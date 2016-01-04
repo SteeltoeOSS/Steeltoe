@@ -1,0 +1,24 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "Spring Cloud Server configuration provider",
+  "authors": [ "dtillman" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+      }
+    }
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Configuration": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-*",
+    "Newtonsoft.Json": "7.0.1",
+    "System.Net.Http": "4.0.0"
+  }
+}
