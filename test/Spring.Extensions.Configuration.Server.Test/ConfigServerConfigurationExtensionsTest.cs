@@ -30,7 +30,27 @@ namespace Spring.Extensions.Configuration.Server.Test
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationExtensions.AddConfigServer(configurationBuilder));
-            Assert.Equal("Value cannot be null.\r\nParameter name: " + nameof(configurationBuilder), ex.Message);
+            Assert.Contains(nameof(configurationBuilder), ex.Message);
+
+        }
+
+        [Fact]
+        public void AddConfigService_AddsConfigServerProviderToProvidersList()
+        {
+            // Arrange
+            var configurationBuilder = new ConfigurationBuilder();
+
+            // Act and Assert
+            configurationBuilder.AddConfigServer();
+
+            ConfigServerConfigurationProvider configServerProvider = null;
+            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            {
+                configServerProvider = provider as ConfigServerConfigurationProvider;
+                if (configServerProvider != null)
+                    break;
+            }
+            Assert.NotNull(configServerProvider);
 
         }
 

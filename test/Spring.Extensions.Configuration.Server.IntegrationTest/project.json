@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-*",
   "description": "Integration test project for Spring.Extensions.Configuration.Test",
   "authors": [ "dtillman" ],
@@ -13,6 +13,8 @@
     }
   },
   "dependencies": {
+    "Microsoft.AspNet.Hosting": "1.0.0-*",
+    "Microsoft.AspNet.Mvc": "6.0.0-*",
     "Microsoft.Extensions.Configuration": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
     "Spring.Extensions.Configuration.Server": "1.0.0-*",

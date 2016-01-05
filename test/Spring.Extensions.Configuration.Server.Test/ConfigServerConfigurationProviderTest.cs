@@ -35,7 +35,7 @@ namespace Spring.Extensions.Configuration.Server.Test
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings));
-            Assert.Equal("Value cannot be null.\r\nParameter name: " + nameof(settings), ex.Message);
+            Assert.Contains(nameof(settings), ex.Message);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Spring.Extensions.Configuration.Server.Test
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
-            Assert.Equal("Value cannot be null.\r\nParameter name: " + nameof(httpClient), ex.Message);
+            Assert.Contains(nameof(httpClient), ex.Message);
         }
 
         [Fact]

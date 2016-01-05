@@ -17,9 +17,23 @@
 using Spring.Extensions.Configuration.Server.Test;
 using Xunit;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNet.TestHost;
+using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Hosting;
 
 namespace Spring.Extensions.Configuration.Server.IntegrationTest
 {
+    //
+    // NOTE: Some of the tests assume an running Java config server is started
+    //       with repository data for application: foo, profile: development
+    //
+    //       The easiest way to get that to happen is clone the spring-cloud-config
+    //       repo and run the config-server.
+    //          eg. git clone https://github.com/spring-cloud/spring-cloud-config.git
+    //              cd spring-cloud-config\spring-cloud-config-server
+    //              mvn spring-boot:run
+    //
+
     public class ConfigServerConfigurationExtensionsIntegrationTest
     {
         public ConfigServerConfigurationExtensionsIntegrationTest()
@@ -27,9 +41,10 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
         }
 
         [Fact]
-        public void SpringCloudConfigServer_DefaultData()
+        public void SpringCloudConfigServer_ReturnsExpectedDefaultData()
         {
-            // Arrange
+
+            // Arrange 
             var appsettings = @"
 {
     'spring': {
@@ -47,7 +62,7 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonFile(path);
 
-            // Act and Assert
+            // Act and Assert (expects Spring Cloud Config server to be running)
             configurationBuilder.AddConfigServer();
             IConfigurationRoot root = configurationBuilder.Build();
 
@@ -59,6 +74,23 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
 
         }
 
+        [Fact]
+        public async void SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
+        {
+            // Arrange
+            var builder = new WebHostBuilder().UseStartup<TestServerStartup>();
+
+            // Act and Assert (TestServer expects Spring Cloud Config server to be running)
+            using (var server = new TestServer(builder)) { 
+                var client = server.CreateClient();
+                string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+
+                Assert.Equal("spam" + 
+                    "bar"+ 
+                    "Spring Cloud Samples" +
+                    "https://github.com/spring-cloud-samples", result);
+            }
+        }
     }
 }
 
