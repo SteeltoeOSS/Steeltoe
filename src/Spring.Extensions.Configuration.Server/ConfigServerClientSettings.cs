@@ -47,27 +47,27 @@ namespace Spring.Extensions.Configuration.Server
         /// The environment used when accessing configuration data (defaults: Development)
         /// </summary>
         public string Environment { get; set; } = "Development";
-        
+
         /// <summary>
         /// The application name used when accessing configuration data (defaults: tbd)
         /// </summary>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// The label used when accessing configuration data (defaults: null)
         /// </summary>
         public string Label { get; set; }
-        
+
         /// <summary>
         /// The username used when accessing the Config Server (defaults: null)
         /// </summary>
         public string Username { get; set; }
-        
+
         /// <summary>
         /// The password used when accessing the Config Server (defaults: null)
         /// </summary>
         public string Password { get; set; }
-        
+
         /// <summary>
         /// Enables/Disables failfast behavior (defaults: false)
         /// </summary>
@@ -81,6 +81,14 @@ namespace Spring.Extensions.Configuration.Server
         public ConfigServerClientSettings(ILoggerFactory logFactory = null)
         {
             _logger = logFactory?.CreateLogger<ConfigServerClientSettings>();
+        }
+
+        internal ILogger Logger
+        {
+            get
+            {
+                return _logger;
+            }
         }
 
         internal ConfigServerClientSettings(IEnumerable<IConfigurationProvider> providers, ILoggerFactory logFactory = null)

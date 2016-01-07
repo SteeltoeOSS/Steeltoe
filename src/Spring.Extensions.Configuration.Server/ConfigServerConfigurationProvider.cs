@@ -137,6 +137,14 @@ namespace Spring.Extensions.Configuration.Server
             }
         }
 
+        internal ILogger Logger
+        {
+            get
+            {
+                return _logger;
+            }
+        }
+
         internal async Task<Environment> RemoteLoadAsync(string path)
         {
             try {

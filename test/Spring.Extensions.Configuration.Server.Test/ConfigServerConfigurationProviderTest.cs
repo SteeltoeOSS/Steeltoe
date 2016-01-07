@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Xunit;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace Spring.Extensions.Configuration.Server.Test
 {
@@ -48,6 +49,19 @@ namespace Spring.Extensions.Configuration.Server.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
             Assert.Contains(nameof(httpClient), ex.Message);
+        }
+
+        [Fact]
+        public void SettingsConstructor__WithLoggerFactorySucceeds()
+        {
+            // Arrange
+            LoggerFactory logFactory = new LoggerFactory();
+            ConfigServerClientSettings settings = new ConfigServerClientSettings(logFactory);
+
+            // Act and Assert
+            var provider = new ConfigServerConfigurationProvider(settings, logFactory);
+            Assert.NotNull(provider.Logger);
+            Assert.NotNull(settings.Logger);
         }
 
         [Fact]

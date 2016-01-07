@@ -17,6 +17,7 @@
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Spring.Extensions.Configuration.Server.Test
 {
@@ -51,6 +52,30 @@ namespace Spring.Extensions.Configuration.Server.Test
                     break;
             }
             Assert.NotNull(configServerProvider);
+
+        }
+
+        [Fact]
+        public void AddConfigService_WithLoggerFactorySucceeds()
+        {
+            // Arrange
+            var configurationBuilder = new ConfigurationBuilder();
+            var loggerFactory = new LoggerFactory();
+
+            // Act and Assert
+            configurationBuilder.AddConfigServer(loggerFactory);
+
+            ConfigServerConfigurationProvider configServerProvider = null;
+            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            {
+                configServerProvider = provider as ConfigServerConfigurationProvider;
+                if (configServerProvider != null)
+                    break;
+            }
+
+            Assert.NotNull(configServerProvider);
+            Assert.NotNull(configServerProvider.Logger);
+            Assert.NotNull(configServerProvider.Settings.Logger);
 
         }
 
