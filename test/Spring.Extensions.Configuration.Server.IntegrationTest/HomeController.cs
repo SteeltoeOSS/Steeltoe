@@ -34,7 +34,10 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
         [HttpGet]
         public string VerifyAsInjectedOptions()
         {
-            return _options.Bar + _options.Foo + _options.Info.Description + _options.Info.Url;
+            if (_options != null)
+                return _options.Bar + _options.Foo + _options.Info.Description + _options.Info.Url;
+            else
+                return "";
         }
 
     }
