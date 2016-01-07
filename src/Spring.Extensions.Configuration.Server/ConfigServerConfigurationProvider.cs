@@ -22,6 +22,7 @@ using System.Net.Http;
 using System.IO;
 using System.Net;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace Spring.Extensions.Configuration.Server
 {
@@ -31,16 +32,19 @@ namespace Spring.Extensions.Configuration.Server
     public class ConfigServerConfigurationProvider : ConfigurationProvider
     {
 
-        private static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0,0,2);
+        private static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0,0,5);
         private ConfigServerClientSettings _settings;
         private HttpClient _client;
+        private ILogger _logger;
+        
 
         /// <summary>
         /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/> with default
         /// configuration settings. <see cref="ConfigServerClientSettings"/>
+        /// <param name="logFactory">optional logging factory</param>
         /// </summary>
-        public ConfigServerConfigurationProvider() :
-            this(new ConfigServerClientSettings())
+        public ConfigServerConfigurationProvider(ILoggerFactory logFactory = null) :
+            this(new ConfigServerClientSettings(logFactory), logFactory)
         {
         }
 
@@ -49,8 +53,10 @@ namespace Spring.Extensions.Configuration.Server
         /// </summary>
         /// <param name="settings">the configuration settings the provider uses when
         /// accessing the server.</param>
-        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings) :
-            this(settings, new HttpClient())
+        /// <param name="logFactory">optional logging factory</param>
+        /// </summary>
+        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null) :
+            this(settings, new HttpClient(), logFactory)
         {
             _client.Timeout = DEFAULT_TIMEOUT;
         }
@@ -62,7 +68,9 @@ namespace Spring.Extensions.Configuration.Server
         /// accessing the server.</param>
         /// <param name="httpClient">a HttpClient the provider uses to make requests of
         /// the server.</param>
-        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient)
+        /// <param name="logFactory">optional logging factory</param>
+        /// </summary>
+        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
         {
             if (settings == null)
             {
@@ -74,6 +82,8 @@ namespace Spring.Extensions.Configuration.Server
                 throw new ArgumentNullException(nameof(httpClient));
             }
 
+  
+            _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
             _settings = settings;
             _client = httpClient;
         }
@@ -101,9 +111,11 @@ namespace Spring.Extensions.Configuration.Server
             Environment env = task.Result;
             if (env != null)
             {
+                _logger?.LogInformation("Located environment: {0}, {1}, {2}, {3}", env.Name, env.Profiles, env.Label, env.Version);
                 var sources = env.PropertySources;
                 if (sources != null)
                 {
+
                     foreach (PropertySource source in sources)
                     {
                         AddPropertySource(source);
@@ -112,8 +124,8 @@ namespace Spring.Extensions.Configuration.Server
             }
         }
 
-        internal ConfigServerConfigurationProvider(IEnumerable<IConfigurationProvider> providers) :
-            this(new ConfigServerClientSettings(providers))
+        internal ConfigServerConfigurationProvider(IEnumerable<IConfigurationProvider> providers, ILoggerFactory logFactory = null) :
+            this(new ConfigServerClientSettings(providers, logFactory), logFactory)
         {
         }
 
@@ -132,7 +144,7 @@ namespace Spring.Extensions.Configuration.Server
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        // log
+                        _logger?.LogInformation("Config Server returned status: {0} invoking path: {1}", response.StatusCode, path);
                         return null;
                     }
 
@@ -141,7 +153,7 @@ namespace Spring.Extensions.Configuration.Server
                 }
             } catch (Exception e)
             {
-                // log
+                _logger?.LogError("Config Server exception, path: {0}", path, e);
             }
             return null;
 
@@ -157,8 +169,7 @@ namespace Spring.Extensions.Configuration.Server
                 }
             } catch (Exception e)
             {
-                // log
-       
+                _logger?.LogError("Config Server serialization exception", e);
             }
             return null;
         }
@@ -185,7 +196,7 @@ namespace Spring.Extensions.Configuration.Server
                     Data[key] = value;
                 } catch (Exception e)
                 {
-                    //log
+                    _logger?.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType(), e);
                 }
 
             }

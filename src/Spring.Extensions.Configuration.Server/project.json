@@ -18,6 +18,7 @@
   "dependencies": {
     "Microsoft.Extensions.Configuration": "1.0.0-*",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Newtonsoft.Json": "7.0.1",
     "System.Net.Http": "4.0.0"
   }

@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Spring.Extensions.Configuration.Server
 {
@@ -72,15 +73,20 @@ namespace Spring.Extensions.Configuration.Server
         /// </summary>
         public bool FailFast { get; set; } = false;
 
+        private ILogger _logger;
+
         /// <summary>
         /// Initialize Config Server client settings with defaults
         /// </summary>
-        public ConfigServerClientSettings()
+        public ConfigServerClientSettings(ILoggerFactory logFactory = null)
         {
+            _logger = logFactory?.CreateLogger<ConfigServerClientSettings>();
         }
 
-        internal ConfigServerClientSettings(IEnumerable<IConfigurationProvider> providers)
+        internal ConfigServerClientSettings(IEnumerable<IConfigurationProvider> providers, ILoggerFactory logFactory = null)
         {
+
+            _logger = logFactory?.CreateLogger<ConfigServerClientSettings>();
             if (providers == null)
                 return;
 

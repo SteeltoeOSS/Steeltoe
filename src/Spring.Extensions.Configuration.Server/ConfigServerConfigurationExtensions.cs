@@ -16,6 +16,7 @@
 
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Spring.Extensions.Configuration.Server
 {
@@ -41,14 +42,14 @@ namespace Spring.Extensions.Configuration.Server
         ///     would used default Config Server setting unless overriden by values found in appsettings.json or
         ///     environment variables.
         /// </summary>
-        public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder)
+        public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ILoggerFactory logFactory = null)
         {
             if (configurationBuilder == null)
             {
                 throw new ArgumentNullException(nameof(configurationBuilder));
             }
 
-            configurationBuilder.Add(new ConfigServerConfigurationProvider(configurationBuilder.Providers));
+            configurationBuilder.Add(new ConfigServerConfigurationProvider(configurationBuilder.Providers, logFactory));
 
             return configurationBuilder;
 
