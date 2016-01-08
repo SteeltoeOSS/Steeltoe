@@ -60,10 +60,11 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
 
             var path = ConfigServerTestHelpers.CreateTempFile(appsettings);
             var configurationBuilder = new ConfigurationBuilder();
+            var hostingEnv = new HostingEnvironment();
             configurationBuilder.AddJsonFile(path);
 
             // Act and Assert (expects Spring Cloud Config server to be running)
-            configurationBuilder.AddConfigServer();
+            configurationBuilder.AddConfigServer(hostingEnv);
             IConfigurationRoot root = configurationBuilder.Build();
 
             Assert.Equal("spam", root["bar"]);

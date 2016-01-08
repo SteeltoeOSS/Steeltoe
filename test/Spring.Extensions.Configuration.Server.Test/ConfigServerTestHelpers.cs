@@ -53,10 +53,10 @@ namespace Spring.Extensions.Configuration.Server.Test
 
         public static void VerifyDefaults(ConfigServerClientSettings settings)
         {
-            Assert.True(settings.Enabled);
-            Assert.False(settings.FailFast);
-            Assert.Equal(settings.Uri, "http://localhost:8888");
-            Assert.Equal(settings.Environment, "Development");
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED, settings.Enabled);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_FAILFAST, settings.FailFast);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_URI, settings.Uri);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Null(settings.Name);
             Assert.Null(settings.Label);
             Assert.Null(settings.Username);

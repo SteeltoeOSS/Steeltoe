@@ -18,6 +18,8 @@ using Microsoft.Extensions.Configuration;
 using Xunit;
 using System;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNet.Hosting;
+using Microsoft.Extensions.Configuration.Xml;
 
 namespace Spring.Extensions.Configuration.Server.Test
 {
@@ -28,10 +30,23 @@ namespace Spring.Extensions.Configuration.Server.Test
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = null;
+            var environment = new HostingEnvironment();
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationExtensions.AddConfigServer(configurationBuilder));
+            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationExtensions.AddConfigServer(configurationBuilder, environment));
             Assert.Contains(nameof(configurationBuilder), ex.Message);
+
+        }
+
+        [Fact]
+        public void AddConfigService_ThrowsIfHostingEnvironmentNull()
+        {
+            // Arrange
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            IHostingEnvironment environment = null;
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationExtensions.AddConfigServer(configurationBuilder, environment));
+            Assert.Contains(nameof(environment), ex.Message);
 
         }
 
@@ -40,9 +55,10 @@ namespace Spring.Extensions.Configuration.Server.Test
         {
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
+            var environment = new HostingEnvironment();
 
             // Act and Assert
-            configurationBuilder.AddConfigServer();
+            configurationBuilder.AddConfigServer(environment);
 
             ConfigServerConfigurationProvider configServerProvider = null;
             foreach (IConfigurationProvider provider in configurationBuilder.Providers)
@@ -61,9 +77,10 @@ namespace Spring.Extensions.Configuration.Server.Test
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
             var loggerFactory = new LoggerFactory();
+            var environment = new HostingEnvironment();
 
             // Act and Assert
-            configurationBuilder.AddConfigServer(loggerFactory);
+            configurationBuilder.AddConfigServer(environment,loggerFactory);
 
             ConfigServerConfigurationProvider configServerProvider = null;
             foreach (IConfigurationProvider provider in configurationBuilder.Providers)
@@ -75,7 +92,6 @@ namespace Spring.Extensions.Configuration.Server.Test
 
             Assert.NotNull(configServerProvider);
             Assert.NotNull(configServerProvider.Logger);
-            Assert.NotNull(configServerProvider.Settings.Logger);
 
         }
 
@@ -86,13 +102,15 @@ namespace Spring.Extensions.Configuration.Server.Test
             var appsettings = @"
 {
     'spring': {
+        'application': {
+            'name': 'myName'
+    },
       'cloud': {
         'config': {
             'uri': 'http://foo.com:9999',
             'enabled': false,
             'failFast': true,
             'label': 'myLabel',
-            'name': 'myName',
             'username': 'myUsername',
             'password': 'myPassword'
         }
@@ -102,10 +120,11 @@ namespace Spring.Extensions.Configuration.Server.Test
 
             var path = ConfigServerTestHelpers.CreateTempFile(appsettings);
             var configurationBuilder = new ConfigurationBuilder();
+            var environment = new HostingEnvironment();
             configurationBuilder.AddJsonFile(path);
 
             // Act and Assert
-            configurationBuilder.AddConfigServer();
+            configurationBuilder.AddConfigServer(environment);
 
             ConfigServerConfigurationProvider configServerProvider = null;
             foreach (IConfigurationProvider provider in configurationBuilder.Providers)
@@ -119,12 +138,148 @@ namespace Spring.Extensions.Configuration.Server.Test
 
             Assert.False(settings.Enabled);
             Assert.True(settings.FailFast);
-            Assert.Equal(settings.Uri, "http://foo.com:9999");
-            Assert.Equal(settings.Environment, "Development");
-            Assert.Equal(settings.Name, "myName");
-            Assert.Equal(settings.Label, "myLabel");
-            Assert.Equal(settings.Username, "myUsername");
-            Assert.Equal(settings.Password, "myPassword");
+            Assert.Equal("http://foo.com:9999", settings.Uri);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+            Assert.Equal("myName", settings.Name);
+            Assert.Equal("myLabel", settings.Label);
+            Assert.Equal("myUsername", settings.Username);
+            Assert.Equal("myPassword", settings.Password);
+        }
+
+
+        [Fact]
+        public void AddConfigService_XmlAppSettingsConfiguresClient()
+        {
+            // Arrange
+            var appsettings = @"
+<settings>
+    <spring>
+      <cloud>
+        <config>
+            <uri>http://foo.com:9999</uri>
+            <enabled>false</enabled>
+            <failFast>true</failFast>
+            <label>myLabel</label>
+            <name>myName</name>
+            <username>myUsername</username>
+            <password>myPassword</password>
+        </config>
+      </cloud>
+    </spring>
+</settings>";
+            var path = ConfigServerTestHelpers.CreateTempFile(appsettings);
+            var configurationBuilder = new ConfigurationBuilder();
+            var environment = new HostingEnvironment();
+            configurationBuilder.AddXmlFile(path);
+
+            // Act and Assert
+            configurationBuilder.AddConfigServer(environment);
+
+            ConfigServerConfigurationProvider configServerProvider = null;
+            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            {
+                configServerProvider = provider as ConfigServerConfigurationProvider;
+                if (configServerProvider != null)
+                    break;
+            }
+            Assert.NotNull(configServerProvider);
+            ConfigServerClientSettings settings = configServerProvider.Settings;
+
+            Assert.False(settings.Enabled);
+            Assert.True(settings.FailFast);
+            Assert.Equal("http://foo.com:9999", settings.Uri);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+            Assert.Equal("myName", settings.Name);
+            Assert.Equal("myLabel", settings.Label);
+            Assert.Equal("myUsername", settings.Username);
+            Assert.Equal("myPassword", settings.Password);
+
+        }
+        [Fact]
+        public void AddConfigService_IniAppSettingsConfiguresClient()
+        {
+            // Arrange
+            var appsettings = @"
+[spring:cloud:config]
+    uri=http://foo.com:9999
+    enabled=false
+    failFast=true
+    label=myLabel
+    name=myName
+    username=myUsername
+    password=myPassword
+";
+            var path = ConfigServerTestHelpers.CreateTempFile(appsettings);
+            var configurationBuilder = new ConfigurationBuilder();
+            var environment = new HostingEnvironment();
+            configurationBuilder.AddIniFile(path);
+
+            // Act and Assert
+            configurationBuilder.AddConfigServer(environment);
+
+            ConfigServerConfigurationProvider configServerProvider = null;
+            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            {
+                configServerProvider = provider as ConfigServerConfigurationProvider;
+                if (configServerProvider != null)
+                    break;
+            }
+            Assert.NotNull(configServerProvider);
+            ConfigServerClientSettings settings = configServerProvider.Settings;
+
+            // Act and Assert
+            Assert.False(settings.Enabled);
+            Assert.True(settings.FailFast);
+            Assert.Equal("http://foo.com:9999", settings.Uri);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+            Assert.Equal("myName", settings.Name);
+            Assert.Equal("myLabel", settings.Label);
+            Assert.Equal("myUsername", settings.Username);
+            Assert.Equal("myPassword", settings.Password);
+
+        }
+
+        [Fact]
+        public void AddConfigService_CommandLineAppSettingsConfiguresClient()
+        {
+            // Arrange
+            var appsettings = new string[]
+                {
+                    "spring:cloud:config:enabled=false",
+                    "--spring:cloud:config:failFast=true",
+                    "/spring:cloud:config:uri=http://foo.com:9999",
+                    "--spring:cloud:config:name", "myName",
+                    "/spring:cloud:config:label", "myLabel",
+                    "--spring:cloud:config:username", "myUsername",
+                    "--spring:cloud:config:password", "myPassword"
+                };
+
+            var configurationBuilder = new ConfigurationBuilder();
+            var environment = new HostingEnvironment();
+            configurationBuilder.AddCommandLine(appsettings);
+
+            // Act and Assert
+            configurationBuilder.AddConfigServer(environment);
+
+            ConfigServerConfigurationProvider configServerProvider = null;
+            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            {
+                configServerProvider = provider as ConfigServerConfigurationProvider;
+                if (configServerProvider != null)
+                    break;
+            }
+            Assert.NotNull(configServerProvider);
+            ConfigServerClientSettings settings = configServerProvider.Settings;
+
+            Assert.False(settings.Enabled);
+            Assert.True(settings.FailFast);
+            Assert.Equal("http://foo.com:9999", settings.Uri);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+            Assert.Equal("myName", settings.Name );
+            Assert.Equal("myLabel", settings.Label );
+            Assert.Equal("myUsername", settings.Username);
+            Assert.Equal("myPassword", settings.Password );
+
         }
 
     }

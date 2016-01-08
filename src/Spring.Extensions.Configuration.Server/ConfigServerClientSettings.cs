@@ -28,28 +28,42 @@ namespace Spring.Extensions.Configuration.Server
     public class ConfigServerClientSettings
     {
         /// <summary>
-        /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server 
-        /// configuration settings are found. (e.g. spring:cloud:config:uri, spring:cloud:config:enabled, etc.)
+        /// Default Config Server address used by provider
         /// </summary>
-        public const string PREFIX = "spring:cloud:config";
+        public const string DEFAULT_URI = "http://localhost:8888";
 
         /// <summary>
-        /// The Config Servers address (defaults: https://localhost:8888)
+        /// Default enironment used when accessing configuration data
         /// </summary>
-        public string Uri { get; set; } = "http://localhost:8888";
+        public const string DEFAULT_ENVIRONMENT = "Production";
 
         /// <summary>
-        /// Enables/Disables the Config Server provider (defaults: true)
+        /// Default fail fast setting
         /// </summary>
-        public bool Enabled { get; set; } = true;
+        public const bool DEFAULT_FAILFAST = false;
 
         /// <summary>
-        /// The environment used when accessing configuration data (defaults: Development)
+        /// Default Config Server provider enabled setting
         /// </summary>
-        public string Environment { get; set; } = "Development";
+        public const bool DEFAULT_PROVIDER_ENABLED = true;
 
         /// <summary>
-        /// The application name used when accessing configuration data (defaults: tbd)
+        /// The Config Server address (defaults: DEFAULT_URI)
+        /// </summary>
+        public string Uri { get; set; } = DEFAULT_URI;
+
+        /// <summary>
+        /// Enables/Disables the Config Server provider (defaults: DEFAULT_PROVIDER_ENABLED)
+        /// </summary>
+        public bool Enabled { get; set; } = DEFAULT_PROVIDER_ENABLED;
+
+        /// <summary>
+        /// The environment used when accessing configuration data (defaults: DEFAULT_ENVIRONMENT)
+        /// </summary>
+        public string Environment { get; set; } = DEFAULT_ENVIRONMENT;
+
+        /// <summary>
+        /// The application name used when accessing configuration data (defaults: TODO:)
         /// </summary>
         public string Name { get; set; }
 
@@ -69,77 +83,17 @@ namespace Spring.Extensions.Configuration.Server
         public string Password { get; set; }
 
         /// <summary>
-        /// Enables/Disables failfast behavior (defaults: false)
+        /// Enables/Disables failfast behavior (defaults: DEFAULT_FAILFAST)
         /// </summary>
-        public bool FailFast { get; set; } = false;
-
-        private ILogger _logger;
+        public bool FailFast { get; set; } = DEFAULT_FAILFAST;
 
         /// <summary>
         /// Initialize Config Server client settings with defaults
         /// </summary>
-        public ConfigServerClientSettings(ILoggerFactory logFactory = null)
+        public ConfigServerClientSettings()
         {
-            _logger = logFactory?.CreateLogger<ConfigServerClientSettings>();
         }
 
-        internal ILogger Logger
-        {
-            get
-            {
-                return _logger;
-            }
-        }
-
-        internal ConfigServerClientSettings(IEnumerable<IConfigurationProvider> providers, ILoggerFactory logFactory = null)
-        {
-
-            _logger = logFactory?.CreateLogger<ConfigServerClientSettings>();
-            if (providers == null)
-                return;
-
-            Initialize(new List<IConfigurationProvider>(providers));
-        }
-
-        private void Initialize(List<IConfigurationProvider> list)
-        {
-            ConfigurationRoot root = new ConfigurationRoot(list);
-
-            var section = root.GetSection(PREFIX);
-            Name = section["name"];
-            Label = section["label"];
-            Username = section["username"];
-            Password = section["password"];
-
-            var env = section["environment"];
-            if (!string.IsNullOrEmpty(env))
-            {
-                Environment = env;
-            }
-
-            var uri = section["uri"];
-            if (!string.IsNullOrEmpty(uri))
-            {
-                Uri = uri;
-            }
-
-            var enabled = section["enabled"];
-            if (!string.IsNullOrEmpty(enabled))
-            {
-                bool result;
-                if (Boolean.TryParse(enabled, out result))
-                    Enabled = result;
-            }
-
-            var failFast = section["failFast"];
-            if (!string.IsNullOrEmpty(failFast))
-            {
-                bool result;
-                if (Boolean.TryParse(failFast, out result))
-                    FailFast = result;
-            }
-
-        }
     }
 }
 

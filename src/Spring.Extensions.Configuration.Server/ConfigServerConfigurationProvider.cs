@@ -23,6 +23,7 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNet.Hosting;
 
 namespace Spring.Extensions.Configuration.Server
 {
@@ -44,7 +45,7 @@ namespace Spring.Extensions.Configuration.Server
         /// <param name="logFactory">optional logging factory</param>
         /// </summary>
         public ConfigServerConfigurationProvider(ILoggerFactory logFactory = null) :
-            this(new ConfigServerClientSettings(logFactory), logFactory)
+            this(new ConfigServerClientSettings(), logFactory)
         {
         }
 
@@ -82,7 +83,6 @@ namespace Spring.Extensions.Configuration.Server
                 throw new ArgumentNullException(nameof(httpClient));
             }
 
-  
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
             _settings = settings;
             _client = httpClient;
@@ -122,11 +122,6 @@ namespace Spring.Extensions.Configuration.Server
                     }
                 }
             }
-        }
-
-        internal ConfigServerConfigurationProvider(IEnumerable<IConfigurationProvider> providers, ILoggerFactory logFactory = null) :
-            this(new ConfigServerClientSettings(providers, logFactory), logFactory)
-        {
         }
 
         internal IDictionary<string, string> Properties

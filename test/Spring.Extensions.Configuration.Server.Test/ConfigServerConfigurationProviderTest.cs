@@ -56,29 +56,15 @@ namespace Spring.Extensions.Configuration.Server.Test
         {
             // Arrange
             LoggerFactory logFactory = new LoggerFactory();
-            ConfigServerClientSettings settings = new ConfigServerClientSettings(logFactory);
+            ConfigServerClientSettings settings = new ConfigServerClientSettings();
 
             // Act and Assert
             var provider = new ConfigServerConfigurationProvider(settings, logFactory);
             Assert.NotNull(provider.Logger);
-            Assert.NotNull(settings.Logger);
         }
 
         [Fact]
-        public void ProvidersConstructor_InitializedWithDefaultsWhenNull()
-        {
-            // Arrange
-            IEnumerable<IConfigurationProvider> providers = null;
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(providers);
-
-
-            // Act and Assert
-            ConfigServerTestHelpers.VerifyDefaults(provider.Settings);
-
-        }
-
-        [Fact]
-        public void DefaultConstructor_InitializedWithDefaults()
+        public void DefaultConstructor_InitializedWithDefaultSettings()
         {
             // Arrange
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider();

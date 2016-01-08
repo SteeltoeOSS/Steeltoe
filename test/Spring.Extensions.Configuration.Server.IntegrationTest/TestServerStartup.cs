@@ -32,7 +32,7 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
         public IConfiguration Configuration { get; set; }
 
 
-        public TestServerStartup()
+        public TestServerStartup(IHostingEnvironment environment)
         {
             // These settings match the default java config server
             var appsettings = @"
@@ -50,7 +50,7 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
             var path = ConfigServerTestHelpers.CreateTempFile(appsettings);
             var builder = new ConfigurationBuilder()
                 .AddJsonFile(path)
-                .AddConfigServer();
+                .AddConfigServer(environment);
             Configuration = builder.Build();
 
         }
