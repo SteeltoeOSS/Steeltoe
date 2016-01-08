@@ -48,11 +48,13 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
             var appsettings = @"
 {
     'spring': {
+      'application': {
+        'name' : 'foo'
+      },
       'cloud': {
         'config': {
             'uri': 'http://localhost:8888',
-            'name': 'foo',
-            'environment': 'development'
+            'env': 'development'
         }
       }
     }

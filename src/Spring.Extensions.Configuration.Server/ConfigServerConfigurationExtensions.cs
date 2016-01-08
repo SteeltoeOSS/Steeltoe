@@ -31,7 +31,8 @@ namespace Spring.Extensions.Configuration.Server
 
         /// <summary>
         /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server 
-        /// configuration settings are found. (e.g. spring:cloud:config:uri, spring:cloud:config:enabled, etc.)
+        /// configuration settings (<see cref="ConfigServerClientSettings"/> are found. 
+        ///   (e.g. spring:cloud:config:env, spring:cloud:config:uri, spring:cloud:config:enabled, etc.)
         /// </summary>
         public const string PREFIX = "spring:cloud:config";
 
@@ -179,7 +180,7 @@ namespace Spring.Extensions.Configuration.Server
         private static string GetEnvironment(IConfigurationSection section, IHostingEnvironment environment)
         {
             // if spring:cloud:config:environment present, use it
-            var env = section["environment"];
+            var env = section["env"];
             if (!string.IsNullOrEmpty(env))
             {
                 return env;
