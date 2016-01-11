@@ -96,35 +96,37 @@ namespace Spring.Extensions.Configuration.Server
             var clientConfigsection = root.GetSection(PREFIX);
             var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
 
-            settings.Name = GetApplicationName(clientConfigsection, appSection);
-            settings.Environment = GetEnvironment(clientConfigsection, environment);
-            settings.Label = GetLabel(clientConfigsection);
-            settings.Username = GetUsername(clientConfigsection);
-            settings.Password = GetPassword(clientConfigsection);
-            settings.Uri = GetUri(clientConfigsection);
-            settings.Enabled = GetEnabled(clientConfigsection);
-            settings.FailFast = GetFailFast(clientConfigsection);
+            settings.Name = ResovlePlaceholders(GetApplicationName(clientConfigsection, appSection), root);
+            settings.Environment = ResovlePlaceholders(GetEnvironment(clientConfigsection, environment), root);
+            settings.Label = ResovlePlaceholders(GetLabel(clientConfigsection), root);
+            settings.Username = ResovlePlaceholders(GetUsername(clientConfigsection), root);
+            settings.Password = ResovlePlaceholders(GetPassword(clientConfigsection), root);
+            settings.Uri = ResovlePlaceholders(GetUri(clientConfigsection), root);
+            settings.Enabled = GetEnabled(clientConfigsection, root);
+            settings.FailFast = GetFailFast(clientConfigsection, root);
         }
 
-        private static bool GetFailFast(IConfigurationSection section)
+        private static bool GetFailFast(IConfigurationSection section, ConfigurationRoot root)
         {
             var failFast = section["failFast"];
             if (!string.IsNullOrEmpty(failFast))
             {
                 bool result;
-                if (Boolean.TryParse(failFast, out result))
+                string resolved = ResovlePlaceholders(failFast, root);
+                if (Boolean.TryParse(resolved, out result))
                     return result;
             }
             return ConfigServerClientSettings.DEFAULT_FAILFAST;
         }
 
-        private static bool GetEnabled(IConfigurationSection section)
+        private static bool GetEnabled(IConfigurationSection section, ConfigurationRoot root)
         {
             var enabled = section["enabled"];
             if (!string.IsNullOrEmpty(enabled))
             {
                 bool result;
-                if (Boolean.TryParse(enabled, out result))
+                string resolved = ResovlePlaceholders(enabled, root);
+                if (Boolean.TryParse(resolved, out result))
                     return result;
             }
             return ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED; ;
@@ -189,5 +191,13 @@ namespace Spring.Extensions.Configuration.Server
             // Otherwise use frameworks defined value (its default is Production)
             return environment.EnvironmentName;
         }
+
+        private static string ResovlePlaceholders(string property, IConfiguration config)
+        {
+            return PropertyPlaceholderHelper.ResovlePlaceholders(property, config);
+        }
+
+
+
     }
 }

@@ -107,7 +107,7 @@ namespace Spring.Extensions.Configuration.Server.Test
     },
       'cloud': {
         'config': {
-            'uri': 'http://foo.com:9999',
+            'uri': 'http://user:password@foo.com:9999',
             'enabled': false,
             'failFast': true,
             'label': 'myLabel',
@@ -138,7 +138,7 @@ namespace Spring.Extensions.Configuration.Server.Test
 
             Assert.False(settings.Enabled);
             Assert.True(settings.FailFast);
-            Assert.Equal("http://foo.com:9999", settings.Uri);
+            Assert.Equal("http://user:password@foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("myName", settings.Name);
             Assert.Equal("myLabel", settings.Label);
@@ -281,6 +281,64 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.Equal("myPassword", settings.Password );
 
         }
+
+        [Fact]
+        public void AddConfigService_HandlesPlaceHolders()
+        {
+            // Arrange
+            var appsettings = @"
+{
+    'foo': {
+        'bar': {
+            'name': 'testName'
+        },
+    },
+    'spring': {
+        'application': {
+            'name': 'myName'
+        },
+      'cloud': {
+        'config': {
+            'uri': 'http://user:password@foo.com:9999',
+            'enabled': false,
+            'failFast': true,
+            'name': '${foo:bar:name?foobar}',
+            'label': 'myLabel',
+            'username': 'myUsername',
+            'password': 'myPassword'
+        }
+      }
+    }
+}";
+
+            var path = ConfigServerTestHelpers.CreateTempFile(appsettings);
+            var configurationBuilder = new ConfigurationBuilder();
+            var environment = new HostingEnvironment();
+            configurationBuilder.AddJsonFile(path);
+
+            // Act and Assert
+            configurationBuilder.AddConfigServer(environment);
+
+            ConfigServerConfigurationProvider configServerProvider = null;
+            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            {
+                configServerProvider = provider as ConfigServerConfigurationProvider;
+                if (configServerProvider != null)
+                    break;
+            }
+            Assert.NotNull(configServerProvider);
+            ConfigServerClientSettings settings = configServerProvider.Settings;
+
+            Assert.False(settings.Enabled);
+            Assert.True(settings.FailFast);
+            Assert.Equal("http://user:password@foo.com:9999", settings.Uri);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+            Assert.Equal("testName", settings.Name);
+            Assert.Equal("myLabel", settings.Label);
+            Assert.Equal("myUsername", settings.Username);
+            Assert.Equal("myPassword", settings.Password);
+        }
+
 
     }
 }
