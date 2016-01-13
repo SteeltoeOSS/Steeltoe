@@ -26,7 +26,7 @@ namespace Spring.Extensions.Configuration.Server.Test
     public class ConfigServerConfigurationExtensionsTest
     {
         [Fact]
-        public void AddConfigService_ThrowsIfConfigBuilderNull()
+        public void AddConfigServer_ThrowsIfConfigBuilderNull()
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = null;
@@ -39,7 +39,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         }
 
         [Fact]
-        public void AddConfigService_ThrowsIfHostingEnvironmentNull()
+        public void AddConfigServer_ThrowsIfHostingEnvironmentNull()
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
@@ -51,7 +51,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         }
 
         [Fact]
-        public void AddConfigService_AddsConfigServerProviderToProvidersList()
+        public void AddConfigServer_AddsConfigServerProviderToProvidersList()
         {
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
@@ -72,7 +72,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         }
 
         [Fact]
-        public void AddConfigService_WithLoggerFactorySucceeds()
+        public void AddConfigServer_WithLoggerFactorySucceeds()
         {
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
@@ -96,7 +96,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         }
 
         [Fact]
-        public void AddConfigService_JsonAppSettingsConfiguresClient()
+        public void AddConfigServer_JsonAppSettingsConfiguresClient()
         {
             // Arrange
             var appsettings = @"
@@ -148,7 +148,7 @@ namespace Spring.Extensions.Configuration.Server.Test
 
 
         [Fact]
-        public void AddConfigService_XmlAppSettingsConfiguresClient()
+        public void AddConfigServer_XmlAppSettingsConfiguresClient()
         {
             // Arrange
             var appsettings = @"
@@ -196,7 +196,7 @@ namespace Spring.Extensions.Configuration.Server.Test
 
         }
         [Fact]
-        public void AddConfigService_IniAppSettingsConfiguresClient()
+        public void AddConfigServer_IniAppSettingsConfiguresClient()
         {
             // Arrange
             var appsettings = @"
@@ -240,7 +240,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         }
 
         [Fact]
-        public void AddConfigService_CommandLineAppSettingsConfiguresClient()
+        public void AddConfigServer_CommandLineAppSettingsConfiguresClient()
         {
             // Arrange
             var appsettings = new string[]
@@ -283,7 +283,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         }
 
         [Fact]
-        public void AddConfigService_HandlesPlaceHolders()
+        public void AddConfigServer_HandlesPlaceHolders()
         {
             // Arrange
             var appsettings = @"
@@ -340,7 +340,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         }
 
         [Fact]
-        public void AddConfigService_WithCloudfoundryEnvironment_ConfiguresClientCorrectly()
+        public void AddConfigServer_WithCloudfoundryEnvironment_ConfiguresClientCorrectly()
         {
 
             // Arrange
