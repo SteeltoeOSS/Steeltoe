@@ -76,8 +76,6 @@ namespace Spring.Extensions.Configuration.Server
 
         }
 
-
-
         private static ConfigServerClientSettings CreateSettings(IHostingEnvironment environment, IEnumerable<IConfigurationProvider> providers, ILoggerFactory logFactory)
         {
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
@@ -103,9 +101,13 @@ namespace Spring.Extensions.Configuration.Server
             settings.Username = ResovlePlaceholders(GetUsername(clientConfigsection), root);
             settings.Password = ResovlePlaceholders(GetPassword(clientConfigsection), root);
             settings.Uri = ResovlePlaceholders(GetUri(clientConfigsection, root), root);
+            settings.AccessTokenUri = ResovlePlaceholders(GetAccessTokenUri(clientConfigsection, root), root);
+            settings.ClientId = ResovlePlaceholders(GetClientId(clientConfigsection, root), root);
+            settings.ClientSecret = ResovlePlaceholders(GetClientSecret(clientConfigsection, root), root);
             settings.Enabled = GetEnabled(clientConfigsection, root);
             settings.FailFast = GetFailFast(clientConfigsection, root);
-        }
+
+    }
 
         private static bool GetFailFast(IConfigurationSection configServerSection, ConfigurationRoot root)
         {
@@ -136,6 +138,7 @@ namespace Spring.Extensions.Configuration.Server
 
         private static string GetUri(IConfigurationSection configServerSection, ConfigurationRoot root)
         {
+        
             // First check for spring:cloud:config:uri
             var uri = configServerSection["uri"];
             if (!string.IsNullOrEmpty(uri))
@@ -173,23 +176,9 @@ namespace Spring.Extensions.Configuration.Server
 
         private static string GetApplicationName(IConfigurationSection configServerSection, ConfigurationRoot root)
         {
-            // if spring:cloud:config:name present, use it
-            var name = configServerSection["name"];
-            if (!string.IsNullOrEmpty(name))
-            {
-                return name;
-            }
-
-            // if spring:application:name present, use it
-            var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
-            name = appSection["name"];
-            if (!string.IsNullOrEmpty(name))
-            {
-                return name;
-            }
-
             // TODO: Figure out a sensible "default" app name (e.g apps assembly name?)
-            return "name";
+            var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
+            return GetSetting("name", configServerSection, appSection, "name");
         }
 
         private static string GetEnvironment(IConfigurationSection section, IHostingEnvironment environment)
@@ -204,13 +193,53 @@ namespace Spring.Extensions.Configuration.Server
             // Otherwise use ASP.NET 5 defined value (i.e. ASPNET_ENV or Hosting:Environment) (its default is 'Production')
             return environment.EnvironmentName;
         }
+        private static string GetClientSecret(IConfigurationSection configServerSection, ConfigurationRoot root)
+        {
+            var vcapConfigServerSection = root.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
+            return GetSetting("credentials:client_secret", configServerSection, vcapConfigServerSection,
+                ConfigServerClientSettings.DEFAULT_CLIENT_SECRET);
+
+        }
+
+        private static string GetClientId(IConfigurationSection configServerSection, ConfigurationRoot root)
+        {
+            var vcapConfigServerSection = root.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
+            return GetSetting("credentials:client_id", configServerSection, vcapConfigServerSection,
+                ConfigServerClientSettings.DEFAULT_CLIENT_ID);
+
+        }
+ 
+        private static string GetAccessTokenUri(IConfigurationSection configServerSection, ConfigurationRoot root)
+        {
+            var vcapConfigServerSection = root.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
+            return GetSetting("credentials:access_token_uri", configServerSection, vcapConfigServerSection, 
+                ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI);
+
+        }
 
         private static string ResovlePlaceholders(string property, IConfiguration config)
         {
             return PropertyPlaceholderHelper.ResovlePlaceholders(property, config);
         }
 
+        private static string GetSetting(string key, IConfigurationSection primary, IConfigurationSection secondary, string def)
+        {
+            // First check for key in primary
+            var setting = primary[key];
+            if (!string.IsNullOrEmpty(setting))
+            {
+                return setting;
+            }
 
+            // Next check for key in secondary
+            setting = secondary[key];
+            if (!string.IsNullOrEmpty(setting))
+            {
+                return setting;
+            }
+
+            return def;
+        }
 
     }
 }

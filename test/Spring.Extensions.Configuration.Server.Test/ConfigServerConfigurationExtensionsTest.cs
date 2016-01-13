@@ -144,6 +144,9 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
+            Assert.Null(settings.AccessTokenUri);
+            Assert.Null(settings.ClientId);
+            Assert.Null(settings.ClientSecret);
         }
 
 
@@ -193,6 +196,9 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
+            Assert.Null(settings.AccessTokenUri);
+            Assert.Null(settings.ClientId);
+            Assert.Null(settings.ClientSecret);
 
         }
         [Fact]
@@ -236,6 +242,9 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
+            Assert.Null(settings.AccessTokenUri);
+            Assert.Null(settings.ClientId);
+            Assert.Null(settings.ClientSecret);
 
         }
 
@@ -279,6 +288,9 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.Equal("myLabel", settings.Label );
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password );
+            Assert.Null(settings.AccessTokenUri);
+            Assert.Null(settings.ClientId);
+            Assert.Null(settings.ClientSecret);
 
         }
 
@@ -337,6 +349,9 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
+            Assert.Null(settings.AccessTokenUri);
+            Assert.Null(settings.ClientId);
+            Assert.Null(settings.ClientSecret);
         }
 
         [Fact]
@@ -436,6 +451,9 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.True(settings.Enabled);
             Assert.False(settings.FailFast);
             Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", settings.Uri);
+            Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", settings.AccessTokenUri);
+            Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", settings.ClientId);
+            Assert.Equal("e8KF1hXvAnGd", settings.ClientSecret);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("my-app", settings.Name);
             Assert.Null(settings.Label);

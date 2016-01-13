@@ -33,6 +33,21 @@ namespace Spring.Extensions.Configuration.Server
         public const string DEFAULT_URI = "http://localhost:8888";
 
         /// <summary>
+        /// Default address used by provider to obtain a OAuth Access Token 
+        /// </summary>
+        public const string DEFAULT_ACCESS_TOKEN_URI = null;
+
+        /// <summary>
+        /// Default client id used by provider to obtain a OAuth Access Token 
+        /// </summary>
+        public const string DEFAULT_CLIENT_ID = null;
+
+        /// <summary>
+        /// Default client secret used by provider to obtain a OAuth Access Token 
+        /// </summary>
+        public const string DEFAULT_CLIENT_SECRET = null;
+
+        /// <summary>
         /// Default enironment used when accessing configuration data
         /// </summary>
         public const string DEFAULT_ENVIRONMENT = "Production";
@@ -86,6 +101,21 @@ namespace Spring.Extensions.Configuration.Server
         /// Enables/Disables failfast behavior (defaults: DEFAULT_FAILFAST)
         /// </summary>
         public bool FailFast { get; set; } = DEFAULT_FAILFAST;
+
+        /// <summary>
+        /// Address used by provider to obtain a OAuth Access Token 
+        /// </summary>
+        public string AccessTokenUri { get; set; } = DEFAULT_ACCESS_TOKEN_URI;
+
+        /// <summary>
+        /// Client id used by provider to obtain a OAuth Access Token 
+        /// </summary>
+        public string ClientId { get; set; } = DEFAULT_CLIENT_ID;
+
+        /// <summary>
+        /// Client secret used by provider to obtain a OAuth Access Token 
+        /// </summary>
+        public string ClientSecret { get; set; } = DEFAULT_CLIENT_SECRET;
 
         /// <summary>
         /// Initialize Config Server client settings with defaults

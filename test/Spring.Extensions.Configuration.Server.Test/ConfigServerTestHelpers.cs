@@ -57,6 +57,9 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.Equal(ConfigServerClientSettings.DEFAULT_FAILFAST, settings.FailFast);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_URI, settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI, settings.AccessTokenUri);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_CLIENT_ID, settings.ClientId);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_CLIENT_SECRET, settings.ClientSecret);
             Assert.Null(settings.Name);
             Assert.Null(settings.Label);
             Assert.Null(settings.Username);
