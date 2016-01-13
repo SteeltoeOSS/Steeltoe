@@ -1,6 +1,6 @@
-﻿{
+{
   "version": "1.0.0-*",
-  "description": "Cloudfoundry configuration provider",
+  "description": "CloudFoundry configuration provider",
   "authors": [ "dtillman" ],
   "tags": [ "" ],
   "projectUrl": "",
@@ -12,6 +12,7 @@
     },
     "dnxcore50": {
       "dependencies": {
+        "System.ComponentModel.TypeConverter": "4.0.1-beta-23516"
       }
     }
   },
@@ -19,8 +20,8 @@
     "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
     "Newtonsoft.Json": "7.0.1"
-
   }
 }
