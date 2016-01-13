@@ -28,6 +28,8 @@ namespace Spring.Extensions.Configuration.Server
     public static class ConfigServerConfigurationExtensions
     {
         private const string SPRING_APPLICATION_PREFIX = "spring:application";
+        private const string VCAP_SERVICES_PREFIX = "vcap:services";
+        private const string VCAP_SERVICES_CONFIGSERVER_PREFIX = "vcap:services:p-config-server:0";
 
         /// <summary>
         /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server 
@@ -94,21 +96,20 @@ namespace Spring.Extensions.Configuration.Server
         {
 
             var clientConfigsection = root.GetSection(PREFIX);
-            var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
 
-            settings.Name = ResovlePlaceholders(GetApplicationName(clientConfigsection, appSection), root);
+            settings.Name = ResovlePlaceholders(GetApplicationName(clientConfigsection, root), root);
             settings.Environment = ResovlePlaceholders(GetEnvironment(clientConfigsection, environment), root);
             settings.Label = ResovlePlaceholders(GetLabel(clientConfigsection), root);
             settings.Username = ResovlePlaceholders(GetUsername(clientConfigsection), root);
             settings.Password = ResovlePlaceholders(GetPassword(clientConfigsection), root);
-            settings.Uri = ResovlePlaceholders(GetUri(clientConfigsection), root);
+            settings.Uri = ResovlePlaceholders(GetUri(clientConfigsection, root), root);
             settings.Enabled = GetEnabled(clientConfigsection, root);
             settings.FailFast = GetFailFast(clientConfigsection, root);
         }
 
-        private static bool GetFailFast(IConfigurationSection section, ConfigurationRoot root)
+        private static bool GetFailFast(IConfigurationSection configServerSection, ConfigurationRoot root)
         {
-            var failFast = section["failFast"];
+            var failFast = configServerSection["failFast"];
             if (!string.IsNullOrEmpty(failFast))
             {
                 bool result;
@@ -119,9 +120,9 @@ namespace Spring.Extensions.Configuration.Server
             return ConfigServerClientSettings.DEFAULT_FAILFAST;
         }
 
-        private static bool GetEnabled(IConfigurationSection section, ConfigurationRoot root)
+        private static bool GetEnabled(IConfigurationSection configServerSection, ConfigurationRoot root)
         {
-            var enabled = section["enabled"];
+            var enabled = configServerSection["enabled"];
             if (!string.IsNullOrEmpty(enabled))
             {
                 bool result;
@@ -133,42 +134,54 @@ namespace Spring.Extensions.Configuration.Server
 
         }
 
-        private static string GetUri(IConfigurationSection section)
+        private static string GetUri(IConfigurationSection configServerSection, ConfigurationRoot root)
         {
-            var uri = section["uri"];
+            // First check for spring:cloud:config:uri
+            var uri = configServerSection["uri"];
             if (!string.IsNullOrEmpty(uri))
             {
                 return uri;
             }
+
+            // Next check for cloudfoundry binding vcap:services:p-config-server:0:credentials:uri
+            var vcapConfigServerSection = root.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
+            uri = vcapConfigServerSection["credentials:uri"];
+            if (!string.IsNullOrEmpty(uri))
+            {
+                return uri;
+            }
+
+            // Take default if none of above
             return ConfigServerClientSettings.DEFAULT_URI;
         }
 
-        private static string GetPassword(IConfigurationSection section)
+        private static string GetPassword(IConfigurationSection configServerSection)
         {
-            return section["password"];
+            return configServerSection["password"];
         }
 
-        private static string GetUsername(IConfigurationSection section)
+        private static string GetUsername(IConfigurationSection configServerSection)
         {
-            return section["username"];
+            return configServerSection["username"];
         }
 
-        private static string GetLabel(IConfigurationSection section)
+        private static string GetLabel(IConfigurationSection configServerSection)
         {
             // TODO: multi label  support
-            return section["label"];
+            return configServerSection["label"];
         }
 
-        private static string GetApplicationName(IConfigurationSection section, IConfigurationSection appSection)
+        private static string GetApplicationName(IConfigurationSection configServerSection, ConfigurationRoot root)
         {
             // if spring:cloud:config:name present, use it
-            var name = section["name"];
+            var name = configServerSection["name"];
             if (!string.IsNullOrEmpty(name))
             {
                 return name;
             }
 
             // if spring:application:name present, use it
+            var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
             name = appSection["name"];
             if (!string.IsNullOrEmpty(name))
             {
@@ -181,14 +194,14 @@ namespace Spring.Extensions.Configuration.Server
 
         private static string GetEnvironment(IConfigurationSection section, IHostingEnvironment environment)
         {
-            // if spring:cloud:config:environment present, use it
+            // if spring:cloud:config:env present, use it
             var env = section["env"];
             if (!string.IsNullOrEmpty(env))
             {
                 return env;
             }
             
-            // Otherwise use frameworks defined value (its default is Production)
+            // Otherwise use ASP.NET 5 defined value (i.e. ASPNET_ENV or Hosting:Environment) (its default is 'Production')
             return environment.EnvironmentName;
         }
 
