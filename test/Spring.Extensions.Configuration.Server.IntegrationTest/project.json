@@ -17,6 +17,7 @@
     "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
     "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+    "Spring.Extensions.Configuration.CloudFoundry": "1.0.0-*",
     "Spring.Extensions.Configuration.Server": "1.0.0-*",
     "Spring.Extensions.Configuration.Server.Test": "1.0.0-*",
     "xunit": "2.1.0",

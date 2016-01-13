@@ -26,8 +26,8 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
  
     public class HomeController : Controller
     {
-        private ConfigServerOptions _options;
-        public HomeController(IOptions<ConfigServerOptions> options)
+        private ConfigServerDataAsOptions _options;
+        public HomeController(IOptions<ConfigServerDataAsOptions> options)
         {
             _options = options.Value;
         }

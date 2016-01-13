@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Spring.Extensions.Configuration.Server.IntegrationTest
 {
-    public class ConfigServerOptions
+    public class ConfigServerDataAsOptions
     {
         public string Bar { get; set; }
         public string Foo { get; set; }

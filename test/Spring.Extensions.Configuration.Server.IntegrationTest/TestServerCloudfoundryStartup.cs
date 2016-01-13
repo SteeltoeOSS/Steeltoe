@@ -14,54 +14,34 @@
 // limitations under the License.
 //
 
+
 using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNet.Hosting;
+using Spring.Extensions.Configuration.CloudFoundry;
 using Microsoft.Extensions.DependencyInjection;
-using Spring.Extensions.Configuration.Server.Test;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Spring.Extensions.Configuration.Server.IntegrationTest
 {
-    class TestServerStartup
+    public class TestServerCloudfoundryStartup
     {
         public IConfiguration Configuration { get; set; }
 
 
-        public TestServerStartup(IHostingEnvironment environment)
+        public TestServerCloudfoundryStartup(IHostingEnvironment environment)
         {
-            // These settings match the default java config server
-            var appsettings = @"
-{
-    'spring': {
-      'application': {
-        'name': 'foo'
-      },
-      'cloud': {
-        'config': {
-            'uri': 'http://localhost:8888',
-            'env': 'development'
-        }
-      }
-    }
-}";
-            var path = ConfigServerTestHelpers.CreateTempFile(appsettings);
+
             var builder = new ConfigurationBuilder()
-                .AddJsonFile(path)
+                .AddCloudFoundry()
                 .AddConfigServer(environment);
             Configuration = builder.Build();
 
         }
-  
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
             services.Configure<ConfigServerDataAsOptions>(Configuration);
-
             services.AddMvc();
         }
         public void Configure(IApplicationBuilder app)

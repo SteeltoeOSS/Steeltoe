@@ -94,6 +94,78 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
                     "https://github.com/spring-cloud-samples", result);
             }
         }
+
+
+        [Fact]
+        public async void SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
+        {
+            // Arrange
+            var VCAP_APPLICATION = @" 
+{
+
+    'application_id': 'fa05c1a9-0fc1-4fbd-bae1-139850dec7a3',
+    'application_name': 'foo',
+    'application_uris': [
+    'foo.10.244.0.34.xip.io'
+    ],
+    'application_version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca',
+    'limits': {
+    'disk': 1024,
+    'fds': 16384,
+    'mem': 256
+    },
+    'name': 'foo',
+    'space_id': '06450c72-4669-4dc6-8096-45f9777db68a',
+    'space_name': 'my-space',
+    'uris': [
+    'foo.10.244.0.34.xip.io',
+    'foo.10.244.0.34.xip.io'
+    ],
+    'users': null,
+    'version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca'
+}";
+
+
+            var VCAP_SERVICES = @"
+{
+    'p-config-server': [
+    {
+    'credentials': {
+        'access_token_uri': 'https://p-spring-cloud-services.uaa.wise.com/oauth/token',
+        'client_id': 'p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef',
+        'client_secret': 'e8KF1hXvAnGd',
+        'uri': 'http://localhost:8888'
+    },
+    'label': 'p-config-server',
+    'name': 'My Config Server',
+    'plan': 'standard',
+    'tags': [
+        'configuration',
+        'spring-cloud'
+        ]
+    }
+    ]
+}";
+
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", VCAP_APPLICATION);
+            System.Environment.SetEnvironmentVariable("VCAP_SERVICES", VCAP_SERVICES);
+
+            // TestServerCloudfoundryStartup uses AddCloudfoundry() which parses VCAP_APPLICATION/VCAP_SERVICES
+            var builder = new WebHostBuilder().UseStartup<TestServerCloudfoundryStartup>()
+                                                .UseEnvironment("development");
+
+            // Act and Assert (TestServer expects Spring Cloud Config server to be running)
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+
+                Assert.Equal("spam" +
+                    "bar" +
+                    "Spring Cloud Samples" +
+                    "https://github.com/spring-cloud-samples", result);
+            }
+        }
     }
 }
 
