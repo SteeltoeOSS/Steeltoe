@@ -30,7 +30,7 @@ namespace Spring.Extensions.Configuration.CloudFoundry
         {
             get
             {
-                return Vcap.Application.Application_Id;
+                return Vcap?.Application?.Application_Id;
             }
         }
 
@@ -38,35 +38,35 @@ namespace Spring.Extensions.Configuration.CloudFoundry
         {
             get
             {
-                return Vcap.Application.Application_Name;
+                return Vcap?.Application?.Application_Name;
             }
         }
         public string[] ApplicationUris
         {
             get
             {
-                return Vcap.Application.Application_Uris;
+                return Vcap?.Application?.Application_Uris;
             }
         }
         public string ApplicationVersion
         {
             get
             {
-                return Vcap.Application.Application_Version;
+                return Vcap?.Application?.Application_Version;
             }
         }
         public string InstanceId
         {
             get
             {
-                return Vcap.Application.Instance_Id;
+                return Vcap?.Application?.Instance_Id;
             }
         }
         public int InstanceIndex
         {
             get
             {
-                return GetInt(Vcap.Application.Instance_Index, -1);
+                return GetInt(Vcap?.Application?.Instance_Index, -1);
             }
         }
 
@@ -74,76 +74,79 @@ namespace Spring.Extensions.Configuration.CloudFoundry
         {
             get
             {
-                return Vcap.Application.Name;
+                return Vcap?.Application?.Name;
             }
         }
         public int Port
         {
             get
             {
-                return GetInt(Vcap.Application.Port, -1);
+                return GetInt(Vcap?.Application?.Port, -1);
             }
         }
         public string SpaceId
         {
             get
             {
-                return Vcap.Application.Space_Id;
+                return Vcap?.Application?.Space_Id;
             }
         }
         public string SpaceName
         {
             get
             {
-                return Vcap.Application.Space_Name;
+                return Vcap?.Application?.Space_Name;
             }
         }
         public string Start
         {
             get
             {
-                return Vcap.Application.Start;
+                return Vcap?.Application?.Start;
             }
         }
         public string[] Uris
         {
             get
             {
-                return Vcap.Application.Uris;
+                return Vcap?.Application?.Uris;
             }
         }
         public string Version
         {
             get
             {
-                return Vcap.Application.Version;
+                return Vcap?.Application?.Version;
             }
         }
         public int DiskLimit
         {
             get
             {
-                if (Vcap.Application.Limits == null)
+                var limits = Vcap?.Application?.Limits;
+                if ( limits == null)
                     return -1;
-                return GetInt(Vcap.Application.Limits.Disk, -1);
+                return GetInt(limits.Disk, -1);
             }
         }
         public int MemoryLimit
         {
             get
             {
-                if (Vcap.Application.Limits == null)
+                var limits = Vcap?.Application?.Limits;
+                if (limits == null)
                     return -1;
-                return GetInt(Vcap.Application.Limits.Mem, -1);
+                return GetInt(limits.Mem, -1);
             }
         }
         public int FileDescriptorLimit
         {
             get
             {
-                if (Vcap.Application.Limits == null)
+                var limits = Vcap?.Application?.Limits;
+                if (limits == null)
                     return -1;
-                return GetInt(Vcap.Application.Limits.Fds, -1);
+                return GetInt(limits.Fds, -1);
             }
         }
 

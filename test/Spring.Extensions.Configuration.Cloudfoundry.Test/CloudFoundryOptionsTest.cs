@@ -29,6 +29,56 @@ namespace Spring.Extensions.Configuration.CloudFoundry.Test
 {
     public class CloudFoundryOptionsTest
     {
+        [Fact]
+        public void ConfigureCloudFoundryOptions_With_VCAP_APPLICATION_Environment_NotPresent()
+        {
+            // Arrange
+            var services = new ServiceCollection().AddOptions();
+            // Act and Assert
+
+            var builder = new ConfigurationBuilder().AddCloudFoundry();
+            var config = builder.Build();
+
+            services.Configure<CloudFoundryApplicationOptions>(config);
+            var service = services.BuildServiceProvider().GetService<IOptions<CloudFoundryApplicationOptions>>();
+            Assert.NotNull(service);
+            var options = service.Value;
+
+            Assert.Null(options.ApplicationId);
+            Assert.Null(options.ApplicationName);
+            Assert.Null(options.ApplicationUris);
+            Assert.Null(options.ApplicationVersion);
+            Assert.Null(options.InstanceId);
+            Assert.Null(options.Name);
+            Assert.Null(options.SpaceId);
+            Assert.Null(options.SpaceName);
+            Assert.Null(options.Start);
+            Assert.Null(options.Uris);
+            Assert.Equal(-1, options.DiskLimit);
+            Assert.Equal(-1, options.FileDescriptorLimit);
+            Assert.Equal(-1, options.InstanceIndex);
+            Assert.Equal(-1, options.MemoryLimit);
+            Assert.Equal(-1, options.Port);
+        }
+
+        [Fact]
+        public void ConfigureCloudFoundryOptions_With_VCAP_SERVICES_Environment_NotPresent()
+        {
+            // Arrange
+            var services = new ServiceCollection().AddOptions();
+            // Act and Assert
+
+            var builder = new ConfigurationBuilder().AddCloudFoundry();
+            var config = builder.Build();
+
+            services.Configure<CloudFoundryServicesOptions>(config);
+            var service = services.BuildServiceProvider().GetService<IOptions<CloudFoundryServicesOptions>>();
+            Assert.NotNull(service);
+            var options = service.Value;
+            Assert.NotNull(options);
+            Assert.NotNull(options.Services);
+            Assert.Equal(0, options.Services.Count);
+        }
 
         [Fact]
         public void ConfigureCloudFoundryOptions_With_VCAP_APPLICATION_Environment_ConfiguresCloudFoundryApplicationOptions()

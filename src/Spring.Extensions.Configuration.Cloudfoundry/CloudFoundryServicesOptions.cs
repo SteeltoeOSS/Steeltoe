@@ -33,9 +33,10 @@ namespace Spring.Extensions.Configuration.CloudFoundry
             get
             {
                 List<Service> results = new List<Service>();
-                if (Vcap.Services != null)
+                var services = Vcap?.Services;
+                if (services != null)
                 {
-                    foreach(KeyValuePair<string, Service[]> kvp in Vcap.Services)
+                    foreach(KeyValuePair<string, Service[]> kvp in services)
                     {
                         results.AddRange(kvp.Value);
                     }
