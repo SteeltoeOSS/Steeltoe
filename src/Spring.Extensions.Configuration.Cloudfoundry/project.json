@@ -1,10 +1,11 @@
 {
-  "version": "1.0.0-*",
-  "description": "CloudFoundry configuration provider",
-  "authors": [ "dtillman" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "version": "1.0.1-*",
+  "description": "ASP.NET 5 CloudFoundry Configuration Provider",
+  "authors": [ "Pivotal", "dtillman" ],
+  "tags": [ "CloudFoundry", "ASPNET5", "Spring" ],
+  "projectUrl": "http://steeltoe.io",
+  "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+  "copyright": "Copyright 2015 the original authors",
   "frameworks": {
     "net451": {
       "dependencies": {
