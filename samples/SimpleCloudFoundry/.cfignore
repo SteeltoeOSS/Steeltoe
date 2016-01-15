@@ -1,0 +1,10 @@
+.vs/
+artifacts/
+bin/
+*.sln
+*.xproj
+*.xproj.user
+README.md
+project.lock.json
+Properties/
+test
