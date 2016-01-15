@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A96062CC-FE11-4A72-A140-CE42B5F526C0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CDE5FB35-5448-448A-8E34-63C345DED3C9}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Simple", "src\Simple\Simple.xproj", "{1650C522-91F7-4E5E-A0C6-8F7D6F3C486B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C6119CB0-41D9-4F2B-986C-70925A52D776}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Simple.Test", "test\Simple.Test\Simple.Test.xproj", "{16625C5B-6A57-4C69-80BD-9BE0D3F6117E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1650C522-91F7-4E5E-A0C6-8F7D6F3C486B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1650C522-91F7-4E5E-A0C6-8F7D6F3C486B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1650C522-91F7-4E5E-A0C6-8F7D6F3C486B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1650C522-91F7-4E5E-A0C6-8F7D6F3C486B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16625C5B-6A57-4C69-80BD-9BE0D3F6117E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16625C5B-6A57-4C69-80BD-9BE0D3F6117E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16625C5B-6A57-4C69-80BD-9BE0D3F6117E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16625C5B-6A57-4C69-80BD-9BE0D3F6117E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1650C522-91F7-4E5E-A0C6-8F7D6F3C486B} = {A96062CC-FE11-4A72-A140-CE42B5F526C0}
+		{16625C5B-6A57-4C69-80BD-9BE0D3F6117E} = {C6119CB0-41D9-4F2B-986C-70925A52D776}
+	EndGlobalSection
+EndGlobal

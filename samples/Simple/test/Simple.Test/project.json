@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0-*",
+  "description": "Simple.Test Unit tests for Simple application",
+  "authors": [ "dtillman" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": {
+      "dependencies": {
+      }
+    }
+  },
+  "dependencies": {
+    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
+    "Simple": "1.0.0-*",
+    "xunit": "2.1.0",
+    "xunit.runner.dnx": "2.1.0-rc1-build204"
+  },
+
+  "commands": {
+    "test": "xunit.runner.dnx"
+  }
+}
