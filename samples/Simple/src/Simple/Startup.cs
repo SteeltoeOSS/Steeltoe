@@ -47,6 +47,11 @@ namespace Simple
             // standard DI mechanisms provided by ASP.NET
             services.Configure<ConfigServerData>(Configuration);
 
+            // Add the Spring Cloud Config Server client settings as IOption<>
+            // Then it can be injected into other ASP.NET components (eg. HomeController) using 
+            // standard DI mechanisms provided by ASP.NET
+            services.Configure<ConfigServerClientSettingsOptions>(Configuration);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

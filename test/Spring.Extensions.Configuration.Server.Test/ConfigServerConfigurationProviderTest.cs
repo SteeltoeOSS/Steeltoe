@@ -307,7 +307,7 @@ namespace Spring.Extensions.Configuration.Server.Test
             provider.Load();
             Assert.NotNull(startup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
-            Assert.Equal(0, provider.Properties.Count);
+            Assert.Equal(11, provider.Properties.Count);
         }
 
         [Fact]
@@ -347,6 +347,37 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.Equal("value1", value);
             Assert.True(provider.TryGet("key2", out value));
             Assert.Equal("10", value);
+        }
+        [Fact]
+        public void AddConfigServerClientSettings_ChangesDataDictionary()
+        {
+            // Arrange
+            ConfigServerClientSettings settings = new ConfigServerClientSettings();
+            settings.AccessTokenUri = "http://foo.bar/";
+            settings.ClientId = "client_id";
+            settings.ClientSecret = "client_secret";
+            settings.Enabled = true;
+            settings.Environment = "environment";
+            settings.FailFast = false;
+            settings.Label = "label";
+            settings.Name = "name";
+            settings.Password = "password";
+            settings.Uri = "http://foo.bar/";
+            settings.Username = "username";
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider();
+
+
+            // Act and Assert
+            provider.AddConfigServerClientSettings(settings);
+
+            string value;
+            Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out value));
+            Assert.Equal("http://foo.bar/", value);
+            //Assert.True(provider.TryGet("a", out value));
+            //Assert.Equal("value2", value);
+            //Assert.True(provider.TryGet("b", out value));
+            //Assert.Equal("10", value);
+
         }
 
     }

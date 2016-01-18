@@ -33,6 +33,7 @@ namespace Spring.Extensions.Configuration.CloudFoundry.Test
         public void ConfigureCloudFoundryOptions_With_VCAP_APPLICATION_Environment_NotPresent()
         {
             // Arrange
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
             var services = new ServiceCollection().AddOptions();
             // Act and Assert
 
@@ -65,6 +66,7 @@ namespace Spring.Extensions.Configuration.CloudFoundry.Test
         public void ConfigureCloudFoundryOptions_With_VCAP_SERVICES_Environment_NotPresent()
         {
             // Arrange
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
             var services = new ServiceCollection().AddOptions();
             // Act and Assert
 

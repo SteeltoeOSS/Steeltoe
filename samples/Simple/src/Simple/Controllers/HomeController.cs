@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.OptionsModel;
 using Simple.Model;
+using Spring.Extensions.Configuration.Server;
 
 namespace Simple.Controllers
 {
@@ -12,13 +13,19 @@ namespace Simple.Controllers
     {
         private ConfigServerData ConfigServerData { get; set; }
 
-        public HomeController(IOptions<ConfigServerData> configServerData)
+        private ConfigServerClientSettingsOptions ConfigServerClientSettingsOptions { get; set; }
+
+        public HomeController(IOptions<ConfigServerData> configServerData, IOptions<ConfigServerClientSettingsOptions> confgServerSettings)
         {
             // The ASP.NET DI mechanism injects the data retrieved from the Spring Cloud Config Server 
             // as an IOptions<ConfigServerData>. This happens because we added the call to:
             // "services.Configure<ConfigServerData>(Configuration);" in the StartUp class
             if (configServerData != null)
                 ConfigServerData = configServerData.Value;
+
+            // Inject the settings used in communicating with the Spring Cloud Config Server
+            if (confgServerSettings != null)
+                ConfigServerClientSettingsOptions = confgServerSettings.Value;
         }
 
         public IActionResult Index()
@@ -70,6 +77,38 @@ namespace Simple.Controllers
                 ViewData["Info.Description"] = "Not Available";
             }
 
+            return View();
+        }
+
+        public IActionResult ConfigServerSettings()
+        {
+            if (ConfigServerClientSettingsOptions != null)
+            {
+                ViewData["AccessTokenUri"] = ConfigServerClientSettingsOptions.AccessTokenUri;
+                ViewData["ClientId"] = ConfigServerClientSettingsOptions.ClientId;
+                ViewData["ClientSecret"] = ConfigServerClientSettingsOptions.ClientSecret;
+                ViewData["Enabled"] = ConfigServerClientSettingsOptions.Enabled;
+                ViewData["Environment"] = ConfigServerClientSettingsOptions.Environment;
+                ViewData["FailFast"] = ConfigServerClientSettingsOptions.FailFast;
+                ViewData["Label"] = ConfigServerClientSettingsOptions.Label;
+                ViewData["Name"] = ConfigServerClientSettingsOptions.Name;
+                ViewData["Password"] = ConfigServerClientSettingsOptions.Password;
+                ViewData["Uri"] = ConfigServerClientSettingsOptions.Uri;
+                ViewData["Username"] = ConfigServerClientSettingsOptions.Username;
+            } else
+            {
+                ViewData["AccessTokenUri"] = "Not Available";
+                ViewData["ClientId"] = "Not Available";
+                ViewData["ClientSecret"] = "Not Available";
+                ViewData["Enabled"] = "Not Available";
+                ViewData["Environment"] = "Not Available";
+                ViewData["FailFast"] = "Not Available";
+                ViewData["Label"] = "Not Available";
+                ViewData["Name"] = "Not Available";
+                ViewData["Password"] = "Not Available";
+                ViewData["Uri"] = "Not Available";
+                ViewData["Username"] = "Not Available";
+            }
             return View();
         }
     }

@@ -21,7 +21,7 @@
     "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
     "Microsoft.Extensions.DependencyInjection": "1.0.0-rc1-final",
     "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
-    "Spring.Extensions.Configuration.CloudFoundry": "1.0.0-*",
+    "Spring.Extensions.Configuration.CloudFoundry": "1.0.1-*",
     "xunit": "2.1.0",
     "xunit.runner.dnx": "2.1.0-rc1-build204"
   },

@@ -178,7 +178,7 @@ namespace Spring.Extensions.Configuration.Server
         {
             // TODO: Figure out a sensible "default" app name (e.g apps assembly name?)
             var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
-            return GetSetting("name", configServerSection, appSection, "name");
+            return GetSetting("name", configServerSection, appSection, null);
         }
 
         private static string GetEnvironment(IConfigurationSection section, IHostingEnvironment environment)

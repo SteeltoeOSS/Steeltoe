@@ -12,7 +12,7 @@ namespace Simple.Test.Controllers
         [Fact]
         public void ConfigServer_IOptionsNull()
         {
-            HomeController controller = new HomeController(null);
+            HomeController controller = new HomeController(null, null);
             var result = controller.ConfigServer() as ViewResult;
             Assert.Equal("Not Available", result.ViewData["Bar"]);
             Assert.Equal("Not Available", result.ViewData["Foo"]);
@@ -27,7 +27,7 @@ namespace Simple.Test.Controllers
             ConfigServerData data = new ConfigServerData();
             IOptions<ConfigServerData> options = new TestOptions<ConfigServerData>(data);
             
-            HomeController controller = new HomeController(options);
+            HomeController controller = new HomeController(options, null);
             var result = controller.ConfigServer() as ViewResult;
             Assert.Equal("Not returned", result.ViewData["Bar"]);
             Assert.Equal("Not returned", result.ViewData["Foo"]);
@@ -42,7 +42,7 @@ namespace Simple.Test.Controllers
             data.Info = new Info() { Description = "Description", Url = "Url" };
             IOptions<ConfigServerData> options = new TestOptions<ConfigServerData>(data);
 
-            HomeController controller = new HomeController(options);
+            HomeController controller = new HomeController(options, null);
             var result = controller.ConfigServer() as ViewResult;
             Assert.Equal("Bar", result.ViewData["Bar"]);
             Assert.Equal("Foo", result.ViewData["Foo"]);

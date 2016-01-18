@@ -105,6 +105,9 @@ namespace Spring.Extensions.Configuration.Server
         /// </summary>
         public override void Load()
         {
+            // Adds client settings (e.g spring:cloud:config:uri) to the Data dictionary
+            AddConfigServerClientSettings(_settings);
+
             var path = GetConfigServerUri();
             Task<Environment> task = RemoteLoadAsync(path);
             task.Wait();
@@ -123,6 +126,7 @@ namespace Spring.Extensions.Configuration.Server
                 }
             }
         }
+
 
         internal IDictionary<string, string> Properties
         {
@@ -203,6 +207,21 @@ namespace Spring.Extensions.Configuration.Server
                 }
 
             }
+        }
+
+        internal void AddConfigServerClientSettings(ConfigServerClientSettings settings)
+        {
+            Data["spring:cloud:config:enabled"] = settings.Enabled.ToString();
+            Data["spring:cloud:config:failFast"] = settings.FailFast.ToString();
+            Data["spring:cloud:config:env"] = settings.Environment;
+            Data["spring:cloud:config:label"] = settings.Label;
+            Data["spring:cloud:config:name"] = settings.Name;
+            Data["spring:cloud:config:password"] = settings.Password;
+            Data["spring:cloud:config:uri"] = settings.Uri;
+            Data["spring:cloud:config:username"] = settings.Username;
+            Data["spring:cloud:config:access_token_uri"] = settings.AccessTokenUri;
+            Data["spring:cloud:config:client_secret"] = settings.ClientSecret;
+            Data["spring:cloud:config:client_id"] = settings.ClientId;
         }
     }
 }
