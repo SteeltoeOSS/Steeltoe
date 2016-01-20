@@ -50,12 +50,17 @@ namespace SimpleCloudFoundry
             services.AddMvc();
 
             // Add the Configuration data from VCAP_APPLICATION and VCAP_SERVICES
-            // as IOptions that can be injected into other Asp.NET components (e.g. HomeController)
+            // as IOptions that can be injected into other ASP.NET components (e.g. HomeController)
             services.Configure<CloudFoundryApplicationOptions>(Configuration);
             services.Configure<CloudFoundryServicesOptions>(Configuration);
 
+            // Add the Spring Cloud Config Server client settings as IOption<>
+            // Then it can be injected into other ASP.NET components (eg. HomeControllqer) using 
+            // standard DI mechanisms provided by ASP.NET
+            services.Configure<ConfigServerClientSettingsOptions>(Configuration);
+
             // Add the configuration data returned from the Spring Cloud Config Server
-            // as IOptions that can be injected into other Asp.NET components (eg. HomeController)
+            // as IOptions that can be injected into other ASP.NET components (eg. HomeController)
             services.Configure<ConfigServerData>(Configuration);
         }
 

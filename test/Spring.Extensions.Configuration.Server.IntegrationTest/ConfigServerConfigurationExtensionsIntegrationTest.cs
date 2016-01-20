@@ -24,7 +24,7 @@ using Microsoft.AspNet.Hosting;
 namespace Spring.Extensions.Configuration.Server.IntegrationTest
 {
     //
-    // NOTE: Some of the tests assume an running Java config server is started
+    // NOTE: Some of the tests assume a running Spring Cloud Config Server is started
     //       with repository data for application: foo, profile: development
     //
     //       The easiest way to get that to happen is clone the spring-cloud-config

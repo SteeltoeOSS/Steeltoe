@@ -6,32 +6,32 @@
 <h2>@ViewData["Title"]</h2>
 <h3>Configuration Data from VCAP_APPLICATION</h3>
 
-<h4>Application Name=@Model.CloudFoundryApplication.ApplicationName</h4>
-<h4>Application ID=@Model.CloudFoundryApplication.ApplicationId</h4>
-<h4>Application Version=@Model.CloudFoundryApplication.ApplicationVersion</h4>
-<h4>Application Uri=@Model.CloudFoundryApplication.ApplicationUris[0]</h4>
+<h4>vcap:application:application_name = @Model.CloudFoundryApplication.ApplicationName</h4>
+<h4>vcap:application:application_id = @Model.CloudFoundryApplication.ApplicationId</h4>
+<h4>vcap:application:application_version = @Model.CloudFoundryApplication.ApplicationVersion</h4>
+<h4>vcap:application:application_uris = @Model.CloudFoundryApplication.ApplicationUris[0]</h4>
 
-<h4>Space Name=@Model.CloudFoundryApplication.SpaceName</h4>
-<h4>Space ID=@Model.CloudFoundryApplication.SpaceId</h4>
+<h4>vcap:application:space_name = @Model.CloudFoundryApplication.SpaceName</h4>
+<h4>vcap:application:space_id = @Model.CloudFoundryApplication.SpaceId</h4>
 
-<h4>Instance ID=@Model.CloudFoundryApplication.InstanceId</h4>
-<h4>Instance Index=@Model.CloudFoundryApplication.InstanceIndex</h4>
+<h4>vcap:application:instance_id = @Model.CloudFoundryApplication.InstanceId</h4>
+<h4>vcap:application:instance_index = @Model.CloudFoundryApplication.InstanceIndex</h4>
 
-<h4>Disk Limit=@Model.CloudFoundryApplication.DiskLimit</h4>
-<h4>Memory Limit=@Model.CloudFoundryApplication.MemoryLimit</h4>
-<h4>FileDescriptor Limit=@Model.CloudFoundryApplication.FileDescriptorLimit</h4>
+<h4>vcap:application:limits:disk = @Model.CloudFoundryApplication.DiskLimit</h4>
+<h4>vcap:application:limits:mem = @Model.CloudFoundryApplication.MemoryLimit</h4>
+<h4>vcap:application:limits:fds = @Model.CloudFoundryApplication.FileDescriptorLimit</h4>
 
-<h4>Start=@Model.CloudFoundryApplication.Start</h4>
+<h4>vcap:application:start = @Model.CloudFoundryApplication.Start</h4>
 
 <h3>Configuration Data from VCAP_SERVICES</h3>
 
 @foreach (var service in Model.CloudFoundryServices.Services)
 {
-    <h4>Service Type=@service.Label</h4>
-    <h4>Service Plan=@service.Plan</h4>
-    <h4>Service Instance=@service.Name</h4>
-    <h4>Tags=@foreach (var tag in service.Tags) { @(tag + " ") }</h4>
-    <h4>Service Credentials:</h4>
+    <h4>vcap:services:@(service.Label):label = @service.Label</h4>
+    <h4>vcap:services:@(service.Label):plan = @service.Plan</h4>
+    <h4>vcap:services:@(service.Label):name = @service.Name</h4>
+    <h4>vcap:services:@(service.Label):tags = @foreach (var tag in service.Tags) { @(tag + " ") }</h4>
+    <h4>vcap:services:@(service.Label):credentials =</h4>
     <service-credentials credentials="@service.Credentials"></service-credentials>
 }
 
