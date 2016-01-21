@@ -15,7 +15,7 @@ namespace SimpleCloudFoundry.Test.Controllers
         [Fact]
         public void CloudFoundry_IOptionsNull()
         {
-            HomeController controller = new HomeController(null, null, null);
+            HomeController controller = new HomeController(null, null, null, null);
             var result = controller.CloudFoundry() as ViewResult;
             Assert.Equal(0, result.ViewData.Count);
         }

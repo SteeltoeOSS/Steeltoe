@@ -95,6 +95,7 @@ namespace Simple.Controllers
                 ViewData["Password"] = ConfigServerClientSettingsOptions.Password;
                 ViewData["Uri"] = ConfigServerClientSettingsOptions.Uri;
                 ViewData["Username"] = ConfigServerClientSettingsOptions.Username;
+                ViewData["ValidateCertificates"] = ConfigServerClientSettingsOptions.ValidateCertificates;
             } else
             {
                 ViewData["AccessTokenUri"] = "Not Available";
@@ -108,6 +109,7 @@ namespace Simple.Controllers
                 ViewData["Password"] = "Not Available";
                 ViewData["Uri"] = "Not Available";
                 ViewData["Username"] = "Not Available";
+                ViewData["ValidateCertificates"] = "Not Available";
             }
             return View();
         }
