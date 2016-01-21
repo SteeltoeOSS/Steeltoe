@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1-*",
+  "version": "1.0.2-*",
   "description": "ASP.NET 5 CloudFoundry Configuration Provider",
   "authors": [ "Pivotal", "dtillman" ],
   "tags": [ "CloudFoundry", "ASPNET5", "Spring" ],

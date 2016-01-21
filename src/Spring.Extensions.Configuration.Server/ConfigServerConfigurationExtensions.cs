@@ -46,15 +46,15 @@ namespace Spring.Extensions.Configuration.Server
         /// <param name="logFactory">optional logging factory. Used to enable logging in Config Server client.</param>
         /// <returns>The <see cref="IConfigurationBuilder"/>.</returns>
         /// 
-        /// Default Spring Config Server settings <see cref="ConfigServerClientSettings" /> will used by the provider
-        /// unless overriden by values found in providers previously added to the <paramref name="configurationBuilder"/>. 
+        /// Default Spring Config Server settings <see cref="ConfigServerClientSettings" /> will be used unless
+        /// overriden by values found in providers previously added to the <paramref name="configurationBuilder"/>. 
         /// Example:
         ///         var configurationBuilder = new ConfigurationBuilder();
         ///         configurationBuilder.AddJsonFile("appsettings.json")
         ///                             .AddEnvironmentVariables()
         ///                             .AddConfigServer()
         ///                             .Build();
-        ///     would used default Config Server setting unless overriden by values found in appsettings.json or
+        ///     would use default Config Server setting unless overriden by values found in appsettings.json or
         ///     environment variables.
         /// </summary>
         public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostingEnvironment environment, ILoggerFactory logFactory = null)
@@ -106,6 +106,7 @@ namespace Spring.Extensions.Configuration.Server
             settings.ClientSecret = ResovlePlaceholders(GetClientSecret(clientConfigsection, root), root);
             settings.Enabled = GetEnabled(clientConfigsection, root);
             settings.FailFast = GetFailFast(clientConfigsection, root);
+            settings.ValidateCertificates = GetCertificateValidation(clientConfigsection, root);
 
     }
 
@@ -214,6 +215,19 @@ namespace Spring.Extensions.Configuration.Server
             var vcapConfigServerSection = root.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
             return GetSetting("credentials:access_token_uri", configServerSection, vcapConfigServerSection, 
                 ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI);
+
+        }
+        private static bool GetCertificateValidation(IConfigurationSection configServerSection, ConfigurationRoot root)
+        {
+            var accept = configServerSection["validate_certificates"];
+            if (!string.IsNullOrEmpty(accept))
+            {
+                bool result;
+                string resolved = ResovlePlaceholders(accept, root);
+                if (Boolean.TryParse(resolved, out result))
+                    return result;
+            }
+            return ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION;
 
         }
 

@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.1-*",
+  "version": "1.0.2-*",
   "description": "ASP.NET 5 Spring Cloud Config Server Configuration Provider",
   "authors": [ "Pivotal", "dtillman" ],
   "tags": [ "CloudFoundry", "ASPNET5", "Spring", "Spring Cloud Services", "Spring Cloud Config Server" ],
@@ -13,6 +13,7 @@
     },
     "dnxcore50": {
       "dependencies": {
+        "System.Net.Http.WinHttpHandler": "4.0.0-beta-*"
       }
     }
   },

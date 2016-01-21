@@ -18,7 +18,14 @@ namespace Spring.Extensions.Configuration.Server
 {
     public class ConfigServerClientSettingsOptions
     {
-
+        public bool ValidateCertificates
+        {
+            get
+            {
+                return GetBoolean(Spring?.Cloud?.Config?.Validate_Certificates,
+                    ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION);
+            }
+        }
         public bool Enabled
         {
             get
@@ -116,6 +123,8 @@ namespace Spring.Extensions.Configuration.Server
                     ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED);
                 settings.FailFast = GetBoolean(Spring?.Cloud?.Config?.FailFast,
                     ConfigServerClientSettings.DEFAULT_FAILFAST);
+                settings.ValidateCertificates = GetBoolean(Spring?.Cloud?.Config?.Validate_Certificates,
+                 ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION);
 
                 settings.Environment = Spring?.Cloud?.Config?.Env;
                 settings.Label = Spring?.Cloud?.Config?.Label;
@@ -165,6 +174,7 @@ namespace Spring.Extensions.Configuration.Server
         public string Access_Token_Uri { get; set; }
         public string Client_Secret { get; set; }
         public string Client_Id { get; set; }
+        public string Validate_Certificates { get; set; }
 
     }
 }

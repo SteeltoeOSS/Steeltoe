@@ -24,6 +24,10 @@ using System.Net;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNet.Hosting;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using System.Text;
+using System.Net.Security;
 
 namespace Spring.Extensions.Configuration.Server
 {
@@ -57,7 +61,7 @@ namespace Spring.Extensions.Configuration.Server
         /// <param name="logFactory">optional logging factory</param>
         /// </summary>
         public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null) :
-            this(settings, new HttpClient(), logFactory)
+            this(settings, GetHttpClient(settings), logFactory)
         {
             _client.Timeout = DEFAULT_TIMEOUT;
         }
@@ -146,12 +150,34 @@ namespace Spring.Extensions.Configuration.Server
 
         internal async Task<Environment> RemoteLoadAsync(string path)
         {
-            try {
-                using (HttpResponseMessage response = await _client.GetAsync(path))
+            var request = new HttpRequestMessage(HttpMethod.Get, path);
+
+            if (!string.IsNullOrEmpty(_settings.AccessTokenUri))
+            {
+                var accessToken = await GetAccessToken(_settings);
+                if (accessToken != null)
+                {
+                    AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Bearer", accessToken);
+                    request.Headers.Authorization = auth;
+                } 
+            }
+#if NET451
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!_settings.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif
+
+            try
+            {
+                using (HttpResponseMessage response = await _client.SendAsync(request))
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        _logger?.LogInformation("Config Server returned status: {0} invoking path: {1}", response.StatusCode, path);
+                        _logger?.LogInformation("Config Server returned status: {0} invoking path: {1}", 
+                            response.StatusCode, path);
                         return null;
                     }
 
@@ -160,10 +186,68 @@ namespace Spring.Extensions.Configuration.Server
                 }
             } catch (Exception e)
             {
-                _logger?.LogError("Config Server exception, path: {0}", path, e);
+                _logger?.LogError("Config Server exception: {0}, path: {1}", e, path);
             }
-            return null;
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
 
+            return null;
+        }
+        internal async Task<string> GetAccessToken(ConfigServerClientSettings settings)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, settings.AccessTokenUri);
+            HttpClient client = GetHttpClient(settings);
+#if NET451
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!settings.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif      
+
+            AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Basic", GetEncoded(settings.ClientId, settings.ClientSecret));
+            request.Headers.Authorization = auth;
+
+            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "grant_type", "client_credentials" }
+            });
+
+            try
+            {
+                using (client)
+                {
+                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    {
+                        if (response.StatusCode != HttpStatusCode.OK)
+                        {
+                            _logger?.LogInformation("Config Server returned status: {0} while obtaining access token from: {1}",
+                                response.StatusCode, settings.AccessTokenUri);
+                            return null;
+                        }
+
+                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+                        var token = payload.Value<string>("access_token");
+                        return token;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError("Config Server exception: {0} ,obtaining access token from: {1}", e, settings.AccessTokenUri);
+            }
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
+            return null;
         }
 
         internal Environment Deserialize(Stream stream)
@@ -222,6 +306,34 @@ namespace Spring.Extensions.Configuration.Server
             Data["spring:cloud:config:access_token_uri"] = settings.AccessTokenUri;
             Data["spring:cloud:config:client_secret"] = settings.ClientSecret;
             Data["spring:cloud:config:client_id"] = settings.ClientId;
+            Data["spring:cloud:config:validate_certificates"] = settings.ValidateCertificates.ToString();
+        }
+        private string GetEncoded(string user, string password)
+        {
+            if (user == null)
+                user = string.Empty;
+            if (password == null)
+                password = string.Empty;
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
+        }
+
+        private static HttpClient GetHttpClient(ConfigServerClientSettings settings)
+        {
+#if NET451
+            return new HttpClient();
+#else
+            // TODO: For coreclr, disabling certificate validation only works on windows
+            // https://github.com/dotnet/corefx/issues/4476
+            if (settings != null && !settings.ValidateCertificates)
+            {
+                var handler = new WinHttpHandler();
+                handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                return new HttpClient(handler);
+            } else
+            {
+                return new HttpClient();
+            }
+#endif
         }
     }
 }

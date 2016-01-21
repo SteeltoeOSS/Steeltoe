@@ -49,6 +49,7 @@ namespace Spring.Extensions.Configuration.Server.Test
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI, options.AccessTokenUri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_CLIENT_ID, options.ClientId);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_CLIENT_SECRET, options.ClientSecret);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION, options.ValidateCertificates);
             Assert.Null(options.Name);
             Assert.Null(options.Label);
             Assert.Null(options.Username);

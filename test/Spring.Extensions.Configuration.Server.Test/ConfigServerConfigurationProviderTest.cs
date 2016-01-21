@@ -307,7 +307,7 @@ namespace Spring.Extensions.Configuration.Server.Test
             provider.Load();
             Assert.NotNull(startup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
-            Assert.Equal(11, provider.Properties.Count);
+            Assert.Equal(12, provider.Properties.Count);
         }
 
         [Fact]
@@ -364,6 +364,7 @@ namespace Spring.Extensions.Configuration.Server.Test
             settings.Password = "password";
             settings.Uri = "http://foo.bar/";
             settings.Username = "username";
+            settings.ValidateCertificates = false;
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider();
 
 
@@ -373,10 +374,29 @@ namespace Spring.Extensions.Configuration.Server.Test
             string value;
             Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out value));
             Assert.Equal("http://foo.bar/", value);
-            //Assert.True(provider.TryGet("a", out value));
-            //Assert.Equal("value2", value);
-            //Assert.True(provider.TryGet("b", out value));
-            //Assert.Equal("10", value);
+            Assert.True(provider.TryGet("spring:cloud:config:client_id", out value));
+            Assert.Equal("client_id", value);
+            Assert.True(provider.TryGet("spring:cloud:config:client_secret", out value));
+            Assert.Equal("client_secret", value);
+            Assert.True(provider.TryGet("spring:cloud:config:env", out value));
+            Assert.Equal("environment", value);
+            Assert.True(provider.TryGet("spring:cloud:config:label", out value));
+            Assert.Equal("label", value);
+            Assert.True(provider.TryGet("spring:cloud:config:name", out value));
+            Assert.Equal("name", value);
+            Assert.True(provider.TryGet("spring:cloud:config:password", out value));
+            Assert.Equal("password", value);
+            Assert.True(provider.TryGet("spring:cloud:config:uri", out value));
+            Assert.Equal("http://foo.bar/", value);
+            Assert.True(provider.TryGet("spring:cloud:config:username", out value));
+            Assert.Equal("username", value);
+
+            Assert.True(provider.TryGet("spring:cloud:config:enabled", out value));
+            Assert.Equal("True", value);
+            Assert.True(provider.TryGet("spring:cloud:config:failFast", out value));
+            Assert.Equal("False", value);
+            Assert.True(provider.TryGet("spring:cloud:config:validate_certificates", out value));
+            Assert.Equal("False", value);
 
         }
 

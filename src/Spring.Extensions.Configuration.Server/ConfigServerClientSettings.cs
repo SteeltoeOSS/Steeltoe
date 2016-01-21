@@ -63,6 +63,11 @@ namespace Spring.Extensions.Configuration.Server
         public const bool DEFAULT_PROVIDER_ENABLED = true;
 
         /// <summary>
+        /// Default certifcate validation enabled setting
+        /// </summary>
+        public const bool DEFAULT_CERTIFICATE_VALIDATION = true;
+
+        /// <summary>
         /// The Config Server address (defaults: DEFAULT_URI)
         /// </summary>
         public string Uri { get; set; } = DEFAULT_URI;
@@ -116,6 +121,11 @@ namespace Spring.Extensions.Configuration.Server
         /// Client secret used by provider to obtain a OAuth Access Token 
         /// </summary>
         public string ClientSecret { get; set; } = DEFAULT_CLIENT_SECRET;
+
+        /// <summary>
+        /// Enables/Disables whether provider validates server certificates
+        /// </summary>
+        public bool ValidateCertificates { get; set; } = DEFAULT_CERTIFICATE_VALIDATION;
 
         /// <summary>
         /// Initialize Config Server client settings with defaults

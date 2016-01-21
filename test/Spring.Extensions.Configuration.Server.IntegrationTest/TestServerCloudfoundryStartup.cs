@@ -20,6 +20,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNet.Hosting;
 using Spring.Extensions.Configuration.CloudFoundry;
 using Microsoft.Extensions.DependencyInjection;
+using Spring.Extensions.Configuration.Server.Test;
+using Microsoft.Extensions.Logging;
 
 namespace Spring.Extensions.Configuration.Server.IntegrationTest
 {
@@ -28,12 +30,24 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
         public IConfiguration Configuration { get; set; }
 
 
-        public TestServerCloudfoundryStartup(IHostingEnvironment environment)
+        public TestServerCloudfoundryStartup(IHostingEnvironment environment, ILoggerFactory logFactory)
         {
-
+            var appSettings = @"
+{
+    spring: {
+        cloud: {
+            config: {
+                validate_certificates: false
+            }
+        }
+    }
+}";
+            logFactory.AddConsole(minLevel: LogLevel.Debug);
+            var path = ConfigServerTestHelpers.CreateTempFile(appSettings);
             var builder = new ConfigurationBuilder()
+                .AddJsonFile(path)
                 .AddCloudFoundry()
-                .AddConfigServer(environment);
+                .AddConfigServer(environment,logFactory);
             Configuration = builder.Build();
 
         }

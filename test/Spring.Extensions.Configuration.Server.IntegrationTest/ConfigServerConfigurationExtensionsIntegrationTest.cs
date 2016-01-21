@@ -131,9 +131,9 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
     'p-config-server': [
     {
     'credentials': {
-        'access_token_uri': 'https://p-spring-cloud-services.uaa.wise.com/oauth/token',
-        'client_id': 'p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef',
-        'client_secret': 'e8KF1hXvAnGd',
+        'access_token_uri': null,
+        'client_id': null,
+        'client_secret': null,
         'uri': 'http://localhost:8888'
     },
     'label': 'p-config-server',
@@ -143,6 +143,76 @@ namespace Spring.Extensions.Configuration.Server.IntegrationTest
         'configuration',
         'spring-cloud'
         ]
+    }
+    ]
+}";
+
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", VCAP_APPLICATION);
+            System.Environment.SetEnvironmentVariable("VCAP_SERVICES", VCAP_SERVICES);
+
+            // TestServerCloudfoundryStartup uses AddCloudfoundry() which parses VCAP_APPLICATION/VCAP_SERVICES
+            var builder = new WebHostBuilder().UseStartup<TestServerCloudfoundryStartup>()
+                                                .UseEnvironment("development");
+
+            // Act and Assert (TestServer expects Spring Cloud Config server to be running)
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+
+                Assert.Equal("spam" +
+                    "bar" +
+                    "Spring Cloud Samples" +
+                    "https://github.com/spring-cloud-samples", result);
+            }
+        }
+
+       
+        [Fact(Skip = "Requires matching PCF environment with SCCS provisioned")]
+        public async void SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
+        {
+            // Arrange
+            var VCAP_APPLICATION = @" 
+{
+    'limits': {
+    'mem': 1024,
+    'disk': 1024,
+    'fds': 16384
+    },
+    'application_id': 'c2e03250-62e3-4494-82fb-1bc6e2e25ad0',
+    'application_version': 'ef087dfd-2955-4854-86c1-4a2cf30e05b3',
+    'application_name': 'test',
+    'application_uris': [
+    'test.apps.testcloud.com'
+    ],
+    'version': 'ef087dfd-2955-4854-86c1-4a2cf30e05b3',
+    'name': 'test',
+    'space_name': 'development',
+    'space_id': 'ff257d70-eeed-4487-9d6c-4ac709f76aea',
+    'uris': [
+    'test.apps.testcloud.com'
+    ],
+    'users': null
+}";
+
+
+            var VCAP_SERVICES = @"
+{
+    'p-config-server': [
+    {
+        'name': 'myConfigServer',
+        'label': 'p-config-server',
+        'tags': [
+        'configuration',
+        'spring-cloud'
+        ],
+        'plan': 'standard',
+        'credentials': {
+        'uri': 'https://config-5b3af2c9-754f-4eb6-9d4b-da50d33d5a5f.apps.testcloud.com',
+        'client_id': 'p-config-server-690772bc-2820-4a2c-9c76-6d8ccf8e8de5',
+        'client_secret': 'Ib9RFhVPuLub',
+        'access_token_uri': 'https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token'
+        }
     }
     ]
 }";
