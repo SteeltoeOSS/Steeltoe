@@ -84,9 +84,6 @@ namespace Simple.Controllers
         {
             if (ConfigServerClientSettingsOptions != null)
             {
-                ViewData["AccessTokenUri"] = ConfigServerClientSettingsOptions.AccessTokenUri;
-                ViewData["ClientId"] = ConfigServerClientSettingsOptions.ClientId;
-                ViewData["ClientSecret"] = ConfigServerClientSettingsOptions.ClientSecret;
                 ViewData["Enabled"] = ConfigServerClientSettingsOptions.Enabled;
                 ViewData["Environment"] = ConfigServerClientSettingsOptions.Environment;
                 ViewData["FailFast"] = ConfigServerClientSettingsOptions.FailFast;
@@ -98,9 +95,7 @@ namespace Simple.Controllers
                 ViewData["ValidateCertificates"] = ConfigServerClientSettingsOptions.ValidateCertificates;
             } else
             {
-                ViewData["AccessTokenUri"] = "Not Available";
-                ViewData["ClientId"] = "Not Available";
-                ViewData["ClientSecret"] = "Not Available";
+
                 ViewData["Enabled"] = "Not Available";
                 ViewData["Environment"] = "Not Available";
                 ViewData["FailFast"] = "Not Available";
