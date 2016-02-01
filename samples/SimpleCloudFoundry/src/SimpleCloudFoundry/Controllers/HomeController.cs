@@ -65,7 +65,29 @@ namespace SimpleCloudFoundry.Controllers
         }
         public IActionResult ConfigServer()
         {
-            // TODO:
+            // ConfigServerData property is set to a ConfigServerData POCO that has been
+            // initialized with the configuration data returned from the Spring Cloud Config Server
+            if (ConfigServerData != null)
+            {
+                ViewData["Bar"] = ConfigServerData.Bar ?? "Not returned";
+                ViewData["Foo"] = ConfigServerData.Foo ?? "Not returned";
+
+                ViewData["Info.Url"] = "Not returned";
+                ViewData["Info.Description"] = "Not returned";
+
+                if (ConfigServerData.Info != null)
+                {
+                    ViewData["Info.Url"] = ConfigServerData.Info.Url ?? "Not returned";
+                    ViewData["Info.Description"] = ConfigServerData.Info.Description ?? "Not returned";
+                }
+            }
+            else {
+                ViewData["Bar"] = "Not Available";
+                ViewData["Foo"] = "Not Available";
+                ViewData["Info.Url"] = "Not Available";
+                ViewData["Info.Description"] = "Not Available";
+            }
+
             return View();
         }
         public IActionResult ConfigServerSettings()

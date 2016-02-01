@@ -13,8 +13,9 @@ namespace SimpleCloudFoundry
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostingEnvironment env, ILoggerFactory logFactory)
         {
+            logFactory.AddConsole(minLevel: LogLevel.Debug);
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -27,15 +28,15 @@ namespace SimpleCloudFoundry
                 //
                 .AddCloudFoundry()
 
-                 //
-                 // Adds the Spring Cloud Configuration Server as a configuration source.
-                 // The settings used in contacting the Server will be picked up from
-                 // appsettings.json, and then overriden from any environment variables, and then
-                 // overriden from the CloudFoundry environment variable settings. 
-                 // Defaults will be used for any settings not present in any of the earlier added 
-                 // sources.  See ConfigServerClientSettings for defaults. 
-                 //
-                .AddConfigServer(env);
+                //
+                // Adds the Spring Cloud Configuration Server as a configuration source.
+                // The settings used in contacting the Server will be picked up from
+                // appsettings.json, and then overriden from any environment variables, and then
+                // overriden from the CloudFoundry environment variable settings. 
+                // Defaults will be used for any settings not present in any of the earlier added 
+                // sources.  See ConfigServerClientSettings for defaults. 
+                //
+                .AddConfigServer(env, logFactory);
 
             Configuration = builder.Build();
         }
