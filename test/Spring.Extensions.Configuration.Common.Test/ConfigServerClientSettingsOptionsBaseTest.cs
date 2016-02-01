@@ -20,7 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.OptionsModel;
 using Xunit;
 
-namespace Spring.Extensions.Configuration.Server.Test
+namespace Spring.Extensions.Configuration.Common.Test
 {
     public class ConfigServerClientSettingsOptionsTest
     {
@@ -29,24 +29,27 @@ namespace Spring.Extensions.Configuration.Server.Test
         {
             // Arrange
             var services = new ServiceCollection().AddOptions();
-            var environment = new HostingEnvironment();
+            var settings = new ConfigServerClientSettingsBase();
+
 
             // Act and Assert
-            var builder = new ConfigurationBuilder().AddConfigServer(environment);
+            var builder = new ConfigurationBuilder();
+            builder.Add(new ConfigServerConfigurationProviderBase(settings));
             var config = builder.Build();
 
-            services.Configure<ConfigServerClientSettingsOptions>(config);
-            var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();
+
+            services.Configure<ConfigServerClientSettingsOptionsBase>(config);
+            var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptionsBase>>();
             Assert.NotNull(service);
             var options = service.Value;
             Assert.NotNull(options);
             ConfigServerTestHelpers.VerifyDefaults(options.Settings);
 
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED, options.Enabled);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_FAILFAST, options.FailFast);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_URI, options.Uri);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, options.Environment);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION, options.ValidateCertificates);
+            Assert.False(options.Enabled);
+            Assert.False(options.FailFast);
+            Assert.Null(options.Uri);
+            Assert.Null(options.Environment);
+            Assert.False(options.ValidateCertificates);
             Assert.Null(options.Name);
             Assert.Null(options.Label);
             Assert.Null(options.Username);

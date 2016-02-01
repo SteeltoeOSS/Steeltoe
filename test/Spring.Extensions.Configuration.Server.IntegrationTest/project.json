@@ -20,8 +20,7 @@
     "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
-    "Spring.Extensions.Configuration.CloudFoundry": "1.0.2-*",
-    "Spring.Extensions.Configuration.Server": "1.0.2-*",
+    "Spring.Extensions.Configuration.Server": "1.0.3-*",
     "Spring.Extensions.Configuration.Server.Test": "1.0.0-*",
     "xunit": "2.1.0",
     "xunit.runner.dnx": "2.1.0-rc1-build204"

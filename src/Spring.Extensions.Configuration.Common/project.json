@@ -1,6 +1,6 @@
-{
+﻿{
   "version": "1.0.3-*",
-  "description": "ASP.NET 5 Spring Cloud Config Server Configuration Provider",
+  "description": "ASP.NET 5 Spring Cloud Config Server Configuration Provider - Common Code",
   "authors": [ "Pivotal", "dtillman" ],
   "tags": [ "CloudFoundry", "ASPNET5", "Spring", "Spring Cloud Services", "Spring Cloud Config Server" ],
   "projectUrl": "http://steeltoe.io",
@@ -23,7 +23,6 @@
     "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
     "Newtonsoft.Json": "7.0.1",
-    "Spring.Extensions.Configuration.Common": "1.0.3-*",
     "System.Net.Http": "4.0.0"
   }
 }

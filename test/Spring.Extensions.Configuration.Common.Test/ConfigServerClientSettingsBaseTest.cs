@@ -16,15 +16,16 @@
 
 using Xunit;
 
-namespace Spring.Extensions.Configuration.Server.Test
+
+namespace Spring.Extensions.Configuration.Common.Test
 {
-    public class ConfigServerClientSettingsTest
+    public class ConfigServerClientSettingsBaseTest
     {
         [Fact]
         public void DefaultConstructor_InitializedWithDefaults()
         {
             // Arrange
-            ConfigServerClientSettings settings = new ConfigServerClientSettings();
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
 
             // Act and Assert
             ConfigServerTestHelpers.VerifyDefaults(settings);

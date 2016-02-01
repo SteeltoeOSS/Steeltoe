@@ -16,9 +16,9 @@
 
 namespace Spring.Extensions.Configuration.Server
 {
-    public class ConfigServerClientSettingsOptions
+    public class ConfigServerClientSettingsOptions : Common.ConfigServerClientSettingsOptionsBase
     {
-        public bool ValidateCertificates
+        public override bool ValidateCertificates
         {
             get
             {
@@ -26,7 +26,7 @@ namespace Spring.Extensions.Configuration.Server
                     ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION);
             }
         }
-        public bool Enabled
+        public override bool Enabled
         {
             get
             {
@@ -34,7 +34,7 @@ namespace Spring.Extensions.Configuration.Server
                     ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED);
             }
         }
-        public bool FailFast
+        public override bool FailFast
         {
             get
             {
@@ -42,84 +42,13 @@ namespace Spring.Extensions.Configuration.Server
                     ConfigServerClientSettings.DEFAULT_FAILFAST);
             }
         }
-        public string Environment
-        {
-            get
-            {
-                return Spring?.Cloud?.Config?.Env;
-            }
-        }
-        public string Label
-        {
-            get
-            {
-                return Spring?.Cloud?.Config?.Label;
-            }
-
-        }
-        public string Name
-        {
-            get
-            {
-                return Spring?.Cloud?.Config?.Name;
-            }
-
-        }
-        public string Password
-        {
-            get
-            {
-                return Spring?.Cloud?.Config?.Password;
-            }
-
-        }
-        public string Uri
-        {
-            get
-            {
-                return Spring?.Cloud?.Config?.Uri;
-            }
-
-        }
-        public string Username
-        {
-            get
-            {
-                return Spring?.Cloud?.Config?.Username;
-            }
-
-        }
-        public string AccessTokenUri
-        {
-            get
-            {
-                return Spring?.Cloud?.Config?.Access_Token_Uri;
-            }
-
-        }
-        public string ClientSecret
-        {
-            get
-            {
-                return Spring?.Cloud?.Config?.Client_Secret;
-            }
-
-        }
-        public string ClientId
-        {
-            get
-            {
-                return Spring?.Cloud?.Config?.Client_Id;
-            }
-
-        }
-
+     
         public ConfigServerClientSettings Settings
         {
             get
             {
                 ConfigServerClientSettings settings = new ConfigServerClientSettings();
-                settings.Enabled = GetBoolean(Spring?.Cloud?.Config?.Enabled, 
+                settings.Enabled = GetBoolean(Spring?.Cloud?.Config?.Enabled,
                     ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED);
                 settings.FailFast = GetBoolean(Spring?.Cloud?.Config?.FailFast,
                     ConfigServerClientSettings.DEFAULT_FAILFAST);
@@ -132,49 +61,9 @@ namespace Spring.Extensions.Configuration.Server
                 settings.Password = Spring?.Cloud?.Config?.Password;
                 settings.Uri = Spring?.Cloud?.Config?.Uri;
                 settings.Username = Spring?.Cloud?.Config?.Username;
-                settings.AccessTokenUri = Spring?.Cloud?.Config?.Access_Token_Uri;
-                settings.ClientSecret = Spring?.Cloud?.Config?.Client_Secret;
-                settings.ClientId = Spring?.Cloud?.Config?.Client_Id;
 
                 return settings;
             }
         }
-        public Spring Spring { get; set; }
-
-        private bool GetBoolean(string strValue, bool def)
-        {
-
-            bool result = def;
-            if (!string.IsNullOrEmpty(strValue))
-            {
-                bool.TryParse(strValue, out result);
-            }
-            return result;
-        }
-    }
-
-    public class Spring
-    {
-        public Cloud Cloud { get; set; }
-    }
-    public class Cloud
-    {
-        public Config Config { get; set; }
-    }
-    public class Config
-    {
-        public string Enabled { get; set; }
-        public string FailFast { get; set; }
-        public string Env { get; set; }
-        public string Label { get; set; }
-        public string Name { get; set;  }
-        public string Password { get; set; }
-        public string Uri { get; set; }
-        public string Username { get; set; }
-        public string Access_Token_Uri { get; set; }
-        public string Client_Secret { get; set; }
-        public string Client_Id { get; set; }
-        public string Validate_Certificates { get; set; }
-
     }
 }

@@ -14,24 +14,16 @@
 // limitations under the License.
 //
 
-using Xunit;
+using System.Collections.Generic;
 
-namespace Spring.Extensions.Configuration.Server.Test
+namespace Spring.Extensions.Configuration.Common
 {
-    public class ConfigServerClientSettingsTest
+    internal class Environment
     {
-        [Fact]
-        public void DefaultConstructor_InitializedWithDefaults()
-        {
-            // Arrange
-            ConfigServerClientSettings settings = new ConfigServerClientSettings();
-
-            // Act and Assert
-            ConfigServerTestHelpers.VerifyDefaults(settings);
-
-        }
-
-
+        public string Name { get; set; }
+        public string Label { get; set; }
+        public IList<string> Profiles { get; set; }
+        public IList<PropertySource> PropertySources { get; set; }
+        public string Version { get; set; }
     }
-
 }

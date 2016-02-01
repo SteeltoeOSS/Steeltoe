@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "Unit test project for Spring.Extensions.Configuration.Server",
+  "description": "Unit test project for Spring.Extensions.Configuration.Common",
   "authors": [ "dtillman" ],
   "tags": [ "" ],
   "projectUrl": "",
@@ -25,7 +25,7 @@
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
     "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
-    "Spring.Extensions.Configuration.Server": "1.0.3-*",
+    "Spring.Extensions.Configuration.Common": "1.0.3-*",
     "xunit": "2.1.0",
     "xunit.runner.dnx": "2.1.0-rc1-build204"
   },

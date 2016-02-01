@@ -21,7 +21,7 @@ using Xunit;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 
-namespace Spring.Extensions.Configuration.Server.Test
+namespace Spring.Extensions.Configuration.Common.Test
 {
     public class ConfigServerTestHelpers
     {
@@ -51,13 +51,13 @@ namespace Spring.Extensions.Configuration.Server.Test
             return reader.ReadToEnd();
         }
 
-        public static void VerifyDefaults(ConfigServerClientSettings settings)
+        public static void VerifyDefaults(ConfigServerClientSettingsBase settings)
         {
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED, settings.Enabled);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_FAILFAST, settings.FailFast);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_URI, settings.Uri);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION, settings.ValidateCertificates);
+            Assert.False(settings.Enabled);
+            Assert.False(settings.FailFast);
+            Assert.Null(settings.Uri);
+            Assert.Null(settings.Environment);
+            Assert.False(settings.ValidateCertificates);
             Assert.Null(settings.Name);
             Assert.Null(settings.Label);
             Assert.Null(settings.Username);
