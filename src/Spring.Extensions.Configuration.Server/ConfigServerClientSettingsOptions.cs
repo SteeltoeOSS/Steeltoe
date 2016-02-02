@@ -16,9 +16,9 @@
 
 namespace Spring.Extensions.Configuration.Server
 {
-    public class ConfigServerClientSettingsOptions : Common.ConfigServerClientSettingsOptionsBase
+    public class ConfigServerClientSettingsOptions
     {
-        public override bool ValidateCertificates
+        public bool ValidateCertificates
         {
             get
             {
@@ -26,7 +26,7 @@ namespace Spring.Extensions.Configuration.Server
                     ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION);
             }
         }
-        public override bool Enabled
+        public bool Enabled
         {
             get
             {
@@ -34,7 +34,7 @@ namespace Spring.Extensions.Configuration.Server
                     ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED);
             }
         }
-        public override bool FailFast
+        public bool FailFast
         {
             get
             {
@@ -42,13 +42,61 @@ namespace Spring.Extensions.Configuration.Server
                     ConfigServerClientSettings.DEFAULT_FAILFAST);
             }
         }
-     
+        public string Environment
+        {
+            get
+            {
+                return Spring?.Cloud?.Config?.Env;
+            }
+        }
+        public string Label
+        {
+            get
+            {
+                return Spring?.Cloud?.Config?.Label;
+            }
+
+        }
+        public string Name
+        {
+            get
+            {
+                return Spring?.Cloud?.Config?.Name;
+            }
+
+        }
+        public string Password
+        {
+            get
+            {
+                return Spring?.Cloud?.Config?.Password;
+            }
+
+        }
+        public string Uri
+        {
+            get
+            {
+                return Spring?.Cloud?.Config?.Uri;
+            }
+
+        }
+        public string Username
+        {
+            get
+            {
+                return Spring?.Cloud?.Config?.Username;
+            }
+
+        }
+
+
         public ConfigServerClientSettings Settings
         {
             get
             {
                 ConfigServerClientSettings settings = new ConfigServerClientSettings();
-                settings.Enabled = GetBoolean(Spring?.Cloud?.Config?.Enabled,
+                settings.Enabled = GetBoolean(Spring?.Cloud?.Config?.Enabled, 
                     ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED);
                 settings.FailFast = GetBoolean(Spring?.Cloud?.Config?.FailFast,
                     ConfigServerClientSettings.DEFAULT_FAILFAST);
@@ -65,5 +113,39 @@ namespace Spring.Extensions.Configuration.Server
                 return settings;
             }
         }
+        public SpringConfig Spring { get; set; }
+
+        private bool GetBoolean(string strValue, bool def)
+        {
+
+            bool result = def;
+            if (!string.IsNullOrEmpty(strValue))
+            {
+                bool.TryParse(strValue, out result);
+            }
+            return result;
+        }
+    }
+
+    public class SpringConfig
+    {
+        public CloudConfig Cloud { get; set; }
+    }
+    public class CloudConfig
+    {
+        public SpringCloudConfig Config { get; set; }
+    }
+    public class SpringCloudConfig
+    {
+        public string Enabled { get; set; }
+        public string FailFast { get; set; }
+        public string Env { get; set; }
+        public string Label { get; set; }
+        public string Name { get; set;  }
+        public string Password { get; set; }
+        public string Uri { get; set; }
+        public string Username { get; set; }
+        public string Validate_Certificates { get; set; }
+
     }
 }

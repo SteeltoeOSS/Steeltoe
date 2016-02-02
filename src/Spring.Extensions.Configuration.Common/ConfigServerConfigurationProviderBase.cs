@@ -39,15 +39,29 @@ namespace Spring.Extensions.Configuration.Common
         protected ConfigServerClientSettingsBase _settings;
         protected HttpClient _client;
         protected ILogger _logger;
-       
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/>.
+        /// </summary>
+        /// <param name="settings">the configuration settings the provider uses when
+        /// accessing the server.</param>
+        /// <param name="logFactory">optional logging factory</param>
+        /// </summary>
         internal protected ConfigServerConfigurationProviderBase(ConfigServerClientSettingsBase settings, ILoggerFactory logFactory = null) :
             this(settings, GetHttpClient(settings), logFactory)
         {
             _client.Timeout = DEFAULT_TIMEOUT;
         }
 
-
+        /// <summary>
+        /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/>.
+        /// </summary>
+        /// <param name="settings">the configuration settings the provider uses when
+        /// accessing the server.</param>
+        /// <param name="httpClient">a HttpClient the provider uses to make requests of
+        /// the server.</param>
+        /// <param name="logFactory">optional logging factory</param>
+        /// </summary>
         internal protected ConfigServerConfigurationProviderBase(ConfigServerClientSettingsBase settings, HttpClient httpClient, ILoggerFactory logFactory = null)
         {
             if (settings == null)
@@ -73,12 +87,17 @@ namespace Spring.Extensions.Configuration.Common
         public override void Load()
         {
             // Adds client settings (e.g spring:cloud:config:uri) to the Data dictionary
-            AddConfigServerClientSettings(_settings);
+            AddConfigServerClientSettings();
 
+            // Make Config Server URI from settings
             var path = GetConfigServerUri();
+
+            // Invoke config server, and wait for results
             Task<Environment> task = RemoteLoadAsync(path);
             task.Wait();
             Environment env = task.Result;
+
+            // Update config Data dictionary with any results
             if (env != null)
             {
                 _logger?.LogInformation("Located environment: {0}, {1}, {2}, {3}", env.Name, env.Profiles, env.Label, env.Version);
@@ -94,27 +113,45 @@ namespace Spring.Extensions.Configuration.Common
             }
         }
 
-        internal IDictionary<string, string> Properties
+        /// <summary>
+        /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server
+        /// </summary>
+        /// <param name="requestUri">the Uri used when accessing the server</param>
+        /// <returns>The HttpRequestMessage built from the path</returns>
+        internal protected virtual HttpRequestMessage GetRequestMessage(string requestUri)
         {
-            get
-            {
-                return Data;
-            }
+            return new HttpRequestMessage(HttpMethod.Get, requestUri);
         }
 
-        internal ILogger Logger
+        /// <summary>
+        /// Adds the client settings for the Configuration Server to the data dictionary
+        /// </summary>
+        internal protected virtual void AddConfigServerClientSettings()
         {
-            get
-            {
-                return _logger;
-            }
+            Data["spring:cloud:config:enabled"] = _settings.Enabled.ToString();
+            Data["spring:cloud:config:failFast"] = _settings.FailFast.ToString();
+            Data["spring:cloud:config:env"] = _settings.Environment;
+            Data["spring:cloud:config:label"] = _settings.Label;
+            Data["spring:cloud:config:name"] = _settings.Name;
+            Data["spring:cloud:config:password"] = _settings.Password;
+            Data["spring:cloud:config:uri"] = _settings.Uri;
+            Data["spring:cloud:config:username"] = _settings.Username;
+            Data["spring:cloud:config:validate_certificates"] = _settings.ValidateCertificates.ToString();
         }
 
-        internal virtual async Task<Environment> RemoteLoadAsync(string path)
+        /// <summary>
+        /// Asynchronously calls the Spring Cloud Configuration Server using the provided Uri and returning a 
+        /// a task that can be used to obtain the results
+        /// </summary>
+        /// <param name="requestUri">the Uri used in accessing the Spring Cloud Configuration Server</param>
+        /// <returns>The task object representing the asynchronous operation</returns>
+        internal protected virtual async Task<Environment> RemoteLoadAsync(string requestUri)
         {
-            var request = GetRequestMessage(path);
+            // Get the request message 
+            var request = GetRequestMessage(requestUri);
 
 #if NET451
+            // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_settings.ValidateCertificates)
             {
@@ -123,6 +160,7 @@ namespace Spring.Extensions.Configuration.Common
             }
 #endif
 
+            // Invoke config server
             try
             {
                 using (HttpResponseMessage response = await _client.SendAsync(request))
@@ -130,7 +168,7 @@ namespace Spring.Extensions.Configuration.Common
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         _logger?.LogInformation("Config Server returned status: {0} invoking path: {1}", 
-                            response.StatusCode, path);
+                            response.StatusCode, requestUri);
                         return null;
                     }
 
@@ -139,7 +177,7 @@ namespace Spring.Extensions.Configuration.Common
                 }
             } catch (Exception e)
             {
-                _logger?.LogError("Config Server exception: {0}, path: {1}", e, path);
+                _logger?.LogError("Config Server exception: {0}, path: {1}", e, requestUri);
             }
 #if NET451
             finally
@@ -150,12 +188,13 @@ namespace Spring.Extensions.Configuration.Common
 
             return null;
         }
-        internal virtual HttpRequestMessage GetRequestMessage(string path)
-        {
-            return new HttpRequestMessage(HttpMethod.Get, path);
-        }
 
-        internal virtual Environment Deserialize(Stream stream)
+        /// <summary>
+        /// Deserialize the response from the Configuration Server
+        /// </summary>
+        /// <param name="stream">the stream representing the response from the Configuration Server</param>
+        /// <returns>The Environment object representing the response from the server</returns>
+        internal protected virtual Environment Deserialize(Stream stream)
         {
             try {
                 using (JsonReader reader = new JsonTextReader(new StreamReader(stream)))
@@ -170,7 +209,11 @@ namespace Spring.Extensions.Configuration.Common
             return null;
         }
 
-        internal virtual string GetConfigServerUri()
+        /// <summary>
+        /// Create the Uri that will be used in accessing the Configuration Server
+        /// </summary>
+        /// <returns>The request URI for the Configuration Server</returns>
+        internal protected virtual string GetConfigServerUri()
         {
             var path = "/" + _settings.Name + "/" + _settings.Environment;
             if (!string.IsNullOrWhiteSpace(_settings.Label))
@@ -179,7 +222,13 @@ namespace Spring.Extensions.Configuration.Common
             return _settings.Uri + path;
         }
 
-        internal virtual void AddPropertySource(PropertySource source)
+        /// <summary>
+        /// Adds values from a PropertySource to the Configurtation Data dictionary managed
+        /// by this provider
+        /// </summary>
+        /// <param name="source">a property source to add</param>
+
+        internal protected virtual void AddPropertySource(PropertySource source)
         {
             if (source == null || source.Source == null)
                 return;
@@ -198,20 +247,13 @@ namespace Spring.Extensions.Configuration.Common
             }
         }
 
-        internal virtual void AddConfigServerClientSettings(ConfigServerClientSettingsBase settings)
-        {
-            Data["spring:cloud:config:enabled"] = settings.Enabled.ToString();
-            Data["spring:cloud:config:failFast"] = settings.FailFast.ToString();
-            Data["spring:cloud:config:env"] = settings.Environment;
-            Data["spring:cloud:config:label"] = settings.Label;
-            Data["spring:cloud:config:name"] = settings.Name;
-            Data["spring:cloud:config:password"] = settings.Password;
-            Data["spring:cloud:config:uri"] = settings.Uri;
-            Data["spring:cloud:config:username"] = settings.Username;
-            Data["spring:cloud:config:validate_certificates"] = settings.ValidateCertificates.ToString();
-        }
-
-        private static HttpClient GetHttpClient(ConfigServerClientSettingsBase settings)
+        /// <summary>
+        /// Creates an appropriatly configured HttpClient that will be used in communicating with the
+        /// Spring Cloud Configuration Server
+        /// </summary>
+        /// <param name="settings">the settings used in configuring the HttpClient</param>
+        /// <returns>The HttpClient used by the provider</returns>
+        protected static HttpClient GetHttpClient(ConfigServerClientSettingsBase settings)
         {
 #if NET451
             return new HttpClient();
@@ -228,6 +270,22 @@ namespace Spring.Extensions.Configuration.Common
                 return new HttpClient();
             }
 #endif
+        }
+
+        internal IDictionary<string, string> Properties
+        {
+            get
+            {
+                return Data;
+            }
+        }
+
+        internal ILogger Logger
+        {
+            get
+            {
+                return _logger;
+            }
         }
     }
 }

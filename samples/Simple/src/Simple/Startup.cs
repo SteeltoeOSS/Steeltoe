@@ -32,13 +32,11 @@ namespace Simple
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()
 
-                //
                 // Adds the Spring Cloud Configuration Server as a configuration source.
                 // The settings used in contacting the Server will be picked up from
                 // appsettings.json, and then overriden from any environment variables. 
                 // Defaults will be used for any settings not present in either of those sources.
                 // See ConfigServerClientSettings for defaults. 
-                //
                 .AddConfigServer(env);
 
             Configuration = builder.Build();

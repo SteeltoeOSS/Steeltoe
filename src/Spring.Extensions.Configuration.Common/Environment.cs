@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace Spring.Extensions.Configuration.Common
 {
-    internal class Environment
+    public class Environment
     {
         public string Name { get; set; }
         public string Label { get; set; }

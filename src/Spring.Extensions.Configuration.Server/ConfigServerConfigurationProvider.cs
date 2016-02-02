@@ -14,20 +14,9 @@
 // limitations under the License.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+
 using System.Net.Http;
-using System.IO;
-using System.Net;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Hosting;
-using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
-using System.Text;
-using System.Net.Security;
 using Spring.Extensions.Configuration.Common;
 
 namespace Spring.Extensions.Configuration.Server
@@ -37,8 +26,6 @@ namespace Spring.Extensions.Configuration.Server
     /// </summary>
     public class ConfigServerConfigurationProvider : ConfigServerConfigurationProviderBase
     {
-
-
         /// <summary>
         /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/> with default
         /// configuration settings. <see cref="ConfigServerClientSettings"/>

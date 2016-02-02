@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace Spring.Extensions.Configuration.Common
 {
-    internal class PropertySource
+    public  class PropertySource
     {
         public PropertySource()
         {

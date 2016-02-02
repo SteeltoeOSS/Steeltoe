@@ -24,3 +24,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Spring.Extensions.Configuration.Common.Test")]
 [assembly: InternalsVisibleTo("Spring.Extensions.Configuration.Server.Test")]
+[assembly: InternalsVisibleTo("Spring.Extensions.Configuration.CloudFoundry.Server.Test")]

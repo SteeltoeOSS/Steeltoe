@@ -361,7 +361,7 @@ namespace Spring.Extensions.Configuration.Common.Test
 
 
             // Act and Assert
-            provider.AddConfigServerClientSettings(settings);
+            provider.AddConfigServerClientSettings();
 
             string value;
 
