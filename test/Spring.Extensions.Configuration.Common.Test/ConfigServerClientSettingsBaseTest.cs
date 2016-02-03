@@ -32,6 +32,68 @@ namespace Spring.Extensions.Configuration.Common.Test
 
         }
 
+        [Fact]
+        public void GetRawUri_GoodWithUserPass()
+        {
+            // Arrange
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase() { Uri = "https://user:pass@localhost:8888/" };
+            
+            // Act and Assert
+            Assert.Equal("https://localhost:8888/", settings.RawUri); 
+
+        }
+        [Fact]
+        public void GetRawUri_Bad()
+        {
+            // Arrange
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase() { Uri = "blahblah" };
+
+            // Act and Assert
+            Assert.Equal("blahblah", settings.RawUri);
+
+        }
+        [Fact]
+        public void GetUserName_GoodWithUserPassOnUri()
+        {
+            // Arrange
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase() { Uri = "https://user:pass@localhost:8888/" };
+
+            // Act and Assert
+            Assert.Equal("user", settings.Username);
+
+        }
+        [Fact]
+        public void GetPassword_GoodWithUserPassOnUri()
+        {
+            // Arrange
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase() { Uri = "https://user:pass@localhost:8888/" };
+
+            // Act and Assert
+            Assert.Equal("pass", settings.Password);
+
+        }
+        [Fact]
+        public void GetUserName_GoodWithUserPassOnUri_SettingsOverrides()
+        {
+            // Arrange
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase() { Uri = "https://user:pass@localhost:8888/", Username = "explicitOverrides" };
+
+            // Act and Assert
+            Assert.Equal("explicitOverrides", settings.Username);
+            Assert.Equal("pass", settings.Password);
+
+        }
+        [Fact]
+        public void GetPassword_GoodWithUserPassOnUri_SettingsOverrides()
+        {
+            // Arrange
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase() { Uri = "https://user:pass@localhost:8888/" , Password = "explicitOverrides" };
+
+            // Act and Assert
+            Assert.Equal("explicitOverrides", settings.Password);
+            Assert.Equal("user", settings.Username);
+
+        }
 
     }
 

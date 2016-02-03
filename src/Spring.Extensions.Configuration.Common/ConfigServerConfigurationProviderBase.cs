@@ -143,7 +143,15 @@ namespace Spring.Extensions.Configuration.Common
         /// <returns>The HttpRequestMessage built from the path</returns>
         internal protected virtual HttpRequestMessage GetRequestMessage(string requestUri)
         {
-            return new HttpRequestMessage(HttpMethod.Get, requestUri);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            if (!string.IsNullOrEmpty(_settings.Password))
+            {
+                AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Basic", 
+                    GetEncoded(_settings.Username, _settings.Password));
+                request.Headers.Authorization = auth;
+            }
+
+            return request;
         }
 
         /// <summary>
@@ -251,11 +259,11 @@ namespace Spring.Extensions.Configuration.Common
         /// <returns>The request URI for the Configuration Server</returns>
         internal protected virtual string GetConfigServerUri(string label)
         {
-            var path = "/" + _settings.Name + "/" + _settings.Environment;
+            var path = _settings.Name + "/" + _settings.Environment;
             if (!string.IsNullOrWhiteSpace(label))
                 path = path + "/" + label;
 
-            return _settings.Uri + path;
+            return _settings.RawUri + path;
         }
 
         /// <summary>
@@ -281,6 +289,20 @@ namespace Spring.Extensions.Configuration.Common
                 }
 
             }
+        }
+        /// <summary>
+        /// Encode the username password for a http request
+        /// </summary>
+        /// <param name="user">the username</param>
+        /// <param name="password">the password</param>
+        /// <returns></returns>
+        internal protected string GetEncoded(string user, string password)
+        {
+            if (user == null)
+                user = string.Empty;
+            if (password == null)
+                password = string.Empty;
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
         }
 
         /// <summary>

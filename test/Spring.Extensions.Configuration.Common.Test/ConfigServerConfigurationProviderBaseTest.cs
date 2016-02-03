@@ -73,7 +73,7 @@ namespace Spring.Extensions.Configuration.Common.Test
 
             // Act and Assert
             string path = provider.GetConfigServerUri(null);
-            Assert.Equal(settings.Uri + "/" + settings.Name + "/" + settings.Environment, path);
+            Assert.Equal(settings.RawUri + settings.Name + "/" + settings.Environment, path);
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace Spring.Extensions.Configuration.Common.Test
 
             // Act and Assert
             string path = provider.GetConfigServerUri(settings.Label);
-            Assert.Equal(settings.Uri + "/" + settings.Name + "/" + settings.Environment + "/" + settings.Label, path);
+            Assert.Equal(settings.RawUri + settings.Name + "/" + settings.Environment + "/" + settings.Label, path);
         }
 
         [Fact]
@@ -508,6 +508,24 @@ namespace Spring.Extensions.Configuration.Common.Test
             Assert.Equal("3", result[2]);
         }
 
+        [Fact]
+        public void GetRequestMessage_AddsBasicAuthIfPassword()
+        {
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
+            settings.Uri = "http://user:password@localhost:8888/";
+            settings.Name = "foo";
+            settings.Environment = "development";
+            ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings);
+
+            string requestURI = provider.GetConfigServerUri(null);
+            var request = provider.GetRequestMessage(requestURI);
+
+            Assert.Equal(HttpMethod.Get, request.Method);
+            Assert.Equal(requestURI, request.RequestUri.ToString());
+            Assert.NotNull(request.Headers.Authorization);
+            Assert.Equal("Basic", request.Headers.Authorization.Scheme);
+            Assert.Equal(provider.GetEncoded("user", "password"), request.Headers.Authorization.Parameter);
+        }
     }
 }
 
