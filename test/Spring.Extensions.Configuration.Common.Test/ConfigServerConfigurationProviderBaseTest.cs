@@ -72,7 +72,7 @@ namespace Spring.Extensions.Configuration.Common.Test
             ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings);
 
             // Act and Assert
-            string path = provider.GetConfigServerUri();
+            string path = provider.GetConfigServerUri(null);
             Assert.Equal(settings.Uri + "/" + settings.Name + "/" + settings.Environment, path);
         }
 
@@ -84,7 +84,7 @@ namespace Spring.Extensions.Configuration.Common.Test
             ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings);
 
             // Act and Assert
-            string path = provider.GetConfigServerUri();
+            string path = provider.GetConfigServerUri(settings.Label);
             Assert.Equal(settings.Uri + "/" + settings.Name + "/" + settings.Environment + "/" + settings.Label, path);
         }
 
@@ -224,7 +224,7 @@ namespace Spring.Extensions.Configuration.Common.Test
             settings.Name = "myName";
             server.BaseAddress = new Uri(settings.Uri);
             ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings, server.CreateClient());
-            string path = provider.GetConfigServerUri();
+            string path = provider.GetConfigServerUri(null);
 
             // Act and Assert
             HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(path));
@@ -244,7 +244,7 @@ namespace Spring.Extensions.Configuration.Common.Test
             settings.Name = "myName";
             server.BaseAddress = new Uri(settings.Uri);
             ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings, server.CreateClient());
-            string path = provider.GetConfigServerUri();
+            string path = provider.GetConfigServerUri(null);
 
             // Act and Assert
             Environment result = await provider.RemoteLoadAsync(path);
@@ -282,7 +282,7 @@ namespace Spring.Extensions.Configuration.Common.Test
             settings.Name = "myName";
             server.BaseAddress = new Uri(settings.Uri);
             ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings, server.CreateClient());
-            string path = provider.GetConfigServerUri();
+            string path = provider.GetConfigServerUri(null);
 
             // Act and Assert
             Environment env = await provider.RemoteLoadAsync(path);
@@ -441,6 +441,71 @@ namespace Spring.Extensions.Configuration.Common.Test
             Assert.True(provider.TryGet("spring:cloud:config:validate_certificates", out value));
             Assert.Equal("False", value);
 
+        }
+        [Fact]
+        public void GetLabels_Null()
+        {
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
+            ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings);
+
+            string[] result = provider.GetLabels();
+            Assert.NotNull(result);
+            Assert.Equal(1, result.Length);
+            Assert.Equal("", result[0]);
+        }
+
+        [Fact]
+        public void GetLabels_Empty()
+        {
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
+            settings.Label = string.Empty;
+            ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings);
+
+            string[] result = provider.GetLabels();
+            Assert.NotNull(result);
+            Assert.Equal(1, result.Length);
+            Assert.Equal("", result[0]);
+        }
+        [Fact]
+        public void GetLabels_SingleString()
+        {
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
+            settings.Label = "foobar";
+            ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings);
+
+            string[] result = provider.GetLabels();
+            Assert.NotNull(result);
+            Assert.Equal(1, result.Length);
+            Assert.Equal("foobar", result[0]);
+        }
+        [Fact]
+        public void GetLabels_MultiString()
+        {
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
+            settings.Label = "1,2,3,";
+            ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings);
+
+            string[] result = provider.GetLabels();
+            Assert.NotNull(result);
+            Assert.Equal(3, result.Length);
+            Assert.Equal("1", result[0]);
+            Assert.Equal("2", result[1]);
+            Assert.Equal("3", result[2]);
+        }
+
+        [Fact]
+        public void GetLabels_MultiStringHoles()
+        {
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
+            settings.Label = "1,,2,3,";
+            ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings);
+
+            string[] result = provider.GetLabels();
+            Assert.NotNull(result);
+            Assert.Equal(3, result.Length);
+            Assert.Equal("1", result[0]);
+            Assert.Equal("2", result[1]);
+            Assert.Equal("3", result[2]);
         }
 
     }

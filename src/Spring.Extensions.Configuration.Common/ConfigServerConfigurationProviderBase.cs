@@ -35,7 +35,7 @@ namespace Spring.Extensions.Configuration.Common
     public class ConfigServerConfigurationProviderBase : ConfigurationProvider
     {
 
-        private static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0,0,5);
+        private static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0, 0, 5);
         protected ConfigServerClientSettingsBase _settings;
         protected HttpClient _client;
         protected ILogger _logger;
@@ -68,7 +68,7 @@ namespace Spring.Extensions.Configuration.Common
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-            
+
             if (httpClient == null)
             {
                 throw new ArgumentNullException(nameof(httpClient));
@@ -79,7 +79,7 @@ namespace Spring.Extensions.Configuration.Common
             _client = httpClient;
         }
 
- 
+
         /// <summary>
         /// Loads configuration data from the Spring Cloud Configuration Server as specified by
         /// the <see cref="Settings"/> 
@@ -90,34 +90,40 @@ namespace Spring.Extensions.Configuration.Common
             AddConfigServerClientSettings();
 
             Exception error = null;
+            _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
 
-            try {
-
-                // Make Config Server URI from settings
-                var path = GetConfigServerUri();
-
-                // Invoke config server, and wait for results
-                Task<Environment> task = RemoteLoadAsync(path);
-                task.Wait();
-                Environment env = task.Result;
-
-                // Update config Data dictionary with any results
-                if (env != null)
+            try
+            {
+                
+                string[] labels = GetLabels();
+                foreach (string label in labels)
                 {
-                    _logger?.LogInformation("Located environment: {0}, {1}, {2}, {3}", env.Name, env.Profiles, env.Label, env.Version);
-                    var sources = env.PropertySources;
-                    if (sources != null)
+                    // Make Config Server URI from settings
+                    var path = GetConfigServerUri(label);
+
+                    // Invoke config server, and wait for results
+                    Task<Environment> task = RemoteLoadAsync(path);
+                    task.Wait();
+                    Environment env = task.Result;
+
+                    // Update config Data dictionary with any results
+                    if (env != null)
                     {
-
-                        foreach (PropertySource source in sources)
+                        _logger?.LogInformation("Located environment: {0}, {1}, {2}, {3}", env.Name, env.Profiles, env.Label, env.Version);
+                        var sources = env.PropertySources;
+                        if (sources != null)
                         {
-                            AddPropertySource(source);
-                        }
-                    }
-                    return;
-                }
 
-            } catch (Exception e)
+                            foreach (PropertySource source in sources)
+                            {
+                                AddPropertySource(source);
+                            }
+                        }
+                        return;
+                    }
+                }
+            }
+            catch (Exception e)
             {
                 error = e;
             }
@@ -188,7 +194,7 @@ namespace Spring.Extensions.Configuration.Common
                             return null;
 
                         // Log status
-                        var message = string.Format("Config Server returned status: {0} invoking path: {1}", 
+                        var message = string.Format("Config Server returned status: {0} invoking path: {1}",
                             response.StatusCode, requestUri);
 
                         _logger?.LogInformation(message);
@@ -241,12 +247,13 @@ namespace Spring.Extensions.Configuration.Common
         /// <summary>
         /// Create the Uri that will be used in accessing the Configuration Server
         /// </summary>
+        /// <param name="label">a label to add</param>
         /// <returns>The request URI for the Configuration Server</returns>
-        internal protected virtual string GetConfigServerUri()
+        internal protected virtual string GetConfigServerUri(string label)
         {
             var path = "/" + _settings.Name + "/" + _settings.Environment;
-            if (!string.IsNullOrWhiteSpace(_settings.Label))
-                path = path + "/" + _settings.Label;
+            if (!string.IsNullOrWhiteSpace(label))
+                path = path + "/" + label;
 
             return _settings.Uri + path;
         }
@@ -261,8 +268,8 @@ namespace Spring.Extensions.Configuration.Common
         {
             if (source == null || source.Source == null)
                 return;
-    
-            foreach(KeyValuePair<string,object> kvp in source.Source)
+
+            foreach (KeyValuePair<string, object> kvp in source.Source)
             {
                 try {
                     string key = kvp.Key.Replace(".", Constants.KeyDelimiter);
@@ -301,6 +308,16 @@ namespace Spring.Extensions.Configuration.Common
 #endif
         }
 
+        internal string[] GetLabels()
+        {
+            if (string.IsNullOrWhiteSpace(_settings.Label))
+            {
+                return EMPTY_LABELS;
+            }
+
+            return _settings.Label.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         internal IDictionary<string, string> Properties
         {
             get
@@ -316,5 +333,9 @@ namespace Spring.Extensions.Configuration.Common
                 return _logger;
             }
         }
+
+        private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
+        private static readonly string[] EMPTY_LABELS = new string[] { "" };
+
     }
 }
