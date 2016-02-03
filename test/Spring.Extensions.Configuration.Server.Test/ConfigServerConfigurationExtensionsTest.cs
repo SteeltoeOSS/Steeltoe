@@ -109,7 +109,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         'config': {
             'uri': 'http://user:password@foo.com:9999',
             'enabled': false,
-            'failFast': true,
+            'failFast': false,
             'label': 'myLabel',
             'username': 'myUsername',
             'password': 'myPassword'
@@ -137,7 +137,7 @@ namespace Spring.Extensions.Configuration.Server.Test
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
-            Assert.True(settings.FailFast);
+            Assert.False(settings.FailFast);
             Assert.Equal("http://user:password@foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("myName", settings.Name);
@@ -158,7 +158,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         <config>
             <uri>http://foo.com:9999</uri>
             <enabled>false</enabled>
-            <failFast>true</failFast>
+            <failFast>false</failFast>
             <label>myLabel</label>
             <name>myName</name>
             <username>myUsername</username>
@@ -186,7 +186,7 @@ namespace Spring.Extensions.Configuration.Server.Test
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
-            Assert.True(settings.FailFast);
+            Assert.False(settings.FailFast);
             Assert.Equal("http://foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("myName", settings.Name);
@@ -204,7 +204,7 @@ namespace Spring.Extensions.Configuration.Server.Test
 [spring:cloud:config]
     uri=http://foo.com:9999
     enabled=false
-    failFast=true
+    failFast=false
     label=myLabel
     name=myName
     username=myUsername
@@ -230,7 +230,7 @@ namespace Spring.Extensions.Configuration.Server.Test
 
             // Act and Assert
             Assert.False(settings.Enabled);
-            Assert.True(settings.FailFast);
+            Assert.False(settings.FailFast);
             Assert.Equal("http://foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("myName", settings.Name);
@@ -248,7 +248,7 @@ namespace Spring.Extensions.Configuration.Server.Test
             var appsettings = new string[]
                 {
                     "spring:cloud:config:enabled=false",
-                    "--spring:cloud:config:failFast=true",
+                    "--spring:cloud:config:failFast=false",
                     "/spring:cloud:config:uri=http://foo.com:9999",
                     "--spring:cloud:config:name", "myName",
                     "/spring:cloud:config:label", "myLabel",
@@ -274,7 +274,7 @@ namespace Spring.Extensions.Configuration.Server.Test
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
-            Assert.True(settings.FailFast);
+            Assert.False(settings.FailFast);
             Assert.Equal("http://foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("myName", settings.Name );
@@ -304,7 +304,7 @@ namespace Spring.Extensions.Configuration.Server.Test
         'config': {
             'uri': 'http://user:password@foo.com:9999',
             'enabled': false,
-            'failFast': true,
+            'failFast': false,
             'name': '${foo:bar:name?foobar}',
             'label': 'myLabel',
             'username': 'myUsername',
@@ -333,7 +333,7 @@ namespace Spring.Extensions.Configuration.Server.Test
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
-            Assert.True(settings.FailFast);
+            Assert.False(settings.FailFast);
             Assert.Equal("http://user:password@foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("testName", settings.Name);

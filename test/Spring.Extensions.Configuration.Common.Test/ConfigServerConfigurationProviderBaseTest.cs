@@ -200,9 +200,7 @@ namespace Spring.Extensions.Configuration.Common.Test
             ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(new ConfigServerClientSettingsBase());
 
             // Act and Assert
-            Environment env = await provider.RemoteLoadAsync("foobar\\foobar\\");
-            Assert.Null(env);
-
+            InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(() => provider.RemoteLoadAsync("foobar\\foobar\\"));
         }
 
         [Fact]
@@ -212,12 +210,11 @@ namespace Spring.Extensions.Configuration.Common.Test
             ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(new ConfigServerClientSettingsBase());
 
             // Act and Assert
-            Environment env = await provider.RemoteLoadAsync("http://foo.bar:9999/app/profile");
-            Assert.Null(env);
-
+            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync("http://foo.bar:9999/app/profile"));
         }
+
         [Fact]
-        public async void RemoteLoadAsync_ConfigServerReturnsNotOkStatus()
+        public async void RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
         {
             // Arrange
             var startup = new TestConfigServerStartup("",500);
@@ -230,10 +227,32 @@ namespace Spring.Extensions.Configuration.Common.Test
             string path = provider.GetConfigServerUri();
 
             // Act and Assert
+            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(path));
+
+            Assert.NotNull(startup.LastRequest);
+            Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
+
+        }
+        [Fact]
+        public async void RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
+        {
+            // Arrange
+            var startup = new TestConfigServerStartup("", 204);
+            var server = TestServer.Create(startup.Configure);
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
+            settings.Uri = "http://localhost:8888";
+            settings.Name = "myName";
+            server.BaseAddress = new Uri(settings.Uri);
+            ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings, server.CreateClient());
+            string path = provider.GetConfigServerUri();
+
+            // Act and Assert
             Environment result = await provider.RemoteLoadAsync(path);
+
             Assert.NotNull(startup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
             Assert.Null(result);
+
         }
 
         [Fact]
@@ -301,6 +320,43 @@ namespace Spring.Extensions.Configuration.Common.Test
             Assert.NotNull(startup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
             Assert.Equal(9, provider.Properties.Count);
+        }
+
+        [Fact]
+        public void Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
+        {
+            // Arrange
+            var startup = new TestConfigServerStartup("", 404);
+            var server = TestServer.Create(startup.Configure);
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
+            settings.Uri = "http://localhost:8888";
+            settings.Name = "myName";
+            settings.FailFast = true;
+            server.BaseAddress = new Uri(settings.Uri);
+            ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings, server.CreateClient());
+
+            // Act and Assert
+            var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
+
+        }
+
+
+        [Fact]
+        public void Load_ConfigServerReturnsBadStatus_FailFastEnabled()
+        {
+            // Arrange
+            var startup = new TestConfigServerStartup("", 500);
+            var server = TestServer.Create(startup.Configure);
+            ConfigServerClientSettingsBase settings = new ConfigServerClientSettingsBase();
+            settings.Uri = "http://localhost:8888";
+            settings.Name = "myName";
+            settings.FailFast = true;
+            server.BaseAddress = new Uri(settings.Uri);
+            ConfigServerConfigurationProviderBase provider = new ConfigServerConfigurationProviderBase(settings, server.CreateClient());
+
+            // Act and Assert
+            var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
+
         }
 
         [Fact]

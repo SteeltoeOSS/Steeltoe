@@ -89,27 +89,44 @@ namespace Spring.Extensions.Configuration.Common
             // Adds client settings (e.g spring:cloud:config:uri) to the Data dictionary
             AddConfigServerClientSettings();
 
-            // Make Config Server URI from settings
-            var path = GetConfigServerUri();
+            Exception error = null;
 
-            // Invoke config server, and wait for results
-            Task<Environment> task = RemoteLoadAsync(path);
-            task.Wait();
-            Environment env = task.Result;
+            try {
 
-            // Update config Data dictionary with any results
-            if (env != null)
-            {
-                _logger?.LogInformation("Located environment: {0}, {1}, {2}, {3}", env.Name, env.Profiles, env.Label, env.Version);
-                var sources = env.PropertySources;
-                if (sources != null)
+                // Make Config Server URI from settings
+                var path = GetConfigServerUri();
+
+                // Invoke config server, and wait for results
+                Task<Environment> task = RemoteLoadAsync(path);
+                task.Wait();
+                Environment env = task.Result;
+
+                // Update config Data dictionary with any results
+                if (env != null)
                 {
-
-                    foreach (PropertySource source in sources)
+                    _logger?.LogInformation("Located environment: {0}, {1}, {2}, {3}", env.Name, env.Profiles, env.Label, env.Version);
+                    var sources = env.PropertySources;
+                    if (sources != null)
                     {
-                        AddPropertySource(source);
+
+                        foreach (PropertySource source in sources)
+                        {
+                            AddPropertySource(source);
+                        }
                     }
+                    return;
                 }
+
+            } catch (Exception e)
+            {
+                error = e;
+            }
+
+            _logger?.LogWarning("Could not locate PropertySource: " + error?.ToString());
+
+            if (_settings.FailFast)
+            {
+                throw new ConfigServerException("Could not locate PropertySource, fail fast property is set, failing", error);
             }
         }
 
@@ -167,9 +184,20 @@ namespace Spring.Extensions.Configuration.Common
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        _logger?.LogInformation("Config Server returned status: {0} invoking path: {1}", 
+                        if (response.StatusCode == HttpStatusCode.NotFound)
+                            return null;
+
+                        // Log status
+                        var message = string.Format("Config Server returned status: {0} invoking path: {1}", 
                             response.StatusCode, requestUri);
-                        return null;
+
+                        _logger?.LogInformation(message);
+
+                        // Throw if status >= 400 
+                        if (response.StatusCode >= HttpStatusCode.BadRequest)
+                            throw new HttpRequestException(message);
+                        else
+                            return null;
                     }
 
                     Stream stream = await response.Content.ReadAsStreamAsync();
@@ -177,7 +205,9 @@ namespace Spring.Extensions.Configuration.Common
                 }
             } catch (Exception e)
             {
+                // Log and rethrow
                 _logger?.LogError("Config Server exception: {0}, path: {1}", e, requestUri);
+                throw;
             }
 #if NET451
             finally
@@ -186,7 +216,6 @@ namespace Spring.Extensions.Configuration.Common
             }
 #endif
 
-            return null;
         }
 
         /// <summary>
