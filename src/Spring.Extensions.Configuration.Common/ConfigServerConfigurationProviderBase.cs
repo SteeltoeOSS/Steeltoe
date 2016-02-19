@@ -94,9 +94,7 @@ namespace Spring.Extensions.Configuration.Common
 
             try
             {
-                
-                string[] labels = GetLabels();
-                foreach (string label in labels)
+                foreach (string label in GetLabels())
                 {
                     // Make Config Server URI from settings
                     var path = GetConfigServerUri(label);
@@ -122,8 +120,7 @@ namespace Spring.Extensions.Configuration.Common
                         return;
                     }
                 }
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 error = e;
             }
