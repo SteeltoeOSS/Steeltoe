@@ -1,5 +1,5 @@
 {
-  "version": "1.0.6-*",
+  "version": "1.0.7-*",
   "description": "ASP.NET 5 Spring Cloud Config Server Configuration Provider",
   "authors": [ "Pivotal", "dtillman" ],
   "tags": [ "CloudFoundry", "ASPNET5", "Spring", "Spring Cloud Services", "Spring Cloud Config Server" ],
@@ -21,9 +21,11 @@
     "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-rc1-final",
     "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
     "Newtonsoft.Json": "7.0.1",
-    "Spring.Extensions.Configuration.Common": "1.0.6-*",
+    "Spring.Extensions.Configuration.Common": "1.0.7-*",
     "System.Net.Http": "4.0.0"
   }
 }

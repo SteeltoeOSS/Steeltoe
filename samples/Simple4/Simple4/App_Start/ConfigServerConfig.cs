@@ -10,7 +10,7 @@ using Microsoft.AspNet.FileProviders;
 namespace Simple4
 {
 
-    public class ServerConfig
+    public class ConfigServerConfig
     {
 
        

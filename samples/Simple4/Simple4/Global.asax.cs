@@ -19,7 +19,7 @@ namespace Simple4
 
             // Get the configuration from the Spring Cloud Config Server using
             // the "development" environment
-            ServerConfig.RegisterConfig("development");
+            ConfigServerConfig.RegisterConfig("development");
         }
     }
 }

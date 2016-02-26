@@ -29,7 +29,7 @@ namespace Simple4.Controllers
 
         public ActionResult ConfigServerSettings()
         {
-            var config = ServerConfig.Configuration;
+            var config = ConfigServerConfig.Configuration;
             var section = config.GetSection("spring:cloud:config");
 
             if (section != null)
@@ -62,7 +62,7 @@ namespace Simple4.Controllers
         public ActionResult ConfigServerData()
         {
 
-            var config = ServerConfig.Configuration;
+            var config = ConfigServerConfig.Configuration;
             if (config != null)
             {
                 ViewBag.Bar = config["bar"] ?? "Not returned";
