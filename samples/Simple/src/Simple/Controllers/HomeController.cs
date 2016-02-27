@@ -23,7 +23,7 @@ namespace Simple.Controllers
             if (configServerData != null)
                 ConfigServerData = configServerData.Value;
 
-            // Inject the settings used in communicating with the Spring Cloud Config Server
+            // The settings used in communicating with the Spring Cloud Config Server
             if (confgServerSettings != null)
                 ConfigServerClientSettingsOptions = confgServerSettings.Value;
         }

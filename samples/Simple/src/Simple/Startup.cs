@@ -47,20 +47,17 @@ namespace Simple
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Optional for Spring Cloud Configuration Server.  
-            // Adds IConfigurationRoot as a service and also configures the 
-            // IOption<ConfigServerClientSettingsOptions> 
-            // After this call, these components can be injected into other 
-            // components(e.g. HomeController) using the standard ASP.NET DI mechanisms.
+            // Optional: Adds IConfigurationRoot as a service and also configures IOption<ConfigServerClientSettingsOptions> 
+            // Performs:
+            //      services.AddOptions();
+            //      services.Configure<ConfigServerClientSettingsOptions>(config);
+            //      services.AddInstance<IConfigurationRoot>(config);
             services.AddConfigServer(Configuration);
-
 
             // Add framework services.
             services.AddMvc();
 
             // Add the configuration data returned from the Spring Cloud Config Server as IOption<>
-            // It can also be injected into other ASP.NET components (eg. HomeController) using 
-            // standard DI mechanisms provided by ASP.NET
             services.Configure<ConfigServerData>(Configuration);
 
         }
