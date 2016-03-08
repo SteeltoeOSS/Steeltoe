@@ -7,8 +7,9 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Spring.Extensions.Configuration.Server;
 using Simple.Model;
+
+using SteelToe.Extensions.Configuration;
 
 namespace Simple
 {

@@ -113,12 +113,8 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Spring.Extensions.Configuration.Common, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Spring.Extensions.Configuration.Common.1.0.7\lib\net451\Spring.Extensions.Configuration.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Spring.Extensions.Configuration.Server, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Spring.Extensions.Configuration.Server.1.0.6\lib\net451\Spring.Extensions.Configuration.Server.dll</HintPath>
+    <Reference Include="SteelToe.Extensions.Configuration.ConfigServer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SteelToe.Extensions.Configuration.ConfigServer.1.0.0\lib\net451\SteelToe.Extensions.Configuration.ConfigServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
