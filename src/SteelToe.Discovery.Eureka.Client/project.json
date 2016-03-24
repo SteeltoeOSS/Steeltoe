@@ -1,0 +1,32 @@
+﻿{
+  "version": "1.0.0",
+  "description": "Neflix Eureka Client",
+  "authors": [ "Pivotal", "dtillman" ],
+  "tags": ["ASPNET5", "Spring", "Spring Cloud Services", "Eureka Client" ],
+  "projectUrl": "http://steeltoe.io",
+  "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+  "copyright": "Copyright 2016 the original authors",
+
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "Microsoft.CSharp": "4.0.0",
+        "System.Collections": "4.0.10",
+        "System.Linq": "4.0.0",
+        "System.Runtime": "4.0.21-beta-23516",
+        "System.Threading": "4.0.11-beta-23516",
+        "System.Net.NameResolution": "4.0.0-beta-23516",
+        "System.Threading.Timer": "4.0.1-beta-23516"
+      }
+    }
+  },
+  "dependencies": {
+    "Newtonsoft.Json": "7.0.1",
+    "System.Net.Http": "4.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final"
+  }
+}

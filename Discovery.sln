@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{91A49B73-E69B-4FC4-AE72-EF9F1065BA99}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{507127F6-36E0-4846-8E06-496DAE315B7E}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Discovery.Eureka.Client", "src\SteelToe.Discovery.Eureka.Client\SteelToe.Discovery.Eureka.Client.xproj", "{651559B3-E411-4A6F-B2DD-16912BA830F9}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Discovery.Eureka.Client.Test", "test\SteelToe.Discovery.Eureka.Client.Test\SteelToe.Discovery.Eureka.Client.Test.xproj", "{C2E0630E-30C9-45D1-AEA6-1E086EBBA69B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5CF68E94-BEE4-4A23-8C35-EF336ECE4559}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Discovery.Eureka.Client.ITest", "test\SteelToe.Discovery.Eureka.Client.ITest\SteelToe.Discovery.Eureka.Client.ITest.xproj", "{7DB992DF-0C27-4F87-842C-4A96DFB32556}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{651559B3-E411-4A6F-B2DD-16912BA830F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{651559B3-E411-4A6F-B2DD-16912BA830F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{651559B3-E411-4A6F-B2DD-16912BA830F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{651559B3-E411-4A6F-B2DD-16912BA830F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2E0630E-30C9-45D1-AEA6-1E086EBBA69B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2E0630E-30C9-45D1-AEA6-1E086EBBA69B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2E0630E-30C9-45D1-AEA6-1E086EBBA69B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2E0630E-30C9-45D1-AEA6-1E086EBBA69B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DB992DF-0C27-4F87-842C-4A96DFB32556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DB992DF-0C27-4F87-842C-4A96DFB32556}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DB992DF-0C27-4F87-842C-4A96DFB32556}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DB992DF-0C27-4F87-842C-4A96DFB32556}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{651559B3-E411-4A6F-B2DD-16912BA830F9} = {91A49B73-E69B-4FC4-AE72-EF9F1065BA99}
+		{C2E0630E-30C9-45D1-AEA6-1E086EBBA69B} = {507127F6-36E0-4846-8E06-496DAE315B7E}
+		{7DB992DF-0C27-4F87-842C-4A96DFB32556} = {507127F6-36E0-4846-8E06-496DAE315B7E}
+	EndGlobalSection
+EndGlobal
