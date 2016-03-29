@@ -42,7 +42,7 @@ namespace SteelToe.Discovery.Eureka
         public int RegistryFetchIntervalSeconds { get; set; }
         public int InstanceInfoReplicationIntervalSeconds { get; set; }
         public string ProxyHost { get; set; }
-        public string ProxyPort { get; set; }
+        public int ProxyPort { get; set; }
         public string ProxyUserName { get; set; }
         public string ProxyPassword { get; set; }
         public bool ShouldGZipContent { get; set; }

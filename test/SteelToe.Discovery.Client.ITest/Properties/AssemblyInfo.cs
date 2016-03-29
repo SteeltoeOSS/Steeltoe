@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SteelToe.Discovery.Eureka.Client")]
+[assembly: AssemblyTitle("SteelToe.Discovery.Client.ITest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SteelToe.Discovery.Eureka.Client")]
-[assembly: AssemblyCopyright("Copyright © Original Authors 2016")]
+[assembly: AssemblyProduct("SteelToe.Discovery.Client.ITest")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("651559b3-e411-4a6f-b2dd-16912ba830f9")]
-[assembly: InternalsVisibleTo("SteelToe.Discovery.Eureka.Client.Test")]
-[assembly: InternalsVisibleTo("SteelToe.Discovery.Client.Test")]
-[assembly: InternalsVisibleTo("SteelToe.Discovery.Eureka.Client.ITest")]
+[assembly: Guid("2625f344-c9c8-44be-8fb6-43e39ad8cca5")]

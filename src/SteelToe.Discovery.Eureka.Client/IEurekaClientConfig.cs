@@ -20,13 +20,13 @@ namespace SteelToe.Discovery.Eureka
     {
         /// <summary>
         /// Indicates how often(in seconds) to fetch the registry information from the eureka server.
-        /// Configuration property: eureka:client:refresh:internal
+        /// Configuration property: eureka:client:registryFetchIntervalSeconds
         /// </summary>
         int RegistryFetchIntervalSeconds { get; set; }
 
         /// <summary>
         /// Indicates how often(in seconds) to replicate instance changes to be replicated to the eureka server.
-        /// Configuration property: eureka:client:appinfo:replicate:interval
+        /// Configuration property: eureka:client:instanceInfoReplicationIntervalSeconds
         /// </summary>
         int InstanceInfoReplicationIntervalSeconds { get; set; }
 
@@ -40,7 +40,7 @@ namespace SteelToe.Discovery.Eureka
         /// The proxy port to the eureka server if any.
         /// Configuration property: eureka:client:eurekaServer:proxyPort
         /// </summary>
-        string ProxyPort { get; set; }
+        int ProxyPort { get; set; }
 
         /// <summary>
         ///  The proxy user name if any.
@@ -58,7 +58,7 @@ namespace SteelToe.Discovery.Eureka
         /// Indicates whether the content fetched from eureka server has to be compressed whenever it is 
         /// supported by the server.The registry information from the eureka server is compressed
         /// for optimum network traffic.
-        ///  Configuration property: eureka:client:eurekaServer:gzipContent
+        ///  Configuration property: eureka:client:eurekaServer:shouldGZipContent
         /// </summary>
         bool ShouldGZipContent { get; set; }
 
@@ -67,7 +67,7 @@ namespace SteelToe.Discovery.Eureka
         /// server needs to timeout.
         /// Note that the connections in the client are pooled by and this setting affects the actual
         /// connection creation and also the wait time to get the connection from the pool.
-        ///  Configuration property: eureka:client:eurekaServer:connectTimeout
+        ///  Configuration property: eureka:client:eurekaServer:connectTimeoutSeconds
         /// </summary>
         int EurekaServerConnectTimeoutSeconds { get; set; }
 
@@ -76,7 +76,7 @@ namespace SteelToe.Discovery.Eureka
         ///
         /// In some cases, you do not want your instances to be discovered whereas you just want do discover other instances.
         ///
-        ///  Configuration property: eureka:client:registration:enabled
+        ///  Configuration property: eureka:client:shouldRegisterWithEureka
         /// </summary>
         bool ShouldRegisterWithEureka { get; set; }
 
@@ -96,7 +96,7 @@ namespace SteelToe.Discovery.Eureka
         ///
         /// The changes are effective at runtime at the next registry fetch cycle as specified by <see cref="RegistryFetchIntervalSeconds"/>
         ///
-        ///  Configuration property: eureka:client:disableDelta
+        ///  Configuration property: eureka:client:shouldDisableDelta
         /// </summary>
         bool ShouldDisableDelta { get; set; }
 
@@ -130,7 +130,7 @@ namespace SteelToe.Discovery.Eureka
 
         /// <summary>
         /// Comma delimited list of URls to use in contacting the Eureka Server
-        ///  Configuration property: eureka:client:serviceUrl:defaultZone
+        ///  Configuration property: eureka:client:serviceUrl
         /// </summary>
         string EurekaServerServiceUrls { get; set; }
 

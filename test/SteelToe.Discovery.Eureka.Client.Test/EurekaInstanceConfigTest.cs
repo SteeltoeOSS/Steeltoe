@@ -30,7 +30,7 @@ namespace SteelToe.Discovery.Eureka.Test
             var thisHostName = config.GetHostName(false);
             var thisHostAddress = config.GetHostAddress(false);
 
-            Assert.False(config.IsInstanceEnabledOnit);
+            Assert.False(config.IsInstanceEnabledOnInit);
             Assert.Equal(EurekaInstanceConfig.Default_NonSecurePort, config.NonSecurePort);
             Assert.Equal(EurekaInstanceConfig.Default_SecurePort, config.SecurePort);
             Assert.True(config.IsNonSecurePortEnabled);

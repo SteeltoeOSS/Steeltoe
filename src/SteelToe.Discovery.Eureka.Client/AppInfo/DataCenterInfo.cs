@@ -23,7 +23,7 @@ namespace SteelToe.Discovery.Eureka.AppInfo
     {
         public DataCenterName Name { get; private set; }
 
-        internal DataCenterInfo(DataCenterName name)
+        public DataCenterInfo(DataCenterName name)
         {
             Name = name;
         }

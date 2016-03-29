@@ -40,7 +40,7 @@ namespace SteelToe.Discovery.Eureka
             thisHostName = GetHostName(true);
             thisHostAddress = GetHostAddress(true);
 
-            IsInstanceEnabledOnit = false;
+            IsInstanceEnabledOnInit = false;
             NonSecurePort = Default_NonSecurePort;
             SecurePort = Default_SecurePort;
             IsNonSecurePortEnabled = true;
@@ -61,7 +61,7 @@ namespace SteelToe.Discovery.Eureka
         public string InstanceId { get; set; }
         public string AppName { get; set; }
         public string AppGroupName { get; set; }
-        public bool IsInstanceEnabledOnit { get; set; }
+        public bool IsInstanceEnabledOnInit { get; set; }
         public int NonSecurePort { get; set; }
         public int SecurePort { get; set; }
         public bool IsNonSecurePortEnabled { get; set; }

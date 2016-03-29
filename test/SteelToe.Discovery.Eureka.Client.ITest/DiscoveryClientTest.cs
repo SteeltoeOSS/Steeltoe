@@ -20,8 +20,10 @@ using Xunit;
 
 namespace SteelToe.Discovery.Eureka.ITest
 {
-    public class DiscoveryClientTest
+    public class DiscoveryClientTest : AbstractBaseTest
     {
+
+
         [Fact]
         public void ClientRegisters_And_FetchesRegistry()
         {
@@ -39,7 +41,7 @@ namespace SteelToe.Discovery.Eureka.ITest
             {
                 AppName = "MyTestApp",
                 LeaseRenewalIntervalInSeconds = 1,
-                IsInstanceEnabledOnit = true
+                IsInstanceEnabledOnInit = true
             };
 
             DiscoveryManager.Instance.Initialize(clientConfig, instConfig, logFactory);

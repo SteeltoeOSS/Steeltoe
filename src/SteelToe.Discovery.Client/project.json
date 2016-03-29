@@ -1,0 +1,29 @@
+﻿{
+  "version": "1.0.0",
+  "description": "SteelToe Service Discovery Client",
+  "authors": [ "Pivotal", "dtillman" ],
+  "tags": [ "ASPNET5", "Spring", "Spring Cloud Services", "Eureka Client" ],
+  "projectUrl": "http://steeltoe.io",
+  "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+  "copyright": "Copyright 2016 the original authors",
+
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "System.Collections": "4.0.10",
+        "System.Net.NameResolution": "4.0.0-beta-23516"
+      }
+    }
+  },
+  "dependencies": {
+    "SteelToe.Discovery.Eureka.Client": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final"
+  }
+}

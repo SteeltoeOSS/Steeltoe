@@ -42,9 +42,9 @@ namespace SteelToe.Discovery.Eureka
         /// <summary>
         /// Indicates whether the instance should be enabled for taking traffic as soon as it is registered with eureka. 
         /// Sometimes the application might need to do some pre-processing before it is ready to take traffic.
-        /// Configuration property: eureka:instance:traffic:enabled
+        /// Configuration property: eureka:instance:instanceEnabledOnInit
         /// </summary>
-        bool IsInstanceEnabledOnit { get; set; }
+        bool IsInstanceEnabledOnInit { get; set; }
 
         /// <summary>
         /// The <code>non-secure</code> port on which the instance should receive traffic.
@@ -61,14 +61,14 @@ namespace SteelToe.Discovery.Eureka
         /// <summary>
         /// Indicates whether the <code>non-secure</code> port should be enabled for traffic or not.
         /// Set true if the <code>non-secure</code> port is enabled, false otherwise.
-        /// Configuration property: eureka:instance:port.enabled
+        /// Configuration property: eureka:instance:nonSecurePortEnabled
         /// </summary>
         bool IsNonSecurePortEnabled { get; set; }
 
         /// <summary>
         /// Indicates whether the <code>secure</code> port should be enabled for traffic or not.
         /// Set true if the <code>secure</code> port is enabled, false otherwise.
-        /// Configuration property: eureka:instance:securePort.enabled
+        /// Configuration property: eureka:instance:securePortEnabled
         /// </summary>
         bool SecurePortEnabled { get; set; }
 
@@ -79,7 +79,7 @@ namespace SteelToe.Discovery.Eureka
         /// there by disallowing traffic to this instance.
         /// Note that the instance could still not take traffic if it implements HealthCheckCallback and then 
         /// decides to make itself unavailable.
-        /// Configuration property: eureka:instance:lease:renewalInterval
+        /// Configuration property: eureka:instance:leaseRenewalIntervalInSeconds
         /// </summary>
         int LeaseRenewalIntervalInSeconds { get; set; }
 
@@ -91,7 +91,7 @@ namespace SteelToe.Discovery.Eureka
         /// the instance is not alive. Setting this value too small could mean, the instance may be taken out 
         /// of traffic because of temporary network glitches.This value to be set to atleast higher than
         /// the value specified in <see cref="LeaseRenewalIntervalInSeconds" />
-        /// Configuration property: eureka:instance:lease:duration
+        /// Configuration property: eureka:instance:leaseExpirationDurationInSeconds
         /// </summary>
         int LeaseExpirationDurationInSeconds { get; set; }
 

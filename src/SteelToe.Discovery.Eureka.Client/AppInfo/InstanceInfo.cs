@@ -568,7 +568,7 @@ namespace SteelToe.Discovery.Eureka.AppInfo
             info._asgName = instanceConfig.ASGName;
             info._healthCheckUrl = MakeUrl(info, instanceConfig.HealthCheckUrlPath, instanceConfig.HealthCheckUrl, instanceConfig.SecureHealthCheckUrl);
 
-            if (!instanceConfig.IsInstanceEnabledOnit)
+            if (!instanceConfig.IsInstanceEnabledOnInit)
             {
                 info._status = InstanceStatus.STARTING;
             }

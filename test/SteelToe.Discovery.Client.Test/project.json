@@ -1,0 +1,31 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "Unit test project for SteelToe.Discovery.Client",
+  "authors": [ "Pivotal", "dtillman" ],
+  "tags": [ "ASPNET5", "Spring", "Spring Cloud", "Spring Cloud Eureka Server", "Eureka" ],
+  "projectUrl": "http://steeltoe.io",
+  "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+  "copyright": "Copyright 2016 the original authors",
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": {
+      "dependencies": {
+      }
+    }
+  },
+
+  "dependencies": {
+    "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc1-final",
+    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
+    "SteelToe.Discovery.Client": "1.0.0-*",
+    "xunit": "2.1.0",
+    "xunit.runner.dnx": "2.1.0-rc1-build204"
+  },
+
+  "commands": {
+    "test": "xunit.runner.dnx"
+  }
+}
