@@ -39,33 +39,38 @@ namespace SteelToe.Discovery.Eureka.ITest
 
             var instConfig = new EurekaInstanceConfig()
             {
-                AppName = "MyTestApp",
+                AppName = "12345",
                 LeaseRenewalIntervalInSeconds = 1,
                 IsInstanceEnabledOnInit = true
             };
 
             DiscoveryManager.Instance.Initialize(clientConfig, instConfig, logFactory);
-
+            DiscoveryClient client = DiscoveryManager.Instance.Client;
             bool foundApp = false;
             for (int i = 0; i < 30; i++)
             {
                 // Can take a while before app is returned from Eureka server
                 System.Threading.Thread.Sleep(2000);
-                var client = DiscoveryManager.Instance.Client;
                 var apps = client.Applications.GetRegisteredApplications();
                 Assert.NotNull(apps);
-                if (apps.Count == 1)
+   
+                foreach (var app in apps)
                 {
-                    if ("MyTestApp".ToUpperInvariant().Equals(apps[0].Name))
+                    if ("12345".ToUpperInvariant().Equals(app.Name))
                     {
                         foundApp = true;
-                        client.ShutdownAsyc();
-                        System.Threading.Thread.Sleep(1000);
                         break;
                     }
                 }
+                if(foundApp)
+                {
+                    break;
+                }
+                
             }
 
+            client?.ShutdownAsyc();
+            System.Threading.Thread.Sleep(1000);
             Assert.True(foundApp);
         }
     }
