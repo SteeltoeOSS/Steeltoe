@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0",
   "description": "SteelToe Service Discovery Client",
   "authors": [ "Pivotal", "dtillman" ],
@@ -24,6 +24,7 @@
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
-    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final"
+    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-rc1-final"
   }
 }

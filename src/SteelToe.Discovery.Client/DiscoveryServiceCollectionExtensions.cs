@@ -50,7 +50,7 @@ namespace SteelToe.Discovery.Client
                 options.RegistrationOptions = discoveryOptions.RegistrationOptions;
             });
 
-            services.TryAddSingleton<IDiscoveryClient, DiscoveryClient>();
+            services.TryAddSingleton(typeof(IDiscoveryClient), DiscoveryClientFactory.CreateDiscoveryClient);
             return services;
         }
 
@@ -67,7 +67,7 @@ namespace SteelToe.Discovery.Client
             }
             services.AddOptions();
             services.Configure(setupOptions);
-            services.TryAddSingleton<IDiscoveryClient, DiscoveryClient>();
+            services.TryAddSingleton(typeof(IDiscoveryClient), DiscoveryClientFactory.CreateDiscoveryClient);
             return services;
         }
 
@@ -84,7 +84,7 @@ namespace SteelToe.Discovery.Client
             }
             services.AddOptions();
             services.ConfigureOptions(new DiscoveryOptionsFromConfigSetup(config));
-            services.TryAddSingleton<IDiscoveryClient, DiscoveryClient>();
+            services.TryAddSingleton(typeof(IDiscoveryClient), DiscoveryClientFactory.CreateDiscoveryClient);
             return services;
         }
 
