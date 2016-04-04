@@ -322,7 +322,7 @@ namespace SteelToe.Discovery.Eureka
             catch (Exception e)
             {
                 // Log
-                _logger?.LogError("FetchRegistry failed, Exception: {0}", e);
+                _logger?.LogError("FetchRegistry failed, Exception:", e);
                 return false;
             }
 
@@ -358,7 +358,7 @@ namespace SteelToe.Discovery.Eureka
             }
             catch (Exception e)
             {
-                _logger?.LogError("Unregister failed, Exception: {0}", e);
+                _logger?.LogError("Unregister failed, Exception:", e);
             }
 
             _logger?.LogDebug("Unregister failed");
@@ -384,7 +384,7 @@ namespace SteelToe.Discovery.Eureka
             }
             catch (Exception e)
             {
-                _logger?.LogError("Register failed, Exception: {0}", e);
+                _logger?.LogError("Register failed, Exception:", e);
             }
 
             _logger?.LogDebug("Register failed");
@@ -418,7 +418,7 @@ namespace SteelToe.Discovery.Eureka
             }
             catch (Exception e)
             {
-                _logger?.LogError("Renew failed, Exception: {0}", e);
+                _logger?.LogError("Renew failed, Exception:", e);
             }
 
             _logger?.LogDebug("Renew failed");
@@ -552,7 +552,7 @@ namespace SteelToe.Discovery.Eureka
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError("Instance_StatusChangedEvent exception: {0}", e);
+                        _logger?.LogError("Instance_StatusChangedEvent Exception:", e);
                     }
                 }
             }

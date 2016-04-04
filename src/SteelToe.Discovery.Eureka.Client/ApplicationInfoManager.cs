@@ -58,7 +58,7 @@ namespace SteelToe.Discovery.Eureka
                             }
                             catch (Exception e)
                             {
-                                _logger?.LogError("StatusChangedEvent Exception: {0}", e);
+                                _logger?.LogError("StatusChangedEvent Exception:", e);
                             }
                         }
 

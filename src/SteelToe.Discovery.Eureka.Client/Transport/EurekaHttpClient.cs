@@ -95,7 +95,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("RegisterAsync exception: {0}", e);
+                _logger?.LogError("RegisterAsync Exception:", e);
                 throw;
             }
         }
@@ -158,7 +158,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("SendHeartbeatAsync exception: {0}", e);
+                _logger?.LogError("SendHeartbeatAsync Exception:", e);
                 throw;
             }
         }
@@ -225,7 +225,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("GetApplicationAsync exception: {0}", e);
+                _logger?.LogError("GetApplicationAsync Exception:", e);
                 throw;
             }
 
@@ -283,7 +283,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("CancelAsync exception: {0}", e);
+                _logger?.LogError("CancelAsync Exception:", e);
                 throw;
             }
         }
@@ -328,7 +328,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("DeleteStatusOverrideAsync exception: {0}", e);
+                _logger?.LogError("DeleteStatusOverrideAsync Exception:", e);
                 throw;
             }
         }
@@ -376,7 +376,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("StatusUpdateAsync exception: {0}", e);
+                _logger?.LogError("StatusUpdateAsync Exception:", e);
                 throw;
             }
         }
@@ -410,7 +410,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("DoGetInstanceAsync exception: {0}", e);
+                _logger?.LogError("DoGetInstanceAsync Exception:", e);
                 throw;
             }
         }
@@ -451,7 +451,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("DoGetApplicationsAsync exception: {0}", e);
+                _logger?.LogError("DoGetApplicationsAsync Exception:", e);
                 throw;
             }
         }
@@ -502,7 +502,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("GetRequestContent exception: {0}", e);
+                _logger?.LogError("GetRequestContent Exception:", e);
             }
 
             return new StringContent(string.Empty, Encoding.UTF8, "application/json");
