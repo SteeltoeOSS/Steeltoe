@@ -47,5 +47,8 @@ namespace SteelToe.Discovery.Client
         IList<IServiceInstance> GetInstances(String serviceId);
 
 
+        void ShutdownAsync();
+
+
     }
 }

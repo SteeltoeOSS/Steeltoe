@@ -15,6 +15,7 @@
 // limitations under the License.
 //
 
+using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Logging;
 using SteelToe.Discovery.Eureka;
 using SteelToe.Discovery.Eureka.AppInfo;
@@ -24,13 +25,13 @@ using System.Collections.Generic;
 
 namespace SteelToe.Discovery.Client
 {
-    internal class EurekaDiscoveryClient : IDiscoveryClient
+    public class EurekaDiscoveryClient : IDiscoveryClient
     {
         internal IEurekaClientConfig ClientConfig;
         internal IEurekaInstanceConfig InstConfig;
         internal IEurekaClient Client;
 
-        internal EurekaDiscoveryClient(EurekaClientOptions clientOptions, EurekaInstanceOptions instOptions, ILoggerFactory logFactory = null)
+        internal EurekaDiscoveryClient(EurekaClientOptions clientOptions, EurekaInstanceOptions instOptions, IApplicationLifetime lifeCycle = null, ILoggerFactory logFactory = null)
         {
             if (clientOptions == null)
             {
@@ -48,6 +49,11 @@ namespace SteelToe.Discovery.Client
             {
                 ConfigureInstanceIfNeeded(InstConfig);
                 DiscoveryManager.Instance.Initialize(ClientConfig, InstConfig, logFactory);
+            }
+
+            if (lifeCycle != null)
+            {
+                lifeCycle.ApplicationStopping.Register(() => { ShutdownAsync(); });
             }
 
             Client = DiscoveryManager.Instance.Client;
@@ -129,6 +135,11 @@ namespace SteelToe.Discovery.Client
                 instConfig.VirtualHostName = instConfig.AppName;
             }
 
+        }
+
+        public void ShutdownAsync()
+        {
+            Client.ShutdownAsyc();
         }
     }
 

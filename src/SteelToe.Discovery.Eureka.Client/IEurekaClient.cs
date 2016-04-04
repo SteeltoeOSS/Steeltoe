@@ -22,5 +22,7 @@ namespace SteelToe.Discovery.Eureka
     public interface IEurekaClient : ILookupService
     {
         IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure);
+
+        void ShutdownAsyc();
     }
 }
