@@ -220,7 +220,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
 
             // Act and Assert
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync("http://foo.bar:9999/app/profile"));
+            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync("http://localhost:9999/app/profile"));
         }
 
         [Fact]
