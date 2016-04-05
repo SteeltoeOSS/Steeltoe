@@ -150,5 +150,12 @@ namespace SteelToe.Discovery.Client.Test
             Assert.Equal("foo", map["bar"]);
 
         }
+
+        [Fact]
+        public void test()
+        {
+
+        }
+
     }
 }
