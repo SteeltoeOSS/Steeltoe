@@ -138,6 +138,7 @@ namespace SteelToe.Discovery.Client
 
         public void ShutdownAsync()
         {
+            ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.DOWN;
             Client.ShutdownAsyc();
         }
     }

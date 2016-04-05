@@ -36,6 +36,7 @@ namespace SteelToe.Discovery.Eureka
         private IEurekaHttpClient _httpClient;
         private Random _random = new Random();
         private ILogger _logger;
+        private int _shutdown = 0;
 
         public long LastGoodHeartbeatTimestamp { get; internal set; }
         public long LastGoodFullRegistryFetchTimestamp { get; internal set; }
@@ -265,6 +266,11 @@ namespace SteelToe.Discovery.Eureka
         }
         public async void ShutdownAsyc()
         {
+     
+            int shutdown = Interlocked.Exchange(ref _shutdown, 1);
+            if (shutdown > 0)
+                return;
+
             if (_cacheRefreshTimer != null)
             {
                 _cacheRefreshTimer.Dispose();
@@ -567,6 +573,11 @@ namespace SteelToe.Discovery.Eureka
 
         private async void HeartBeatTaskAsync()
         {
+            if (_shutdown > 0)
+            {
+                return;
+            }
+
             var result = await RenewAsync();
             if (!result)
             {
@@ -577,6 +588,11 @@ namespace SteelToe.Discovery.Eureka
 
         private async void CacheRefreshTaskAsync()
         {
+            if (_shutdown > 0)
+            {
+                return;
+            }
+
             bool result = await FetchRegistryAsync(false);
             if (!result)
             {
