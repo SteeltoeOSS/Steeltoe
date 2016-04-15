@@ -19,7 +19,7 @@
     "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final",
-    "SteelToe.Extensions.Configuration.ConfigServer": "1.0.0"
+    "SteelToe.Extensions.Configuration.ConfigServer": ""
   },
 
   "commands": {
