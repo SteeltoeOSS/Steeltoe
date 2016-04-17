@@ -1,15 +1,22 @@
-﻿{
+{
   "version": "1.0.0",
   "description": "ASP.NET 5 CloudFoundry Environment Variable Configuration Provider",
-  "authors": [ "Pivotal", "dtillman" ],
-  "tags": [ "CloudFoundry", "ASPNET5", "Spring", "Spring Cloud" ],
+  "authors": [
+    "Pivotal",
+    "dtillman"
+  ],
+  "tags": [
+    "CloudFoundry",
+    "ASPNET5",
+    "Spring",
+    "Spring Cloud"
+  ],
   "projectUrl": "http://steeltoe.io",
   "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
   "copyright": "Copyright 2015 the original authors",
   "frameworks": {
     "net451": {
-      "dependencies": {
-      }
+      "dependencies": {}
     },
     "dnxcore50": {
       "dependencies": {
@@ -27,4 +34,3 @@
     "Newtonsoft.Json": "7.0.1"
   }
 }
-
