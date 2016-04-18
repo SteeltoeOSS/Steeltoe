@@ -11,7 +11,7 @@ test_script:
   - scripts\appveyor_tests.cmd
 cache:
   - C:\Users\appveyor\.dnx
-scripts_script:
+build_script:
   - scripts\appveyor_build.cmd
 artifacts:
 - path: 'src\SteelToe.Extensions.Configuration.ConfigServer\bin\Release\*.nupkg'
