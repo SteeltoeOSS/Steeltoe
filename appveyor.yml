@@ -1,0 +1,45 @@
+version: '1.0.0-{branch}-{build}'
+init:
+  - git config --global core.autocrlf true
+branches:
+  only:
+    - master
+    - dev
+install:
+  - scripts\appveyor_install.cmd
+test_script:
+  - scripts\appveyor_tests.cmd
+cache:
+  - C:\Users\appveyor\.dnx
+build_script:
+  - scripts\appveyor_build.cmd
+artifacts:
+- path: 'src\SteelToe.Discovery.Client\bin\Release\*.nupkg'
+- path: 'src\SteelToe.Discovery.Eureka.Client\bin\Release\*.nupkg'
+deploy:
+- provider: NuGet
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  server: https://www.myget.org/F/steeltoemaster/api/v2/package
+  api_key:
+    secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
+  on:
+    branch: master
+    appveyor_repo_tag: false
+- provider: NuGet
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  server: https://www.myget.org/F/steeltoedev/api/v2/package
+  api_key:
+    secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
+  on:
+    branch: dev
+    appveyor_repo_tag: false
+- provider: NuGet
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  api_key:
+    secure: RGkpu8xIMDC75IAd1qPRdueeTaYj+ddW2bNEw8S7e81940ELu+WV04uWAzqV34/C
+  on:
+    branch: master
+    appveyor_repo_tag: true
