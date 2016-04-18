@@ -12,7 +12,7 @@ test_script:
 cache:
   - C:\Users\appveyor\.dnx
 scripts_script:
-  - scripts\appveyor_scripts.cmd
+  - scripts\appveyor_build.cmd
 artifacts:
 - path: 'src\SteelToe.Extensions.Configuration.ConfigServer\bin\Release\*.nupkg'
 - path: 'src\SteelToe.Extensions.Configuration.CloudFoundry\bin\Release\*.nupkg'
