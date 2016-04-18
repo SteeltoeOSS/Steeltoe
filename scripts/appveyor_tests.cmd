@@ -29,7 +29,7 @@ call dnvm use 1.0.0-rc1-update1 -a x64 -r coreclr
 cd test\SteelToe.Discovery.Client.Test
 dnx test
 cd ..\..
-cd test\SteelToe.Discoery.Eureka.Client.Test
+cd test\SteelToe.Discovery.Eureka.Client.Test
 dnx test
 cd ..\..
 
