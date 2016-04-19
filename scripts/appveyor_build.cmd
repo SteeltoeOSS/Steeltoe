@@ -3,7 +3,7 @@
 call dnvm use 1.0.0-rc1-update1 -a x64 -r clr
 
 :: Patch project.json files
-cd %APPVEYOR_BUILD_FOLDER%\build
+cd %APPVEYOR_BUILD_FOLDER%\scripts
 call npm install
 call node patch-project-json.js ../src/SteelToe.Extensions.Configuration.CloudFoundry/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
 call node patch-project-json.js ../src/SteelToe.Extensions.Configuration.ConfigServer/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
