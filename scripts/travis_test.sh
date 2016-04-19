@@ -1,5 +1,5 @@
 #!/bin/bash
-source /home/travis/.dnx/dnvm/dnvm.sh
+source $HOME/.dnx/dnvm/dnvm.sh
 
 # Target (x64 CoreCLR)
 dnvm use 1.0.0-rc1-update1 -a x64 -r coreclr
