@@ -1,9 +1,12 @@
 # Configuration
 
 AppVeyor Master:  [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/27c2hd0460aac1cs/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/Configuration)
+
 AppVeyor Dev:  [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/27c2hd0460aac1cs/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/Configuration)
+
 Travis Master: [![Travis Master](https://travis-ci.org/SteelToeOSS/Configuration.svg?branch=master)](https://travis-ci.org/SteelToeOSS/Configuration)
-Travus Dev: [![Travis Dev](https://travis-ci.org/SteelToeOSS/Configuration.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Configuration)
+
+Travis Dev: [![Travis Dev](https://travis-ci.org/SteelToeOSS/Configuration.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Configuration)
 
 # Building
 
