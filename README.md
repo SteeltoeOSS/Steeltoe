@@ -29,7 +29,7 @@ All new configuration provider development is done on the dev branch. More stabl
 
 [Master feed (Stable)](https://www.myget.org/gallery/steeltoemaster) - https://www.myget.org/gallery/steeltoemaster
 
-Release or release candidate packages can be found on [nuget.org](https://www.nuget.org/). Currently there are none available.  We anticipate creatiing a Release Candidate soon.
+[Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/. Currently there are none available.  We anticipate creatiing a Release Candidate soon.
 
 # Building Packages & Running Tests - Windows
 To build the packages on windows:
