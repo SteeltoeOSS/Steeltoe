@@ -31,8 +31,6 @@ All new configuration provider development is done on the dev branch. More stabl
 
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/. 
 
-Currently there are none available.  We anticipate creatiing a Release Candidate soon.
-
 # Building Packages & Running Tests - Windows
 To build the packages on windows:
 
