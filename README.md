@@ -13,17 +13,17 @@ Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteelToeOSS/
 Linux/OS X Dev (Less Stable): [![Travis Dev](https://travis-ci.org/SteelToeOSS/Configuration.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Configuration)
 
 # .NET Runtime & Framework Support
-Like ASP.NET 5, the providers are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX).  The providers are built and tested on Windows, Linux and OSX.
+Like ASP.NET 5, the providers are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes.  The providers are built and unit tested on Windows, Linux and OSX.
 
 While the primary usage of the providers is intended to be with ASP.NET 5 applications, they should also work fine with UWP, console and ASP.NET 4.x apps. An ASP.NET 4.x sample app is available illustrating how this can be done.
 
-Currently they have been tested on DNX 1.0.0-RC1-final/update1 and on ASP.NET 5 1.0.0-RC1-final/update1.  We will update to RC2 when it becomes stable.
+Currently they have been tested on DNX 1.0.0-RC1-final/update1 (CoreCLR & 4.5.1+) and on ASP.NET 5 1.0.0-RC1-final/update1.  We will update to DotNetCLI and ASP.NET RC2 when it becomes stable.
 
 # Usage
 See the Readme for each provider for more details on how to make use of it in an application.
 
 # Nuget Feeds
-All new configuration provider development is done on the dev branch. More stable versions of the providers can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds:
+All new configuration provider development is done on the dev branch. More stable versions of the providers can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 
@@ -78,3 +78,6 @@ To run the unit tests:
 5. dnu restore test
 6. cd test/<test project> (e.g. cd test/SteelToe.Extensions.Configuration.CloudFoundry.Test)
 7. dnx test
+
+# Sample Applications
+See the [Samples](https://github.com/SteelToeOSS/Samples) repo for examples of how to use these packages.
