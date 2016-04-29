@@ -29,12 +29,13 @@ All new configuration provider development is done on the dev branch. More stabl
 
 [Master feed (Stable)](https://www.myget.org/gallery/steeltoemaster) - https://www.myget.org/gallery/steeltoemaster
 
-[Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/. Currently there are none available.  We anticipate creatiing a Release Candidate soon.
+[Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/. 
+
+Currently there are none available.  We anticipate creatiing a Release Candidate soon.
 
 # Building Packages & Running Tests - Windows
 To build the packages on windows:
 
-```
 1. git clone ...
 2. cd <clone directory>
 3. Install DNX 1.0.0-rc1-final/update1. Install both the coreclr and clr runtimes. 
@@ -42,11 +43,11 @@ To build the packages on windows:
 5. dnu restore src
 6. cd src\<project> (e.g. cd src\SteelToe.Extensions.Configuration.CloudFoundry)
 7. dnu pack --configuration <Release or Debug> 
-```
+
 The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src\SteelToe.Extensions.Configuration.CloudFoundry/bin
 
 To run the unit tests:
-```
+
 1. git clone ...
 2. cd <clone directory>
 3. Install DNX 1.0.0-rc1-final/update1. Install the runtime/arch you want to run the unit tests on.
@@ -54,11 +55,10 @@ To run the unit tests:
 5. dnu restore test
 6. cd test\<test project> (e.g. cd test\SteelToe.Extensions.Configuration.CloudFoundry.Test)
 7. dnx test
-```
+
 # Building Packages & Running Tests - Linux/OSX
 To build the packages on Linux/OSX:
 
-```
 1. git clone ...
 2. cd <clone directory>
 3. Install DNX 1.0.0-rc1-final/update1
@@ -66,11 +66,11 @@ To build the packages on Linux/OSX:
 3. dnu restore src
 4. cd src/<project> (e.g.. cd src/SteelToe.Extensions.Configuration.CloudFoundry)
 5. dnu pack --framework dnxcore50 --configuration <Release or Debug> 
-```
+
 The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/SteelToe.Extensions.Configuration.CloudFoundry/bin
 
 To run the unit tests:
-```
+
 1. git clone ...
 2. cd <clone directory>
 3. Install DNX 1.0.0-rc1-final/update1
@@ -78,4 +78,3 @@ To run the unit tests:
 5. dnu restore test
 6. cd test/<test project> (e.g. cd test/SteelToe.Extensions.Configuration.CloudFoundry.Test)
 7. dnx test
-```
