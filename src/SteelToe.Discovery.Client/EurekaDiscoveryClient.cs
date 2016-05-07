@@ -18,63 +18,34 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Logging;
 using SteelToe.Discovery.Eureka;
 using SteelToe.Discovery.Eureka.AppInfo;
+using SteelToe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Generic;
 
 
 namespace SteelToe.Discovery.Client
 {
-    public class EurekaDiscoveryClient : IDiscoveryClient
+    public class EurekaDiscoveryClient : EurekaDiscoveryClientBase, IDiscoveryClient
     {
-        internal IEurekaClientConfig ClientConfig;
-        internal IEurekaInstanceConfig InstConfig;
-        internal IEurekaClient Client;
 
-        internal EurekaDiscoveryClient(EurekaClientOptions clientOptions, EurekaInstanceOptions instOptions, IApplicationLifetime lifeCycle = null, ILoggerFactory logFactory = null)
+        internal protected EurekaDiscoveryClient(EurekaClientOptions clientOptions, EurekaInstanceOptions instOptions, IEurekaHttpClient httpClient, IApplicationLifetime lifeCycle = null, ILoggerFactory logFactory = null)
+         : base(clientOptions, instOptions, httpClient, lifeCycle, logFactory) {
+        }
+
+        internal protected EurekaDiscoveryClient(EurekaClientOptions clientOptions, EurekaInstanceOptions instOptions,  IApplicationLifetime lifeCycle = null, ILoggerFactory logFactory = null) 
+            : base(clientOptions, instOptions, null, lifeCycle, logFactory)
         {
-            if (clientOptions == null)
-            {
-                throw new ArgumentNullException(nameof(clientOptions));
-            }
-
-            ClientConfig = clientOptions;
-            InstConfig = instOptions;
-
-            if (InstConfig == null)
-            {
-                DiscoveryManager.Instance.Initialize(ClientConfig, logFactory);
-            }
-            else
-            {
-                ConfigureInstanceIfNeeded(InstConfig);
-                DiscoveryManager.Instance.Initialize(ClientConfig, InstConfig, logFactory);
-            }
-
-            if (lifeCycle != null)
-            {
-                lifeCycle.ApplicationStopping.Register(() => { ShutdownAsync(); });
-            }
-
-            Client = DiscoveryManager.Instance.Client;
-
         }
 
 
-        public string Description
+        public override string Description
         {
             get
             {
-                return "Spring Cloud Eureka Discovery Client";
+                return "Spring Cloud Eureka Client";
             }
         }
 
-        public IList<string> Services
-        {
-            get
-            {
-                return GetServices();
-            }
-        }
         public IList<IServiceInstance> GetInstances(string serviceId)
         {
             IList<InstanceInfo> infos = Client.GetInstancesByVipAddress(serviceId, false);
@@ -92,55 +63,6 @@ namespace SteelToe.Discovery.Client
                 InstConfig.SecurePortEnabled, InstConfig.MetadataMap, InstConfig.NonSecurePort, InstConfig.AppName);
         }
 
-        protected virtual internal IList<string> GetServices()
-        {
-            Applications applications = Client.Applications;
-            if (applications == null)
-            {
-                return new List<string>();
-            }
-            IList<Application> registered = applications.GetRegisteredApplications();
-            List<string> names = new List<string>();
-            foreach (Application app in registered)
-            {
-                if (app.Instances.Count == 0)
-                {
-                    continue;
-                }
-
-                names.Add(app.Name.ToLowerInvariant());
-
-            }
-            return names;
-        }
-
-        protected virtual internal void ConfigureInstanceIfNeeded(IEurekaInstanceConfig instConfig)
-        {
-            if (string.IsNullOrEmpty(instConfig.AppName))
-            {
-                instConfig.AppName = "unknown";
-            }
-
-            if (string.IsNullOrEmpty(instConfig.InstanceId))
-            {
-                var hostName = instConfig.GetHostName(false);
-                var appName = instConfig.AppName;
-                var index = instConfig.NonSecurePort.ToString();
-                instConfig.InstanceId = hostName + ":" + appName + ":" + index;
-            }
-
-            if (string.IsNullOrEmpty(instConfig.VirtualHostName))
-            {
-                instConfig.VirtualHostName = instConfig.AppName;
-            }
-
-        }
-
-        public void ShutdownAsync()
-        {
-            ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.DOWN;
-            Client.ShutdownAsyc();
-        }
     }
 
     public class ThisServiceInstance : IServiceInstance

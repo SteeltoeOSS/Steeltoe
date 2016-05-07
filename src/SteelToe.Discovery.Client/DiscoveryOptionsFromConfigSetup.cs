@@ -42,20 +42,23 @@ namespace SteelToe.Discovery.Client
             int childCount = clientConfigsection.GetChildren().Count();
             if (childCount > 0)
             {
-                EurekaClientOptions clientOptions = new EurekaClientOptions();
-                EurekaInstanceOptions instOptions = new EurekaInstanceOptions();
-
-                ConfigurationBinder.Bind(config, clientOptions);
-                ConfigurationBinder.Bind(config, instOptions);
-
-                options.ClientType = DiscoveryClientType.EUREKA;
-                options.ClientOptions = clientOptions;
-                options.RegistrationOptions = instOptions;
+                ConfigureDiscovery(config, options, new EurekaClientOptions(), new EurekaInstanceOptions());
             }
             else
             {
                 options.ClientType = DiscoveryClientType.UNKNOWN;
             }
+        }
+
+        internal static void ConfigureDiscovery(IConfiguration config, DiscoveryOptions options, EurekaClientOptions clientOptions, EurekaInstanceOptions instOptions)
+        {
+       
+            ConfigurationBinder.Bind(config, clientOptions);
+            ConfigurationBinder.Bind(config, instOptions);
+
+            options.ClientType = DiscoveryClientType.EUREKA;
+            options.ClientOptions = clientOptions;
+            options.RegistrationOptions = instOptions;
 
         }
 

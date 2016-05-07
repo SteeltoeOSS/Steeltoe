@@ -37,6 +37,7 @@ namespace SteelToe.Discovery.Eureka
             ShouldFetchRegistry = true;
             ShouldOnDemandUpdateStatusChange = true;
             EurekaServerServiceUrls = Default_ServerServiceUrl;
+            ValidateCertificates = true;
 
         }
         public int RegistryFetchIntervalSeconds { get; set; }
@@ -55,6 +56,7 @@ namespace SteelToe.Discovery.Eureka
         public string RegistryRefreshSingleVipAddress { get; set; }
         public bool ShouldOnDemandUpdateStatusChange { get; set; }
         public string EurekaServerServiceUrls { get; set; }
+        public bool ValidateCertificates { get; set; }
 
     }
 }

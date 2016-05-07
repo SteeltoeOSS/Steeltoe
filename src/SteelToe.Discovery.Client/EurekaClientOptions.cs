@@ -41,6 +41,7 @@ namespace SteelToe.Discovery.Client
             ShouldFetchRegistry = true;
             ShouldOnDemandUpdateStatusChange = true;
             EurekaServerServiceUrls = Default_ServerServiceUrl;
+            ValidateCertificates = true;
         }
 
         private bool _enabled;
@@ -281,6 +282,20 @@ namespace SteelToe.Discovery.Client
             }
         }
 
+        private bool __validateCertificates;
+        public bool ValidateCertificates
+        {
+            get
+            {
+                return GetBoolean(Eureka?.Client?.Validate_Certificates, __validateCertificates);
+            }
+
+            set
+            {
+                __validateCertificates = value;
+            }
+        }
+
         public EurekaConfig Eureka { get; set; }
 
     }
@@ -378,6 +393,11 @@ namespace SteelToe.Discovery.Client
         ///  Configuration property: eureka:client:serviceUrl
         /// </summary>
         public string ServiceUrl { get; set; }
+
+        /// <summary>
+        /// Configuration property: eureka:client:validate_certificates
+        /// </summary>
+        public string Validate_Certificates { get; set; }
 
         public EurekaServerConfig EurekaServer { get; set; }
     }

@@ -134,5 +134,11 @@ namespace SteelToe.Discovery.Eureka
         /// </summary>
         string EurekaServerServiceUrls { get; set; }
 
+        /// <summary>
+        /// Enables/Disables whether client validates server certificates
+        /// Configuration property: eureka:client:validate_certificates
+        /// </summary>
+        bool ValidateCertificates { get; set; }
+
     }
 }

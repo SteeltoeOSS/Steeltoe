@@ -21,6 +21,8 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("651559b3-e411-4a6f-b2dd-16912ba830f9")]
+
 [assembly: InternalsVisibleTo("SteelToe.Discovery.Eureka.Client.Test")]
 [assembly: InternalsVisibleTo("SteelToe.Discovery.Client.Test")]
 [assembly: InternalsVisibleTo("SteelToe.Discovery.Eureka.Client.ITest")]
+[assembly: InternalsVisibleTo("Pivotal.Discovery.Client")]

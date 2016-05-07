@@ -17,7 +17,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
+using Microsoft.Extensions.OptionsModel;
 using System;
 
 
@@ -25,8 +25,34 @@ namespace SteelToe.Discovery.Client
 {
     public static class DiscoveryServiceCollectionExtensions
     {
-
         public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, DiscoveryOptions discoveryOptions)
+        {
+            return AddDiscoveryClient(services, typeof(IDiscoveryClient), discoveryOptions, DiscoveryClientFactory.CreateDiscoveryClient);
+        }
+
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, Action<DiscoveryOptions> setupOptions)
+        {
+            return AddDiscoveryClient(services, typeof(IDiscoveryClient), setupOptions, DiscoveryClientFactory.CreateDiscoveryClient);
+        }
+
+
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+            ConfigureOptions<DiscoveryOptions> configOptions = new DiscoveryOptionsFromConfigSetup(config);
+            return AddDiscoveryClient(services, typeof(IDiscoveryClient), configOptions, DiscoveryClientFactory.CreateDiscoveryClient);
+
+        }
+
+        internal static IServiceCollection AddDiscoveryClient<T>(IServiceCollection services, Type clientType, T discoveryOptions, Func<IServiceProvider, object> factory) where T : DiscoveryOptions
         {
             if (services == null)
             {
@@ -43,18 +69,18 @@ namespace SteelToe.Discovery.Client
                 throw new ArgumentException("Client type UNKNOWN");
             }
             services.AddOptions();
-            services.Configure<DiscoveryOptions>(options =>
+            services.Configure<T>(options =>
             {
                 options.ClientType = discoveryOptions.ClientType;
                 options.ClientOptions = discoveryOptions.ClientOptions;
                 options.RegistrationOptions = discoveryOptions.RegistrationOptions;
             });
 
-            services.TryAddSingleton(typeof(IDiscoveryClient), DiscoveryClientFactory.CreateDiscoveryClient);
+            services.TryAddSingleton(clientType, factory);
             return services;
         }
 
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, Action<DiscoveryOptions> setupOptions)
+        internal static IServiceCollection AddDiscoveryClient<T>( IServiceCollection services, Type clientType, Action<T> setupOptions, Func<IServiceProvider, object> factory) where T : DiscoveryOptions
         {
             if (services == null)
             {
@@ -67,24 +93,24 @@ namespace SteelToe.Discovery.Client
             }
             services.AddOptions();
             services.Configure(setupOptions);
-            services.TryAddSingleton(typeof(IDiscoveryClient), DiscoveryClientFactory.CreateDiscoveryClient);
+            services.TryAddSingleton(clientType, factory);
             return services;
         }
 
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config)
+        internal static IServiceCollection AddDiscoveryClient<T>(IServiceCollection services, Type clientType, ConfigureOptions<T> configOptions, Func<IServiceProvider, object> factory) where T : DiscoveryOptions
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (config == null)
+            if (configOptions == null)
             {
-                throw new ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(configOptions));
             }
             services.AddOptions();
-            services.ConfigureOptions(new DiscoveryOptionsFromConfigSetup(config));
-            services.TryAddSingleton(typeof(IDiscoveryClient), DiscoveryClientFactory.CreateDiscoveryClient);
+            services.ConfigureOptions(configOptions);
+            services.TryAddSingleton(clientType, factory);
             return services;
         }
 

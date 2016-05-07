@@ -23,3 +23,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("0beabe67-8b4b-4641-9d7c-143a0211c3ca")]
 [assembly: InternalsVisibleTo("SteelToe.Discovery.Client.Test")]
 [assembly: InternalsVisibleTo("Pivotal.Discovery.Client.Test")]
+[assembly: InternalsVisibleTo("Pivotal.Discovery.Client")]

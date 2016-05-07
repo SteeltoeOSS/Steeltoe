@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace SteelToe.Discovery.Client
 {
-    public class DiscoveryHttpClientHandler : HttpClientHandler
+    public class DiscoveryHttpClientHandler : DiscoveryHttpClientHandlerBase
     {
         private IDiscoveryClient _client;
-        private Random _random = new Random();
 
-        public DiscoveryHttpClientHandler(IDiscoveryClient client)
+        public DiscoveryHttpClientHandler(IDiscoveryClient client) : base()
         {
             if (client == null)
             {
@@ -22,20 +21,7 @@ namespace SteelToe.Discovery.Client
             _client = client;
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var current = request.RequestUri;
-            try {
-                request.RequestUri = LookupService(current);
-                return await base.SendAsync(request, cancellationToken);
-            } finally
-            {
-                request.RequestUri = current;
-            }
-        
-        }
-
-        internal protected Uri LookupService(Uri current)
+        internal protected override Uri LookupService(Uri current)
         {
             if (!current.IsDefaultPort)
             {

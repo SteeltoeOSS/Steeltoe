@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "description": "SteelToe Service Discovery Clientr",
+  "description": "SteelToe Service Discovery Client",
   "authors": [
     "Pivotal",
     "dtillman"
@@ -9,7 +9,7 @@
     "ASPNET5",
     "Spring",
     "Spring Cloud Services",
-    "Eureka Cllient"
+    "Eureka Client"
   ],
   "projectUrl": "http://steeltoe.io",
   "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",

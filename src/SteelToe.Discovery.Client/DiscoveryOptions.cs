@@ -18,11 +18,57 @@ namespace SteelToe.Discovery.Client
 {
     public class DiscoveryOptions
     {
-        public DiscoveryClientType ClientType { get; set; } = DiscoveryClientType.UNKNOWN;
+        public DiscoveryOptions()
+        {
+            ClientType = DiscoveryClientType.UNKNOWN;
+        }
 
-        public IDiscoveryClientOptions ClientOptions { get; set; }
+        public string Type
+        {
+            get
+            {
+                return _type;
+            }
+        }
 
-        public IDiscoveryRegistrationOptions RegistrationOptions { get; set; }
+        protected string _type;
+        public DiscoveryClientType ClientType
+        {
+            get
+            {
+                return (DiscoveryClientType)System.Enum.Parse(typeof(DiscoveryClientType), _type);
+            }
+            set
+            {
+                _type = System.Enum.GetName(typeof(DiscoveryClientType), value);
+            }
+        }
+
+        protected IDiscoveryClientOptions _clientOptions;
+        public IDiscoveryClientOptions ClientOptions
+        {
+            get
+            {
+                return _clientOptions;
+            }
+            set
+            {
+                _clientOptions = value;
+            }
+
+        }
+        protected IDiscoveryRegistrationOptions _registrationOptions;
+        public IDiscoveryRegistrationOptions RegistrationOptions
+        {
+            get
+            {
+                return _registrationOptions;
+            }
+            set
+            {
+                _registrationOptions = value;
+            }
+        }
 
     }
 

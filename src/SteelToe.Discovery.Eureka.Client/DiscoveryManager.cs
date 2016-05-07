@@ -15,6 +15,7 @@
 //
 
 using Microsoft.Extensions.Logging;
+using SteelToe.Discovery.Eureka.Transport;
 using System;
 
 namespace SteelToe.Discovery.Eureka
@@ -45,27 +46,39 @@ namespace SteelToe.Discovery.Eureka
 
         public void Initialize(IEurekaClientConfig clientConfig, ILoggerFactory logFactory = null)
         {
+            Initialize(clientConfig, (IEurekaHttpClient)null, logFactory);
+        }
+
+        public void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
+        {
+            Initialize(clientConfig, instanceConfig, null, logFactory);
+
+        }
+
+        public void Initialize(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
+        {
             if (clientConfig == null)
             {
                 throw new ArgumentNullException(nameof(clientConfig));
             }
             _logger = logFactory?.CreateLogger<DiscoveryManager>();
             ClientConfig = clientConfig;
-            Client = new DiscoveryClient(clientConfig, null, logFactory);
-
+            Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
         }
 
-        public void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
+        public void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
         {
 
             if (clientConfig == null)
             {
                 throw new ArgumentNullException(nameof(clientConfig));
             }
+
             if (instanceConfig == null)
             {
                 throw new ArgumentNullException(nameof(instanceConfig));
             }
+
             _logger = logFactory?.CreateLogger<DiscoveryManager>();
             ClientConfig = clientConfig;
             InstanceConfig = instanceConfig;
@@ -74,9 +87,10 @@ namespace SteelToe.Discovery.Eureka
             {
                 ApplicationInfoManager.Instance.Initialize(instanceConfig, logFactory);
             }
-            Client = new DiscoveryClient(clientConfig, null, logFactory);
 
+            Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
         }
+
 
     }
 }

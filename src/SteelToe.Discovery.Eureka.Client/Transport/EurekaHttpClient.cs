@@ -25,6 +25,8 @@ using System.Text;
 using SteelToe.Discovery.Eureka.Util;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using System.Net.Security;
+using System.Net;
 
 namespace SteelToe.Discovery.Eureka.Transport
 {
@@ -34,8 +36,8 @@ namespace SteelToe.Discovery.Eureka.Transport
         protected IDictionary<string, string> _headers;
         protected IEurekaClientConfig _config;
 
-        private HttpClient _client;
-        private ILogger _logger;
+        protected HttpClient _client;
+        protected ILogger _logger;
 
         internal EurekaHttpClient()
         {
@@ -79,7 +81,15 @@ namespace SteelToe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + info.AppName);
             var request = GetRequestMessage(HttpMethod.Post, requestUri);
-
+#if NET451
+            // If certificate validation is disabled, inject a callback to handle properly
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!_config.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif
             try
             {
                 request.Content = GetRequestContent(new JsonInstanceInfoRoot(info.ToJsonInstance()));
@@ -98,6 +108,12 @@ namespace SteelToe.Discovery.Eureka.Transport
                 _logger?.LogError("RegisterAsync Exception:", e);
                 throw;
             }
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
         }
 
         public virtual async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatAsync(string appName, string id, InstanceInfo info, InstanceStatus overriddenStatus)
@@ -132,7 +148,15 @@ namespace SteelToe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + info.AppName + "/" + id, queryArgs);
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
-
+#if NET451
+            // If certificate validation is disabled, inject a callback to handle properly
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!_config.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -161,6 +185,12 @@ namespace SteelToe.Discovery.Eureka.Transport
                 _logger?.LogError("SendHeartbeatAsync Exception:", e);
                 throw;
             }
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
         }
 
         public virtual async Task<EurekaHttpResponse<Applications>> GetApplicationsAsync(ISet<string> regions = null)
@@ -202,7 +232,15 @@ namespace SteelToe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
-
+#if NET451
+            // If certificate validation is disabled, inject a callback to handle properly
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!_config.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -228,6 +266,12 @@ namespace SteelToe.Discovery.Eureka.Transport
                 _logger?.LogError("GetApplicationAsync Exception:", e);
                 throw;
             }
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
 
         }
 
@@ -269,7 +313,15 @@ namespace SteelToe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName + "/" + id);
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
-
+#if NET451
+            // If certificate validation is disabled, inject a callback to handle properly
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!_config.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -286,6 +338,12 @@ namespace SteelToe.Discovery.Eureka.Transport
                 _logger?.LogError("CancelAsync Exception:", e);
                 throw;
             }
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
         }
 
         public virtual async Task<EurekaHttpResponse> DeleteStatusOverrideAsync(string appName, string id, InstanceInfo info)
@@ -314,7 +372,15 @@ namespace SteelToe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName + "/" + id + "/status", queryArgs);
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
-
+#if NET451
+            // If certificate validation is disabled, inject a callback to handle properly
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!_config.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -331,6 +397,12 @@ namespace SteelToe.Discovery.Eureka.Transport
                 _logger?.LogError("DeleteStatusOverrideAsync Exception:", e);
                 throw;
             }
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
         }
 
 
@@ -362,7 +434,15 @@ namespace SteelToe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName + "/" + id + "/status", queryArgs);
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
-
+#if NET451
+            // If certificate validation is disabled, inject a callback to handle properly
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!_config.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -379,6 +459,12 @@ namespace SteelToe.Discovery.Eureka.Transport
                 _logger?.LogError("StatusUpdateAsync Exception:", e);
                 throw;
             }
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
         }
         protected virtual async Task<EurekaHttpResponse<InstanceInfo>> DoGetInstanceAsync(string path)
         {
@@ -387,7 +473,15 @@ namespace SteelToe.Discovery.Eureka.Transport
             var requestUri = GetRequestUri(_serviceUrl + path);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
             HttpClient client = GetHttpClient(_config);
-
+#if NET451
+            // If certificate validation is disabled, inject a callback to handle properly
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!_config.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -413,6 +507,12 @@ namespace SteelToe.Discovery.Eureka.Transport
                 _logger?.LogError("DoGetInstanceAsync Exception:", e);
                 throw;
             }
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
         }
 
         protected virtual async Task<EurekaHttpResponse<Applications>> DoGetApplicationsAsync(string path, ISet<string> regions)
@@ -428,7 +528,15 @@ namespace SteelToe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + path, queryArgs);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
-
+#if NET451
+            // If certificate validation is disabled, inject a callback to handle properly
+            RemoteCertificateValidationCallback prevValidator = null;
+            if (!_config.ValidateCertificates)
+            {
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+#endif
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -454,6 +562,12 @@ namespace SteelToe.Discovery.Eureka.Transport
                 _logger?.LogError("DoGetApplicationsAsync Exception:", e);
                 throw;
             }
+#if NET451
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+#endif
         }
 
 
@@ -463,14 +577,30 @@ namespace SteelToe.Discovery.Eureka.Transport
 
         }
 
-        internal protected HttpClient GetHttpClient(IEurekaClientConfig config)
+        internal protected virtual HttpClient GetHttpClient(IEurekaClientConfig config)
         {
             if (_client != null)
             {
                 return _client;
             }
 
-            var client = new HttpClient();
+            HttpClient client = null;
+#if NET451
+            client = new HttpClient();
+#else
+            // TODO: For coreclr, disabling certificate validation only works on windows platform
+            // https://github.com/dotnet/corefx/issues/4476
+            if (config != null && !config.ValidateCertificates)
+            {
+                var handler = new WinHttpHandler();
+                handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                return new HttpClient(handler);
+            } else
+            {
+                client = new HttpClient();
+            }
+#endif
+
             if (config != null)
             {
                 client.Timeout = new TimeSpan(0, 0, config.EurekaServerConnectTimeoutSeconds);
