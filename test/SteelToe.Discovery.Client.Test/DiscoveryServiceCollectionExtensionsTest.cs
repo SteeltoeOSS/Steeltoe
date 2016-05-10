@@ -24,13 +24,8 @@ namespace SteelToe.Discovery.Client.Test
 {
     public class DiscoveryServiceCollectionExtensionsTest : AbstractBaseTest
     {
-        public DiscoveryServiceCollectionExtensionsTest()
+        public DiscoveryServiceCollectionExtensionsTest() : base()
         {
-            ApplicationInfoManager.Instance.InstanceInfo = null;
-            ApplicationInfoManager.Instance.InstanceConfig = null;
-            DiscoveryManager.Instance.ClientConfig = null;
-            DiscoveryManager.Instance.Client = null;
-            DiscoveryManager.Instance.InstanceConfig = null;
         }
 
         [Fact]

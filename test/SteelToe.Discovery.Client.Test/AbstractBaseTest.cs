@@ -27,6 +27,7 @@ namespace SteelToe.Discovery.Client.Test
             DiscoveryManager.Instance.ClientConfig = null;
             DiscoveryManager.Instance.Client = null;
             DiscoveryManager.Instance.InstanceConfig = null;
+            DiscoveryClientFactory._discoveryClient = null;
         }
     }
 }

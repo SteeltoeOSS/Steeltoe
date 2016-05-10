@@ -39,11 +39,11 @@ namespace SteelToe.Discovery.Eureka.Transport
         protected HttpClient _client;
         protected ILogger _logger;
 
-        internal EurekaHttpClient()
+        protected EurekaHttpClient()
         {
         }
 
-        internal EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null) :
+        public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null) :
             this(config, new Dictionary<string, string>(), logFactory)
         {
             _client = client;
@@ -577,7 +577,7 @@ namespace SteelToe.Discovery.Eureka.Transport
 
         }
 
-        internal protected virtual HttpClient GetHttpClient(IEurekaClientConfig config)
+        protected virtual HttpClient GetHttpClient(IEurekaClientConfig config)
         {
             if (_client != null)
             {
@@ -610,7 +610,7 @@ namespace SteelToe.Discovery.Eureka.Transport
 
         }
 
-        internal protected virtual HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
+        protected internal virtual HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
         {
             var request = new HttpRequestMessage(method, requestUri);
             foreach (var header in _headers)
@@ -621,7 +621,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             return request;
         }
 
-        internal protected virtual HttpContent GetRequestContent(object toSerialize)
+        protected virtual HttpContent GetRequestContent(object toSerialize)
         {
             try
             {
@@ -638,7 +638,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             return new StringContent(string.Empty, Encoding.UTF8, "application/json");
         }
 
-        internal protected virtual Uri GetRequestUri(string baseUri, IDictionary<string, string> queryValues = null)
+        protected internal virtual Uri GetRequestUri(string baseUri, IDictionary<string, string> queryValues = null)
         {
 
             string uri = baseUri;
@@ -656,7 +656,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             return new Uri(uri);
         }
 
-        internal protected static string MakeServiceUrl(string serviceUrl)
+        protected internal static string MakeServiceUrl(string serviceUrl)
         {
             var url = new Uri(serviceUrl).ToString();
             if (url[url.Length - 1] != '/')

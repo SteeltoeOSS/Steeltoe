@@ -24,5 +24,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("SteelToe.Discovery.Eureka.Client.Test")]
 [assembly: InternalsVisibleTo("SteelToe.Discovery.Client.Test")]
-[assembly: InternalsVisibleTo("SteelToe.Discovery.Eureka.Client.ITest")]
-[assembly: InternalsVisibleTo("Pivotal.Discovery.Client")]
+[assembly: InternalsVisibleTo("Pivotal.Discovery.Client.Test")]

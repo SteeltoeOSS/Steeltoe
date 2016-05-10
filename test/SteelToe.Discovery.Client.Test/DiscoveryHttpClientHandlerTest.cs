@@ -20,7 +20,7 @@ using Xunit;
 
 namespace SteelToe.Discovery.Client.Test
 {
-    public class DiscoveryHttpClientHandlerTest
+    public class DiscoveryHttpClientHandlerTest : AbstractBaseTest
     {
         [Fact]
         public void Constructor_ThrowsIfClientNull()
