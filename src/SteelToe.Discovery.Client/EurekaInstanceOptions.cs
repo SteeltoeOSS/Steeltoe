@@ -38,23 +38,6 @@ namespace SteelToe.Discovery.Client
             _thisHostName = GetHostName(true);
             _thisHostAddress = GetHostAddress(true);
 
-            //AppName = Default_Appname;
-            //IsInstanceEnabledOnInit = true;
-            //NonSecurePort = Default_NonSecurePort;
-            //InstanceId = Default_NonSecurePort.ToString();
-            //SecurePort = Default_SecurePort;
-            //IsNonSecurePortEnabled = true;
-            //SecurePortEnabled = false;
-            //LeaseRenewalIntervalInSeconds = Default_LeaseRenewalIntervalInSeconds;
-            //LeaseExpirationDurationInSeconds = Default_LeaseExpirationDurationInSeconds;
-            //VirtualHostName = "unknown";
-            //IpAddress = _thisHostAddress;
-
-            //StatusPageUrlPath = Default_StatusPageUrlPath;
-            //HomePageUrlPath = Default_HomePageUrlPath;
-            //HealthCheckUrlPath = Default_HealthCheckUrlPath;
-            //MetadataMap = new Dictionary<string, string>();
-            //DataCenterInfo = new DataCenterInfo(DataCenterName.MyOwn);
         }
 
         private string _appGroupName;

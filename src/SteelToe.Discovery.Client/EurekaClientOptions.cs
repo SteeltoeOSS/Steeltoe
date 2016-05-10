@@ -29,27 +29,19 @@ namespace SteelToe.Discovery.Client
 
         public EurekaClientOptions()
         {
-            Enabled = true;
-            RegistryFetchIntervalSeconds = Default_RegistryFetchIntervalSeconds;
-            InstanceInfoReplicationIntervalSeconds = Default_InstanceInfoReplicationIntervalSeconds;
-            ShouldGZipContent = true;
-            EurekaServerConnectTimeoutSeconds = Default_EurekaServerConnectTimeoutSeconds;
-            ShouldRegisterWithEureka = true;
-            AllowRedirects = false;
-            ShouldDisableDelta = false;
-            ShouldFilterOnlyUpInstances = true;
-            ShouldFetchRegistry = true;
-            ShouldOnDemandUpdateStatusChange = true;
-            EurekaServerServiceUrls = Default_ServerServiceUrl;
-            ValidateCertificates = true;
         }
 
-        private bool _enabled;
+        private bool _enabled = true;
         public bool Enabled
         {
             get
             {
-                return GetBoolean(Eureka?.Client?.Enabled, _enabled);
+                if (_enabled != true)
+                {
+                    return _enabled;
+                }
+
+                return GetBoolean(Eureka?.Client?.Enabled, true);
             }
 
             set
@@ -58,12 +50,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private bool _allowRedirects;
+        private bool _allowRedirects = false;
         public bool AllowRedirects
         {
             get
             {
-                return GetBoolean(Eureka?.Client?.AllowRedirects, _allowRedirects);
+                if (_allowRedirects != false)
+                {
+                    return _allowRedirects;
+                }
+                return GetBoolean(Eureka?.Client?.AllowRedirects, false);
             }
 
             set
@@ -72,12 +68,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private int _eurekaServerConnectTimeoutSeconds;
+        private int _eurekaServerConnectTimeoutSeconds = Default_EurekaServerConnectTimeoutSeconds;
         public int EurekaServerConnectTimeoutSeconds
         {
             get
             {
-                return GetInt(Eureka?.Client?.EurekaServer?.ConnectTimeoutSeconds, _eurekaServerConnectTimeoutSeconds);
+                if (_eurekaServerConnectTimeoutSeconds != Default_EurekaServerConnectTimeoutSeconds)
+                {
+                    return _eurekaServerConnectTimeoutSeconds;
+                }
+                return GetInt(Eureka?.Client?.EurekaServer?.ConnectTimeoutSeconds, Default_EurekaServerConnectTimeoutSeconds);
             }
 
             set
@@ -86,12 +86,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private string _eurekaServerServiceUrls;
+        private string _eurekaServerServiceUrls = Default_ServerServiceUrl;
         public string EurekaServerServiceUrls
         {
             get
             {
-                return GetString(Eureka?.Client?.ServiceUrl, _eurekaServerServiceUrls);
+                if (!_eurekaServerServiceUrls.Equals(Default_ServerServiceUrl))
+                {
+                    return _eurekaServerServiceUrls;
+                }
+                return GetString(Eureka?.Client?.ServiceUrl, Default_ServerServiceUrl);
             }
 
             set
@@ -100,12 +104,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private int _instanceInfoReplicationIntervalSeconds;
+        private int _instanceInfoReplicationIntervalSeconds = Default_InstanceInfoReplicationIntervalSeconds;
         public int InstanceInfoReplicationIntervalSeconds
         {
             get
             {
-                return GetInt(Eureka?.Client?.InstanceInfoReplicationIntervalSeconds, _instanceInfoReplicationIntervalSeconds);
+                if (_instanceInfoReplicationIntervalSeconds != Default_InstanceInfoReplicationIntervalSeconds)
+                {
+                    return _instanceInfoReplicationIntervalSeconds;
+                }
+                return GetInt(Eureka?.Client?.InstanceInfoReplicationIntervalSeconds, Default_InstanceInfoReplicationIntervalSeconds);
             }
 
             set
@@ -119,7 +127,11 @@ namespace SteelToe.Discovery.Client
         {
             get
             {
-                return GetString(Eureka?.Client?.EurekaServer?.ProxyHost, _proxyHost);
+                if (_proxyHost != null)
+                {
+                    return _proxyHost;
+                }
+                return GetString(Eureka?.Client?.EurekaServer?.ProxyHost, null);
             }
 
             set
@@ -133,7 +145,11 @@ namespace SteelToe.Discovery.Client
         {
             get
             {
-                return GetString(Eureka?.Client?.EurekaServer?.ProxyPassword, _proxyPassword);
+                if (_proxyPassword != null)
+                {
+                    return _proxyPassword;
+                }
+                return GetString(Eureka?.Client?.EurekaServer?.ProxyPassword, null);
             }
 
             set
@@ -147,7 +163,11 @@ namespace SteelToe.Discovery.Client
         {
             get
             {
-                return GetInt(Eureka?.Client?.EurekaServer?.ProxyPort, _proxyPort);
+                if (_proxyPort != 0)
+                {
+                    return _proxyPort;
+                }
+                return GetInt(Eureka?.Client?.EurekaServer?.ProxyPort, 0);
             }
 
             set
@@ -161,7 +181,11 @@ namespace SteelToe.Discovery.Client
         {
             get
             {
-                return GetString(Eureka?.Client?.EurekaServer?.ProxyUserName, _proxyUserName);
+                if (_proxyUserName != null)
+                {
+                    return _proxyUserName;
+                }
+                return GetString(Eureka?.Client?.EurekaServer?.ProxyUserName, null);
             }
 
             set
@@ -170,12 +194,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private int _registryFetchIntervalSeconds;
+        private int _registryFetchIntervalSeconds = Default_RegistryFetchIntervalSeconds;
         public int RegistryFetchIntervalSeconds
         {
             get
             {
-                return GetInt(Eureka?.Client?.RegistryFetchIntervalSeconds, _registryFetchIntervalSeconds);
+                if (_registryFetchIntervalSeconds != Default_RegistryFetchIntervalSeconds)
+                {
+                    return Default_RegistryFetchIntervalSeconds;
+                }
+                return GetInt(Eureka?.Client?.RegistryFetchIntervalSeconds, Default_RegistryFetchIntervalSeconds);
             }
 
             set
@@ -189,7 +217,11 @@ namespace SteelToe.Discovery.Client
         {
             get
             {
-                return GetString(Eureka?.Client?.RegistryRefreshSingleVipAddress, _registryRefreshSingleVipAddress);
+                if (_registryRefreshSingleVipAddress != null)
+                {
+                    return _registryRefreshSingleVipAddress;
+                }
+                return GetString(Eureka?.Client?.RegistryRefreshSingleVipAddress, null);
             }
 
             set
@@ -198,12 +230,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private bool _shouldDisableDelta;
+        private bool _shouldDisableDelta = false;
         public bool ShouldDisableDelta
         {
             get
             {
-                return GetBoolean(Eureka?.Client?.ShouldDisableDelta, _shouldDisableDelta);
+                if (_shouldDisableDelta != false)
+                {
+                    return _shouldDisableDelta;
+                }
+                return GetBoolean(Eureka?.Client?.ShouldDisableDelta, false);
             }
 
             set
@@ -212,12 +248,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private bool _shouldFetchRegistry;
+        private bool _shouldFetchRegistry = true;
         public bool ShouldFetchRegistry
         {
             get
             {
-                return GetBoolean(Eureka?.Client?.ShouldFetchRegistry, _shouldFetchRegistry);
+                if (_shouldFetchRegistry != true)
+                {
+                    return _shouldFetchRegistry;
+                }
+                return GetBoolean(Eureka?.Client?.ShouldFetchRegistry, true);
             }
 
             set
@@ -226,12 +266,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private bool _shouldFilterOnlyUpInstances;
+        private bool _shouldFilterOnlyUpInstances = true;
         public bool ShouldFilterOnlyUpInstances
         {
             get
             {
-                return GetBoolean(Eureka?.Client?.ShouldFilterOnlyUpInstances, _shouldFilterOnlyUpInstances);
+                if (_shouldFilterOnlyUpInstances != true)
+                {
+                    return _shouldFilterOnlyUpInstances;
+                }
+                return GetBoolean(Eureka?.Client?.ShouldFilterOnlyUpInstances, true);
             }
 
             set
@@ -240,12 +284,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private bool _shouldGZipContent;
+        private bool _shouldGZipContent = true;
         public bool ShouldGZipContent
         {
             get
             {
-                return GetBoolean(Eureka?.Client.EurekaServer?.ShouldGZipContent, _shouldGZipContent);
+                if (_shouldGZipContent != true)
+                {
+                    return _shouldGZipContent;
+                }
+                return GetBoolean(Eureka?.Client.EurekaServer?.ShouldGZipContent, true);
             }
 
             set
@@ -254,12 +302,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private bool _shouldOnDemandUpdateStatusChange;
+        private bool _shouldOnDemandUpdateStatusChange = true;
         public bool ShouldOnDemandUpdateStatusChange
         {
             get
             {
-                return GetBoolean(Eureka?.Client.ShouldOnDemandUpdateStatusChange, _shouldOnDemandUpdateStatusChange);
+                if (_shouldOnDemandUpdateStatusChange != true)
+                {
+                    return _shouldOnDemandUpdateStatusChange;
+                }
+                return GetBoolean(Eureka?.Client.ShouldOnDemandUpdateStatusChange, true);
             }
 
             set
@@ -268,12 +320,16 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private bool _shouldRegisterWithEureka;
+        private bool _shouldRegisterWithEureka = true;
         public bool ShouldRegisterWithEureka
         {
             get
             {
-                return GetBoolean(Eureka?.Client?.ShouldRegisterWithEureka, _shouldRegisterWithEureka);
+                if (_shouldRegisterWithEureka != true)
+                {
+                    return _shouldRegisterWithEureka;
+                }
+                return GetBoolean(Eureka?.Client?.ShouldRegisterWithEureka, true);
             }
 
             set
@@ -282,17 +338,21 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private bool __validateCertificates;
+        private bool _validateCertificates = true;
         public bool ValidateCertificates
         {
             get
             {
-                return GetBoolean(Eureka?.Client?.Validate_Certificates, __validateCertificates);
+                if (_validateCertificates != true)
+                {
+                    return _validateCertificates;
+                }
+                return GetBoolean(Eureka?.Client?.Validate_Certificates, true);
             }
 
             set
             {
-                __validateCertificates = value;
+                _validateCertificates = value;
             }
         }
 
