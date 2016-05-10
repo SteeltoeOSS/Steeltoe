@@ -9,8 +9,6 @@ install:
   - scripts\appveyor_install.cmd
 test_script:
   - scripts\appveyor_tests.cmd
-cache:
-  - C:\Users\appveyor\.dnx
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
