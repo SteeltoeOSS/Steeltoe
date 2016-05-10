@@ -12,12 +12,17 @@ var tag = process.argv[4]; // e.g. '', or '1.0.0-rc1'
 
 if (!version)
     console.log("No version provided");
-    
+
+var lastDash = version.lastIndexOf("-");
+var buildNumber = version.substring(lastDash + 1, version.length);
+var num = "00000000" + parseInt(buildNumber);
+buildNumber = num.substr(num.length-5);    
+
 if (tag) {
     // Turn version into tag + '-' + buildnumber
-    var lastDash = version.lastIndexOf("-");
-    var buildNumber = version.substring(lastDash + 1, version.length);
     version = tag + '-' + buildNumber;
+} else {
+    version = version.substring(0, lastDash) + '-' + buildNumber;
 }    
 
 jsonfile.readFile(file, function (err, project) {
