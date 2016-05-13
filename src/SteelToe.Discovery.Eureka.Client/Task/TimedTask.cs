@@ -41,7 +41,7 @@ namespace SteelToe.Discovery.Eureka.Task
                 {
                     Task();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // Log
                 }

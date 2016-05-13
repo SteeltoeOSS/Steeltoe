@@ -486,15 +486,14 @@ namespace SteelToe.Discovery.Eureka.AppInfo
             InstanceInfo info = new InstanceInfo();
             if (json != null)
             {
-                info._instanceId = json.InstanceId;
                 info._sid = (json.Sid == null) ? "na" : json.Sid;
                 info._appName = json.AppName;
                 info._appGroupName = json.AppGroupName;
                 info._ipAddr = json.IpAddr;
                 info._port = (json.Port == null) ? 0 : json.Port.Port;
-                info._isUnsecurePortEnabled = (json.Port == null) ? false : json.Port.Enabled;
+                info._isUnsecurePortEnabled = (json.Port == null) ? false : Boolean.Parse(json.Port.Enabled);
                 info._securePort = (json.SecurePort == null) ? 0 : json.SecurePort.Port;
-                info._isSecurePortEnabled = (json.Port == null) ? false : json.SecurePort.Enabled;
+                info._isSecurePortEnabled = (json.Port == null) ? false : Boolean.Parse(json.SecurePort.Enabled);
                 info._homePageUrl = json.HomePageUrl;
                 info._statusPageUrl = json.StatusPageUrl;
                 info._healthCheckUrl = json.HealthCheckUrl;
@@ -513,6 +512,7 @@ namespace SteelToe.Discovery.Eureka.AppInfo
                 info._actionType = json.Actiontype;
                 info._asgName = json.AsgName;
                 info._metaData = GetMetaDataFromJson(json.Metadata);
+                info._instanceId = GetInstanceIdFromJson(json, info._metaData);
 
             }
             return info;
@@ -533,6 +533,27 @@ namespace SteelToe.Discovery.Eureka.AppInfo
                 }
             }
             return new Dictionary<string, string>(json);
+        }
+        private static string GetInstanceIdFromJson(JsonInstanceInfo jinfo, Dictionary<string,string> metaData)
+        {
+            if (string.IsNullOrEmpty(jinfo.InstanceId))
+            {
+  
+                if (metaData == null)
+                {
+                    return null;
+                }
+                string mid = null;
+                if (metaData.TryGetValue("instanceId", out mid))
+                {
+                    return jinfo.HostName + ":" + mid;
+                }
+                return null;
+
+            } else
+            {
+                return jinfo.InstanceId;
+            }
         }
 
 
@@ -583,6 +604,11 @@ namespace SteelToe.Discovery.Eureka.AppInfo
                         info._isCoordinatingDiscoveryServer = true;
                     }
                 }
+            }
+
+            if (instanceConfig.MetadataMap != null && instanceConfig.MetadataMap.Count > 0)
+            {
+                info._metaData = new Dictionary<string, string>(instanceConfig.MetadataMap);
             }
 
 

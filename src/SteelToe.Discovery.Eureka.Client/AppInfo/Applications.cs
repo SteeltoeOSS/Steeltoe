@@ -278,10 +278,14 @@ namespace SteelToe.Discovery.Eureka.AppInfo
             {
                 apps.Version = japps.VersionDelta;
                 apps.AppsHashCode = japps.AppsHashCode;
-                foreach (var japp in japps.Applications)
+
+                if (japps.Applications != null)
                 {
-                    var app = Application.FromJsonApplication(japp);
-                    apps.Add(app);
+                    foreach (var japp in japps.Applications)
+                    {
+                        var app = Application.FromJsonApplication(japp);
+                        apps.Add(app);
+                    }
                 }
             }
             return apps;

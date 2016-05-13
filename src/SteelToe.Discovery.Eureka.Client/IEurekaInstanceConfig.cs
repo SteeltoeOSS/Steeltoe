@@ -245,5 +245,7 @@ namespace SteelToe.Discovery.Eureka
         /// This is the exact name that would be used by other instances to make calls.
         /// </summary>
         string GetHostName(bool refresh);
+
+        string HostName { get; set; }
     }
 }

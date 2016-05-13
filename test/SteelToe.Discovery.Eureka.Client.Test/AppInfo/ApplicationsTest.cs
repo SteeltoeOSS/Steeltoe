@@ -661,8 +661,19 @@ namespace SteelToe.Discovery.Eureka.AppInfo.Test
                 Actiontype = ActionType.ADDED,
                 AsgName = "AsgName"
             };
-            JsonApplication japp = new JsonApplication("myApp", new List<JsonInstanceInfo> { jinfo });
-            JsonApplications japps = new JsonApplications("AppsHashCode", 1L, new List<JsonApplication>() { japp });
+            JsonApplication japp = new JsonApplication()
+            {
+                Name = "myApp",
+                Instances = new List<JsonInstanceInfo> { jinfo }
+            };
+      
+            JsonApplications japps = new JsonApplications()
+            {
+                AppsHashCode = "AppsHashCode",
+                VersionDelta = 1L,
+                Applications = new List<JsonApplication>() { japp }
+
+            };
 
             Applications apps = Applications.FromJsonApplications(japps);
 

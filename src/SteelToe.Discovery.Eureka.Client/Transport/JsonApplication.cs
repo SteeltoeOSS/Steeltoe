@@ -17,26 +17,67 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace SteelToe.Discovery.Eureka.Transport
 {
     internal class JsonApplication
     {
 
-        public string Name { get; private set; }
-        public IList<JsonInstanceInfo> Instances { get; private set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        [JsonProperty("instance")]
+        [JsonConverter(typeof(JsonInstanceInfoConverter))]
+        public IList<JsonInstanceInfo> Instances { get; set; }
 
         [JsonConstructor]
-        public JsonApplication(
-            [JsonProperty("name")] string name,
-            [JsonProperty("instance")] List<JsonInstanceInfo> instances)
+        public JsonApplication()
         {
-            Name = name;
-            Instances = instances;
+
         }
         internal static JsonApplication Deserialize(Stream stream)
         {
             return JsonSerialization.Deserialize<JsonApplication>(stream);
+        }
+    }
+    public class JsonInstanceInfoConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(IList<JsonInstanceInfo>);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            List<JsonInstanceInfo> result = null;
+            try {
+          
+                if (reader.TokenType == JsonToken.StartArray)
+                {
+                     result = (List<JsonInstanceInfo>)serializer.Deserialize(reader, typeof(List<JsonInstanceInfo>));
+                }
+                else
+                {
+                    JsonInstanceInfo singleInst = (JsonInstanceInfo)serializer.Deserialize(reader, typeof(JsonInstanceInfo));
+                    if (singleInst != null)
+                    {
+                        result = new List<JsonInstanceInfo>();
+                        result.Add(singleInst);
+                    }
+                }
+            } catch (Exception)
+            {
+                result = new List<JsonInstanceInfo>();
+            }
+
+            if (result == null)
+                result = new List<JsonInstanceInfo>();
+            return result;
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            serializer.Serialize(writer, value);
         }
     }
 }

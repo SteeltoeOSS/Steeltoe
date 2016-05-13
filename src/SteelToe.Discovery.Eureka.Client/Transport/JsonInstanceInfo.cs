@@ -99,7 +99,7 @@ namespace SteelToe.Discovery.Eureka.Transport
         [JsonConverter(typeof(StringEnumConverter))]
         public ActionType Actiontype { get; set; }
 
-        [JsonProperty("asgName")]
+        [JsonProperty("asgName", NullValueHandling = NullValueHandling.Ignore)]
         public string AsgName { get; set; }
 
         public class JsonPortWrapper
@@ -109,11 +109,11 @@ namespace SteelToe.Discovery.Eureka.Transport
                     [JsonProperty("@enabled")] bool enabled,
                     [JsonProperty("$")] int port)
             {
-                Enabled = enabled;
+                Enabled = enabled.ToString();
                 Port = port;
             }
             [JsonProperty("@enabled")]
-            public bool Enabled { get; private set; }
+            public string Enabled { get; private set; }
 
             [JsonProperty("$")]
             public int Port { get; private set; }

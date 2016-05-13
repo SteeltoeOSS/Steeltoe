@@ -57,7 +57,6 @@ namespace SteelToe.Discovery.Eureka
             MetadataMap = new Dictionary<string, string>();
             DataCenterInfo = new DataCenterInfo(DataCenterName.MyOwn);
         }
-
         public string InstanceId { get; set; }
         public string AppName { get; set; }
         public string AppGroupName { get; set; }
@@ -86,8 +85,22 @@ namespace SteelToe.Discovery.Eureka
         {
             if (refresh || string.IsNullOrEmpty(thisHostName))
                 thisHostName = Dns.GetHostName();
+
             return thisHostName;
+
         }
+        public string HostName
+        {
+            get
+            {
+                return thisHostName;
+            }
+            set
+            {
+                thisHostName = value;
+            }
+        }
+
         internal string GetHostAddress(bool refresh)
         {
             if (refresh || string.IsNullOrEmpty(thisHostAddress))

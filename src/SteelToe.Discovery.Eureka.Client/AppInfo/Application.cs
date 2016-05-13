@@ -99,10 +99,13 @@ namespace SteelToe.Discovery.Eureka.AppInfo
                 return null;
 
             Application app = new Application(japp.Name);
-            foreach (var instance in japp.Instances)
+            if (japp.Instances != null)
             {
-                var inst = InstanceInfo.FromJsonInstance(instance);
-                app.Add(inst);
+                foreach (var instance in japp.Instances)
+                {
+                    var inst = InstanceInfo.FromJsonInstance(instance);
+                    app.Add(inst);
+                }
             }
             return app;
         }

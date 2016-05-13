@@ -19,6 +19,7 @@ using Xunit;
 
 using SteelToe.Discovery.Eureka.AppInfo;
 using SteelToe.Discovery.Eureka.Client.Test;
+using System;
 
 namespace SteelToe.Discovery.Eureka.Transport.Test
 {
@@ -61,10 +62,10 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
             Assert.Equal(InstanceStatus.UP, result.Status);
             Assert.Equal(InstanceStatus.UNKNOWN, result.OverriddenStatus);
             var port = result.Port;
-            Assert.True(port.Enabled);
+            Assert.True(Boolean.Parse(port.Enabled));
             Assert.Equal(8080, port.Port);
             var securePort = result.SecurePort;
-            Assert.False(securePort.Enabled);
+            Assert.False(Boolean.Parse(securePort.Enabled));
             Assert.Equal(443, securePort.Port);
             Assert.Equal(1, result.CountryId);
             var dataCenterInfo = result.DataCenterInfo;

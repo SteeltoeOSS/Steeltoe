@@ -16,6 +16,7 @@
 
 using SteelToe.Discovery.Eureka.Client.Test;
 using SteelToe.Discovery.Eureka.Transport;
+using System;
 using System.Collections.Generic;
 
 using Xunit;
@@ -184,10 +185,10 @@ namespace SteelToe.Discovery.Eureka.AppInfo.Test
             Assert.Equal("na", jinfo.Sid);
             Assert.NotNull(jinfo.Port);
             Assert.Equal(80, jinfo.Port.Port);
-            Assert.True(jinfo.Port.Enabled);
+            Assert.True(Boolean.Parse(jinfo.Port.Enabled));
             Assert.NotNull(jinfo.SecurePort);
             Assert.Equal(443, jinfo.SecurePort.Port);
-            Assert.False(jinfo.SecurePort.Enabled);
+            Assert.False(Boolean.Parse(jinfo.SecurePort.Enabled));
             Assert.Equal("http://" + config.GetHostName(false) + ":" + 80 + "/", jinfo.HomePageUrl);
             Assert.Equal("http://" + config.GetHostName(false) + ":" + 80 + "/Status", jinfo.StatusPageUrl);
             Assert.Equal("http://" + config.GetHostName(false) + ":" + 80 + "/healthcheck", jinfo.HealthCheckUrl);

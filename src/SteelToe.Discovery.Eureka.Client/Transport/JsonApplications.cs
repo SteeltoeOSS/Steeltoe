@@ -17,31 +17,71 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-
+using System;
 
 namespace SteelToe.Discovery.Eureka.Transport
 {
     internal class JsonApplications
     {
-        public string AppsHashCode { get; private set; }
-        public long VersionDelta { get; private set; }
+        [JsonProperty("apps__hashcode")]
+        public string AppsHashCode { get;  set; }
+        [JsonProperty("versions__delta")]
+        public long VersionDelta { get;  set; }
+        [JsonProperty("application")]
+        [JsonConverter(typeof(JsonApplicationConverter))]
+        public IList<JsonApplication> Applications { get; set; }
 
-        public IList<JsonApplication> Applications { get; private set; }
-
-        [JsonConstructor]
-        public JsonApplications(
-                    [JsonProperty("apps__hashcode")] string appsHashCode,
-                    [JsonProperty("versions__delta")]  long versionDelta,
-                    [JsonProperty("application")] List<JsonApplication> applications)
+        public JsonApplications()
         {
-            AppsHashCode = appsHashCode;
-            VersionDelta = versionDelta;
-            Applications = applications;
+
         }
+
 
         internal static JsonApplications Deserialize(Stream stream)
         {
             return JsonSerialization.Deserialize<JsonApplications>(stream);
+        }
+    }
+    public class JsonApplicationConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(IList<JsonApplication>);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            List<JsonApplication> result = null;
+            try
+            {
+
+                if (reader.TokenType == JsonToken.StartArray)
+                {
+                    result = (List<JsonApplication>)serializer.Deserialize(reader, typeof(List<JsonApplication>));
+                }
+                else
+                {
+                    JsonApplication singleInst = (JsonApplication)serializer.Deserialize(reader, typeof(JsonApplication));
+                    if (singleInst != null)
+                    {
+                        result = new List<JsonApplication>();
+                        result.Add(singleInst);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                result = new List<JsonApplication>();
+            }
+
+            if (result == null)
+                result = new List<JsonApplication>();
+            return result;
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            serializer.Serialize(writer, value);
         }
     }
 

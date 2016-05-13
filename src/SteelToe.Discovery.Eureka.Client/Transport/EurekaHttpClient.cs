@@ -541,13 +541,17 @@ namespace SteelToe.Discovery.Eureka.Transport
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
+
                     Stream stream = await response.Content.ReadAsStreamAsync();
                     JsonApplicationsRoot jroot = JsonApplicationsRoot.Deserialize(stream);
-
+                
                     Applications appsResp = null;
-                    if (jroot != null)
+                    if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        appsResp = Applications.FromJsonApplications(jroot.Applications);
+                        if (jroot != null)
+                        {
+                            appsResp = Applications.FromJsonApplications(jroot.Applications);
+                        }
                     }
                     _logger?.LogDebug("DoGetApplicationsAsync {0}, status: {1}, applications: {2}",
                         requestUri.ToString(), response.StatusCode, ((appsResp != null) ? appsResp.ToString() : "null"));

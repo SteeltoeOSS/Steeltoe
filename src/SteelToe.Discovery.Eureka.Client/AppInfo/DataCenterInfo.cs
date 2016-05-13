@@ -44,6 +44,7 @@ namespace SteelToe.Discovery.Eureka.AppInfo
             //TODO: Other datacenters @class settings?
             return new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
                 this.Name.ToString());
+  
         }
     }
 }

@@ -308,7 +308,7 @@ namespace SteelToe.Discovery.Client
             }
         }
 
-        private IDictionary<string, string> _metadataMap;
+        private IDictionary<string, string> _metadataMap = new Dictionary<string, string>();
         public IDictionary<string, string> MetadataMap
         {
             get
@@ -318,7 +318,7 @@ namespace SteelToe.Discovery.Client
                     return _metadataMap;
                 }
 
-                return GetDictionary(Eureka?.Instance?.MetadataMap, new Dictionary<string, string>());
+                return GetDictionary(Eureka?.Instance?.MetadataMap, _metadataMap);
             }
 
             set
@@ -468,6 +468,17 @@ namespace SteelToe.Discovery.Client
             set
             {
                 _virtualHostName = value;
+            }
+        }
+        public string HostName
+        {
+            get
+            {
+                return _thisHostName;
+            }
+            set
+            {
+                _thisHostName = value;
             }
         }
 

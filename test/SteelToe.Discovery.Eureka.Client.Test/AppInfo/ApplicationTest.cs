@@ -141,7 +141,12 @@ namespace SteelToe.Discovery.Eureka.AppInfo.Test
                 Actiontype = ActionType.ADDED,
                 AsgName = "AsgName"
             };
-            JsonApplication japp = new JsonApplication("myApp", new List<JsonInstanceInfo> { jinfo });
+
+            JsonApplication japp = new JsonApplication()
+            {
+                Name = "myApp",
+                Instances = new List<JsonInstanceInfo> { jinfo }
+            };
 
             Application app = Application.FromJsonApplication(japp);
 
