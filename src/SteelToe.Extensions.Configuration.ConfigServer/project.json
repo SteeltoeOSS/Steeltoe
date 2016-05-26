@@ -36,6 +36,7 @@
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-final",
     "Microsoft.Extensions.Options": "1.0.0-rc2-final",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc2-final",
     "Newtonsoft.Json": "8.0.3",
     "System.Net.Http": "4.0.1-rc2-24027"
   }

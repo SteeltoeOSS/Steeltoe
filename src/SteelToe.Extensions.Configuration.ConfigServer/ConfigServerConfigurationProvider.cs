@@ -28,6 +28,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer
 {
@@ -360,7 +361,8 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
 #else
             // TODO: For coreclr, disabling certificate validation only works on windows platform
             // https://github.com/dotnet/corefx/issues/4476
-            if (settings != null && !settings.ValidateCertificates)
+            RuntimeEnvironment runEnv = new RuntimeEnvironment();
+            if (settings != null && !settings.ValidateCertificates && runEnv.OperatingSystemPlatform == Platform.Windows)
             {
                 var handler = new WinHttpHandler();
                 handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
