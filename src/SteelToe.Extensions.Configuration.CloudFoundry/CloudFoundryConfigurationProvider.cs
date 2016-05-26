@@ -23,7 +23,7 @@ using System.IO;
 
 namespace SteelToe.Extensions.Configuration.CloudFoundry
 {
-    public class CloudFoundryConfigurationProvider : ConfigurationProvider
+    public class CloudFoundryConfigurationProvider : ConfigurationProvider, IConfigurationSource
     {
         private const string VCAP_PREFIX = "VCAP_";
         private const string APPLICATION = "APPLICATION";
@@ -48,8 +48,13 @@ namespace SteelToe.Extensions.Configuration.CloudFoundry
  
                 //TODO: Use JsonStreamConfigurationProvider when ASP.NET5 Configuration PR accepted
                 var path = CreateTempFile(appJson);
+
+                string directory =Path.GetDirectoryName(path);
+                string fileName = Path.GetFileName(path);
                 ConfigurationBuilder builder = new ConfigurationBuilder();
-                builder.AddJsonFile(path);
+                builder.SetBasePath(directory);
+
+                builder.AddJsonFile(fileName);
                 var applicationData = builder.Build();
 
                 if (applicationData != null)
@@ -68,8 +73,13 @@ namespace SteelToe.Extensions.Configuration.CloudFoundry
             {
                 //TODO: Use JsonStreamConfigurationProvider when ASP.NET5 Configuration PR accepted
                 var path = CreateTempFile(appServicesJson);
+
+                string directory = Path.GetDirectoryName(path);
+                string fileName = Path.GetFileName(path);
                 ConfigurationBuilder builder = new ConfigurationBuilder();
-                builder.AddJsonFile(path);
+                builder.SetBasePath(directory);
+
+                builder.AddJsonFile(fileName);
                 var servicesData = builder.Build();
 
                 if (servicesData != null)
@@ -106,7 +116,7 @@ namespace SteelToe.Extensions.Configuration.CloudFoundry
                 return;
             if (string.IsNullOrEmpty(section.Value))
                 return;
-            Data[prefix + Constants.KeyDelimiter + section.Path] = section.Value;
+            Data[prefix + ConfigurationPath.KeyDelimiter + section.Path] = section.Value;
         }
 
         // TODO: Remove when moving to JsonStreamConfigurationProvider
@@ -116,6 +126,11 @@ namespace SteelToe.Extensions.Configuration.CloudFoundry
             File.WriteAllText(tempFile, contents);
             return tempFile;
 
+        }
+
+        public IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
+            return this;
         }
     }
 }

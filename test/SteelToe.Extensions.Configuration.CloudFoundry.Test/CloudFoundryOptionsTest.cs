@@ -19,7 +19,7 @@ using System;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 
 namespace SteelToe.Extensions.Configuration.CloudFoundry.Test
 {

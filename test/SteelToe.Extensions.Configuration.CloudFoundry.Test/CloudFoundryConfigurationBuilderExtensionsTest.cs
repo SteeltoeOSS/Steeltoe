@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.TestHost;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -49,7 +49,7 @@ namespace SteelToe.Extensions.Configuration.CloudFoundry.Test
             configurationBuilder.AddCloudFoundry();
 
             CloudFoundryConfigurationProvider cloudProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            foreach (IConfigurationProvider provider in configurationBuilder.Sources)
             {
                 cloudProvider = provider as CloudFoundryConfigurationProvider;
                 if (cloudProvider != null)

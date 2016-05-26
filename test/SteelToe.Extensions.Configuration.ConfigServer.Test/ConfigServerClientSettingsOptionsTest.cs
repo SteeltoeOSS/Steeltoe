@@ -14,10 +14,11 @@
 // limitations under the License.
 //
 
-using Microsoft.AspNet.Hosting;
+
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer.Test

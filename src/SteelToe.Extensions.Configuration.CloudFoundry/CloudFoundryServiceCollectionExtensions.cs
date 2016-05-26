@@ -52,7 +52,7 @@ namespace SteelToe.Extensions.Configuration
             services.AddOptions();
             services.Configure<CloudFoundryApplicationOptions>(config);
             services.Configure<CloudFoundryServicesOptions>(config);
-            services.AddInstance<IConfigurationRoot>(config);
+            services.AddSingleton<IConfigurationRoot>(config);
             return services;
         }
     }

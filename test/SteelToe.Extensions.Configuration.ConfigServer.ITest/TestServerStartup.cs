@@ -14,11 +14,12 @@
 // limitations under the License.
 //
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SteelToe.Extensions.Configuration.ConfigServer.Test;
+using System.IO;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer.ITest
 {
@@ -45,8 +46,12 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.ITest
     }
 }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            var builder = new ConfigurationBuilder()
-                .AddJsonFile(path)
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.SetBasePath(directory);
+            
+            builder.AddJsonFile(fileName)
                 .AddConfigServer(environment);
             Configuration = builder.Build();
 

@@ -18,6 +18,7 @@ using System;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using SteelToe.Extensions.Configuration.ConfigServer;
 
 namespace SteelToe.Extensions.Configuration
@@ -50,7 +51,7 @@ namespace SteelToe.Extensions.Configuration
 
             services.AddOptions();
             services.Configure<ConfigServerClientSettingsOptions>(config);
-            services.AddInstance<IConfigurationRoot>(config);
+            services.AddSingleton<IConfigurationRoot>(config);
             return services;
         }
     }

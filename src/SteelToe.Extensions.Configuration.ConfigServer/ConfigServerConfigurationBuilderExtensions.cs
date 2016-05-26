@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SteelToe.Extensions.Configuration.ConfigServer;
@@ -29,12 +29,7 @@ namespace SteelToe.Extensions.Configuration
     public static class ConfigServerConfigurationBuilderExtensions
     {
 
-        /// <summary>
-        /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server 
-        /// configuration settings (<see cref="ConfigServerClientSettings"/> are found. 
-        ///   (e.g. spring:cloud:config:env, spring:cloud:config:uri, spring:cloud:config:enabled, etc.)
-        /// </summary>
-        public const string PREFIX = "spring:cloud:config";
+
 
         /// <summary>
         /// Adds the Spring Cloud Config Server provider <see cref="ConfigServerConfigurationProvider"/> 
@@ -67,26 +62,8 @@ namespace SteelToe.Extensions.Configuration
                 throw new ArgumentNullException(nameof(environment));
             }
 
-            ConfigServerClientSettings settings = CreateSettings(environment, configurationBuilder.Providers, logFactory);
-            configurationBuilder.Add(new ConfigServerConfigurationProvider(settings, logFactory));
-
+            configurationBuilder.Add(new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), environment, logFactory));
             return configurationBuilder;
-
         }
-
-        private static ConfigServerClientSettings CreateSettings(IHostingEnvironment environment, IEnumerable<IConfigurationProvider> providers, ILoggerFactory logFactory)
-        {
-            ConfigServerClientSettings settings = new ConfigServerClientSettings();
-
-            if (providers != null)
-            {
-                ConfigurationRoot existing = new ConfigurationRoot(new List<IConfigurationProvider>(providers));
-                ConfigurationSettingsHelper.Initialize(PREFIX, settings, environment, existing);
-            }
-   
-            return settings;
-
-        }
-
     }
 }

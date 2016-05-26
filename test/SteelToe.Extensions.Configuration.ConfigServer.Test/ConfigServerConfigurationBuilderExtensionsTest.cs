@@ -18,7 +18,9 @@ using Microsoft.Extensions.Configuration;
 using Xunit;
 using System;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer.Test
 {
@@ -60,7 +62,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             configurationBuilder.AddConfigServer(environment);
 
             ConfigServerConfigurationProvider configServerProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            foreach (IConfigurationProvider provider in configurationBuilder.Sources)
             {
                 configServerProvider = provider as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
@@ -82,7 +84,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             configurationBuilder.AddConfigServer(environment,loggerFactory);
 
             ConfigServerConfigurationProvider configServerProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            foreach (IConfigurationProvider provider in configurationBuilder.Sources)
             {
                 configServerProvider = provider as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
@@ -118,21 +120,27 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
 }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            var configurationBuilder = new ConfigurationBuilder();
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
             var environment = new HostingEnvironment();
-            configurationBuilder.AddJsonFile(path);
+            configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
 
             ConfigServerConfigurationProvider configServerProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            foreach (IConfigurationSource source in configurationBuilder.Sources)
             {
-                configServerProvider = provider as ConfigServerConfigurationProvider;
+                configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
                     break;
             }
             Assert.NotNull(configServerProvider);
+            configurationBuilder.Build();
+
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
@@ -167,17 +175,22 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
     </spring>
 </settings>";
             var path = TestHelpers.CreateTempFile(appsettings);
-            var configurationBuilder = new ConfigurationBuilder();
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
             var environment = new HostingEnvironment();
-            configurationBuilder.AddXmlFile(path);
+            configurationBuilder.AddXmlFile(fileName);
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
+            IConfigurationRoot root = configurationBuilder.Build();
 
             ConfigServerConfigurationProvider configServerProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            foreach (IConfigurationSource source in configurationBuilder.Sources)
             {
-                configServerProvider = provider as ConfigServerConfigurationProvider;
+                configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
                     break;
             }
@@ -210,17 +223,22 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
     password=myPassword
 ";
             var path = TestHelpers.CreateTempFile(appsettings);
-            var configurationBuilder = new ConfigurationBuilder();
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
             var environment = new HostingEnvironment();
-            configurationBuilder.AddIniFile(path);
+            configurationBuilder.AddIniFile(fileName);
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
+            IConfigurationRoot root = configurationBuilder.Build();
 
             ConfigServerConfigurationProvider configServerProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            foreach (IConfigurationSource source in configurationBuilder.Sources)
             {
-                configServerProvider = provider as ConfigServerConfigurationProvider;
+                configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
                     break;
             }
@@ -261,11 +279,12 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
+            IConfigurationRoot root = configurationBuilder.Build();
 
             ConfigServerConfigurationProvider configServerProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            foreach (IConfigurationSource source in configurationBuilder.Sources)
             {
-                configServerProvider = provider as ConfigServerConfigurationProvider;
+                configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
                     break;
             }
@@ -314,17 +333,23 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
 }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            var configurationBuilder = new ConfigurationBuilder();
+
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+      
             var environment = new HostingEnvironment();
-            configurationBuilder.AddJsonFile(path);
+            configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
+            IConfigurationRoot root = configurationBuilder.Build();
 
             ConfigServerConfigurationProvider configServerProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Providers)
+            foreach (IConfigurationSource source in configurationBuilder.Sources)
             {
-                configServerProvider = provider as ConfigServerConfigurationProvider;
+                configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
                     break;
             }

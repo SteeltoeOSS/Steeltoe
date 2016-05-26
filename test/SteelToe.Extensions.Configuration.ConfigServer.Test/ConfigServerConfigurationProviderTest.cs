@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-using Microsoft.AspNet.TestHost;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -22,6 +22,8 @@ using System.Net.Http;
 using Xunit;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer.Test
 {
@@ -33,9 +35,10 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             ConfigServerClientSettings settings = null;
+            IHostingEnvironment env = new HostingEnvironment();
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings));
+            var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, env));
             Assert.Contains(nameof(settings), ex.Message);
         }
 
@@ -44,10 +47,22 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
+            IHostingEnvironment env = new HostingEnvironment();
             HttpClient httpClient = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
+            var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient, env));
+            Assert.Contains(nameof(httpClient), ex.Message);
+        }
+        [Fact]
+        public void SettingsConstructor__ThrowsIfEnvironmentNull()
+        {
+            // Arrange
+            ConfigServerClientSettings settings = new ConfigServerClientSettings();
+            HttpClient httpClient = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient, null));
             Assert.Contains(nameof(httpClient), ex.Message);
         }
 
@@ -55,11 +70,12 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public void SettingsConstructor__WithLoggerFactorySucceeds()
         {
             // Arrange
+            IHostingEnvironment envir = new HostingEnvironment();
             LoggerFactory logFactory = new LoggerFactory();
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
 
             // Act and Assert
-            var provider = new ConfigServerConfigurationProvider(settings, logFactory);
+            var provider = new ConfigServerConfigurationProvider(settings, envir, logFactory);
             Assert.NotNull(provider.Logger);
         }
 
@@ -67,7 +83,8 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public void DefaultConstructor_InitializedWithDefaultSettings()
         {
             // Arrange
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider();
+            IHostingEnvironment env = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(env);
 
             // Act and Assert
             TestHelpers.VerifyDefaults(provider.Settings);
@@ -78,8 +95,9 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public void GetConfigServerUri_NoLabel()
         {
             // Arrange
+            IHostingEnvironment env = new HostingEnvironment();
             ConfigServerClientSettings settings = new ConfigServerClientSettings() { Name = "myName", Environment = "Production" };
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, env);
 
             // Act and Assert
             string path = provider.GetConfigServerUri(null);
@@ -90,8 +108,9 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public void GetConfigServerUri_WithLabel()
         {
             // Arrange
+            IHostingEnvironment env = new HostingEnvironment();
             ConfigServerClientSettings settings = new ConfigServerClientSettings() { Name = "myName", Environment = "Production", Label = "myLabel" };
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, env);
 
             // Act and Assert
             string path = provider.GetConfigServerUri(settings.Label);
@@ -102,7 +121,8 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public void Deserialize_EmptyStream()
         {
             // Arrange
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+            IHostingEnvironment env = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), env);
             MemoryStream stream = new MemoryStream();
 
             // Act and Assert
@@ -129,7 +149,8 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         }
     
 }";
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
             Stream stream = TestHelpers.StringToStream(environment);
 
             // Act and Assert
@@ -157,7 +178,8 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         }
     ]
 }";
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
             Stream stream = TestHelpers.StringToStream(environment);
 
             // Act and Assert
@@ -182,13 +204,14 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public void AddPropertySource_ChangesDataDictionary()
         {
             // Arrange
+            IHostingEnvironment envir = new HostingEnvironment();
             IDictionary<string, object> properties = new Dictionary<string, object>();
             properties["a.b.c.d"] = "value1";
             properties["a"] = "value2";
             properties["b"] = 10;
             PropertySource source = new PropertySource("test", properties);
             source.Name = "test";
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
 
             // Act and Assert
             provider.AddPropertySource(source);
@@ -207,7 +230,8 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public async void RemoteLoadAsync_InvalidPath()
         {
             // Arrange
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
 
             // Act and Assert
             InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(() => provider.RemoteLoadAsync("foobar\\foobar\\"));
@@ -217,7 +241,8 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public async void RemoteLoadAsync_HostTimesout()
         {
             // Arrange
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
 
             // Act and Assert
             HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync("http://localhost:9999/app/profile"));
@@ -227,40 +252,51 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public async void RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
         {
             // Arrange
-            var startup = new TestConfigServerStartup("", 500);
-            var server = TestServer.Create(startup.Configure);
+
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 500;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
             settings.Name = "myName";
             server.BaseAddress = new Uri(settings.Uri);
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient(), envir);
             string path = provider.GetConfigServerUri(null);
 
             // Act and Assert
             HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(path));
 
-            Assert.NotNull(startup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
+            Assert.NotNull(TestConfigServerStartup.LastRequest);
+            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
 
         }
         [Fact]
         public async void RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
         {
             // Arrange
-            var startup = new TestConfigServerStartup("", 204);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 204;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
+
+
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
             settings.Name = "myName";
             server.BaseAddress = new Uri(settings.Uri);
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient(), envir);
             string path = provider.GetConfigServerUri(null);
 
             // Act and Assert
             ConfigEnvironment result = await provider.RemoteLoadAsync(path);
 
-            Assert.NotNull(startup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
+            Assert.NotNull(TestConfigServerStartup.LastRequest);
+            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Null(result);
 
         }
@@ -285,19 +321,24 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         }
     ]
 }";
-            var startup = new TestConfigServerStartup(environment, 200);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = environment;
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder); 
+
+
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
             settings.Name = "myName";
             server.BaseAddress = new Uri(settings.Uri);
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient(), envir);
             string path = provider.GetConfigServerUri(null);
 
             // Act and Assert
             ConfigEnvironment env = await provider.RemoteLoadAsync(path);
-            Assert.NotNull(startup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
+            Assert.NotNull(TestConfigServerStartup.LastRequest);
+            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
             Assert.NotNull(env);
             Assert.Equal("testname", env.Name);
             Assert.NotNull(env.Profiles);
@@ -317,18 +358,24 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public void Load_ConfigServerReturnsNotFoundStatus()
         {
             // Arrange
-            var startup = new TestConfigServerStartup("", 404);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 404;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+    
+
+
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
             settings.Name = "myName";
             server.BaseAddress = new Uri(settings.Uri);
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient(), envir);
 
             // Act and Assert
             provider.Load();
-            Assert.NotNull(startup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
+            Assert.NotNull(TestConfigServerStartup.LastRequest);
+            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Equal(9, provider.Properties.Count);
         }
 
@@ -336,14 +383,19 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public void Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
         {
             // Arrange
-            var startup = new TestConfigServerStartup("", 404);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 404;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
+ 
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
             settings.Name = "myName";
             settings.FailFast = true;
             server.BaseAddress = new Uri(settings.Uri);
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient(), envir);
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
@@ -355,14 +407,18 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         public void Load_ConfigServerReturnsBadStatus_FailFastEnabled()
         {
             // Arrange
-            var startup = new TestConfigServerStartup("", 500);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 500;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
             settings.Name = "myName";
             settings.FailFast = true;
             server.BaseAddress = new Uri(settings.Uri);
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient(), envir);
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
@@ -389,18 +445,22 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         }
     ]
 }";
-            var startup = new TestConfigServerStartup(environment, 200);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = environment;
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
             settings.Name = "myName";
             server.BaseAddress = new Uri(settings.Uri);
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient(), envir);
 
             // Act and Assert
             provider.Load();
-            Assert.NotNull(startup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, startup.LastRequest.Path.Value);
+            Assert.NotNull(TestConfigServerStartup.LastRequest);
+            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
 
             string value;
             Assert.True(provider.TryGet("key1", out value));
@@ -413,6 +473,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
+            IHostingEnvironment envir = new HostingEnvironment();
 
             settings.Enabled = true;
             settings.Environment = "environment";
@@ -423,7 +484,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             settings.Uri = "http://foo.bar/";
             settings.Username = "username";
             settings.ValidateCertificates = false;
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, envir);
 
 
             // Act and Assert
@@ -455,8 +516,9 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetLabels_Null()
         {
+            IHostingEnvironment envir = new HostingEnvironment();
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, envir);
 
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
@@ -467,9 +529,10 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetLabels_Empty()
         {
+            IHostingEnvironment envir = new HostingEnvironment();
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Label = string.Empty;
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, envir);
 
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
@@ -479,9 +542,10 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetLabels_SingleString()
         {
+            IHostingEnvironment envir = new HostingEnvironment();
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Label = "foobar";
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, envir);
 
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
@@ -491,9 +555,10 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetLabels_MultiString()
         {
+            IHostingEnvironment envir = new HostingEnvironment();
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Label = "1,2,3,";
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, envir);
 
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
@@ -506,9 +571,10 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetLabels_MultiStringHoles()
         {
+            IHostingEnvironment envir = new HostingEnvironment();
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Label = "1,,2,3,";
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, envir);
 
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
@@ -521,11 +587,12 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetRequestMessage_AddsBasicAuthIfPassword()
         {
+            IHostingEnvironment envir = new HostingEnvironment();
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://user:password@localhost:8888/";
             settings.Name = "foo";
             settings.Environment = "development";
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, envir);
 
             string requestURI = provider.GetConfigServerUri(null);
             var request = provider.GetRequestMessage(requestURI);

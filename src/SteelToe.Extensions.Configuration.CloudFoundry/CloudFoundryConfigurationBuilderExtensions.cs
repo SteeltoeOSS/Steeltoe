@@ -31,7 +31,6 @@ namespace SteelToe.Extensions.Configuration
             }
 
             configurationBuilder.Add(new CloudFoundryConfigurationProvider());
-
             return configurationBuilder;
 
         }

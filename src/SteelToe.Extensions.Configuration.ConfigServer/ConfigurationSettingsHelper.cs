@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System;
 
@@ -9,7 +9,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
     {
         private const string SPRING_APPLICATION_PREFIX = "spring:application";
 
-        public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IHostingEnvironment environment, ConfigurationRoot root)
+        public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IHostingEnvironment environment, IConfigurationRoot root)
         {
             if (configPrefix == null)
             {
@@ -46,7 +46,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
 
         }
 
-        private static bool GetFailFast(IConfigurationSection configServerSection, ConfigurationRoot root, bool def)
+        private static bool GetFailFast(IConfigurationSection configServerSection, IConfigurationRoot root, bool def)
         {
             var failFast = configServerSection["failFast"];
             if (!string.IsNullOrEmpty(failFast))
@@ -59,7 +59,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             return def;
         }
 
-        private static bool GetEnabled(IConfigurationSection configServerSection, ConfigurationRoot root, bool def)
+        private static bool GetEnabled(IConfigurationSection configServerSection, IConfigurationRoot root, bool def)
         {
             var enabled = configServerSection["enabled"];
             if (!string.IsNullOrEmpty(enabled))
@@ -73,7 +73,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
 
         }
 
-        private static string GetUri(IConfigurationSection configServerSection, ConfigurationRoot root, string def)
+        private static string GetUri(IConfigurationSection configServerSection, IConfigurationRoot root, string def)
         {
 
             // First check for spring:cloud:config:uri
@@ -103,7 +103,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             return configServerSection["label"];
         }
 
-        private static string GetApplicationName(IConfigurationSection configServerSection, ConfigurationRoot root)
+        private static string GetApplicationName(IConfigurationSection configServerSection, IConfigurationRoot root)
         {
             // TODO: Figure out a sensible "default" app name (e.g apps assembly name?)
             var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
@@ -123,7 +123,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             return environment.EnvironmentName;
         }
 
-        private static bool GetCertificateValidation(IConfigurationSection configServerSection, ConfigurationRoot root, bool def)
+        private static bool GetCertificateValidation(IConfigurationSection configServerSection, IConfigurationRoot root, bool def)
         {
             var accept = configServerSection["validate_certificates"];
             if (!string.IsNullOrEmpty(accept))

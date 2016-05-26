@@ -16,6 +16,7 @@
 
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer.Test
@@ -171,9 +172,14 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
     }
 }";
             var path = TestHelpers.CreateTempFile(json1);
-            var builder = new ConfigurationBuilder();
-            builder.AddJsonFile(path);
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.SetBasePath(directory);
+
+            builder.AddJsonFile(fileName);
             var config = builder.Build();
+
             string text = "foo=${vcap:application:uris[1]}";
 
             // Act and Assert

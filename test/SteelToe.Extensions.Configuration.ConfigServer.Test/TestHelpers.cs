@@ -18,8 +18,8 @@ using System;
 using System.IO;
 
 using Xunit;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer.Test
 {
@@ -68,37 +68,24 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
     public class TestConfigServerStartup
     {
 
-        private String _response;
-        private int _returnStatus;
+        public static string Response { get; set; } 
+        public static int ReturnStatus { get; set; } = 200;
 
-        private HttpRequest _request;
+        public static HttpRequest LastRequest { get; set; }
 
-        public HttpRequest LastRequest
+        public TestConfigServerStartup()
         {
-            get
-            {
-                return _request;
-            }
-        }
-        public TestConfigServerStartup(string response) :
-            this(response, 200)
-        {
-
+            LastRequest = null;
         }
 
-        public TestConfigServerStartup(string response, int returnStatus)
-        {
-            _response = response;
-            _returnStatus = returnStatus;
-        }
-
+        
         public void Configure(IApplicationBuilder app)
         {
             app.Run(async context =>
             { 
-                _request = context.Request;
-                context.Response.StatusCode = _returnStatus;
-                await context.Response.WriteAsync(_response);
+                LastRequest = context.Request;
+                context.Response.StatusCode = ReturnStatus;
+                await context.Response.WriteAsync(Response);
             });
         }
 

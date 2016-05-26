@@ -27,38 +27,48 @@ using System.Net.Security;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer
 {
     /// <summary>
     /// A Spring Cloud Config Server based <see cref="ConfigurationProvider"/>.
     /// </summary>
-    public class ConfigServerConfigurationProvider : ConfigurationProvider
+    public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource
     {
+        /// <summary>
+        /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server 
+        /// configuration settings (<see cref="ConfigServerClientSettings"/> are found. 
+        ///   (e.g. spring:cloud:config:env, spring:cloud:config:uri, spring:cloud:config:enabled, etc.)
+        /// </summary>
+        public const string PREFIX = "spring:cloud:config";
+
         private static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0, 0, 5);
         protected ConfigServerClientSettings _settings;
+        protected IHostingEnvironment _environment;
         protected HttpClient _client;
         protected ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/> with default
         /// configuration settings. <see cref="ConfigServerClientSettings"/>
+        /// <param name="environment">required Hosting environment, used in establishing config server profile</param>
         /// <param name="logFactory">optional logging factory</param>
         /// </summary>
-        public ConfigServerConfigurationProvider(ILoggerFactory logFactory = null) :
-            this(new ConfigServerClientSettings(), logFactory)
+        public ConfigServerConfigurationProvider(IHostingEnvironment environment, ILoggerFactory logFactory = null) :
+            this(new ConfigServerClientSettings(), environment, logFactory)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/>.
         /// </summary>
-        /// <param name="settings">the configuration settings the provider uses when
-        /// accessing the server.</param>
+        /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
+        /// <param name="environment">required Hosting environment, used in establishing config server profile</param>
         /// <param name="logFactory">optional logging factory</param>
         /// </summary>
-        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null) :
-            this(settings, GetHttpClient(settings), logFactory)
+        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, IHostingEnvironment environment, ILoggerFactory logFactory = null) :
+            this(settings, GetHttpClient(settings), environment, logFactory)
         {
             _client.Timeout = DEFAULT_TIMEOUT;
         }
@@ -70,9 +80,10 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
         /// accessing the server.</param>
         /// <param name="httpClient">a HttpClient the provider uses to make requests of
         /// the server.</param>
+        /// <param name="environment">required Hosting environment, used in establishing config server profile</param>
         /// <param name="logFactory">optional logging factory</param>
         /// </summary>
-        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null) 
+        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, IHostingEnvironment environment, ILoggerFactory logFactory = null) 
         {
             if (settings == null)
             {
@@ -84,9 +95,15 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
                 throw new ArgumentNullException(nameof(httpClient));
             }
 
+            if (environment == null)
+            {
+                throw new ArgumentNullException(nameof(environment));
+            }
+
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
             _settings = settings;
             _client = httpClient;
+            _environment = environment;
         }
 
 
@@ -303,7 +320,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             {
                 try
                 {
-                    string key = kvp.Key.Replace(".", Constants.KeyDelimiter);
+                    string key = kvp.Key.Replace(".", ConfigurationPath.KeyDelimiter);
                     string value = kvp.Value.ToString();
                     Data[key] = value;
                 }
@@ -362,6 +379,23 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             }
 
             return _settings.Label.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
+            ConfigurationBuilder config = new ConfigurationBuilder();
+            foreach (IConfigurationSource s in builder.Sources)
+            {
+                if (s == this)
+                {
+                    break;
+                }
+                config.Add(s);
+            }
+            IConfigurationRoot existing = config.Build();
+            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _environment, existing);
+            return this;
+
         }
 
         internal IDictionary<string, string> Properties

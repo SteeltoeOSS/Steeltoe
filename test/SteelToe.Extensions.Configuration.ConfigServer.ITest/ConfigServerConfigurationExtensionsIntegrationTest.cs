@@ -17,10 +17,12 @@
 
 using Xunit;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNet.TestHost;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using SteelToe.Extensions.Configuration.ConfigServer.Test;
+using System.IO;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer.ITest
 {
@@ -62,16 +64,21 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.ITest
 }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            var configurationBuilder = new ConfigurationBuilder();
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
+           
             var hostingEnv = new HostingEnvironment();
-            configurationBuilder.AddJsonFile(path);
+            configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert (expects Spring Cloud Config server to be running)
             configurationBuilder.AddConfigServer(hostingEnv);
             IConfigurationRoot root = configurationBuilder.Build();
 
             Assert.Equal("spam", root["bar"]);
-            Assert.Equal("bar", root["foo"]);
+            Assert.Equal("barcelona", root["foo"]);
             Assert.Equal("Spring Cloud Samples", root["info:description"]);
             Assert.Equal("https://github.com/spring-cloud-samples", root["info:url"]);
             Assert.Equal("http://localhost:8761/eureka/", root["eureka:client:serviceUrl:defaultZone"]);
@@ -90,7 +97,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.ITest
                 string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                 Assert.Equal("spam" + 
-                    "bar"+ 
+                    "barcelona"+ 
                     "Spring Cloud Samples" +
                     "https://github.com/spring-cloud-samples", result);
             }

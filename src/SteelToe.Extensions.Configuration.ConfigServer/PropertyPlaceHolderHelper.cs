@@ -99,7 +99,7 @@ namespace SteelToe.Extensions.Configuration
                         // previously resolved placeholder value.
                         propVal = ParseStringValue(propVal, config, visitedPlaceHolders);
                         result.Replace(startIndex, endIndex + SUFFIX.Length, propVal);
-                        logger?.LogVerbose("Resolved placeholder '{0}'" + placeholder);
+                        logger?.LogDebug("Resolved placeholder '{0}'" + placeholder);
                         startIndex = result.IndexOf(PREFIX, startIndex + propVal.Length);
                     }
                     else 
