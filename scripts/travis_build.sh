@@ -1,4 +1,6 @@
 #!/bin/bash
+export DOTNET_INSTALL_DIR="$PWD/.dotnetsdk"
+export PATH="$DOTNET_INSTALL_DIR:$PATH"
 cd src
 dotnet restore
 cd ../test
