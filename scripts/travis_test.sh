@@ -1,13 +1,11 @@
 #!/bin/bash
-source $HOME/.dnx/dnvm/dnvm.sh
+export DOTNET_INSTALL_DIR="$PWD/.dotnetsdk"
+export PATH="$DOTNET_INSTALL_DIR:$PATH"
 
-# Target (x64 CoreCLR)
-dnvm use 1.0.0-rc1-update1 -a x64 -r coreclr
-
-# Run unit tests (x64 CoreCLR)
+# Run unit tests 
 cd test/SteelToe.Discovery.Client.Test
-dnx test
+dotnet test --framework netcoreapp1.0
 cd ../..
 cd test/SteelToe.Discovery.Eureka.Client.Test
-dnx test
+dotnet test --framework netcoreapp1.0
 cd ../..

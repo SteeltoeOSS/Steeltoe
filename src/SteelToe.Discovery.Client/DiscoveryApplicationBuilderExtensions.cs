@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SteelToe.Discovery.Client

@@ -17,7 +17,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using System;
 
 
@@ -109,7 +109,7 @@ namespace SteelToe.Discovery.Client
                 throw new ArgumentNullException(nameof(configOptions));
             }
             services.AddOptions();
-            services.ConfigureOptions(configOptions);
+            services.AddSingleton<IConfigureOptions<T>>(configOptions);
             services.TryAddSingleton(clientType, factory);
             return services;
         }

@@ -16,6 +16,7 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.IO;
 using Xunit;
 
 namespace SteelToe.Discovery.Client.Test
@@ -88,10 +89,14 @@ namespace SteelToe.Discovery.Client.Test
     }
     }
 }";
-
             var path = TestHelpers.CreateTempFile(appsettings);
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddJsonFile(path);
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
+  
+            configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
             var options = new DiscoveryOptions();

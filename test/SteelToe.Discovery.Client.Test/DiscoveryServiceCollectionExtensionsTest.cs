@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
+using System.IO;
 
 namespace SteelToe.Discovery.Client.Test
 {
@@ -117,10 +118,13 @@ namespace SteelToe.Discovery.Client.Test
     }
 }";
 
-
             var path = TestHelpers.CreateTempFile(appsettings);
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddJsonFile(path);
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
+            configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
             var services = new ServiceCollection();
@@ -143,10 +147,13 @@ namespace SteelToe.Discovery.Client.Test
         },
     }
 }";
-
             var path = TestHelpers.CreateTempFile(appsettings);
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddJsonFile(path);
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
+            configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
             var services = new ServiceCollection();

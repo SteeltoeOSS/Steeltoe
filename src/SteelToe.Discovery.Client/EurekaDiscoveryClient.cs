@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using SteelToe.Discovery.Eureka;
 using SteelToe.Discovery.Eureka.AppInfo;

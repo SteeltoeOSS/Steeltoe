@@ -16,8 +16,8 @@
 
 using System;
 using System.IO;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Builder;
 
 namespace SteelToe.Discovery.Eureka.Client.Test
 {
@@ -47,49 +47,24 @@ namespace SteelToe.Discovery.Eureka.Client.Test
     public class TestConfigServerStartup
     {
 
-        private String _response;
-        private int _returnStatus;
-
-        private HttpRequest _request;
-        private Stream _requestBody;
-
-        public HttpRequest LastRequest
+        public static string Response { get; set; }
+        public static int ReturnStatus { get; set; } = 200;
+        public static HttpRequest LastRequest { get; set; }
+        public static Stream RequestBody { get; set; }
+        public TestConfigServerStartup()
         {
-            get
-            {
-                return _request;
-            }
+            LastRequest = null;
+            RequestBody = new MemoryStream();
         }
-        public Stream RequestBody
-        {
-            get
-            {
-                return _requestBody;
-            }
-
-        }
-        public TestConfigServerStartup(string response) :
-            this(response, 200)
-        {
-
-        }
-
-        public TestConfigServerStartup(string response, int returnStatus)
-        {
-            _response = response;
-            _returnStatus = returnStatus;
-        }
-
         public void Configure(IApplicationBuilder app)
         {
             app.Run(async context =>
             {
-                _request = context.Request;
-                _requestBody = new MemoryStream();
-                _request.Body.CopyTo(_requestBody);
-                _requestBody.Seek(0, SeekOrigin.Begin);
-                context.Response.StatusCode = _returnStatus;
-                await context.Response.WriteAsync(_response);
+                LastRequest = context.Request;
+                LastRequest.Body.CopyTo(RequestBody);
+                RequestBody.Seek(0, SeekOrigin.Begin);
+                context.Response.StatusCode = ReturnStatus;
+                await context.Response.WriteAsync(Response);
             });
         }
 

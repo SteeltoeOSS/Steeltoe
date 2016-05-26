@@ -19,10 +19,12 @@ using System.Net.Http;
 using Xunit;
 using SteelToe.Discovery.Eureka.AppInfo;
 using SteelToe.Discovery.Eureka.Client.Test;
-using Microsoft.AspNet.TestHost;
+using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using System.Collections.Generic;
 using SteelToe.Discovery.Eureka.Util;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SteelToe.Discovery.Eureka.Transport.Test
 {
@@ -77,9 +79,13 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void RegisterAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 204;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
 
-            var startup = new TestConfigServerStartup("", 204);
-            var server = TestServer.Create(startup.Configure);
+
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
             EurekaInstanceConfig config = new EurekaInstanceConfig();
@@ -100,8 +106,13 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void RegisterAsync_SendsValidPOSTData()
         {
-            var startup = new TestConfigServerStartup("", 204);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 204;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
+
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
             EurekaInstanceConfig config = new EurekaInstanceConfig()
@@ -118,13 +129,13 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             EurekaHttpResponse resp = await client.RegisterAsync(info);
 
-            Assert.NotNull(startup.LastRequest);
-            Assert.Equal("POST", startup.LastRequest.Method);
-            Assert.Equal("localhost:8888", startup.LastRequest.Host.Value);
-            Assert.Equal("/apps/FOOBAR", startup.LastRequest.Path.Value);
+            Assert.NotNull(TestConfigServerStartup.LastRequest);
+            Assert.Equal("POST", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/apps/FOOBAR", TestConfigServerStartup.LastRequest.Path.Value);
 
             // Check JSON payload
-            JsonInstanceInfoRoot recvJson = JsonInstanceInfoRoot.Deserialize(startup.RequestBody);
+            JsonInstanceInfoRoot recvJson = JsonInstanceInfoRoot.Deserialize(TestConfigServerStartup.RequestBody);
             Assert.NotNull(recvJson);
             Assert.NotNull(recvJson.Instance);
 
@@ -163,9 +174,12 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void SendHeartBeatAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
 
-            var startup = new TestConfigServerStartup("", 200);
-            var server = TestServer.Create(startup.Configure);
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
             EurekaInstanceConfig config = new EurekaInstanceConfig()
@@ -185,11 +199,11 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
 
-            Assert.Equal("PUT", startup.LastRequest.Method);
-            Assert.Equal("localhost:8888", startup.LastRequest.Host.Value);
-            Assert.Equal("/apps/FOO/id1", startup.LastRequest.Path.Value);
+            Assert.Equal("PUT", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/apps/FOO/id1", TestConfigServerStartup.LastRequest.Path.Value);
             var time = DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc));
-            Assert.Equal("?status=STARTING&lastDirtyTimestamp=" + time, startup.LastRequest.QueryString.Value);
+            Assert.Equal("?status=STARTING&lastDirtyTimestamp=" + time, TestConfigServerStartup.LastRequest.QueryString.Value);
         }
 
         [Fact]
@@ -228,8 +242,12 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
         }]
     }
 }";
-            var startup = new TestConfigServerStartup(json, 200);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = json;
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
@@ -242,9 +260,9 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
             EurekaHttpResponse<Applications> resp = await client.GetApplicationsAsync();
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-            Assert.Equal("GET", startup.LastRequest.Method);
-            Assert.Equal("localhost:8888", startup.LastRequest.Host.Value);
-            Assert.Equal("/apps/", startup.LastRequest.Path.Value);
+            Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/apps/", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.NotNull(resp.Headers);
             Assert.NotNull(resp.Response);
             Assert.NotNull(resp.Response.ApplicationMap);
@@ -325,8 +343,12 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
     }]
     }
 }";
-            var startup = new TestConfigServerStartup(json, 200);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = json;
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
@@ -339,9 +361,9 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
             EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo");
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-            Assert.Equal("GET", startup.LastRequest.Method);
-            Assert.Equal("localhost:8888", startup.LastRequest.Host.Value);
-            Assert.Equal("/apps/foo", startup.LastRequest.Path.Value);
+            Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/apps/foo", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.NotNull(resp.Headers);
             Assert.NotNull(resp.Response);
             Assert.Equal("FOO", resp.Response.Name);
@@ -418,8 +440,12 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
     'asgName':null
     }
 }";
-            var startup = new TestConfigServerStartup(json, 200);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = json;
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
@@ -431,9 +457,9 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
             EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-            Assert.Equal("GET", startup.LastRequest.Method);
-            Assert.Equal("localhost:8888", startup.LastRequest.Host.Value);
-            Assert.Equal("/instances/DESKTOP-GNQ5SUT", startup.LastRequest.Path.Value);
+            Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/instances/DESKTOP-GNQ5SUT", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.NotNull(resp.Headers);
             Assert.NotNull(resp.Response);
             Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.InstanceId);
@@ -465,9 +491,12 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void CancelAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
 
-            var startup = new TestConfigServerStartup("", 200);
-            var server = TestServer.Create(startup.Configure);
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
@@ -480,9 +509,9 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
-            Assert.Equal("DELETE", startup.LastRequest.Method);
-            Assert.Equal("localhost:8888", startup.LastRequest.Host.Value);
-            Assert.Equal("/apps/foo/bar", startup.LastRequest.Path.Value);
+            Assert.Equal("DELETE", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/apps/foo/bar", TestConfigServerStartup.LastRequest.Path.Value);
         }
 
         [Fact]
@@ -516,8 +545,12 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
         public async void StatusUpdateAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
 
-            var startup = new TestConfigServerStartup("", 200);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
@@ -532,10 +565,10 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
-            Assert.Equal("PUT", startup.LastRequest.Method);
-            Assert.Equal("localhost:8888", startup.LastRequest.Host.Value);
-            Assert.Equal("/apps/foo/bar/status", startup.LastRequest.Path.Value);
-            Assert.Equal("?value=DOWN&lastDirtyTimestamp=" + javaTime, startup.LastRequest.QueryString.Value);
+            Assert.Equal("PUT", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal("?value=DOWN&lastDirtyTimestamp=" + javaTime, TestConfigServerStartup.LastRequest.QueryString.Value);
         }
 
         [Fact]
@@ -569,8 +602,12 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
         public async void DeleteStatusOverrideAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
 
-            var startup = new TestConfigServerStartup("", 200);
-            var server = TestServer.Create(startup.Configure);
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 200;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
             var cconfig = new EurekaClientConfig()
@@ -584,10 +621,10 @@ namespace SteelToe.Discovery.Eureka.Transport.Test
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
-            Assert.Equal("DELETE", startup.LastRequest.Method);
-            Assert.Equal("localhost:8888", startup.LastRequest.Host.Value);
-            Assert.Equal("/apps/foo/bar/status", startup.LastRequest.Path.Value);
-            Assert.Equal("?lastDirtyTimestamp=" + javaTime, startup.LastRequest.QueryString.Value);
+            Assert.Equal("DELETE", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.Equal("?lastDirtyTimestamp=" + javaTime, TestConfigServerStartup.LastRequest.QueryString.Value);
         }
 
         [Fact]

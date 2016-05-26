@@ -1,14 +1,14 @@
 #!/bin/bash
-source $HOME/.dnx/dnvm/dnvm.sh
-dnvm use 1.0.0-rc1-update1 -a x64 -r coreclr
+export DOTNET_INSTALL_DIR="$PWD/.dotnetsdk"
+export PATH="$DOTNET_INSTALL_DIR:$PATH"
 cd src
-dnu restore
+dotnet restore
 cd ../test
-dnu restore
+dotnet restore
 cd ..
 cd src/SteelToe.Discovery.Client
-dnu pack --framework dnxcore50 --configuration Release
+dotnet build --framework netstandard1.3 --configuration Release
 cd ../..
 cd src/SteelToe.Discovery.Eureka.Client
-dnu pack --framework dnxcore50 --configuration Release
+dotnet build --framework netstandard1.3 --configuration Release
 cd ../..

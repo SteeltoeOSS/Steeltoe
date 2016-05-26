@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using System;
 using Xunit;
 
