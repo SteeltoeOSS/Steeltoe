@@ -383,7 +383,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             return _settings.Label.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
+        public virtual IConfigurationProvider Build(IConfigurationBuilder builder)
         {
             ConfigurationBuilder config = new ConfigurationBuilder();
             foreach (IConfigurationSource s in builder.Sources)

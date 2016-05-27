@@ -29,8 +29,6 @@ namespace SteelToe.Extensions.Configuration
     public static class ConfigServerConfigurationBuilderExtensions
     {
 
-
-
         /// <summary>
         /// Adds the Spring Cloud Config Server provider <see cref="ConfigServerConfigurationProvider"/> 
         /// to <paramref name="configurationBuilder"/>.
