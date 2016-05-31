@@ -14,8 +14,8 @@ Currently the client only supports [Spring Cloud Eureka Server](http://projects.
 
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/
 
-## Basic ASP.NET 5 Usage
-You should have a good understanding of how the new .NET [Configuration model](http://docs.asp.net/en/latest/fundamentals/configuration.html) works before starting to use the client. A basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is necessary in order to configure the client.  You should also have a good understanding of how the ASP.NET 5 [Startup](https://docs.asp.net/en/latest/fundamentals/startup.html) class is used in configuring the application services and the middleware used in the app. Specfically pay particular attention to the usage of the `Configure` and `ConfigureServices` methods. Its also important you have a good understanding of how to setup and use a Spring Cloud Eureka Server.  Detailed information on its usage can be found [here](http://projects.spring.io/spring-cloud/docs/1.0.3/spring-cloud.html#spring-cloud-eureka-server).
+## Basic ASP.NET Core Usage
+You should have a good understanding of how the new .NET [Configuration model](http://docs.asp.net/en/latest/fundamentals/configuration.html) works before starting to use the client. A basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is necessary in order to configure the client.  You should also have a good understanding of how the ASP.NET Core [Startup](https://docs.asp.net/en/latest/fundamentals/startup.html) class is used in configuring the application services and the middleware used in the app. Specfically pay particular attention to the usage of the `Configure` and `ConfigureServices` methods. Its also important you have a good understanding of how to setup and use a Spring Cloud Eureka Server.  Detailed information on its usage can be found [here](http://projects.spring.io/spring-cloud/docs/1.0.3/spring-cloud.html#spring-cloud-eureka-server).
 
 In order to use the Discovery client you need to do the following:
 ```
@@ -76,10 +76,12 @@ Once the providers settings have been defined and put in a file, the next step i
 public class Startup {
     .....
     public IConfigurationRoot Configuration { get; private set; }
-    public Startup(...)
+    public Startup(IHostingEnvironment env)
     {
         // Set up configuration sources.
         var builder = new ConfigurationBuilder()
+            .SetBasePath(env.ContentRootPath)
+            
             // Read in Discovery clients configuration
             .AddJsonFile("appsettings.json")
             .AddEnvironmentVariables();
@@ -111,7 +113,6 @@ public class Startup {
     public void Configure(IApplicationBuilder app, ....)
     {
         ....
-        app.UseIISPlatformHandler();
         app.UseStaticFiles();
         app.UseMvc();
         
