@@ -47,6 +47,7 @@ Next we add the Config Server provider to the builder (e.g. `AddConfigServer()`)
 ...
 
 var builder = new ConfigurationBuilder()
+    .SetBasePath(basePath)
     .AddJsonFile("appsettings.json")
     .AddEnvironmentVariables()                   
     .AddConfigServer();
@@ -54,17 +55,18 @@ var builder = new ConfigurationBuilder()
 var config = builder.Build();
 ...
 ```
-Normally in an ASP.NET 5 application, the above C# code is would be included in the constructor of the `Startup` class. For example, you might see something like this:
+Normally in an ASP.NET Core application, the above C# code is would be included in the constructor of the `Startup` class. For example, you might see something like this:
 ```
 #using SteelToe.Extensions.Configuration;
 
 public class Startup {
     .....
     public IConfigurationRoot Configuration { get; private set; }
-    public Startup(...)
+    public Startup(IHostingEnvironment env)
     {
         // Set up configuration sources.
         var builder = new ConfigurationBuilder()
+            .SetBasePath(env.ContentRootPath)
             .AddJsonFile("appsettings.json")
             .AddEnvironmentVariables()
             .AddConfigServer();

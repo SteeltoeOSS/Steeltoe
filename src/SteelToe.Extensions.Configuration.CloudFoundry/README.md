@@ -21,22 +21,24 @@ In order to get the `VCAP_*` environment variables parsed and made available in 
 ...
 
 var builder = new ConfigurationBuilder()
+    .SetBasePath(basePath)
     .AddJsonFile("appsettings.json")                    
     .AddCloudFoundry();      
 var config = builder.Build();
 ...
 ```
-In an ASP.NET 5 application, the above code is normally included in the constructor of the `Startup` class. For example, you might see something like this:
+In an ASP.NET Core application, the above code is normally included in the constructor of the `Startup` class. For example, you might see something like this:
 ```
 #using SteelToe.Extensions.Configuration;
 
 public class Startup {
     .....
     public IConfigurationRoot Configuration { get; private set; }
-    public Startup(...)
+    public Startup(IHostingEnvironment env, ...)
     {
         // Set up configuration sources.
         var builder = new ConfigurationBuilder()
+            .SetBasePath(env.ContentRootPath)
             .AddJsonFile("appsettings.json")
             .AddCloudFoundry();
 
