@@ -287,7 +287,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             }
             catch (Exception e)
             {
-                _logger?.LogError("Config Server serialization exception", e);
+                _logger?.LogError("Config Server serialization exception: {0}", e);
             }
             return null;
         }
