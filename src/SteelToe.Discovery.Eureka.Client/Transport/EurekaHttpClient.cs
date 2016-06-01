@@ -182,7 +182,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("SendHeartbeatAsync Exception:", e);
+                _logger?.LogError("SendHeartbeatAsync Exception: {0}", e);
                 throw;
             }
 #if NET451
@@ -263,7 +263,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("GetApplicationAsync Exception:", e);
+                _logger?.LogError("GetApplicationAsync Exception: {0}", e);
                 throw;
             }
 #if NET451
@@ -335,7 +335,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("CancelAsync Exception:", e);
+                _logger?.LogError("CancelAsync Exception: {0}", e);
                 throw;
             }
 #if NET451
@@ -394,7 +394,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("DeleteStatusOverrideAsync Exception:", e);
+                _logger?.LogError("DeleteStatusOverrideAsync Exception: {0}", e);
                 throw;
             }
 #if NET451
@@ -456,7 +456,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("StatusUpdateAsync Exception:", e);
+                _logger?.LogError("StatusUpdateAsync Exception: {0}", e);
                 throw;
             }
 #if NET451
@@ -504,7 +504,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("DoGetInstanceAsync Exception:", e);
+                _logger?.LogError("DoGetInstanceAsync Exception: {0}", e);
                 throw;
             }
 #if NET451
@@ -563,7 +563,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("DoGetApplicationsAsync Exception:", e);
+                _logger?.LogError("DoGetApplicationsAsync Exception: {0}", e);
                 throw;
             }
 #if NET451
@@ -636,7 +636,7 @@ namespace SteelToe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("GetRequestContent Exception:", e);
+                _logger?.LogError("GetRequestContent Exception: {0}", e);
             }
 
             return new StringContent(string.Empty, Encoding.UTF8, "application/json");
