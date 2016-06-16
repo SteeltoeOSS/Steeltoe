@@ -113,12 +113,19 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             'failFast': false,
             'label': 'myLabel',
             'username': 'myUsername',
-            'password': 'myPassword'
+            'password': 'myPassword',
+            'retry': {
+                'enabled':'false',
+                'initialInterval':55555,
+                'maxInterval': 55555,
+                'multiplier': 5.5,
+                'maxAttempts': 55555
+            }
         }
       }
     }
 }";
-
+     
             var path = TestHelpers.CreateTempFile(appsettings);
             string directory = Path.GetDirectoryName(path);
             string fileName = Path.GetFileName(path);
@@ -151,6 +158,12 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
+            Assert.False(settings.RetryEnabled);
+            Assert.Equal(55555, settings.RetryAttempts);
+            Assert.Equal(55555, settings.RetryInitialInterval);
+            Assert.Equal(55555, settings.RetryMaxInterval);
+            Assert.Equal(5.5, settings.RetryMultiplier);
+
         }
 
 

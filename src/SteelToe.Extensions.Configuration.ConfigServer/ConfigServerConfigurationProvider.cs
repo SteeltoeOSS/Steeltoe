@@ -28,6 +28,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
+using System.Threading;
 using Microsoft.Extensions.PlatformAbstractions;
 
 namespace SteelToe.Extensions.Configuration.ConfigServer
@@ -44,7 +45,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
         /// </summary>
         public const string PREFIX = "spring:cloud:config";
 
-        private static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0, 0, 5);
+        private static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0, 0, 3);
         protected ConfigServerClientSettings _settings;
         protected IHostingEnvironment _environment;
         protected HttpClient _client;
@@ -128,9 +129,46 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             // Adds client settings (e.g spring:cloud:config:uri, etc) to the Data dictionary
             AddConfigServerClientSettings();
 
-            Exception error = null;
-            _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
+            if (_settings.RetryEnabled && _settings.FailFast)
+            {
+                var attempts = 0;
+                var backOff = _settings.RetryInitialInterval;
+                do
+                {
+                    _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
+                    try
+                    {
+                        DoLoad();
+                        return;
+                    }
+                    catch (ConfigServerException e)
+                    {
+                        _logger?.LogInformation("Failed fetching config from server at: {0}, Exception: {1}", _settings.Uri, e);
+                        attempts++;
+                        if (attempts < _settings.RetryAttempts)
+                        {
+                            Thread.CurrentThread.Join(backOff);
+                            var nextBackoff = (int)(backOff * _settings.RetryMultiplier);
+                            backOff = Math.Min(nextBackoff, _settings.RetryMaxInterval);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
 
+                } while (true);
+
+            } else
+            {
+                _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
+                DoLoad();
+            }
+
+        }
+        internal void DoLoad()
+        {
+            Exception error = null;
             try
             {
                 foreach (string label in GetLabels())
@@ -205,6 +243,11 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             Data["spring:cloud:config:uri"] = _settings.Uri;
             Data["spring:cloud:config:username"] = _settings.Username;
             Data["spring:cloud:config:validate_certificates"] = _settings.ValidateCertificates.ToString();
+            Data["spring:cloud:config:retry:enabled"] = _settings.RetryEnabled.ToString();
+            Data["spring:cloud:config:retry:maxAttempts"] = _settings.RetryAttempts.ToString();
+            Data["spring:cloud:config:retry:initialInterval"] = _settings.RetryInitialInterval.ToString();
+            Data["spring:cloud:config:retry:maxInterval"] = _settings.RetryMaxInterval.ToString();
+            Data["spring:cloud:config:retry:multiplier"] = _settings.RetryMultiplier.ToString();
         }
 
         /// <summary>

@@ -376,7 +376,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             provider.Load();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
-            Assert.Equal(9, provider.Properties.Count);
+            Assert.Equal(14, provider.Properties.Count);
         }
 
         [Fact]
@@ -422,6 +422,31 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
+
+        }
+
+        [Fact]
+        public void Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
+        {
+            // Arrange
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.ReturnStatus = 500;
+            TestConfigServerStartup.RequestCount = 0;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
+            ConfigServerClientSettings settings = new ConfigServerClientSettings();
+            settings.Uri = "http://localhost:8888";
+            settings.Name = "myName";
+            settings.FailFast = true;
+            settings.RetryEnabled = true;
+            server.BaseAddress = new Uri(settings.Uri);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient(), envir);
+
+            // Act and Assert
+            var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
+            Assert.Equal(6, TestConfigServerStartup.RequestCount);
 
         }
 

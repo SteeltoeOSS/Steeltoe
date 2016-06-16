@@ -50,6 +50,31 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
         public const bool DEFAULT_CERTIFICATE_VALIDATION = true;
 
         /// <summary>
+        /// Default number of retries to be attempted
+        /// </summary>
+        public const int DEFAULT_MAX_RETRY_ATTEMPTS = 6;
+
+        /// <summary>
+        /// Default initial retry interval in milliseconds
+        /// </summary>
+        public const int DEFAULT_INITIAL_RETRY_INTERVAL = 1000;
+
+        /// <summary>
+        /// Default multiplier for next retry interval
+        /// </summary>
+        public const double DEFAULT_RETRY_MULTIPLIER = 1.1;
+
+        /// <summary>
+        /// Default initial retry interval in milliseconds
+        /// </summary>
+        public const int DEFAULT_MAX_RETRY_INTERVAL = 2000;
+
+        /// <summary>
+        /// Default retry enabled setting
+        /// </summary>
+        public const bool DEFAULT_RETRY_ENABLED = false;
+
+        /// <summary>
         /// Initialize Config Server client settings with defaults
         /// </summary>
         public ConfigServerClientSettings() : base()
@@ -59,6 +84,11 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             Environment = DEFAULT_ENVIRONMENT;
             Enabled = DEFAULT_PROVIDER_ENABLED;
             Uri = DEFAULT_URI;
+            RetryEnabled = DEFAULT_RETRY_ENABLED;
+            RetryInitialInterval = DEFAULT_INITIAL_RETRY_INTERVAL;
+            RetryMaxInterval = DEFAULT_MAX_RETRY_INTERVAL;
+            RetryAttempts = DEFAULT_MAX_RETRY_ATTEMPTS;
+            RetryMultiplier = DEFAULT_RETRY_MULTIPLIER;
         }
 
         /// <summary>
@@ -113,6 +143,26 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
         /// Enables/Disables whether provider validates server certificates
         /// </summary>
         public virtual bool ValidateCertificates { get; set; }
+        /// <summary>
+        /// Enables/Disables config server client retry on failures
+        /// </summary>
+        public virtual bool RetryEnabled { get; set; }
+        /// <summary>
+        /// Initial retry interval in milliseconds
+        /// </summary>
+        public virtual int RetryInitialInterval { get; set; }
+        /// <summary>
+        /// Max retry interval in milliseconds
+        /// </summary>
+        public virtual int RetryMaxInterval { get; set; }
+        /// <summary>
+        ///  Multiplier for next retry interval
+        /// </summary>
+        public virtual double RetryMultiplier { get; set; }
+        /// <summary>
+        /// The max number of retries the client will attempt
+        /// </summary>
+        public virtual int RetryAttempts { get; set; }
 
         /// <summary>
         /// Returns the HttpRequestUrl, unescaped
@@ -124,6 +174,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
                 return GetRawUri();
             }
         }
+ 
 
         internal string GetRawUri()
         {

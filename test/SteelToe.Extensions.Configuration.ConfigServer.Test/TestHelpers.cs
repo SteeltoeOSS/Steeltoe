@@ -58,6 +58,11 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal(ConfigServerClientSettings.DEFAULT_URI, settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION, settings.ValidateCertificates);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL, settings.RetryInitialInterval);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS, settings.RetryAttempts);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_RETRY_ENABLED, settings.RetryEnabled);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER, settings.RetryMultiplier);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL, settings.RetryMaxInterval);
             Assert.Null(settings.Name);
             Assert.Null(settings.Label);
             Assert.Null(settings.Username);
@@ -73,6 +78,8 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
 
         public static HttpRequest LastRequest { get; set; }
 
+        public static int RequestCount { get; set; } = 0;
+
         public TestConfigServerStartup()
         {
             LastRequest = null;
@@ -84,6 +91,7 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             app.Run(async context =>
             { 
                 LastRequest = context.Request;
+                RequestCount++;
                 context.Response.StatusCode = ReturnStatus;
                 await context.Response.WriteAsync(Response);
             });

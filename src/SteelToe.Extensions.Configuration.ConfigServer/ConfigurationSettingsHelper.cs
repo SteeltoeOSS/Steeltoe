@@ -43,41 +43,53 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             settings.Enabled = GetEnabled(clientConfigsection, root, settings.Enabled);
             settings.FailFast = GetFailFast(clientConfigsection, root, settings.FailFast);
             settings.ValidateCertificates = GetCertificateValidation(clientConfigsection, root, settings.ValidateCertificates);
-
+            settings.RetryEnabled = GetRetryEnabled(clientConfigsection, root, settings.RetryEnabled);
+            settings.RetryInitialInterval = GetRetryInitialInterval(clientConfigsection, root, settings.RetryInitialInterval);
+            settings.RetryMaxInterval = GetRetryMaxInterval(clientConfigsection, root, settings.RetryMaxInterval);
+            settings.RetryMultiplier = GetRetryMultiplier(clientConfigsection, root, settings.RetryMultiplier);
+            settings.RetryAttempts = GetRetryMaxAttempts(clientConfigsection, root, settings.RetryAttempts);
         }
-
-        private static bool GetFailFast(IConfigurationSection configServerSection, IConfigurationRoot root, bool def)
+   
+        private static int GetRetryMaxAttempts(IConfigurationSection clientConfigsection, IConfigurationRoot root, int def)
         {
-            var failFast = configServerSection["failFast"];
-            if (!string.IsNullOrEmpty(failFast))
-            {
-                bool result;
-                string resolved = ResovlePlaceholders(failFast, root);
-                if (Boolean.TryParse(resolved, out result))
-                    return result;
-            }
-            return def;
+            return GetInt("retry:maxAttempts", clientConfigsection, root, def);
         }
 
-        private static bool GetEnabled(IConfigurationSection configServerSection, IConfigurationRoot root, bool def)
+        private static double GetRetryMultiplier(IConfigurationSection clientConfigsection, IConfigurationRoot root, double def)
         {
-            var enabled = configServerSection["enabled"];
-            if (!string.IsNullOrEmpty(enabled))
-            {
-                bool result;
-                string resolved = ResovlePlaceholders(enabled, root);
-                if (Boolean.TryParse(resolved, out result))
-                    return result;
-            }
-            return def;
-
+            return GetDouble("retry:multiplier", clientConfigsection, root, def);
         }
 
-        private static string GetUri(IConfigurationSection configServerSection, IConfigurationRoot root, string def)
+        private static int GetRetryMaxInterval(IConfigurationSection clientConfigsection, IConfigurationRoot root, int def)
+        {
+            return GetInt("retry:maxInterval", clientConfigsection, root, def);
+        }
+
+        private static int GetRetryInitialInterval(IConfigurationSection clientConfigsection, IConfigurationRoot root, int def)
+        {
+            return GetInt("retry:initialInterval", clientConfigsection, root, def);
+        }
+
+        private static bool GetRetryEnabled(IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
+        {
+            return GetBoolean("retry:enabled", clientConfigsection, root, def);
+        }
+
+        private static bool GetFailFast(IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
+        {
+            return GetBoolean("failFast", clientConfigsection, root, def);
+        }
+
+        private static bool GetEnabled(IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
+        {
+            return GetBoolean("enabled", clientConfigsection, root, def);
+        }
+
+        private static string GetUri(IConfigurationSection clientConfigsection, IConfigurationRoot root, string def)
         {
 
             // First check for spring:cloud:config:uri
-            var uri = configServerSection["uri"];
+            var uri = clientConfigsection["uri"];
             if (!string.IsNullOrEmpty(uri))
             {
                 return uri;
@@ -87,27 +99,26 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             return def;
         }
 
-        private static string GetPassword(IConfigurationSection configServerSection)
+        private static string GetPassword(IConfigurationSection clientConfigsection)
         {
-            return configServerSection["password"];
+            return clientConfigsection["password"];
         }
 
-        private static string GetUsername(IConfigurationSection configServerSection)
+        private static string GetUsername(IConfigurationSection clientConfigsection)
         {
-            return configServerSection["username"];
+            return clientConfigsection["username"];
         }
 
-        private static string GetLabel(IConfigurationSection configServerSection)
+        private static string GetLabel(IConfigurationSection clientConfigsection)
         {
-            // TODO: multi label  support
-            return configServerSection["label"];
+            return clientConfigsection["label"];
         }
 
-        private static string GetApplicationName(IConfigurationSection configServerSection, IConfigurationRoot root)
+        private static string GetApplicationName(IConfigurationSection clientConfigsection, IConfigurationRoot root)
         {
             // TODO: Figure out a sensible "default" app name (e.g apps assembly name?)
             var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
-            return GetSetting("name", configServerSection, appSection, null);
+            return GetSetting("name", clientConfigsection, appSection, null);
         }
 
         private static string GetEnvironment(IConfigurationSection section, IHostingEnvironment environment)
@@ -123,18 +134,9 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             return environment.EnvironmentName;
         }
 
-        private static bool GetCertificateValidation(IConfigurationSection configServerSection, IConfigurationRoot root, bool def)
+        private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
         {
-            var accept = configServerSection["validate_certificates"];
-            if (!string.IsNullOrEmpty(accept))
-            {
-                bool result;
-                string resolved = ResovlePlaceholders(accept, root);
-                if (Boolean.TryParse(resolved, out result))
-                    return result;
-            }
-            return def;
-
+            return GetBoolean("validate_certificates", clientConfigsection, root, def);
         }
 
         private static string ResovlePlaceholders(string property, IConfiguration config)
@@ -160,5 +162,45 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
 
             return def;
         }
+
+        private static int GetInt(string key, IConfigurationSection clientConfigsection, IConfigurationRoot root, int def)
+        {
+            var val = clientConfigsection[key];
+            if (!string.IsNullOrEmpty(val))
+            {
+                int result;
+                string resolved = ResovlePlaceholders(val, root);
+                if (int.TryParse(resolved, out result))
+                    return result;
+            }
+            return def;
+        }
+        private static double GetDouble(string key, IConfigurationSection clientConfigsection, IConfigurationRoot root, double def)
+        {
+            var val = clientConfigsection[key];
+            if (!string.IsNullOrEmpty(val))
+            {
+                double result;
+                string resolved = ResovlePlaceholders(val, root);
+                if (double.TryParse(resolved, out result))
+                    return result;
+            }
+            return def;
+        }
+
+        private static bool GetBoolean(string key, IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
+        {
+            var val = clientConfigsection[key];
+            if (!string.IsNullOrEmpty(val))
+            {
+                bool result;
+                string resolved = ResovlePlaceholders(val, root);
+                if (Boolean.TryParse(resolved, out result))
+                    return result;
+            }
+            return def;
+
+        }
+
     }
 }

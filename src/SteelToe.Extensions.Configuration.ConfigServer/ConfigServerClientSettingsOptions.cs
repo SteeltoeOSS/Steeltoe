@@ -90,18 +90,75 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
 
         }
 
+        public bool RetryEnabled
+        {
+            get { 
+            
+                return GetBoolean(Spring?.Cloud?.Config?.Retry?.Enabled,
+                    ConfigServerClientSettings.DEFAULT_RETRY_ENABLED);
+            }
+        }
+     
+        public int RetryInitialInterval
+        {
+            get
+            {
+                return GetInt(Spring?.Cloud?.Config?.Retry?.InitialInterval,
+               ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL);
+            }
+        }
+
+ 
+        public int RetryMaxInterval
+        {
+            get
+            {
+                return GetInt(Spring?.Cloud?.Config?.Retry?.MaxInterval,
+               ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL);
+            }
+        }
+   
+        public double RetryMultiplier
+        {
+            get
+            {
+                return GetDouble(Spring?.Cloud?.Config?.Retry?.Multiplier,
+               ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER);
+            }
+        }
+
+        public int RetryAttempts
+        {
+            get
+            {
+                return GetInt(Spring?.Cloud?.Config?.Retry?.MaxAttempts,
+               ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS);
+            }
+        }
+
 
         public ConfigServerClientSettings Settings
         {
             get
             {
                 ConfigServerClientSettings settings = new ConfigServerClientSettings();
-                settings.Enabled = GetBoolean(Spring?.Cloud?.Config?.Enabled, 
-                    ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED);
+
+                settings.Enabled = GetBoolean(Spring?.Cloud?.Config?.Enabled,
+                        ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED);
                 settings.FailFast = GetBoolean(Spring?.Cloud?.Config?.FailFast,
-                    ConfigServerClientSettings.DEFAULT_FAILFAST);
+                        ConfigServerClientSettings.DEFAULT_FAILFAST);
                 settings.ValidateCertificates = GetBoolean(Spring?.Cloud?.Config?.Validate_Certificates,
-                 ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION);
+                        ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION);
+                settings.RetryAttempts = GetInt(Spring?.Cloud?.Config?.Retry?.MaxAttempts,
+                        ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS);
+                settings.RetryEnabled = GetBoolean(Spring?.Cloud?.Config?.Retry?.Enabled,
+                        ConfigServerClientSettings.DEFAULT_RETRY_ENABLED);
+                settings.RetryInitialInterval = GetInt(Spring?.Cloud?.Config?.Retry?.InitialInterval,
+                       ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL);
+                settings.RetryMaxInterval = GetInt(Spring?.Cloud?.Config?.Retry?.MaxInterval,
+                        ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL);
+                settings.RetryMultiplier = GetDouble(Spring?.Cloud?.Config?.Retry?.Multiplier,
+                        ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER);
 
                 settings.Environment = Spring?.Cloud?.Config?.Env;
                 settings.Label = Spring?.Cloud?.Config?.Label;
@@ -125,6 +182,25 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
             }
             return result;
         }
+
+        private int GetInt(string strValue, int def)
+        {
+            int result = def;
+            if (!string.IsNullOrEmpty(strValue))
+            {
+                int.TryParse(strValue, out result);
+            }
+            return result;
+        }
+        private double GetDouble(string strValue, double def)
+        {
+            double result = def;
+            if (!string.IsNullOrEmpty(strValue))
+            {
+                double.TryParse(strValue, out result);
+            }
+            return result;
+        }
     }
 
     public class SpringConfig
@@ -137,6 +213,8 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
     }
     public class SpringCloudConfig
     {
+
+        public SpringCloudConfigRetry Retry { get; set; }
         public string Enabled { get; set; }
         public string FailFast { get; set; }
         public string Env { get; set; }
@@ -147,5 +225,13 @@ namespace SteelToe.Extensions.Configuration.ConfigServer
         public string Username { get; set; }
         public string Validate_Certificates { get; set; }
 
+    }
+    public class SpringCloudConfigRetry
+    {
+        public string Enabled { get; set; }
+        public string InitialInterval { get; set; }
+        public string MaxInterval { get; set; }
+        public string Multiplier { get; set; }
+        public string MaxAttempts { get; set; }
     }
 }

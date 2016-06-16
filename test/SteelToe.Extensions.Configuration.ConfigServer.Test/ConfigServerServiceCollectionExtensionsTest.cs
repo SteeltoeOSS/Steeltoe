@@ -74,6 +74,11 @@ namespace SteelToe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal(ConfigServerClientSettings.DEFAULT_URI, options.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, options.Environment);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION, options.ValidateCertificates);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL, options.RetryInitialInterval);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS, options.RetryAttempts);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_RETRY_ENABLED, options.RetryEnabled);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER, options.RetryMultiplier);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL, options.RetryMaxInterval);
             Assert.Null(options.Name);
             Assert.Null(options.Label);
             Assert.Null(options.Username);
