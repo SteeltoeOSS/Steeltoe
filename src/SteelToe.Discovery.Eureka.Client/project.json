@@ -45,6 +45,7 @@
       },
   "dependencies": {
     "Newtonsoft.Json": "8.0.3",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-final"
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc2-final"
   }
   }

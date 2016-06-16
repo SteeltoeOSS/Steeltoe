@@ -156,11 +156,5 @@ namespace SteelToe.Discovery.Client.Test
 
         }
 
-        [Fact]
-        public void test()
-        {
-
-        }
-
     }
 }
