@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "description": "CloudFoundry Connector for ASP.NET Core MySql Data Provider",
+  "authors": [
+    "Pivotal",
+    "dtillman"
+  ],
+  "packOptions": {
+    "tags": [
+      "CloudFoundry",
+      "ASPNETCore",
+      "Redis",
+      "Cache"
+    ],
+    "projectUrl": "http://steeltoe.io",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "copyright": "Copyright 2015 the original authors"
+  },
+  "frameworks": {
+    "net451": {
+      "dependencies": { }
+    }
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Options": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Configuration.Binder": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Caching.Redis": "1.0.0-rc2-final",
+    "SteelToe.CloudFoundry.Connector": "1.0.0-*",
+    "MySql.Data": "6.9.8"
+  }
+}
