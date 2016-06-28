@@ -32,38 +32,38 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
         }
 
         [Fact]
-        public void AddMySqlDataProvider_ThrowsIfServiceCollectionNull()
+        public void AddMySqlConnection_ThrowsIfServiceCollectionNull()
         {
             // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlDataProvider(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlDataProvider(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
 
         }
         [Fact]
-        public void AddMySqlDataProvider_ThrowsIfConfigurtionNull()
+        public void AddMySqlConnection_ThrowsIfConfigurtionNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlDataProvider(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlDataProvider(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
 
         }
 
         [Fact]
-        public void AddMySqlDataProvider_ThrowsIfServiceNameNull()
+        public void AddMySqlConnection_ThrowsIfServiceNameNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -71,20 +71,20 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
             string serviceName = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlDataProvider(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
 
         }
 
         [Fact]
-        public void AddMySqlDataProvider_NoVCAPs_AddsMySqlConnection()
+        public void AddMySqlConnection_NoVCAPs_AddsMySqlConnection()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            MySqlProviderServiceCollectionExtensions.AddMySqlDataProvider(services, config);
+            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
 
            var service = services.BuildServiceProvider().GetService<MySqlConnection>();
            Assert.NotNull(service);
@@ -92,20 +92,20 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
         }
 
         [Fact]
-        public void AddMySqlDataProvider_WithServiceName_NoVCAPs_ThrowsConnectorException()
+        public void AddMySqlConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlDataProvider(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
 
         }
 
         [Fact]
-        public void AddMySqlDataProvider_MultipleMySqlServices_ThrowsConnectorException()
+        public void AddMySqlConnection_MultipleMySqlServices_ThrowsConnectorException()
         {
             // Arrange
             var env1 = @"
@@ -188,12 +188,12 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
             var config = builder.Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlDataProvider(services, config));
+            var ex = Assert.Throws<ConnectorException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config));
             Assert.Contains("Multiple", ex.Message);
 
         }
         [Fact]
-        public void AddMySqlDataProvider_WithVCAPs_AddsMySqlConnection()
+        public void AddMySqlConnection_WithVCAPs_AddsMySqlConnection()
         {
             // Arrange
             var env1 = @"
@@ -256,7 +256,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
             var config = builder.Build();
 
             // Act and Assert
-            MySqlProviderServiceCollectionExtensions.AddMySqlDataProvider(services, config);
+            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
 
             var service = services.BuildServiceProvider().GetService<MySqlConnection>();
             Assert.NotNull(service);

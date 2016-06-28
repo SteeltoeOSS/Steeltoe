@@ -27,7 +27,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql
     public static class MySqlProviderServiceCollectionExtensions
     {
 
-        public static IServiceCollection AddMySqlDataProvider(this IServiceCollection services, IConfiguration config, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -47,7 +47,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql
             return services;
         }
 
-        public static IServiceCollection AddMySqlDataProvider(this IServiceCollection services, IConfiguration config, string serviceName, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
