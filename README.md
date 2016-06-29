@@ -2,18 +2,18 @@
 
 This repo contains several connectors which simplify the process of connecting to services on CloudFoundry.  
 
-Windows Master (Stable):  [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/27c2hd0460aac1cs/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/Configuration)
+Windows Master (Stable): [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/ivdciaopp5kxo3cp/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/connectors/branch/master)
 
-Windows Dev (Less Stable):  [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/27c2hd0460aac1cs/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/Configuration)
+Windows Dev (Less Stable): [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/ivdciaopp5kxo3cp/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/connectors/branch/dev)
 
-Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteelToeOSS/Configuration.svg?branch=master)](https://travis-ci.org/SteelToeOSS/Configuration)
+Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteelToeOSS/Connectors.svg?branch=master)](https://travis-ci.org/SteelToeOSS/Connectors)
 
-Linux/OS X Dev (Less Stable): [![Travis Dev](https://travis-ci.org/SteelToeOSS/Configuration.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Configuration)
+Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteelToeOSS/Connectors.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Connectors)
 
 # .NET Runtime & Framework Support
-Like ASP.NET Core, the connectors are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes.  Where supported the connectors are built and unit tested on Windows, Linux and OSX.
+Like ASP.NET Core, the connectors are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes. Note that some connectors only support .NET 4.5.1+ since the libraries they depend on do not yet supoort .NET Core.
 
-Note that some connectors do not support running on .NET Core (CoreCLR/CoreFX).
+Where supported the connectors are built and unit tested on Windows, Linux and OSX.
 
 While the primary usage of the connectors is intended to be with ASP.NET Core applications, they should also work fine with UWP, Console and ASP.NET 4.x apps.
 
@@ -35,42 +35,42 @@ All new configuration connector development is done on the dev branch. More stab
 To build the packages on windows:
 
 1. git clone ...
-2. cd <clone directory>
+2. cd `<clone directory>`
 3. Install .NET Core SDK
 4. dotnet restore src
-5. cd src\<project> (e.g. cd src\SteelToe.CloudFoundry.Connector)
-6. dotnet pack --configuration <Release or Debug> 
+5. cd src\ `<project>` (e.g. cd src\SteelToe.CloudFoundry.Connector)
+6. dotnet pack --configuration `<Release or Debug>` 
 
-The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src\SteelToe.CloudFoundry.Connector\bin
+The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src\SteelToe.CloudFoundry.Connector\bin)
 
 To run the unit tests:
 
 1. git clone ...
-2. cd <clone directory>
+2. cd `<clone directory>`
 3. Install .NET Core SDK 
 4. dotnet restore test
-5. cd test\<test project> (e.g. cd test\SteelToe.CloudFoundry.Connector.Test)
+5. cd test\ `<test project>` (e.g. cd test\SteelToe.CloudFoundry.Connector.Test)
 6. dotnet test
 
 # Building Packages & Running Tests - Linux/OSX
 To build the packages on Linux/OSX: ( Note: Some connectors do not support CoreCLR.)
 
 1. git clone ...
-2. cd <clone directory>
+2. cd `<clone directory>`
 3. Install .NET Core SDK
 4. dotnet restore src
-5. cd src/<project> (e.g.. cd src/SteelToe.CloudFoundry.Connector)
-6. dotnet pack --configuration <Release or Debug> 
+5. cd src/ `<project>` (e.g.. cd src/SteelToe.CloudFoundry.Connector)
+6. dotnet pack --configuration `<Release or Debug>`
 
 The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/SteelToe.CloudFoundry.Connector/bin
 
 To run the unit tests: ( Note: Some connectors do not support CoreCLR.)
 
 1. git clone ...
-2. cd <clone directory>
+2. cd `<clone directory>`
 3. Install .NET Core SDK 
 4. dotnet restore test
-5. cd test\<test project> (e.g. cd test/SteelToe.CloudFoundry.Connector.Test)
+5. cd test\ `<test project>` (e.g. cd test/SteelToe.CloudFoundry.Connector.Test)
 6. dotnet test --framework netcoreapp1.0
 
 # Sample Applications
