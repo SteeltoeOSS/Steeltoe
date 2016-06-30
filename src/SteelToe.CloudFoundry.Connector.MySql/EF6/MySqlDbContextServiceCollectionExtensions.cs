@@ -14,20 +14,20 @@
 // limitations under the License.
 //
 
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MySql.Data.MySqlClient;
 using SteelToe.CloudFoundry.Connector.Services;
 using System;
+using System.Data.Entity;
+using MySql.Data.Entity;
 
-
-namespace SteelToe.CloudFoundry.Connector.MySql
+namespace SteelToe.CloudFoundry.Connector.MySql.EF6
 {
-    public static class MySqlProviderServiceCollectionExtensions
+    public static class MySqlDbContextServiceCollectionExtensions
     {
-
-        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null) where TContext : DbContext
         {
             if (services == null)
             {
@@ -40,12 +40,12 @@ namespace SteelToe.CloudFoundry.Connector.MySql
             }
 
             MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
+            DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
-            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null) where TContext : DbContext
         {
             if (services == null)
             {
@@ -62,16 +62,18 @@ namespace SteelToe.CloudFoundry.Connector.MySql
                 throw new ArgumentNullException(nameof(config));
             }
             MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+            DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
-            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, IConfiguration config, MySqlServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
+            DbConfiguration.SetConfiguration(new MySqlEFConfiguration());
             MySqlProviderConfiguration mySqlConfig = new MySqlProviderConfiguration(config);
-            MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig);
-            services.Add(new ServiceDescriptor(typeof(MySqlConnection), factory.Create, contextLifetime));
+
+            MySqlDbContextConnectorFactory factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
+            services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
     }
 }

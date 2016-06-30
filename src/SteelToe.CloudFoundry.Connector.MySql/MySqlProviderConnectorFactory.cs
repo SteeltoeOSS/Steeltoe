@@ -22,18 +22,35 @@ namespace SteelToe.CloudFoundry.Connector.MySql
 {
     public class MySqlProviderConnectorFactory
     {
-        private MySqlServiceInfo _info;
-        private MySqlProviderConfiguration _config;
-        private MySqlProviderConfigurer _configurer = new MySqlProviderConfigurer();
+        protected MySqlServiceInfo _info;
+        protected MySqlProviderConfiguration _config;
+        protected MySqlProviderConfigurer _configurer = new MySqlProviderConfigurer();
+
+        internal MySqlProviderConnectorFactory()
+        {
+
+        }
         public MySqlProviderConnectorFactory(MySqlServiceInfo sinfo, MySqlProviderConfiguration config)
         {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             _info = sinfo;
             _config = config;
         }
-        internal MySqlConnection Create(IServiceProvider provider)
+        internal protected virtual object Create(IServiceProvider provider)
         {
-            var connectionString = _configurer.Configure(_info, _config);
-            return new MySqlConnection(connectionString);
+            var connectionString = CreateConnectionString();
+            if (connectionString != null)
+                return new MySqlConnection(connectionString);
+            return null;
+        }
+
+        internal protected virtual string CreateConnectionString()
+        {
+            return _configurer.Configure(_info, _config);
         }
     }
 }
