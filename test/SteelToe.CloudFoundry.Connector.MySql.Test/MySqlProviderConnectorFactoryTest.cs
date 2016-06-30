@@ -26,7 +26,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
         public void Constructor_ThrowsIfConfigNull()
         {
             // Arrange
-            MySqlProviderConfiguration config = null;
+            MySqlProviderConnectorOptions config = null;
             MySqlServiceInfo si = null;
 
             // Act and Assert
@@ -37,7 +37,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
         [Fact]
         public void Create_ReturnsMySqlConnection()
         {
-            MySqlProviderConfiguration config = new MySqlProviderConfiguration()
+            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 3306,

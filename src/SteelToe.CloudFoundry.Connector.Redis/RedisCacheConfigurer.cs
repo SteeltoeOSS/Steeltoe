@@ -24,7 +24,7 @@ namespace SteelToe.CloudFoundry.Connector.Redis
     public class RedisCacheConfigurer
     {
     
-        internal IOptions<RedisCacheOptions> Configure(RedisServiceInfo si, RedisCacheConfiguration configuration)
+        internal IOptions<RedisCacheOptions> Configure(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
         {
             RedisCacheOptions redisOptions = new RedisCacheOptions();
             UpdateOptions(configuration, redisOptions);
@@ -52,7 +52,7 @@ namespace SteelToe.CloudFoundry.Connector.Redis
             }
         }
 
-        internal void UpdateOptions(RedisCacheConfiguration config, RedisCacheOptions options)
+        internal void UpdateOptions(RedisCacheConnectorOptions config, RedisCacheOptions options)
         {
             if (config == null)
             {

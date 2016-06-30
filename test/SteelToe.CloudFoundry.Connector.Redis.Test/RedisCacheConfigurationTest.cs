@@ -30,7 +30,7 @@ namespace SteelToe.CloudFoundry.Connector.Redis.Test
             IConfiguration config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new RedisCacheConfiguration(config));
+            var ex = Assert.Throws<ArgumentNullException>(() => new RedisCacheConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
 
@@ -58,7 +58,7 @@ namespace SteelToe.CloudFoundry.Connector.Redis.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            var sconfig = new RedisCacheConfiguration(config);
+            var sconfig = new RedisCacheConnectorOptions(config);
             Assert.Equal("localhost", sconfig.Host);
             Assert.Equal(1234, sconfig.Port);
             Assert.Equal("password", sconfig.Password);

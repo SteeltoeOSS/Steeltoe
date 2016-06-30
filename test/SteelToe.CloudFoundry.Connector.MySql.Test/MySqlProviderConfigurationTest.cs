@@ -30,7 +30,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
             IConfiguration config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConfiguration(config));
+            var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
 
@@ -58,7 +58,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            var sconfig = new MySqlProviderConfiguration(config);
+            var sconfig = new MySqlProviderConnectorOptions(config);
             Assert.Equal("localhost", sconfig.Server);
             Assert.Equal(1234, sconfig.Port);
             Assert.Equal("password", sconfig.Password);

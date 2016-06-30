@@ -28,7 +28,7 @@ namespace SteelToe.CloudFoundry.Connector.Redis.Test
         {
             RedisCacheConfigurer configurer = new RedisCacheConfigurer();
             RedisCacheOptions redisOptions = new RedisCacheOptions();
-            RedisCacheConfiguration config = new RedisCacheConfiguration()
+            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
             {
                 ConnectionString = "foobar",
                 InstanceId = "instanceId"
@@ -45,7 +45,7 @@ namespace SteelToe.CloudFoundry.Connector.Redis.Test
         {
             RedisCacheConfigurer configurer = new RedisCacheConfigurer();
             RedisCacheOptions redisOptions = new RedisCacheOptions();
-            RedisCacheConfiguration config = new RedisCacheConfiguration()
+            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -80,7 +80,7 @@ namespace SteelToe.CloudFoundry.Connector.Redis.Test
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
             RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-            RedisCacheConfiguration config = new RedisCacheConfiguration()
+            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -100,7 +100,7 @@ namespace SteelToe.CloudFoundry.Connector.Redis.Test
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
             RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-            RedisCacheConfiguration config = new RedisCacheConfiguration()
+            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,

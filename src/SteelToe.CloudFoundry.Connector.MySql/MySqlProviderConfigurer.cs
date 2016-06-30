@@ -21,14 +21,14 @@ namespace SteelToe.CloudFoundry.Connector.MySql
 {
     public class MySqlProviderConfigurer
     {
-        internal string Configure(MySqlServiceInfo si, MySqlProviderConfiguration configuration)
+        internal string Configure(MySqlServiceInfo si, MySqlProviderConnectorOptions configuration)
         {
             UpdateConfiguration(si, configuration);
             return configuration.ToString();
 
 
         }
-        internal void UpdateConfiguration(MySqlServiceInfo si, MySqlProviderConfiguration configuration)
+        internal void UpdateConfiguration(MySqlServiceInfo si, MySqlProviderConnectorOptions configuration)
         {
             if (si == null)
             {

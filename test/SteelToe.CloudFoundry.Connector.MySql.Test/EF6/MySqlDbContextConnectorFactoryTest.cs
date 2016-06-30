@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using MySql.Data.Entity;
 using SteelToe.CloudFoundry.Connector.Services;
 using System;
 using System.Data.Entity;
@@ -28,7 +29,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.EF6.Test
         {
         
             // Arrange
-            MySqlProviderConfiguration config = new MySqlProviderConfiguration();
+            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions();
             MySqlServiceInfo si = null;
             Type dbContextType = null;
 
@@ -37,12 +38,13 @@ namespace SteelToe.CloudFoundry.Connector.MySql.EF6.Test
             Assert.Contains(nameof(dbContextType), ex.Message);
 
         }
+
         [Fact]
         public void Constructor_ThrowsIfNoValidConstructorFound()
         {
 
             // Arrange
-            MySqlProviderConfiguration config = new MySqlProviderConfiguration();
+            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions();
             MySqlServiceInfo si = null;
             Type dbContextType = typeof(BadDbContext);
 
@@ -66,7 +68,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.EF6.Test
         [Fact]
         public void Create_ReturnsDbContext()
         {
-            MySqlProviderConfiguration config = new MySqlProviderConfiguration()
+            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 3306,
@@ -85,10 +87,12 @@ namespace SteelToe.CloudFoundry.Connector.MySql.EF6.Test
         }
     }
 
+    [DbConfigurationType(typeof(MySqlEFConfiguration))]
     class BadDbContext : DbContext
     {
 
     }
+    [DbConfigurationType(typeof(MySqlEFConfiguration))]
     class GoodDbContext: DbContext
     {
         public GoodDbContext(string str)

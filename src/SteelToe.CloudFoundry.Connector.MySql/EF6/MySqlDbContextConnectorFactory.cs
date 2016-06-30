@@ -32,7 +32,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.EF6
 
         }
 
-        public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConfiguration config, Type dbContextType) :
+        public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConnectorOptions config, Type dbContextType) :
             base(info, config)
         {
             if (dbContextType == null)

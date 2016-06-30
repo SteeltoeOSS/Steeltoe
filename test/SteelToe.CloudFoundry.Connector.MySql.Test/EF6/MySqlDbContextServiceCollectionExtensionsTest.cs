@@ -16,6 +16,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySql.Data.Entity;
 using SteelToe.Extensions.Configuration;
 using System;
 using System.Data.Entity;
@@ -268,6 +269,8 @@ namespace SteelToe.CloudFoundry.Connector.MySql.EF6.Test
 
         }
     }
+
+    [DbConfigurationType(typeof(MySqlEFConfiguration))]
     class Good2DbContext : DbContext
     {
         public Good2DbContext(string str)

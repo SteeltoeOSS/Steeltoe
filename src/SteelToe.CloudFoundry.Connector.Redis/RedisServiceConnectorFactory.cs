@@ -24,9 +24,9 @@ namespace SteelToe.CloudFoundry.Connector.Redis
     public class RedisServiceConnectorFactory
     {
         private RedisServiceInfo _info;
-        private RedisCacheConfiguration _config;
+        private RedisCacheConnectorOptions _config;
         private RedisCacheConfigurer _configurer = new RedisCacheConfigurer();
-        public RedisServiceConnectorFactory(RedisServiceInfo sinfo, RedisCacheConfiguration config)
+        public RedisServiceConnectorFactory(RedisServiceInfo sinfo, RedisCacheConnectorOptions config)
         {
             _info = sinfo;
             _config = config;

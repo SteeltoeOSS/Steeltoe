@@ -69,7 +69,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql
 
         private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            MySqlProviderConfiguration mySqlConfig = new MySqlProviderConfiguration(config);
+            MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
             MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig);
             services.Add(new ServiceDescriptor(typeof(MySqlConnection), factory.Create, contextLifetime));
         }
