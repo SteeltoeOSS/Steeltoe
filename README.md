@@ -11,7 +11,7 @@ Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteelToeOSS/
 Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteelToeOSS/Connectors.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Connectors)
 
 # .NET Runtime & Framework Support
-Like ASP.NET Core, the connectors are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes. Note that some connectors only support .NET 4.5.1+ since the libraries they depend on do not yet supoort .NET Core.
+Like ASP.NET Core, the connectors are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes. Note that some connectors only support .NET 4.5.1+ since the libraries they depend on do not yet support .NET Core.
 
 Where supported the connectors are built and unit tested on Windows, Linux and OSX.
 
