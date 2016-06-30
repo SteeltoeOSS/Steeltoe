@@ -13,17 +13,17 @@ This project contain a SteelToe Connector for Redis.  This connector simplifies 
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/
 
 ## Usage
-You should have some understanding of how to use the [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) before starting to use this connector. Also basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is also helpful.
+You probably will want some understanding of how to use the [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) before starting to use this connector. Also basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is also helpful.
 
 In order to use this Connector you need to do the following:
 ```
 1. Create and bind a Redis Service instance to your application.
-2. Optionally, configure any Redis client settings you need in your applications configuration (e.g. appsettings.json)
-3. Add SteelToe CloudFoundry provider to your ConfigurationBuilder.
+2. Optionally, configure any Redis client settings (e.g. appsettings.json)
+3. Add SteelToe CloudFoundry config provider to your ConfigurationBuilder.
 4. Add DistributedRedisCache to your ServiceCollection.
 ```
 ## Create & Bind Redis Service
-You can create and bind Redis service instances using the CloudFoundry command line (i.e. cf).
+You can create and bind Redis service instances using the CloudFoundry command line (i.e. cf):
 ```
 1. cf target -o myorg -s myspace
 2. cf create-service p-redis shared-vm myRedisCache
@@ -33,25 +33,28 @@ You can create and bind Redis service instances using the CloudFoundry command l
 Once you have bound the service to the app, the providers settings have been setup in `VCAP_SERVICES` and will be picked up automatically when the app is started by using the `CloudFoundry` configuration provider at startup.
 
 ## Optionally - Configure Redis Client Settings
+Optionally you can configure the settings the Connector will use when setting up the RedisCache. Typically you would put these in your `appsettings.json` file and use the JSON configuration provider to add them to the applications configuration. Then when the Redis Connector configures the RedisCache it will the combine the settings from `appsettings.json` with the settings it obtains from the CloudFoundry configuration provider, with the CloudFoundry settings overriding any settings found in `appsettings.json`.
 
 ```
 {
 ...
   "redis": {
     "client": {
-      ... Add settings
+      "host": "http://foo.bar",
+      "port": 1111
     }
   }
   .....
 }
 ```
 
-For a complete list of client settings see the documentation in the [IEurekaClientConfig](https://github.com/SteelToeOSS/Discovery/blob/master/src/SteelToe.Discovery.Eureka.Client/IEurekaClientConfig.cs) and [IEurekaInstanceConfig](https://github.com/SteelToeOSS/Discovery/blob/master/src/SteelToe.Discovery.Eureka.Client/IEurekaInstanceConfig.cs) files.
+ 
+For a complete list of client settings see the documentation in the [RedisCacheConnectorOptions](https://github.com/SteelToeOSS/Connectors/blob/master/src/SteelToe.CloudFoundry.Connector.Redis/RedisCacheConnectorOptions.cs) file.
 
 ## Add the CloudFoundry Configuration Provider
 Next we add the CloudFoundry Configuration provider to the builder (e.g. `AddCloudFoundry()`). This is needed in order to pickup the VCAP_ Service bindings and add them to the Configuration. Here is some sample code illustrating how this is done:
 ```
-#using Pivotal.Extensions.Configuration;
+#using SteelToe.Extensions.Configuration;
 ...
 
 var builder = new ConfigurationBuilder()
@@ -62,10 +65,11 @@ var builder = new ConfigurationBuilder()
           
 var config = builder.Build();
 ...
+
 ```
 Normally in an ASP.NET Core application, the above C# code is would be included in the constructor of the `Startup` class. For example, you might see something like this:
 ```
-#using Pivotal.Extensions.Configuration;
+#using SteelToe.Extensions.Configuration;
 
 public class Startup {
     .....
@@ -77,16 +81,19 @@ public class Startup {
             .SetBasePath(env.ContentRootPath)
             .AddJsonFile("appsettings.json")
             .AddEnvironmentVariables()
+
+            // Add to configuration the Cloudfoundry VCAP settings
             .AddCloudFoundry();
 
         Configuration = builder.Build();
     }
     ....
 ```
-## Add and Use the Discovery Client 
-The next step is to Add and Use the Discovery Client.  You do these two things in  `ConfigureServices(..)` and the `Configure(..)` methods of the startup class:
+
+## Add the DistributedRedisCache
+The next step is to Add DistributedRedisCache.  You do this in `ConfigureServices(..)` method of the startup class:
 ```
-#using Pivotal.Discovery.Client;
+#using SteelToe.CloudFoundry.Connector.Redis;
 
 public class Startup {
     .....
@@ -97,55 +104,39 @@ public class Startup {
     }
     public void ConfigureServices(IServiceCollection services)
     {
-        // Add Pivotal Discovery Client service
-        services.AddDiscoveryClient(Configuration);
+        // Add Microsoft Redis Cache configured from CloudFoundry
+        services.AddDistributedRedisCache(Configuration);
 
         // Add framework services.
         services.AddMvc();
         ...
     }
-    public void Configure(IApplicationBuilder app, ....)
-    {
-        ....
-        app.UseStaticFiles();
-        app.UseMvc();
-        
-        // Use the Pivotal Discovery Client service
-        app.UseDiscoveryClient();
-    }
     ....
 ```
-## Discovering Services
-Once the app has started, the Discovery client will begin to operate in the background, both registering services and periodically fetching the service registry from the server.
+## Using the Cache
+Below is an example illustrating how to use the DI services to inject the Cache into a controller:
 
-The simplest way of using the registry to lookup services when using the `HttpClient` is to use the Pivotal `DiscoveryHttpClientHandler`. For example, see below the `FortuneService` class. It is intended to be used to retrieve Fortunes from a Fortune micro service. The micro service is registered under the name `fortuneService`.  
-
-First, notice that the `FortuneService` constructor takes the `IDiscoveryClient` as a parameter. This is the discovery client interface which you use to lookup services in the service registry. Upon app startup, it is registered with the DI service so it can be easily used in any controller, view or service in your app.  Notice that the constructor code makes use of the client by creating an instance of the `DiscoveryHttpClientHandler`, giving it a reference to the `IDiscoveryClient`. 
-
-Next, notice that when the `RandomFortuneAsync()` method is called, you see that the `HttpClient` is created with the handler. The handlers role is to intercept any requests made and evaluate the URL to see if the host portion of the URL can be resolved from the service registry.  In this case it will attempt to resolve the "fortuneService" name into an actual `host:port` before allowing the request to continue. If the name can't be resolved the handler will still allow the request to continue, but in this case, the request will fail.
-
-Of course you don't have to use the handler, you can make lookup requests directly on the `IDiscoveryClient` interface if you need to.
 
 ```
-using Pivotal.Discovery.Client;
+using Microsoft.Extensions.Caching.Distributed;
 ....
-public class FortuneService : IFortuneService
+public class HomeController : Controller
 {
-    DiscoveryHttpClientHandler _handler;
-    private const string RANDOM_FORTUNE_URL = "http://fortuneService/api/fortunes/random";
-    public FortuneService(IDiscoveryClient client)
+    private IDistributedCache _cache;
+    public HomeController(IDistributedCache cache)
     {
-        _handler = new DiscoveryHttpClientHandler(client);
+        _cache = cache;
     }
-    public async Task<string> RandomFortuneAsync()
+    ...
+    public IActionResult CacheData()
     {
-        var client = GetClient();
-        return await client.GetStringAsync(RANDOM_FORTUNE_URL);
-    }
-    private HttpClient GetClient()
-    {
-        var client = new HttpClient(_handler, false);
-        return client;
+        string key1 = Encoding.Default.GetString(_cache.Get("Key1"));
+        string key2 = Encoding.Default.GetString(_cache.Get("Key2"));
+
+        ViewData["Key1"] = key1;
+        ViewData["Key2"] = key2;
+
+        return View();
     }
 }
 ``` 
