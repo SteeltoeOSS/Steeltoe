@@ -1,6 +1,6 @@
 ﻿# CloudFoundry .NET Redis Connector
 
-This project contain a SteelToe Connector for Redis.  This connector simplifies using [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) in an application running on CloudFoundry.
+This project contains a SteelToe Connector for Redis.  This connector simplifies using [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) in an application running on CloudFoundry.
 
 ## Provider Package Name and Feeds
 
@@ -49,7 +49,7 @@ Optionally you can configure the settings the Connector will use when setting up
 ```
 
  
-For a complete list of client settings see the documentation in the [RedisCacheConnectorOptions](https://github.com/SteelToeOSS/Connectors/blob/master/src/SteelToe.CloudFoundry.Connector.Redis/RedisCacheConnectorOptions.cs) file.
+For a complete list of client settings see the documentation in the `RedisCacheConnectorOptions` file.
 
 ## Add the CloudFoundry Configuration Provider
 Next we add the CloudFoundry Configuration provider to the builder (e.g. `AddCloudFoundry()`). This is needed in order to pickup the VCAP_ Service bindings and add them to the Configuration. Here is some sample code illustrating how this is done:
@@ -91,7 +91,7 @@ public class Startup {
 ```
 
 ## Add the DistributedRedisCache
-The next step is to Add DistributedRedisCache.  You do this in `ConfigureServices(..)` method of the startup class:
+The next step is to add DistributedRedisCache to your ServiceCollection.  You do this in `ConfigureServices(..)` method of the startup class:
 ```
 #using SteelToe.CloudFoundry.Connector.Redis;
 
