@@ -9,3 +9,4 @@ mkdir -p "$DOTNET_INSTALL_DIR"
 curl -L "$DOTNET_SDK_URL" | tar -xzv -C "$DOTNET_INSTALL_DIR"
 export PATH="$DOTNET_INSTALL_DIR:$PATH"
 dotnet --info
+npm install jsonfile -g
