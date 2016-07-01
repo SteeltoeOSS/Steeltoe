@@ -109,7 +109,9 @@ public class Startup {
         // Add MySqlConnector configured from CloudFoundry
         services.AddMySqlConnection(Configuration);
 
-        // OR if using EF6
+        // OR 
+
+        // If using EF6
         services.AddDbContext<TestContext>(Configuration);
 
         // Add framework services.
@@ -152,6 +154,18 @@ public class HomeController : Controller
 }
 
 -------------------------------------
+using MySql.Data.Entity;
+using System.Data.Entity;
+...
+
+[DbConfigurationType(typeof(MySqlEFConfiguration))]
+public class TestContext : DbContext
+{
+    public TestContext(string connectionString) : base(connectionString)
+    {
+    }
+    public DbSet<TestData> TestData { get; set; }
+}
 
 using Project.Models;
 ....
