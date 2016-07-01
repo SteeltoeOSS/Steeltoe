@@ -1,4 +1,4 @@
-language: generic
+language: node_js
 sudo: required
 dist: trusty
 addons:
