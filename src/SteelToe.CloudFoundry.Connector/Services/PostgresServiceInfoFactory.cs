@@ -16,7 +16,6 @@
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
-    [ServiceInfoFactory]
     public class PostgresServiceInfoFactory : RelationalServiceInfoFactory
     {
         private static string[] _schemes = new string[] { PostgresServiceInfo.POSTGRES_SCHEME, PostgresServiceInfo.POSTGRES_JDBC_SCHEME };

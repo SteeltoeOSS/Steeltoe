@@ -17,7 +17,6 @@
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
-    [ServiceInfoFactory]
     public class DB2ServiceInfoFactory : RelationalServiceInfoFactory
     {
         private static Tags _tags = new Tags(new string[] { "sqldb", "dashDB", "db2" });

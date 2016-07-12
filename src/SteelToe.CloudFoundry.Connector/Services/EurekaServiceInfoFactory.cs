@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
+  
     public class EurekaServiceInfoFactory : ServiceInfoFactory
     {
         public EurekaServiceInfoFactory() :

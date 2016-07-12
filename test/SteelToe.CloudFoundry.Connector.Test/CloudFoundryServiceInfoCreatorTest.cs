@@ -88,7 +88,7 @@ namespace SteelToe.CloudFoundry.Connector.Test
             var inst = CloudFoundryServiceInfoCreator.Instance(config);
             Assert.NotNull(inst);
             Assert.NotNull(inst.Factories);
-            Assert.Equal(8, inst.Factories.Count);
+            Assert.Equal(9, inst.Factories.Count);
 
         }
         [Fact]

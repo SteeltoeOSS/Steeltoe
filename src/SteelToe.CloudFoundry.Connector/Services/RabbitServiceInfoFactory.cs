@@ -19,7 +19,6 @@ using System.Collections.Generic;
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
-    [ServiceInfoFactory]
     public class RabbitServiceInfoFactory : ServiceInfoFactory
     {
         private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };

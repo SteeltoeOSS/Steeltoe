@@ -18,7 +18,6 @@ using SteelToe.Extensions.Configuration.CloudFoundry;
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
-    [ServiceInfoFactory]
     public class RedisServiceInfoFactory : ServiceInfoFactory
     {
 

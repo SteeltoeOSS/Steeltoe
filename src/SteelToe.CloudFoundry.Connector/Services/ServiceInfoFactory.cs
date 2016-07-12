@@ -20,6 +20,7 @@ using SteelToe.Extensions.Configuration.CloudFoundry;
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
+    [ServiceInfoFactory]
     public abstract class ServiceInfoFactory : IServiceInfoFactory
     {
         private Tags _tags;

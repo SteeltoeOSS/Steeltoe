@@ -16,7 +16,6 @@
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
-    [ServiceInfoFactory]
     public class SqlServerServiceInfoFactory : RelationalServiceInfoFactory
     {
         public SqlServerServiceInfoFactory() :
