@@ -19,64 +19,74 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace SteelToe.Discovery.Client
 {
-    internal class DiscoveryClientFactory
+    public class DiscoveryClientFactory
     {
-        private static object _lock = new object();
-        internal static object _discoveryClient;
-        internal static object CreateDiscoveryClient(IServiceProvider provider)
+   
+        protected DiscoveryOptions _config;
+
+        internal DiscoveryClientFactory()
         {
-            if (_discoveryClient == null)
-            {
-                if (provider == null)
-                {
-                    return null;
-                }
 
-                lock (_lock)
-                {
-                    if (_discoveryClient == null)
-                    {
-                        var options = provider.GetService(typeof(IOptions<DiscoveryOptions>)) as IOptions<DiscoveryOptions>;
-                        var logFactory = provider.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
-                        var lifeCycle = provider.GetService(typeof(IApplicationLifetime)) as IApplicationLifetime;
-                        _discoveryClient = CreateClient(options?.Value, lifeCycle, logFactory);
-                    }
-                }
-            }
-
-            return _discoveryClient;
         }
 
-        internal static object CreateClient(DiscoveryOptions options, IApplicationLifetime lifeCycle = null, ILoggerFactory logFactory = null)
+        public DiscoveryClientFactory(DiscoveryOptions config)
+        {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+            _config = config;
+        }
+
+        internal protected virtual object Create(IServiceProvider provider)
+        {
+            if (provider == null)
+            {
+                return null;
+            }
+
+            ConfigureOptions();
+
+            var logFactory = provider.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
+            var lifeCycle = provider.GetService(typeof(IApplicationLifetime)) as IApplicationLifetime;
+   
+            return CreateClient(lifeCycle, logFactory);
+        }
+
+        internal protected virtual object CreateClient(IApplicationLifetime lifeCycle = null, ILoggerFactory logFactory = null)
         {
             var logger = logFactory?.CreateLogger<DiscoveryClientFactory>();
-            if (options == null)
+            if (_config == null)
             {
                 logger?.LogWarning("Failed to create DiscoveryClient, no DiscoveryOptions");
                 return _unknown;
             }
 
-            if (options.ClientType == DiscoveryClientType.EUREKA)
+            if (_config.ClientType == DiscoveryClientType.EUREKA)
             {
-                var clientOpts = options.ClientOptions as EurekaClientOptions;
+                var clientOpts = _config.ClientOptions as EurekaClientOptions;
                 if (clientOpts == null)
                 {
                     logger?.LogWarning("Failed to create DiscoveryClient, no EurekaClientOptions");
                     return _unknown;
                 }
 
-                var instOpts = options.RegistrationOptions as EurekaInstanceOptions;
+                var instOpts = _config.RegistrationOptions as EurekaInstanceOptions;
                 return new EurekaDiscoveryClient(clientOpts, instOpts, lifeCycle, logFactory);
             } else
             {
-                logger?.LogWarning("Failed to create DiscoveryClient, unknown ClientType: {0}", options.ClientType.ToString());
+                logger?.LogWarning("Failed to create DiscoveryClient, unknown ClientType: {0}", _config.ClientType.ToString());
             }
-
 
             return _unknown;
         }
+        internal protected virtual void ConfigureOptions()
+        {
+
+        }
         private static UnknownDiscoveryClient _unknown = new UnknownDiscoveryClient();
     }
+
     public class UnknownDiscoveryClient : IDiscoveryClient
     {
         public string Description
