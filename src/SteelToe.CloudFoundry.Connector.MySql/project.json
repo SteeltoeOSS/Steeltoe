@@ -29,7 +29,7 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Binder": "1.0.0",
     "Microsoft.Extensions.Caching.Redis": "1.0.0",
-    "SteelToe.CloudFoundry.Connector": "1.0.0-*",
+    "SteelToe.CloudFoundry.Connector": "1.0.0-dev-*",
     "MySql.Data": "6.9.8",
     "MySql.Data.Entity": "6.9.8"
   }
