@@ -14,10 +14,27 @@
 // limitations under the License.
 //
 
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Linq;
+
 namespace SteelToe.Discovery.Client
 {
     public class DiscoveryOptions
     {
+        public const string EUREKA_PREFIX = "eureka";
+        public const string EUREKA_CLIENT_CONFIGURATION_PREFIX = "eureka:client";
+        public const string EUREKA_INSTANCE_CONFIGURATION_PREFIX = "eureka:instance";
+
+        public DiscoveryOptions(IConfiguration config)
+        {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+            Configure(config);
+
+        }
         public DiscoveryOptions()
         {
             ClientType = DiscoveryClientType.UNKNOWN;
@@ -69,8 +86,35 @@ namespace SteelToe.Discovery.Client
                 _registrationOptions = value;
             }
         }
+        internal protected virtual void Configure(IConfiguration config)
+        {
+            var clientConfigsection = config.GetSection(EUREKA_PREFIX);
+            int childCount = clientConfigsection.GetChildren().Count();
+            if (childCount > 0)
+            {
+                Configure(config, new EurekaClientOptions(), new EurekaInstanceOptions());
+            }
+            else
+            {
+                ClientType = DiscoveryClientType.UNKNOWN;
+            }
+        }
+
+        internal protected virtual void Configure(IConfiguration config, EurekaClientOptions clientOptions, EurekaInstanceOptions instOptions)
+        {
+
+            ConfigurationBinder.Bind(config, clientOptions);
+            ConfigurationBinder.Bind(config, instOptions);
+
+            ClientType = DiscoveryClientType.EUREKA;
+            ClientOptions = clientOptions;
+            RegistrationOptions = instOptions;
+
+        }
 
     }
 
     public enum DiscoveryClientType { EUREKA, UNKNOWN }
+
+
 }

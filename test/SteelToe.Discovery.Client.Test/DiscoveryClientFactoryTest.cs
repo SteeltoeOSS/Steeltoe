@@ -24,12 +24,13 @@ namespace SteelToe.Discovery.Client.Test
     {
         public DiscoveryClientFactoryTest() : base()
         {
-            DiscoveryClientFactory._discoveryClient = null;
         }
+
         [Fact]
         public void CreateClient_NullOptions_ReturnsUnknownClient()
         {
-            IDiscoveryClient result = DiscoveryClientFactory.CreateClient(null) as IDiscoveryClient;
+            DiscoveryClientFactory factory = new DiscoveryClientFactory();
+            IDiscoveryClient result = factory.CreateClient() as IDiscoveryClient;
             Assert.NotNull(result);
             Assert.Equal("Unknown", result.Description);
         }
@@ -37,7 +38,8 @@ namespace SteelToe.Discovery.Client.Test
         [Fact]
         public void CreateClient_UnknownClientType_ReturnsUnknownClient()
         {
-            var result = DiscoveryClientFactory.CreateClient(new DiscoveryOptions()) as IDiscoveryClient;
+            DiscoveryClientFactory factory = new DiscoveryClientFactory(new DiscoveryOptions());
+            var result = factory.CreateClient() as IDiscoveryClient;
             Assert.NotNull(result);
             Assert.Equal("Unknown", result.Description);
         }
@@ -55,20 +57,22 @@ namespace SteelToe.Discovery.Client.Test
 
                 }
             };
-            var client = DiscoveryClientFactory.CreateClient(options);
+            DiscoveryClientFactory factory = new DiscoveryClientFactory(options);
+            var client = factory.CreateClient();
             Assert.NotNull(client);
             Assert.IsType(typeof(EurekaDiscoveryClient), client);
         }
 
         [Fact]
-        public void CreateDiscoveryClient_NullIServiceProvider_ReturnsNull()
+        public void Create_NullIServiceProvider_ReturnsNull()
         {
-            var result = DiscoveryClientFactory.CreateDiscoveryClient(null);
+            DiscoveryClientFactory factory = new DiscoveryClientFactory();
+            var result = factory.Create(null);
             Assert.Null(result);
         }
 
         [Fact]
-        public void CreateDiscoveryClient_CreatesClients()
+        public void Create_CreatesClients()
         {
             DiscoveryOptions options = new DiscoveryOptions()
             {
@@ -80,51 +84,49 @@ namespace SteelToe.Discovery.Client.Test
 
                 }
             };
-            IServiceProvider provider = new MyServiceProvier(new TestOptions(options));
-            var result = DiscoveryClientFactory.CreateDiscoveryClient(provider);
+            DiscoveryClientFactory factory = new DiscoveryClientFactory(options);
+            IServiceProvider provider = new MyServiceProvier();
+            var result = factory.Create(provider);
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void CreateDiscoveryClient_MissingOptions_ReturnsNull()
+        public void Create_MissingOptions_ReturnsUnknown()
         {
-            IServiceProvider provider = new MyServiceProvier(null);
-            IDiscoveryClient result = DiscoveryClientFactory.CreateDiscoveryClient(provider) as IDiscoveryClient;
+            DiscoveryClientFactory factory = new DiscoveryClientFactory();
+            IServiceProvider provider = new MyServiceProvier();
+            IDiscoveryClient result = factory.Create(provider) as IDiscoveryClient;
             Assert.NotNull(result);
             Assert.Equal("Unknown", result.Description);
         }
 
+        [Fact]
+        public void Create_Calls_ConfigureOptions()
+        {
+            MyDiscoveryClientFactory factory = new MyDiscoveryClientFactory();
+            IServiceProvider provider = new MyServiceProvier();
+            IDiscoveryClient result = factory.Create(provider) as IDiscoveryClient;
+            Assert.NotNull(result);
+            Assert.True(factory.ConfigureOptionsCalled);
+        }
     }
-
+    class MyDiscoveryClientFactory : DiscoveryClientFactory
+    {
+        public bool ConfigureOptionsCalled { get; set; }
+        internal protected override void ConfigureOptions()
+        {
+            this.ConfigureOptionsCalled = true;
+        }
+    }
     class MyServiceProvier : IServiceProvider
     {
-        private TestOptions _options;
-        public MyServiceProvier(TestOptions options)
+
+        public MyServiceProvier()
         {
-            _options = options;
         }
         public object GetService(Type serviceType)
         {
-            if (serviceType == typeof(IOptions<DiscoveryOptions>))
-            {
-                return _options;
-            }
             return null;
-        }
-    }
-    class TestOptions : IOptions<DiscoveryOptions>
-    {
-        private DiscoveryOptions _options;
-        public TestOptions(DiscoveryOptions options = null)
-        {
-            _options = options;
-        }
-        public DiscoveryOptions Value
-        {
-            get
-            {
-                return _options;
-            }
         }
     }
 }
