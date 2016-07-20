@@ -20,12 +20,14 @@ using SteelToe.Extensions.Configuration.CloudFoundry;
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
+    [ServiceInfoFactory]
     public abstract class ServiceInfoFactory : IServiceInfoFactory
     {
         private Tags _tags;
         private string[] _schemes;
 
         private List<string> uriKeys = new List<string> { "uri", "url" };
+
         public ServiceInfoFactory(Tags tags, string scheme) :
             this(tags, new string[] { scheme })
         {
@@ -151,6 +153,21 @@ namespace SteelToe.CloudFoundry.Connector.Services
         internal protected virtual string GetUriFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, uriKeys);
+        }
+
+        internal protected virtual string GetClientIdFromCredentials(Dictionary<string, Credential> credentials)
+        {
+            return GetStringFromCredentials(credentials, "client_id");
+        }
+
+        internal protected virtual string GetClientSecretFromCredentials(Dictionary<string, Credential> credentials)
+        {
+            return GetStringFromCredentials(credentials, "client_secret");
+        }
+
+        internal protected virtual string GetAccessTokenUriFromCredentials(Dictionary<string, Credential> credentials)
+        {
+            return GetStringFromCredentials(credentials, "access_token_uri");
         }
 
         internal protected virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, string key)

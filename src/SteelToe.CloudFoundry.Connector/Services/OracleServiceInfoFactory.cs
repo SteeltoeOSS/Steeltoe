@@ -16,7 +16,6 @@
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
-    [ServiceInfoFactory]
     public class OracleServiceInfoFactory : RelationalServiceInfoFactory
     {
         public OracleServiceInfoFactory() :

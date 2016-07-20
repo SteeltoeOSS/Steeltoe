@@ -20,13 +20,13 @@ using System.Text;
 
 namespace SteelToe.CloudFoundry.Connector
 {
-    public abstract class AbstractServiceConfiguration
+    public abstract class AbstractServiceConnectorOptions
     {
-        protected AbstractServiceConfiguration()
+        protected AbstractServiceConnectorOptions()
         {
 
         }
-        public AbstractServiceConfiguration(IConfiguration config)
+        public AbstractServiceConnectorOptions(IConfiguration config)
         {
             if (config == null)
             {

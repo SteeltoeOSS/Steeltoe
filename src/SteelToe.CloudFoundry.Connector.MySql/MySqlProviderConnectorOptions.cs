@@ -21,17 +21,17 @@ using System.Text;
 
 namespace SteelToe.CloudFoundry.Connector.MySql
 {
-    public class MySqlProviderConfiguration : AbstractServiceConfiguration
+    public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
     {
         public const string Default_Server = "localhost";
         public const int Default_Port = 3306;
         private const string MYSQL_CLIENT_SECTION_PREFIX = "mysql:client";
 
-        public MySqlProviderConfiguration()
+        public MySqlProviderConnectorOptions()
         {
         }
 
-        public MySqlProviderConfiguration(IConfiguration config) :
+        public MySqlProviderConnectorOptions(IConfiguration config) :
             base()
         {
             if (config == null)

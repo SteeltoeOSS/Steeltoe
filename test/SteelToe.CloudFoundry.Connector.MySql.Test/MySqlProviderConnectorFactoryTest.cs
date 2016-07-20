@@ -15,6 +15,7 @@
 //
 
 using SteelToe.CloudFoundry.Connector.Services;
+using System;
 using Xunit;
 
 namespace SteelToe.CloudFoundry.Connector.MySql.Test
@@ -22,9 +23,21 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
     public class MySqlProviderConnectorFactoryTest
     {
         [Fact]
+        public void Constructor_ThrowsIfConfigNull()
+        {
+            // Arrange
+            MySqlProviderConnectorOptions config = null;
+            MySqlServiceInfo si = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorFactory(si, config));
+            Assert.Contains(nameof(config), ex.Message);
+
+        }
+        [Fact]
         public void Create_ReturnsMySqlConnection()
         {
-            MySqlProviderConfiguration config = new MySqlProviderConfiguration()
+            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 3306,

@@ -26,7 +26,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
         public void UpdateConfiguration_WithNullMySqlServiceInfo_ReturnsExpected()
         {
             MySqlProviderConfigurer configurer = new MySqlProviderConfigurer();
-            MySqlProviderConfiguration config = new MySqlProviderConfiguration()
+            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
             {
                 Server ="localhost",
                 Port = 1234,
@@ -48,7 +48,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
         public void UpdateConfiguration_WithMySqlServiceInfo_ReturnsExpected()
         {
             MySqlProviderConfigurer configurer = new MySqlProviderConfigurer();
-            MySqlProviderConfiguration config = new MySqlProviderConfiguration()
+            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -71,7 +71,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            MySqlProviderConfiguration config = new MySqlProviderConfiguration()
+            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -92,7 +92,7 @@ namespace SteelToe.CloudFoundry.Connector.MySql.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            MySqlProviderConfiguration config = new MySqlProviderConfiguration()
+            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,

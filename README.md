@@ -11,19 +11,19 @@ Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteelToeOSS/
 Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteelToeOSS/Connectors.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Connectors)
 
 # .NET Runtime & Framework Support
-Like ASP.NET Core, the connectors are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes. Note that some connectors only support .NET 4.5.1+ since the libraries they depend on do not yet supoort .NET Core.
+Like ASP.NET Core, the connectors are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes. Note that some connectors only support .NET 4.5.1+ since the libraries they depend on do not yet support .NET Core.
 
 Where supported the connectors are built and unit tested on Windows, Linux and OSX.
 
 While the primary usage of the connectors is intended to be with ASP.NET Core applications, they should also work fine with UWP, Console and ASP.NET 4.x apps.
 
-Depending on their level of support, the connectors and samples have been tested on .NET Core 1.0.0-RC2/SDK Preview 1, .NET 4.5.1, and on ASP.NET Core 1.0.0-RC2-final.
+Depending on their level of support, the connectors and samples have been tested on .NET Core 1.0.0 Preview 2 SDK, .NET 4.5.1, and on ASP.NET Core 1.0.0.
 
 # Usage
 See the Readme for each connector for more details on how to make use of it in an application.
 
 # Nuget Feeds
-All new configuration connector development is done on the dev branch. More stable versions of the connectors can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
+All new connector development is done on the dev branch. More stable versions of the connectors can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 

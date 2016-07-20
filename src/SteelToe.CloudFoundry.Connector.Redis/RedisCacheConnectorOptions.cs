@@ -20,17 +20,17 @@ using System;
 
 namespace SteelToe.CloudFoundry.Connector.Redis
 {
-    public class RedisCacheConfiguration : AbstractServiceConfiguration
+    public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     {
         public const string Default_Host = "localhost";
         public const int Default_Port = 6379;
         private const string REDIS_CLIENT_SECTION_PREFIX = "redis:client";
 
-        public RedisCacheConfiguration()
+        public RedisCacheConnectorOptions()
         {
         }
 
-        public RedisCacheConfiguration(IConfiguration config) :
+        public RedisCacheConnectorOptions(IConfiguration config) :
             base()
         {
             if (config == null)

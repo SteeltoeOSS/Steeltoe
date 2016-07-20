@@ -57,7 +57,7 @@ namespace SteelToe.CloudFoundry.Connector.Test
         }
     }
 
-    class TestServiceConfiguration : AbstractServiceConfiguration
+    class TestServiceConfiguration : AbstractServiceConnectorOptions
     {
         public TestServiceConfiguration(IConfiguration config)
             : base(config)

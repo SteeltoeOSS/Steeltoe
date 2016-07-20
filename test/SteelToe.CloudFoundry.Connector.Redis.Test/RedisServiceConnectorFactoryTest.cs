@@ -25,7 +25,7 @@ namespace SteelToe.CloudFoundry.Connector.Redis.Test
         [Fact]
         public void Create_ReturnsRedisCache()
         {
-            RedisCacheConfiguration config = new RedisCacheConfiguration()
+            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,

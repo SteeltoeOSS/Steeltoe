@@ -22,7 +22,6 @@ using System.Threading.Tasks;
 
 namespace SteelToe.CloudFoundry.Connector.Services
 {
-    [ServiceInfoFactory]
     public class MongoServiceInfoFactory : ServiceInfoFactory
     {
         public MongoServiceInfoFactory() :
