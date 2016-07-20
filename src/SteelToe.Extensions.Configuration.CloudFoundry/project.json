@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "description": "ASP.NET 5 CloudFoundry Environment Variable Configuration Provider",
+  "description": "ASP.NET Core CloudFoundry Environment Variable Configuration Provider",
   "authors": [
     "Pivotal",
     "dtillman"
@@ -8,7 +8,7 @@
   "packOptions": {
     "tags": [
       "CloudFoundry",
-      "ASPNET5",
+      "ASPNET Core",
       "Spring",
       "Spring Cloud"
     ],
@@ -22,18 +22,17 @@
     },
     "netstandard1.3": {
       "dependencies": {
-      },
-      "imports": [ "portable-net451+win8" ]
+      }
     }
   },
   "dependencies": {
-    "Microsoft.Extensions.Configuration": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc2-final",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Options": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-rc2-final",
-    "Newtonsoft.Json": "8.0.3"
+    "Microsoft.Extensions.Configuration": "1.0.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Options": "1.0.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "Newtonsoft.Json": "9.0.1"
   }
 }

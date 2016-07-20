@@ -4,7 +4,7 @@
   "description": "Integration test project for SteelToe.Extensions.Configuration.ConfigServer",
   "authors": [ "Pivotal", "dtillman" ],
   "packOptions": {
-    "tags": [ "ASPNET5", "Spring", "Spring Cloud", "Spring Cloud Config Server" ],
+    "tags": [ "ASPNET Core", "Spring", "Spring Cloud", "Spring Cloud Config Server" ],
     "projectUrl": "http://steeltoe.io",
     "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
     "copyright": "Copyright 2015 the original authors"
@@ -14,7 +14,7 @@
       "dependencies": {
         "Microsoft.NETCore.App": {
           "type": "platform",
-          "version": "1.0.0-rc2-3002702"
+          "version": "1.0.0"
         }
       },
       "imports": [
@@ -29,17 +29,17 @@
     }
   },
   "dependencies": {
-    "Microsoft.AspNetCore.Hosting": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Configuration": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc2-final",
+    "Microsoft.AspNetCore.Hosting": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.Extensions.Configuration": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Logging": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "SteelToe.Extensions.Configuration.ConfigServer": "1.0.0-*",
     "SteelToe.Extensions.Configuration.ConfigServer.Test": "1.0.0-*",
-    "xunit": "2.1.0",
-    "dotnet-test-xunit": "1.0.0-rc2-build10025"
+    "xunit": "2.2.0-beta2-build3300",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029"
   },
   "buildOptions": {
     "copyToOutput": {
