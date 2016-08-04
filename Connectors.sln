@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3A6DCB1F-B7A5-435A-B938-31B3A85E5324}"
 EndProject
@@ -23,6 +23,10 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.Redis.Test", "test\SteelToe.CloudFoundry.Connector.Redis.Test\SteelToe.CloudFoundry.Connector.Redis.Test.xproj", "{B518FBCF-138E-4154-931E-63DF5551D09B}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.MySql.Test", "test\SteelToe.CloudFoundry.Connector.MySql.Test\SteelToe.CloudFoundry.Connector.MySql.Test.xproj", "{A1112F84-5350-481B-8296-FB1119097329}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.PostgreSql", "src\SteelToe.CloudFoundry.Connector.PostgreSql\SteelToe.CloudFoundry.Connector.PostgreSql.xproj", "{25922DA9-53C1-43CC-B119-5D1CF3462118}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.PostgreSql.Test", "test\SteelToe.CloudFoundry.Connector.PostgreSql.Test\SteelToe.CloudFoundry.Connector.PostgreSql.Test.xproj", "{2B86C248-05AB-4C87-A7AF-1843794750C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +58,14 @@ Global
 		{A1112F84-5350-481B-8296-FB1119097329}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1112F84-5350-481B-8296-FB1119097329}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1112F84-5350-481B-8296-FB1119097329}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25922DA9-53C1-43CC-B119-5D1CF3462118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25922DA9-53C1-43CC-B119-5D1CF3462118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25922DA9-53C1-43CC-B119-5D1CF3462118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25922DA9-53C1-43CC-B119-5D1CF3462118}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +77,7 @@ Global
 		{75EF0251-185B-490C-A006-3CE44C6FF713} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
 		{B518FBCF-138E-4154-931E-63DF5551D09B} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
 		{A1112F84-5350-481B-8296-FB1119097329} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
+		{25922DA9-53C1-43CC-B119-5D1CF3462118} = {3A6DCB1F-B7A5-435A-B938-31B3A85E5324}
+		{2B86C248-05AB-4C87-A7AF-1843794750C3} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
 	EndGlobalSection
 EndGlobal
