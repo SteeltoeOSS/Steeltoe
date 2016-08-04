@@ -69,15 +69,12 @@ namespace SteelToe.CloudFoundry.Connector.MySql.EF6
 
         private static void DoAdd(IServiceCollection services, IConfiguration config, MySqlServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
-            //if (System.Threading.Interlocked.CompareExchange(ref _setConfiguration, 1, 0) == 0) { 
-            //    DbConfiguration.SetConfiguration(new MySqlEFConfiguration());
-            //}
 
             MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
 
             MySqlDbContextConnectorFactory factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
-        //private static int _setConfiguration = 0;
+       
     }
 }
