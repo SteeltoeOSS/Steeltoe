@@ -10,6 +10,18 @@
     "copyright": "Copyright 2016 the original authors"
   },
   "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        }
+      },
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
+    },
     "net451": {
       "dependencies": {
         "Microsoft.NETCore.Platforms": "1.0.1-*"
