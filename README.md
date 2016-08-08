@@ -37,7 +37,7 @@ To build the packages on windows:
 1. git clone ...
 2. cd `<clone directory>`
 3. Install .NET Core SDK
-4. dotnet restore src
+4. dotnet restore --configfile nuget.config src
 5. cd src\ `<project>` (e.g. cd src\SteelToe.CloudFoundry.Connector)
 6. dotnet pack --configuration `<Release or Debug>` 
 
@@ -48,7 +48,7 @@ To run the unit tests:
 1. git clone ...
 2. cd `<clone directory>`
 3. Install .NET Core SDK 
-4. dotnet restore test
+4. dotnet restore --configfile nuget.config test
 5. cd test\ `<test project>` (e.g. cd test\SteelToe.CloudFoundry.Connector.Test)
 6. dotnet test
 
@@ -58,7 +58,7 @@ To build the packages on Linux/OSX: ( Note: Some connectors do not support CoreC
 1. git clone ...
 2. cd `<clone directory>`
 3. Install .NET Core SDK
-4. dotnet restore src
+4. dotnet restore --configfile nuget.config src
 5. cd src/ `<project>` (e.g.. cd src/SteelToe.CloudFoundry.Connector)
 6. dotnet pack --configuration `<Release or Debug>`
 
@@ -69,7 +69,7 @@ To run the unit tests: ( Note: Some connectors do not support CoreCLR.)
 1. git clone ...
 2. cd `<clone directory>`
 3. Install .NET Core SDK 
-4. dotnet restore test
+4. dotnet restore --configfile nuget.config test
 5. cd test\ `<test project>` (e.g. cd test/SteelToe.CloudFoundry.Connector.Test)
 6. dotnet test --framework netcoreapp1.0
 
