@@ -27,6 +27,9 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.PostgreSql", "src\SteelToe.CloudFoundry.Connector.PostgreSql\SteelToe.CloudFoundry.Connector.PostgreSql.xproj", "{25922DA9-53C1-43CC-B119-5D1CF3462118}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.PostgreSql.Test", "test\SteelToe.CloudFoundry.Connector.PostgreSql.Test\SteelToe.CloudFoundry.Connector.PostgreSql.Test.xproj", "{2B86C248-05AB-4C87-A7AF-1843794750C3}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.Rabbit", "src\SteelToe.CloudFoundry.Connector.Rabbit\SteelToe.CloudFoundry.Connector.Rabbit.xproj", "{E42C9832-E939-46EB-8A9F-A854FBD18EAE}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.Rabbit.Test", "test\SteelToe.CloudFoundry.Connector.Rabbit.Test\SteelToe.CloudFoundry.Connector.Rabbit.Test.xproj", "{72E7186B-F318-4DB0-83E1-2ACB302802CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +69,14 @@ Global
 		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,5 +90,7 @@ Global
 		{A1112F84-5350-481B-8296-FB1119097329} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
 		{25922DA9-53C1-43CC-B119-5D1CF3462118} = {3A6DCB1F-B7A5-435A-B938-31B3A85E5324}
 		{2B86C248-05AB-4C87-A7AF-1843794750C3} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE} = {3A6DCB1F-B7A5-435A-B938-31B3A85E5324}
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
 	EndGlobalSection
 EndGlobal

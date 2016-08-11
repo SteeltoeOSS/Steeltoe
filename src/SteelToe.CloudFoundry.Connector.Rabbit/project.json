@@ -1,0 +1,42 @@
+{
+  "version": "1.0.1",
+  "description": "CloudFoundry Connector for ASP.NET Core RabbitMQ Client",
+  "authors": [
+    "Pivotal",
+    "kgross",
+    "dgoddard"
+  ],
+  "packOptions": {
+    "tags": [
+      "CloudFoundry",
+      "ASPNET Core",
+      "Connectors",
+      "RabbitMQ"
+    ],
+    "projectUrl": "http://steeltoe.io",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "copyright": "Copyright 2016 the original authors"
+  },
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+        "RabbitMQ.Client": "3.6.3"
+      }
+    },
+    "netstandard1.3": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "RabbitMQ.Client": "4.0.0-rc-1"
+      }
+    }
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Options": "1.0.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Binder": "1.0.0",
+    "SteelToe.CloudFoundry.Connector": "1.0.0-*"
+  }
+}

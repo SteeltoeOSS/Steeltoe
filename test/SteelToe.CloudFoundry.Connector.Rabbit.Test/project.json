@@ -1,0 +1,41 @@
+{
+  "version": "1.0.0",
+  "testRunner": "xunit",
+  "description": "Unit test project for SteelToe.CloudFoundry.Connector.Rabbit",
+  "authors": [ "Pivotal", "dtillman" ],
+  "packOptions": {
+    "tags": [ "ASPNET Core", "Connector", "Spring", "Spring Cloud", "Spring Cloud Connector","Rabbit" ],
+    "projectUrl": "http://steeltoe.io",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "copyright": "Copyright 2016 the original authors"
+  },
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+        "Microsoft.NETCore.Platforms": "1.0.1-*"
+      }
+    }
+  },
+  "dependencies": {
+    "Microsoft.AspNetCore.Hosting": "1.0.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.AspNetCore.TestHost": "1.0.0",
+    "Microsoft.Extensions.Configuration": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Microsoft.Extensions.Options": "1.0.0",
+    "SteelToe.Extensions.Configuration.CloudFoundry": "1.0.0-*",
+    "xunit": "2.2.0-beta2-build3300",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029",
+    "SteelToe.CloudFoundry.Connector.Rabbit": "1.0.0"
+  },
+  "buildOptions": {
+    "copyToOutput": {
+      "include": [ "xunit.runner.json" ]
+    }
+  }
+}
+
+
+
+
