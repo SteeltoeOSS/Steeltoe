@@ -16,6 +16,7 @@ artifacts:
 - path: 'src\SteelToe.CloudFoundry.Connector.MySql\bin\Release\*.nupkg'
 - path: 'src\SteelToe.CloudFoundry.Connector.Redis\bin\Release\*.nupkg'
 - path: 'src\SteelToe.CloudFoundry.Connector.PostgreSql\bin\Release\*.nupkg'
+- path: 'src\SteelToe.CloudFoundry.Connector.Rabbit\bin\Release\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: true

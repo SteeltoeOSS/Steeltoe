@@ -7,6 +7,9 @@ dotnet test --framework netcoreapp1.0
 cd ../..
 cd test/SteelToe.CloudFoundry.Connector.PostgreSql.Test
 dotnet test --framework netcoreapp1.0
+cd ../..
+cd test/SteelToe.CloudFoundry.Connector.Rabbit.Test
+dotnet test --framework netcoreapp1.0
 # cd ../..
 # cd test/SteelToe.CloudFoundry.Connector.MySql.Test
 # dotnet test --framework netcoreapp1.0
