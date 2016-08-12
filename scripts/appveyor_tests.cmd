@@ -13,3 +13,6 @@ cd ..\..
 cd test\SteelToe.CloudFoundry.Connector.PostgreSql.Test
 dotnet test
 cd ..\..
+cd test\SteelToe.CloudFoundry.Connector.Rabbit.Test
+dotnet test
+cd ..\..
