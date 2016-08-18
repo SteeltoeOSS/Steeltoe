@@ -23,7 +23,7 @@ namespace SteelToe.CloudFoundry.Connector.Services
     {
         private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };
         public RabbitServiceInfoFactory() :
-            base(new Tags("rabbitmq"), _scheme)
+            base(new Tags("rabbit"), _scheme)
         {
 
         }
