@@ -1,0 +1,41 @@
+﻿{
+  "version": "1.0.0",
+  "description": "CloudFoundry Connector for ASP.NET Core and OAuth Services",
+  "authors": [
+    "Pivotal",
+    "dtillman"
+  ],
+  "packOptions": {
+    "tags": [
+      "CloudFoundry",
+      "ASPNET Core",
+      "Connectors",
+      "Security",
+      "OAuth2",
+      "Single Sign-On"
+    ],
+    "projectUrl": "http://steeltoe.io",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "copyright": "Copyright 2016 the original authors"
+  },
+  "frameworks": {
+    "net451": {
+      "dependencies": {}
+    },
+    "netstandard1.3": {
+      "imports": "dnxcore50",
+      "dependencies": {}
+    }
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Options": "1.0.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Binder": "1.0.0",
+    "SteelToe.CloudFoundry.Connector": "1.0.0-*"
+  }
+}
+
+

@@ -8,6 +8,7 @@ npm install
 node patch-project-json.js ../src/SteelToe.CloudFoundry.Connector/project.json $STEELTOE_VERSION-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER $TRAVIS_TAG
 node patch-project-json.js ../src/SteelToe.CloudFoundry.Connector.PostgreSql/project.json $STEELTOE_VERSION-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER $TRAVIS_TAG
 node patch-project-json.js ../src/SteelToe.CloudFoundry.Connector.Rabbit/project.json $STEELTOE_VERSION-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER $TRAVIS_TAG
+node patch-project-json.js ../src/SteelToe.CloudFoundry.Connector.OAuth/project.json $STEELTOE_VERSION-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER $TRAVIS_TAG
 # node patch-project-json.js ../src/SteelToe.CloudFoundry.Connector.MySql/project.json $STEELTOE_VERSION-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER $TRAVIS_TAG
 # node patch-project-json.js ../src/SteelToe.CloudFoundry.Connector.Redis/project.json $STEELTOE_VERSION-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER $TRAVIS_TAG
 cd ..
@@ -24,6 +25,10 @@ dotnet build --framework netstandard1.3 --configuration Release
 
 cd ../..
 cd src/SteelToe.CloudFoundry.Connector.Rabbit
+dotnet build --framework netstandard1.3 --configuration Release
+
+cd ../..
+cd src/SteelToe.CloudFoundry.Connector.OAuth
 dotnet build --framework netstandard1.3 --configuration Release
 
 # Note MySql and Redis currently only build/run on windows

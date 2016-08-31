@@ -16,3 +16,6 @@ cd ..\..
 cd test\SteelToe.CloudFoundry.Connector.Rabbit.Test
 dotnet test
 cd ..\..
+cd test\SteelToe.CloudFoundry.Connector.OAuth.Test
+dotnet test
+cd ..\..

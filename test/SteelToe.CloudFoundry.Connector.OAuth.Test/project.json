@@ -1,0 +1,57 @@
+﻿{
+  "version": "1.0.0",
+  "testRunner": "xunit",
+  "description": "Unit test project for SteelToe.CloudFoundry.Connector.OAuth",
+  "authors": [ "Pivotal", "dtillman" ],
+  "packOptions": {
+    "tags": [ "ASPNET Core", "Connector", "Spring Cloud", "OAuth", "Security", "Single Sign-On" ],
+    "projectUrl": "http://steeltoe.io",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "copyright": "Copyright 2016 the original authors"
+  },
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        }
+      },
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
+    },
+    "net451": {
+      "dependencies": {
+        "Microsoft.NETCore.Platforms": "1.0.1-*"
+      }
+    }
+  },
+  "dependencies": {
+    "Microsoft.AspNetCore.Hosting": "1.0.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.AspNetCore.TestHost": "1.0.0",
+    "Microsoft.Extensions.Configuration": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Microsoft.Extensions.Options": "1.0.0",
+    "SteelToe.Extensions.Configuration.CloudFoundry": "1.0.0-*",
+    "SteelToe.CloudFoundry.Connector.OAuth": "1.0.0-*",
+    "xunit": "2.2.0-beta2-build3300",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029"
+  },
+  "buildOptions": {
+    "copyToOutput": {
+      "include": [ "xunit.runner.json" ]
+    }
+  }
+}
+
+
+
+
+
+
+
+
