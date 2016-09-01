@@ -23,16 +23,16 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
     public class OAuthConfigurer
     {
 
-        internal IOptions<OAuthOptions> Configure(SsoServiceInfo si, OAuthConnectorOptions configuration)
+        internal IOptions<OAuthServiceOptions> Configure(SsoServiceInfo si, OAuthConnectorOptions configuration)
         {
-            OAuthOptions ssoOptions = new OAuthOptions();
+            OAuthServiceOptions ssoOptions = new OAuthServiceOptions();
             UpdateOptions(configuration, ssoOptions);
             UpdateOptions(si, ssoOptions);
-            return new ConnectorIOptions<OAuthOptions>(ssoOptions);
+            return new ConnectorIOptions<OAuthServiceOptions>(ssoOptions);
 
         }
 
-        internal void UpdateOptions(SsoServiceInfo si, OAuthOptions options)
+        internal void UpdateOptions(SsoServiceInfo si, OAuthServiceOptions options)
         {
             if (si == null)
             {
@@ -48,7 +48,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
             options.JwtKeyUrl = si.AuthDomain + OAuthConnectorOptions.Default_JwtTokenKey;
         }
 
-        internal void UpdateOptions(OAuthConnectorOptions config, OAuthOptions options)
+        internal void UpdateOptions(OAuthConnectorOptions config, OAuthServiceOptions options)
         {
             if (config == null)
             {

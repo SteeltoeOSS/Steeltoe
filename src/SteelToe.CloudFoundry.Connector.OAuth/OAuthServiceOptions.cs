@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 namespace SteelToe.CloudFoundry.Connector.OAuth
 {
-    public class OAuthOptions 
+    public class OAuthServiceOptions 
     {
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }

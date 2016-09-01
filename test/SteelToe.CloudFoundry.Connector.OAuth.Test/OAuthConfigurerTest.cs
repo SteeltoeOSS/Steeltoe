@@ -27,7 +27,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
         [Fact]
         public void Update_WithDefaultConnectorOptions_UpdatesOAuthOptions_AsExpected()
         {
-            OAuthOptions opts = new OAuthOptions();
+            OAuthServiceOptions opts = new OAuthServiceOptions();
             OAuthConnectorOptions config = new OAuthConnectorOptions();
             OAuthConfigurer configurer = new OAuthConfigurer();
             configurer.UpdateOptions(config, opts);
@@ -46,7 +46,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
         [Fact]
         public void Update_WithServiceInfo_UpdatesOAuthOptions_AsExpected()
         {
-            OAuthOptions opts = new OAuthOptions();
+            OAuthServiceOptions opts = new OAuthServiceOptions();
             SsoServiceInfo si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "http://foo.bar");
      
             OAuthConfigurer configurer = new OAuthConfigurer();

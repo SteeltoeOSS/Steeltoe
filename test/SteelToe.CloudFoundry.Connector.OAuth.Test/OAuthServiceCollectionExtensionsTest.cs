@@ -86,7 +86,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             // Act and Assert
             OAuthServiceCollectionExtensions.AddOAuthOptions(services, config);
 
-            var service = services.BuildServiceProvider().GetService<IOptions<OAuthOptions>>();
+            var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
             Assert.NotNull(service);
 
         }
@@ -237,7 +237,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             // Act and Assert
             OAuthServiceCollectionExtensions.AddOAuthOptions(services, config);
 
-            var service = services.BuildServiceProvider().GetService<IOptions<OAuthOptions>>();
+            var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
             Assert.NotNull(service);
 
             var opts = service.Value;
