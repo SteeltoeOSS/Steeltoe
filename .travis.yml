@@ -1,0 +1,27 @@
+language: node_js
+sudo: required
+dist: trusty
+addons:
+  apt:
+    packages:
+    - gettext
+    - unzip
+    - curl
+    - libcurl4-openssl-dev
+    - libicu-dev
+    - libssl-dev
+    - libunwind8
+    - uuid-dev
+    - zlib1g
+os:
+  - linux
+  - osx
+osx_image: xcode7.3
+branches:
+  only:
+    - master
+    - dev
+script:
+  - ./scripts/travis_install.sh
+  - ./scripts/travis_build.sh
+  - ./scripts/travis_test.sh

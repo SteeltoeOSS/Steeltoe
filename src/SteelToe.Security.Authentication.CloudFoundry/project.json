@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "description": "ASP.NET Core External Security Provider for CloudFoundry",
+  "authors": [
+    "Pivotal",
+    "dtillman"
+  ],
+  "packOptions": {
+    "tags": [
+      "CloudFoundry",
+      "ASPNET Core",
+      "Security",
+      "OAuth2",
+      "Single Sign-On"
+    ],
+    "projectUrl": "http://steeltoe.io",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "copyright": "Copyright 2016 the original authors"
+  },
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+        "System.Net.Http": "4.0.0"
+      }
+    },
+    "netstandard1.3": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "System.Net.Http.WinHttpHandler": "4.0.0",
+        "System.Threading.Thread": "4.0.0"
+      }
+    }
+  },
+  "dependencies": {
+    "System.Runtime.InteropServices.RuntimeInformation": "4.0.0-*",
+    "Microsoft.AspNetCore.Authentication": "1.0.0",
+    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
+    "Microsoft.AspNetCore.Authentication.OAuth": "1.0.0",
+    "Microsoft.AspNetCore.Authorization": "1.0.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Options": "1.0.0",
+    "SteelToe.CloudFoundry.Connector.OAuth": "1.0.0-*"
+  }
+}
+
