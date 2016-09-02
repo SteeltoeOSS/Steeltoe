@@ -81,38 +81,51 @@ namespace SteelToe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void GetBackChannelHandler_ReturnsCorrectly()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 
-                CloudFoundryOptions opts = new CloudFoundryOptions();
-                Assert.Null(opts.GetBackChannelHandler());
 
-                opts = new CloudFoundryOptions()
-                {
-                    ValidateCertificates = false
-                };
+            CloudFoundryOptions opts = new CloudFoundryOptions();
+            Assert.Null(opts.GetBackChannelHandler());
+
+            opts = new CloudFoundryOptions()
+            {
+                ValidateCertificates = false
+            };
+#if NET451
+            Assert.Null(opts.GetBackChannelHandler());
+
+#else
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 Assert.NotNull(opts.GetBackChannelHandler());
+#endif
 
-                OAuthServiceOptions oauthOpts = new OAuthServiceOptions()
-                {
-                    ClientId = "ClientId",
-                    ClientSecret = "ClientSecret",
-                    UserAuthorizationUrl = "UserAuthorizationUrl",
-                    AccessTokenUrl = "AccessTokenUrl",
-                    UserInfoUrl = "UserInfoUrl",
-                    TokenInfoUrl = "TokenInfoUrl",
-                    JwtKeyUrl = "JwtKeyUrl",
-                    Scope = { "foo", "bar" }
-                };
+            OAuthServiceOptions oauthOpts = new OAuthServiceOptions()
+            {
+                ClientId = "ClientId",
+                ClientSecret = "ClientSecret",
+                UserAuthorizationUrl = "UserAuthorizationUrl",
+                AccessTokenUrl = "AccessTokenUrl",
+                UserInfoUrl = "UserInfoUrl",
+                TokenInfoUrl = "TokenInfoUrl",
+                JwtKeyUrl = "JwtKeyUrl",
+                Scope = { "foo", "bar" }
+            };
 
-                opts = new CloudFoundryOptions(oauthOpts);
-                Assert.Null(opts.GetBackChannelHandler());
+            opts = new CloudFoundryOptions(oauthOpts);
+            Assert.Null(opts.GetBackChannelHandler());
 
-                opts = new CloudFoundryOptions(oauthOpts)
-                {
-                    ValidateCertificates = false
-                };
+            opts = new CloudFoundryOptions(oauthOpts)
+            {
+                ValidateCertificates = false
+            };
+
+#if NET451
+            Assert.Null(opts.GetBackChannelHandler());
+
+#else
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 Assert.NotNull(opts.GetBackChannelHandler());
-            }
+#endif
+
         }
     }
 }
