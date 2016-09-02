@@ -48,6 +48,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
                 'clientSecret': 'clientsecret',
                 'userAuthorizationUri': 'userauthorizationuri',
                 'accessTokenUri': 'accesstokenuri',
+                'validate_certificates': false,
                 'scope': ['foo','bar']
             },
             'resource' : {
@@ -80,6 +81,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             Assert.NotNull(sconfig.Scope);
             Assert.Equal(2, sconfig.Scope.Count);
             Assert.True(sconfig.Scope.Contains("foo") && sconfig.Scope.Contains("bar"));
+            Assert.False(sconfig.Validate_Certificates);
 
         }
     }

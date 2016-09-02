@@ -28,7 +28,10 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
         public void Update_WithDefaultConnectorOptions_UpdatesOAuthOptions_AsExpected()
         {
             OAuthServiceOptions opts = new OAuthServiceOptions();
-            OAuthConnectorOptions config = new OAuthConnectorOptions();
+            OAuthConnectorOptions config = new OAuthConnectorOptions()
+            {
+                Validate_Certificates = false
+            };
             OAuthConfigurer configurer = new OAuthConfigurer();
             configurer.UpdateOptions(config, opts);
 
@@ -39,6 +42,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             Assert.Equal(OAuthConnectorOptions.Default_OAuthServiceUrl + OAuthConnectorOptions.Default_CheckTokenUri, opts.TokenInfoUrl);
             Assert.Equal(OAuthConnectorOptions.Default_OAuthServiceUrl + OAuthConnectorOptions.Default_AuthorizationUri, opts.UserAuthorizationUrl);
             Assert.Equal(OAuthConnectorOptions.Default_OAuthServiceUrl + OAuthConnectorOptions.Default_UserInfoUri, opts.UserInfoUrl);
+            Assert.False(opts.ValidateCertificates);
             Assert.NotNull(opts.Scope);
             Assert.Equal(0, opts.Scope.Count);
         }
@@ -60,6 +64,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_CheckTokenUri, opts.TokenInfoUrl);
             Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_AuthorizationUri, opts.UserAuthorizationUrl);
             Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_UserInfoUri, opts.UserInfoUrl);
+            Assert.True(opts.ValidateCertificates);
             Assert.NotNull(opts.Scope);
             Assert.Equal(0, opts.Scope.Count);
         }
@@ -82,6 +87,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             Assert.Equal(OAuthConnectorOptions.Default_OAuthServiceUrl + OAuthConnectorOptions.Default_CheckTokenUri, opts.TokenInfoUrl);
             Assert.Equal(OAuthConnectorOptions.Default_OAuthServiceUrl + OAuthConnectorOptions.Default_AuthorizationUri, opts.UserAuthorizationUrl);
             Assert.Equal(OAuthConnectorOptions.Default_OAuthServiceUrl + OAuthConnectorOptions.Default_UserInfoUri, opts.UserInfoUrl);
+            Assert.True(opts.ValidateCertificates);
             Assert.NotNull(opts.Scope);
             Assert.Equal(0, opts.Scope.Count);
         }
@@ -106,6 +112,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_CheckTokenUri, opts.TokenInfoUrl);
             Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_AuthorizationUri, opts.UserAuthorizationUrl);
             Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_UserInfoUri, opts.UserInfoUrl);
+            Assert.True(opts.ValidateCertificates);
             Assert.NotNull(opts.Scope);
             Assert.Equal(0, opts.Scope.Count);
         }

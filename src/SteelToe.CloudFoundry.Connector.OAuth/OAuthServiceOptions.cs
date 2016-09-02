@@ -29,6 +29,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
         public string TokenInfoUrl { get; set; }
         public string JwtKeyUrl { get; set; }
         public ICollection<string> Scope { get; set; } = new HashSet<string>();
+        public bool ValidateCertificates { get; set; } = true;
 
     }
 }

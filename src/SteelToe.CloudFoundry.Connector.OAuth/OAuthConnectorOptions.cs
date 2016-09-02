@@ -33,6 +33,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
         internal const string Default_OAuthServiceUrl = "Default_OAuthServiceUrl";
         internal const string Default_ClientId = "Default_ClientId";
         internal const string Default_ClientSecret = "Default_ClientSecret";
+        internal const bool Default_ValidateCertificates = true;
 
         public OAuthConnectorOptions()
         {
@@ -63,6 +64,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
         public string TokenInfoUri { get; set; } = Default_CheckTokenUri;
         public string JwtKeyUri { get; set; } = Default_JwtTokenKey;
         public List<string> Scope { get; set; }
+        public bool Validate_Certificates { get; set; } = Default_ValidateCertificates;
 
     }
 }
