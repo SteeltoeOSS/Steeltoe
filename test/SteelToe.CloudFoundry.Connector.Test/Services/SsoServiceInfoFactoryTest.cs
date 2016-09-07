@@ -30,6 +30,24 @@ namespace SteelToe.CloudFoundry.Connector.Test.Services
         }
 
         [Fact]
+        public void Accept_AcceptsValidUAAServiceBinding()
+        {
+            Service s = new Service()
+            {
+                Label = "user-provided",
+                Tags = new string[0],
+                Name = "mySSO",
+                Credentials = new Credential() {
+                    { "client_id", new Credential("clientId")},
+                    { "client_secret", new Credential("clientSecret")},
+                    { "uri", new Credential("uaa://sso.login.system.testcloud.com") }
+                    }
+            };
+            SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
+            Assert.True(factory.Accept(s));
+        }
+
+        [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
             Service s = new Service()
@@ -65,6 +83,29 @@ namespace SteelToe.CloudFoundry.Connector.Test.Services
                     { "client_id", new Credential("clientId")},
                     { "client_secret", new Credential("clientSecret")},
                     { "auth_domain", new Credential("https://sso.login.system.testcloud.com")}
+                    }
+            };
+            SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
+            var info = factory.Create(s) as SsoServiceInfo;
+            Assert.NotNull(info);
+            Assert.Equal("mySSO", info.Id);
+            Assert.Equal("clientId", info.ClientId);
+            Assert.Equal("clientSecret", info.ClientSecret);
+            Assert.Equal("https://sso.login.system.testcloud.com", info.AuthDomain);
+        }
+
+        [Fact]
+        public void CreateWithURI_CreatesValidServiceBinding()
+        {
+            Service s = new Service()
+            {
+                Label = "user-provided",
+                Tags = new string[0],
+                Name = "mySSO",
+                Credentials = new Credential() {
+                    { "client_id", new Credential("clientId")},
+                    { "client_secret", new Credential("clientSecret")},
+                    { "uri", new Credential("uaa://sso.login.system.testcloud.com") }
                     }
             };
             SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
