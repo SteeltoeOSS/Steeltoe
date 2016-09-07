@@ -32,38 +32,38 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
         }
 
         [Fact]
-        public void AddOAuthOptions_ThrowsIfServiceCollectionNull()
+        public void AddOAuthServiceOptions_ThrowsIfServiceCollectionNull()
         {
             // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthOptions(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthOptions(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
 
         }
         [Fact]
-        public void AddOAuthOptions_ThrowsIfConfigurtionNull()
+        public void AddOAuthServiceOptions_ThrowsIfConfigurtionNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthOptions(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthOptions(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
 
         }
 
         [Fact]
-        public void AddOAuthOptions_ThrowsIfServiceNameNull()
+        public void AddOAuthServiceOptions_ThrowsIfServiceNameNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -71,20 +71,20 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             string serviceName = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthOptions(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
 
         }
 
         [Fact]
-        public void AddOAuthOptions_NoVCAPs_AddsOAuthOptions()
+        public void AddOAuthServiceOptions_NoVCAPs_AddsOAuthOptions()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            OAuthServiceCollectionExtensions.AddOAuthOptions(services, config);
+            OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config);
 
             var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
             Assert.NotNull(service);
@@ -92,20 +92,20 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
         }
 
         [Fact]
-        public void AddOAuthOptions_WithServiceName_NoVCAPs_ThrowsConnectorException()
+        public void AddOAuthServiceOptions_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthOptions(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
 
         }
 
         [Fact]
-        public void AddOAuthOptions_MultipleOAuthServices_ThrowsConnectorException()
+        public void AddOAuthServiceOptions_MultipleOAuthServices_ThrowsConnectorException()
         {
             // Arrange
             var env1 = @"
@@ -174,12 +174,12 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             var config = builder.Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthOptions(services, config));
+            var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
             Assert.Contains("Multiple", ex.Message);
 
         }
         [Fact]
-        public void AddOAuthOptions_WithVCAPs_AddsOAuthOptions()
+        public void AddOAuthServiceOptions_WithVCAPs_AddsOAuthOptions()
         {
             // Arrange
             var env1 = @"
@@ -235,7 +235,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             var config = builder.Build();
 
             // Act and Assert
-            OAuthServiceCollectionExtensions.AddOAuthOptions(services, config);
+            OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config);
 
             var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
             Assert.NotNull(service);

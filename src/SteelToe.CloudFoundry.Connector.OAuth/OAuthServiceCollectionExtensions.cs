@@ -24,7 +24,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
 {
     public static class OAuthServiceCollectionExtensions
     {
-        public static IServiceCollection AddOAuthOptions(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
@@ -43,7 +43,7 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
             return services;
         }
 
-        public static IServiceCollection AddOAuthOptions(this IServiceCollection services, IConfiguration config, string serviceName)
+        public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config, string serviceName)
         {
             if (services == null)
             {
