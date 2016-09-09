@@ -31,20 +31,12 @@ namespace SteelToe.Security.Authentication.CloudFoundry
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var iopts = builder.ApplicationServices.GetService(typeof(IOptions<OAuthServiceOptions>)) as IOptions<OAuthServiceOptions>;
-            var signonOpts = iopts?.Value;
+            CloudFoundryOptions options = UpdateCloudFoundryOptions(builder, new CloudFoundryOptions());
+            var cookieOptions = GetCookieOptions(options);
 
-            CloudFoundryOptions cloudOpts = null;
-            if (signonOpts != null)
-            {
-                cloudOpts = new CloudFoundryOptions(signonOpts);
-            } else
-            {
-                cloudOpts = new CloudFoundryOptions();
-            }
-   
+            builder.UseCookieAuthentication(cookieOptions);
 
-            return builder.UseMiddleware<CloudFoundryMiddleware>(Options.Create(cloudOpts));
+            return builder.UseMiddleware<CloudFoundryMiddleware>(Options.Create(options));
         }
 
         public static IApplicationBuilder UseCloudFoundryAuthentication(this IApplicationBuilder builder, CloudFoundryOptions options)
@@ -53,12 +45,47 @@ namespace SteelToe.Security.Authentication.CloudFoundry
             {
                 throw new ArgumentNullException(nameof(builder));
             }
+
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
+            options = UpdateCloudFoundryOptions(builder, options);
+            var cookieOptions = GetCookieOptions(options);
+
+            builder.UseCookieAuthentication(cookieOptions);
+
             return builder.UseMiddleware<CloudFoundryMiddleware>(Options.Create(options));
+        }
+
+        private static CookieAuthenticationOptions GetCookieOptions(CloudFoundryOptions options)
+        {
+          var cookieOptions = new CookieAuthenticationOptions()
+            {
+                AuthenticationScheme = CloudFoundryOptions.AUTHENTICATION_SCHEME,
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = false,
+
+            };
+
+
+            if (options.AccessDeniedPath != null)
+            {
+                cookieOptions.AccessDeniedPath = options.AccessDeniedPath;
+            }
+            return cookieOptions;
+
+        }
+
+        private static CloudFoundryOptions UpdateCloudFoundryOptions(IApplicationBuilder builder, CloudFoundryOptions cloudOpts)
+        {
+            var iopts = builder.ApplicationServices.GetService(typeof(IOptions<OAuthServiceOptions>)) as IOptions<OAuthServiceOptions>;
+            var signonOpts = iopts?.Value;
+            cloudOpts.UpdateOptions(signonOpts);
+            cloudOpts.BackchannelHttpHandler = cloudOpts.GetBackChannelHandler();
+            return cloudOpts;
+
         }
 
     }

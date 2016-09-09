@@ -36,9 +36,13 @@ namespace SteelToe.Security.Authentication.CloudFoundry
         internal const string Default_ClientSecret = "Default_ClientSecret";
 
         public const string AUTHENTICATION_SCHEME = "CloudFoundry";
+        public const string OAUTH_AUTHENTICATION_SCHEME = "CloudFoundry.OAuth";
+
         public string TokenInfoUrl { get; set; }
         public string JwtKeyUrl { get; set; }
         public bool ValidateCertificates { get; set; } = true;
+        public PathString AccessDeniedPath { get; set; }
+        public PathString LogoutPath { get; set; }
 
         public CloudFoundryOptions()
         {
@@ -46,7 +50,7 @@ namespace SteelToe.Security.Authentication.CloudFoundry
             ClaimsIssuer = AUTHENTICATION_SCHEME;
             ClientId = Default_ClientId;
             ClientSecret = Default_ClientSecret;
-            AuthenticationScheme = CloudFoundryOptions.AUTHENTICATION_SCHEME;
+            AuthenticationScheme = CloudFoundryOptions.OAUTH_AUTHENTICATION_SCHEME;
             DisplayName = CloudFoundryOptions.AUTHENTICATION_SCHEME;
             CallbackPath = new PathString("/signin-cloudfoundry");
             AuthorizationEndpoint = authURL + Default_AuthorizationUri;
@@ -54,24 +58,21 @@ namespace SteelToe.Security.Authentication.CloudFoundry
             UserInformationEndpoint = authURL + Default_UserInfoUri;
             TokenInfoUrl = authURL + Default_CheckTokenUri;
             JwtKeyUrl = authURL + Default_JwtTokenKey;
+            SaveTokens = true;
+            AutomaticChallenge = true;
             Scope.Clear();
-            BackchannelHttpHandler = GetBackChannelHandler();
         }
 
-        public CloudFoundryOptions(OAuthServiceOptions options)
+        public CloudFoundryOptions(OAuthServiceOptions options) : this()
         {
-            ClaimsIssuer = AUTHENTICATION_SCHEME;
             ClientId = options.ClientId;
             ClientSecret = options.ClientSecret;
-            AuthenticationScheme = CloudFoundryOptions.AUTHENTICATION_SCHEME;
-            DisplayName = CloudFoundryOptions.AUTHENTICATION_SCHEME;
-            CallbackPath = new PathString("/signin-cloudfoundry");
             AuthorizationEndpoint = options.UserAuthorizationUrl;
             TokenEndpoint = options.AccessTokenUrl;
             UserInformationEndpoint = options.UserInfoUrl;
             TokenInfoUrl = options.TokenInfoUrl;
             JwtKeyUrl = options.JwtKeyUrl;
-            ValidateCertificates = options.ValidateCertificates;
+            AutomaticChallenge = true;
 
             foreach (var scope in options.Scope)
             {
@@ -94,6 +95,31 @@ namespace SteelToe.Security.Authentication.CloudFoundry
             }
             return null;
 #endif
+        }
+
+        internal protected virtual void UpdateOptions(OAuthServiceOptions options)
+        {
+            if (options == null || options.ClientId == null ||
+                options.ClientId.Equals(OAuthConnectorDefaults.Default_ClientId))
+            {
+                return;
+            }
+
+            ClientId = options.ClientId;
+            ClientSecret = options.ClientSecret;
+            AuthorizationEndpoint = options.UserAuthorizationUrl;
+            TokenEndpoint = options.AccessTokenUrl;
+            UserInformationEndpoint = options.UserInfoUrl;
+            TokenInfoUrl = options.TokenInfoUrl;
+            JwtKeyUrl = options.JwtKeyUrl;
+            ValidateCertificates = options.ValidateCertificates;
+
+            foreach (var scope in options.Scope)
+            {
+                Scope.Add(scope);
+            }
+
+            BackchannelHttpHandler = GetBackChannelHandler();
         }
     }
 }

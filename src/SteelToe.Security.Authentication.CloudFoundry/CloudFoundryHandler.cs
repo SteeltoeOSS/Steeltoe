@@ -29,7 +29,7 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Net;
 using System.Text;
-
+using Microsoft.AspNetCore.Http.Features.Authentication;
 
 namespace SteelToe.Security.Authentication.CloudFoundry
 {

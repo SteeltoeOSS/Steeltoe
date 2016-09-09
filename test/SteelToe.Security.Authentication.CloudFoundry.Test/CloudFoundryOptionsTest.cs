@@ -33,7 +33,7 @@ namespace SteelToe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(CloudFoundryOptions.AUTHENTICATION_SCHEME, opts.ClaimsIssuer);
             Assert.Equal(CloudFoundryOptions.Default_ClientId, opts.ClientId );
             Assert.Equal(CloudFoundryOptions.Default_ClientSecret, opts.ClientSecret );
-            Assert.Equal(CloudFoundryOptions.AUTHENTICATION_SCHEME, opts.AuthenticationScheme );
+            Assert.Equal(CloudFoundryOptions.OAUTH_AUTHENTICATION_SCHEME, opts.AuthenticationScheme );
             Assert.Equal(CloudFoundryOptions.AUTHENTICATION_SCHEME, opts.DisplayName );
             Assert.Equal(new PathString("/signin-cloudfoundry"), opts.CallbackPath );
             Assert.Equal(authURL + CloudFoundryOptions.Default_AuthorizationUri, opts.AuthorizationEndpoint );
@@ -64,7 +64,7 @@ namespace SteelToe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(CloudFoundryOptions.AUTHENTICATION_SCHEME, opts.ClaimsIssuer);
             Assert.Equal("ClientId", opts.ClientId);
             Assert.Equal("ClientSecret", opts.ClientSecret);
-            Assert.Equal(CloudFoundryOptions.AUTHENTICATION_SCHEME, opts.AuthenticationScheme);
+            Assert.Equal(CloudFoundryOptions.OAUTH_AUTHENTICATION_SCHEME, opts.AuthenticationScheme);
             Assert.Equal(CloudFoundryOptions.AUTHENTICATION_SCHEME, opts.DisplayName);
             Assert.Equal(new PathString("/signin-cloudfoundry"), opts.CallbackPath);
             Assert.Equal("UserAuthorizationUrl", opts.AuthorizationEndpoint);

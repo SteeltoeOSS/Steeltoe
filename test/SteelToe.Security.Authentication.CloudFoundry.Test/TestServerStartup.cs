@@ -16,8 +16,9 @@
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,16 +35,23 @@ namespace SteelToe.Security.Authentication.CloudFoundry.Test
 
         public static OAuthServiceOptions ServiceOptions { get; set; }
 
-        public TestServerStartup()
-        {
+        public IConfigurationRoot Configuration { get; }
 
+        public TestServerStartup(IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(env.ContentRootPath)
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.AddAuthentication(options => 
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+
+            services.AddAuthentication(sharedOptions => sharedOptions.SignInScheme = CloudFoundryOptions.AUTHENTICATION_SCHEME);
 
             if (ServiceOptions != null)
             {
@@ -73,11 +81,6 @@ namespace SteelToe.Security.Authentication.CloudFoundry.Test
                 }
             });
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AutomaticAuthenticate = true
-
-            });
             if (CloudFoundryOptions != null)
                 app.UseCloudFoundryAuthentication(CloudFoundryOptions);
             else
@@ -86,7 +89,7 @@ namespace SteelToe.Security.Authentication.CloudFoundry.Test
 
             app.Run(async context =>
             {
-                await context.Authentication.ChallengeAsync(CloudFoundryOptions.AUTHENTICATION_SCHEME);
+                await context.Authentication.ChallengeAsync(CloudFoundryOptions.OAUTH_AUTHENTICATION_SCHEME);
                 return;
 
             });
