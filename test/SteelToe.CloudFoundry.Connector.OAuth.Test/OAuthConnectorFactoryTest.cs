@@ -35,13 +35,13 @@ namespace SteelToe.CloudFoundry.Connector.OAuth.Test
             Assert.NotNull(opts);
 
 
-            Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_AccessTokenUri, opts.AccessTokenUrl);
+            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
             Assert.Equal("myClientId", opts.ClientId);
             Assert.Equal("myClientSecret", opts.ClientSecret);
-            Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_JwtTokenKey, opts.JwtKeyUrl);
-            Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_CheckTokenUri, opts.TokenInfoUrl);
-            Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_AuthorizationUri, opts.UserAuthorizationUrl);
-            Assert.Equal("http://foo.bar" + OAuthConnectorOptions.Default_UserInfoUri, opts.UserInfoUrl);
+            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_JwtTokenKey, opts.JwtKeyUrl);
+            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_CheckTokenUri, opts.TokenInfoUrl);
+            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_AuthorizationUri, opts.UserAuthorizationUrl);
+            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_UserInfoUri, opts.UserInfoUrl);
             Assert.NotNull(opts.Scope);
             Assert.Equal(0, opts.Scope.Count);
         }

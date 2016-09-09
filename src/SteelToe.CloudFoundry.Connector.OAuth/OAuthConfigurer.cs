@@ -41,11 +41,11 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
 
             options.ClientId = si.ClientId;
             options.ClientSecret = si.ClientSecret;
-            options.AccessTokenUrl = si.AuthDomain + OAuthConnectorOptions.Default_AccessTokenUri;
-            options.UserAuthorizationUrl = si.AuthDomain + OAuthConnectorOptions.Default_AuthorizationUri;
-            options.TokenInfoUrl = si.AuthDomain + OAuthConnectorOptions.Default_CheckTokenUri;
-            options.UserInfoUrl = si.AuthDomain + OAuthConnectorOptions.Default_UserInfoUri;
-            options.JwtKeyUrl = si.AuthDomain + OAuthConnectorOptions.Default_JwtTokenKey;
+            options.AccessTokenUrl = si.AuthDomain + OAuthConnectorDefaults.Default_AccessTokenUri;
+            options.UserAuthorizationUrl = si.AuthDomain + OAuthConnectorDefaults.Default_AuthorizationUri;
+            options.TokenInfoUrl = si.AuthDomain + OAuthConnectorDefaults.Default_CheckTokenUri;
+            options.UserInfoUrl = si.AuthDomain + OAuthConnectorDefaults.Default_UserInfoUri;
+            options.JwtKeyUrl = si.AuthDomain + OAuthConnectorDefaults.Default_JwtTokenKey;
         }
 
         internal void UpdateOptions(OAuthConnectorOptions config, OAuthServiceOptions options)

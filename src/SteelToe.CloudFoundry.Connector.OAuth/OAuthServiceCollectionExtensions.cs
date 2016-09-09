@@ -36,9 +36,9 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OAuthConnectorOptions redisConfig = new OAuthConnectorOptions(config);
+            OAuthConnectorOptions oauthConfig = new OAuthConnectorOptions(config);
             SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-            OAuthConnectorFactory factory = new OAuthConnectorFactory(info, redisConfig); ;
+            OAuthConnectorFactory factory = new OAuthConnectorFactory(info, oauthConfig); ;
             services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
             return services;
         }
@@ -60,9 +60,9 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OAuthConnectorOptions redisConfig = new OAuthConnectorOptions(config);
+            OAuthConnectorOptions oauthConfig = new OAuthConnectorOptions(config);
             SsoServiceInfo info = config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
-            OAuthConnectorFactory factory = new OAuthConnectorFactory(info, redisConfig);
+            OAuthConnectorFactory factory = new OAuthConnectorFactory(info, oauthConfig);
             services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
             return services;
         }

@@ -25,15 +25,6 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
         private const string SECURITY_CLIENT_SECTION_PREFIX = "security:oauth2:client";
         private const string SECURITY_RESOURCE_SECTION_PREFIX = "security:oauth2:resource";
 
-        internal const string Default_AuthorizationUri = "/oauth/authorize";
-        internal const string Default_AccessTokenUri = "/oauth/token";
-        internal const string Default_UserInfoUri = "/userinfo";
-        internal const string Default_CheckTokenUri = "/check_token";
-        internal const string Default_JwtTokenKey = "/token_key";
-        internal const string Default_OAuthServiceUrl = "Default_OAuthServiceUrl";
-        internal const string Default_ClientId = "Default_ClientId";
-        internal const string Default_ClientSecret = "Default_ClientSecret";
-        internal const bool Default_ValidateCertificates = true;
 
         public OAuthConnectorOptions()
         {
@@ -55,16 +46,16 @@ namespace SteelToe.CloudFoundry.Connector.OAuth
 
         }
 
-        public string OAuthServiceUrl { get; set; } = Default_OAuthServiceUrl;
-        public string ClientId { get; set; } = Default_ClientId;
-        public string ClientSecret { get; set; } = Default_ClientSecret;
-        public string UserAuthorizationUri { get; set; } = Default_AuthorizationUri;
-        public string AccessTokenUri { get; set; } = Default_AccessTokenUri;
-        public string UserInfoUri { get; set; } = Default_UserInfoUri;
-        public string TokenInfoUri { get; set; } = Default_CheckTokenUri;
-        public string JwtKeyUri { get; set; } = Default_JwtTokenKey;
+        public string OAuthServiceUrl { get; set; } = OAuthConnectorDefaults.Default_OAuthServiceUrl;
+        public string ClientId { get; set; } = OAuthConnectorDefaults.Default_ClientId;
+        public string ClientSecret { get; set; } = OAuthConnectorDefaults.Default_ClientSecret;
+        public string UserAuthorizationUri { get; set; } = OAuthConnectorDefaults.Default_AuthorizationUri;
+        public string AccessTokenUri { get; set; } = OAuthConnectorDefaults.Default_AccessTokenUri;
+        public string UserInfoUri { get; set; } = OAuthConnectorDefaults.Default_UserInfoUri;
+        public string TokenInfoUri { get; set; } = OAuthConnectorDefaults.Default_CheckTokenUri;
+        public string JwtKeyUri { get; set; } = OAuthConnectorDefaults.Default_JwtTokenKey;
         public List<string> Scope { get; set; }
-        public bool Validate_Certificates { get; set; } = Default_ValidateCertificates;
+        public bool Validate_Certificates { get; set; } = OAuthConnectorDefaults.Default_ValidateCertificates;
 
     }
 }
