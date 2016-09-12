@@ -146,7 +146,7 @@ namespace SteelToe.Security.Authentication.CloudFoundry
             {
                 foreach (var s in scopes)
                 {
-                    identity.AddClaim(new Claim(s, string.Empty, ClaimValueTypes.String, Options.ClaimsIssuer));
+                    identity.AddClaim(new Claim("scope", s, ClaimValueTypes.String, Options.ClaimsIssuer));
                 }
             }
 
