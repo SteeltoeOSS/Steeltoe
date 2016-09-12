@@ -39,7 +39,8 @@
     "Microsoft.AspNetCore.Authorization": "1.0.0",
     "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
     "Microsoft.Extensions.Options": "1.0.0",
-    "SteelToe.CloudFoundry.Connector.OAuth": "1.0.0-dev-*"
+    "SteelToe.CloudFoundry.Connector.OAuth": "1.0.0-dev-*",
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0"
   }
 }
 

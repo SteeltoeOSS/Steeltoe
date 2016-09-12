@@ -42,5 +42,23 @@ namespace SteelToe.Security.Authentication.CloudFoundry
             return services;
         }
 
+        public static IServiceCollection AddCloudFoundryJwtAuthentication(this IServiceCollection services, IConfiguration config)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+
+            services.AddAuthentication();
+            services.AddOAuthServiceOptions(config);
+            return services;
+        }
+
     }
 }

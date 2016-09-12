@@ -26,7 +26,7 @@ namespace SteelToe.Security.Authentication.CloudFoundry.Test
     public class CloudFoundryServiceCollectionExtensionsTest
     {
         [Fact]
-        public void AddCloudFoundryAuthentication_ThowsAppBuilderNull()
+        public void AddCloudFoundryAuthentication_ThowsForNulls()
         {
             // Arrange
             IServiceCollection services = null;
@@ -47,6 +47,33 @@ namespace SteelToe.Security.Authentication.CloudFoundry.Test
 
             var services = new ServiceCollection();
             CloudFoundryServiceCollectionExtensions.AddCloudFoundryAuthentication(services, config);
+            var provider = services.BuildServiceProvider();
+            var iopts = provider.GetService(typeof(IOptions<OAuthServiceOptions>)) as IOptions<OAuthServiceOptions>;
+            Assert.NotNull(iopts);
+
+        }
+        [Fact]
+        public void AddCloudFoundryJwtAuthentication_ThowsForNulls()
+        {
+            // Arrange
+            IServiceCollection services = null;
+            IConfiguration config = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.AddCloudFoundryJwtAuthentication(services, config));
+            Assert.Contains(nameof(services), ex.Message);
+            var ex2 = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.AddCloudFoundryJwtAuthentication(new ServiceCollection(), config));
+            Assert.Contains(nameof(config), ex2.Message);
+
+        }
+        [Fact]
+        public void AddCloudFoundryJwtAuthentication_AddsRequiredServices()
+        {
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var config = configurationBuilder.Build();
+
+            var services = new ServiceCollection();
+            CloudFoundryServiceCollectionExtensions.AddCloudFoundryJwtAuthentication(services, config);
             var provider = services.BuildServiceProvider();
             var iopts = provider.GetService(typeof(IOptions<OAuthServiceOptions>)) as IOptions<OAuthServiceOptions>;
             Assert.NotNull(iopts);

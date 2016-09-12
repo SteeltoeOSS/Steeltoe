@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using SteelToe.CloudFoundry.Connector.OAuth;
 using System.Runtime.InteropServices;
-
+using Microsoft.IdentityModel.Tokens;
 
 namespace SteelToe.Security.Authentication.CloudFoundry
 { 
@@ -43,6 +43,10 @@ namespace SteelToe.Security.Authentication.CloudFoundry
         public bool ValidateCertificates { get; set; } = true;
         public PathString AccessDeniedPath { get; set; }
         public PathString LogoutPath { get; set; }
+        public JwtBearerOptions JwtBearerOptions { get; set; }
+        public TokenValidationParameters TokenValidationParameters { get; set; }
+        internal CloudFoundryTokenKeyResolver TokenKeyResolver { get; set; } 
+        internal CloudFoundryTokenValidator TokenValidator { get; set; }
 
         public CloudFoundryOptions()
         {
@@ -61,6 +65,7 @@ namespace SteelToe.Security.Authentication.CloudFoundry
             SaveTokens = true;
             AutomaticChallenge = true;
             Scope.Clear();
+
         }
 
         public CloudFoundryOptions(OAuthServiceOptions options) : this()

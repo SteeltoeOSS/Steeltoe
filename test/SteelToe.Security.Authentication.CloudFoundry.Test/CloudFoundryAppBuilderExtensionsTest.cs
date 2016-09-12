@@ -107,6 +107,51 @@ namespace SteelToe.Security.Authentication.CloudFoundry.Test
             }
 
         }
+        [Fact]
+        public void UseCloudFoundryJwtAuthentication_ThowsAppBuilderNull()
+        {
+            // Arrange
+            IApplicationBuilder builder = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryAppBuilderExtensions.UseCloudFoundryJwtAuthentication(builder));
+            Assert.Contains(nameof(builder), ex.Message);
+            var ex2 = Assert.Throws<ArgumentNullException>(() => CloudFoundryAppBuilderExtensions.UseCloudFoundryJwtAuthentication(builder, new CloudFoundryOptions()));
+            Assert.Contains(nameof(builder), ex2.Message);
+
+        }
+
+        [Fact]
+        public void UseCloudFoundryJwtAuthentication_ThowsCloudFoundryOptionsNull()
+        {
+            // Arrange
+            IApplicationBuilder builder = new ApplicationBuilder(null);
+            CloudFoundryOptions options = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryAppBuilderExtensions.UseCloudFoundryJwtAuthentication(builder, options));
+            Assert.Contains(nameof(options), ex.Message);
+
+        }
+
+        [Fact]
+        public async void UseCloudFoundryJwtAuthentication_AddsMiddlewareIntoPipeline()
+        {
+            IHostingEnvironment envir = new HostingEnvironment();
+            CloudFoundryOptions opts = new CloudFoundryOptions();
+
+            TestServerStartup.CloudFoundryOptions = opts;
+            TestServerStartup.ServiceOptions = null;
+            var builder = new WebHostBuilder().UseStartup<TestServerJwtStartup>().UseEnvironment("development");
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/");
+                Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+            }
+
+        }
+
     }
 
 }
