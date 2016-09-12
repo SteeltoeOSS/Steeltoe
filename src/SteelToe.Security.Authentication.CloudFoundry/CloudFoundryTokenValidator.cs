@@ -67,10 +67,18 @@ namespace SteelToe.Security.Authentication.CloudFoundry
             SecurityToken validatedToken = null;
             ClaimsPrincipal principal = null;
             JwtSecurityToken validJwt = null;
+            try
+            {
 
-           if (!string.IsNullOrEmpty(token)) {
-                principal = _handler.ValidateToken(token, Options.TokenValidationParameters, out validatedToken);
-                validJwt = validatedToken as JwtSecurityToken;
+                if (!string.IsNullOrEmpty(token))
+                {
+                    principal = _handler.ValidateToken(token, Options.TokenValidationParameters, out validatedToken);
+                    validJwt = validatedToken as JwtSecurityToken;
+                }
+
+            } catch (Exception e)
+            {
+                //LOG
             }
             if (validJwt == null || principal == null)
             {
