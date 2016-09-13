@@ -5,8 +5,8 @@ This project contains a [ASP.NET Core External Security Provider](https://github
 This provider simplifies using CloudFoundry OAuth2 security services (e.g. [UAA Server](https://github.com/cloudfoundry/uaa) and/or [Pivotal Single Signon](https://docs.pivotal.io/p-identity/)) for Authentication and Authorization in an ASP.NET Core application.
 
 There are two providers to choose from in this package:
-* A provider that enables OAuth2 Single Signon with CloudFoundry Security services. Have a look at the SteelToe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) sample for details.
-* A provider that enables using JWT tokens issued by CloudFoundry Security services for securing REST endpoints. Have a look at the SteelToe [CloudFoundryJwtAuthentication](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundryJwtAuthentication) sample for details.
+* A provider that enables OAuth2 Single Signon with CloudFoundry Security services. Have a look at the SteelToe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) for a sample app.
+* A provider that enables using JWT tokens issued by CloudFoundry Security services for securing REST endpoints. Have a look at the SteelToe [CloudFoundryJwtAuthentication](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundryJwtAuthentication) for a sample app.
 
 ## Package Name and Feeds
 
@@ -23,7 +23,7 @@ You should have a good understanding of how the new .NET [Configuration model](h
 
 With regard to CloudFoundry, you should have a good understanding of CloudFoundry OAuth2 security services (e.g. [UAA Server](https://github.com/cloudfoundry/uaa) and/or [Pivotal Single Signon](https://docs.pivotal.io/p-identity/)).
 
-In order to use the Discovery client you need to do the following:
+In order to use the Security provider you need to do the following:
 ```
 1. Create and bind an instance of a CloudFoundry OAuth2 service to your application.
 2. Confiure any additional settings the Security provider will need. (Optional)
@@ -32,12 +32,12 @@ In order to use the Discovery client you need to do the following:
 5. Secure your endpoints 
 ``` 
 ## Create & Bind OAuth2 Service
-As mentioned above there are a couple OAuth2 services you can use on CloudFoundry. Rather than explaining the steps here, we recommend you read and follow the [Create OAuth2 Service Instance on CloudFoundry]() section of the SteelToe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) sample.
+As mentioned above there are a couple OAuth2 services you can use on CloudFoundry. Rather than explaining the steps here, we recommend you read and follow the [Create OAuth2 Service Instance on CloudFoundry](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) section of the SteelToe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) sample.
 
-Once you have bound the service to the app, the services settings have been setup in `VCAP_SERVICES` and will be picked up automatically when the app is started by using the `CloudFoundry` configuration provider discussed below during application startup.
+Once you have bound the service to the app, the services settings will have been setup in `VCAP_SERVICES` and will be picked up automatically when the app is started by using the `CloudFoundry` configuration provider discussed below during application startup.
 
 ## Additional Security provider settings (Optional)
-Typically you do not need to configure any additional settings for the security provider.  In the below example, we show how to disable certificate validation for the security provider.  This is necessary when your app is targeted to run on Windows cells on CloudFoundry.
+Typically you do not need to configure any additional settings for the security provider.  In the below example, we show how to disable certificate validation for the security provider.  This is necessary when your app is targeted to run on Windows cells on CloudFoundry and you are using self-signed certificates.
 ```
 {
 "Logging": {
@@ -86,7 +86,7 @@ The next step is to Add and Use the Security provider.  You will do these two th
 
 ## Using OAuth2 Single Signon 
 
-The `AddCloudFoundryAuthentication()` call configures and adds the CloudFoundry authentication service to the ServiceCollection and the `UseCloudFoundryAuthentication()` call adds the CloudFoundry authentication middleware to the pipeline.
+The `AddCloudFoundryAuthentication()` call configures and adds the CloudFoundry OAuth2 authentication service to the ServiceCollection and the `UseCloudFoundryAuthentication()` call adds the CloudFoundry middleware to the pipeline.
 ```
 using SteelToe.Security.Authentication.CloudFoundry;
 using SteelToe.Extensions.Configuration;
@@ -126,7 +126,7 @@ public class Startup {
 ```
 ## Using JWT Bearer Tokens
 
-The `AddCloudFoundryJwtAuthentication()` call configures and adds the CloudFoundry authentication service to the ServiceCollection and the `UseCloudFoundryJwtAuthentication()` call adds the CloudFoundry authentication middleware to the pipeline.
+The `AddCloudFoundryJwtAuthentication()` call configures and adds the CloudFoundry JWT authentication service to the ServiceCollection and the `UseCloudFoundryJwtAuthentication()` call adds the CloudFoundry middleware to the pipeline.
 ```
 using SteelToe.Security.Authentication.CloudFoundry;
 using SteelToe.Extensions.Configuration;
@@ -189,8 +189,7 @@ You can also use ASP.NET Core Policies feature on the endpoints.  Here is an exa
  ```
 using Microsoft.AspNetCore.Authentication;
 ....
-public class HomeController : Controller
-{
+
 [Route("api/[controller]")]
 public class ValuesController : Controller
 {
