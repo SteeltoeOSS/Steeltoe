@@ -102,9 +102,13 @@ namespace SteelToe.Security.Authentication.CloudFoundry
                 return options.JwtBearerOptions;
             }
 
+            var tokenParameters = GetTokenValidationParameters(options);
+            tokenParameters.ValidateAudience = false;
+            tokenParameters.AudienceValidator = null;
+
             return new JwtBearerOptions()
             {
-                TokenValidationParameters = GetTokenValidationParameters(options)
+                TokenValidationParameters = tokenParameters
                 
             };
         }
