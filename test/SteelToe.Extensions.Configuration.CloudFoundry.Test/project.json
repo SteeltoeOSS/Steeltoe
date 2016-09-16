@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0",
   "testRunner": "xunit",
   "description": "Unit test project for SteelToe.Extensions.Configuration.CloudFoundry",
@@ -39,7 +39,8 @@
     "Microsoft.Extensions.Options": "1.0.0",
     "SteelToe.Extensions.Configuration.CloudFoundry": "1.0.0-*",
     "xunit": "2.2.0-beta2-build3300",
-    "dotnet-test-xunit": "2.2.0-preview2-build1029"
+    "dotnet-test-xunit": "2.2.0-preview2-build1029",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.1"
   },
   "buildOptions": {
     "copyToOutput": {
