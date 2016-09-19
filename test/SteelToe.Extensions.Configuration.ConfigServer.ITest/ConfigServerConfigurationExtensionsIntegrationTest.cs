@@ -20,11 +20,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using SteelToe.Extensions.Configuration.ConfigServer.Test;
+using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 using System.IO;
 using Microsoft.AspNetCore.Hosting.Internal;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer.ITest
+namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
     //
     // NOTE: Some of the tests assume a running Spring Cloud Config Server is started

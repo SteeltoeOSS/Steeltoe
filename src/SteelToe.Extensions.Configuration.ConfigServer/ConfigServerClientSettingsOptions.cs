@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace SteelToe.Extensions.Configuration.ConfigServer
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     public class ConfigServerClientSettingsOptions
     {

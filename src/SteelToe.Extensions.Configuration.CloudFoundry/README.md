@@ -4,7 +4,7 @@ This project contains the CloudFoundry configuration provider.  This provider en
 
 ## Provider Package Name and Feeds
 
-`SteelToe.Extensions.Configuration.CloudFoundry`
+`Steeltoe.Extensions.Configuration.CloudFoundry`
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 
@@ -17,7 +17,7 @@ You should have a good understanding of how the new .NET [Configuration model](h
 
 In order to get the `VCAP_*` environment variables parsed and made available in your configuration you need to add the CloudFoundry configuration provider to the builder.
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 ...
 
 var builder = new ConfigurationBuilder()
@@ -29,7 +29,7 @@ var config = builder.Build();
 ```
 In an ASP.NET Core application, the above code is normally included in the constructor of the `Startup` class. For example, you might see something like this:
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 
 public class Startup {
     .....
@@ -69,7 +69,7 @@ Alternatively you can use the [Options](https://github.com/aspnet/Options) frame
 
 To do this, add the the following to your `public void ConfigureServices(...)` method in your `Startup` class.
 ```
-#using SteelToe.Extensions.Configuration.CloudFoundry;
+#using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 public void ConfigureServices(IServiceCollection services)
 {
@@ -83,7 +83,7 @@ public void ConfigureServices(IServiceCollection services)
 ```
 The `Configure<CloudFoundryApplicationOptions>(Configuration)` binds the `vcap:application:...` configuration values to an instance of `CloudFoundryApplicationOptions` and the `Configure<CloudFoundryServicesOptions>(Configuration)` binds the `vcap:services:...` config values to an instance of `CloudFoundryServicesOptions`. After this is done you can then gain access to these POCOs in Controllers or Views via Dependency Injection.  Here is an example controller illustrating this:
 ```
-#using SteelToe.Extensions.Configuration.CloudFoundry;
+#using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 public class HomeController : Controller
 {

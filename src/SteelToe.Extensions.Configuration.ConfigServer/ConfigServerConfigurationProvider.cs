@@ -31,7 +31,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     /// <summary>
     /// A Spring Cloud Config Server based <see cref="ConfigurationProvider"/>.

@@ -7,7 +7,7 @@
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>85b94f1c-0f93-44b2-af3e-1f3e05346c7d</ProjectGuid>
-    <RootNamespace>SteelToe.Extensions.Configuration.ConfigServer.Test</RootNamespace>
+    <RootNamespace>Steeltoe.Extensions.Configuration.ConfigServer.Test</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
   </PropertyGroup>

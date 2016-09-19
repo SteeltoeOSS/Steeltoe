@@ -18,10 +18,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SteelToe.Extensions.Configuration.ConfigServer.Test;
+using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 using System.IO;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer.ITest
+namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
     class TestServerStartup
     {

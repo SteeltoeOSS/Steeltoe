@@ -19,9 +19,9 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SteelToe.Extensions.Configuration.ConfigServer;
+using Steeltoe.Extensions.Configuration.ConfigServer;
 
-namespace SteelToe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration
 {
     /// <summary>
     /// Extension methods for adding <see cref="ConfigServerConfigurationProvider"/>.

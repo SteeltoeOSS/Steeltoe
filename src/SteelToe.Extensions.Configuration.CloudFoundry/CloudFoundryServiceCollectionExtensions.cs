@@ -16,11 +16,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 
 
-namespace SteelToe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration
 {
     /// <summary>
     /// Extension methods for adding services related to CloudFoundry

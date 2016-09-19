@@ -25,7 +25,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     public class ConfigServerConfigurationProviderTest
     {

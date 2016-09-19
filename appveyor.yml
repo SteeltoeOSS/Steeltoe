@@ -12,8 +12,8 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\SteelToe.Extensions.Configuration.ConfigServer\bin\Release\*.nupkg'
-- path: 'src\SteelToe.Extensions.Configuration.CloudFoundry\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Configuration.ConfigServer\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Configuration.CloudFoundry\bin\Release\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: true

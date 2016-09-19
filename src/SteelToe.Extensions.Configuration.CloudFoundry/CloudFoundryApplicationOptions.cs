@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SteelToe.Extensions.Configuration.CloudFoundry
+namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
 
     public class CloudFoundryApplicationOptions 

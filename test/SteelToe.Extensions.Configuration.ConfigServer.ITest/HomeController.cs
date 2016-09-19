@@ -17,7 +17,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer.ITest
+namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
  
     public class HomeController : Controller

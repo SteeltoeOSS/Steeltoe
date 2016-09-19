@@ -15,10 +15,10 @@
 //
 
 using Microsoft.Extensions.Configuration;
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 
-namespace SteelToe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration
 {
     public static class CloudFoundryConfigurationBuilderExtensions
     {

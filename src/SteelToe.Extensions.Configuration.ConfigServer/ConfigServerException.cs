@@ -16,7 +16,7 @@
 
 using System;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     /// <summary>
     /// Exception thrown by Config Server client when problems occur

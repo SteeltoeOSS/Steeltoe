@@ -7,7 +7,7 @@
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>6c872c62-7b97-43c7-827c-5ab8b3d7ba41</ProjectGuid>
-    <RootNamespace>SteelToe.Extensions.Configuration.CloudFoundry.Test</RootNamespace>
+    <RootNamespace>Steeltoe.Extensions.Configuration.CloudFoundry.Test</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
   </PropertyGroup>

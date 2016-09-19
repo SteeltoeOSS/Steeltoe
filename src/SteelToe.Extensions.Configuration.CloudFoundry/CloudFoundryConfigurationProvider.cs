@@ -21,7 +21,7 @@ using System.Linq;
 
 using System.IO;
 
-namespace SteelToe.Extensions.Configuration.CloudFoundry
+namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
     public class CloudFoundryConfigurationProvider : ConfigurationProvider, IConfigurationSource
     {

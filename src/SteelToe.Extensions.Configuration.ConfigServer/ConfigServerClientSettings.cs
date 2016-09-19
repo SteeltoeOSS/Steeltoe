@@ -16,7 +16,7 @@
 
 using System;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     /// <summary>
     /// Holds the settings used to configure the Spring Cloud Config Server provider 

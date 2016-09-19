@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SteelToe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration
 {
     /// <summary>
     /// Utility class for working with configuration values that have placeholders in them.

@@ -21,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace SteelToe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
     public class CloudFoundryOptionsTest
     {

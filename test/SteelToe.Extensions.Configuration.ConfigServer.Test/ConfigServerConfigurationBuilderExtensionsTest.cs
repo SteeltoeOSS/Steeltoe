@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     public class ConfigServerConfigurationBuilderExtensionsTest
     {

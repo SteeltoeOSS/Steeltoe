@@ -21,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     public class ConfigServerClientSettingsOptionsTest
     {

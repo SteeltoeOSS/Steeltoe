@@ -12,15 +12,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Extensions.Configuration.ConfigServer", "src\SteelToe.Extensions.Configuration.ConfigServer\SteelToe.Extensions.Configuration.ConfigServer.xproj", "{23413532-9D6D-4777-9560-3EBCDEC0AC03}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Extensions.Configuration.ConfigServer", "src\Steeltoe.Extensions.Configuration.ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.xproj", "{23413532-9D6D-4777-9560-3EBCDEC0AC03}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Extensions.Configuration.ConfigServer.Test", "test\SteelToe.Extensions.Configuration.ConfigServer.Test\SteelToe.Extensions.Configuration.ConfigServer.Test.xproj", "{85B94F1C-0F93-44B2-AF3E-1F3E05346C7D}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Extensions.Configuration.ConfigServer.Test", "test\Steeltoe.Extensions.Configuration.ConfigServer.Test\Steeltoe.Extensions.Configuration.ConfigServer.Test.xproj", "{85B94F1C-0F93-44B2-AF3E-1F3E05346C7D}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Extensions.Configuration.ConfigServer.ITest", "test\SteelToe.Extensions.Configuration.ConfigServer.ITest\SteelToe.Extensions.Configuration.ConfigServer.ITest.xproj", "{3D9B0677-D184-4E30-8503-C9F291FA1335}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Extensions.Configuration.ConfigServer.ITest", "test\Steeltoe.Extensions.Configuration.ConfigServer.ITest\Steeltoe.Extensions.Configuration.ConfigServer.ITest.xproj", "{3D9B0677-D184-4E30-8503-C9F291FA1335}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Extensions.Configuration.CloudFoundry", "src\SteelToe.Extensions.Configuration.CloudFoundry\SteelToe.Extensions.Configuration.CloudFoundry.xproj", "{CD4399C7-81FB-49A6-8A9B-164C02CF2128}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Extensions.Configuration.CloudFoundry", "src\Steeltoe.Extensions.Configuration.CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.xproj", "{CD4399C7-81FB-49A6-8A9B-164C02CF2128}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Extensions.Configuration.CloudFoundry.Test", "test\SteelToe.Extensions.Configuration.CloudFoundry.Test\SteelToe.Extensions.Configuration.CloudFoundry.Test.xproj", "{6C872C62-7B97-43C7-827C-5AB8B3D7BA41}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Extensions.Configuration.CloudFoundry.Test", "test\Steeltoe.Extensions.Configuration.CloudFoundry.Test\Steeltoe.Extensions.Configuration.CloudFoundry.Test.xproj", "{6C872C62-7B97-43C7-827C-5AB8B3D7BA41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

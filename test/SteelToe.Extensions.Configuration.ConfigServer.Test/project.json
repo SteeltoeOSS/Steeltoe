@@ -1,7 +1,7 @@
 ﻿{
   "version": "1.0.0",
   "testRunner": "xunit",
-  "description": "Unit test project for SteelToe.Extensions.Configuration.ConfigServer",
+  "description": "Unit test project for Steeltoe.Extensions.Configuration.ConfigServer",
   "authors": [ "Pivotal", "dtillman" ],
   "packOptions": {
     "tags": [ "ASPNET Core", "Spring", "Spring Cloud", "Spring Cloud Config Server" ],
@@ -43,7 +43,7 @@
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "Microsoft.Extensions.Logging": "1.0.0",
     "Microsoft.Extensions.Options": "1.0.0",
-    "SteelToe.Extensions.Configuration.ConfigServer": "1.0.0-*",
+    "Steeltoe.Extensions.Configuration.ConfigServer": "1.0.0-*",
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029"
   },

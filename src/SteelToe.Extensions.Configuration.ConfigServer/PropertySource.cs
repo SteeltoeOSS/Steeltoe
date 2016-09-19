@@ -16,7 +16,7 @@
 
 using System.Collections.Generic;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     public  class PropertySource
     {

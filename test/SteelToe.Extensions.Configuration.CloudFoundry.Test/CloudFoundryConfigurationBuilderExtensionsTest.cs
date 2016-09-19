@@ -23,7 +23,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SteelToe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
     public class CloudFoundryConfigurationBuilderExtensionsTest
     {

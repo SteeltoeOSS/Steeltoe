@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using Xunit;
 
-namespace SteelToe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     public class PropertyPlaceholderHelperTest
     {

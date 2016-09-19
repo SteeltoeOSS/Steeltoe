@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace SteelToe.Extensions.Configuration.ConfigServer.ITest
+namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
     public class ConfigServerDataAsOptions
     {

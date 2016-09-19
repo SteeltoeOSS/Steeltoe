@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace SteelToe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
     public class CloudFoundryConfigurationProviderTest
     {

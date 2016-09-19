@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 
 
-namespace SteelToe.Extensions.Configuration.ConfigServer
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     public static class ConfigurationSettingsHelper
     {

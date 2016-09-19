@@ -4,7 +4,7 @@ This project contains the [Spring Cloud Config Server](http://projects.spring.io
 
 ## Provider Package Name and Feeds
 
-`SteelToe.Extensions.Configuration.ConfigServer`
+`Steeltoe.Extensions.Configuration.ConfigServer`
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 
@@ -23,7 +23,7 @@ In order to retrieve configuration data from the Config Server you need to do th
 ## Configure Provider Settings & Add Provider to Builder
 The most convenient way to configure the settings is to provide them in a file and then use one of the other file based configuration providers to read them in and make them available.  Below is an example of the providers settings in JSON. Only two settings are provided; the setting `spring:application:name` configures the "application name" to `foo`, and `spring:cloud:config:uri` configures the address of the Config Server.  
 
-For a complete list of provider settings see the documentation in the [ConfigServerClientSettings](https://github.com/SteelToeOSS/Configuration/blob/master/src/SteelToe.Extensions.Configuration.ConfigServer/ConfigServerClientSettings.cs) file. For an understanding of how these settings and others are used in retrieving configuration data from the Config Server, see the Spring Cloud Config Client/Server [documentation](http://projects.spring.io/spring-cloud/docs/1.0.3/spring-cloud.html#_spring_cloud_config). 
+For a complete list of provider settings see the documentation in the [ConfigServerClientSettings](https://github.com/SteeltoeOSS/Configuration/blob/master/src/Steeltoe.Extensions.Configuration.ConfigServer/ConfigServerClientSettings.cs) file. For an understanding of how these settings and others are used in retrieving configuration data from the Config Server, see the Spring Cloud Config Client/Server [documentation](http://projects.spring.io/spring-cloud/docs/1.0.3/spring-cloud.html#_spring_cloud_config). 
 ```
 {
   "spring": {
@@ -43,7 +43,7 @@ Once the providers settings have been defined and put in a file, the next step i
 
 Next we add the Config Server provider to the builder (e.g. `AddConfigServer()`). Because the JSON provider is added `before` the Config Server provider, the JSON based settings will become available to the provider.  Note that you don't have to use JSON for the providers settings, you can use any of the other off-the-shelf configuration providers for the settings (e.g. INI file, environment variables, etc.).  The important thing to understand is you need to `Add*()` the source of the settings (i.e. `AddJsonFile(..)`) BEFORE you `AddConfigServer(..)`,  otherwise the settings won't be picked up and used.
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 ...
 
 var builder = new ConfigurationBuilder()
@@ -57,7 +57,7 @@ var config = builder.Build();
 ```
 Normally in an ASP.NET Core application, the above C# code is would be included in the constructor of the `Startup` class. For example, you might see something like this:
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 
 public class Startup {
     .....
