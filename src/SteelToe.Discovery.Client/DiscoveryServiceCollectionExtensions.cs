@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 
 
-namespace SteelToe.Discovery.Client
+namespace Steeltoe.Discovery.Client
 {
     public static class DiscoveryServiceCollectionExtensions
     {

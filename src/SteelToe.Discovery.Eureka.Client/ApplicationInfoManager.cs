@@ -15,10 +15,10 @@
 //
 
 using Microsoft.Extensions.Logging;
-using SteelToe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 
-namespace SteelToe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka
 {
     public class ApplicationInfoManager
     {

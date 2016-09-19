@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
-using SteelToe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.Client.Test;
 using System.Threading;
 using Xunit;
 
-namespace SteelToe.Discovery.Eureka.Task.Test
+namespace Steeltoe.Discovery.Eureka.Task.Test
 {
     public class TimedTaskTest : AbstractBaseTest
     {

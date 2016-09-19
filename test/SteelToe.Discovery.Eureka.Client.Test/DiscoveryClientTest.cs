@@ -17,13 +17,13 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.TestHost;
-using SteelToe.Discovery.Eureka.AppInfo;
-using SteelToe.Discovery.Eureka.Client.Test;
-using SteelToe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using Xunit;
 
-namespace SteelToe.Discovery.Eureka.Test
+namespace Steeltoe.Discovery.Eureka.Test
 {
     public class DiscoveryClientTest : AbstractBaseTest
     {

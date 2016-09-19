@@ -21,7 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SteelToe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport
 {
     internal class JsonLeaseInfo
     {

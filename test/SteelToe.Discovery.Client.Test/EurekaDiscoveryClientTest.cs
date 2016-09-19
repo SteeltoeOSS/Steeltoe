@@ -16,9 +16,9 @@
 
 using System;
 using Xunit;
-using SteelToe.Discovery.Eureka;
+using Steeltoe.Discovery.Eureka;
 
-namespace SteelToe.Discovery.Client.Test
+namespace Steeltoe.Discovery.Client.Test
 {
     public class EurekaDiscoveryClientTest: AbstractBaseTest
     { 

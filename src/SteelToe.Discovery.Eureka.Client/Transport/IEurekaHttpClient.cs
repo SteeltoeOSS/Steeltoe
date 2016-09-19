@@ -1,9 +1,9 @@
-﻿using SteelToe.Discovery.Eureka.AppInfo;
+﻿using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SteelToe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport
 {
     public interface IEurekaHttpClient
     {

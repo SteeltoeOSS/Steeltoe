@@ -1,12 +1,12 @@
-# SteelToe Discovery Client
+# Steeltoe Discovery Client
 
-This project contains the SteelToe Discovery Client.  This client provides a generalized interface to service registries.  
+This project contains the Steeltoe Discovery Client.  This client provides a generalized interface to service registries.  
 
 Currently the client only supports [Spring Cloud Eureka Server](http://projects.spring.io/spring-cloud/docs/1.0.3/spring-cloud.html#spring-cloud-eureka-server), but in the not to distant future will support Consul as well.
 
 ## Provider Package Name and Feeds
 
-`SteelToe.Discovery.Client`
+`Steeltoe.Discovery.Client`
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 
@@ -65,13 +65,13 @@ Below is an example of the clients settings in JSON that are necessary to get th
 }
 ```
 
-For a complete list of client settings see the documentation in the [IEurekaClientConfig](https://github.com/SteelToeOSS/Discovery/blob/master/src/SteelToe.Discovery.Eureka.Client/IEurekaClientConfig.cs) and [IEurekaInstanceConfig](https://github.com/SteelToeOSS/Discovery/blob/master/src/SteelToe.Discovery.Eureka.Client/IEurekaInstanceConfig.cs) files.
+For a complete list of client settings see the documentation in the [IEurekaClientConfig](https://github.com/SteeltoeOSS/Discovery/blob/master/src/Steeltoe.Discovery.Eureka.Client/IEurekaClientConfig.cs) and [IEurekaInstanceConfig](https://github.com/SteeltoeOSS/Discovery/blob/master/src/Steeltoe.Discovery.Eureka.Client/IEurekaInstanceConfig.cs) files.
 
 ## Add and Use the Discovery Client 
 Once the providers settings have been defined and put in a file, the next step is to get them read in and make them available to the client. Using the C# example below, you can see that the clients configuration settings from above would be put in `appsettings.json` and the using the off-the-shelf JSON configuration provider we are able to read in the settings from the file using the provider (e.g. `AddJsonFile("appsettings.json")`.  
 
 ```
-#using SteelToe.Discovery.Client;
+#using Steeltoe.Discovery.Client;
 
 public class Startup {
     .....
@@ -92,7 +92,7 @@ public class Startup {
 ```
 The next step is to Add and Use the Discovery Client.  You do these two things in  `ConfigureServices(..)` and the `Configure(..)` methods of the startup class:
 ```
-#using SteelToe.Discovery.Client;
+#using Steeltoe.Discovery.Client;
 
 public class Startup {
     .....
@@ -103,7 +103,7 @@ public class Startup {
     }
     public void ConfigureServices(IServiceCollection services)
     {
-        // Add SteelToe Discovery Client service
+        // Add Steeltoe Discovery Client service
         services.AddDiscoveryClient(Configuration);
 
         // Add framework services.
@@ -116,7 +116,7 @@ public class Startup {
         app.UseStaticFiles();
         app.UseMvc();
         
-        // Use the SteelToe Discovery Client service
+        // Use the Steeltoe Discovery Client service
         app.UseDiscoveryClient();
     }
     ....
@@ -124,7 +124,7 @@ public class Startup {
 ## Discovering Services
 Once the app has started, the Discovery client will begin to operate in the background, both registering services and periodically fetching the service registry from the server.
 
-The simplest way of using the registry to lookup services when using the `HttpClient` is to use the SteelToe `DiscoveryHttpClientHandler`. For example, see below the `FortuneService` class. It is intended to be used to retrieve Fortunes from a Fortune micro service. The micro service is registered under the name `fortuneService`.  
+The simplest way of using the registry to lookup services when using the `HttpClient` is to use the Steeltoe `DiscoveryHttpClientHandler`. For example, see below the `FortuneService` class. It is intended to be used to retrieve Fortunes from a Fortune micro service. The micro service is registered under the name `fortuneService`.  
 
 First, notice that the `FortuneService` constructor takes the `IDiscoveryClient` as a parameter. This is the discovery client interface which you use to lookup services in the service registry. Upon app startup, it is registered with the DI service so it can be easily used in any controller, view or service in your app.  Notice that the constructor code makes use of the client by creating an instance of the `DiscoveryHttpClientHandler`, giving it a reference to the `IDiscoveryClient`. 
 
@@ -133,7 +133,7 @@ Next, notice that when the `RandomFortuneAsync()` method is called, you see that
 Of course you don't have to use the handler, you can make lookup requests directly on the `IDiscoveryClient` interface if you need to.
 
 ```
-using SteelToe.Discovery.Client;
+using Steeltoe.Discovery.Client;
 ....
 public class FortuneService : IFortuneService
 {

@@ -18,7 +18,7 @@ using System;
 using System.IO;
 
 
-namespace SteelToe.Discovery.Client.Test
+namespace Steeltoe.Discovery.Client.Test
 {
     public static class TestHelpers
     {

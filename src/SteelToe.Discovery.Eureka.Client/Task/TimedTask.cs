@@ -17,7 +17,7 @@
 using System;
 using System.Threading;
 
-namespace SteelToe.Discovery.Eureka.Task
+namespace Steeltoe.Discovery.Eureka.Task
 {
     internal class TimedTask
     {

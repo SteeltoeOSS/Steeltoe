@@ -18,7 +18,7 @@ using System;
 using System.Net;
 using System.Net.Http.Headers;
 
-namespace SteelToe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport
 {
     public class EurekaHttpResponse
     {

@@ -1,11 +1,11 @@
 ﻿
-using SteelToe.Discovery.Client;
+using Steeltoe.Discovery.Client;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SteelToe.Discovery.Client
+namespace Steeltoe.Discovery.Client
 {
     public class DiscoveryHttpClientHandler : DiscoveryHttpClientHandlerBase
     {

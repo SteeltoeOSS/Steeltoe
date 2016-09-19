@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 
-namespace SteelToe.Discovery.Client
+namespace Steeltoe.Discovery.Client
 {
     public class DiscoveryOptions
     {

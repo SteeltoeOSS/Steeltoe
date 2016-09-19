@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SteelToe.Discovery.Client
+namespace Steeltoe.Discovery.Client
 {
     public abstract class DiscoveryHttpClientHandlerBase : HttpClientHandler
     {

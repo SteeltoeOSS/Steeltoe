@@ -15,7 +15,7 @@
 //
 
 
-namespace SteelToe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaClientConfig : IEurekaClientConfig
     {

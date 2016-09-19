@@ -17,7 +17,7 @@
 using System;
 using Xunit;
 
-namespace SteelToe.Discovery.Eureka.Util.Test
+namespace Steeltoe.Discovery.Eureka.Util.Test
 {
     public class DateTimeConversionsTest
     {

@@ -15,10 +15,10 @@
 //
 
 using Microsoft.Extensions.Logging;
-using SteelToe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.Transport;
 using System;
 
-namespace SteelToe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka
 {
     public class DiscoveryManager
     {

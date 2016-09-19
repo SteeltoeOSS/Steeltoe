@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-using SteelToe.Discovery.Eureka;
+using Steeltoe.Discovery.Eureka;
 
 
-namespace SteelToe.Discovery.Client
+namespace Steeltoe.Discovery.Client
 {
 
     public class EurekaClientOptions : AbstractOptions, IDiscoveryClientOptions, IEurekaClientConfig

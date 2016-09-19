@@ -18,14 +18,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-using SteelToe.Discovery.Eureka.AppInfo;
-using SteelToe.Discovery.Eureka.Task;
-using SteelToe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Task;
+using Steeltoe.Discovery.Eureka.Transport;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace SteelToe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka
 {
     public class DiscoveryClient : IEurekaClient
     {

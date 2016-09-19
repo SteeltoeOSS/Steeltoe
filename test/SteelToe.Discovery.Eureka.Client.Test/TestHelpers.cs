@@ -19,7 +19,7 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 
-namespace SteelToe.Discovery.Eureka.Client.Test
+namespace Steeltoe.Discovery.Eureka.Client.Test
 {
     public static class TestHelpers
     {

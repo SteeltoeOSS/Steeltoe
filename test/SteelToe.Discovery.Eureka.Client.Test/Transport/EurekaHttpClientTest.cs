@@ -17,16 +17,16 @@
 using System;
 using System.Net.Http;
 using Xunit;
-using SteelToe.Discovery.Eureka.AppInfo;
-using SteelToe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Client.Test;
 using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using System.Collections.Generic;
-using SteelToe.Discovery.Eureka.Util;
+using Steeltoe.Discovery.Eureka.Util;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting;
 
-namespace SteelToe.Discovery.Eureka.Transport.Test
+namespace Steeltoe.Discovery.Eureka.Transport.Test
 {
     public class EurekaHttpClientTest : AbstractBaseTest
     {

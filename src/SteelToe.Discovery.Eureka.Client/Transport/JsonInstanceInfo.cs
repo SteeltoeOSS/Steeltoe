@@ -16,11 +16,11 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using SteelToe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
 using System.IO;
 
-namespace SteelToe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport
 {
     internal class JsonInstanceInfo
     {

@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 
-namespace SteelToe.Discovery.Client
+namespace Steeltoe.Discovery.Client
 {
     public class DiscoveryClientFactory
     {

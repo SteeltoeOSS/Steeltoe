@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-using SteelToe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using Xunit;
 
-namespace SteelToe.Discovery.Client.Test
+namespace Steeltoe.Discovery.Client.Test
 {
     public class EurekaInstanceOptionsTest : AbstractBaseTest
     {

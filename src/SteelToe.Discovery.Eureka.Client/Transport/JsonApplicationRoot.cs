@@ -16,7 +16,7 @@
 
 using System.IO;
 
-namespace SteelToe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport
 {
     internal class JsonApplicationRoot
     {

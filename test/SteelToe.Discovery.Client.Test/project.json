@@ -1,7 +1,7 @@
 ﻿{
   "version": "1.0.0",
   "testRunner": "xunit",
-  "description": "Unit test project for SteelToe.Discovery.Client",
+  "description": "Unit test project for Steeltoe.Discovery.Client",
   "authors": [ "Pivotal", "dtillman" ],
   "packOptions": {
     "tags": [ "ASPNET Core", "Spring", "Spring Cloud", "Spring Cloud Eureka Server", "Eureka" ],
@@ -35,7 +35,7 @@
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Microsoft.Extensions.Options": "1.0.0",
     "Microsoft.Extensions.Logging": "1.0.0",
-    "SteelToe.Discovery.Client": "1.0.0-*",
+    "Steeltoe.Discovery.Client": "1.0.0-*",
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029"
   },

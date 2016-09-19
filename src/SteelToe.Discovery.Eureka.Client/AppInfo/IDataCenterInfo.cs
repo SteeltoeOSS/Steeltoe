@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace SteelToe.Discovery.Eureka.AppInfo
+namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public interface IDataCenterInfo
     {

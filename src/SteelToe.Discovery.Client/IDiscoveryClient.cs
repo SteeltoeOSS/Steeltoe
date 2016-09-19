@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace SteelToe.Discovery.Client
+namespace Steeltoe.Discovery.Client
 {
     public interface IDiscoveryClient
     {

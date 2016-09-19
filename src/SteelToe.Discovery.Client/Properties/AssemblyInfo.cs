@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SteelToe.Discovery.Client")]
+[assembly: AssemblyTitle("Steeltoe.Discovery.Client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SteelToe.Discovery.Client")]
+[assembly: AssemblyProduct("Steeltoe.Discovery.Client")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -21,6 +21,6 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("0beabe67-8b4b-4641-9d7c-143a0211c3ca")]
-[assembly: InternalsVisibleTo("SteelToe.Discovery.Client.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.Client.Test")]
 [assembly: InternalsVisibleTo("Pivotal.Discovery.Client.Test")]
 [assembly: InternalsVisibleTo("Pivotal.Discovery.Client")]

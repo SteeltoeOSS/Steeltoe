@@ -15,9 +15,9 @@
 //
 
 using System;
-using SteelToe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.Transport;
 
-namespace SteelToe.Discovery.Eureka.AppInfo
+namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class DataCenterInfo : IDataCenterInfo
     {

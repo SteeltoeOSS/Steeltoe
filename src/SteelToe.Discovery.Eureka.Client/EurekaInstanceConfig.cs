@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 
-using SteelToe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
-namespace SteelToe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaInstanceConfig : IEurekaInstanceConfig
     {

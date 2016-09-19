@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
-using SteelToe.Discovery.Eureka;
-using SteelToe.Discovery.Eureka.AppInfo;
-using SteelToe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Generic;
 
-namespace SteelToe.Discovery.Client
+namespace Steeltoe.Discovery.Client
 {
     public class EurekaDiscoveryClientBase
     {

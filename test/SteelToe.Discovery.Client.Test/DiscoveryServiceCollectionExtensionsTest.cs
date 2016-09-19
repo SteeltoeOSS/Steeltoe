@@ -14,14 +14,14 @@
 // limitations under the License.
 //
 
-using SteelToe.Discovery.Eureka;
+using Steeltoe.Discovery.Eureka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 using System.IO;
 
-namespace SteelToe.Discovery.Client.Test
+namespace Steeltoe.Discovery.Client.Test
 {
     public class DiscoveryServiceCollectionExtensionsTest : AbstractBaseTest
     {

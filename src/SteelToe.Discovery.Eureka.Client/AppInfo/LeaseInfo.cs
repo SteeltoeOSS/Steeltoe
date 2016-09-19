@@ -15,10 +15,10 @@
 //
 
 using System;
-using SteelToe.Discovery.Eureka.Transport;
-using SteelToe.Discovery.Eureka.Util;
+using Steeltoe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.Util;
 
-namespace SteelToe.Discovery.Eureka.AppInfo
+namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class LeaseInfo
     {

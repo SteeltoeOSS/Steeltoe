@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-namespace SteelToe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport
 {
     internal class JsonApplication
     {

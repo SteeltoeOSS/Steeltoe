@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 
-using SteelToe.Discovery.Eureka.AppInfo;
-using SteelToe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Transport;
 using System.IO;
 using Xunit;
 
-namespace SteelToe.Discovery.Eureka.Client.Test.Transport
+namespace Steeltoe.Discovery.Eureka.Client.Test.Transport
 {
     public class JsonInstanceInfoRootTest : AbstractBaseTest
     {

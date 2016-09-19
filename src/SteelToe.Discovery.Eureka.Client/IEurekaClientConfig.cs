@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace SteelToe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka
 {
     public interface IEurekaClientConfig
     {

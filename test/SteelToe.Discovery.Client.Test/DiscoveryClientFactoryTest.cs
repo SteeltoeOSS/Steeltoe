@@ -18,7 +18,7 @@ using Microsoft.Extensions.Options;
 using System;
 using Xunit;
 
-namespace SteelToe.Discovery.Client.Test
+namespace Steeltoe.Discovery.Client.Test
 {
     public class DiscoveryClientFactoryTest : AbstractBaseTest
     {

@@ -16,7 +16,7 @@
 
 using System;
 
-namespace SteelToe.Discovery.Eureka.Util
+namespace Steeltoe.Discovery.Eureka.Util
 {
     public static class DateTimeConversions
     {

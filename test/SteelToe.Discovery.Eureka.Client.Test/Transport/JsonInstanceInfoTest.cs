@@ -17,11 +17,11 @@
 using System.IO;
 using Xunit;
 
-using SteelToe.Discovery.Eureka.AppInfo;
-using SteelToe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Client.Test;
 using System;
 
-namespace SteelToe.Discovery.Eureka.Transport.Test
+namespace Steeltoe.Discovery.Eureka.Transport.Test
 {
     public class JsonInstanceInfoTest : AbstractBaseTest
     {

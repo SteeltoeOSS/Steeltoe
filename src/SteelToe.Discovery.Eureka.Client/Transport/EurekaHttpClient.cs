@@ -19,17 +19,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
 
-using SteelToe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using Newtonsoft.Json;
 using System.Text;
-using SteelToe.Discovery.Eureka.Util;
+using Steeltoe.Discovery.Eureka.Util;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using System.Net.Security;
 using System.Net;
 using System.Runtime.InteropServices;
 
-namespace SteelToe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport
 {
     public class EurekaHttpClient : IEurekaHttpClient
     {

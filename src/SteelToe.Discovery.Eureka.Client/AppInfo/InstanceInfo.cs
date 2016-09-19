@@ -14,13 +14,13 @@
 // limitations under the License.
 //
 
-using SteelToe.Discovery.Eureka.Transport;
-using SteelToe.Discovery.Eureka.Util;
+using Steeltoe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SteelToe.Discovery.Eureka.AppInfo
+namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class InstanceInfo
     {

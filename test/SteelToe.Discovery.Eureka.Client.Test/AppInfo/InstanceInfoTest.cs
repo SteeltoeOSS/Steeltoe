@@ -14,14 +14,14 @@
 // limitations under the License.
 //
 
-using SteelToe.Discovery.Eureka.Client.Test;
-using SteelToe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Generic;
 
 using Xunit;
 
-namespace SteelToe.Discovery.Eureka.AppInfo.Test
+namespace Steeltoe.Discovery.Eureka.AppInfo.Test
 {
     public class InstanceInfoTest : AbstractBaseTest
     {

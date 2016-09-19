@@ -15,11 +15,11 @@
 //
 
 using Newtonsoft.Json;
-using SteelToe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.Client.Test;
 using System.IO;
 using Xunit;
 
-namespace SteelToe.Discovery.Eureka.Transport.Test
+namespace Steeltoe.Discovery.Eureka.Transport.Test
 {
     public class JsonSerializationTest : AbstractBaseTest
     {

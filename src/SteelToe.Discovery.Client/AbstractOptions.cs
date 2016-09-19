@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace SteelToe.Discovery.Client
+namespace Steeltoe.Discovery.Client
 {
     public abstract class AbstractOptions
     {
