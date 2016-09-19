@@ -20,7 +20,7 @@ using System.IO;
 
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.OAuth.Test
+namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
 {
     public class OAuthConnectorOptionsTest
     {

@@ -1,10 +1,10 @@
 ﻿# CloudFoundry .NET Connector
 
-This project contains base types used in creating SteelToe Connectors for CloudFoundry. SteelToe Connectors simplify connecting to services bound to an application on CloudFoundry. 
+This project contains base types used in creating Steeltoe Connectors for CloudFoundry. Steeltoe Connectors simplify connecting to services bound to an application on CloudFoundry. 
 
 ## Connector Package Name and Feeds
 
-`SteelToe.CloudFoundry.Connector`
+`Steeltoe.CloudFoundry.Connector`
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 

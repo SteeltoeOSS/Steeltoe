@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 
-namespace SteelToe.CloudFoundry.Connector.App
+namespace Steeltoe.CloudFoundry.Connector.App
 {
     public class ApplicationInstanceInfo : IApplicationInstanceInfo
     {

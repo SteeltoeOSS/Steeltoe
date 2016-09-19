@@ -19,7 +19,7 @@ using System;
 using System.IO;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.PostgreSql.Test
+namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 {
     public class PostgresProviderConfigurationTest
     {

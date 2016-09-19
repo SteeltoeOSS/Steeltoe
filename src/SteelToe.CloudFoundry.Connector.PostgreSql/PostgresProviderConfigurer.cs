@@ -15,9 +15,9 @@
 //
 
 
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 
-namespace SteelToe.CloudFoundry.Connector.PostgreSql
+namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
     public class PostgresProviderConfigurer
     {

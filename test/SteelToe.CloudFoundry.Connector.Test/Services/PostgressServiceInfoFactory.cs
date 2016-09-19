@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
     public class PostgressServiceInfoFactory
     {

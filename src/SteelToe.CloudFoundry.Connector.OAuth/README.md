@@ -1,11 +1,11 @@
 ﻿# CloudFoundry .NET OAuth Connector
 
-This project contains a SteelToe Connector for OAuth services.  This connector simplifies using CloudFoundry OAuth2 security services (e.g. [UAA Server](https://github.com/cloudfoundry/uaa) or [Pivotal Single Signon](https://docs.pivotal.io/p-identity/)).
+This project contains a Steeltoe Connector for OAuth services.  This connector simplifies using CloudFoundry OAuth2 security services (e.g. [UAA Server](https://github.com/cloudfoundry/uaa) or [Pivotal Single Signon](https://docs.pivotal.io/p-identity/)).
 
-It exposes the OAuth service configuration data as injectable `IOption<OAuthServiceOptions>`. This connector is used by the ASP.NET Core [CloudFoundry External Security Provider](https://github.com/SteelToeOSS/Security), but can be used standalone as well.
+It exposes the OAuth service configuration data as injectable `IOption<OAuthServiceOptions>`. This connector is used by the ASP.NET Core [CloudFoundry External Security Provider](https://github.com/SteeltoeOSS/Security), but can be used standalone as well.
 ## Provider Package Name and Feeds
 
-`SteelToe.CloudFoundry.Connector.OAuth`
+`Steeltoe.CloudFoundry.Connector.OAuth`
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 
@@ -20,13 +20,13 @@ In order to use this Connector you need to do the following:
 ```
 1. Create and bind a OAuth service instance to your application.
 2. Confiure any additional settings the OAuth connector will need. (Optional)
-3. Add SteelToe CloudFoundry configuration provider to your ConfigurationBuilder.
+3. Add Steeltoe CloudFoundry configuration provider to your ConfigurationBuilder.
 4. Add OAuth connector to your ServiceCollection.
 5. Access the OAuth service options.
 ```
 ## Create & Bind OAuth Service
 
-There are multiple OAuth services you can use on CloudFoundry. Rather than explaining the steps to create and bind the service to your app here, we recommend you read and follow the [Create OAuth2 Service Instance on CloudFoundry](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) section of the SteelToe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) sample.
+There are multiple OAuth services you can use on CloudFoundry. Rather than explaining the steps to create and bind the service to your app here, we recommend you read and follow the [Create OAuth2 Service Instance on CloudFoundry](https://github.com/SteeltoeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) section of the Steeltoe [CloudFoundrySingleSignon](https://github.com/SteeltoeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) sample.
 
 Once you have bound the service to the app, the OAuth service settings have been setup in `VCAP_SERVICES` and will be picked up automatically when the app is started by using the `CloudFoundry` configuration provider at startup.
 
@@ -54,10 +54,10 @@ Typically you do not need to configure any additional settings for the connector
 ```
 
 ## Add the CloudFoundry Configuration Provider
-Next we add the SteelToe CloudFoundry Configuration provider to the builder (e.g. `AddCloudFoundry()`). This is needed in order to pickup the `VCAP_` Service bindings and add them to the Configuration. Here is some sample code illustrating how this is done:
+Next we add the Steeltoe CloudFoundry Configuration provider to the builder (e.g. `AddCloudFoundry()`). This is needed in order to pickup the `VCAP_` Service bindings and add them to the Configuration. Here is some sample code illustrating how this is done:
 
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 
 public class Startup {
     .....
@@ -79,7 +79,7 @@ public class Startup {
 ## Add the OAuth Connector
 The next step is to add OAuth connector to your ServiceCollection.  You do this in `ConfigureServices(..)` method of the `Startup` class:
 ```
-#using SteelToe.CloudFoundry.Connector.OAuth;
+#using Steeltoe.CloudFoundry.Connector.OAuth;
 
 public class Startup {
     .....
@@ -104,7 +104,7 @@ Below is an example illustrating how to use the DI services to inject the OAuth 
 
 
 ```
-using SteelToe.CloudFoundry.Connector.OAuth;
+using Steeltoe.CloudFoundry.Connector.OAuth;
 ....
 public class HomeController : Controller
 {

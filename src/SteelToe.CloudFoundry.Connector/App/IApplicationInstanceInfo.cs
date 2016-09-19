@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace SteelToe.CloudFoundry.Connector.App
+namespace Steeltoe.CloudFoundry.Connector.App
 {
     public interface IApplicationInstanceInfo
     {

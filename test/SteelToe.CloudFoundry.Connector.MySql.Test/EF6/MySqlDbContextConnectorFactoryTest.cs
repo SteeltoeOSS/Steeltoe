@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 using MySql.Data.Entity;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Data.Entity;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.MySql.EF6.Test
+namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
 {
     public class MySqlDbContextConnectorFactoryTest
     {

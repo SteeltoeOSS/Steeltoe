@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System.Collections.Generic;
 
-namespace SteelToe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class RabbitServiceInfoFactory : ServiceInfoFactory
     {

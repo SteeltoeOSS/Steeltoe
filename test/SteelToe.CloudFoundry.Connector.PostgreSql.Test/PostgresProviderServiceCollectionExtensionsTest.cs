@@ -17,11 +17,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.PostgreSql.Test
+namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 {
     public class PostgresProviderServiceCollectionExtensionsTest
     {

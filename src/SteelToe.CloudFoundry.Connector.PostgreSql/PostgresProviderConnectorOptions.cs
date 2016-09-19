@@ -19,7 +19,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Text;
 
-namespace SteelToe.CloudFoundry.Connector.PostgreSql
+namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
     public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
     {

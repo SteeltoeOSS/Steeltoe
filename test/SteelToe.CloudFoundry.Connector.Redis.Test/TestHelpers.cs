@@ -17,7 +17,7 @@
 using System.IO;
 
 
-namespace SteelToe.CloudFoundry.Connector.Redis.Test
+namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
     public class TestHelpers
     {

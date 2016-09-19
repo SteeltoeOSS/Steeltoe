@@ -17,7 +17,7 @@
 using System.IO;
 
 
-namespace SteelToe.CloudFoundry.Connector.Rabbit.Test
+namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 {
     public class TestHelpers
     {

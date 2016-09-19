@@ -17,7 +17,7 @@
 using System.IO;
 
 
-namespace SteelToe.CloudFoundry.Connector.PostgreSql.Test
+namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 {
     public class TestHelpers
     {

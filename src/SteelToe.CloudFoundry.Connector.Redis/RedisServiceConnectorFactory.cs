@@ -17,9 +17,9 @@
 using System;
 
 using Microsoft.Extensions.Caching.Redis;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 
-namespace SteelToe.CloudFoundry.Connector.Redis
+namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisServiceConnectorFactory
     {

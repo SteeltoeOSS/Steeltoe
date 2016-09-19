@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SteelToe.CloudFoundry.Connector.Rabbit")]
+[assembly: AssemblyProduct("Steeltoe.CloudFoundry.Connector.Rabbit")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -18,4 +18,4 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("193321B8-7A40-406D-BC54-6D060B4B8FC8")]
 
-[assembly: InternalsVisibleTo("SteelToe.CloudFoundry.Connector.Rabbit.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.Connector.Rabbit.Test")]

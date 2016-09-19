@@ -17,7 +17,7 @@
 using System.IO;
 
 
-namespace SteelToe.CloudFoundry.Connector.MySql.Test
+namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
     public class TestHelpers
     {

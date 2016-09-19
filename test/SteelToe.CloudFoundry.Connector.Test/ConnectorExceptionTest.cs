@@ -17,7 +17,7 @@
 using System;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Test
+namespace Steeltoe.CloudFoundry.Connector.Test
 {
     public class ConnectorExceptionTest
     {

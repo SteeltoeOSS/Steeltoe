@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Text;
 
-namespace SteelToe.CloudFoundry.Connector
+namespace Steeltoe.CloudFoundry.Connector
 {
     public abstract class AbstractServiceConnectorOptions
     {

@@ -14,13 +14,13 @@
 // limitations under the License.
 //
 
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SteelToe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class MongoServiceInfoFactory : ServiceInfoFactory
     {

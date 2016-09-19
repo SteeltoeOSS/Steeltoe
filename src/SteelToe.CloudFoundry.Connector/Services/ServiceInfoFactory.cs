@@ -16,9 +16,9 @@
 
 using System;
 using System.Collections.Generic;
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 
-namespace SteelToe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
     [ServiceInfoFactory]
     public abstract class ServiceInfoFactory : IServiceInfoFactory

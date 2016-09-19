@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SteelToe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class SsoServiceInfo : ServiceInfo
     {

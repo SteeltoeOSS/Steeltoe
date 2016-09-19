@@ -16,12 +16,12 @@
 
 
 using Microsoft.Extensions.Configuration;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Collections.Generic;
 
 
-namespace SteelToe.CloudFoundry.Connector
+namespace Steeltoe.CloudFoundry.Connector
 {
     public static class IConfigurationExtensions
     {

@@ -15,15 +15,15 @@
 //
 
 using Microsoft.Extensions.Configuration;
-using SteelToe.CloudFoundry.Connector.Services;
-using SteelToe.CloudFoundry.Connector.App;
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.App;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Reflection;
 
-namespace SteelToe.CloudFoundry.Connector
+namespace Steeltoe.CloudFoundry.Connector
 {
     public class CloudFoundryServiceInfoCreator
     {

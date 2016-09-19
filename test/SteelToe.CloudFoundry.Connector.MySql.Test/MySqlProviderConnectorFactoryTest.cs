@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.MySql.Test
+namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
     public class MySqlProviderConnectorFactoryTest
     {

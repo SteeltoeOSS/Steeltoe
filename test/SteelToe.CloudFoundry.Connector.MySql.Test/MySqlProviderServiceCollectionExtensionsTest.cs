@@ -17,11 +17,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.MySql.Test
+namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
     public class MySqlProviderServiceCollectionExtensionsTest
     {

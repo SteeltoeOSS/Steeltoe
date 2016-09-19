@@ -18,11 +18,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
 
-namespace SteelToe.CloudFoundry.Connector.PostgreSql.EFCore
+namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 {
     public static class PostgresDbContextOptionsExtensions
     {

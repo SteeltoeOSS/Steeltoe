@@ -19,7 +19,7 @@ using System;
 using System.IO;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Redis.Test
+namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
     public class RedisCacheConfigurationTest
     {

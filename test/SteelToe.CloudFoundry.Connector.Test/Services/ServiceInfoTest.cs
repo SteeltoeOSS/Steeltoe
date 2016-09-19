@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 
-using SteelToe.CloudFoundry.Connector.App;
-using SteelToe.CloudFoundry.Connector.App.Test;
+using Steeltoe.CloudFoundry.Connector.App;
+using Steeltoe.CloudFoundry.Connector.App.Test;
 using System;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
     public class ServiceInfoTest
     {

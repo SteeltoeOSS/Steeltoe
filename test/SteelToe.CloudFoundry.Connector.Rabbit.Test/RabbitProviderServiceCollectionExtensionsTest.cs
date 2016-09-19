@@ -16,12 +16,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration;
 using System;
 using RabbitMQ.Client;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Rabbit.Test
+namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 {
     public class RabbitServiceCollectionExtensionsTest
     {

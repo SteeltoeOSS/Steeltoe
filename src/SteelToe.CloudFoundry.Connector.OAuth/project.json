@@ -34,7 +34,7 @@
     "Microsoft.Extensions.Options": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Binder": "1.0.0",
-    "SteelToe.CloudFoundry.Connector": "1.0.0-*"
+    "Steeltoe.CloudFoundry.Connector": "1.0.0-*"
   }
 }
 

@@ -16,11 +16,11 @@
 
 
 using System;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System.Reflection;
 using System.Data.Entity;
 
-namespace SteelToe.CloudFoundry.Connector.MySql.EF6
+namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {
     public class MySqlDbContextConnectorFactory : MySqlProviderConnectorFactory
     {

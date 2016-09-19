@@ -15,10 +15,10 @@
 //
 
 using Npgsql;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-namespace SteelToe.CloudFoundry.Connector.PostgreSql
+namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
     public class PostgresProviderConnectorFactory
     {

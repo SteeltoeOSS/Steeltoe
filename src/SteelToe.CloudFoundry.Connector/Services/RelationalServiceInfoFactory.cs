@@ -15,9 +15,9 @@
 //
 
 using System;
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 
-namespace SteelToe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public abstract class RelationalServiceInfoFactory : ServiceInfoFactory
     {

@@ -17,7 +17,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
     public class RabbitServiceInfoTest
     {

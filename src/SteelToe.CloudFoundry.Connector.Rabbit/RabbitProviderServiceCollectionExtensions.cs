@@ -18,10 +18,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-namespace SteelToe.CloudFoundry.Connector.Rabbit
+namespace Steeltoe.CloudFoundry.Connector.Rabbit
 {
     public static class RabbitProviderServiceCollectionExtensions
     {

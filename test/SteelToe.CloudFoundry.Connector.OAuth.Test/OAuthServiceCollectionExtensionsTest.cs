@@ -17,11 +17,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.OAuth.Test
+namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
 {
     public class OAuthServiceCollectionExtensionsTest
     {

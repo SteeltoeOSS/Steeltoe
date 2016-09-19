@@ -12,12 +12,12 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\SteelToe.CloudFoundry.Connector\bin\Release\*.nupkg'
-- path: 'src\SteelToe.CloudFoundry.Connector.MySql\bin\Release\*.nupkg'
-- path: 'src\SteelToe.CloudFoundry.Connector.Redis\bin\Release\*.nupkg'
-- path: 'src\SteelToe.CloudFoundry.Connector.PostgreSql\bin\Release\*.nupkg'
-- path: 'src\SteelToe.CloudFoundry.Connector.Rabbit\bin\Release\*.nupkg'
-- path: 'src\SteelToe.CloudFoundry.Connector.OAuth\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.MySql\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.Redis\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.PostgreSql\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.Rabbit\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.OAuth\bin\Release\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: true

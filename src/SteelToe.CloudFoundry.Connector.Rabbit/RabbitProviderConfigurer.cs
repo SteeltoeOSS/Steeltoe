@@ -15,9 +15,9 @@
 //
 
 
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 
-namespace SteelToe.CloudFoundry.Connector.Rabbit
+namespace Steeltoe.CloudFoundry.Connector.Rabbit
 {
     public class RabbitProviderConfigurer
     {

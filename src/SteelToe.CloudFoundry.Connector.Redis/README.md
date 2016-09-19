@@ -1,10 +1,10 @@
 ﻿# CloudFoundry .NET Redis Connector
 
-This project contains a SteelToe Connector for Redis.  This connector simplifies using [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) in an application running on CloudFoundry.
+This project contains a Steeltoe Connector for Redis.  This connector simplifies using [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) in an application running on CloudFoundry.
 
 ## Provider Package Name and Feeds
 
-`SteelToe.CloudFoundry.Connector.Redis`
+`Steeltoe.CloudFoundry.Connector.Redis`
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 
@@ -19,7 +19,7 @@ In order to use this Connector you need to do the following:
 ```
 1. Create and bind a Redis Service instance to your application.
 2. Optionally, configure any Redis client settings (e.g. appsettings.json)
-3. Add SteelToe CloudFoundry config provider to your ConfigurationBuilder.
+3. Add Steeltoe CloudFoundry config provider to your ConfigurationBuilder.
 4. Add DistributedRedisCache to your ServiceCollection.
 ```
 ## Create & Bind Redis Service
@@ -54,7 +54,7 @@ For a complete list of client settings see the documentation in the `RedisCacheC
 ## Add the CloudFoundry Configuration Provider
 Next we add the CloudFoundry Configuration provider to the builder (e.g. `AddCloudFoundry()`). This is needed in order to pickup the VCAP_ Service bindings and add them to the Configuration. Here is some sample code illustrating how this is done:
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 ...
 
 var builder = new ConfigurationBuilder()
@@ -69,7 +69,7 @@ var config = builder.Build();
 ```
 Normally in an ASP.NET Core application, the above C# code is would be included in the constructor of the `Startup` class. For example, you might see something like this:
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 
 public class Startup {
     .....
@@ -93,7 +93,7 @@ public class Startup {
 ## Add the DistributedRedisCache
 The next step is to add DistributedRedisCache to your ServiceCollection.  You do this in `ConfigureServices(..)` method of the startup class:
 ```
-#using SteelToe.CloudFoundry.Connector.Redis;
+#using Steeltoe.CloudFoundry.Connector.Redis;
 
 public class Startup {
     .....

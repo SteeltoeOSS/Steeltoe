@@ -16,10 +16,10 @@
 
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Options;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 
 
-namespace SteelToe.CloudFoundry.Connector.Redis
+namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisCacheConfigurer
     {

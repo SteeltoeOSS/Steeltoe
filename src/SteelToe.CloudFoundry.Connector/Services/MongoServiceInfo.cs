@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace SteelToe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class MongoServiceInfo : UriServiceInfo
     {

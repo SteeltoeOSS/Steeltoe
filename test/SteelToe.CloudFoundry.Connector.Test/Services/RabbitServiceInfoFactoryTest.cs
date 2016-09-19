@@ -15,12 +15,12 @@
 //
 
 using Microsoft.Extensions.Configuration;
-using SteelToe.Extensions.Configuration;
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
     public class RabbitServiceInfoFactoryTest
     {

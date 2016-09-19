@@ -19,7 +19,7 @@ using System;
 using System.IO;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.MySql.Test
+namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
     public class MySqlProviderConfigurationTest
     {

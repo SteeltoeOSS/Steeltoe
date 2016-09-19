@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
-using SteelToe.CloudFoundry.Connector.App;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.App;
+using Steeltoe.CloudFoundry.Connector.Services;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Redis.Test
+namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
     public class RedisServiceConnectorFactoryTest
     {

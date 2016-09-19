@@ -17,7 +17,7 @@
 using System;
 
 
-namespace SteelToe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class RedisServiceInfo : UriServiceInfo
     {

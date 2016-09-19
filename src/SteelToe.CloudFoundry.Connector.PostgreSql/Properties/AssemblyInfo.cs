@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SteelToe.CloudFoundry.Connector.PostgreSql")]
+[assembly: AssemblyProduct("Steeltoe.CloudFoundry.Connector.PostgreSql")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -19,4 +19,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("25922da9-53c1-43cc-b119-5d1cf3462118")]
 
 
-[assembly: InternalsVisibleTo("SteelToe.CloudFoundry.Connector.PostgreSql.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.Connector.PostgreSql.Test")]

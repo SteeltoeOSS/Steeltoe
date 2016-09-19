@@ -17,11 +17,11 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Redis.Test
+namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
     public class RedisCacheServiceCollectionExtensionsTest
     {

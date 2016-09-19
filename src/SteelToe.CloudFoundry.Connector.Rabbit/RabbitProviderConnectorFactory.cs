@@ -15,10 +15,10 @@
 //
 
 using RabbitMQ.Client;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-namespace SteelToe.CloudFoundry.Connector.Rabbit
+namespace Steeltoe.CloudFoundry.Connector.Rabbit
 {
     public class RabbitProviderConnectorFactory
     {

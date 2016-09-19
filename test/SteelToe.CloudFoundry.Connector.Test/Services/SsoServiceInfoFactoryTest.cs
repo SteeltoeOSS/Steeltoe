@@ -1,12 +1,12 @@
-﻿using SteelToe.CloudFoundry.Connector.Services;
-using SteelToe.Extensions.Configuration.CloudFoundry;
+﻿using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Test.Services
+namespace Steeltoe.CloudFoundry.Connector.Test.Services
 {
     public class SsoServiceInfoFactoryTest
     {

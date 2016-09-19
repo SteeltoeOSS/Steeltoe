@@ -15,9 +15,9 @@
 //
 
 using System;
-using SteelToe.CloudFoundry.Connector.App;
+using Steeltoe.CloudFoundry.Connector.App;
 
-namespace SteelToe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public abstract class ServiceInfo : IServiceInfo
     {

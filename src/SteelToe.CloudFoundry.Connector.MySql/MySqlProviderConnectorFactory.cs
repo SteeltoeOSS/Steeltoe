@@ -15,10 +15,10 @@
 //
 
 using MySql.Data.MySqlClient;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-namespace SteelToe.CloudFoundry.Connector.MySql
+namespace Steeltoe.CloudFoundry.Connector.MySql
 {
     public class MySqlProviderConnectorFactory
     {

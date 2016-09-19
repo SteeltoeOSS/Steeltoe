@@ -1,10 +1,10 @@
 ﻿# CloudFoundry .NET Postgres Connector
 
-This project contains a SteelToe Connector for Postgres.  This connector simplifies using [Npgsql - 3.1.5](http://www.npgsql.org/) in an application running on CloudFoundry.
+This project contains a Steeltoe Connector for Postgres.  This connector simplifies using [Npgsql - 3.1.5](http://www.npgsql.org/) in an application running on CloudFoundry.
 
 ## Provider Package Name and Feeds
 
-`SteelToe.CloudFoundry.Connector.PostgreSql`
+`Steeltoe.CloudFoundry.Connector.PostgreSql`
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 
@@ -19,7 +19,7 @@ In order to use this Connector you need to do the following:
 ```
 1. Create and bind a Postgres Service instance to your application.
 2. Optionally, configure any Postgres client settings (e.g. appsettings.json)
-3. Add SteelToe CloudFoundry config provider to your ConfigurationBuilder.
+3. Add Steeltoe CloudFoundry config provider to your ConfigurationBuilder.
 4. Add NpgsqlConnection or DbContext to your ServiceCollection.
 ```
 ## Create & Bind Postgres Service
@@ -54,7 +54,7 @@ For a complete list of client settings see the documentation in the `PostgresPro
 ## Add the CloudFoundry Configuration Provider
 Next we add the CloudFoundry Configuration provider to the builder (e.g. `AddCloudFoundry()`). This is needed in order to pickup the VCAP_ Service bindings and add them to the Configuration. Here is some sample code illustrating how this is done:
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 ...
 
 var builder = new ConfigurationBuilder()
@@ -69,7 +69,7 @@ var config = builder.Build();
 ```
 Normally in an ASP.NET Core application, the above C# code is would be included in the constructor of the `Startup` class. For example, you might see something like this:
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 
 public class Startup {
     .....
@@ -93,9 +93,9 @@ public class Startup {
 ## Add NpgsqlConnector or a DbContext
 The next step is to add NpgsqlConnector or DbContext's to your ServiceCollection depending on your needs.  You do this in `ConfigureServices(..)` method of the startup class:
 ```
-#using SteelToe.CloudFoundry.Connector.PostgreSql;
+#using Steeltoe.CloudFoundry.Connector.PostgreSql;
 ... OR
-#using SteelToe.CloudFoundry.Connector.PostgreSql.EFCore;
+#using Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore;
 
 public class Startup {
     .....

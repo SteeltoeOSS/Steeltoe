@@ -8,7 +8,7 @@
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>25922da9-53c1-43cc-b119-5d1cf3462118</ProjectGuid>
-    <RootNamespace>SteelToe.CloudFoundry.Connector.PostgreSql</RootNamespace>
+    <RootNamespace>Steeltoe.CloudFoundry.Connector.PostgreSql</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>

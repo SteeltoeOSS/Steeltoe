@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SteelToe.CloudFoundry.Connector.OAuth")]
+[assembly: AssemblyProduct("Steeltoe.CloudFoundry.Connector.OAuth")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -18,4 +18,4 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("e049182d-3c94-4661-ac2e-428a9fc81ffd")]
 
-[assembly: InternalsVisibleTo("SteelToe.CloudFoundry.Connector.OAuth.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.Connector.OAuth.Test")]

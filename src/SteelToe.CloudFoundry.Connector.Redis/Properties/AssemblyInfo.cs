@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SteelToe.CloudFoundry.Connector.Redis")]
+[assembly: AssemblyProduct("Steeltoe.CloudFoundry.Connector.Redis")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -19,4 +19,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("65b3fa01-1a10-4fad-aec5-7642ef9b708d")]
 
 
-[assembly: InternalsVisibleTo("SteelToe.CloudFoundry.Connector.Redis.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.Connector.Redis.Test")]

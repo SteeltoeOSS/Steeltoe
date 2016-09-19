@@ -7,7 +7,7 @@
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>72E7186B-F318-4DB0-83E1-2ACB302802CE</ProjectGuid>
-    <RootNamespace>SteelToe.CloudFoundry.Connector.Rabbit.Test</RootNamespace>
+    <RootNamespace>Steeltoe.CloudFoundry.Connector.Rabbit.Test</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>

@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Rabbit.Test
+namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 {
     public class RabbitProviderConfigurerTest {
         [Fact]

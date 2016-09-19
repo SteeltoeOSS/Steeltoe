@@ -15,12 +15,12 @@
 //
 
 using Microsoft.Extensions.Configuration;
-using SteelToe.CloudFoundry.Connector.Services;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.Test
+namespace Steeltoe.CloudFoundry.Connector.Test
 {
     public class CloudFoundryServiceInfoCreatorTest
     {

@@ -20,10 +20,10 @@ using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-namespace SteelToe.CloudFoundry.Connector.Redis
+namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public static class RedisCacheServiceCollectionExtensions
     {

@@ -19,7 +19,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Text;
 
-namespace SteelToe.CloudFoundry.Connector.MySql
+namespace Steeltoe.CloudFoundry.Connector.MySql
 {
     public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
     {

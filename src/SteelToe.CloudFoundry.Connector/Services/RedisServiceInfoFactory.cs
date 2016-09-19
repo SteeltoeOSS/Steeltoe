@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
-using SteelToe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 
-namespace SteelToe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class RedisServiceInfoFactory : ServiceInfoFactory
     {

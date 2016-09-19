@@ -17,10 +17,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-namespace SteelToe.CloudFoundry.Connector.OAuth
+namespace Steeltoe.CloudFoundry.Connector.OAuth
 {
     public static class OAuthServiceCollectionExtensions
     {

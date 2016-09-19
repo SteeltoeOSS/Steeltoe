@@ -16,10 +16,10 @@
 
 using System;
 
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using Microsoft.Extensions.Options;
 
-namespace SteelToe.CloudFoundry.Connector.OAuth
+namespace Steeltoe.CloudFoundry.Connector.OAuth
 {
     public class OAuthConnectorFactory
     {

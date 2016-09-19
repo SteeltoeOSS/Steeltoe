@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SteelToe.CloudFoundry.Connector.MySql")]
+[assembly: AssemblyProduct("Steeltoe.CloudFoundry.Connector.MySql")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -18,4 +18,4 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("f42e9f66-e6d3-4555-9dcf-d7e5fbb169f5")]
 
-[assembly: InternalsVisibleTo("SteelToe.CloudFoundry.Connector.MySql.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.Connector.MySql.Test")]

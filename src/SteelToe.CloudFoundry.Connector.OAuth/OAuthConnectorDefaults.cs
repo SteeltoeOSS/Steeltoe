@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SteelToe.CloudFoundry.Connector.OAuth
+namespace Steeltoe.CloudFoundry.Connector.OAuth
 {
     public class OAuthConnectorDefaults
     {

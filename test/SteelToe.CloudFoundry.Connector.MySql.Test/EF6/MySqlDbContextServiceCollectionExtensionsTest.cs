@@ -17,12 +17,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.Entity;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration;
 using System;
 using System.Data.Entity;
 using Xunit;
 
-namespace SteelToe.CloudFoundry.Connector.MySql.EF6.Test
+namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
 {
     public class MySqlDbContextServiceCollectionExtensionsTest
     {

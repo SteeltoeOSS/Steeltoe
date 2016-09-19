@@ -17,7 +17,7 @@
 
 using System;
 
-namespace SteelToe.CloudFoundry.Connector
+namespace Steeltoe.CloudFoundry.Connector
 {
     public class ConnectorException : Exception
     {

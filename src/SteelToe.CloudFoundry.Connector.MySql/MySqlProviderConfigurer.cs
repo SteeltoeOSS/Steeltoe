@@ -15,9 +15,9 @@
 //
 
 
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 
-namespace SteelToe.CloudFoundry.Connector.MySql
+namespace Steeltoe.CloudFoundry.Connector.MySql
 {
     public class MySqlProviderConfigurer
     {

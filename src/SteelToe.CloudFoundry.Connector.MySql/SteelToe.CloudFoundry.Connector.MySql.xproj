@@ -7,7 +7,7 @@
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>f42e9f66-e6d3-4555-9dcf-d7e5fbb169f5</ProjectGuid>
-    <RootNamespace>SteelToe.CloudFoundry.Connector.MySql</RootNamespace>
+    <RootNamespace>Steeltoe.CloudFoundry.Connector.MySql</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>

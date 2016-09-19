@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 
 
-namespace SteelToe.CloudFoundry.Connector.Redis
+namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     {

@@ -18,12 +18,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SteelToe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Data.Entity;
 using MySql.Data.Entity;
 
-namespace SteelToe.CloudFoundry.Connector.MySql.EF6
+namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {
     public static class MySqlDbContextServiceCollectionExtensions
     {

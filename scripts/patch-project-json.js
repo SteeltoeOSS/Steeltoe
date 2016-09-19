@@ -39,12 +39,12 @@ jsonfile.readFile(file, function (err, project) {
     project.version = version;
 
     // Patch dependencies
-    if (project.dependencies['SteelToe.CloudFoundry.Connector'] ) {
-        project.dependencies['SteelToe.CloudFoundry.Connector'] = dependsVersion;
+    if (project.dependencies['Steeltoe.CloudFoundry.Connector'] ) {
+        project.dependencies['Steeltoe.CloudFoundry.Connector'] = dependsVersion;
     }
 
-    if (project.dependencies['SteelToe.Extensions.Configuration.CloudFoundry']) {
-        project.dependencies['SteelToe.Extensions.Configuration.CloudFoundry'] = dependsVersion;
+    if (project.dependencies['Steeltoe.Extensions.Configuration.CloudFoundry']) {
+        project.dependencies['Steeltoe.Extensions.Configuration.CloudFoundry'] = dependsVersion;
     }
 
     jsonfile.writeFile(file, project, {spaces: 2}, function(err) {
