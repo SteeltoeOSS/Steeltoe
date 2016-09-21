@@ -17,10 +17,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using SteelToe.CloudFoundry.Connector.OAuth;
+using Steeltoe.CloudFoundry.Connector.OAuth;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace SteelToe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public static class CloudFoundryServiceCollectionExtensions
     {

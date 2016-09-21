@@ -3,19 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5804915A-5476-4DE7-AFDD-4492F37543D3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FAD86FF9-64CE-4915-8146-DC4A33C31004}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5CB4DFCB-2083-4EF9-8C62-ECC7A9DF2F9B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{43A46D73-271A-414B-92DE-F6ACD13FA117}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Security.Authentication.CloudFoundry", "src\SteelToe.Security.Authentication.CloudFoundry\SteelToe.Security.Authentication.CloudFoundry.xproj", "{CC60F638-A791-4694-998C-2B1559D37207}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Security.Authentication.CloudFoundry", "src\Steeltoe.Security.Authentication.CloudFoundry\Steeltoe.Security.Authentication.CloudFoundry.xproj", "{CC60F638-A791-4694-998C-2B1559D37207}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Security.Authentication.CloudFoundry.Test", "test\SteelToe.Security.Authentication.CloudFoundry.Test\SteelToe.Security.Authentication.CloudFoundry.Test.xproj", "{0B258F76-09D9-44FE-8232-CBF33F68242C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CC82EA8F-5967-43DF-950E-309E52603A6E}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-		README.md = README.md
-	EndProjectSection
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Security.Authentication.CloudFoundry.Test", "test\Steeltoe.Security.Authentication.CloudFoundry.Test\Steeltoe.Security.Authentication.CloudFoundry.Test.xproj", "{0B258F76-09D9-44FE-8232-CBF33F68242C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,7 +30,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{CC60F638-A791-4694-998C-2B1559D37207} = {5804915A-5476-4DE7-AFDD-4492F37543D3}
-		{0B258F76-09D9-44FE-8232-CBF33F68242C} = {5CB4DFCB-2083-4EF9-8C62-ECC7A9DF2F9B}
+		{CC60F638-A791-4694-998C-2B1559D37207} = {FAD86FF9-64CE-4915-8146-DC4A33C31004}
+		{0B258F76-09D9-44FE-8232-CBF33F68242C} = {43A46D73-271A-414B-92DE-F6ACD13FA117}
 	EndGlobalSection
 EndGlobal

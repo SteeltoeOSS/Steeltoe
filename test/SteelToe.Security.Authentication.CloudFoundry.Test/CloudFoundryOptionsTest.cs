@@ -15,12 +15,12 @@
 //
 
 using Microsoft.AspNetCore.Http;
-using SteelToe.CloudFoundry.Connector.OAuth;
+using Steeltoe.CloudFoundry.Connector.OAuth;
 using System.Runtime.InteropServices;
 
 using Xunit;
 
-namespace SteelToe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryOptionsTest
     {

@@ -5,12 +5,12 @@ This project contains a [ASP.NET Core External Security Provider](https://github
 This provider simplifies using CloudFoundry OAuth2 security services (e.g. [UAA Server](https://github.com/cloudfoundry/uaa) and/or [Pivotal Single Signon](https://docs.pivotal.io/p-identity/)) for Authentication and Authorization in an ASP.NET Core application.
 
 There are two providers to choose from in this package:
-* A provider that enables OAuth2 Single Signon with CloudFoundry Security services. Have a look at the SteelToe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) for a sample app.
-* A provider that enables using JWT tokens issued by CloudFoundry Security services for securing REST endpoints. Have a look at the SteelToe [CloudFoundryJwtAuthentication](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundryJwtAuthentication) for a sample app.
+* A provider that enables OAuth2 Single Signon with CloudFoundry Security services. Have a look at the Steeltoe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) for a sample app.
+* A provider that enables using JWT tokens issued by CloudFoundry Security services for securing REST endpoints. Have a look at the Steeltoe [CloudFoundryJwtAuthentication](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundryJwtAuthentication) for a sample app.
 
 ## Package Name and Feeds
 
-`SteelToe.Security.Authentication.CloudFoundry`
+`Steeltoe.Security.Authentication.CloudFoundry`
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 
@@ -32,7 +32,7 @@ In order to use the Security provider you need to do the following:
 5. Secure your endpoints 
 ``` 
 ## Create & Bind OAuth2 Service
-As mentioned above there are a couple OAuth2 services you can use on CloudFoundry. Rather than explaining the steps here, we recommend you read and follow the [Create OAuth2 Service Instance on CloudFoundry](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) section of the SteelToe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) sample.
+As mentioned above there are a couple OAuth2 services you can use on CloudFoundry. Rather than explaining the steps here, we recommend you read and follow the [Create OAuth2 Service Instance on CloudFoundry](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) section of the Steeltoe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) sample.
 
 Once you have bound the service to the app, the services settings will have been setup in `VCAP_SERVICES` and will be picked up automatically when the app is started by using the `CloudFoundry` configuration provider discussed below during application startup.
 
@@ -63,7 +63,7 @@ Typically you do not need to configure any additional settings for the security 
 Next we add the CloudFoundry Configuration provider to the builder (e.g. `AddCloudFoundry()`). This is needed in order to pickup the `VCAP_` Service bindings and add them to the Configuration. Here is some sample code illustrating how this is done:
 
 ```
-#using SteelToe.Extensions.Configuration;
+#using Steeltoe.Extensions.Configuration;
 
 public class Startup {
     .....
@@ -88,8 +88,8 @@ The next step is to Add and Use the Security provider.  You will do these two th
 
 The `AddCloudFoundryAuthentication()` call configures and adds the CloudFoundry OAuth2 authentication service to the ServiceCollection and the `UseCloudFoundryAuthentication()` call adds the CloudFoundry middleware to the pipeline.
 ```
-using SteelToe.Security.Authentication.CloudFoundry;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.Security.Authentication.CloudFoundry;
+using Steeltoe.Extensions.Configuration;
 
 public class Startup {
     .....
@@ -128,8 +128,8 @@ public class Startup {
 
 The `AddCloudFoundryJwtAuthentication()` call configures and adds the CloudFoundry JWT authentication service to the ServiceCollection and the `UseCloudFoundryJwtAuthentication()` call adds the CloudFoundry middleware to the pipeline.
 ```
-using SteelToe.Security.Authentication.CloudFoundry;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.Security.Authentication.CloudFoundry;
+using Steeltoe.Extensions.Configuration;
 
 public class Startup {
     .....
@@ -207,8 +207,8 @@ public class ValuesController : Controller
  
 And here is what you need to do in your `Startup` class to create the `testgroup` policy:
 ```
-using SteelToe.Security.Authentication.CloudFoundry;
-using SteelToe.Extensions.Configuration;
+using Steeltoe.Security.Authentication.CloudFoundry;
+using Steeltoe.Extensions.Configuration;
 
 public class Startup {
     .....

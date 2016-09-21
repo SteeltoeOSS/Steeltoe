@@ -18,7 +18,7 @@ using System;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace SteelToe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
 
     public static class CloudFoundryHelper

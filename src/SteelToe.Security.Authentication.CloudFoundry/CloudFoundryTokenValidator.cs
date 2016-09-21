@@ -8,7 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SteelToe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryTokenValidator
     {
@@ -76,7 +76,7 @@ namespace SteelToe.Security.Authentication.CloudFoundry
                     validJwt = validatedToken as JwtSecurityToken;
                 }
 
-            } catch (Exception e)
+            } catch (Exception)
             {
                 //LOG
             }

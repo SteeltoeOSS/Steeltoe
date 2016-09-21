@@ -21,11 +21,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SteelToe.CloudFoundry.Connector.OAuth;
+using Steeltoe.CloudFoundry.Connector.OAuth;
 using System;
 
 
-namespace SteelToe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class TestServerJwtStartup
     {

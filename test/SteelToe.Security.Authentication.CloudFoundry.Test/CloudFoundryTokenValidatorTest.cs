@@ -18,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using Xunit;
 
-namespace SteelToe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryTokenValidatorTest
     {

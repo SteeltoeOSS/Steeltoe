@@ -31,7 +31,7 @@ using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 
-namespace SteelToe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     internal class CloudFoundryHandler : OAuthHandler<CloudFoundryOptions>
     {

@@ -17,11 +17,11 @@
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using SteelToe.CloudFoundry.Connector.OAuth;
+using Steeltoe.CloudFoundry.Connector.OAuth;
 using System.Runtime.InteropServices;
 using Microsoft.IdentityModel.Tokens;
 
-namespace SteelToe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry
 { 
  
     public class CloudFoundryOptions : OAuthOptions

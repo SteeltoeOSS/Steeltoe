@@ -12,7 +12,7 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\SteelToe.Security.Authentication.CloudFoundry\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Security.Authentication.CloudFoundry\bin\Release\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: true

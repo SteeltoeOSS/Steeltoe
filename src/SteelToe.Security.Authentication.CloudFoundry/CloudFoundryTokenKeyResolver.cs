@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Threading.Tasks;
 
-namespace SteelToe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryTokenKeyResolver
     {

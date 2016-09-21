@@ -32,7 +32,7 @@ using Newtonsoft.Json.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 
-namespace SteelToe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryHandlerTest
     {

@@ -20,7 +20,7 @@ using System.Linq;
 using System.Net.Http;
 using Xunit;
 
-namespace SteelToe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryTokenKeyResolverTest
     {

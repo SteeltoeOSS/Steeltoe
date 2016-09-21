@@ -23,7 +23,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
 
-namespace SteelToe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
 
     public class CloudFoundryMiddleware : OAuthMiddleware<CloudFoundryOptions>

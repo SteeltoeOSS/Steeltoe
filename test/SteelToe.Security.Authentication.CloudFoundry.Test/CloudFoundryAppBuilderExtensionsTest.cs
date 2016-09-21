@@ -21,11 +21,11 @@ using Microsoft.AspNetCore.TestHost;
 using Xunit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
-using SteelToe.CloudFoundry.Connector.OAuth;
+using Steeltoe.CloudFoundry.Connector.OAuth;
 using Microsoft.AspNetCore.Hosting.Internal;
 using System.Net;
 
-namespace SteelToe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryAppBuilderExtensionsTest
     {
