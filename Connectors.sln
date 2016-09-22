@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3A6DCB1F-B7A5-435A-B938-31B3A85E5324}"
 EndProject
@@ -12,17 +12,29 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.Redis", "src\SteelToe.CloudFoundry.Connector.Redis\SteelToe.CloudFoundry.Connector.Redis.xproj", "{65B3FA01-1A10-4FAD-AEC5-7642EF9B708D}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.Redis", "src\Steeltoe.CloudFoundry.Connector.Redis\Steeltoe.CloudFoundry.Connector.Redis.xproj", "{65B3FA01-1A10-4FAD-AEC5-7642EF9B708D}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector", "src\SteelToe.CloudFoundry.Connector\SteelToe.CloudFoundry.Connector.xproj", "{BAD63265-14F4-4EAA-A855-D8CF41D3DD20}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector", "src\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.xproj", "{BAD63265-14F4-4EAA-A855-D8CF41D3DD20}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.MySql", "src\SteelToe.CloudFoundry.Connector.MySql\SteelToe.CloudFoundry.Connector.MySql.xproj", "{F42E9F66-E6D3-4555-9DCF-D7E5FBB169F5}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.MySql", "src\Steeltoe.CloudFoundry.Connector.MySql\Steeltoe.CloudFoundry.Connector.MySql.xproj", "{F42E9F66-E6D3-4555-9DCF-D7E5FBB169F5}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.Test", "test\SteelToe.CloudFoundry.Connector.Test\SteelToe.CloudFoundry.Connector.Test.xproj", "{75EF0251-185B-490C-A006-3CE44C6FF713}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.Test", "test\Steeltoe.CloudFoundry.Connector.Test\Steeltoe.CloudFoundry.Connector.Test.xproj", "{75EF0251-185B-490C-A006-3CE44C6FF713}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.Redis.Test", "test\SteelToe.CloudFoundry.Connector.Redis.Test\SteelToe.CloudFoundry.Connector.Redis.Test.xproj", "{B518FBCF-138E-4154-931E-63DF5551D09B}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.Redis.Test", "test\Steeltoe.CloudFoundry.Connector.Redis.Test\Steeltoe.CloudFoundry.Connector.Redis.Test.xproj", "{B518FBCF-138E-4154-931E-63DF5551D09B}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.CloudFoundry.Connector.MySql.Test", "test\SteelToe.CloudFoundry.Connector.MySql.Test\SteelToe.CloudFoundry.Connector.MySql.Test.xproj", "{A1112F84-5350-481B-8296-FB1119097329}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.MySql.Test", "test\Steeltoe.CloudFoundry.Connector.MySql.Test\Steeltoe.CloudFoundry.Connector.MySql.Test.xproj", "{A1112F84-5350-481B-8296-FB1119097329}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.PostgreSql", "src\Steeltoe.CloudFoundry.Connector.PostgreSql\Steeltoe.CloudFoundry.Connector.PostgreSql.xproj", "{25922DA9-53C1-43CC-B119-5D1CF3462118}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.PostgreSql.Test", "test\Steeltoe.CloudFoundry.Connector.PostgreSql.Test\Steeltoe.CloudFoundry.Connector.PostgreSql.Test.xproj", "{2B86C248-05AB-4C87-A7AF-1843794750C3}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.Rabbit", "src\Steeltoe.CloudFoundry.Connector.Rabbit\Steeltoe.CloudFoundry.Connector.Rabbit.xproj", "{E42C9832-E939-46EB-8A9F-A854FBD18EAE}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.Rabbit.Test", "test\Steeltoe.CloudFoundry.Connector.Rabbit.Test\Steeltoe.CloudFoundry.Connector.Rabbit.Test.xproj", "{72E7186B-F318-4DB0-83E1-2ACB302802CE}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.OAuth", "src\Steeltoe.CloudFoundry.Connector.OAuth\Steeltoe.CloudFoundry.Connector.OAuth.xproj", "{E049182D-3C94-4661-AC2E-428A9FC81FFD}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.OAuth.Test", "test\Steeltoe.CloudFoundry.Connector.OAuth.Test\Steeltoe.CloudFoundry.Connector.OAuth.Test.xproj", "{8D4DBECC-87AA-4C79-AAAC-E309C306D3DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +66,30 @@ Global
 		{A1112F84-5350-481B-8296-FB1119097329}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1112F84-5350-481B-8296-FB1119097329}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1112F84-5350-481B-8296-FB1119097329}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25922DA9-53C1-43CC-B119-5D1CF3462118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25922DA9-53C1-43CC-B119-5D1CF3462118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25922DA9-53C1-43CC-B119-5D1CF3462118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25922DA9-53C1-43CC-B119-5D1CF3462118}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B86C248-05AB-4C87-A7AF-1843794750C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E049182D-3C94-4661-AC2E-428A9FC81FFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E049182D-3C94-4661-AC2E-428A9FC81FFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E049182D-3C94-4661-AC2E-428A9FC81FFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E049182D-3C94-4661-AC2E-428A9FC81FFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D4DBECC-87AA-4C79-AAAC-E309C306D3DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D4DBECC-87AA-4C79-AAAC-E309C306D3DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D4DBECC-87AA-4C79-AAAC-E309C306D3DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D4DBECC-87AA-4C79-AAAC-E309C306D3DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +101,11 @@ Global
 		{75EF0251-185B-490C-A006-3CE44C6FF713} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
 		{B518FBCF-138E-4154-931E-63DF5551D09B} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
 		{A1112F84-5350-481B-8296-FB1119097329} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
+		{25922DA9-53C1-43CC-B119-5D1CF3462118} = {3A6DCB1F-B7A5-435A-B938-31B3A85E5324}
+		{2B86C248-05AB-4C87-A7AF-1843794750C3} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
+		{E42C9832-E939-46EB-8A9F-A854FBD18EAE} = {3A6DCB1F-B7A5-435A-B938-31B3A85E5324}
+		{72E7186B-F318-4DB0-83E1-2ACB302802CE} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
+		{E049182D-3C94-4661-AC2E-428A9FC81FFD} = {3A6DCB1F-B7A5-435A-B938-31B3A85E5324}
+		{8D4DBECC-87AA-4C79-AAAC-E309C306D3DB} = {08543DA4-EAE9-4D4F-999B-2FBBB8A45B99}
 	EndGlobalSection
 EndGlobal
