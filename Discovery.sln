@@ -7,18 +7,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{91A49B73-E69
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{507127F6-36E0-4846-8E06-496DAE315B7E}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Discovery.Eureka.Client", "src\SteelToe.Discovery.Eureka.Client\SteelToe.Discovery.Eureka.Client.xproj", "{651559B3-E411-4A6F-B2DD-16912BA830F9}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Discovery.Eureka.Client", "src\Steeltoe.Discovery.Eureka.Client\Steeltoe.Discovery.Eureka.Client.xproj", "{651559B3-E411-4A6F-B2DD-16912BA830F9}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Discovery.Eureka.Client.Test", "test\SteelToe.Discovery.Eureka.Client.Test\SteelToe.Discovery.Eureka.Client.Test.xproj", "{C2E0630E-30C9-45D1-AEA6-1E086EBBA69B}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Discovery.Eureka.Client.Test", "test\Steeltoe.Discovery.Eureka.Client.Test\Steeltoe.Discovery.Eureka.Client.Test.xproj", "{C2E0630E-30C9-45D1-AEA6-1E086EBBA69B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5CF68E94-BEE4-4A23-8C35-EF336ECE4559}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Discovery.Client", "src\SteelToe.Discovery.Client\SteelToe.Discovery.Client.xproj", "{0BEABE67-8B4B-4641-9D7C-143A0211C3CA}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Discovery.Client", "src\Steeltoe.Discovery.Client\Steeltoe.Discovery.Client.xproj", "{0BEABE67-8B4B-4641-9D7C-143A0211C3CA}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SteelToe.Discovery.Client.Test", "test\SteelToe.Discovery.Client.Test\SteelToe.Discovery.Client.Test.xproj", "{BE36A7B0-A8D4-4BC7-8667-5A6A7BE5D659}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Discovery.Client.Test", "test\Steeltoe.Discovery.Client.Test\Steeltoe.Discovery.Client.Test.xproj", "{BE36A7B0-A8D4-4BC7-8667-5A6A7BE5D659}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
