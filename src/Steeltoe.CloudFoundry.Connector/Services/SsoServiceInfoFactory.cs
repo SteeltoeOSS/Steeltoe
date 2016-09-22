@@ -27,9 +27,19 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
             if (!string.IsNullOrEmpty(uri))
             {
-                return new SsoServiceInfo(binding.Name, clientId, clientSecret, uri.Replace("uaa", "https"));
+                return new SsoServiceInfo(binding.Name, clientId, clientSecret, UpdateUaaScheme(uri));
             }
             return null;
+        }
+
+        internal string UpdateUaaScheme(string uaaString)
+        {
+            if (uaaString.StartsWith("uaa:"))
+            {
+                return "https:" + uaaString.Substring(4);
+            }
+
+            return uaaString;
         }
     
     }

@@ -116,5 +116,20 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             Assert.Equal("clientSecret", info.ClientSecret);
             Assert.Equal("https://sso.login.system.testcloud.com", info.AuthDomain);
         }
+
+        [Fact]
+        public void UpdateUaaScheme_UpdatesSchemeProperly()
+        {
+            string uaa1 = "uaa://sso.login.system.testcloud.com";
+            SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
+            string result = factory.UpdateUaaScheme(uaa1);
+            Assert.Equal("https://sso.login.system.testcloud.com", result);
+            string uaa2 = "uaa://uaa.system.testcloud.com";
+            result = factory.UpdateUaaScheme(uaa2);
+            Assert.Equal("https://uaa.system.testcloud.com", result);
+            string nonUaa = "https://uaa.system.testcloud.com";
+            result = factory.UpdateUaaScheme(nonUaa);
+            Assert.Equal(nonUaa, result);
+        }
     }
 }
