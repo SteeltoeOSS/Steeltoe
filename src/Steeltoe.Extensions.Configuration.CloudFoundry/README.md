@@ -60,7 +60,7 @@ You can access the [VCAP_SERVICES](http://docs.cloudfoundry.org/devguide/deploy-
 ```
 var config = builder.Build();
 var mySqlName = config["vcap:services:[service-name]:0:name"]
-var instanceId = config["vcap:application:[service-name]:0:credentials:uri"]
+var instanceId = config["vcap:services:[service-name]:0:credentials:uri"]
 ....
 ```
 Note: The provider uses the built-in [JSON configuration provider](https://github.com/aspnet/Configuration/tree/dev/src/Microsoft.Extensions.Configuration.Json) when parsing the JSON in the `VCAP_*` environment variables.
