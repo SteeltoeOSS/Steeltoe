@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.IO;
+using Microsoft.Extensions.Configuration.Json;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
@@ -45,16 +46,10 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             string appJson = vcap[APPLICATION];
             if (!string.IsNullOrEmpty(appJson))
             {
- 
-                //TODO: Use JsonStreamConfigurationProvider when ASP.NET5 Configuration PR accepted
-                var path = CreateTempFile(appJson);
 
-                string directory =Path.GetDirectoryName(path);
-                string fileName = Path.GetFileName(path);
+                var memStream = GetMemoryStream(appJson);
                 ConfigurationBuilder builder = new ConfigurationBuilder();
-                builder.SetBasePath(directory);
-
-                builder.AddJsonFile(fileName);
+                builder.Add(new JsonStreamConfigurationSource(memStream));
                 var applicationData = builder.Build();
 
                 if (applicationData != null)
@@ -71,15 +66,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             string appServicesJson = vcap[SERVICES];
             if (!string.IsNullOrEmpty(appServicesJson))
             {
-                //TODO: Use JsonStreamConfigurationProvider when ASP.NET5 Configuration PR accepted
-                var path = CreateTempFile(appServicesJson);
-
-                string directory = Path.GetDirectoryName(path);
-                string fileName = Path.GetFileName(path);
+                var memStream = GetMemoryStream(appServicesJson);
                 ConfigurationBuilder builder = new ConfigurationBuilder();
-                builder.SetBasePath(directory);
-
-                builder.AddJsonFile(fileName);
+                builder.Add(new JsonStreamConfigurationSource(memStream));
                 var servicesData = builder.Build();
 
                 if (servicesData != null)
@@ -89,6 +78,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             }
 
         }
+
         internal IDictionary<string, string> Properties
         {
             get
@@ -119,18 +109,55 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             Data[prefix + ConfigurationPath.KeyDelimiter + section.Path] = section.Value;
         }
 
-        // TODO: Remove when moving to JsonStreamConfigurationProvider
-        private static string CreateTempFile(string contents)
-        {
-            var tempFile = Path.GetTempFileName();
-            File.WriteAllText(tempFile, contents);
-            return tempFile;
-
-        }
-
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
             return this;
+        }
+
+        internal static MemoryStream GetMemoryStream(string json)
+        {
+            var memStream = new MemoryStream();
+            var textWriter = new StreamWriter(memStream);
+            textWriter.Write(json);
+            textWriter.Flush();
+            memStream.Seek(0, SeekOrigin.Begin);
+            return memStream;
+        }
+
+    }
+
+    class JsonStreamConfigurationProvider : JsonConfigurationProvider
+    {
+        MemoryStream _stream;
+        internal JsonStreamConfigurationProvider(JsonConfigurationSource source, MemoryStream stream) : base(source)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+            _stream = stream;
+        }
+        public override void Load()
+        {
+            base.Load(_stream);
+        }
+    }
+
+    class JsonStreamConfigurationSource : JsonConfigurationSource
+    {
+        private MemoryStream _stream;
+
+        internal JsonStreamConfigurationSource(MemoryStream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+            _stream = stream;
+        }
+        public override IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
+            return new JsonStreamConfigurationProvider(this, _stream);
         }
     }
 }
