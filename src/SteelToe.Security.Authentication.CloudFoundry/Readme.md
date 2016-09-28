@@ -32,7 +32,7 @@ In order to use the Security provider you need to do the following:
 5. Secure your endpoints 
 ``` 
 ## Create & Bind OAuth2 Service
-As mentioned above there are a couple OAuth2 services you can use on CloudFoundry. Rather than explaining the steps here, we recommend you read and follow the [Create OAuth2 Service Instance on CloudFoundry](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) section of the Steeltoe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) sample.
+As mentioned above there are a couple OAuth2 services you can use on CloudFoundry. Rather than explaining the steps here to create and bind OAuth2 service to your app, we recommend you read and follow the [Create OAuth2 Service Instance on CloudFoundry](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) section of the Steeltoe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) sample.
 
 Once you have bound the service to the app, the services settings will have been setup in `VCAP_SERVICES` and will be picked up automatically when the app is started by using the `CloudFoundry` configuration provider discussed below during application startup.
 

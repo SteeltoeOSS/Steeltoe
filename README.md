@@ -6,9 +6,9 @@ Windows Master (Stable): [![AppVeyor Master](https://ci.appveyor.com/api/project
 
 Windows Dev (Less Stable): [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/w27a5c4x64pd7jyq/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/security/branch/dev)
 
-Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteelToeOSS/Security.svg?branch=master)](https://travis-ci.org/SteelToeOSS/Security)
+Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Security.svg?branch=master)](https://travis-ci.org/SteelToeOSS/Security)
 
-Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteelToeOSS/Security.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Security)
+Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Security.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Security)
 
 # .NET Runtime & Framework Support
 Like ASP.NET Core, the providers are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes. 
