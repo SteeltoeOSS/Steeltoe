@@ -17,7 +17,7 @@ Like ASP.NET Core, the providers are intended to support both .NET 4.5.1+ and .N
 
 While the primary usage of the providers is intended to be with ASP.NET Core applications, they should also work fine with UWP, Console and ASP.NET 4.x apps. An ASP.NET 4.x sample app is available illustrating how this can be done.
 
-Currently all of the code and samples have been tested on .NET Core 1.0.0-RC2/SDK Preview 1, .NET 4.5.1, and on ASP.NET Core 1.0.0-RC2-final.
+Currently all of the code and samples have been tested on .NET Core 1.0.0 Preview 2 SDK, .NET 4.5.1, and on ASP.NET Core 1.0.0.
 
 # Usage
 See the Readme for each provider for more details on how to make use of it in an application.
