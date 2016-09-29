@@ -19,8 +19,8 @@ var num = "00000000" + parseInt(buildNumber);
 buildNumber = num.substr(num.length-5);    
 
 if (tag) {
-    // Turn version into tag + '-' + buildnumber
-    version = tag + '-' + buildNumber;
+    // Turn version into tag
+    version = tag;
 } else {
     version = version.substring(0, lastDash) + '-' + buildNumber;
 }   
