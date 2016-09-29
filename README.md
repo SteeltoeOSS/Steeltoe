@@ -75,3 +75,40 @@ To run the unit tests:
 
 # Sample Applications
 See the [Samples](https://github.com/SteeltoeOSS/Samples) repo for examples of how to use these packages.
+
+# Known limitations
+
+### Using Options and Configuration
+When using the Microsoft provided [Option extension framework](https://docs.asp.net/en/latest/fundamentals/configuration.html?highlight=ioptions#using-options-and-configuration-objects) you will find that the Options POCO does not update with new values if the configuration is refreshed with new values from the Config server. This is a [known limitation of the Options framework](https://github.com/aspnet/Options/issues/145).
+
+If you retrieve values from the `IConfiguration` directly, you will see the updated values, they just will not be reflected in the Options POCO.
+
+Example:
+
+Having configured a `ConfigServerData` POCO through IOC
+
+```
+public IConfigurationRoot Configuration { get; }
+...
+services.Configure<ConfigServerData>(Configuration);
+```
+If `ConfigServerData.SomeProperty` has an initial value of `foo` after startup, and then you change the value for the property from `foo` to `bar` in the Config Server Git repo and then somewhere in your code you call:
+```
+Configurtion.Reload();
+```
+you will find that `ConfigServerData.SomeProperty` will still have the value of `foo`. But, if you directly reference the `IConfiguration`, you will see the updated property value.
+
+```
+var value = Configuration["SomeProperty"]; // value == 'bar'
+```
+
+This is a [known limitation of the Options framework](https://github.com/aspnet/Options/issues/145).
+
+### Unstructured data files
+Unlike the Java version of the configuration server client, the Steeltoe client currently only supports property and yaml files; not plain text.
+
+### Client decryption
+Steeltoe client only supports clear text communication with the configuration server. Client decryption is on our roadmap, but not currently supported. For now, you cannot send encrypted data to the client.
+
+### Server initiated reload
+Currently reloads must be initiated by the client, Steeltoe has not implemented handlers to listen for server change events.
