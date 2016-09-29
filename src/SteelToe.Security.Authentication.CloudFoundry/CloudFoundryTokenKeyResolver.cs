@@ -1,7 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,10 +11,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryTokenKeyResolver
     {
-        private const string SHA256WITHRSA = "SHA256withRSA";
-        private const string SH384WITHRSA = "SHA384withRSA";
-        private const string SHA512WITHRSA = "SHA512withRSA";
-
         public CloudFoundryOptions Options { get; internal protected set; }
 
         public Dictionary<string, SecurityKey> Resolved { get; internal protected set; }
@@ -58,30 +53,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         {
 
 #if NET451
+            
             byte[] existing = Base64UrlEncoder.DecodeBytes(key.N);
-            if (key.Alg.Equals(SHA256WITHRSA, StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (existing.Length == 257)
-                {
-                    TrimKey(key, existing);
-                }
-            } else if (key.Alg.Equals(SH384WITHRSA, StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (existing.Length == 385)
-                {
-                    TrimKey(key, existing);
-                }
-            } else if (key.Alg.Equals(SHA512WITHRSA, StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (existing.Length == 513)
-                {
-                    TrimKey(key, existing);
-                }
-            }
-
+            TrimKey(key, existing);
 #endif
-                return key;
+            return key;
         }
+
+#if NET451
         private void TrimKey(JsonWebKey key, byte[] existing)
         {
             byte[] signRemoved = new byte[existing.Length -1];
@@ -89,6 +68,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             string withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
             key.N = withSignRemoved;
         }
+#endif
 
         public virtual async Task<JsonWebKeySet> FetchKeySet()
         {
