@@ -23,8 +23,9 @@ buildNumber = num.substr(num.length-5);
 var dependsVersion = version.substring(0, lastDash) + '-*';
     
 if (tag) {
-    // Turn version into tag + '-' + buildnumber
-    version = tag + '-' + buildNumber;
+    // Turn version into tag, dependsVersion = version
+    version = tag;
+    dependsVersion = version;
 } else {
     version = version.substring(0, lastDash) + '-' + buildNumber;
 }    
