@@ -65,6 +65,14 @@ IEurekaClient client = DiscoveryManager.Instance.Client;
 Application app = client.GetApplication("SomeName");
 
 ```
+# Known Limitations
 
+### Version
+This is a [Eureka 1.0 client](https://github.com/Netflix/eureka/wiki), not a 2.0 client. Eureka 2.0 is expected to have significant updates to its architecture and public API.
 
+### AWS Support 
+The Eureka client for Java contains features which enable operation on AWS.  The Steeltoe version does not currently implement those features, and instead, this version has been optimized for CloudFoundry environments. We will look at adding AWS cloud features at a future point in time.
+
+### Configuration
+Not all configuration properties found in the Java client are available for configuration. See [IEurekaClientConfig](https://github.com/SteeltoeOSS/Discovery/blob/master/src/Steeltoe.Discovery.Eureka.Client/IEurekaClientConfig.cs) and [IEurekaInstanceConfig](https://github.com/SteeltoeOSS/Discovery/blob/master/src/Steeltoe.Discovery.Eureka.Client/IEurekaInstanceConfig.cs) for configuration options.
 
