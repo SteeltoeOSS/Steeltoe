@@ -53,14 +53,14 @@ You can access the [VCAP_APPLICATION](http://docs.cloudfoundry.org/devguide/depl
 ```
 var config = builder.Build();
 var appName = config["vcap:application:application_name"]
-var instaneId = config["vcap:application:instance_id"] 
+var instanceId = config["vcap:application:instance_id"]
 ....
 ```
-You can access the [VCAP_SERVICES](http://docs.cloudfoundry.org/devguide/deploy-apps/environment-variable.html#VCAP-SERVICES)  environment variable settings directly from the configuration as follows:
+You can access the [VCAP_SERVICES](http://docs.cloudfoundry.org/devguide/deploy-apps/environment-variable.html#VCAP-SERVICES)  environment variable settings directly from the configuration, eg. to access the first instance of `[service-name]`:
 ```
 var config = builder.Build();
-var mySqlName = config["vcap:services:p-mysql:0:name"]
-var instaneId = config["vcap:application:p-mysql:0:credentials:uri"] 
+var mySqlName = config["vcap:services:[service-name]:0:name"]
+var instanceId = config["vcap:services:[service-name]:0:credentials:uri"]
 ....
 ```
 Note: The provider uses the built-in [JSON configuration provider](https://github.com/aspnet/Configuration/tree/dev/src/Microsoft.Extensions.Configuration.Json) when parsing the JSON in the `VCAP_*` environment variables.

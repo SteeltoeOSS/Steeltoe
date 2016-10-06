@@ -17,7 +17,7 @@ Like ASP.NET Core, the providers are intended to support both .NET 4.5.1+ and .N
 
 While the primary usage of the providers is intended to be with ASP.NET Core applications, they should also work fine with UWP, Console and ASP.NET 4.x apps. An ASP.NET 4.x sample app is available illustrating how this can be done.
 
-Currently all of the code and samples have been tested on .NET Core 1.0.0-RC2/SDK Preview 1, .NET 4.5.1, and on ASP.NET Core 1.0.0-RC2-final.
+Currently all of the code and samples have been tested on .NET Core 1.0.0 Preview 2 SDK, .NET 4.5.1, and on ASP.NET Core 1.0.0.
 
 # Usage
 See the Readme for each provider for more details on how to make use of it in an application.
@@ -75,3 +75,40 @@ To run the unit tests:
 
 # Sample Applications
 See the [Samples](https://github.com/SteeltoeOSS/Samples) repo for examples of how to use these packages.
+
+# Known limitations
+
+### Using Options and Configuration
+When using the Microsoft provided [Option extension framework](https://docs.asp.net/en/latest/fundamentals/configuration.html?highlight=ioptions#using-options-and-configuration-objects) you will find that the Options POCO does not update with new values if the configuration is refreshed with new values from the Config server. This is a [known limitation of the Options framework](https://github.com/aspnet/Options/issues/145).
+
+If you retrieve values from the `IConfiguration` directly, you will see the updated values, they just will not be reflected in the Options POCO.
+
+Example:
+
+Having configured a `ConfigServerData` POCO through IOC
+
+```
+public IConfigurationRoot Configuration { get; }
+...
+services.Configure<ConfigServerData>(Configuration);
+```
+If `ConfigServerData.SomeProperty` has an initial value of `foo` after startup, and then you change the value for the property from `foo` to `bar` in the Config Server Git repo and then somewhere in your code you call:
+```
+Configurtion.Reload();
+```
+you will find that `ConfigServerData.SomeProperty` will still have the value of `foo`. But, if you directly reference the `IConfiguration`, you will see the updated property value.
+
+```
+var value = Configuration["SomeProperty"]; // value == 'bar'
+```
+
+This is a [known limitation of the Options framework](https://github.com/aspnet/Options/issues/145).
+
+### Unstructured data files
+Unlike the Java version of the configuration server client, the Steeltoe client currently only supports property and yaml files; not plain text.
+
+### Client decryption
+Steeltoe client only supports clear text communication with the configuration server. Client decryption is on our roadmap, but not currently supported. For now, you cannot send encrypted data to the client.
+
+### Server initiated reload
+Currently reloads must be initiated by the client, Steeltoe has not implemented handlers to listen for server change events.
