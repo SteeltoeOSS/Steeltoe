@@ -36,7 +36,7 @@
     "Microsoft.Extensions.Configuration": "1.0.0",
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Microsoft.Extensions.Options": "1.0.0",
-    "Steeltoe.Extensions.Configuration.CloudFoundry": "1.0.0-dev-*",
+    "Steeltoe.Extensions.Configuration.CloudFoundry": "1.0.0-rc1",
     "Steeltoe.CloudFoundry.Connector.Rabbit": "1.0.0-*",
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029"
