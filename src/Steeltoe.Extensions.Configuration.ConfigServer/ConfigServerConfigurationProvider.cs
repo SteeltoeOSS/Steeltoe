@@ -274,7 +274,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             // Invoke config server
             try
             {
-                using (HttpResponseMessage response = await _client.SendAsync(request))
+                using (HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false))
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
