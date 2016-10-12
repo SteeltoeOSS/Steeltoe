@@ -78,7 +78,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             IConfigurationRoot root = configurationBuilder.Build();
 
             Assert.Equal("spam", root["bar"]);
-            Assert.Equal("from-default", root["foo"]);
+            Assert.Equal("from foo development", root["foo"]);
             Assert.Equal("Spring Cloud Samples", root["info:description"]);
             Assert.Equal("https://github.com/spring-cloud-samples", root["info:url"]);
             Assert.Equal("http://localhost:8761/eureka/", root["eureka:client:serviceUrl:defaultZone"]);
@@ -97,7 +97,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                 string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                 Assert.Equal("spam" +
-                    "from-default" + 
+                    "from foo development" + 
                     "Spring Cloud Samples" +
                     "https://github.com/spring-cloud-samples", result);
             }

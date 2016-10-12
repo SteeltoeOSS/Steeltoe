@@ -188,10 +188,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                         var sources = env.PropertySources;
                         if (sources != null)
                         {
-
-                            foreach (PropertySource source in sources)
+                            int index = sources.Count - 1;
+                            for( ; index>=0; index--)
                             {
-                                AddPropertySource(source);
+                                AddPropertySource(sources[index]);
                             }
                         }
                         return;
