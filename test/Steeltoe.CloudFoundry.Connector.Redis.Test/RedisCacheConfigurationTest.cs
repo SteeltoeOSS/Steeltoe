@@ -44,7 +44,19 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             'host': 'localhost',
             'port': 1234,
             'password': 'password',
-            'instanceid': 'instanceid'
+            'instanceid': 'instanceid',
+            'allowAdmin': true,
+            'clientName': 'foobar',
+            'connectRetry': 100,
+            'connectTimeout': 100,
+            'abortOnConnectFail': true,
+            'keepAlive': 100,
+            'resolveDns': true,
+            'serviceName': 'foobar',
+            'ssl': true,
+            'sslHost': 'foobar',
+            'writeBuffer': 100,
+            'tieBreaker': 'foobar'
         }
    }
 }";
@@ -63,9 +75,25 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Equal(1234, sconfig.Port);
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("instanceid", sconfig.InstanceId);
+
+            Assert.Equal(true, sconfig.AllowAdmin);
+            Assert.Equal("foobar", sconfig.ClientName);
+            Assert.Equal(100, sconfig.ConnectRetry);
+            Assert.Equal(100, sconfig.ConnectTimeout);
+            Assert.Equal(true, sconfig.AbortOnConnectFail);
+            Assert.Equal(100, sconfig.KeepAlive);
+            Assert.Equal(true, sconfig.ResolveDns);
+            Assert.Equal("foobar", sconfig.ServiceName);
+            Assert.Equal(true, sconfig.Ssl);
+            Assert.Equal("foobar", sconfig.SslHost);
+            Assert.Equal("foobar", sconfig.TieBreaker);
+            Assert.Equal(100, sconfig.WriteBuffer);
+
+
             Assert.Equal(null, sconfig.ConnectionString);
 
-        }
+
+    }
     }
 }
 

@@ -22,11 +22,24 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public abstract class AbstractServiceConnectorOptions
     {
-        protected AbstractServiceConnectorOptions()
-        {
+        protected char _keyValueTerm;
+        protected char _keyValueSep;
+        protected const char Default_Terminator = ';';
+        protected const char Default_Separator = '=';
 
+        protected AbstractServiceConnectorOptions() :
+            this(Default_Terminator, Default_Separator)
+        {
         }
-        public AbstractServiceConnectorOptions(IConfiguration config)
+
+        protected AbstractServiceConnectorOptions(char keyValueTerm, char keyValueSep)
+        {
+            this._keyValueSep = keyValueSep;
+            this._keyValueTerm = keyValueTerm;
+        }
+
+        public AbstractServiceConnectorOptions(IConfiguration config, char terminator = Default_Terminator, char separator = Default_Separator) :
+            this(terminator, separator)
         {
             if (config == null)
             {
@@ -34,6 +47,7 @@ namespace Steeltoe.CloudFoundry.Connector
             }
             config.Bind(this);
         }
+
         internal protected void AddKeyValue(StringBuilder sb, string key, int value)
         {
             AddKeyValue(sb, key, value.ToString());
@@ -47,9 +61,9 @@ namespace Steeltoe.CloudFoundry.Connector
             if (!string.IsNullOrEmpty(value))
             {
                 sb.Append(key);
-                sb.Append("=");
+                sb.Append(_keyValueSep);
                 sb.Append(value);
-                sb.Append(";");
+                sb.Append(_keyValueTerm);
             }
         }
     }

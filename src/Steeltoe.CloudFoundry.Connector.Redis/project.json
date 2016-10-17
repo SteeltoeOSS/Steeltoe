@@ -29,6 +29,7 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Binder": "1.0.0",
     "Microsoft.Extensions.Caching.Redis": "1.0.0",
-    "Steeltoe.CloudFoundry.Connector": "1.0.0-*"
+    "StackExchange.Redis.StrongName": "1.0.333",
+    "Steeltoe.CloudFoundry.Connector": "1.0.0"
   }
 }

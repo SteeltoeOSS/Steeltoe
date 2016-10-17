@@ -17,8 +17,10 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 using Steeltoe.Extensions.Configuration;
 using System;
+using System.IO;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
@@ -184,5 +186,98 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Contains("Multiple", ex.Message);
 
         }
+
+        [Fact]
+        public void AddRedisConnectionMultiplexer_ThrowsIfServiceCollectionNull()
+        {
+            // Arrange
+            IServiceCollection services = null;
+            IConfigurationRoot config = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config));
+            Assert.Contains(nameof(services), ex.Message);
+
+            var ex2 = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, "foobar"));
+            Assert.Contains(nameof(services), ex2.Message);
+
+        }
+        [Fact]
+        public void AddRedisConnectionMultiplexer_ThrowsIfConfigurtionNull()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            IConfigurationRoot config = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config));
+            Assert.Contains(nameof(config), ex.Message);
+
+            var ex2 = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, "foobar"));
+            Assert.Contains(nameof(config), ex2.Message);
+
+        }
+
+        [Fact]
+        public void AddRedisConnectionMultiplexer_ThrowsIfServiceNameNull()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            IConfigurationRoot config = null;
+            string serviceName = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, serviceName));
+            Assert.Contains(nameof(serviceName), ex.Message);
+
+        }
+
+        [Fact]
+        public void AddRedisConnectionMultiplexer_NoVCAPs_AddsConnectionMultiplexer()
+        {
+            // Arrange
+            var appsettings = @"
+{
+   'redis': {
+        'client': {
+            'host': 'localhost',
+            'port': 1234,
+            'password': 'password',
+            'abortOnConnectFail': false
+        }
+   }
+}";
+            var path = TestHelpers.CreateTempFile(appsettings);
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+            configurationBuilder.AddJsonFile(fileName);
+            var config = configurationBuilder.Build();
+
+            IServiceCollection services = new ServiceCollection();
+
+            // Act and Assert
+            RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
+
+            var service = services.BuildServiceProvider().GetService<ConnectionMultiplexer>();
+            Assert.NotNull(service);
+
+        }
+
+        [Fact]
+        public void AddRedisConnectionMultiplexer_WithServiceName_NoVCAPs_ThrowsConnectorException()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            IConfigurationRoot config = new ConfigurationBuilder().Build();
+
+            // Act and Assert
+            var ex = Assert.Throws<ConnectorException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, "foobar"));
+            Assert.Contains("foobar", ex.Message);
+
+        }
+
     }
 }

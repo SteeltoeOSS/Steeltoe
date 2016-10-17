@@ -15,8 +15,10 @@
 //
 
 using Microsoft.Extensions.Caching.Redis;
+using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.CloudFoundry.Connector.Services;
+using System.Net;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
@@ -54,7 +56,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             };
             configurer.UpdateOptions(config, redisOptions);
 
-            Assert.Equal( "localhost:1234,password=password", redisOptions.Configuration);
+            Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
             Assert.Equal("instanceId", redisOptions.InstanceName);
 
         }
@@ -63,16 +65,16 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         public void UpdateOptions_FromServiceInfo_ReturnsExcpected()
         {
             RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-            RedisCacheOptions redisOptions = new RedisCacheOptions();
+            RedisCacheConnectorOptions connOptions = new RedisCacheConnectorOptions();
             RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword");
             si.ApplicationInfo = new ApplicationInstanceInfo()
             {
                 InstanceId = "instanceId"
             };
-            configurer.UpdateOptions(si, redisOptions);
+            configurer.UpdateOptions(si, connOptions);
 
-            Assert.Equal("foobar:4321,password=sipassword", redisOptions.Configuration);
-            Assert.Equal("instanceId", redisOptions.InstanceName);
+            Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
+            Assert.Equal("instanceId", connOptions.InstanceId);
 
         }
 
@@ -92,7 +94,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             var redisOptions = opts.Value;
             Assert.NotNull(redisOptions);
 
-            Assert.Equal("localhost:1234,password=password", redisOptions.Configuration);
+            Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
             Assert.Equal("instanceId", redisOptions.InstanceName);
         }
 
@@ -117,8 +119,58 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             var redisOptions = opts.Value;
             Assert.NotNull(redisOptions);
 
-            Assert.Equal("foobar:4321,password=sipassword", redisOptions.Configuration);
+            Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
             Assert.Equal("instanceId", redisOptions.InstanceName);
+        }
+
+        [Fact]
+        public void ConfigureConnection_NoServiceInfo_ReturnsExpected()
+        {
+            RedisCacheConfigurer configurer = new RedisCacheConfigurer();
+            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+            {
+                Host = "localhost",
+                Port = 1234,
+                Password = "password"
+
+            };
+            var opts = configurer.ConfigureConnection(null, config);
+            Assert.NotNull(opts);
+
+            Assert.NotNull(opts.EndPoints);
+            var ep = opts.EndPoints[0] as DnsEndPoint;
+            Assert.NotNull(ep);
+            Assert.Equal("localhost", ep.Host);
+            Assert.Equal(1234, ep.Port);
+            Assert.Equal("password", opts.Password);
+ 
+        }
+
+        [Fact]
+        public void ConfigureConnection_ServiceInfoOveridesConfig_ReturnsExpected()
+        {
+            RedisCacheConfigurer configurer = new RedisCacheConfigurer();
+            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+            {
+                Host = "localhost",
+                Port = 1234,
+                Password = "password"
+       
+            };
+            RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword");
+            si.ApplicationInfo = new ApplicationInstanceInfo()
+            {
+                InstanceId = "instanceId"
+            };
+            var opts = configurer.ConfigureConnection(si, config);
+            Assert.NotNull(opts);
+
+            Assert.NotNull(opts.EndPoints);
+            var ep = opts.EndPoints[0] as DnsEndPoint;
+            Assert.NotNull(ep);
+            Assert.Equal("foobar", ep.Host);
+            Assert.Equal(4321, ep.Port);
+            Assert.Equal("sipassword", opts.Password);
         }
     }
 }

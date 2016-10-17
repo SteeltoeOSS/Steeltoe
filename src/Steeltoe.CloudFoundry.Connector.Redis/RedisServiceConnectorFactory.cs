@@ -18,6 +18,7 @@ using System;
 
 using Microsoft.Extensions.Caching.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
+using StackExchange.Redis;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
@@ -31,10 +32,16 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             _info = sinfo;
             _config = config;
         }
-        internal RedisCache Create(IServiceProvider provider)
+        internal RedisCache CreateCache(IServiceProvider provider)
         {
             var opts = _configurer.Configure(_info, _config);
             return new RedisCache(opts);
+        }
+
+        internal ConnectionMultiplexer CreateConnection(IServiceProvider provider)
+        {
+            var opts = _configurer.ConfigureConnection(_info, _config);
+            return ConnectionMultiplexer.Connect(opts);
         }
     }
 }

@@ -16,6 +16,7 @@
 
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
 
 
@@ -23,16 +24,25 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisCacheConfigurer
     {
-    
-        internal IOptions<RedisCacheOptions> Configure(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
+
+        internal IOptions<RedisCacheOptions> Configure(RedisServiceInfo si, RedisCacheConnectorOptions options)
         {
-            RedisCacheOptions redisOptions = new RedisCacheOptions();
-            UpdateOptions(configuration, redisOptions);
-            UpdateOptions(si, redisOptions);
-            return new ConnectorIOptions<RedisCacheOptions>(redisOptions);
+            UpdateOptions(si, options);
             
+            RedisCacheOptions redisOptions = new RedisCacheOptions();
+            UpdateOptions(options, redisOptions);
+
+            return new ConnectorIOptions<RedisCacheOptions>(redisOptions);
+
         }
-        internal void UpdateOptions(RedisServiceInfo si, RedisCacheOptions options)
+
+        internal void UpdateOptions(RedisCacheConnectorOptions options, RedisCacheOptions redisOptions )
+        {
+            redisOptions.Configuration = options.ToString();
+            redisOptions.InstanceName = options.InstanceId;
+        }
+
+        internal void UpdateOptions(RedisServiceInfo si, RedisCacheConnectorOptions options)
         {
             if (si == null)
             {
@@ -41,44 +51,30 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             if (!string.IsNullOrEmpty(si.Host))
             {
-                string msConfiguration = si.Host + ":" + si.Port;
-                if (!string.IsNullOrEmpty(si.Password))
-                {
-                    msConfiguration = msConfiguration + ",password=" + si.Password;
-                }
+                options.Host = si.Host;
+                options.Port = si.Port;
+                options.EndPoints = null;
+            }
 
-                options.Configuration = msConfiguration;
-                options.InstanceName = si.ApplicationInfo.InstanceId;
+            if (!string.IsNullOrEmpty(si.Password))
+            {
+                options.Password = si.Password;
+            }
+
+            if (!string.IsNullOrEmpty(si.ApplicationInfo.InstanceId))
+            {
+                options.InstanceId = si.ApplicationInfo.InstanceId;
             }
         }
 
-        internal void UpdateOptions(RedisCacheConnectorOptions config, RedisCacheOptions options)
+        internal ConfigurationOptions ConfigureConnection(RedisServiceInfo si, RedisCacheConnectorOptions options)
         {
-            if (config == null)
-            {
-                return;
-            }
+            UpdateOptions(si, options);
+            ConfigurationOptions redisOptions = ConfigurationOptions.Parse(options.ToString());
+            return redisOptions;
 
-            if (!string.IsNullOrEmpty(config.ConnectionString))
-            {
-                options.Configuration = config.ConnectionString;
-                options.InstanceName = config.InstanceId;
-            }
-            else
-            {
-                string msConfiguration = config.Host + ":" + config.Port;
-                if (!string.IsNullOrEmpty(config.Password))
-                {
-                    msConfiguration = msConfiguration + ",password=" + config.Password;
-                }
-
-                options.Configuration = msConfiguration;
-                options.InstanceName = config.InstanceId;
-
-            }
-
-            return;
         }
     }
-
 }
+
+

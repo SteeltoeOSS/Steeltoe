@@ -23,7 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
     public class RedisServiceConnectorFactoryTest
     {
         [Fact]
-        public void Create_ReturnsRedisCache()
+        public void CreateCache_ReturnsRedisCache()
         {
             RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
             {
@@ -38,8 +38,28 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 InstanceId = "instanceId"
             };
             var factory = new RedisServiceConnectorFactory(si, config);
-            var cache = factory.Create(null);
+            var cache = factory.CreateCache(null);
             Assert.NotNull(cache);
+        }
+        [Fact]
+        public void CreateConnection_ReturnsConnectinMultiplexer()
+        {
+            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+            {
+                Host = "localhost",
+                Port = 1234,
+                Password = "password",
+                InstanceId = "instanceId", 
+                AbortOnConnectFail = false
+            };
+            RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword");
+            si.ApplicationInfo = new ApplicationInstanceInfo()
+            {
+                InstanceId = "instanceId"
+            };
+            var factory = new RedisServiceConnectorFactory(si, config);
+            var multi = factory.CreateConnection(null);
+            Assert.NotNull(multi);
         }
     }
 }
