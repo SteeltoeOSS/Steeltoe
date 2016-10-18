@@ -61,9 +61,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 options.Password = si.Password;
             }
 
-            if (!string.IsNullOrEmpty(si.ApplicationInfo.InstanceId))
+            if (!string.IsNullOrEmpty(si.ApplicationInfo.ApplicationId))
             {
-                options.InstanceId = si.ApplicationInfo.InstanceId;
+                options.InstanceId = si.ApplicationInfo.ApplicationId;
             }
         }
 

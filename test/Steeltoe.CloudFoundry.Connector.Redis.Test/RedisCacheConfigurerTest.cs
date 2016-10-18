@@ -69,12 +69,12 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword");
             si.ApplicationInfo = new ApplicationInstanceInfo()
             {
-                InstanceId = "instanceId"
+                ApplicationId = "applicationId"
             };
             configurer.UpdateOptions(si, connOptions);
 
             Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
-            Assert.Equal("instanceId", connOptions.InstanceId);
+            Assert.Equal("applicationId", connOptions.InstanceId);
 
         }
 
