@@ -1,0 +1,32 @@
+﻿{
+  "version": "1.0.0",
+  "description": "ASP.NET Core DataProtection Redis Key Store",
+  "authors": [
+    "Pivotal",
+    "dtillman"
+  ],
+  "packOptions": {
+    "tags": [
+      "CloudFoundry",
+      "ASPNET Core",
+      "Security",
+      "DataProtection",
+      "Redis"
+    ],
+    "projectUrl": "http://steeltoe.io",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "copyright": "Copyright 2016 the original authors"
+  },
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+      }
+    }
+  },
+  "dependencies": {
+    "Microsoft.AspNetCore.DataProtection": "1.0.0",
+    "StackExchange.Redis.StrongName": "1.0.333"
+  }
+}
+
+

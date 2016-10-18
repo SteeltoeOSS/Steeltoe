@@ -11,6 +11,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Security.Authentic
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Security.Authentication.CloudFoundry.Test", "test\Steeltoe.Security.Authentication.CloudFoundry.Test\Steeltoe.Security.Authentication.CloudFoundry.Test.xproj", "{0B258F76-09D9-44FE-8232-CBF33F68242C}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Security.DataProtection.Redis", "src\Steeltoe.Security.DataProtection.Redis\Steeltoe.Security.DataProtection.Redis.xproj", "{DAFF48B6-F16D-43A7-AE08-780ED8C74362}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.Security.DataProtection.Redis.Test", "test\Steeltoe.Security.DataProtection.Redis.Test\Steeltoe.Security.DataProtection.Redis.Test.xproj", "{D8D90F75-AED5-4603-85ED-91AA93DD8995}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,14 @@ Global
 		{0B258F76-09D9-44FE-8232-CBF33F68242C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B258F76-09D9-44FE-8232-CBF33F68242C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B258F76-09D9-44FE-8232-CBF33F68242C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAFF48B6-F16D-43A7-AE08-780ED8C74362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAFF48B6-F16D-43A7-AE08-780ED8C74362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAFF48B6-F16D-43A7-AE08-780ED8C74362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAFF48B6-F16D-43A7-AE08-780ED8C74362}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8D90F75-AED5-4603-85ED-91AA93DD8995}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8D90F75-AED5-4603-85ED-91AA93DD8995}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8D90F75-AED5-4603-85ED-91AA93DD8995}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8D90F75-AED5-4603-85ED-91AA93DD8995}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,5 +44,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CC60F638-A791-4694-998C-2B1559D37207} = {FAD86FF9-64CE-4915-8146-DC4A33C31004}
 		{0B258F76-09D9-44FE-8232-CBF33F68242C} = {43A46D73-271A-414B-92DE-F6ACD13FA117}
+		{DAFF48B6-F16D-43A7-AE08-780ED8C74362} = {FAD86FF9-64CE-4915-8146-DC4A33C31004}
+		{D8D90F75-AED5-4603-85ED-91AA93DD8995} = {43A46D73-271A-414B-92DE-F6ACD13FA117}
 	EndGlobalSection
 EndGlobal
