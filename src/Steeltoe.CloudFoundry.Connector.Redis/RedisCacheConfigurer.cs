@@ -61,10 +61,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 options.Password = si.Password;
             }
 
-            if (!string.IsNullOrEmpty(si.ApplicationInfo.ApplicationId))
-            {
-                options.InstanceId = si.ApplicationInfo.ApplicationId;
-            }
         }
 
         internal ConfigurationOptions ConfigureConnection(RedisServiceInfo si, RedisCacheConnectorOptions options)

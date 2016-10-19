@@ -74,7 +74,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             configurer.UpdateOptions(si, connOptions);
 
             Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
-            Assert.Equal("applicationId", connOptions.InstanceId);
+            Assert.Null(connOptions.InstanceId);
 
         }
 
