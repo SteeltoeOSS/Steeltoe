@@ -1,6 +1,6 @@
 ﻿# CloudFoundry .NET Redis Connector
 
-This project contains a Steeltoe Connector for Redis.  This connector simplifies using [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) in an application running on CloudFoundry.
+This project contains a Steeltoe Connector for Redis.  This connector simplifies using Microsoft [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) and/or StackExchange [ConnectionMultiplexor](https://github.com/StackExchange/StackExchange.Redis) in an application running on CloudFoundry.
 
 ## Provider Package Name and Feeds
 
@@ -13,14 +13,14 @@ This project contains a Steeltoe Connector for Redis.  This connector simplifies
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/
 
 ## Usage
-You probably will want some understanding of how to use the [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) before starting to use this connector. Also basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is also helpful.
+You probably will want some understanding of how to use the [RedisCache](https://github.com/aspnet/Caching/tree/dev/src/Microsoft.Extensions.Caching.Redis) and/or [ConnectionMultiplexor](https://github.com/StackExchange/StackExchange.Redis/blob/master/Docs/Basics.md) before starting to use this connector. Also basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is also helpful.
 
 In order to use this Connector you need to do the following:
 ```
 1. Create and bind a Redis Service instance to your application.
 2. Optionally, configure any Redis client settings (e.g. appsettings.json)
 3. Add Steeltoe CloudFoundry config provider to your ConfigurationBuilder.
-4. Add DistributedRedisCache to your ServiceCollection.
+4. Add DistributedRedisCache and/or ConnectionMultiplexor to your ServiceCollection.
 ```
 ## Create & Bind Redis Service
 You can create and bind Redis service instances using the CloudFoundry command line (i.e. cf):
@@ -90,8 +90,8 @@ public class Startup {
     ....
 ```
 
-## Add the DistributedRedisCache
-The next step is to add DistributedRedisCache to your ServiceCollection.  You do this in `ConfigureServices(..)` method of the startup class:
+## Add DistributedRedisCache and/or ConnectionMultiplexer
+The next step is to add DistributedRedisCache and/or ConnectionMultiplexer to your ServiceCollection.  You do this in `ConfigureServices(..)` method of the startup class:
 ```
 #using Steeltoe.CloudFoundry.Connector.Redis;
 
@@ -107,14 +107,17 @@ public class Startup {
         // Add Microsoft Redis Cache configured from CloudFoundry
         services.AddDistributedRedisCache(Configuration);
 
-        // Add framework services.
+        // Add StackExchange ConnectionMultiplexor configurated from CloudFoundry
+        services.AddRedisConnectionMultiplexer(Configuration);
+
+        // Add framework services
         services.AddMvc();
         ...
     }
     ....
 ```
 ## Using the Cache
-Below is an example illustrating how to use the DI services to inject the Cache into a controller:
+Below is an example illustrating how to use the DI services to inject the `IDistributedCache` into a controller.  The same idea holds for `ConnectionMultiplexor`.
 
 
 ```
