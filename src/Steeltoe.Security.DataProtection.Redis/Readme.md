@@ -108,9 +108,9 @@ public class Startup {
     ....
 ```
 ## Using Shared KeyStore
-Once this has been setup, the keys used by the DataProtection framework will be stored in the bound Redis CloudFoundry service. As an example of how this can be leveraged, imagine you want to share protected data stored in a Session across instances of an ASP.NET Core application running on CloudFoundry. 
+Once this has been setup, the keys used by the DataProtection framework will be stored in the bound Redis CloudFoundry service. As an example of how this can be leveraged, imagine you want to share encrypted data stored in a Session across multiple instances of an ASP.NET Core application running on CloudFoundry. 
 
-To do this, we first need to configure the Session feature in our application. To do this, we add the following to the Startup class we already have created above:
+To do this, we first need to configure the Session feature in our application. To do this, we add Session related configuration to the Startup class we already have created above.
 ```
 #using Steeltoe.CloudFoundry.Connector.Redis;
 
@@ -146,9 +146,9 @@ public class Startup {
     ....
 ```
 
-Once you have done this, then in a Controller you can inject `IDataProtectionProvider` and use it to protect any data you store in Session.
+Once you have done this, then in a Controller you can inject `IDataProtectionProvider` and use it to encrypt any data you store in Session.
 
-Since the keys and the session data are stored in the bound Redis cache, you should be able to scale the app (e.g. `cf scale myApp -i 5`) and find that the session data is available to all instances.
+Since the keys and the session data are stored in the bound Redis cache, you should be able to scale the app (e.g. `cf scale myApp -i 5`) and see that you are able to acces and decrypt the session data from any instance of the app.
 ```
     public class HomeController : Controller
     {
