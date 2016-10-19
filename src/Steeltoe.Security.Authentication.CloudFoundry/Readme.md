@@ -1,8 +1,8 @@
 ﻿# ASP.NET Core Security Provider for CloudFoundry
 
-This project contains a [ASP.NET Core External Security Provider](https://github.com/aspnet/Security) for CloudFoundry. 
+This project contains a [ASP.NET Core External Security Providers](https://github.com/aspnet/Security) for CloudFoundry. 
 
-This provider simplifies using CloudFoundry OAuth2 security services (e.g. [UAA Server](https://github.com/cloudfoundry/uaa) and/or [Pivotal Single Signon](https://docs.pivotal.io/p-identity/)) for Authentication and Authorization in an ASP.NET Core application.
+The providers simplify using CloudFoundry OAuth2 security services (e.g. [UAA Server](https://github.com/cloudfoundry/uaa) and/or [Pivotal Single Signon](https://docs.pivotal.io/p-identity/)) for Authentication and Authorization in an ASP.NET Core application.
 
 There are two providers to choose from in this package:
 * A provider that enables OAuth2 Single Signon with CloudFoundry Security services. Have a look at the Steeltoe [CloudFoundrySingleSignon](https://github.com/SteelToeOSS/Samples/tree/dev/Security/src/CloudFoundrySingleSignon) for a sample app.
