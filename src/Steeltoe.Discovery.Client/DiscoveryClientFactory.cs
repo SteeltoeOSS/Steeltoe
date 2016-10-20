@@ -12,7 +12,6 @@
 //
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
@@ -53,7 +52,7 @@ namespace Steeltoe.Discovery.Client
             return CreateClient(lifeCycle, logFactory);
         }
 
-        internal protected virtual object CreateClient(IApplicationLifetime lifeCycle = null, ILoggerFactory logFactory = null)
+        public virtual object CreateClient(IApplicationLifetime lifeCycle = null, ILoggerFactory logFactory = null)
         {
             var logger = logFactory?.CreateLogger<DiscoveryClientFactory>();
             if (_config == null)

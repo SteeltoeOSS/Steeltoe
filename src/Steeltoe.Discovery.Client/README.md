@@ -2,7 +2,7 @@
 
 This project contains the Steeltoe Discovery Client.  This client provides a generalized interface to service registries.  
 
-Currently the client only supports [Spring Cloud Eureka Server](http://projects.spring.io/spring-cloud/docs/1.0.3/spring-cloud.html#spring-cloud-eureka-server), but in the not to distant future will support Consul as well.
+Currently the client only supports [Spring Cloud Eureka Server](http://projects.spring.io/spring-cloud/docs/1.0.3/spring-cloud.html#spring-cloud-eureka-server), but in the future we will support Consul as well.
 
 ## Provider Package Name and Feeds
 
@@ -155,5 +155,17 @@ public class FortuneService : IFortuneService
     }
 }
 ``` 
+# Known Limitations
+
+### Eureka Version
+This client references a [Eureka 1.0 client](https://github.com/Netflix/eureka/wiki), not a 2.0 client. Eureka 2.0 is expected to have significant updates to its architecture and public API.
+
+### Eureka AWS Support 
+The Eureka client for Java contains features which enable operation on AWS.  The Steeltoe version does not currently implement those features, and instead, this version has been optimized for CloudFoundry environments. We will look at adding AWS cloud features at a future point in time.
+
+### Eureak Configuration
+Not all configuration properties found in the Java client are available for configuration. See [IEurekaClientConfig](https://github.com/SteeltoeOSS/Discovery/blob/master/src/Steeltoe.Discovery.Eureka.Client/IEurekaClientConfig.cs) and [IEurekaInstanceConfig](https://github.com/SteeltoeOSS/Discovery/blob/master/src/Steeltoe.Discovery.Eureka.Client/IEurekaInstanceConfig.cs) for configuration options.
+
+
 
 
