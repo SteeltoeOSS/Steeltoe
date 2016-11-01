@@ -15,6 +15,7 @@
 //
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -68,13 +69,25 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         {
 
             string token = GetAccessToken(context.Properties.Items);
-            bool result = ValidateToken(token);
+            context.HttpContext.Items[COOKIE_VALIDATOR_RESULT_KEY] = VALID;
 
-            if (!result)
+            if (string.IsNullOrEmpty(token))
             {
+                context.HttpContext.Items[COOKIE_VALIDATOR_RESULT_KEY] = TOKEN_MISSING;
                 context.RejectPrincipal();
                 await context.HttpContext.Authentication.SignOutAsync(CloudFoundryOptions.AUTHENTICATION_SCHEME);
+            } else
+            {
+                var result = ValidateToken(token);
+
+                if (!result)
+                {
+                    context.HttpContext.Items[COOKIE_VALIDATOR_RESULT_KEY] = TOKEN_INVALID;
+                    context.RejectPrincipal();
+                    await context.HttpContext.Authentication.SignOutAsync(CloudFoundryOptions.AUTHENTICATION_SCHEME);
+                }
             }
+
         }
 
         public virtual bool ValidateToken(string token)
@@ -108,5 +121,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             items.TryGetValue(ACCESS_TOKEN_KEY, out result);
             return result;
         }
+
+        public const string COOKIE_VALIDATOR_RESULT_KEY = ".CloudFoundry.Cookie.Val.Result";
+        public const int VALID = 1;
+        public const int TOKEN_MISSING = 2;
+        public const int TOKEN_INVALID = 3;
+  
     }
 }

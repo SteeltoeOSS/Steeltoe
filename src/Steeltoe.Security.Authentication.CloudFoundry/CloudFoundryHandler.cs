@@ -30,6 +30,8 @@ using System.Net.Security;
 using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Http.Features.Authentication;
+using Steeltoe.Security.Authentication.CloudFoundry;
+using static Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenValidator;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
@@ -38,6 +40,19 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public CloudFoundryHandler(HttpClient httpClient)
             : base(httpClient)
         {
+        }
+
+        protected override async Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
+        {
+            if (Context.Items.ContainsKey(COOKIE_VALIDATOR_RESULT_KEY))
+            {
+                int valResult = (int)Context.Items[COOKIE_VALIDATOR_RESULT_KEY];
+                if (valResult == VALID)
+                    return await base.HandleUnauthorizedAsync(context);
+                return false;
+            }
+
+            return await base.HandleUnauthorizedAsync(context);
         }
 
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(string code, string redirectUri)
