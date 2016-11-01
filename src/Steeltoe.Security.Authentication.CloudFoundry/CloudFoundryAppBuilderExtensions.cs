@@ -106,11 +106,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             tokenParameters.ValidateAudience = false;
             tokenParameters.AudienceValidator = null;
 
-            return new JwtBearerOptions()
+            var bearerOpts = new JwtBearerOptions()
             {
-                TokenValidationParameters = tokenParameters
-                
+                ClaimsIssuer = options.ClaimsIssuer,
+                TokenValidationParameters = tokenParameters,
+                Events = new CloudFoundryJwtBearerEvents()
             };
+
+            return bearerOpts;
         }
 
         private static TokenValidationParameters GetTokenValidationParameters(CloudFoundryOptions options)
@@ -151,7 +154,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             if (options.AccessDeniedPath != null)
             {
                 cookieOptions.AccessDeniedPath = options.AccessDeniedPath;
-                cookieOptions.LogoutPath = options.AccessDeniedPath;
             }
 
             if (options.TokenValidator != null)
