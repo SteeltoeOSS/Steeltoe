@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-//#if !NET451
+#if !NET451
 using System;
 
 using MySQL.Data.EntityFrameworkCore.Infraestructure;
@@ -123,4 +123,4 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
     }
 }
-//#endif
+#endif

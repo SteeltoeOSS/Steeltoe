@@ -24,7 +24,7 @@
     },
     "netstandard1.6": {
       "dependencies": {
-        "MySql.Data": "7.0.6-IR31"
+        "MySql.Data.EntityFrameworkCore": "7.0.6-IR31"
       }
     }
   },
@@ -35,7 +35,6 @@
     "Microsoft.Extensions.Options": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Binder": "1.0.0",
-    "Steeltoe.CloudFoundry.Connector": "1.0.0-dev-*",
-    "MySql.Data.EntityFrameworkCore": "7.0.6-IR31"
+    "Steeltoe.CloudFoundry.Connector": "1.0.0-*"
   }
 }
