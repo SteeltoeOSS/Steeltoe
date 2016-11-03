@@ -1,6 +1,6 @@
 ﻿# CloudFoundry .NET MySql Connector
 
-This project contains a Steeltoe Connector for MySql.  This connector simplifies using [Connector/NET - 6.9.8](https://dev.mysql.com/downloads/connector/net/) in an application running on CloudFoundry.
+This project contains a Steeltoe Connector for MySql.  This connector simplifies using [Connector/NET - 6.9.9/7.0.x](https://dev.mysql.com/downloads/connector/net/) in an application running on CloudFoundry.
 
 ## Provider Package Name and Feeds
 
@@ -13,7 +13,7 @@ This project contains a Steeltoe Connector for MySql.  This connector simplifies
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/
 
 ## Usage
-You probably will want some understanding of how to use the [Connector/NET - 6.9.8](https://dev.mysql.com/downloads/connector/net/) before starting to use this connector. Also basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is also helpful.
+You probably will want some understanding of how to use the [Connector/NET - 6.9.9/7.0.x](https://dev.mysql.com/downloads/connector/net/) before starting to use this connector. Also basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is also helpful.
 
 In order to use this Connector you need to do the following:
 ```
@@ -26,7 +26,7 @@ In order to use this Connector you need to do the following:
 You can create and bind MySql service instances using the CloudFoundry command line (i.e. cf):
 ```
 1. cf target -o myorg -s myspace
-2. cf create-service p-mysql 100mb-dev myMySqlService
+2. cf create-service p-mysql 100mb myMySqlService
 3. cf bind-service myApp myMySqlService
 4. cf restage myApp
 ```
@@ -114,6 +114,11 @@ public class Startup {
         // If using EF6
         services.AddDbContext<TestContext>(Configuration);
 
+        // OR
+
+        // If using EFCore
+        services.AddDbContext<TestContext>(options => options.UseMySql(Configuration));
+
         // Add framework services.
         services.AddMvc();
         ...
@@ -153,7 +158,8 @@ public class HomeController : Controller
     }
 }
 
--------------------------------------
+ 
+---------- If using EF6 ---------------
 using MySql.Data.Entity;
 using System.Data.Entity;
 ...
@@ -166,7 +172,21 @@ public class TestContext : DbContext
     }
     public DbSet<TestData> TestData { get; set; }
 }
+ 
+---------- If using EFCore ---------------
+using Microsoft.EntityFrameworkCore;
+...
 
+    public class TestContext : DbContext
+    {
+        public TestContext(DbContextOptions options) : base(options)
+        {
+
+        }
+        public DbSet<TestData> TestData { get; set; }
+    }
+
+-----------------------------------------
 using Project.Models;
 ....
 public class HomeController : Controller
