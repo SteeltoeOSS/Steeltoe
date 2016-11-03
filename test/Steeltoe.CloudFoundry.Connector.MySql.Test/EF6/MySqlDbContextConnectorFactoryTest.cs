@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+#if NET451
 using MySql.Data.Entity;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
@@ -27,7 +28,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         [Fact]
         public void Constructor_ThrowsIfTypeNull()
         {
-        
+
             // Arrange
             MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions();
             MySqlServiceInfo si = null;
@@ -83,17 +84,18 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             Assert.NotNull(context);
             GoodDbContext gcontext = context as GoodDbContext;
             Assert.NotNull(gcontext);
-      
+
         }
     }
 
     [DbConfigurationType(typeof(MySqlEFConfiguration))]
-    class BadDbContext : DbContext
+    public class BadDbContext : DbContext
     {
 
     }
+
     [DbConfigurationType(typeof(MySqlEFConfiguration))]
-    class GoodDbContext: DbContext
+    public class GoodDbContext : DbContext
     {
         public GoodDbContext(string str)
         {
@@ -101,4 +103,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         }
     }
 
+    //public class MyMySqlEFConfiguration : MySqlEFConfiguration {
+    //}
+
 }
+#endif

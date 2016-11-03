@@ -18,7 +18,15 @@
   },
   "frameworks": {
     "net451": {
-      "dependencies": { }
+      "dependencies": {
+        "MySql.Data.Entity" : "6.9.9"
+      }
+    },
+    "netstandard1.6": {
+      "dependencies": {
+        "MySql.Data.EntityFrameworkCore": "7.0.6-IR31",
+        "MySql.Data": "7.0.6-IR31"
+      }
     }
   },
   "dependencies": {
@@ -28,8 +36,6 @@
     "Microsoft.Extensions.Options": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Binder": "1.0.0",
-    "Steeltoe.CloudFoundry.Connector": "1.0.0-*",
-    "MySql.Data": "6.9.8",
-    "MySql.Data.Entity": "6.9.8"
+    "Steeltoe.CloudFoundry.Connector": "1.0.0-*"
   }
 }
