@@ -67,7 +67,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
         }
 
-        public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, Action<MySQLDbContextOptionsBuilder> mySqlOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, Action<MySQLDbContextOptionsBuilder> mySqlOptionsAction = null) where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -84,7 +84,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
             return optionsBuilder.UseMySQL<TContext>(connection, mySqlOptionsAction);
 
         }
-        public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, Action<MySQLDbContextOptionsBuilder> mySqlOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, Action<MySQLDbContextOptionsBuilder> mySqlOptionsAction = null) where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
