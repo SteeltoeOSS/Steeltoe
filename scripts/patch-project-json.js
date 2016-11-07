@@ -40,9 +40,9 @@ jsonfile.readFile(file, function (err, project) {
     project.version = version;
 
     // Patch dependencies
-    if (project.dependencies['Steeltoe.CloudFoundry.Connector'] ) {
-        project.dependencies['Steeltoe.CloudFoundry.Connector'] = dependsVersion;
-    }
+    //if (project.dependencies['Steeltoe.CloudFoundry.Connector'] ) {
+    //    project.dependencies['Steeltoe.CloudFoundry.Connector'] = dependsVersion;
+    //}
 
     if (project.dependencies['Steeltoe.Extensions.Configuration.CloudFoundry']) {
         project.dependencies['Steeltoe.Extensions.Configuration.CloudFoundry'] = dependsVersion;

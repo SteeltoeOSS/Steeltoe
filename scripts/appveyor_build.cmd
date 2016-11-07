@@ -9,6 +9,12 @@ call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.Redis/pro
 call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.PostgreSql/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
 call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.Rabbit/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
 call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.OAuth/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
+call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.Test/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
+call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.MySql.Test/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
+call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.Redis.Test/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
+call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.PostgreSql.Test/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
+call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.Rabbit.Test/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
+call node patch-project-json.js ../src/Steeltoe.CloudFoundry.Connector.OAuth.Test/project.json %APPVEYOR_BUILD_VERSION% %APPVEYOR_REPO_TAG_NAME%
 cd %APPVEYOR_BUILD_FOLDER%
 
 :: Restore packages
