@@ -13,9 +13,9 @@ dotnet test --framework netcoreapp1.0
 cd ../..
 cd test/Steeltoe.CloudFoundry.Connector.OAuth.Test
 dotnet test --framework netcoreapp1.0
-# cd ../..
-# cd test/Steeltoe.CloudFoundry.Connector.MySql.Test
-# dotnet test --framework netcoreapp1.0
+cd ../..
+cd test/Steeltoe.CloudFoundry.Connector.MySql.Test
+dotnet test --framework netcoreapp1.0
 # cd ../..
 # cd test/Steeltoe.CloudFoundry.Connector.Redis.Test
 # dotnet test --framework netcoreapp1.0
