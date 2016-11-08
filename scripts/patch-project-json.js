@@ -33,6 +33,9 @@ if (tag) {
 
 jsonfile.readFile(file, function (err, project) {
     
+    if (err)
+        console.error(err);
+
     console.log("Version: " + version);
     console.log("Dependency Version: " + dependsVersion);
     
@@ -48,8 +51,8 @@ jsonfile.readFile(file, function (err, project) {
         project.dependencies['Steeltoe.Extensions.Configuration.CloudFoundry'] = dependsVersion;
     }
 
-    jsonfile.writeFile(file, project, {spaces: 2}, function(err) {
-        if (err)
-            console.error(err);
+    jsonfile.writeFile(file, project, {spaces: 2}, function(err1) {
+        if (err1)
+            console.error(err1);
     });
 })
