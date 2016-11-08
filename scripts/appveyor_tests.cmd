@@ -1,4 +1,7 @@
 @ECHO OFF
+cd test
+dotnet restore --disable-parallel
+cd ..
 
 :: Run unit tests 
 cd test\Steeltoe.CloudFoundry.Connector.Test

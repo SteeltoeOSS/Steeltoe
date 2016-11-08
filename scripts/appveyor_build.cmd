@@ -20,8 +20,6 @@ cd %APPVEYOR_BUILD_FOLDER%
 :: Restore packages
 cd src
 dotnet restore --disable-parallel
-cd ..\test
-dotnet restore --disable-parallel
 cd ..
 
 :: Build packages
