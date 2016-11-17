@@ -13,11 +13,11 @@ Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/
 Linux/OS X Dev (Less Stable): [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Configuration.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Configuration)
 
 # .NET Runtime & Framework Support
-Like ASP.NET Core, the providers are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes.  The providers are built and unit tested on Windows, Linux and OSX.
+Like the ASP.NET Core configuration providers, these providers are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes.  The providers are built and unit tested on Windows, Linux and OSX.
 
 While the primary usage of the providers is intended to be with ASP.NET Core applications, they should also work fine with UWP, Console and ASP.NET 4.x apps. An ASP.NET 4.x sample app is available illustrating how this can be done.
 
-Currently all of the code and samples have been tested on .NET Core 1.0.0 Preview 2 SDK, .NET 4.5.1, and on ASP.NET Core 1.0.0.
+Currently all of the code and samples have been tested on .NET Core 1.1, .NET 4.5.1/4.6.x, and on ASP.NET Core 1.1.0.
 
 # Usage
 See the Readme for each provider for more details on how to make use of it in an application.
@@ -39,7 +39,7 @@ To build the packages on windows:
 3. Install .NET Core SDK
 4. dotnet restore src
 5. cd src\<project> (e.g. cd src\Steeltoe.Extensions.Configuration.CloudFoundry)
-6. dotnet pack --configuration <Release or Debug> 
+6. dotnet pack --configuration Release or Debug
 
 The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src\Steeltoe.Extensions.Configuration.CloudFoundry\bin
 
@@ -50,7 +50,7 @@ To run the unit tests:
 3. Install .NET Core SDK 
 4. dotnet restore test
 5. cd test\<test project> (e.g. cd test\Steeltoe.Extensions.Configuration.CloudFoundry.Test)
-6. dotnet test
+6. dotnet test 
 
 # Building Packages & Running Tests - Linux/OSX
 To build the packages on Linux/OSX:
@@ -60,7 +60,7 @@ To build the packages on Linux/OSX:
 3. Install .NET Core SDK
 4. dotnet restore src
 5. cd src/<project> (e.g.. cd src/Steeltoe.Extensions.Configuration.CloudFoundry)
-6. dotnet pack --configuration <Release or Debug> 
+6. dotnet pack --configuration Release or Debug
 
 The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Extensions.Configuration.CloudFoundry/bin
 

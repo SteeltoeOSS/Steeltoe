@@ -65,7 +65,7 @@ var instanceId = config["vcap:services:[service-name]:0:credentials:uri"]
 ```
 Note: The provider uses the built-in [JSON configuration provider](https://github.com/aspnet/Configuration/tree/dev/src/Microsoft.Extensions.Configuration.Json) when parsing the JSON in the `VCAP_*` environment variables.
 
-Alternatively you can use the [Options](https://github.com/aspnet/Options) framework together with [Dependency Injection](http://docs.asp.net/en/latest/fundamentals/dependency-injection.html) provided in ASP.NET 5 for accessing `VCAP_*` configuration data as POCOs.
+Alternatively you can use the [Options](https://github.com/aspnet/Options) framework together with [Dependency Injection](http://docs.asp.net/en/latest/fundamentals/dependency-injection.html) provided in ASP.NET Core for accessing `VCAP_*` configuration data as POCOs.
 
 To do this, add the the following to your `public void ConfigureServices(...)` method in your `Startup` class.
 ```

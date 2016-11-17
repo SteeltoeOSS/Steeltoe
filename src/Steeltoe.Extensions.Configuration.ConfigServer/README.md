@@ -86,7 +86,7 @@ var property1 = config["myconfiguration:property1"]
 var property2 = config["myconfiguration:property2"] 
 ....
 ```
-Alternatively you can use the [Options](https://github.com/aspnet/Options) framework together with [Dependency Injection](http://docs.asp.net/en/latest/fundamentals/dependency-injection.html) provided in ASP.NET 5 for accessing the configuration data as POCOs.
+Alternatively you can use the [Options](https://github.com/aspnet/Options) framework together with [Dependency Injection](http://docs.asp.net/en/latest/fundamentals/dependency-injection.html) provided in ASP.NET Core for accessing the configuration data as POCOs.
 To do this, first create a POCO to represent your configuration data from the Config Server. For example:
 ```
 public class MyConfiguration {
