@@ -23,7 +23,7 @@
     "netstandard1.3": {
       "dependencies": {
         "System.Threading.Thread": "4.3.0",
-        "System.Net.Http.WinHttpHandler": "4.3.0",
+        "System.Net.Http.WinHttpHandler": "4.3.0"
       },
       "imports": [
         "portable-net451+win8"
@@ -42,6 +42,5 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
     "Microsoft.Extensions.PlatformAbstractions": "1.1.0",
     "Newtonsoft.Json": "9.0.1"
-
   }
 }
