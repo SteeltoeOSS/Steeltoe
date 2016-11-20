@@ -14,7 +14,8 @@
     ],
     "projectUrl": "http://steeltoe.io",
     "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
-    "copyright": "Copyright 2015 the original authors"
+    "copyright": "Copyright 2015 the original authors",
+    "iconUrl": "http://steeltoe.io/images/transparent.png"
   },
     "frameworks": {
       "net451": {
@@ -24,19 +25,21 @@
           }
         },
         "dependencies": {
-            "System.Net.Http": "4.0.0"
-         }
+          "System.Runtime.InteropServices.RuntimeInformation": "4.0.0",
+          "System.Net.Http": "4.0.0"
+        }
         },
         "netstandard1.3": {
           "dependencies": {
-            "System.Collections": "4.0.11",
-            "System.Linq": "4.1.0",
-            "System.Threading": "4.0.11",
-            "System.Net.NameResolution": "4.0.0",
-            "System.Threading.Timer": "4.0.1",
-            "System.Net.Http.WinHttpHandler": "4.0.0",
-            "System.Net.Http": "4.1.0",
-            "System.Runtime": "4.1.0"
+            "System.Runtime.InteropServices.RuntimeInformation": "4.3.0",
+            "System.Net.Http": "4.3.0",
+            "System.Collections": "4.3.0",
+            "System.Linq": "4.3.0",
+            "System.Threading": "4.3.0",
+            "System.Net.NameResolution": "4.3.0",
+            "System.Threading.Timer": "4.3.0",
+            "System.Net.Http.WinHttpHandler": "4.3.0",
+            "System.Runtime": "4.3.0"
           },
           "imports": [
             "portable-net451+win8"
@@ -45,7 +48,6 @@
       },
   "dependencies": {
     "Newtonsoft.Json": "9.0.1",
-    "System.Runtime.InteropServices.RuntimeInformation": "4.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0"
+    "Microsoft.Extensions.Logging.Abstractions": "1.1.0"
   }
   }
