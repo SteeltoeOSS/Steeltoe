@@ -1,6 +1,6 @@
 ﻿# CloudFoundry .NET Postgres Connector
 
-This project contains a Steeltoe Connector for Postgres.  This connector simplifies using [Npgsql - 3.1.5](http://www.npgsql.org/) in an application running on CloudFoundry.
+This project contains a Steeltoe Connector for Postgres.  This connector simplifies using [Npgsql - 3.1.9](http://www.npgsql.org/) in an application running on CloudFoundry.
 
 ## Provider Package Name and Feeds
 
@@ -13,7 +13,7 @@ This project contains a Steeltoe Connector for Postgres.  This connector simplif
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/
 
 ## Usage
-You probably will want some understanding of how to use the [Npgsql - 3.1.5](http://www.npgsql.org/) before starting to use this connector. Also basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is also helpful.
+You probably will want some understanding of how to use the [Npgsql - 3.1.9](http://www.npgsql.org/) before starting to use this connector. Also basic understanding of the `ConfigurationBuilder` and how to add providers to the builder is also helpful.
 
 In order to use this Connector you need to do the following:
 ```

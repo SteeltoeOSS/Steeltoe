@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{15AD4B5F-5469-40AD-946B-3A12CE041220}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Steeltoe.CloudFoundry.Connector.Redis", "src\Steeltoe.CloudFoundry.Connector.Redis\Steeltoe.CloudFoundry.Connector.Redis.xproj", "{65B3FA01-1A10-4FAD-AEC5-7642EF9B708D}"

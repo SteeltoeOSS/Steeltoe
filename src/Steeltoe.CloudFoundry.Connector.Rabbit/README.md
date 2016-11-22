@@ -91,8 +91,8 @@ public class Startup {
     ....
 ```
 
-## Add RabbitConnector or a DbContext
-The next step is to add RabbitConnector or DbContext's to your ServiceCollection depending on your needs.  You do this in `ConfigureServices(..)` method of the startup class:
+## Add RabbitConnection
+The next step is to add RabbitConnector to your ServiceCollection.  You do this in `ConfigureServices(..)` method of the startup class:
 ```
 #using Steeltoe.CloudFoundry.Connector.Rabbit;
 

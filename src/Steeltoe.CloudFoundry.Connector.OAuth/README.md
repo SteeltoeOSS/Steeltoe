@@ -30,7 +30,7 @@ There are multiple OAuth services you can use on CloudFoundry. Rather than expla
 
 Once you have bound the service to the app, the OAuth service settings have been setup in `VCAP_SERVICES` and will be picked up automatically when the app is started by using the `CloudFoundry` configuration provider at startup.
 
-## Additional OAuth connector settings (Optional)
+## Additional OAuth Connector settings (Optional)
 Typically you do not need to configure any additional settings for the connector.  In the below example, we show how to add in the setting to disable certificate validation.  This might be necessary when your app is targeted to run on Windows cells on CloudFoundry and you are using self-signed certificates.
 ```
 {

@@ -17,7 +17,7 @@ Where supported the connectors are built and unit tested on Windows, Linux and O
 
 While the primary usage of the connectors is intended to be with ASP.NET Core applications, they should also work fine with UWP, Console and ASP.NET 4.x apps.
 
-Depending on their level of support, the connectors and samples have been tested on .NET Core 1.0.0 Preview 2 SDK, .NET 4.5.1, and on ASP.NET Core 1.0.0.
+Depending on their level of support, the connectors and samples have been tested  on .NET Core 1.1, .NET 4.5.1/4.6.x, and on ASP.NET Core 1.1.0.
 
 # Usage
 See the Readme for each connector for more details on how to make use of it in an application.
@@ -31,6 +31,12 @@ All new connector development is done on the dev branch. More stable versions of
 
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/. 
 
+# Building Pre-requisites
+To build and run the unit tests:
+
+1. .NET Core SDK 1.0.1 or greater
+2. .NET Core Runtime 1.1
+3. 
 # Building Packages & Running Tests - Windows
 To build the packages on windows:
 
@@ -71,7 +77,7 @@ To run the unit tests: ( Note: Some connectors do not support CoreCLR.)
 3. Install .NET Core SDK 
 4. dotnet restore --configfile nuget.config test
 5. cd test\ `<test project>` (e.g. cd test/Steeltoe.CloudFoundry.Connector.Test)
-6. dotnet test --framework netcoreapp1.0
+6. dotnet test --framework netcoreapp1.1
 
 # Sample Applications
 See the [Samples](https://github.com/SteeltoeOSS/Samples) repo for examples of how to use these packages.

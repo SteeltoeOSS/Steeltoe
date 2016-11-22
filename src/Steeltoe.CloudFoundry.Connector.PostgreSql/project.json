@@ -14,7 +14,8 @@
     ],
     "projectUrl": "http://steeltoe.io",
     "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
-    "copyright": "Copyright 2016 the original authors"
+    "copyright": "Copyright 2016 the original authors",
+    "iconUrl": "http://steeltoe.io/images/transparent.png"
   },
   "frameworks": {
     "net451": {
@@ -26,15 +27,15 @@
     }
   },
   "dependencies": {
-    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-    "Microsoft.Extensions.Options": "1.0.0",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-    "Microsoft.Extensions.Configuration.Binder": "1.0.0",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Options": "1.1.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
+    "Microsoft.Extensions.Configuration.Binder": "1.1.0",
     "Steeltoe.CloudFoundry.Connector": "1.0.0-*",
-    "Npgsql": "3.1.5",
-    "Npgsql.EntityFrameworkCore.PostgreSQL": "1.0.1",
-    "Microsoft.EntityFrameworkCore": "1.0.0"
+    "Npgsql": "3.1.9",
+    "Npgsql.EntityFrameworkCore.PostgreSQL": "1.1.0",
+    "Microsoft.EntityFrameworkCore": "1.1.0"
   }
 }
