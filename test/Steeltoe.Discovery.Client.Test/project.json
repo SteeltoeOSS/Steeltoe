@@ -10,7 +10,7 @@
     "copyright": "Copyright 2016 the original authors"
   },
   "frameworks": {
-    "netcoreapp1.0": {
+    "netcoreapp1.1": {
       "dependencies": {
         "Microsoft.NETCore.App": {
           "type": "platform",
@@ -37,7 +37,8 @@
     "Microsoft.Extensions.Logging": "1.1.0",
     "Steeltoe.Discovery.Client": "1.0.0-*",
     "xunit": "2.2.0-beta4-build3444",
-    "dotnet-test-xunit": "2.2.0-preview2-build1029"
+    "dotnet-test-xunit": "2.2.0-preview2-build1029",
+    "Microsoft.DotNet.InternalAbstractions": "1.0.0"
   },
   "buildOptions": {
     "copyToOutput": {
