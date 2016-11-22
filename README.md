@@ -44,7 +44,7 @@ To build the packages on windows:
 2. cd clone directory
 3. Install .NET Core SDK
 4. dotnet restore src
-5. cd src\<project> (e.g. cd src\Steeltoe.Discovery.Client)
+5. cd src\project (e.g. cd src\Steeltoe.Discovery.Client)
 6. dotnet pack --configuration Release or Debug 
 
 The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Discovery.Client/bin
@@ -55,7 +55,7 @@ To run the unit tests:
 2. cd clone directory
 3. Install .NET Core SDK 
 4. dotnet restore test
-5. cd test\<test project> (e.g. cd test\Steeltoe.Discovery.Client.Test)
+5. cd test\test project (e.g. cd test\Steeltoe.Discovery.Client.Test)
 6. dotnet test
 
 # Building Packages & Running Tests - Linux/OSX
@@ -65,7 +65,7 @@ To build the packages on Linux/OSX:
 2. cd clone directory
 3. Install .NET Core SDK
 4. dotnet restore src
-5. cd src/<project> (e.g.. cd src/Steeltoe.Discovery.Client)
+5. cd src/project (e.g.. cd src/Steeltoe.Discovery.Client)
 6. dotnet pack --configuration Release or Debug
 
 The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Discovery.Client/bin
@@ -76,7 +76,7 @@ To run the unit tests:
 2. cd clone directory
 3. Install .NET Core SDK 
 4. dotnet restore test
-5. cd test\<test project> (e.g. cd test/Steeltoe.Discovery.Client.Test)
+5. cd test\test project (e.g. cd test/Steeltoe.Discovery.Client.Test)
 6. dotnet test --framework netcoreapp1.1
 
 # Sample Applications

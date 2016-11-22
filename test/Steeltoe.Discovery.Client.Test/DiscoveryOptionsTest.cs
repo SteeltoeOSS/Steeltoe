@@ -68,6 +68,7 @@ namespace Steeltoe.Discovery.Client.Test
         'serviceUrl': 'http://localhost:8761/eureka/'
     },
     'instance': {
+        'hostName': 'myHostName',
         'instanceId': 'instanceId',
         'appName': 'appName',
         'appGroup': 'appGroup',
@@ -152,7 +153,8 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.Equal("healthCheckUrlPath", ro.HealthCheckUrlPath);
             Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
             Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
-
+            Assert.Equal("myHostName", ro.GetHostName(false));
+            Assert.Equal("myHostName", ro.HostName);
             var map = ro.MetadataMap;
             Assert.NotNull(map);
             Assert.Equal(2, map.Count);

@@ -470,21 +470,31 @@ namespace Steeltoe.Discovery.Client
                 _virtualHostName = value;
             }
         }
+
+        private string _hostName;
         public string HostName
         {
             get
             {
-                return _thisHostName;
+                return GetHostName(false);
             }
             set
             {
-                _thisHostName = value;
+                if (!value.Equals(_thisHostName))
+                    _hostName = value;
             }
         }
 
         public string GetHostName(bool refresh)
         {
-            // TODO: eureka:instance:hostname
+            if (_hostName != null)
+                return _hostName;
+
+            var boundValue = GetString(Eureka?.Instance?.HostName, null);
+            if (!string.IsNullOrEmpty(boundValue))
+                return boundValue;
+            
+
             if (refresh || string.IsNullOrEmpty(_thisHostName))
                 _thisHostName = Dns.GetHostName();
             return _thisHostName;
@@ -673,6 +683,11 @@ namespace Steeltoe.Discovery.Client
         /// Configuration property: eureka:instance:secureHealthCheckUrl
         /// </summary>
         public string SecureHealthCheckUrl { get; set; }
+
+        /// <summary>
+        /// Configuration property: eureka:instance:hostName
+        /// </summary>
+        public string HostName { get; set; }
     }
 
 }
