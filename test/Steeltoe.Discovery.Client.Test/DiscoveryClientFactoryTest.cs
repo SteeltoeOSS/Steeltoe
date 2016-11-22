@@ -64,6 +64,16 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
+        public void CreateClient_Calls_ConfigureOptions()
+        {
+            MyDiscoveryClientFactory factory = new MyDiscoveryClientFactory();
+            IServiceProvider provider = new MyServiceProvier();
+            IDiscoveryClient result = factory.CreateClient() as IDiscoveryClient;
+            Assert.NotNull(result);
+            Assert.True(factory.ConfigureOptionsCalled);
+        }
+
+        [Fact]
         public void Create_NullIServiceProvider_ReturnsNull()
         {
             DiscoveryClientFactory factory = new DiscoveryClientFactory();
@@ -100,15 +110,6 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.Equal("Unknown", result.Description);
         }
 
-        [Fact]
-        public void Create_Calls_ConfigureOptions()
-        {
-            MyDiscoveryClientFactory factory = new MyDiscoveryClientFactory();
-            IServiceProvider provider = new MyServiceProvier();
-            IDiscoveryClient result = factory.Create(provider) as IDiscoveryClient;
-            Assert.NotNull(result);
-            Assert.True(factory.ConfigureOptionsCalled);
-        }
     }
     class MyDiscoveryClientFactory : DiscoveryClientFactory
     {

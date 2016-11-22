@@ -44,8 +44,6 @@ namespace Steeltoe.Discovery.Client
                 return null;
             }
 
-            ConfigureOptions();
-
             var logFactory = provider.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
             var lifeCycle = provider.GetService(typeof(IApplicationLifetime)) as IApplicationLifetime;
    
@@ -54,7 +52,11 @@ namespace Steeltoe.Discovery.Client
 
         public virtual object CreateClient(IApplicationLifetime lifeCycle = null, ILoggerFactory logFactory = null)
         {
+
             var logger = logFactory?.CreateLogger<DiscoveryClientFactory>();
+
+            ConfigureOptions();
+
             if (_config == null)
             {
                 logger?.LogWarning("Failed to create DiscoveryClient, no DiscoveryOptions");
