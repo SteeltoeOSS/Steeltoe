@@ -52,7 +52,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 InstanceId = "instanceId", 
                 AbortOnConnectFail = false
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword");
+            RedisServiceInfo si = new RedisServiceInfo("myId", "127.0.0.1", 4321, "sipassword");
             si.ApplicationInfo = new ApplicationInstanceInfo()
             {
                 InstanceId = "instanceId"

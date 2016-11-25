@@ -240,7 +240,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
    'redis': {
         'client': {
-            'host': 'localhost',
+            'host': '127.0.0.1',
             'port': 1234,
             'password': 'password',
             'abortOnConnectFail': false
