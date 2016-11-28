@@ -69,10 +69,23 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="environment">required Hosting environment, used in establishing config server profile</param>
         /// <param name="logFactory">optional logging factory</param>
         /// </summary>
-        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, IHostingEnvironment environment, ILoggerFactory logFactory = null) :
-            this(settings, GetHttpClient(settings), environment, logFactory)
+        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, IHostingEnvironment environment, ILoggerFactory logFactory = null) 
         {
-            _client.Timeout = DEFAULT_TIMEOUT;
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            if (environment == null)
+            {
+                throw new ArgumentNullException(nameof(environment));
+            }
+
+            _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
+            _settings = settings;
+            _client = null;
+            _environment = environment;
+           
         }
 
         /// <summary>
@@ -258,6 +271,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The task object representing the asynchronous operation</returns>
         internal protected virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
         {
+            // Get client if not already set
+            if (_client == null)
+            {
+                _client = GetHttpClient(_settings);
+            }
+
             // Get the request message 
             var request = GetRequestMessage(requestUri);
 
@@ -400,7 +419,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         protected static HttpClient GetHttpClient(ConfigServerClientSettings settings)
         {
 #if NET451
-            return new HttpClient();
+            var client = new HttpClient();
+            HttpClientHandler h = new HttpClientHandler();
+            client.Timeout = DEFAULT_TIMEOUT;
+            return client;
 #else
             // TODO: For coreclr, disabling certificate validation only works on windows platform
             // https://github.com/dotnet/corefx/issues/4476
@@ -408,10 +430,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 var handler = new WinHttpHandler();
                 handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                return new HttpClient(handler);
+                var client = new HttpClient(handler);
+                client.Timeout = DEFAULT_TIMEOUT;
+                return client;
             } else
             {
-                return new HttpClient();
+                var client = new HttpClient();
+                client.Timeout = DEFAULT_TIMEOUT;
+                return client;
             }
 #endif
         }
