@@ -20,14 +20,11 @@
   "frameworks": {
     "net451": {
       "dependencies": {
-        "System.Net.Http": "4.0.0"
       }
     },
     "netstandard1.3": {
       "dependencies": {
-        "System.Threading.Thread": "4.0.0",
-        "System.Net.Http.WinHttpHandler": "4.3.0",
-        "System.Net.Http": "4.3.0"
+        "System.Threading.Thread": "4.3.0"
       },
       "imports": [
         "portable-net451+win8"
@@ -35,15 +32,15 @@
     }
   },
   "dependencies": {
-    "System.Runtime.InteropServices.RuntimeInformation": "4.0.0",
-    "Microsoft.AspNetCore.Hosting.Abstractions": "1.0.0",
-    "Microsoft.Extensions.Configuration": "1.0.0",
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-    "Microsoft.Extensions.Options": "1.0.0",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-    "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
+    "System.Net.Http": "4.3.0",
+    "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Configuration": "1.1.0",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Options": "1.1.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
+    "Microsoft.Extensions.PlatformAbstractions": "1.1.0",
     "Newtonsoft.Json": "9.0.1"
   }
 }

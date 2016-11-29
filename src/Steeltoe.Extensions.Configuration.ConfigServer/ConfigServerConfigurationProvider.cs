@@ -29,7 +29,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading;
-using System.Runtime.InteropServices;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -418,29 +417,24 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The HttpClient used by the provider</returns>
         protected static HttpClient GetHttpClient(ConfigServerClientSettings settings)
         {
+            HttpClient client = null;
 #if NET451
-            var client = new HttpClient();
-            HttpClientHandler h = new HttpClientHandler();
-            client.Timeout = DEFAULT_TIMEOUT;
-            return client;
+            client = new HttpClient();
 #else
-            // TODO: For coreclr, disabling certificate validation only works on windows platform
-            // https://github.com/dotnet/corefx/issues/4476
-            if (settings != null && !settings.ValidateCertificates && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (settings != null && !settings.ValidateCertificates)
             {
-                var handler = new WinHttpHandler();
-                handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                var client = new HttpClient(handler);
-                client.Timeout = DEFAULT_TIMEOUT;
-                return client;
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                client = new HttpClient(handler);
             } else
             {
-                var client = new HttpClient();
-                client.Timeout = DEFAULT_TIMEOUT;
-                return client;
+                client = new HttpClient();
             }
 #endif
+            client.Timeout = DEFAULT_TIMEOUT;
+            return client;
         }
+
         internal string[] GetLabels()
         {
             if (string.IsNullOrWhiteSpace(_settings.Label))
