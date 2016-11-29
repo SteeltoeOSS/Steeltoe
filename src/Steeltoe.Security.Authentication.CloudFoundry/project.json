@@ -15,32 +15,32 @@
     ],
     "projectUrl": "http://steeltoe.io",
     "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
-    "copyright": "Copyright 2016 the original authors"
+    "copyright": "Copyright 2016 the original authors",
+    "iconUrl": "http://steeltoe.io/images/transparent.png"
   },
   "frameworks": {
     "net451": {
       "dependencies": {
-        "System.Net.Http": "4.0.0"
+
       }
     },
     "netstandard1.3": {
       "imports": "dnxcore50",
       "dependencies": {
-        "System.Net.Http.WinHttpHandler": "4.0.0",
-        "System.Threading.Thread": "4.0.0"
+        "System.Threading.Thread": "4.3.0"
       }
     }
   },
   "dependencies": {
-    "System.Runtime.InteropServices.RuntimeInformation": "4.0.0-*",
-    "Microsoft.AspNetCore.Authentication": "1.0.0",
-    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
-    "Microsoft.AspNetCore.Authentication.OAuth": "1.0.0",
-    "Microsoft.AspNetCore.Authorization": "1.0.0",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
-    "Microsoft.Extensions.Options": "1.0.0",
+    "System.Net.Http": "4.3.0",
+    "Microsoft.AspNetCore.Authentication": "1.1.0",
+    "Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
+    "Microsoft.AspNetCore.Authentication.OAuth": "1.1.0",
+    "Microsoft.AspNetCore.Authorization": "1.1.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Options": "1.1.0",
     "Steeltoe.CloudFoundry.Connector.OAuth": "1.0.0-dev-*",
-    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0"
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.1.0"
   }
 }
 

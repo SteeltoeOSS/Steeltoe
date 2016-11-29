@@ -18,7 +18,6 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Steeltoe.CloudFoundry.Connector.OAuth;
-using System.Runtime.InteropServices;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
@@ -92,10 +91,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 #if NET451
             return null;
 #else
-            if (!ValidateCertificates && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (!ValidateCertificates)
             {
-                var handler = new WinHttpHandler();
-                handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
                 return handler;
             }
             return null;
