@@ -27,7 +27,6 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using System.Net.Security;
 using System.Net;
-using System.Runtime.InteropServices;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
@@ -593,13 +592,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #if NET451
             client = new HttpClient();
 #else
-            // TODO: For coreclr, disabling certificate validation only works on windows platform
-            // https://github.com/dotnet/corefx/issues/4476
-            if (config != null && !config.ValidateCertificates && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (config != null && !config.ValidateCertificates)
             {
-                var handler = new WinHttpHandler();
-                handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                return new HttpClient(handler);
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback  = (sender, cert, chain, sslPolicyErrors) => true;
+                client = new HttpClient(handler);
             } else
             {
                 client = new HttpClient();
