@@ -36,7 +36,7 @@ To build and run the unit tests:
 
 1. .NET Core SDK 1.0.1 or greater
 2. .NET Core Runtime 1.1
-3. 
+
 # Building Packages & Running Tests - Windows
 To build the packages on windows:
 
