@@ -186,7 +186,7 @@ using Microsoft.EntityFrameworkCore;
         public DbSet<TestData> TestData { get; set; }
     }
 
------------------------------------------
+----------- Sample Controller code ----------
 using Project.Models;
 ....
 public class HomeController : Controller
