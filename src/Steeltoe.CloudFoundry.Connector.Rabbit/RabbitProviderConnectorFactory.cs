@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
             _info = sinfo;
             _config = config;
         }
-        internal protected virtual object Create(IServiceProvider provider)
+        public virtual object Create(IServiceProvider provider)
         {
             var connectionString = CreateConnectionString();
             if (connectionString != null)
@@ -48,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
             return null;
         }
 
-        internal protected virtual string CreateConnectionString()
+        public virtual string CreateConnectionString()
         {
             return _configurer.Configure(_info, _config);
         }

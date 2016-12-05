@@ -32,13 +32,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             _info = sinfo;
             _config = config;
         }
-        internal RedisCache CreateCache(IServiceProvider provider)
+        public virtual RedisCache CreateCache(IServiceProvider provider)
         {
             var opts = _configurer.Configure(_info, _config);
             return new RedisCache(opts);
         }
 
-        internal ConnectionMultiplexer CreateConnection(IServiceProvider provider)
+        public virtual ConnectionMultiplexer CreateConnection(IServiceProvider provider)
         {
             var opts = _configurer.ConfigureConnection(_info, _config);
             return ConnectionMultiplexer.Connect(opts);

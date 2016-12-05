@@ -48,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
             }
         }
 
-        internal protected override object Create(IServiceProvider arg)
+        public override object Create(IServiceProvider arg)
         {
             var connectionString = base.CreateConnectionString();
             if (connectionString != null)

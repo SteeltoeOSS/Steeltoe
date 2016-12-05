@@ -32,7 +32,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
             _info = sinfo;
             _config = config;
         }
-        internal IOptions<OAuthServiceOptions> Create(IServiceProvider provider)
+        public IOptions<OAuthServiceOptions> Create(IServiceProvider provider)
         {
             var opts = _configurer.Configure(_info, _config);
             return opts;
