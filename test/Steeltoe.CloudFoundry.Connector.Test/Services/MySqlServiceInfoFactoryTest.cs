@@ -166,5 +166,48 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal(3306, info.Port);
             Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", info.Path);
         }
+
+        [Fact]
+        public void Accept_AcceptsValidCupsServiceBinding()
+        {
+            Service s = new Service()
+            {
+                Label = "user-provided",
+                Tags = new string[0],
+                Name = "cupsMySqlService",
+                Credentials = new Credential() {
+                    { "username", new Credential("Dd6O1BPXUHdrmzbP") },
+                    { "password", new Credential("7E1LxXnlH2hhlPVt") },
+                    { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                    }
+            };
+            MySqlServiceInfoFactory factory = new MySqlServiceInfoFactory();
+            Assert.True(factory.Accept(s));
+        }
+
+        [Fact]
+        public void Create_CreatesValidServiceBinding_Cups()
+        {
+            Service s = new Service()
+            {
+                Label = "user-provided",
+                Tags = new string[0],
+                Name = "cupsMySqlService",
+                Credentials = new Credential() {
+                    { "username", new Credential("Dd6O1BPXUHdrmzbP") },
+                    { "password", new Credential("7E1LxXnlH2hhlPVt") },
+                    { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                    }
+            };
+            MySqlServiceInfoFactory factory = new MySqlServiceInfoFactory();
+            var info = factory.Create(s) as MySqlServiceInfo;
+            Assert.NotNull(info);
+            Assert.Equal("cupsMySqlService", info.Id);
+            Assert.Equal("7E1LxXnlH2hhlPVt", info.Password);
+            Assert.Equal("Dd6O1BPXUHdrmzbP", info.UserName);
+            Assert.Equal("192.168.0.90", info.Host);
+            Assert.Equal(3306, info.Port);
+            Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", info.Path);
+        }
     }
 }
