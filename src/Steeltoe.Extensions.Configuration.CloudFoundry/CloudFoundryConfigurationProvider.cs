@@ -30,6 +30,11 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         private const string APPLICATION = "APPLICATION";
         private const string SERVICES = "SERVICES";
 
+        private const string CF_INSTANCE_GUID = "CF_INSTANCE_GUID";
+        private const string CF_INSTANCE_INDEX = "CF_INSTANCE_INDEX";
+        private const string CF_INSTANCE_PORT = "CF_INSTANCE_PORT";
+        private const string CF_INSTANCE_IP = "CF_INSTANCE_IP";
+
         public CloudFoundryConfigurationProvider()
         {
         }
@@ -55,11 +60,17 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 if (applicationData != null)
                 {
                     LoadData("vcap:application", applicationData.GetChildren());
+
                     string vcapAppName = Data["vcap:application:name"];
                     if (!string.IsNullOrEmpty(vcapAppName))
                     {
                         Data["spring:application:name"] = vcapAppName;
                     }
+
+                    AddDiegoVariables();
+
+                   
+
                 }
             }
 
@@ -79,6 +90,26 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         }
 
+        internal void AddDiegoVariables()
+        {
+            if (!Data.ContainsKey("vcap:application:instance_id"))
+            {
+                Data["vcap:application:instance_id"] = Environment.GetEnvironmentVariable(CF_INSTANCE_GUID);
+            }
+
+            if (!Data.ContainsKey("vcap:application:instance_index"))
+            {
+                Data["vcap:application:instance_index"] = Environment.GetEnvironmentVariable(CF_INSTANCE_INDEX);
+            }
+
+            if (!Data.ContainsKey("vcap:application:port"))
+            {
+                Data["vcap:application:port"] = Environment.GetEnvironmentVariable(CF_INSTANCE_PORT);
+            }
+
+            Data["vcap:application:instance_ip"] = Environment.GetEnvironmentVariable(CF_INSTANCE_IP);
+
+        }
         internal IDictionary<string, string> Properties
         {
             get
