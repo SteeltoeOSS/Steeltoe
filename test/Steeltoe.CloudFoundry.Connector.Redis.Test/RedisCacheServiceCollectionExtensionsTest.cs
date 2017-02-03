@@ -261,7 +261,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Act and Assert
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
 
-            var service = services.BuildServiceProvider().GetService<ConnectionMultiplexer>();
+            var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
             Assert.NotNull(service);
 
         }
