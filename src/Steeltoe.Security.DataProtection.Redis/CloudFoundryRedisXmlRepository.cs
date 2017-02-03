@@ -19,12 +19,10 @@ using StackExchange.Redis;
 
 namespace Steeltoe.Security.DataProtection.Redis
 {
-    // Note: RedisXmlRepository has been copied "as is" from version 1.1 of Microsoft.AspNetCore.DataProtection.Redis.  When
-    // Microsoft releases 1.1 remove RedisXmlRepository from this project and add reference to Microsoft.AspNetCore.DataProtection.Redis nuget.
     public class CloudFoundryRedisXmlRepository : RedisXmlRepository
     {
         private const string DataProtectionKeysName = "DataProtection-Keys";
-        public CloudFoundryRedisXmlRepository(ConnectionMultiplexer redis) : base( () => redis.GetDatabase(), DataProtectionKeysName)
+        public CloudFoundryRedisXmlRepository(IConnectionMultiplexer redis) : base( () => redis.GetDatabase(), DataProtectionKeysName)
         {
         }
     }
