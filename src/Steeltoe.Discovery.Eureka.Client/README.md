@@ -56,6 +56,7 @@ DiscoveryManager.Instance.Initialize(clientConfig, instanceConfig);
 or
 
 // No services to register
+// Note: You also need to set `ShouldRegisterWithEureka` = `false` in EurekaClientConfig, the default is `true`
 DiscoveryManager.Instance.Initialize(clientConfig);
 ```
 Once you have initialized the client you can obtain an instance of the `IEurekaClient` and use its methods to lookup services or instances.

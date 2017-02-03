@@ -115,7 +115,7 @@ namespace Steeltoe.Discovery.Eureka
                 return;
             }
 
-            if (ClientConfig.ShouldRegisterWithEureka)
+            if (ClientConfig.ShouldRegisterWithEureka && ApplicationInfoManager.Instance.InstanceInfo != null)
             {
                 var result = RegisterAsync();
                 result.Wait();
