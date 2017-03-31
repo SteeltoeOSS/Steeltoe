@@ -18,7 +18,7 @@ Where appropriate, the components are built and unit tested on Windows, Linux an
 Where appropriate, the components and samples have been tested on .NET Core 1.0.0 Preview 2 SDK, .NET 4.5.1, and on ASP.NET Core 1.0.0.
 
 # Usage
-See the Readme for each component for more details on how to make use of it in an application.
+For more information on how to use these components see the online [Steeltoe documentation](http://steeltoe.io/).
 
 # Nuget Feeds
 All new development is done on the dev branch. More stable versions of the components can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
