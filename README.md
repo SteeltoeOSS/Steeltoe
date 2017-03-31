@@ -13,14 +13,14 @@ Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/
 Linux/OS X Dev (Less Stable): [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Configuration.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Configuration)
 
 # .NET Runtime & Framework Support
-Like the ASP.NET Core configuration providers, these providers are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) runtimes.  The providers are built and unit tested on Windows, Linux and OSX.
+Like the ASP.NET Core configuration providers, these providers are intended to support both .NET 4.5.1+ and .NET Core (CoreCLR/CoreFX) run-times.  The providers are built and unit tested on Windows, Linux and OSX.
 
 While the primary usage of the providers is intended to be with ASP.NET Core applications, they should also work fine with UWP, Console and ASP.NET 4.x apps. An ASP.NET 4.x sample app is available illustrating how this can be done.
 
 Currently all of the code and samples have been tested on .NET Core 1.1, .NET 4.5.1/4.6.x, and on ASP.NET Core 1.1.0.
 
 # Usage
-See the Readme for each provider for more details on how to make use of it in an application.
+See the [Steeltoe documentation](http://steeltoe.io/) for information on how to use these components in your applications.
 
 # Nuget Feeds
 All new configuration provider development is done on the dev branch. More stable versions of the providers can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
