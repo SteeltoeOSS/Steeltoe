@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.0",
+  "version": "1.0.1",
   "testRunner": "xunit",
   "description": "Unit test project for Steeltoe.Extensions.Configuration.ConfigServer",
   "authors": [ "Pivotal", "dtillman" ],
@@ -43,7 +43,7 @@
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Microsoft.Extensions.Logging": "1.1.0",
     "Microsoft.Extensions.Options": "1.1.0",
-    "Steeltoe.Extensions.Configuration.ConfigServer": "1.0.0-*",
+    "Steeltoe.Extensions.Configuration.ConfigServer": "1.0.1-*",
     "xunit": "2.2.0-beta4-build3444",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Microsoft.DotNet.InternalAbstractions": "1.0.0"
