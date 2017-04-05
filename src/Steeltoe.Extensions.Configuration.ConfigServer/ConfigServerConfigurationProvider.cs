@@ -360,14 +360,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The request URI for the Configuration Server</returns>
         internal protected virtual string GetConfigServerUri(string label)
         {
-            var uriBuilder = new UriBuilder(_settings.RawUri);
+
             var path = _settings.Name + "/" + _settings.Environment;
             if (!string.IsNullOrWhiteSpace(label))
                 path = path + "/" + label;
 
-            uriBuilder.Path = path;
+            if (!_settings.RawUri.EndsWith("/")) 
+               path = "/" + path;
+       
+            return _settings.RawUri + path;
 
-            return uriBuilder.ToString();
         }
 
         /// <summary>
