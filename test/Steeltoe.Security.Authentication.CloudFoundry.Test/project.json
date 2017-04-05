@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "testRunner": "xunit",
   "description": "Unit test project for Steeltoe.Security.Authentication.CloudFoundry",
   "authors": [ "Pivotal", "dtillman" ],
@@ -34,7 +34,7 @@
     "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
     "Microsoft.Extensions.Configuration.Json": "1.1.0",
-    "Steeltoe.Security.Authentication.CloudFoundry": "1.0.0-dev-*",
+    "Steeltoe.Security.Authentication.CloudFoundry": "1.0.1-*",
     "xunit": "2.2.0-beta4-build3444",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Microsoft.AspNetCore.Hosting": "1.1.0",

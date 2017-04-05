@@ -1,5 +1,5 @@
 #!/bin/bash
-export STEELTOE_VERSION="1.0.0"
+export STEELTOE_VERSION="1.0.1"
 export DOTNET_INSTALL_DIR="$PWD/.dotnetsdk"
 export PATH="$DOTNET_INSTALL_DIR:$PATH"
 #  Patch project.json files
