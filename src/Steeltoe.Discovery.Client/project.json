@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Steeltoe Service Discovery Client",
   "authors": [
     "Pivotal",
@@ -33,7 +33,7 @@
       }
     },
   "dependencies": {
-    "Steeltoe.Discovery.Eureka.Client": "1.0.0-*",
+    "Steeltoe.Discovery.Eureka.Client": "1.0.1-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
     "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
