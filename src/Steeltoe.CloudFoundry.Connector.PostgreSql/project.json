@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CloudFoundry Connector for ASP.NET Core PostgreSql Data Provider",
   "authors": [
     "Pivotal",
@@ -33,7 +33,7 @@
     "Microsoft.Extensions.Options": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
     "Microsoft.Extensions.Configuration.Binder": "1.1.0",
-    "Steeltoe.CloudFoundry.Connector": "1.0.0-*",
+    "Steeltoe.CloudFoundry.Connector": "1.0.1-*",
     "Npgsql": "3.1.9",
     "Npgsql.EntityFrameworkCore.PostgreSQL": "1.1.0",
     "Microsoft.EntityFrameworkCore": "1.1.0"

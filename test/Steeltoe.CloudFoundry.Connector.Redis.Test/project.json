@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "testRunner": "xunit",
   "description": "Unit test project for Steeltoe.CloudFoundry.Connector.Redis",
   "authors": [ "Pivotal", "dtillman" ],
@@ -36,11 +36,11 @@
     "Microsoft.Extensions.Configuration": "1.1.0",
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.Extensions.Options": "1.1.0",
-    "Steeltoe.Extensions.Configuration.CloudFoundry": "1.0.0-*",
+    "Steeltoe.Extensions.Configuration.CloudFoundry": "1.0.1-*",
     "xunit": "2.2.0-beta4-build3444",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Microsoft.DotNet.InternalAbstractions": "1.0.0",
-    "Steeltoe.CloudFoundry.Connector.Redis": "1.0.0-*"
+    "Steeltoe.CloudFoundry.Connector.Redis": "1.0.1-*"
   },
   "buildOptions": {
     "copyToOutput": {

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CloudFoundry Connector for ASP.NET Core Redis Distributed Cache",
   "authors": [
     "Pivotal",
@@ -34,6 +34,6 @@
     "Microsoft.Extensions.Configuration.Binder": "1.1.0",
     "Microsoft.Extensions.Caching.Redis": "1.1.0",
     "StackExchange.Redis.StrongName": "1.1.605",
-    "Steeltoe.CloudFoundry.Connector": "1.0.0-*"
+    "Steeltoe.CloudFoundry.Connector": "1.0.1-*"
   }
 }
