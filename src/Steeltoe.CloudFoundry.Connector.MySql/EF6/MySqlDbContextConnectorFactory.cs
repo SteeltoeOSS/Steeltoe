@@ -23,7 +23,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {
     public class MySqlDbContextConnectorFactory : MySqlProviderConnectorFactory
     {
-        private ConstructorInfo constructor;
 
         internal MySqlDbContextConnectorFactory() 
         {
