@@ -21,6 +21,9 @@
       "dependencies": { }
     },
     "netstandard1.3": {
+      "dependencies": {
+        "System.Runtime.Loader": "4.3.0"
+      },
       "imports": "dnxcore50"
     }
   },

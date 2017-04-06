@@ -14,20 +14,21 @@
 // limitations under the License.
 //
 
-#if !NET451
-using System;
 
-using MySQL.Data.EntityFrameworkCore.Infraestructure;
+using System;
+using System.Reflection;
+
+//using MySQL.Data.EntityFrameworkCore.Infraestructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
-using MySQL.Data.EntityFrameworkCore.Extensions;
+//using MySQL.Data.EntityFrameworkCore.Extensions;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 {
     public static class MySqlDbContextOptionsExtensions
     {
-        public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, Action<MySQLDbContextOptionsBuilder> mySqlOptionsAction = null)
+        public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object mySqlOptionsAction = null)
         {
             if (optionsBuilder == null)
             {
@@ -41,10 +42,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
             var connection = GetConnection(config);
 
-            return optionsBuilder.UseMySQL(connection, mySqlOptionsAction);
+            return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction);
 
         }
-        public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, Action<MySQLDbContextOptionsBuilder> mySqlOptionsAction = null)
+        public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object mySqlOptionsAction = null)
         {
             if (optionsBuilder == null)
             {
@@ -63,11 +64,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return optionsBuilder.UseMySQL(connection, mySqlOptionsAction);
+            return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction);
 
         }
 
-        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, Action<MySQLDbContextOptionsBuilder> mySqlOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object mySqlOptionsAction = null) where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -81,10 +82,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
             var connection = GetConnection(config);
 
-            return optionsBuilder.UseMySQL<TContext>(connection, mySqlOptionsAction);
+            return DoUseMySql<TContext>(optionsBuilder, connection, mySqlOptionsAction);
 
         }
-        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, Action<MySQLDbContextOptionsBuilder> mySqlOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object mySqlOptionsAction = null) where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -103,7 +104,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return optionsBuilder.UseMySQL<TContext>(connection, mySqlOptionsAction);
+            return DoUseMySql<TContext>(optionsBuilder, connection, mySqlOptionsAction);
 
         }
 
@@ -117,10 +118,53 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
             MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
 
-            MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig);
+            MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, null);
             return factory.CreateConnectionString();
         }
+        private static string[] mySqlEntityAssemblies = new string[] {"MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"};
+        private static string[] mySqlEntityTypeNames = new string[] {"MySQL.Data.EntityFrameworkCore.Extensions.MySQLDbContextOptionsExtensions","Microsoft.EntityFrameworkCore.MySqlDbContextOptionsExtensions"};
+        private static DbContextOptionsBuilder DoUseMySql(DbContextOptionsBuilder builder, string connection, object mySqlOptionsAction = null)
+        {
+            Type extensionType = ConnectorHelpers.FindType(mySqlEntityAssemblies, mySqlEntityTypeNames);
+            if (extensionType == null) {
+                throw new ConnectorException("Unable to find DbContextOptionsBuilder extension, are you missing MySql EntityFramework Core assembly");
+            }
+            MethodInfo useMethod = FindUseSqlMethod(extensionType, new Type[] {typeof(DbContextOptionsBuilder), typeof(string)});
+            if (extensionType == null) {
+                throw new ConnectorException("Unable to find UseMySql extension, are you missing MySql EntityFramework Core assembly");
+            }
+            object result = ConnectorHelpers.Invoke(useMethod, null, new object[] {builder, connection, mySqlOptionsAction});
+            if (result == null) {
+                throw new ConnectorException(String.Format("Failed to invoke UseMySql extension, connection: {0}", connection));
+            }
+            return (DbContextOptionsBuilder) result;
+        }
 
+        private static DbContextOptionsBuilder<TContext> DoUseMySql<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object mySqlOptionsAction = null) where TContext : DbContext
+        {
+            return (DbContextOptionsBuilder<TContext>) DoUseMySql((DbContextOptionsBuilder)builder, connection, mySqlOptionsAction);   
+        }
+        public static MethodInfo FindUseSqlMethod(Type type, Type[] parameterTypes) 
+        {
+            var typeInfo = type.GetTypeInfo();
+            var declaredMethods = typeInfo.DeclaredMethods;
+
+            foreach (MethodInfo ci in declaredMethods)
+            {
+                    
+                var parameters = ci.GetParameters();
+
+                if (parameters.Length == 3 && 
+                    parameters[0].ParameterType.Equals(parameterTypes[0]) &&
+                    parameters[1].ParameterType.Equals(parameterTypes[1]) &&
+                    ci.IsPublic && ci.IsStatic)
+                {
+                    return ci;
+                }
+            
+            }
+
+            return null;
+        }
     }
 }
-#endif

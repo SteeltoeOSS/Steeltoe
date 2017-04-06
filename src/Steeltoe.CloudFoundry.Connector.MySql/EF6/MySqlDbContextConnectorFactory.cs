@@ -18,13 +18,11 @@
 using System;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System.Reflection;
-using System.Data.Entity;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {
     public class MySqlDbContextConnectorFactory : MySqlProviderConnectorFactory
     {
-        private Type dbContextType;
         private ConstructorInfo constructor;
 
         internal MySqlDbContextConnectorFactory() 
@@ -33,51 +31,26 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
         }
 
         public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConnectorOptions config, Type dbContextType) :
-            base(info, config)
+            base(info, config, dbContextType)
         {
             if (dbContextType == null)
             {
                 throw new ArgumentNullException(nameof(dbContextType));
             }
-   
-            this.dbContextType = dbContextType;
-            this.constructor = FindConstructor(dbContextType);
-            if (this.constructor == null)
-            {
-                throw new ConnectorException(string.Format("Missing 'public {0}(string connectionString)' constructor", dbContextType));
-            }
+            
         }
 
         public override object Create(IServiceProvider arg)
         {
             var connectionString = base.CreateConnectionString();
-            if (connectionString != null)
-                return CreateDbContext(connectionString);
-            return null;
-        }
-        internal protected DbContext CreateDbContext(string connectString)
-        {
-            return (DbContext) this.constructor.Invoke(new object[] { connectString });
+            object result = null;
+            if (connectionString != null) 
+                result = ConnectorHelpers.CreateInstance(_type, new object[] {connectionString} );
+            if (result == null)
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor", _type));
+            return result;
         }
 
-        internal protected virtual ConstructorInfo FindConstructor(Type type)
-        {
-            var typeInfo = type.GetTypeInfo();
-            var declaredConstructors = typeInfo.DeclaredConstructors;
-
-            foreach (ConstructorInfo ci in declaredConstructors)
-            {
-                var parameters = ci.GetParameters();
-                if (parameters.Length == 1 && 
-                    parameters[0].ParameterType == typeof(string) &&
-                    ci.IsPublic && !ci.IsStatic)
-                {
-                    return ci;
-                }
-            }
-
-            return null;
-        }
     }
     
 }

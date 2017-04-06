@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Data.Entity;
-using MySql.Data.Entity;
+
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {

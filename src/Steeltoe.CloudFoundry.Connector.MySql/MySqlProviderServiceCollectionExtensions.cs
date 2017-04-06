@@ -17,7 +17,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MySql.Data.MySqlClient;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
@@ -67,11 +66,19 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             return services;
         }
 
+        private static string[] mySqlAssemblies = new string[] {"MySql.Data", "MySqlConnector"};
+        private static string[] mySqlTypeNames = new string[] {"MySql.Data.MySqlClient.MySqlConnection","MySql.Data.MySqlClient.MySqlConnection"};
         private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
+            Type mySqlConnection = ConnectorHelpers.FindType(mySqlAssemblies, mySqlTypeNames);
+            if (mySqlConnection == null) {
+                throw new ConnectorException("Unable to find MySqlConnection, are you missing MySql ADO.NET assembly");
+            }
+
             MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
-            MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig);
-            services.Add(new ServiceDescriptor(typeof(MySqlConnection), factory.Create, contextLifetime));
+            MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
+            services.Add(new ServiceDescriptor(mySqlConnection, factory.Create, contextLifetime));
         }
+
     }
 }
