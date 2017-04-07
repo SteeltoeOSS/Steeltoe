@@ -15,6 +15,7 @@
 //
 
 using System;
+using RabbitMQ.Client;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Xunit;
 
@@ -30,7 +31,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             RabbitServiceInfo si = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new RabbitProviderConnectorFactory(si, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => new RabbitProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
             Assert.Contains(nameof(config), ex.Message);
 
         }
@@ -47,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
                 
             };
             RabbitServiceInfo si = new RabbitServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
-            var factory = new RabbitProviderConnectorFactory(si, config);
+            var factory = new RabbitProviderConnectorFactory(si, config, typeof(ConnectionFactory));
             var connection = factory.Create(null);
             Assert.NotNull(connection);
         }

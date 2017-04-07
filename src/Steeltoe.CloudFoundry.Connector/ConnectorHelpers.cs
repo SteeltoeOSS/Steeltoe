@@ -79,7 +79,10 @@ namespace Steeltoe.CloudFoundry.Connector
         public static object CreateInstance(Type t, object[] args)
         {
             try {
-                return Activator.CreateInstance(t, args);
+                if (args == null)
+                    return Activator.CreateInstance(t);
+                else
+                    return Activator.CreateInstance(t, args);
             } catch(Exception) {
         
             }

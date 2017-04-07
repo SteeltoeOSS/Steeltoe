@@ -17,7 +17,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
@@ -66,11 +65,20 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
             return services;
         }
 
+        
+        private static string[] rabbitAssemblies = new string[] {"RabbitMQ.Client"};
+        private static string[] rabbitTypeNames = new string[] {"RabbitMQ.Client.ConnectionFactory"};
         private static void DoAdd(IServiceCollection services, RabbitServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
+            Type rabbitFactory = ConnectorHelpers.FindType(rabbitAssemblies, rabbitTypeNames);
+            if (rabbitFactory == null) {
+                throw new ConnectorException("Unable to find ConnectionFactory, are you missing RabbitMQ assembly");
+            }
             RabbitProviderConnectorOptions rabbitConfig = new RabbitProviderConnectorOptions(config);
-            RabbitProviderConnectorFactory factory = new RabbitProviderConnectorFactory(info, rabbitConfig);
-            services.Add(new ServiceDescriptor(typeof(ConnectionFactory), factory.Create, contextLifetime));
+            RabbitProviderConnectorFactory factory = new RabbitProviderConnectorFactory(info, rabbitConfig, rabbitFactory);
+            services.Add(new ServiceDescriptor(rabbitFactory, factory.Create, contextLifetime));
         }
+
+
     }
 }
