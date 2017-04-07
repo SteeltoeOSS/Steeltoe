@@ -17,7 +17,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
@@ -66,12 +65,23 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             DoAdd(services, info, config, contextLifetime);
             return services;
         }
-
+        private static string[] postgresAssemblies = new string[] {"Npgsql"};
+        private static string[] postgresTypeNames = new string[] {"Npgsql.NpgsqlConnection"};
         private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
+            Type postgresConnection = ConnectorHelpers.FindType(postgresAssemblies, postgresTypeNames);
+            if (postgresConnection == null) {
+                throw new ConnectorException("Unable to find NpgsqlConnection, are you missing Postgres ADO.NET assembly");
+            }
+
             PostgresProviderConnectorOptions PostgresConfig = new PostgresProviderConnectorOptions(config);
-            PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, PostgresConfig);
-            services.Add(new ServiceDescriptor(typeof(NpgsqlConnection), factory.Create, contextLifetime));
+            PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, PostgresConfig, postgresConnection);
+            services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
         }
+
+        
+
+ 
+
     }
 }

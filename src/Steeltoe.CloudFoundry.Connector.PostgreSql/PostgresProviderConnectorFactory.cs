@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-using Npgsql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
@@ -25,12 +24,12 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         protected PostgresServiceInfo _info;
         protected PostgresProviderConnectorOptions _config;
         protected PostgresProviderConfigurer _configurer = new PostgresProviderConfigurer();
-
+        protected Type _type;
         internal PostgresProviderConnectorFactory()
         {
 
         }
-        public PostgresProviderConnectorFactory(PostgresServiceInfo sinfo, PostgresProviderConnectorOptions config)
+        public PostgresProviderConnectorFactory(PostgresServiceInfo sinfo, PostgresProviderConnectorOptions config, Type type)
         {
             if (config == null)
             {
@@ -39,18 +38,28 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             _info = sinfo;
             _config = config;
+            _type = type;
         }
         public virtual object Create(IServiceProvider provider)
         {
             var connectionString = CreateConnectionString();
-            if (connectionString != null)
-                return new NpgsqlConnection(connectionString);
-            return null;
+            object result = null;
+            if (connectionString != null) 
+                result = CreateConnection(connectionString);
+            if (result == null)
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+            return result;
+
         }
 
         public virtual string CreateConnectionString()
         {
             return _configurer.Configure(_info, _config);
+        }
+        
+        public virtual object CreateConnection(string connectionString)
+        {
+            return ConnectorHelpers.CreateInstance(_type, new object[] {connectionString} );
         }
     }
 }

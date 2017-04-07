@@ -154,7 +154,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
                     
                 var parameters = ci.GetParameters();
 
-                if (parameters.Length == 3 && 
+                if (parameters.Length == 3 && (ci.Name.Equals("UseMySQL") || ci.Name.Equals("UseMySql")) &&
                     parameters[0].ParameterType.Equals(parameterTypes[0]) &&
                     parameters[1].ParameterType.Equals(parameterTypes[1]) &&
                     ci.IsPublic && ci.IsStatic)
