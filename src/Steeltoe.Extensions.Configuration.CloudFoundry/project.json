@@ -34,6 +34,8 @@
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
     "Microsoft.Extensions.Options": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
+    "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.0",
     "Newtonsoft.Json": "9.0.1"
+
   }
 }
