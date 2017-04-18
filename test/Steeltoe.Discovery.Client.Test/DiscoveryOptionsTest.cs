@@ -46,6 +46,13 @@ namespace Steeltoe.Discovery.Client.Test
             // Arrange
             var appsettings = @"
 {
+'spring': {
+    'cloud': {
+        'discovery': {
+            'registrationMethod' : 'foobar'
+        }
+    }
+},
 'eureka': {
     'client': {
         'eurekaServer': {
@@ -155,6 +162,7 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
             Assert.Equal("myHostName", ro.GetHostName(false));
             Assert.Equal("myHostName", ro.HostName);
+            Assert.Equal("foobar", ro.RegistrationMethod);
             var map = ro.MetadataMap;
             Assert.NotNull(map);
             Assert.Equal(2, map.Count);
