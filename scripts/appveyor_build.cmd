@@ -1,11 +1,8 @@
 :: @ECHO OFF
 
 :: Restore packages
-cd src
+cd %APPVEYOR_BUILD_FOLDER%
 dotnet restore
-cd ..\test
-dotnet restore
-cd ..
 
 :: Build packages
 cd src\Steeltoe.Extensions.Configuration.CloudFoundry
