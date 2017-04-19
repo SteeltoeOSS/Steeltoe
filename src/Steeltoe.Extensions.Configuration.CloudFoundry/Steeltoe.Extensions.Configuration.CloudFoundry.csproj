@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\build\versions.props" />
+  <Import Project="..\..\config\versions.props" />
 
   <PropertyGroup>
     <Description>ASP.NET Core CloudFoundry Environment Variable Configuration Provider</Description>
