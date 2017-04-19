@@ -1,5 +1,7 @@
 @ECHO OFF
 :: Output dotnet info
 dotnet --info
-:: For patching project.json's
-call npm install jsonfile -g
+
+SET number=00000%APPVEYOR_BUILD_NUMBER%
+SET STEELTOE_VERSION_SUFFIX=%APPVEYOR_REPO_BRANCH%-%number:~-5%
+echo %STEELTOE_VERSION_SUFFIX%

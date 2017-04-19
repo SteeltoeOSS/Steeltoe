@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\build\versions.props" />
+
+  <PropertyGroup>
+    <Description>ASP.NET Core Spring Cloud Config Server Configuration Provider</Description>
+    <VersionPrefix>1.0.1</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+    <AssemblyName>Steeltoe.Extensions.Configuration.ConfigServer</AssemblyName>
+    <PackageId>Steeltoe.Extensions.Configuration.ConfigServer</PackageId>
+    <PackageTags>ASPNET Core;Spring;Spring Cloud;Spring Cloud Config Server</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
+    <PackageReference Include="System.Threading.Thread" Version="$(CoreFxVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" /> 
+    <!--<PackageReference Include="System.Net.Http" Version="$(CoreFxVersion)" /> -->
+  </ItemGroup>
+
+</Project>
