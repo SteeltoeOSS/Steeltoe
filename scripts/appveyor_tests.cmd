@@ -6,8 +6,8 @@ dotnet test
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 cd test\Steeltoe.Extensions.Configuration.ConfigServer.Test
-if not "%errorlevel%"=="0" goto failure
 dotnet test
+if not "%errorlevel%"=="0" goto failure
 cd ..\..
 echo Unit Tests Pass
 goto success
