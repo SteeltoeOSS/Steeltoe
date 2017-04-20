@@ -16,11 +16,8 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Discovery.Eureka.Client\Steeltoe.Discovery.Eureka.Client.csproj" />
-  </ItemGroup>
-
 <ItemGroup>
+    <PackageReference Include="Steeltoe.Discovery.Eureka.Client" Version="$(SteeltoeVersion)-*" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
 </ItemGroup>
