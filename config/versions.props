@@ -1,5 +1,6 @@
 <Project>
   <PropertyGroup>
+    <SteeltoeVersion>1.0.1</SteeltoeVersion>
     <AspNetCoreVersion>1.1.0</AspNetCoreVersion>
     <AzureKeyVaultVersion>2.0.6</AzureKeyVaultVersion>
     <CoreFxVersion>4.3.0</CoreFxVersion>

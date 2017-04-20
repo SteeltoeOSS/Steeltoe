@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <Description>ASP.NET Core Spring Cloud Config Server Configuration Provider</Description>
-    <VersionPrefix>1.0.1</VersionPrefix>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
     <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
