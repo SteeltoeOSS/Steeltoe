@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export STEELTOE_VERSION_SUFFIX=$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER
+echo $STEELTOE_VERSION_SUFFIX
+
 # Restore packages
 dotnet restore --configfile nuget.config
 
