@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\config\versions.props" />
+
+  <PropertyGroup>
+    <Description>CloudFoundry Connector for ASP.NET Core Redis Distributed Cache</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>net46;netstandard1.5</TargetFrameworks>
+    <AssemblyName>Steeltoe.CloudFoundry.Connector.Redis</AssemblyName>
+    <PackageId>Steeltoe.CloudFoundry.Connector.Redis</PackageId>
+    <PackageTags>CloudFoundry;ASPNET Core;Connectors;Redis</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+<ItemGroup>
+    <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.csproj" />
+</ItemGroup>
+
+<ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="StackExchange.Redis.StrongName" Version="$(StackExchangeVersion)" />
+</ItemGroup>
+
+</Project>

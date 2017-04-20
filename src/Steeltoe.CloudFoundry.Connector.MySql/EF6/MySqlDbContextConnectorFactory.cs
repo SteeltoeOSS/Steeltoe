@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#if NET451
+#if NET46
 
 using System;
 using Steeltoe.CloudFoundry.Connector.Services;
