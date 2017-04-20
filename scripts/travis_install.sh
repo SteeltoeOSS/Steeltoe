@@ -3,7 +3,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install openssl ; fi
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/ ; fi
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/ ; fi
-if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ulimit -S -n 32768 ; fi
+
 
 dotnet --info
 
