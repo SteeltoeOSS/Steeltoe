@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\config\versions.props" />
+
+  <PropertyGroup>
+    <Description>Neflix Eureka Client</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+    <AssemblyName>Steeltoe.Discovery.Eureka.Client</AssemblyName>
+    <PackageId>Steeltoe.Discovery.Eureka.Client</PackageId>
+    <PackageTags>Eureka, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+<ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
+  <PackageReference Include="System.Collections" Version="$(CoreFxVersion)" />
+  <PackageReference Include="System.Net.NameResolution" Version="$(CoreFxVersion)" />
+ </ItemGroup>
+
+<ItemGroup>
+  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
+  <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
+</ItemGroup>
+
+</Project>
