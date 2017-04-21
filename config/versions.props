@@ -2,11 +2,8 @@
   <PropertyGroup>
     <SteeltoeVersion>1.0.1</SteeltoeVersion>
     <AspNetCoreVersion>1.1.0</AspNetCoreVersion>
-    <AzureKeyVaultVersion>2.0.6</AzureKeyVaultVersion>
     <CoreFxVersion>4.3.0</CoreFxVersion>
     <JsonNetVersion>9.0.1</JsonNetVersion>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-    <RuntimeFrameworkVersion>1.1.0</RuntimeFrameworkVersion>
     <TestSdkVersion>15.0.0</TestSdkVersion>
     <XunitVersion>2.2.0</XunitVersion>
   </PropertyGroup>
