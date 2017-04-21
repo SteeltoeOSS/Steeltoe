@@ -90,7 +90,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             {
                 ValidateCertificates = false
             };
-#if NET451
+#if NET46
             Assert.Null(opts.GetBackChannelHandler());
 
 #else
@@ -118,7 +118,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 ValidateCertificates = false
             };
 
-#if NET451
+#if NET46
             Assert.Null(opts.GetBackChannelHandler());
 
 #else

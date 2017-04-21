@@ -60,7 +60,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             HttpRequestMessage requestMessage = GetTokenRequestMessage(code, redirectUri);
             HttpClient client = GetHttpClient();
-#if NET451
+#if NET46
             RemoteCertificateValidationCallback prevValidator = null;
             if (!Options.ValidateCertificates)
             {
@@ -75,7 +75,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
             finally
             {
-#if NET451
+#if NET46
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
 #endif
             }
@@ -100,7 +100,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpRequestMessage request = GetTokenInfoRequestMessage(tokens);
             HttpClient client = GetHttpClient();
 
-#if NET451
+#if NET46
             RemoteCertificateValidationCallback prevValidator = null;
             if (!Options.ValidateCertificates)
             {
@@ -116,7 +116,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
             finally
             {
-#if NET451
+#if NET46
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
 #endif
             }
