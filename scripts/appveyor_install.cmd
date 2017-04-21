@@ -9,3 +9,4 @@ echo %STEELTOE_VERSION_SUFFIX%
 IF "%APPVEYOR_REPO_BRANCH%"=="master" COPY config\nuget-master.config .\nuget.config
 IF "%APPVEYOR_REPO_BRANCH%"=="dev" COPY config\nuget-dev.config .\nuget.config
 IF NOT "%APPVEYOR_REPO_TAG_NAME%"=="" COPY config\nuget.config .\nuget.config
+nuget sources add -Name localfeed -Source %USERPROFILE%\localfeed -ConfigFile .\nuget.config
