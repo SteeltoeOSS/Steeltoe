@@ -17,10 +17,7 @@
   </PropertyGroup>
 
 <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.csproj" />
-</ItemGroup>
-
-<ItemGroup>
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector" Version="$(SteeltoeVersion)-*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="StackExchange.Redis.StrongName" Version="$(StackExchangeVersion)" />

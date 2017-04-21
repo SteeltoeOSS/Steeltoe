@@ -16,15 +16,12 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 
-<ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.csproj" />
-</ItemGroup>
-
 <ItemGroup Condition="'$(TargetFramework)'=='net46'">
     <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
 </ItemGroup>
 
 <ItemGroup>
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector" Version="$(SteeltoeVersion)-*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EFCoreVersion)" />
 </ItemGroup>
