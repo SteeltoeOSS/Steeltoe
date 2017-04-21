@@ -1,9 +1,5 @@
 :: @ECHO OFF
 
-:: Restore packages
-cd %APPVEYOR_BUILD_FOLDER%
-dotnet restore --configfile nuget.config
-
 :: Build packages
 cd src\Steeltoe.Discovery.Eureka.Client
 dotnet restore --configfile ..\..\nuget.config
