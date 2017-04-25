@@ -32,7 +32,7 @@ namespace Steeltoe.Discovery.Client
         public const string Default_StatusPageUrlPath = "/info";
         public const string Default_HomePageUrlPath = "/";
         public const string Default_HealthCheckUrlPath = "/health";
-        public const string Default_RegistrationMethod = "route";
+        public const string Default_RegistrationMethod = "hostname";
 
         public EurekaInstanceOptions()
         {
