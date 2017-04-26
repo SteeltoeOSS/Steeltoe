@@ -32,7 +32,6 @@ namespace Steeltoe.Discovery.Client
         public const string Default_StatusPageUrlPath = "/info";
         public const string Default_HomePageUrlPath = "/";
         public const string Default_HealthCheckUrlPath = "/health";
-        public const string Default_RegistrationMethod = "hostname";
 
         public EurekaInstanceOptions()
         {
@@ -485,16 +484,16 @@ namespace Steeltoe.Discovery.Client
                     _hostName = value;
             }
         }
-        private string _registrationMethod = Default_RegistrationMethod;
+        private string _registrationMethod = null;
         public string RegistrationMethod
         {
             get
             {
-                if (!_registrationMethod.Equals(Default_RegistrationMethod))
+                if (_registrationMethod != null)
                 {
                     return _registrationMethod;
                 }
-                return GetString(Spring?.Cloud?.Discovery?.RegistrationMethod, Default_RegistrationMethod);
+                return GetString(Spring?.Cloud?.Discovery?.RegistrationMethod, null);
             }
 
             set
