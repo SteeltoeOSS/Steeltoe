@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#if NET46
+#if NET452
 using MySql.Data.Entity;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;

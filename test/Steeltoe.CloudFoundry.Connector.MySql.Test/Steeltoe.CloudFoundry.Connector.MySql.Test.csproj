@@ -3,7 +3,7 @@
   <Import Project="..\..\config\versions.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.1;net46</TargetFrameworks>
+    <TargetFrameworks>netcoreapp1.1;net452</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +21,7 @@
     <PackageReference Include="MySql.Data" Version="$(MySqlCoreVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net46'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net452'">
     <PackageReference Include="MySql.Data" Version="$(MySqlVersion)" />
     <PackageReference Include="MySql.Data.Entity" Version="$(MySqlVersion)" />
   </ItemGroup>
