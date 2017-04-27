@@ -17,7 +17,7 @@
 
 using System;
 using System.Reflection;
-#if NET46
+#if NET452
 #else
 using System.Runtime.Loader;
 #endif
@@ -29,7 +29,7 @@ namespace Steeltoe.CloudFoundry.Connector
         public static Assembly FindAssembly(string name) 
         {
             try {
-#if NET46                
+#if NET452                
                 Assembly a = Assembly.Load(new AssemblyName(name));
 #else
                 Assembly a = AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(name));
