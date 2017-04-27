@@ -58,13 +58,36 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 
             configurer.UpdateConfiguration(si, config);
 
+            Assert.False(config.SslEnabled);
             Assert.Equal("example.com", config.Server);
             Assert.Equal(5672, config.Port);
             Assert.Equal("si_username", config.Username);
             Assert.Equal("si_password", config.Password);
             Assert.Equal("si_vhost", config.VirtualHost);
         }
+        [Fact]
+        public void UpdateConfiguration_WithRabbitSSLServiceInfo_UpdatesConfigurationFromServiceInfo()
+        {
+            RabbitProviderConfigurer configurer = new RabbitProviderConfigurer();
+            RabbitProviderConnectorOptions config = new RabbitProviderConnectorOptions()
+            {
+                Server = "localhost",
+                Port = 1234,
+                Username = "username",
+                Password = "password",
+                VirtualHost = "vhost"
+            };
+            RabbitServiceInfo si = new RabbitServiceInfo("MyId", "amqps://si_username:si_password@example.com:5671/si_vhost");
 
+            configurer.UpdateConfiguration(si, config);
+
+            Assert.True(config.SslEnabled);
+            Assert.Equal("example.com", config.Server);
+            Assert.Equal(5671, config.SslPort);
+            Assert.Equal("si_username", config.Username);
+            Assert.Equal("si_password", config.Password);
+            Assert.Equal("si_vhost", config.VirtualHost);
+        }
         [Fact]
         public void Configure_NoServiceInfo_ReturnsProvidedConnectorOptions()
         {
@@ -81,6 +104,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             var opts = configurer.Configure(null, config);
             var uri = new UriInfo(opts);
 
+            Assert.False(config.SslEnabled);
             Assert.Equal(uri.Host, "localhost");
             Assert.Equal(uri.Port, 1234);
             Assert.Equal(uri.UserName, "username");
@@ -108,6 +132,31 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 
             Assert.Equal(uri.Host, "example.com");
             Assert.Equal(uri.Port, 5672);
+            Assert.Equal(uri.UserName, "si_username");
+            Assert.Equal(uri.Password, "si_password");
+            Assert.Equal(uri.Path, "si_vhost");
+        }
+
+        [Fact]
+        public void Configure_SSLServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
+        {
+            RabbitProviderConnectorOptions config = new RabbitProviderConnectorOptions()
+            {
+                Server = "localhost",
+                Port = 1234,
+                Username = "username",
+                Password = "password",
+                VirtualHost = "vhost"
+            };
+
+            RabbitProviderConfigurer configurer = new RabbitProviderConfigurer();
+            RabbitServiceInfo si = new RabbitServiceInfo("MyId", "amqps://si_username:si_password@example.com/si_vhost");
+
+            var opts = configurer.Configure(si, config);
+            var uri = new UriInfo(opts);
+
+            Assert.Equal(uri.Host, "example.com");
+            Assert.Equal(uri.Scheme, "amqps");
             Assert.Equal(uri.UserName, "si_username");
             Assert.Equal(uri.Password, "si_password");
             Assert.Equal(uri.Path, "si_vhost");

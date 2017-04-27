@@ -35,8 +35,16 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
             }
 
             if (!string.IsNullOrEmpty(si.Uri) )
-            {
-                configuration.Port = si.Port;
+            {   
+                if (si.Scheme.Equals(RabbitProviderConnectorOptions.Default_SSLScheme, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    configuration.SslEnabled = true;
+                    configuration.SslPort = si.Port;
+                } else
+                {
+                    configuration.Port = si.Port;
+                }
+      
                 configuration.Username = si.UserName;
                 configuration.Password = si.Password;
                 configuration.Server = si.Host;
