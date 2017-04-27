@@ -68,7 +68,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public JsonWebKey FixupKey(JsonWebKey key)
         {
 
-#if NET46
+#if NET452
             
             byte[] existing = Base64UrlEncoder.DecodeBytes(key.N);
             TrimKey(key, existing);
@@ -76,7 +76,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             return key;
         }
 
-#if NET46
+#if NET452
         private void TrimKey(JsonWebKey key, byte[] existing)
         {
             byte[] signRemoved = new byte[existing.Length -1];
@@ -92,7 +92,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             HttpClient client = GetHttpClient();
-#if NET46
+#if NET452
             RemoteCertificateValidationCallback prevValidator = null;
             if (!Options.ValidateCertificates)
             {
@@ -107,7 +107,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
             finally
             {
-#if NET46
+#if NET452
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
 #endif
             }

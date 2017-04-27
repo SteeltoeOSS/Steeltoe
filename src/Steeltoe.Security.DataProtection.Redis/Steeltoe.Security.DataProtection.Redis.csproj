@@ -7,7 +7,7 @@
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
-    <TargetFrameworks>net46;netstandard1.5</TargetFrameworks>
+    <TargetFrameworks>net452;netstandard1.5</TargetFrameworks>
     <AssemblyName>Steeltoe.Security.DataProtection.Redis</AssemblyName>
     <PackageId>Steeltoe.Security.DataProtection.Redis</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Security;DataProtection;Redis</PackageTags>

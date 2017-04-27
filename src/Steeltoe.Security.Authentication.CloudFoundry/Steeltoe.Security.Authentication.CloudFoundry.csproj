@@ -7,7 +7,7 @@
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
-    <TargetFrameworks>net46;netstandard1.5</TargetFrameworks>
+    <TargetFrameworks>net452;netstandard1.5</TargetFrameworks>
     <AssemblyName>Steeltoe.Security.Authentication.CloudFoundry</AssemblyName>
     <PackageId>Steeltoe.Security.Authentication.CloudFoundry</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Security;OAuth2;SSO</PackageTags>
