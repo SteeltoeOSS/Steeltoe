@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\config\versions.props" />
+
+  <PropertyGroup>
+    <Description>ASP.NET Core DataProtection Redis Key Store</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>net452;netstandard1.5</TargetFrameworks>
+    <AssemblyName>Steeltoe.Security.DataProtection.Redis</AssemblyName>
+    <PackageId>Steeltoe.Security.DataProtection.Redis</PackageId>
+    <PackageTags>CloudFoundry;ASPNET Core;Security;DataProtection;Redis</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+<ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.Redis" Version="$(AspNetCoreDataProtectionRedisVersion)" />
+    <!--<PackageReference Include="StackExchange.Redis.StrongName" Version="$(StackExchangeVersion)" />-->
+  </ItemGroup>
+
+</Project>

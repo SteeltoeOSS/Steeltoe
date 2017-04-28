@@ -88,7 +88,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         internal protected virtual HttpMessageHandler GetBackChannelHandler()
         {
-#if NET451
+#if NET452
             return null;
 #else
             if (!ValidateCertificates)

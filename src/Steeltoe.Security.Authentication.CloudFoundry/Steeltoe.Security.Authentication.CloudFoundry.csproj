@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\config\versions.props" />
+
+  <PropertyGroup>
+    <Description>ASP.NET Core External Security Provider for CloudFoundry</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>net452;netstandard1.5</TargetFrameworks>
+    <AssemblyName>Steeltoe.Security.Authentication.CloudFoundry</AssemblyName>
+    <PackageId>Steeltoe.Security.Authentication.CloudFoundry</PackageId>
+    <PackageTags>CloudFoundry;ASPNET Core;Security;OAuth2;SSO</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+<ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector.OAuth" Version="$(SteeltoeVersion)-*" />
+  </ItemGroup>
+
+</Project>
