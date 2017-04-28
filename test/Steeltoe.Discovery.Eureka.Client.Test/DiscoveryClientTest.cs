@@ -738,7 +738,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(currentCount, _timerFuncCount);
         }
 
-        private int _timerFuncCount;
+        private volatile int _timerFuncCount;
         public void TimerFunc()
         {
             ++_timerFuncCount;
