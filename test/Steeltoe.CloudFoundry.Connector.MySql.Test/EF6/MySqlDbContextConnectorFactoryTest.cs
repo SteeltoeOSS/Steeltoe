@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#if NET451
+#if NET452
 using MySql.Data.Entity;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
@@ -41,7 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         }
 
         [Fact]
-        public void Constructor_ThrowsIfNoValidConstructorFound()
+        public void Create_ThrowsIfNoValidConstructorFound()
         {
 
             // Arrange
@@ -50,22 +50,22 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             Type dbContextType = typeof(BadDbContext);
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => new MySqlDbContextConnectorFactory(si, config, dbContextType));
+            var ex = Assert.Throws<ConnectorException>(() => new MySqlDbContextConnectorFactory(si, config, dbContextType).Create(null));
             Assert.Contains("BadDbContext", ex.Message);
 
         }
 
-        [Fact]
-        public void FindConstructor_FindsCorrectConstructor()
-        {
-            // Arrange
-            MySqlDbContextConnectorFactory factory = new MySqlDbContextConnectorFactory();
-            var info = factory.FindConstructor(typeof(GoodDbContext));
-            Assert.NotNull(info);
-            Assert.Equal(1, info.GetParameters().Length);
-            Assert.Equal(typeof(string), info.GetParameters()[0].ParameterType);
+        // [Fact]
+        // public void FindConstructor_FindsCorrectConstructor()
+        // {
+        //     // Arrange
+        //     MySqlDbContextConnectorFactory factory = new MySqlDbContextConnectorFactory();
+        //     var info = factory.FindConstructor(typeof(GoodDbContext));
+        //     Assert.NotNull(info);
+        //     Assert.Equal(1, info.GetParameters().Length);
+        //     Assert.Equal(typeof(string), info.GetParameters()[0].ParameterType);
 
-        }
+        // }
         [Fact]
         public void Create_ReturnsDbContext()
         {

@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
-using RabbitMQ.Client;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
+using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.Rabbit
 {
@@ -25,32 +25,75 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
         protected RabbitServiceInfo _info;
         protected RabbitProviderConnectorOptions _config;
         protected RabbitProviderConfigurer _configurer = new RabbitProviderConfigurer();
+        protected Type _type;
 
+        protected MethodInfo _setUri;
         internal RabbitProviderConnectorFactory()
         {
 
         }
-        public RabbitProviderConnectorFactory(RabbitServiceInfo sinfo, RabbitProviderConnectorOptions config)
+        public RabbitProviderConnectorFactory(RabbitServiceInfo sinfo, RabbitProviderConnectorOptions config, Type connectFactory)
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
-
+           if (connectFactory == null)
+            {
+                throw new ArgumentNullException(nameof(connectFactory));
+            }
             _info = sinfo;
             _config = config;
+            _type = connectFactory;
+            _setUri = FindSetUriMethod(_type);
+            if (_setUri == null) {
+                throw new ConnectorException("Unable to find ConnectionFactory.SetUri(), incompatible RabbitMQ assembly");
+            }
         }
         public virtual object Create(IServiceProvider provider)
         {
             var connectionString = CreateConnectionString();
-            if (connectionString != null)
-                return new ConnectionFactory { Uri = connectionString };
-            return null;
+            object result = null;
+            if (connectionString != null) 
+                result = CreateConnection(connectionString);
+            if (result == null)
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+            return result;
+
         }
 
         public virtual string CreateConnectionString()
         {
             return _configurer.Configure(_info, _config);
         }
+
+        public virtual object CreateConnection(string connectionString)
+        {
+     
+            object inst =  ConnectorHelpers.CreateInstance(_type, null );
+            if (inst == null)
+                return null;
+            Uri uri = new Uri(connectionString, UriKind.Absolute);
+
+            ConnectorHelpers.Invoke(_setUri, inst, new object[] {uri} );
+            return inst;
+        }
+        public static MethodInfo FindSetUriMethod(Type type) 
+        {
+            var typeInfo = type.GetTypeInfo();
+            var declaredMethods = typeInfo.DeclaredMethods;
+
+            foreach (MethodInfo ci in declaredMethods)
+            {
+                if (ci.Name.Equals("SetUri")) 
+                {
+                    return ci;
+                }
+            
+            }
+
+            return null;
+        }
+
     }
 }

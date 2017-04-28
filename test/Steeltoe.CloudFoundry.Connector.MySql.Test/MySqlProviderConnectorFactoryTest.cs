@@ -17,6 +17,7 @@
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using Xunit;
+using MySql.Data.MySqlClient;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
@@ -30,7 +31,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             MySqlServiceInfo si = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorFactory(si, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorFactory(si, config, typeof(MySqlConnection)));
             Assert.Contains(nameof(config), ex.Message);
 
         }
@@ -47,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
                 
             };
             MySqlServiceInfo si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
-            var factory = new MySqlProviderConnectorFactory(si, config);
+            var factory = new MySqlProviderConnectorFactory(si, config, typeof(MySqlConnection));
             var connection = factory.Create(null);
             Assert.NotNull(connection);
         }

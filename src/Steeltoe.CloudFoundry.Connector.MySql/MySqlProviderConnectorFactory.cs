@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-using MySql.Data.MySqlClient;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
@@ -26,11 +25,14 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         protected MySqlProviderConnectorOptions _config;
         protected MySqlProviderConfigurer _configurer = new MySqlProviderConfigurer();
 
+        protected Type _type;
+
         internal MySqlProviderConnectorFactory()
         {
 
         }
-        public MySqlProviderConnectorFactory(MySqlServiceInfo sinfo, MySqlProviderConnectorOptions config)
+  
+        public MySqlProviderConnectorFactory(MySqlServiceInfo sinfo, MySqlProviderConnectorOptions config, Type type)
         {
             if (config == null)
             {
@@ -39,18 +41,28 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             _info = sinfo;
             _config = config;
+            _type = type;
         }
         public virtual object Create(IServiceProvider provider)
         {
             var connectionString = CreateConnectionString();
-            if (connectionString != null)
-                return new MySqlConnection(connectionString);
-            return null;
+            object result = null;
+            if (connectionString != null) 
+                result = CreateConnection(connectionString);
+            if (result == null)
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+            return result;
+
         }
 
         public virtual string CreateConnectionString()
         {
             return _configurer.Configure(_info, _config);
+        }
+
+        public virtual object CreateConnection(string connectionString)
+        {
+            return ConnectorHelpers.CreateInstance(_type, new object[] {connectionString} );
         }
     }
 }

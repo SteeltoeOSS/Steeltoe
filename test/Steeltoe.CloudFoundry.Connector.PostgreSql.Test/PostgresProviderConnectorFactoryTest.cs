@@ -17,6 +17,7 @@
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using Xunit;
+using Npgsql;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 {
@@ -30,7 +31,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             PostgresServiceInfo si = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorFactory(si, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorFactory(si, config, typeof(NpgsqlConnection)));
             Assert.Contains(nameof(config), ex.Message);
 
         }
@@ -47,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
                 
             };
             PostgresServiceInfo si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
-            var factory = new PostgresProviderConnectorFactory(si, config);
+            var factory = new PostgresProviderConnectorFactory(si, config, typeof(NpgsqlConnection));
             var connection = factory.Create(null);
             Assert.NotNull(connection);
         }

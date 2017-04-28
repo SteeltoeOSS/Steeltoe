@@ -23,8 +23,11 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 {
     public class RabbitProviderConnectorOptions : AbstractServiceConnectorOptions
     {
+        public const string Default_Scheme = "amqp";
+        public const string Default_SSLScheme = "amqps";
         public const string Default_Server = "127.0.0.1";
         public const int Default_Port = 5672;
+        public const int Default_SSLPort = 5671;
         private const string RABBIT_CLIENT_SECTION_PREFIX = "rabbit:client";
 
         public RabbitProviderConnectorOptions()
@@ -42,9 +45,11 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
             section.Bind(this);
         }
 
+        public bool SslEnabled { get; set; } = false;
         public string Uri { get; set; }
         public string Server { get; set; } = Default_Server;
         public int Port { get; set; } = Default_Port;
+        public int SslPort { get; set; } = Default_SSLPort;
         public string Username { get; set; }
         public string Password { get; set;  }
         public string VirtualHost { get; set; }
@@ -55,7 +60,15 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
                 return Uri;
             }
 
-            UriInfo uri = new UriInfo("amqp", Server, Port, Username, Password, VirtualHost);
+            UriInfo uri = null;
+            if (SslEnabled)
+            {
+                uri = new UriInfo(Default_SSLScheme, Server, SslPort, Username, Password, VirtualHost);
+            } else
+            {
+                uri = new UriInfo(Default_Scheme, Server, Port, Username, Password, VirtualHost);
+            }
+
             return uri.ToString();
         }
 

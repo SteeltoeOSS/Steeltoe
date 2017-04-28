@@ -41,6 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 {
    'rabbit': {
         'client': {
+            'sslEnabled': true,
             'server': 'localhost',
             'port': 1234,
             'password': 'password',
@@ -64,6 +65,39 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("username", sconfig.Username);
             Assert.Equal(null, sconfig.Uri);
+            Assert.Equal(true, sconfig.SslEnabled);
+            Assert.Equal(RabbitProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
+        }
+        [Fact]
+        public void ToString_ReturnsValid()
+        {
+            var appsettings = @"
+{
+   'rabbit': {
+        'client': {
+            'sslEnabled': true,
+            'server': 'localhost',
+            'port': 1234,
+            'password': 'password',
+            'username': 'username',
+            'virtualHost': 'foobar'
+        }
+   }
+}";
+
+            var path = TestHelpers.CreateTempFile(appsettings);
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+            configurationBuilder.AddJsonFile(fileName);
+            var config = configurationBuilder.Build();
+
+            var sconfig = new RabbitProviderConnectorOptions(config);
+            string result = sconfig.ToString();
+            Assert.Equal("amqps://username:password@localhost:5671/foobar", result);
+
         }
     }
 }
