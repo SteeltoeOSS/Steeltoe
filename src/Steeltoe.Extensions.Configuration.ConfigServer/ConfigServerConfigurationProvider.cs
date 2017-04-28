@@ -279,7 +279,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             // Get the request message 
             var request = GetRequestMessage(requestUri);
 
-#if NET451
+#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_settings.ValidateCertificates)
@@ -322,7 +322,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 _logger?.LogError("Config Server exception: {0}, path: {1}", e, requestUri);
                 throw;
             }
-#if NET451
+#if NET452
             finally
             {
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
@@ -360,14 +360,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The request URI for the Configuration Server</returns>
         internal protected virtual string GetConfigServerUri(string label)
         {
-            var uriBuilder = new UriBuilder(_settings.RawUri);
+
             var path = _settings.Name + "/" + _settings.Environment;
             if (!string.IsNullOrWhiteSpace(label))
                 path = path + "/" + label;
 
-            uriBuilder.Path = path;
+            if (!_settings.RawUri.EndsWith("/")) 
+               path = "/" + path;
+       
+            return _settings.RawUri + path;
 
-            return uriBuilder.ToString();
         }
 
         /// <summary>
@@ -421,7 +423,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         protected static HttpClient GetHttpClient(ConfigServerClientSettings settings)
         {
             HttpClient client = null;
-#if NET451
+#if NET452
             client = new HttpClient();
 #else
             if (settings != null && !settings.ValidateCertificates)
