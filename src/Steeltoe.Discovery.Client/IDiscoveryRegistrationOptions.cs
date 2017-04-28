@@ -18,5 +18,6 @@ namespace Steeltoe.Discovery.Client
 {
     public interface IDiscoveryRegistrationOptions
     {
+        string RegistrationMethod { get; set; }  // e.g. 'route', 'direct', 'hostname'
     }
 }

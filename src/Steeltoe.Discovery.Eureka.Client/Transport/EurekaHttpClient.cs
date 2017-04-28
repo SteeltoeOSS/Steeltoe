@@ -81,7 +81,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + info.AppName);
             var request = GetRequestMessage(HttpMethod.Post, requestUri);
-#if NET451
+#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_config.ValidateCertificates)
@@ -108,12 +108,15 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 _logger?.LogError("RegisterAsync Exception:", e);
                 throw;
             }
-#if NET451
+
             finally
             {
+                DisposeHttpClient(client);
+#if NET452                
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
 #endif
+            }
+
         }
 
         public virtual async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatAsync(string appName, string id, InstanceInfo info, InstanceStatus overriddenStatus)
@@ -148,7 +151,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + info.AppName + "/" + id, queryArgs);
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
-#if NET451
+#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_config.ValidateCertificates)
@@ -185,12 +188,13 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 _logger?.LogError("SendHeartbeatAsync Exception: {0}", e);
                 throw;
             }
-#if NET451
             finally
             {
+                DisposeHttpClient(client);
+#if NET452                
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
 #endif
+            }
         }
 
         public virtual async Task<EurekaHttpResponse<Applications>> GetApplicationsAsync(ISet<string> regions = null)
@@ -232,7 +236,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
-#if NET451
+#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_config.ValidateCertificates)
@@ -266,12 +270,13 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 _logger?.LogError("GetApplicationAsync Exception: {0}", e);
                 throw;
             }
-#if NET451
             finally
             {
+                DisposeHttpClient(client);
+#if NET452                
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
 #endif
+            }
 
         }
 
@@ -313,7 +318,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName + "/" + id);
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
-#if NET451
+#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_config.ValidateCertificates)
@@ -338,12 +343,13 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 _logger?.LogError("CancelAsync Exception: {0}", e);
                 throw;
             }
-#if NET451
             finally
             {
+                DisposeHttpClient(client);
+#if NET452                
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
 #endif
+            }
         }
 
         public virtual async Task<EurekaHttpResponse> DeleteStatusOverrideAsync(string appName, string id, InstanceInfo info)
@@ -372,7 +378,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName + "/" + id + "/status", queryArgs);
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
-#if NET451
+#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_config.ValidateCertificates)
@@ -397,12 +403,14 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 _logger?.LogError("DeleteStatusOverrideAsync Exception: {0}", e);
                 throw;
             }
-#if NET451
             finally
             {
+                DisposeHttpClient(client);
+#if NET452                
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
 #endif
+            }
+
         }
 
 
@@ -434,7 +442,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName + "/" + id + "/status", queryArgs);
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
-#if NET451
+#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_config.ValidateCertificates)
@@ -459,12 +467,13 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 _logger?.LogError("StatusUpdateAsync Exception: {0}", e);
                 throw;
             }
-#if NET451
             finally
             {
+                DisposeHttpClient(client);
+#if NET452                
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
 #endif
+            }
         }
         protected virtual async Task<EurekaHttpResponse<InstanceInfo>> DoGetInstanceAsync(string path)
         {
@@ -473,7 +482,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var requestUri = GetRequestUri(_serviceUrl + path);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
             HttpClient client = GetHttpClient(_config);
-#if NET451
+#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_config.ValidateCertificates)
@@ -507,12 +516,15 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 _logger?.LogError("DoGetInstanceAsync Exception: {0}", e);
                 throw;
             }
-#if NET451
+
             finally
             {
+                DisposeHttpClient(client);
+#if NET452                
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
 #endif
+            }
+
         }
 
         protected virtual async Task<EurekaHttpResponse<Applications>> DoGetApplicationsAsync(string path, ISet<string> regions)
@@ -528,7 +540,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(_config);
             var requestUri = GetRequestUri(_serviceUrl + path, queryArgs);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
-#if NET451
+#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             if (!_config.ValidateCertificates)
@@ -566,12 +578,13 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 _logger?.LogError("DoGetApplicationsAsync Exception: {0}", e);
                 throw;
             }
-#if NET451
             finally
             {
+                DisposeHttpClient(client);
+#if NET452                
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
 #endif
+            }
         }
 
 
@@ -589,7 +602,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
 
             HttpClient client = null;
-#if NET451
+#if NET452
             client = new HttpClient();
 #else
             if (config != null && !config.ValidateCertificates)
@@ -657,7 +670,16 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             return new Uri(uri);
         }
+        protected virtual void DisposeHttpClient(HttpClient client) 
+        {
+            if (client == null)
+                return;
 
+            if (_client != client) 
+            {
+                client.Dispose();
+            }
+        }
         protected internal static string MakeServiceUrl(string serviceUrl)
         {
             var url = new Uri(serviceUrl).ToString();

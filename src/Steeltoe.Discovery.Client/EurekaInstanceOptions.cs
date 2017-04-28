@@ -484,6 +484,24 @@ namespace Steeltoe.Discovery.Client
                     _hostName = value;
             }
         }
+        private string _registrationMethod = null;
+        public string RegistrationMethod
+        {
+            get
+            {
+                if (_registrationMethod != null)
+                {
+                    return _registrationMethod;
+                }
+                return GetString(Spring?.Cloud?.Discovery?.RegistrationMethod, null);
+            }
+
+            set
+            {
+                _registrationMethod = value;
+            }
+        }
+
 
         public string GetHostName(bool refresh)
         {
@@ -568,6 +586,17 @@ namespace Steeltoe.Discovery.Client
     public class SpringConfig
     {
         public ApplicationConfig Application { get; set; }
+        public CloudConfig Cloud { get; set; }
+    }
+
+    public class CloudConfig
+    {
+        public DiscoveryConfig Discovery { get; set; }
+    }
+
+    public class DiscoveryConfig
+    {
+        public string RegistrationMethod { get; set; }
     }
 
     public class ApplicationConfig
