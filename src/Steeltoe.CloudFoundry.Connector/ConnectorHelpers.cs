@@ -17,10 +17,7 @@
 
 using System;
 using System.Reflection;
-#if NET452
-#else
-using System.Runtime.Loader;
-#endif
+
 
 namespace Steeltoe.CloudFoundry.Connector
 {
@@ -29,11 +26,9 @@ namespace Steeltoe.CloudFoundry.Connector
         public static Assembly FindAssembly(string name) 
         {
             try {
-#if NET452                
+           
                 Assembly a = Assembly.Load(new AssemblyName(name));
-#else
-                Assembly a = AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(name));
-#endif
+
                 return a;
             } catch (Exception) {
 
