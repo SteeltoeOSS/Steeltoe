@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+ <Import Project="..\..\config\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Metrics Event Stream</Description>
     <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStream</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStream</PackageId>
     <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>

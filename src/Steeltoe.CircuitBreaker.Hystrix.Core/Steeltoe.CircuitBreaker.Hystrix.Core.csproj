@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+ <Import Project="..\..\config\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Client</Description>
     <Authors>Pivotal;dtillman</Authors>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.Core</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.Core</PackageId>
