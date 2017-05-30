@@ -3,7 +3,7 @@
 :: Run unit tests 
 cd test\Steeltoe.CircuitBreaker.Hystrix.Core.Test
 dotnet restore --configfile ..\..\nuget.config
-dotnet test
+dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 echo Unit Tests Pass
