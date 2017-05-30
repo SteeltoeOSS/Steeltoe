@@ -89,8 +89,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private void AssertBetween(int expectedLow, int expectedHigh, int value)
         {
             output.WriteLine("Low:" + expectedLow + " High:" + expectedHigh + " Value: " + value);
-            //Assert.True(expectedLow <= value);
-            //Assert.True(expectedHigh >= value);
+            Assert.True(expectedLow <= value);
+            Assert.True(expectedHigh >= value);
         }
 
         [Fact]
