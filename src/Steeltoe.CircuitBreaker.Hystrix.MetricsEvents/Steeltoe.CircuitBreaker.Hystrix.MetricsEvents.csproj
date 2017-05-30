@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
-    <PackageReference Include="Steeltoe.CircuitBreaker.Hystrix.Core" Version="$(SteeltoeVersion)" />
+    <PackageReference Include="Steeltoe.CircuitBreaker.Hystrix.Core" Version="$(SteeltoeVersion)-*" />
   </ItemGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
