@@ -1,0 +1,21 @@
+language: csharp
+sudo: false
+dist: trusty
+env:
+  global:
+    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    - DOTNET_CLI_TELEMETRY_OPTOUT: 1
+mono: none
+dotnet: 1.0.1
+os:
+  - linux
+  - osx
+osx_image: xcode8.2
+branches:
+  only:
+    - master
+    - dev
+script:
+  - ./scripts/travis_install.sh
+  - ./scripts/travis_build.sh
+  - ./scripts/travis_test.sh

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <Description>Unit test project for Steeltoe.CircuitBreaker.Hystrix</Description>
+    <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.Test</AssemblyName>
+    <PackageId>Steeltoe.CircuitBreaker.Hystrix.Test</PackageId>
+    <PackageTags>ASPNET Core;CircuitBreaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Steeltoe.CircuitBreaker.Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+  </ItemGroup>
+  
+</Project>

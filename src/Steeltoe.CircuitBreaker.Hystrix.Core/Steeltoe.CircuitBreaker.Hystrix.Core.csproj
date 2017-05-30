@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Steeltoe Neflix Hystrix Client</Description>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.Core</AssemblyName>
+    <PackageId>Steeltoe.CircuitBreaker.Hystrix.Core</PackageId>
+    <PackageTags>Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="HdrHistogram" Version="$(HdrHistogramVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
+    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
+    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  
+</Project>

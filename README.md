@@ -1,2 +1,1 @@
-# CircuitBreaker
-.NET Circuit Breaker Pattern Frameworks
+# .NET Circuit Breaker
