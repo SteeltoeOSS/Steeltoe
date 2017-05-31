@@ -69,7 +69,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         class NoOpHystrixCommand : HystrixCommand<bool> {
             ITestOutputHelper output;
             public NoOpHystrixCommand(ITestOutputHelper output) :
-                    base(GetCommandOptions(), GetThreadPoolOptions())
+                    base(GetCommandOptions())
             {
                 this.output = output;
             }
@@ -79,6 +79,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 GroupKey = groupKey,
                 ThreadPoolKey = tpKey,
+                ThreadPoolOptions = GetThreadPoolOptions()
 
             };
             return opts;

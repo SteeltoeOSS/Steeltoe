@@ -52,17 +52,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         }
 
         public HystrixCommand(IHystrixCommandOptions commandOptions, Action run = null, Action fallback = null) :
-            this(commandOptions.GroupKey, commandOptions.CommandKey, null, null, null, commandOptions, null, null, null, null, null, null, run, fallback)
+            this(commandOptions.GroupKey, commandOptions.CommandKey, commandOptions.ThreadPoolKey, null, null, commandOptions, commandOptions.ThreadPoolOptions, null, null, null, null, null, run, fallback)
         {
         }
 
-        public HystrixCommand(IHystrixCommandOptions commandOptions, HystrixThreadPoolOptions threadOptions, Action run = null, Action fallback = null) :
-            this(commandOptions.GroupKey, commandOptions.CommandKey, threadOptions.ThreadPoolKey, null, null, commandOptions, threadOptions, null, null, null, null, null, run, fallback)
-        {
-        }
+        //public HystrixCommand(IHystrixCommandOptions commandOptions, IHystrixThreadPoolOptions threadOptions, Action run = null, Action fallback = null) :
+        //    this(commandOptions.GroupKey, commandOptions.CommandKey, threadOptions.ThreadPoolKey, null, null, commandOptions, threadOptions, null, null, null, null, null, run, fallback)
+        //{
+        //}
 
         public HystrixCommand(IHystrixCommandGroupKey group, IHystrixCommandKey key, IHystrixThreadPoolKey threadPoolKey, IHystrixCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool,
-            IHystrixCommandOptions commandOptionsDefaults, HystrixThreadPoolOptions threadPoolOptionsDefaults, HystrixCommandMetrics metrics, SemaphoreSlim fallbackSemaphore, SemaphoreSlim executionSemaphore,
+            IHystrixCommandOptions commandOptionsDefaults, IHystrixThreadPoolOptions threadPoolOptionsDefaults, HystrixCommandMetrics metrics, SemaphoreSlim fallbackSemaphore, SemaphoreSlim executionSemaphore,
              HystrixOptionsStrategy optionsStrategy, HystrixCommandExecutionHook executionHook, Action run, Action fallback) :
             base(group, key, threadPoolKey, circuitBreaker, threadPool, commandOptionsDefaults, threadPoolOptionsDefaults, metrics, fallbackSemaphore, executionSemaphore, optionsStrategy, executionHook, null, null)
         {
@@ -144,14 +144,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         }
 
         public HystrixCommand(IHystrixCommandOptions commandOptions, Func<TResult> run = null, Func<TResult> fallback = null) :
-            this(commandOptions.GroupKey, commandOptions.CommandKey, null, null, null, commandOptions, null, null, null, null, null, null, run, fallback)
+            this(commandOptions.GroupKey, commandOptions.CommandKey, commandOptions.ThreadPoolKey, null, null, commandOptions, commandOptions.ThreadPoolOptions, null, null, null, null, null, run, fallback)
         {
         }
 
-        public HystrixCommand(IHystrixCommandOptions commandOptions, IHystrixThreadPoolOptions threadOptions, Func<TResult> run = null, Func<TResult> fallback = null) :
-            this(commandOptions.GroupKey, commandOptions.CommandKey, threadOptions.ThreadPoolKey, null, null, commandOptions, threadOptions, null, null, null, null, null, run, fallback)
-        {
-        }
+        //public HystrixCommand(IHystrixCommandOptions commandOptions, IHystrixThreadPoolOptions threadOptions, Func<TResult> run = null, Func<TResult> fallback = null) :
+        //    this(commandOptions.GroupKey, commandOptions.CommandKey, threadOptions.ThreadPoolKey, null, null, commandOptions, threadOptions, null, null, null, null, null, run, fallback)
+        //{
+        //}
 
         public HystrixCommand(IHystrixCommandGroupKey group, IHystrixCommandKey key, IHystrixThreadPoolKey threadPoolKey, IHystrixCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool,
             IHystrixCommandOptions commandOptionsDefaults, IHystrixThreadPoolOptions threadPoolOptionsDefaults, HystrixCommandMetrics metrics, SemaphoreSlim fallbackSemaphore, SemaphoreSlim executionSemaphore,

@@ -37,7 +37,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         internal const int Default_CircuitBreakerSleepWindowInMilliseconds = 5000; // default => sleepWindow: 5000 = 5 seconds that we will sleep before trying again after tripping the circuit
         internal const int Default_CircuitBreakerErrorThresholdPercentage = 50; // default => errorThresholdPercentage = 50 = if 50%+ of requests in 10 seconds are failures or latent then we will trip the circuit
         internal const bool Default_CircuitBreakerForceOpen = false; // default => forceCircuitOpen = false (we want to allow traffic)
-                                                                    /* package */
+                                                                     /* package */
         internal const bool Default_CircuitBreakerForceClosed = false; // default => ignoreErrors = false
         internal const int Default_ExecutionTimeoutInMilliseconds = 1000; // default => executionTimeoutInMilliseconds: 1000 = 1 second
         internal const bool Default_ExecutionTimeoutEnabled = true;
@@ -53,9 +53,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         internal const int Default_MetricsRollingPercentileWindowBuckets = 6; // default to 6 buckets (10 seconds each in 60 second window)
         internal const int Default_MetricsRollingPercentileBucketSize = 100; // default to 100 values max per bucket
         internal const int Default_MetricsHealthSnapshotIntervalInMilliseconds = 500; // default to 500ms as max frequency between allowing snapshots of health (error percentage etc)
-  
 
-        internal HystrixCommandOptions(IHystrixCommandOptions defaults = null, IHystrixDynamicOptions dynamic = null) 
+
+        internal HystrixCommandOptions(IHystrixCommandOptions defaults = null, IHystrixDynamicOptions dynamic = null)
             : base(dynamic)
         {
             this.defaults = defaults;
@@ -84,12 +84,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             RequestLogEnabled = Default_RequestLogEnabled;
         }
 
-  
-        public HystrixCommandOptions(IHystrixCommandKey key, IHystrixCommandOptions defaults = null, IHystrixDynamicOptions dynamic = null) 
-            : this(defaults, dynamic)
+        public HystrixCommandOptions(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, IHystrixCommandOptions defaults = null, IHystrixDynamicOptions dynamic = null)
+            : this(key, defaults, dynamic)
+        {
+            GroupKey = groupKey;
+        }
+
+        public HystrixCommandOptions(IHystrixCommandKey key, IHystrixCommandOptions defaults = null, IHystrixDynamicOptions dynamic = null)
+        : this(defaults, dynamic)
         {
             CommandKey = key;
-            CircuitBreakerEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name,  "circuitBreaker.enabled", Default_CircuitBreakerEnabled, defaults?.CircuitBreakerEnabled);
+            CircuitBreakerEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker.enabled", Default_CircuitBreakerEnabled, defaults?.CircuitBreakerEnabled);
             CircuitBreakerRequestVolumeThreshold = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:requestVolumeThreshold", Default_CircuitBreakerRequestVolumeThreshold, defaults?.CircuitBreakerRequestVolumeThreshold);
             CircuitBreakerSleepWindowInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:sleepWindowInMilliseconds", Default_CircuitBreakerSleepWindowInMilliseconds, defaults?.CircuitBreakerSleepWindowInMilliseconds);
             CircuitBreakerErrorThresholdPercentage = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:errorThresholdPercentage", Default_CircuitBreakerErrorThresholdPercentage, defaults?.CircuitBreakerErrorThresholdPercentage);
@@ -250,7 +255,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         /// </summary>
         /// <returns> {@code Integer>} </returns>
         public virtual int ExecutionTimeoutInMilliseconds { get; set; }
-  
+
 
         /// <summary>
         /// Whether the timeout mechanism is enabled for this command
@@ -298,7 +303,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         /// </summary>
         /// <returns> {@code Boolean>} </returns>
         public virtual bool MetricsRollingPercentileEnabled { get; set; }
- 
+
         /// <summary>
         /// Duration of percentile rolling window in milliseconds. This is passed into <seealso cref="HystrixRollingPercentile"/> inside <seealso cref="HystrixCommandMetrics"/>.
         /// </summary>
@@ -356,5 +361,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
             throw new ArgumentOutOfRangeException("execution.isolation.strategy");
         }
+
+        public virtual IHystrixThreadPoolOptions ThreadPoolOptions { get; set; }
     }
 }

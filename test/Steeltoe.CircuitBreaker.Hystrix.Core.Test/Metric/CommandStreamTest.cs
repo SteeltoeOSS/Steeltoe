@@ -42,10 +42,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             readonly HystrixEventType fallbackExecutionResult;
             readonly int fallbackExecutionLatency;
 
-            private Command(HystrixCommandOptions setter, HystrixThreadPoolOptions opts, HystrixEventType executionResult, int executionLatency, String arg,
+            private Command(HystrixCommandOptions setter, HystrixEventType executionResult, int executionLatency, String arg,
                             HystrixEventType fallbackExecutionResult, int fallbackExecutionLatency) :
 
-                base(setter, opts)
+                base(setter)
             {
                 this.executionResult = executionResult;
                 this.executionLatency = executionLatency;
@@ -94,6 +94,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                                           ExecutionIsolationStrategy isolationStrategy,
                                           HystrixEventType desiredFallbackEventType, int fallbackLatency)
             {
+                HystrixThreadPoolOptions topts = new HystrixThreadPoolOptions()
+                {
+                    CoreSize = 10,
+                    MaxQueueSize = -1
+                };
+
                 HystrixCommandOptions setter = new HystrixCommandOptions()
                 {
                     GroupKey = groupKey,
@@ -109,13 +115,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                     RequestCacheEnabled = true,
                     RequestLogEnabled = true,
                     FallbackIsolationSemaphoreMaxConcurrentRequests = 5,
-                    ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name)
+                    ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name),
+                    ThreadPoolOptions = topts
                 };
-                HystrixThreadPoolOptions topts = new HystrixThreadPoolOptions()
-                {
-                    CoreSize = 10,
-                    MaxQueueSize = -1
-                };
+        
      
 
                 String uniqueArg;
@@ -124,19 +127,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 {
                     case HystrixEventType.SUCCESS:
                         uniqueArg = uniqueId.IncrementAndGet() + "";
-                        return new Command(setter, topts, HystrixEventType.SUCCESS, latency, uniqueArg, desiredFallbackEventType, 0);
+                        return new Command(setter, HystrixEventType.SUCCESS, latency, uniqueArg, desiredFallbackEventType, 0);
                     case HystrixEventType.FAILURE:
                         uniqueArg = uniqueId.IncrementAndGet() + "";
-                        return new Command(setter, topts, HystrixEventType.FAILURE, latency, uniqueArg, desiredFallbackEventType, fallbackLatency);
+                        return new Command(setter, HystrixEventType.FAILURE, latency, uniqueArg, desiredFallbackEventType, fallbackLatency);
                     case HystrixEventType.TIMEOUT:
                         uniqueArg = uniqueId.IncrementAndGet() + "";
-                        return new Command(setter, topts, HystrixEventType.SUCCESS, 1000, uniqueArg, desiredFallbackEventType, fallbackLatency);
+                        return new Command(setter, HystrixEventType.SUCCESS, 1000, uniqueArg, desiredFallbackEventType, fallbackLatency);
                     case HystrixEventType.BAD_REQUEST:
                         uniqueArg = uniqueId.IncrementAndGet() + "";
-                        return new Command(setter, topts, HystrixEventType.BAD_REQUEST, latency, uniqueArg, desiredFallbackEventType, 0);
+                        return new Command(setter, HystrixEventType.BAD_REQUEST, latency, uniqueArg, desiredFallbackEventType, 0);
                     case HystrixEventType.RESPONSE_FROM_CACHE:
                         String arg = uniqueId.Value + "";
-                        return new Command(setter, topts, HystrixEventType.SUCCESS, 0, arg, desiredFallbackEventType, 0);
+                        return new Command(setter, HystrixEventType.SUCCESS, 0, arg, desiredFallbackEventType, 0);
                     default:
                         throw new Exception("not supported yet");
                 }

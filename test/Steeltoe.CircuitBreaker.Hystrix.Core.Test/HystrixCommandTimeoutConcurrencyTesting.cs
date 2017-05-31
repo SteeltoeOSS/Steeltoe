@@ -94,7 +94,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
 
             public TestCommand()
-            : base(GetOptions(), GetThreadPoolOptions())
+            : base(GetOptions())
             {
                 this.IsFallbackUserDefined = true;
             }
@@ -106,7 +106,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     CommandKey = HystrixCommandKeyDefault.AsKey("testTimeoutConcurrencyCommand"),
                     ExecutionTimeoutInMilliseconds = 3,
                     CircuitBreakerEnabled = false,
-                    FallbackIsolationSemaphoreMaxConcurrentRequests = NUM_CONCURRENT_COMMANDS
+                    FallbackIsolationSemaphoreMaxConcurrentRequests = NUM_CONCURRENT_COMMANDS,
+                    ThreadPoolOptions = GetThreadPoolOptions()
                 };
                 return opts;
             }

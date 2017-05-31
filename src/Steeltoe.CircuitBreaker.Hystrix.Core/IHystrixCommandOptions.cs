@@ -247,5 +247,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         /// </summary>
         /// <returns> {@code Boolean>} </returns>
         bool RequestLogEnabled { get; set; }
+
+        IHystrixThreadPoolOptions ThreadPoolOptions { get; set; }
     }
 }
