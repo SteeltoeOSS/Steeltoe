@@ -105,11 +105,11 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             var uri = new UriInfo(opts);
 
             Assert.False(config.SslEnabled);
-            Assert.Equal(uri.Host, "localhost");
-            Assert.Equal(uri.Port, 1234);
-            Assert.Equal(uri.UserName, "username");
-            Assert.Equal(uri.Password, "password");
-            Assert.Equal(uri.Path, "vhost");
+            Assert.Equal("localhost", uri.Host);
+            Assert.Equal(1234, uri.Port);
+            Assert.Equal("username", uri.UserName);
+            Assert.Equal("password", uri.Password);
+            Assert.Equal("vhost", uri.Path);
         }
 
         [Fact]
@@ -130,11 +130,11 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             var opts = configurer.Configure(si, config);
             var uri = new UriInfo(opts);
 
-            Assert.Equal(uri.Host, "example.com");
-            Assert.Equal(uri.Port, 5672);
-            Assert.Equal(uri.UserName, "si_username");
-            Assert.Equal(uri.Password, "si_password");
-            Assert.Equal(uri.Path, "si_vhost");
+            Assert.Equal("example.com", uri.Host );
+            Assert.Equal(5672, uri.Port );
+            Assert.Equal("si_username", uri.UserName );
+            Assert.Equal("si_password", uri.Password);
+            Assert.Equal("si_vhost", uri.Path);
         }
 
         [Fact]
@@ -155,11 +155,11 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             var opts = configurer.Configure(si, config);
             var uri = new UriInfo(opts);
 
-            Assert.Equal(uri.Host, "example.com");
-            Assert.Equal(uri.Scheme, "amqps");
-            Assert.Equal(uri.UserName, "si_username");
-            Assert.Equal(uri.Password, "si_password");
-            Assert.Equal(uri.Path, "si_vhost");
+            Assert.Equal("example.com", uri.Host);
+            Assert.Equal("amqps", uri.Scheme );
+            Assert.Equal("si_username", uri.UserName );
+            Assert.Equal("si_password", uri.Password);
+            Assert.Equal("si_vhost", uri.Path );
         }
     }
 }

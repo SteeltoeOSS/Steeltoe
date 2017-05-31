@@ -65,7 +65,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("username", sconfig.Username);
             Assert.Null( sconfig.Uri);
-            Assert.Equal(true, sconfig.SslEnabled);
+            Assert.True( sconfig.SslEnabled);
             Assert.Equal(RabbitProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
         }
         [Fact]

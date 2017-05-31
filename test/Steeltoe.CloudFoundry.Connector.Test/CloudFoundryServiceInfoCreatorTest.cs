@@ -277,6 +277,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             Assert.Null(result8);
         }
 
+        [Fact]
         public void GetServiceInfosType_WithVCAPs_ReturnsExpected()
         {
             // Arrange
