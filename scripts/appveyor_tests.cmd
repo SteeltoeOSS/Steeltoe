@@ -9,7 +9,7 @@ cd ..\..
 
 cd test\Steeltoe.CloudFoundry.Connector.MySql.Test
 dotnet restore --configfile ..\..\nuget.config
-dotnet xunit -verbose
+dotnet xunit -verbose -framework netcoreapp1.1
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 
