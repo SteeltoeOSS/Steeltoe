@@ -1,5 +1,4 @@
 language: csharp
-sudo: false
 dist: trusty
 env:
   global:
@@ -18,4 +17,6 @@ branches:
 script:
   - ./scripts/travis_install.sh
   - ./scripts/travis_build.sh
-  - ./scripts/travis_test.sh
+  - ./scripts/travis_test.shi
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ulimit -n 1024; fi

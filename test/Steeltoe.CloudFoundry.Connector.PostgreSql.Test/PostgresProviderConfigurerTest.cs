@@ -41,7 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             Assert.Equal("username", config.Username);
             Assert.Equal("password", config.Password);
             Assert.Equal("database", config.Database);
-            Assert.Equal(null, config.ConnectionString);
+            Assert.Null( config.ConnectionString);
 
         }
         [Fact]

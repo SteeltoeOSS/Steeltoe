@@ -33,8 +33,8 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             Assert.Equal("localhost", r1.Host);
             Assert.Equal(1527, r1.Port);
             Assert.Equal("joes_password", r1.Password);
-            Assert.Equal(null, r1.Path);
-            Assert.Equal(null, r1.Query);
+            Assert.Null( r1.Path);
+            Assert.Null( r1.Query);
 
 
             Assert.Equal("myId", r2.Id);
@@ -44,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             Assert.Equal("joe", r2.UserName);
             Assert.Equal("joes_password", r2.Password);
             Assert.Equal(string.Empty, r2.Path);
-            Assert.Equal(null, r2.Query);
+            Assert.Null( r2.Query);
         }
     }
 }

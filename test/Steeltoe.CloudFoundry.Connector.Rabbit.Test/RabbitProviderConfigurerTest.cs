@@ -39,7 +39,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             Assert.Equal("username", config.Username);
             Assert.Equal("password", config.Password);
             Assert.Equal("vhost", config.VirtualHost);
-            Assert.Equal(null, config.Uri);
+            Assert.Null( config.Uri);
         }
 
         [Fact]

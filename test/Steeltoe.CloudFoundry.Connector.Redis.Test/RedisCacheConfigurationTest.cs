@@ -90,7 +90,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Equal(100, sconfig.WriteBuffer);
 
 
-            Assert.Equal(null, sconfig.ConnectionString);
+            Assert.Null( sconfig.ConnectionString);
 
 
     }

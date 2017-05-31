@@ -135,7 +135,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("192.168.0.81", info.Host);
             Assert.Equal(-1, info.Port);
             Assert.Equal("fb03d693-91fe-4dc5-8203-ff7a6390df66", info.Path);
-            Assert.Equal(null, info.Query);
+            Assert.Null( info.Query);
             Assert.NotNull(info.Uris);
             Assert.Equal(1, info.Uris.Count);
             Assert.Equal("amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66", info.Uris[0]);
