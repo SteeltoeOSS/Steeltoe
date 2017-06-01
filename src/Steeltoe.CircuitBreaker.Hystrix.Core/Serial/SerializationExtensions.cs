@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Serial
 {
-    static class SerializationExtensions
+    public static class SerializationExtensions
     {
         public static void WriteStringField(this JsonTextWriter writer, string fieldName, string fieldValue)
         {

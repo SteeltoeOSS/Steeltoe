@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CircuitBreaker.Hystrix.Config;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
@@ -25,32 +26,32 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public static class HystrixServiceCollectionExtensions
     {
-        public static void AddHystrixMetricsStream(this IServiceCollection services)
+        public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
         {
             services.AddSingleton<HystrixDashboardStream>(HystrixDashboardStream.GetInstance());
         }
 
-        public static void AddHystrixRequestEventStream(this IServiceCollection services)
+        public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)
         {
             services.AddSingleton<HystrixRequestEventsStream>(HystrixRequestEventsStream.GetInstance());
         }
 
-        public static void AddHystrixUtilizationStream(this IServiceCollection services)
+        public static void AddHystrixUtilizationStream(this IServiceCollection services, IConfiguration config)
         {
             services.AddSingleton<HystrixUtilizationStream>(HystrixUtilizationStream.GetInstance());
         }
 
-        public static void AddHystrixConfigStream(this IServiceCollection services)
+        public static void AddHystrixConfigStream(this IServiceCollection services, IConfiguration config)
         {
             services.AddSingleton<HystrixConfigurationStream>(HystrixConfigurationStream.GetInstance());
         }
 
-        public static void AddHystrixMonitorStreams(this IServiceCollection services)
+        public static void AddHystrixMonitorStreams(this IServiceCollection services, IConfiguration config)
         {
-            services.AddHystrixMetricsStream();
-            services.AddHystrixConfigStream();
-            services.AddHystrixRequestEventStream();
-            services.AddHystrixUtilizationStream();
+            services.AddHystrixMetricsStream(config);
+            services.AddHystrixConfigStream(config);
+            services.AddHystrixRequestEventStream(config);
+            services.AddHystrixUtilizationStream(config);
         }
     }
 }
