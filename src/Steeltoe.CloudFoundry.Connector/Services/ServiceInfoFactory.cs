@@ -23,10 +23,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     [ServiceInfoFactory]
     public abstract class ServiceInfoFactory : IServiceInfoFactory
     {
-        private Tags _tags;
-        private string[] _schemes;
+        protected Tags _tags;
+        protected string[] _schemes;
 
-        private List<string> uriKeys = new List<string> { "uri", "url" };
+        protected List<string> uriKeys = new List<string> { "uri", "url" };
 
         public ServiceInfoFactory(Tags tags, string scheme) :
             this(tags, new string[] { scheme })
@@ -189,7 +189,18 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
             return null;
         }
-
+        internal protected virtual bool GetBoolFromCredentials(Dictionary<string, Credential> credentials, string key)
+        {
+            bool result = false;
+            if (credentials != null)
+            {
+                if (credentials.ContainsKey(key))
+                {
+                    bool.TryParse(credentials[key].Value, out result);
+                }
+            }
+            return result;
+        }
         internal protected virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
             return GetIntFromCredentials(credentials, new List<string>() { key });
