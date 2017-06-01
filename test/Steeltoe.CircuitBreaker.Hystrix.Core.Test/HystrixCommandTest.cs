@@ -846,6 +846,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
                 command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
                 f = command1.ExecuteAsync(); // Running
+                Time.Wait(20); // Let first start
                 f2 = command2.ExecuteAsync(); // In Queue
                 await command3.ExecuteAsync(); // Start, queue rejected
                 Assert.True(false, "we shouldn't get here");
@@ -853,7 +854,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                output.WriteLine("command.getExecutionTimeInMilliseconds(): " + command2.ExecutionTimeInMilliseconds);
+                output.WriteLine("command.getExecutionTimeInMilliseconds(): " + command3.ExecutionTimeInMilliseconds);
                 // will be -1 because it never attempted execution
                 Assert.True(command3.IsResponseRejected);
                 Assert.False(command3.IsResponseShortCircuited);
