@@ -835,29 +835,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
             SingleThreadedPoolWithQueue pool = new SingleThreadedPoolWithQueue(1);
 
-            Task t = new Task(() => Time.Wait(500));
-            t.Start(pool.GetTaskScheduler());
-
             Task<bool> f = null;
+            Task<bool> f2 = null;
             TestCommandRejection command1 = null;
             TestCommandRejection command2 = null;
+            TestCommandRejection command3 = null;
             try
             {
                 command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
-                f = command1.ExecuteAsync();
                 command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
-                await command2.ExecuteAsync();
+                command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+                f = command1.ExecuteAsync(); // Running
+                f2 = command2.ExecuteAsync(); // In Queue
+                await command3.ExecuteAsync(); // Start, queue rejected
                 Assert.True(false, "we shouldn't get here");
             }
             catch (Exception e)
             {
-                //e.printStackTrace();
+                output.WriteLine(e.ToString());
                 output.WriteLine("command.getExecutionTimeInMilliseconds(): " + command2.ExecutionTimeInMilliseconds);
                 // will be -1 because it never attempted execution
-                Assert.True(command2.IsResponseRejected);
-                Assert.False(command2.IsResponseShortCircuited);
-                Assert.False(command2.IsResponseTimedOut);
-                Assert.NotNull(command2.ExecutionException);
+                Assert.True(command3.IsResponseRejected);
+                Assert.False(command3.IsResponseShortCircuited);
+                Assert.False(command3.IsResponseTimedOut);
+                Assert.NotNull(command3.ExecutionException);
 
                 if (e is HystrixRuntimeException && e.InnerException is RejectedExecutionException)
                 {
@@ -874,12 +875,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             }
 
+            // Make sure finished
             var result = f.Result;
+            var result2 = f2.Result;
 
             AssertCommandExecutionEvents(command1, HystrixEventType.SUCCESS);
-            AssertCommandExecutionEvents(command2, HystrixEventType.THREAD_POOL_REJECTED, HystrixEventType.FALLBACK_MISSING);
+            AssertCommandExecutionEvents(command2, HystrixEventType.SUCCESS);
+            AssertCommandExecutionEvents(command3, HystrixEventType.THREAD_POOL_REJECTED, HystrixEventType.FALLBACK_MISSING);
             Assert.Equal(0, circuitBreaker.metrics.CurrentConcurrentExecutionCount);
-            AssertSaneHystrixRequestLog(2);
+            AssertSaneHystrixRequestLog(3);
             pool.Dispose();
         }
         [Fact]
