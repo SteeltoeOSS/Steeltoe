@@ -26,3 +26,7 @@ cd ../..
 cd src/Steeltoe.CloudFoundry.Connector.Redis
 dotnet restore --configfile ../../nuget.config
 cd ../..
+
+cd src/Steeltoe.CloudFoundry.Connector.Hystrix
+dotnet restore --configfile ../../nuget.config
+cd ../..
