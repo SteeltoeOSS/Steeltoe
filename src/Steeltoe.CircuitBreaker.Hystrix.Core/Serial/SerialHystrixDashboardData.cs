@@ -140,7 +140,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
 
             writer.WriteStringField("type", "HystrixThreadPool");
             writer.WriteStringField("name", key.Name);
-            writer.WriteLongField("currentTime", Time.CurrentTimeMillis);
+            writer.WriteLongField("currentTime", Time.CurrentTimeMillisJava);
 
             writer.WriteIntegerField("currentActiveCount", threadPoolMetrics.CurrentActiveCount);
             writer.WriteIntegerField("currentCompletedTaskCount", threadPoolMetrics.CurrentCompletedTaskCount);
@@ -170,7 +170,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
 
             writer.WriteStringField("type", "HystrixCollapser");
             writer.WriteStringField("name", key.Name);
-            writer.WriteLongField("currentTime", Time.CurrentTimeMillis);
+            writer.WriteLongField("currentTime", Time.CurrentTimeMillisJava);
 
             writer.WriteLongField("rollingCountRequestsBatched", collapserMetrics.GetRollingCount(CollapserEventType.ADDED_TO_BATCH));
 
@@ -211,7 +211,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             writer.WriteStringField("type", "HystrixCommand");
             writer.WriteStringField("name", key.Name);
             writer.WriteStringField("group", commandMetrics.CommandGroup.Name);
-            writer.WriteLongField("currentTime", Time.CurrentTimeMillis);
+            writer.WriteLongField("currentTime", Time.CurrentTimeMillisJava);
 
             // circuit breaker
             if (circuitBreaker == null)

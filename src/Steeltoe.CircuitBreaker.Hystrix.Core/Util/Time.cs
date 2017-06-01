@@ -37,11 +37,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
     public static class Time
     {
+        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         public static long CurrentTimeMillis
         {
             get
             {
                 return DateTime.Now.Ticks / 10000;
+            }
+        }
+        public static long CurrentTimeMillisJava
+        {
+            get
+            {
+                long javaTicks = DateTime.Now.Ticks - baseTime.Ticks;
+                return javaTicks / 10000;
             }
         }
         public static bool WaitUntil(Func<bool> check, int maxWaitMilli)
