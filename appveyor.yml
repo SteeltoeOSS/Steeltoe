@@ -19,6 +19,7 @@ artifacts:
 - path: 'src\Steeltoe.CloudFoundry.Connector.PostgreSql\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.Rabbit\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.OAuth\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.Hystrix\bin\Release\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: true
