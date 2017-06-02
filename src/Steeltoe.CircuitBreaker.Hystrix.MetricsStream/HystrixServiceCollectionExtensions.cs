@@ -19,6 +19,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Config;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
+using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 using Steeltoe.CloudFoundry.Connector.Hystrix;
 
 
@@ -31,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             services.AddSingleton<HystrixDashboardStream>(HystrixDashboardStream.GetInstance());
             services.AddHystrixConnection(config);
-           
+            services.AddSingleton<HystrixMetricsStreamPublisher>();
         }
 
         public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)
