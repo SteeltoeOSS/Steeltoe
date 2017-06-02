@@ -1,0 +1,214 @@
+﻿using Newtonsoft.Json;
+using Pivotal.Discovery.Client;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+using System;
+using Steeltoe.CircuitBreaker.Hystrix.Serial;
+using System.IO;
+using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
+
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
+{
+    public static class Serialize
+    {
+        public static string ToJsonString(HystrixDashboardStream.DashboardData data, IDiscoveryClient discoveryClient)
+        {
+            using (StringWriter sw = new StringWriter())
+            {
+                using (JsonTextWriter writer = new JsonTextWriter(sw))
+                {
+                    WriteDashboardData(writer, data, discoveryClient);
+                }
+                return sw.ToString();
+            }
+
+        }
+
+
+
+        private static void WriteLocalService(JsonTextWriter writer, IServiceInstance localService)
+        {
+            writer.WriteObjectFieldStart("origin");
+            writer.WriteStringField("host", localService?.Host);
+            if (localService == null)
+                writer.WriteIntegerField("port", -1);
+            else
+                writer.WriteIntegerField("port", localService.Port);
+
+            writer.WriteStringField("serviceId", localService?.ServiceId);
+            writer.WriteStringField("id", "unknown.net");
+            writer.WriteEndObject();
+        }
+
+
+        private static void WriteDashboardData(JsonTextWriter writer, HystrixDashboardStream.DashboardData data, IDiscoveryClient discoveryClient)
+        {
+            try
+            {
+
+                var localService = discoveryClient?.GetLocalServiceInstance();
+                foreach (HystrixCommandMetrics commandMetrics in data.CommandMetrics)
+                {
+                    writer.WriteStartObject();
+                    WriteLocalService(writer, localService);
+                    writer.WriteObjectFieldStart("data");
+
+                    WriteCommandMetrics(writer, commandMetrics, localService);
+                    writer.WriteEndObject();
+                }
+                foreach (HystrixThreadPoolMetrics threadPoolMetrics in data.ThreadPoolMetrics)
+                {
+                    writer.WriteStartObject();
+                    WriteLocalService(writer, localService);
+                    writer.WriteObjectFieldStart("data");
+                    WriteThreadPoolMetrics(writer, threadPoolMetrics);
+                    writer.WriteEndObject();
+                }
+ 
+
+
+            }
+            catch (Exception)
+            {
+                // Log
+            }
+        }
+
+        private static void WriteThreadPoolMetrics(JsonTextWriter writer, HystrixThreadPoolMetrics threadPoolMetrics)
+        {
+            IHystrixThreadPoolKey key = threadPoolMetrics.ThreadPoolKey;
+
+            writer.WriteStartObject();
+
+            writer.WriteStringField("type", "HystrixThreadPool");
+            writer.WriteStringField("name", key.Name);
+            writer.WriteLongField("currentTime", Time.CurrentTimeMillisJava);
+
+            writer.WriteIntegerField("currentActiveCount", threadPoolMetrics.CurrentActiveCount);
+            writer.WriteIntegerField("currentCompletedTaskCount", threadPoolMetrics.CurrentCompletedTaskCount);
+            writer.WriteIntegerField("currentCorePoolSize", threadPoolMetrics.CurrentCorePoolSize);
+            writer.WriteIntegerField("currentLargestPoolSize", threadPoolMetrics.CurrentLargestPoolSize);
+            writer.WriteIntegerField("currentMaximumPoolSize", threadPoolMetrics.CurrentMaximumPoolSize);
+            writer.WriteIntegerField("currentPoolSize", threadPoolMetrics.CurrentPoolSize);
+            writer.WriteIntegerField("currentQueueSize", threadPoolMetrics.CurrentQueueSize);
+            writer.WriteIntegerField("currentTaskCount", threadPoolMetrics.CurrentTaskCount);
+            writer.WriteLongField("rollingCountThreadsExecuted", threadPoolMetrics.GetRollingCount(ThreadPoolEventType.EXECUTED));
+
+           // writer.WriteLongField("rollingMaxActiveThreads", threadPoolMetrics.RollingMaxActiveThreads);
+            //writer.WriteLongField("rollingCountCommandRejections", threadPoolMetrics.GetRollingCount(ThreadPoolEventType.REJECTED));
+
+            writer.WriteIntegerField("propertyValue_queueSizeRejectionThreshold", threadPoolMetrics.Properties.QueueSizeRejectionThreshold);
+            writer.WriteIntegerField("propertyValue_metricsRollingStatisticalWindowInMilliseconds", threadPoolMetrics.Properties.MetricsRollingStatisticalWindowInMilliseconds);
+
+            writer.WriteLongField("reportingHosts", 1); // this will get summed across all instances in a cluster
+
+            writer.WriteEndObject();
+        }
+
+
+        private static void WriteCommandMetrics(JsonTextWriter writer, HystrixCommandMetrics commandMetrics, IServiceInstance localService)
+        {
+            IHystrixCommandKey key = commandMetrics.CommandKey;
+            IHystrixCircuitBreaker circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(key);
+
+           // writer.WriteStartObject();
+            writer.WriteStringField("type", "HystrixCommand");
+
+            if (localService != null)
+                writer.WriteStringField("name", localService.ServiceId + "." + key.Name);
+            else
+                writer.WriteStringField("name", key.Name);
+
+            writer.WriteStringField("group", commandMetrics.CommandGroup.Name);
+            writer.WriteLongField("currentTime", Time.CurrentTimeMillisJava);
+
+            // circuit breaker
+            if (circuitBreaker == null)
+            {
+                // circuit breaker is disabled and thus never open
+                writer.WriteBooleanField("isCircuitBreakerOpen", false);
+            }
+            else
+            {
+                writer.WriteBooleanField("isCircuitBreakerOpen", circuitBreaker.IsOpen);
+            }
+            HealthCounts healthCounts = commandMetrics.Healthcounts;
+            writer.WriteIntegerField("errorPercentage", healthCounts.ErrorPercentage);
+            writer.WriteLongField("errorCount", healthCounts.ErrorCount);
+            writer.WriteLongField("requestCount", healthCounts.TotalRequests);
+
+            // rolling counters
+           // writer.WriteLongField("rollingCountBadRequests", commandMetrics.GetRollingCount(HystrixEventType.BAD_REQUEST));
+            writer.WriteLongField("rollingCountCollapsedRequests", commandMetrics.GetRollingCount(HystrixEventType.COLLAPSED));
+            //writer.WriteLongField("rollingCountEmit", commandMetrics.GetRollingCount(HystrixEventType.EMIT));
+            writer.WriteLongField("rollingCountExceptionsThrown", commandMetrics.GetRollingCount(HystrixEventType.EXCEPTION_THROWN));
+            writer.WriteLongField("rollingCountFailure", commandMetrics.GetRollingCount(HystrixEventType.FAILURE));
+            //writer.WriteLongField("rollingCountFallbackEmit", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_EMIT));
+            writer.WriteLongField("rollingCountFallbackFailure", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_FAILURE));
+           // writer.WriteLongField("rollingCountFallbackMissing", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_MISSING));
+            writer.WriteLongField("rollingCountFallbackRejection", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_REJECTION));
+            writer.WriteLongField("rollingCountFallbackSuccess", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_SUCCESS));
+            writer.WriteLongField("rollingCountResponsesFromCache", commandMetrics.GetRollingCount(HystrixEventType.RESPONSE_FROM_CACHE));
+            writer.WriteLongField("rollingCountSemaphoreRejected", commandMetrics.GetRollingCount(HystrixEventType.SEMAPHORE_REJECTED));
+            writer.WriteLongField("rollingCountShortCircuited", commandMetrics.GetRollingCount(HystrixEventType.SHORT_CIRCUITED));
+            writer.WriteLongField("rollingCountSuccess", commandMetrics.GetRollingCount(HystrixEventType.SUCCESS));
+            writer.WriteLongField("rollingCountThreadPoolRejected", commandMetrics.GetRollingCount(HystrixEventType.THREAD_POOL_REJECTED));
+            writer.WriteLongField("rollingCountTimeout", commandMetrics.GetRollingCount(HystrixEventType.TIMEOUT));
+
+            writer.WriteIntegerField("currentConcurrentExecutionCount", commandMetrics.CurrentConcurrentExecutionCount);
+            //writer.WriteLongField("rollingMaxConcurrentExecutionCount", commandMetrics.RollingMaxConcurrentExecutions);
+
+            // latency percentiles
+            writer.WriteIntegerField("latencyExecute_mean", commandMetrics.ExecutionTimeMean);
+            writer.WriteObjectFieldStart("latencyExecute");
+            writer.WriteIntegerField("0", commandMetrics.GetExecutionTimePercentile(0));
+            writer.WriteIntegerField("25", commandMetrics.GetExecutionTimePercentile(25));
+            writer.WriteIntegerField("50", commandMetrics.GetExecutionTimePercentile(50));
+            writer.WriteIntegerField("75", commandMetrics.GetExecutionTimePercentile(75));
+            writer.WriteIntegerField("90", commandMetrics.GetExecutionTimePercentile(90));
+            writer.WriteIntegerField("95", commandMetrics.GetExecutionTimePercentile(95));
+            writer.WriteIntegerField("99", commandMetrics.GetExecutionTimePercentile(99));
+            writer.WriteIntegerField("99.5", commandMetrics.GetExecutionTimePercentile(99.5));
+            writer.WriteIntegerField("100", commandMetrics.GetExecutionTimePercentile(100));
+            writer.WriteEndObject();
+            //
+            writer.WriteIntegerField("latencyTotal_mean", commandMetrics.TotalTimeMean);
+            writer.WriteObjectFieldStart("latencyTotal");
+            writer.WriteIntegerField("0", commandMetrics.GetTotalTimePercentile(0));
+            writer.WriteIntegerField("25", commandMetrics.GetTotalTimePercentile(25));
+            writer.WriteIntegerField("50", commandMetrics.GetTotalTimePercentile(50));
+            writer.WriteIntegerField("75", commandMetrics.GetTotalTimePercentile(75));
+            writer.WriteIntegerField("90", commandMetrics.GetTotalTimePercentile(90));
+            writer.WriteIntegerField("95", commandMetrics.GetTotalTimePercentile(95));
+            writer.WriteIntegerField("99", commandMetrics.GetTotalTimePercentile(99));
+            writer.WriteIntegerField("99.5", commandMetrics.GetTotalTimePercentile(99.5));
+            writer.WriteIntegerField("100", commandMetrics.GetTotalTimePercentile(100));
+            writer.WriteEndObject();
+
+            // property values for reporting what is actually seen by the command rather than what was set somewhere
+            IHystrixCommandOptions commandProperties = commandMetrics.Properties;
+
+            writer.WriteIntegerField("propertyValue_circuitBreakerRequestVolumeThreshold", commandProperties.CircuitBreakerRequestVolumeThreshold);
+            writer.WriteIntegerField("propertyValue_circuitBreakerSleepWindowInMilliseconds", commandProperties.CircuitBreakerSleepWindowInMilliseconds);
+            writer.WriteIntegerField("propertyValue_circuitBreakerErrorThresholdPercentage", commandProperties.CircuitBreakerErrorThresholdPercentage);
+            writer.WriteBooleanField("propertyValue_circuitBreakerForceOpen", commandProperties.CircuitBreakerForceOpen);
+            writer.WriteBooleanField("propertyValue_circuitBreakerForceClosed", commandProperties.CircuitBreakerForceClosed);
+            writer.WriteBooleanField("propertyValue_circuitBreakerEnabled", commandProperties.CircuitBreakerEnabled);
+
+            writer.WriteStringField("propertyValue_executionIsolationStrategy", commandProperties.ExecutionIsolationStrategy.ToString());
+            writer.WriteIntegerField("propertyValue_executionIsolationThreadTimeoutInMilliseconds", commandProperties.ExecutionTimeoutInMilliseconds);
+            //writer.WriteIntegerField("propertyValue_executionTimeoutInMilliseconds", commandProperties.ExecutionTimeoutInMilliseconds);
+            writer.WriteBooleanField("propertyValue_executionIsolationThreadInterruptOnTimeout", false);
+            writer.WriteStringField("propertyValue_executionIsolationThreadPoolKeyOverride", commandProperties.ExecutionIsolationThreadPoolKeyOverride);
+            writer.WriteIntegerField("propertyValue_executionIsolationSemaphoreMaxConcurrentRequests", commandProperties.ExecutionIsolationSemaphoreMaxConcurrentRequests);
+            writer.WriteIntegerField("propertyValue_fallbackIsolationSemaphoreMaxConcurrentRequests", commandProperties.FallbackIsolationSemaphoreMaxConcurrentRequests);
+            writer.WriteIntegerField("propertyValue_metricsRollingStatisticalWindowInMilliseconds", commandProperties.MetricsRollingStatisticalWindowInMilliseconds);
+            writer.WriteBooleanField("propertyValue_requestCacheEnabled", commandProperties.RequestCacheEnabled);
+            writer.WriteBooleanField("propertyValue_requestLogEnabled", commandProperties.RequestLogEnabled);
+            writer.WriteIntegerField("reportingHosts", 1); // this will get summed across all instances in a cluster
+            writer.WriteStringField("threadPool", commandMetrics.ThreadPoolKey.Name);
+            writer.WriteEndObject();
+        }
+    }
+}
+

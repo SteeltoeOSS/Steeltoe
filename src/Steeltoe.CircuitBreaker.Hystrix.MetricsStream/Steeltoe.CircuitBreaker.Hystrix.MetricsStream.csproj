@@ -18,9 +18,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Pivotal.Discovery.Client" Version="1.0.1" />
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
     <PackageReference Include="Steeltoe.CircuitBreaker.Hystrix.Core" Version="$(SteeltoeVersion)-*" />
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector.Hystrix" Version="$(SteeltoeVersion)-*" />
   </ItemGroup>
   
 </Project>

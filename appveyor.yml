@@ -16,6 +16,7 @@ artifacts:
 - path: 'src\Steeltoe.CircuitBreaker.Hystrix\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CircuitBreaker.Hystrix.Core\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsStream\bin\Release\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: true
