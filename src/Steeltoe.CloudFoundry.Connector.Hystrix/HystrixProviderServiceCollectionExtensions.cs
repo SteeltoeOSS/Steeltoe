@@ -25,7 +25,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
     public static class HystrixProviderServiceCollectionExtensions
     {
 
-        public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -43,7 +43,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             return services;
         }
 
-        public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -76,7 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             }
             HystrixProviderConnectorOptions hystrixConfig = new HystrixProviderConnectorOptions(config);
             HystrixProviderConnectorFactory factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
-            services.Add(new ServiceDescriptor(rabbitFactory, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(HystrixConnectionFactory), factory.Create, contextLifetime));
         }
 
 

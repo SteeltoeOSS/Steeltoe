@@ -97,7 +97,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             // Act and Assert
             HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config);
 
-            var service = services.BuildServiceProvider().GetService<ConnectionFactory>();
+            var service = services.BuildServiceProvider().GetService<HystrixConnectionFactory>();
             Assert.NotNull(service);
         }
 
@@ -303,7 +303,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
         }
 
         [Fact]
-        public void AddHystrixConnection_WithVCAPs_AddsRabbitConnection()
+        public void AddHystrixConnection_WithVCAPs_AddsHystrixConnectionFactory()
         {
             // Arrange
             var env1 = @"
@@ -416,7 +416,9 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             // Act and Assert
             HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config);
 
-            var service = services.BuildServiceProvider().GetService<ConnectionFactory>();
+            var hystrixService = services.BuildServiceProvider().GetService<HystrixConnectionFactory>();
+            Assert.NotNull(hystrixService);
+            var service = hystrixService.ConnectionFactory as ConnectionFactory;
             Assert.NotNull(service);
             Assert.Equal("06f0b204-9f95-4829-a662-844d3c3d6120", service.VirtualHost);
             Assert.Equal(5672, service.Port);

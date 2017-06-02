@@ -76,8 +76,9 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             Uri uri = new Uri(connectionString, UriKind.Absolute);
 
             ConnectorHelpers.Invoke(_setUri, inst, new object[] {uri} );
-            return inst;
+            return new HystrixConnectionFactory(inst);
         }
+
         public static MethodInfo FindSetUriMethod(Type type) 
         {
             var typeInfo = type.GetTypeInfo();
