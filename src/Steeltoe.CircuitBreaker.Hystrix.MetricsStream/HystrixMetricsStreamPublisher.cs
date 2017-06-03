@@ -25,6 +25,7 @@ using Steeltoe.CloudFoundry.Connector.Hystrix;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 {
+
     public class HystrixMetricsStreamPublisher
     {
         IObservable<string> observable;
@@ -51,7 +52,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             .Subscribe(
                 (sampleDataAsString) =>
                 {
-                    if (sampleDataAsString != null)
+                    if (!string.IsNullOrEmpty(sampleDataAsString))
                     {
                         try
                         {
@@ -59,8 +60,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                             {
                                 using (var channel = connection.CreateModel())
                                 {
+                                    // var body = Encoding.UTF8.GetBytes("\"" + sampleDataAsString + "\"");
                                     var body = Encoding.UTF8.GetBytes(sampleDataAsString);
-                                    channel.BasicPublish(SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE, "", null, body);
+                                    var props = channel.CreateBasicProperties();
+                                    props.ContentType = "application/json";
+                                    channel.BasicPublish(SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE, "", props, body);
                                 }
                             }
                         }

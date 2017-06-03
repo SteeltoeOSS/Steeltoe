@@ -106,13 +106,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             ExecutionIsolationSemaphoreMaxConcurrentRequests = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "execution:isolation:semaphore:maxConcurrentRequests", Default_ExecutionIsolationSemaphoreMaxConcurrentRequests, defaults?.ExecutionIsolationSemaphoreMaxConcurrentRequests);
             FallbackIsolationSemaphoreMaxConcurrentRequests = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "fallback:isolation:semaphore:maxConcurrentRequests", Default_FallbackIsolationSemaphoreMaxConcurrentRequests, defaults?.FallbackIsolationSemaphoreMaxConcurrentRequests);
             FallbackEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "fallback:enabled", Default_FallbackEnabled, defaults?.FallbackEnabled);
-            MetricsRollingStatisticalWindowInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingStats:timeInMilliseconds", MetricsRollingStatisticalWindowInMilliseconds, defaults?.MetricsRollingStatisticalWindowInMilliseconds);
+
+            MetricsRollingStatisticalWindowInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingStats:timeInMilliseconds", Default_MetricsRollingStatisticalWindow, defaults?.MetricsRollingStatisticalWindowInMilliseconds);
             MetricsRollingStatisticalWindowBuckets = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingStats:numBuckets", Default_MetricsRollingStatisticalWindowBuckets, defaults?.MetricsRollingStatisticalWindowBuckets);
             MetricsRollingPercentileEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingPercentile:enabled", Default_MetricsRollingPercentileEnabled, defaults?.MetricsRollingPercentileEnabled);
-            MetricsRollingPercentileWindowInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingPercentile:timeInMilliseconds", Default_MetricsRollingPercentileWindow, defaults?.MetricsRollingPercentileWindow);
+            MetricsRollingPercentileWindowInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingPercentile:timeInMilliseconds", Default_MetricsRollingPercentileWindow, defaults?.MetricsRollingPercentileWindowInMilliseconds);
             MetricsRollingPercentileWindowBuckets = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingPercentile:numBuckets", Default_MetricsRollingPercentileWindowBuckets, defaults?.MetricsRollingPercentileWindowBuckets);
             MetricsRollingPercentileBucketSize = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:rollingPercentile:bucketSize", Default_MetricsRollingPercentileBucketSize, defaults?.MetricsRollingPercentileBucketSize);
             MetricsHealthSnapshotIntervalInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "metrics:healthSnapshot:intervalInMilliseconds", Default_MetricsHealthSnapshotIntervalInMilliseconds, defaults?.MetricsHealthSnapshotIntervalInMilliseconds);
+
             RequestCacheEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "requestCache:enabled", Default_RequestCacheEnabled, defaults?.RequestCacheEnabled);
             RequestLogEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "requestLog:enabled", Default_RequestLogEnabled, defaults?.RequestLogEnabled);
         }
