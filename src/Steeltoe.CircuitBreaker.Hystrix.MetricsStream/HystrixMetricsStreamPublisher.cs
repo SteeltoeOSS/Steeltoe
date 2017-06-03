@@ -22,13 +22,14 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Pivotal.Discovery.Client;
 using System.Text;
 using Steeltoe.CloudFoundry.Connector.Hystrix;
+using System.Collections.Generic;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 {
 
     public class HystrixMetricsStreamPublisher
     {
-        IObservable<string> observable;
+        IObservable<List<string>> observable;
         ConnectionFactory factory;
         IDisposable sampleSubscription;
         IDiscoveryClient discoveryClient;
@@ -39,7 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             this.discoveryClient = discoveryClient;
 
             observable = stream.Observe().Map((data) => {
-                return Serialize.ToJsonString(data, this.discoveryClient); });
+                return Serialize.ToJsonList(data, this.discoveryClient); });
 
             this.factory = factory.ConnectionFactory as ConnectionFactory;
 
@@ -50,33 +51,38 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
         {
             sampleSubscription = observable
             .Subscribe(
-                (sampleDataAsString) =>
+                (jsonList) =>
                 {
-                    if (!string.IsNullOrEmpty(sampleDataAsString))
+
+                    try
                     {
-                        try
+                        using (var connection = factory.CreateConnection())
                         {
-                            using (var connection = factory.CreateConnection())
+                            using (var channel = connection.CreateModel())
                             {
-                                using (var channel = connection.CreateModel())
+                                foreach (var sampleDataAsString in jsonList)
                                 {
-                                    // var body = Encoding.UTF8.GetBytes("\"" + sampleDataAsString + "\"");
-                                    var body = Encoding.UTF8.GetBytes(sampleDataAsString);
-                                    var props = channel.CreateBasicProperties();
-                                    props.ContentType = "application/json";
-                                    channel.BasicPublish(SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE, "", props, body);
+                                    if (!string.IsNullOrEmpty(sampleDataAsString))
+                                    {
+                                        // var body = Encoding.UTF8.GetBytes("\"" + sampleDataAsString + "\"");
+                                        var body = Encoding.UTF8.GetBytes(sampleDataAsString);
+                                        var props = channel.CreateBasicProperties();
+                                        props.ContentType = "application/json";
+                                        channel.BasicPublish(SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE, "", props, body);
+                                    }
                                 }
                             }
                         }
-                        catch (Exception)
+                    }
+                    catch (Exception)
+                    {
+                        if (sampleSubscription != null)
                         {
-                            if (sampleSubscription != null)
-                            {
-                                sampleSubscription.Dispose();
-                                sampleSubscription = null;
-                            }
+                            sampleSubscription.Dispose();
+                            sampleSubscription = null;
                         }
                     }
+
                 },
                 (error) =>
                 {

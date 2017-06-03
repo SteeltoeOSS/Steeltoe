@@ -6,22 +6,18 @@ using Steeltoe.CircuitBreaker.Hystrix.Serial;
 using System.IO;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
+using System.Collections.Generic;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 {
     public static class Serialize
     {
-        public static string ToJsonString(HystrixDashboardStream.DashboardData data, IDiscoveryClient discoveryClient)
+        public static List<string> ToJsonList(HystrixDashboardStream.DashboardData data, IDiscoveryClient discoveryClient)
         {
-            using (StringWriter sw = new StringWriter())
-            {
-                using (JsonTextWriter writer = new JsonTextWriter(sw))
-                {
-                    WriteDashboardData(writer, data, discoveryClient);
-                }
-                return sw.ToString();
-            }
-
+            List<string> jsonList = new List<string>();
+            WriteCommandData(data, discoveryClient, jsonList);
+            WriteThreadPoolData(data, discoveryClient, jsonList);
+            return jsonList;
         }
 
 
@@ -40,33 +36,58 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             writer.WriteEndObject();
         }
 
+        private static void WriteThreadPoolData(HystrixDashboardStream.DashboardData data, IDiscoveryClient discoveryClient, List<string> jsonList)
+        {
+            try
+            {
+                var localService = discoveryClient?.GetLocalServiceInstance();
 
-        private static void WriteDashboardData(JsonTextWriter writer, HystrixDashboardStream.DashboardData data, IDiscoveryClient discoveryClient)
+                foreach (HystrixThreadPoolMetrics threadPoolMetrics in data.ThreadPoolMetrics)
+                {
+                    using (StringWriter sw = new StringWriter())
+                    {
+                        using (JsonTextWriter writer = new JsonTextWriter(sw))
+                        {
+                            writer.WriteStartObject();
+                            WriteLocalService(writer, localService);
+                            writer.WriteObjectFieldStart("data");
+                            WriteThreadPoolMetrics(writer, threadPoolMetrics);
+                            writer.WriteEndObject();
+                            writer.WriteEndObject();
+                        }
+                        jsonList.Add(sw.ToString());
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Log
+            }
+        }
+
+        private static void WriteCommandData(HystrixDashboardStream.DashboardData data, IDiscoveryClient discoveryClient, List<string> jsonList)
         {
             try
             {
 
                 var localService = discoveryClient?.GetLocalServiceInstance();
+
                 foreach (HystrixCommandMetrics commandMetrics in data.CommandMetrics)
                 {
-                    writer.WriteStartObject();
-                    WriteLocalService(writer, localService);
-                    writer.WriteObjectFieldStart("data");
-
-                    WriteCommandMetrics(writer, commandMetrics, localService);
-                    writer.WriteEndObject();
+                    using (StringWriter sw = new StringWriter())
+                    {
+                        using (JsonTextWriter writer = new JsonTextWriter(sw))
+                        {
+                            writer.WriteStartObject();
+                            WriteLocalService(writer, localService);
+                            writer.WriteObjectFieldStart("data");
+                            WriteCommandMetrics(writer, commandMetrics, localService);
+                            writer.WriteEndObject();
+                            writer.WriteEndObject();
+                        }
+                        jsonList.Add(sw.ToString());
+                    }
                 }
-                foreach (HystrixThreadPoolMetrics threadPoolMetrics in data.ThreadPoolMetrics)
-                {
-                    writer.WriteStartObject();
-                    WriteLocalService(writer, localService);
-                    writer.WriteObjectFieldStart("data");
-                    WriteThreadPoolMetrics(writer, threadPoolMetrics);
-                    writer.WriteEndObject();
-                }
- 
-
-
             }
             catch (Exception)
             {
@@ -77,8 +98,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
         private static void WriteThreadPoolMetrics(JsonTextWriter writer, HystrixThreadPoolMetrics threadPoolMetrics)
         {
             IHystrixThreadPoolKey key = threadPoolMetrics.ThreadPoolKey;
-
-            writer.WriteStartObject();
 
             writer.WriteStringField("type", "HystrixThreadPool");
             writer.WriteStringField("name", key.Name);
@@ -94,7 +113,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             writer.WriteIntegerField("currentTaskCount", threadPoolMetrics.CurrentTaskCount);
             writer.WriteLongField("rollingCountThreadsExecuted", threadPoolMetrics.GetRollingCount(ThreadPoolEventType.EXECUTED));
 
-           // writer.WriteLongField("rollingMaxActiveThreads", threadPoolMetrics.RollingMaxActiveThreads);
+            writer.WriteLongField("rollingMaxActiveThreads", threadPoolMetrics.RollingMaxActiveThreads);
             //writer.WriteLongField("rollingCountCommandRejections", threadPoolMetrics.GetRollingCount(ThreadPoolEventType.REJECTED));
 
             writer.WriteIntegerField("propertyValue_queueSizeRejectionThreshold", threadPoolMetrics.Properties.QueueSizeRejectionThreshold);
@@ -102,7 +121,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
             writer.WriteLongField("reportingHosts", 1); // this will get summed across all instances in a cluster
 
-            writer.WriteEndObject();
         }
 
 
@@ -207,7 +225,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             writer.WriteBooleanField("propertyValue_requestLogEnabled", commandProperties.RequestLogEnabled);
             writer.WriteIntegerField("reportingHosts", 1); // this will get summed across all instances in a cluster
             writer.WriteStringField("threadPool", commandMetrics.ThreadPoolKey.Name);
-            writer.WriteEndObject();
         }
     }
 }
