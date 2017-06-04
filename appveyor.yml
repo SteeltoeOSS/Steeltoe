@@ -1,4 +1,4 @@
-version: '1.0.1-{branch}-{build}'
+version: '1.1.0-{branch}-{build}'
 init:
   - git config --global core.autocrlf true
 image: Visual Studio 2017  
