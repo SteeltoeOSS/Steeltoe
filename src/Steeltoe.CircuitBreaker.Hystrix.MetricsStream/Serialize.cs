@@ -114,7 +114,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             writer.WriteLongField("rollingCountThreadsExecuted", threadPoolMetrics.GetRollingCount(ThreadPoolEventType.EXECUTED));
 
             writer.WriteLongField("rollingMaxActiveThreads", threadPoolMetrics.RollingMaxActiveThreads);
-            //writer.WriteLongField("rollingCountCommandRejections", threadPoolMetrics.GetRollingCount(ThreadPoolEventType.REJECTED));
 
             writer.WriteIntegerField("propertyValue_queueSizeRejectionThreshold", threadPoolMetrics.Properties.QueueSizeRejectionThreshold);
             writer.WriteIntegerField("propertyValue_metricsRollingStatisticalWindowInMilliseconds", threadPoolMetrics.Properties.MetricsRollingStatisticalWindowInMilliseconds);
@@ -129,7 +128,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             IHystrixCommandKey key = commandMetrics.CommandKey;
             IHystrixCircuitBreaker circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(key);
 
-           // writer.WriteStartObject();
             writer.WriteStringField("type", "HystrixCommand");
 
             if (localService != null)
@@ -156,14 +154,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             writer.WriteLongField("requestCount", healthCounts.TotalRequests);
 
             // rolling counters
-           // writer.WriteLongField("rollingCountBadRequests", commandMetrics.GetRollingCount(HystrixEventType.BAD_REQUEST));
             writer.WriteLongField("rollingCountCollapsedRequests", commandMetrics.GetRollingCount(HystrixEventType.COLLAPSED));
-            //writer.WriteLongField("rollingCountEmit", commandMetrics.GetRollingCount(HystrixEventType.EMIT));
             writer.WriteLongField("rollingCountExceptionsThrown", commandMetrics.GetRollingCount(HystrixEventType.EXCEPTION_THROWN));
             writer.WriteLongField("rollingCountFailure", commandMetrics.GetRollingCount(HystrixEventType.FAILURE));
-            //writer.WriteLongField("rollingCountFallbackEmit", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_EMIT));
             writer.WriteLongField("rollingCountFallbackFailure", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_FAILURE));
-           // writer.WriteLongField("rollingCountFallbackMissing", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_MISSING));
             writer.WriteLongField("rollingCountFallbackRejection", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_REJECTION));
             writer.WriteLongField("rollingCountFallbackSuccess", commandMetrics.GetRollingCount(HystrixEventType.FALLBACK_SUCCESS));
             writer.WriteLongField("rollingCountResponsesFromCache", commandMetrics.GetRollingCount(HystrixEventType.RESPONSE_FROM_CACHE));
@@ -174,7 +168,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             writer.WriteLongField("rollingCountTimeout", commandMetrics.GetRollingCount(HystrixEventType.TIMEOUT));
 
             writer.WriteIntegerField("currentConcurrentExecutionCount", commandMetrics.CurrentConcurrentExecutionCount);
-            //writer.WriteLongField("rollingMaxConcurrentExecutionCount", commandMetrics.RollingMaxConcurrentExecutions);
 
             // latency percentiles
             writer.WriteIntegerField("latencyExecute_mean", commandMetrics.ExecutionTimeMean);
@@ -215,7 +208,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
             writer.WriteStringField("propertyValue_executionIsolationStrategy", commandProperties.ExecutionIsolationStrategy.ToString());
             writer.WriteIntegerField("propertyValue_executionIsolationThreadTimeoutInMilliseconds", commandProperties.ExecutionTimeoutInMilliseconds);
-            //writer.WriteIntegerField("propertyValue_executionTimeoutInMilliseconds", commandProperties.ExecutionTimeoutInMilliseconds);
             writer.WriteBooleanField("propertyValue_executionIsolationThreadInterruptOnTimeout", false);
             writer.WriteStringField("propertyValue_executionIsolationThreadPoolKeyOverride", commandProperties.ExecutionIsolationThreadPoolKeyOverride);
             writer.WriteIntegerField("propertyValue_executionIsolationSemaphoreMaxConcurrentRequests", commandProperties.ExecutionIsolationSemaphoreMaxConcurrentRequests);

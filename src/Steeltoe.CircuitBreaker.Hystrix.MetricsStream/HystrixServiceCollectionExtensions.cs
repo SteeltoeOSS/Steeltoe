@@ -49,13 +49,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             services.AddSingleton<HystrixConfigurationStream>(HystrixConfigurationStream.GetInstance());
         }
-
-        public static void AddHystrixMonitorStreams(this IServiceCollection services, IConfiguration config)
+        public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
         {
             services.AddHystrixMetricsStream(config);
             services.AddHystrixConfigStream(config);
             services.AddHystrixRequestEventStream(config);
             services.AddHystrixUtilizationStream(config);
         }
+
     }
 }

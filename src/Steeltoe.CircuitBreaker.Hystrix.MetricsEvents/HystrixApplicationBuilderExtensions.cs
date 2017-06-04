@@ -15,7 +15,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
-using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
@@ -23,7 +22,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
         public static IApplicationBuilder UseHystrixMetricsStream(this IApplicationBuilder app)
         {
-            var service = app.ApplicationServices.GetRequiredService<HystrixMetricsStreamPublisher>();
             return app;
         }
     }
