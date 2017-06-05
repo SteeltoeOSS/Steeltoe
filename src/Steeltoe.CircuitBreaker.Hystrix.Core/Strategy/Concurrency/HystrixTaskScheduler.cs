@@ -160,14 +160,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             }
         }
 
-        //public virtual IHystrixThreadPoolKey ThreadPoolKey
-        //{
-        //    get
-        //    {
-        //        return this.threadPoolKey;
-        //    }
-        //}
-
         public virtual bool IsQueueSpaceAvailable
         {
             get { return false; }

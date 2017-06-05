@@ -50,13 +50,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             StartThreadPoolWorker();
             runningThreads = 1;
 
-            //InitializeRunningThreads();
         }
-        //private void InitializeRunningThreads()
-        //{
-        //    for (int i = 0; i < corePoolSize; i++) StartThreadPoolWorker();
-        //    runningThreads = corePoolSize;
-        //}
+
 
         #region IHystrixTaskScheduler
         public override int CurrentQueueSize
@@ -125,10 +120,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                         }
                         if (item != null)
                         {
-                            Interlocked.Increment(ref this.runningTasks);
-                            base.TryExecuteTask(item);
-                            Interlocked.Decrement(ref this.runningTasks);
-                            Interlocked.Increment(ref completedTasks);
+                            try
+                            {
+                                Interlocked.Increment(ref this.runningTasks);
+                                base.TryExecuteTask(item);
+       
+                            } catch(Exception)
+                            {
+                                // Log
+                            } finally
+                            {
+                                Interlocked.Decrement(ref this.runningTasks);
+                                Interlocked.Increment(ref completedTasks);
+                            }
                         }
             
                     }
@@ -151,12 +155,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             {
                 return false;
             }
-
-            Interlocked.Increment(ref this.runningTasks);
-            var result = base.TryExecuteTask(task);
-            Interlocked.Decrement(ref this.runningTasks);
-            Interlocked.Increment(ref completedTasks);
-            return result;
+            try
+            {
+                Interlocked.Increment(ref this.runningTasks);
+                return base.TryExecuteTask(task);
+            } catch (Exception)
+            {
+                // Log
+            } finally
+            {
+                Interlocked.Decrement(ref this.runningTasks);
+                Interlocked.Increment(ref completedTasks);
+            }
+            return true;
         }
 
     }
