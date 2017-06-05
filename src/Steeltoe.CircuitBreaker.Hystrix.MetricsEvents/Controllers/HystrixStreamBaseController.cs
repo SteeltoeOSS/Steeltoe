@@ -17,6 +17,7 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Reactive.Linq;
+using System.Reactive.Concurrency;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
 {
@@ -40,6 +41,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
 
             IDisposable sampleSubscription = null;
             sampleSubscription = sampleStream
+                .ObserveOn(Scheduler.Default)
                 .Subscribe(
                     async (sampleDataAsString) =>
                     {

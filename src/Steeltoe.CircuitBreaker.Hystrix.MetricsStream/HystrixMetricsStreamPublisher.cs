@@ -17,6 +17,7 @@ using System;
 using RabbitMQ.Client;
 using System.Reactive.Observable.Aliases;
 using System.Reactive.Linq;
+using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Pivotal.Discovery.Client;
@@ -53,9 +54,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
         public void StartMetricsPublishing()
         {
-            logger.LogDebug("Hystrix Metrics starting");
+            logger.LogInformation("Hystrix Metrics starting");
 
             sampleSubscription = observable
+            .ObserveOn(Scheduler.Default)
             .Subscribe(
                 (jsonList) =>
                 {
@@ -103,7 +105,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                 },
                 () =>
                 {
-                    logger.LogDebug("Hystrix Metrics shutdown");
+                    logger.LogInformation("Hystrix Metrics shutdown");
                     if (sampleSubscription != null)
                     {
                         sampleSubscription.Dispose();
