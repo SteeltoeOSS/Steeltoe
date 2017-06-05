@@ -1,0 +1,1 @@
+# .NET Circuit Breaker Patterns

@@ -21,7 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
         }
 
 
-
+        private static string contextId = Guid.NewGuid().ToString();
         private static void WriteLocalService(JsonTextWriter writer, IServiceInstance localService)
         {
             writer.WriteObjectFieldStart("origin");
@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                 writer.WriteIntegerField("port", localService.Port);
 
             writer.WriteStringField("serviceId", localService?.ServiceId);
-            writer.WriteStringField("id", "unknown.net");
+            writer.WriteStringField("id", contextId);
             writer.WriteEndObject();
         }
 
