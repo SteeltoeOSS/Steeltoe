@@ -92,16 +92,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                     while (!this.shutdown)
                     {
                         Task item = null;
+                        workQueue.signal.Wait(250);
 
-                        if (!workQueue.signal.Wait(250))
-                        {
-                            if (workQueue.task == null && 
-                                (runningThreads > corePoolSize ||
-                                this.shutdown))
-                            {
-                                break;
-                            }
-                        }
+                        //if (!workQueue.signal.Wait(250))
+                        //{
+                        //    if (workQueue.task == null && 
+                        //        (runningThreads > corePoolSize ||
+                        //        this.shutdown))
+                        //    {
+                        //        break;
+                        //    }
+                        //}
                         item = workQueue.task;
 
                         if (item != null)
