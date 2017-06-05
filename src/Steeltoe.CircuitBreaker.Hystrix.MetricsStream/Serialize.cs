@@ -111,7 +111,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             writer.WriteIntegerField("currentPoolSize", threadPoolMetrics.CurrentPoolSize);
             writer.WriteIntegerField("currentQueueSize", threadPoolMetrics.CurrentQueueSize);
             writer.WriteIntegerField("currentTaskCount", threadPoolMetrics.CurrentTaskCount);
-            writer.WriteLongField("rollingCountThreadsExecuted", threadPoolMetrics.GetRollingCount(ThreadPoolEventType.EXECUTED));
+            writer.WriteLongField("rollingCountThreadsExecuted", threadPoolMetrics.RollingCountThreadsExecuted);
 
             writer.WriteLongField("rollingMaxActiveThreads", threadPoolMetrics.RollingMaxActiveThreads);
 

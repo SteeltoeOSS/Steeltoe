@@ -1165,7 +1165,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 if (IsRecoverableError(originalException))
                 {
-                    logger?.LogWarning("Recovered from java.lang.Error by serving Hystrix fallback: {0}", originalException);
+                    logger?.LogWarning("Recovered from Error by serving Hystrix fallback: {0}", originalException);
                 }
 
                 if (options.FallbackEnabled)

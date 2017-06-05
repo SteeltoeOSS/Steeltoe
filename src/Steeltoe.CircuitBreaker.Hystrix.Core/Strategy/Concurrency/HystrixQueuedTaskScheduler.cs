@@ -110,15 +110,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                         Task item = null;
                         workQueue.TryTake(out item, 250);
 
-                        //if (!workQueue.TryTake(out item, 250))
-                        //{
-                        //    if (item == null && 
-                        //        (runningThreads > corePoolSize || 
-                        //        this.shutdown))
-                        //    {
-                        //        break;
-                        //    }
-                        //}
                         if (item != null)
                         {
                             try
