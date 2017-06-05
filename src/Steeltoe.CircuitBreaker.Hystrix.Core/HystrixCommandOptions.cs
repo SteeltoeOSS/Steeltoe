@@ -117,6 +117,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             RequestCacheEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "requestCache:enabled", Default_RequestCacheEnabled, defaults?.RequestCacheEnabled);
             RequestLogEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "requestLog:enabled", Default_RequestLogEnabled, defaults?.RequestLogEnabled);
+
+            ExecutionIsolationThreadPoolKeyOverride = GetThreadPoolKeyOverride(HYSTRIX_COMMAND_PREFIX, key.Name, "threadPoolKeyOverride", null, defaults?.ExecutionIsolationThreadPoolKeyOverride);
         }
 
 
@@ -362,6 +364,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 return ExecutionIsolationStrategy.SEMAPHORE;
             }
             throw new ArgumentOutOfRangeException("execution.isolation.strategy");
+        }
+
+        protected virtual string GetThreadPoolKeyOverride(string prefix, string key, string property, string globalDefault, string instanceDefaultFromCode)
+        {
+            string result = globalDefault;
+            result = instanceDefaultFromCode != null ? instanceDefaultFromCode : result; // instance default from code
+            result = (dynamic != null) ? dynamic.GetString(prefix + ":" + key + ":" + property, result) : result; // dynamic instance value
+            return result;
         }
 
         public virtual IHystrixThreadPoolOptions ThreadPoolOptions { get; set; }
