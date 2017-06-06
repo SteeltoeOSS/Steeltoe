@@ -56,7 +56,7 @@ To run the unit tests:
 3. Install .NET Core SDK 
 4. dotnet restore test
 5. cd test\<test project> (e.g. cd test\Steeltoe.Extensions.Configuration.CloudFoundry.Test)
-6. dotnet test 
+6. dotnet xunit -verbose 
 
 # Building Packages & Running Tests - Linux/OSX
 To build the packages on Linux/OSX:
@@ -77,7 +77,7 @@ To run the unit tests:
 3. Install .NET Core SDK 
 4. dotnet restore test
 5. cd test\<test project> (e.g. cd test/Steeltoe.Extensions.Configuration.CloudFoundry.Test)
-6. dotnet test --framework netcoreapp1.1
+6. dotnet xunit -verbose -framework netcoreapp1.1
 
 # Sample Applications
 See the [Samples](https://github.com/SteeltoeOSS/Samples) repo for examples of how to use these packages.
