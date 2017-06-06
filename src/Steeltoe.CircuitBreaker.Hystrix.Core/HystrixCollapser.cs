@@ -154,7 +154,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public Task<RequestResponseType> ToTask()
         {
 
-            //TaskCompletionSource<RequestResponseType> tcs = new TaskCompletionSource<RequestResponseType>();
             RequestCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> requestCollapser = collapserFactory.GetRequestCollapser(this);
             CollapsedRequest<RequestResponseType, RequestArgumentType> request = null;
             HystrixCachedTask<RequestResponseType> entry = null;
