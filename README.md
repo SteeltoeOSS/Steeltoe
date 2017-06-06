@@ -34,7 +34,7 @@ All new configuration provider development is done on the dev branch. More stabl
 # Building Pre-requisites
 To build and run the unit tests:
 
-1. .NET Core SDK 1.0.1 or greater
+1. .NET Core SDK 1.0.4 or greater
 2. .NET Core Runtime 1.1
 
 # Building Packages & Running Tests - Windows
