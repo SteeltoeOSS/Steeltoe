@@ -35,7 +35,7 @@ All new development is done on the dev branch. More stable versions of the packa
 # Building Pre-requisites
 To build and run the unit tests:
 
-1. .NET Core SDK 1.0.1 or greater
+1. .NET Core SDK 1.0.4 or greater
 2. .NET Core Runtime 1.1
 
 # Building Packages & Running Tests - Windows
@@ -57,7 +57,7 @@ To run the unit tests:
 3. Install .NET Core SDK 
 4. dotnet restore test
 5. cd test\test project (e.g. cd test\Steeltoe.Discovery.Client.Test)
-6. dotnet test
+6. dotnet xunit -verbose
 
 # Building Packages & Running Tests - Linux/OSX
 To build the packages on Linux/OSX:
@@ -78,7 +78,7 @@ To run the unit tests:
 3. Install .NET Core SDK 
 4. dotnet restore test
 5. cd test\test project (e.g. cd test/Steeltoe.Discovery.Client.Test)
-6. dotnet test --framework netcoreapp1.1
+6. dotnet xunit -verbose -framework netcoreapp1.1
 
 # Sample Applications
 See the [Samples](https://github.com/SteeltoeOSS/Samples) repo for examples of how to use these packages.
