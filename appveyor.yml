@@ -22,7 +22,7 @@ deploy:
   skip_symbols: false
   artifact: /.*\.nupkg/
   server: https://www.myget.org/F/steeltoemaster/api/v2/package
-  symbol_server: https://www.myget.org/F/steeltoedev/symbols/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoemaster/symbols/api/v2/package
   api_key:
     secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
   on:
