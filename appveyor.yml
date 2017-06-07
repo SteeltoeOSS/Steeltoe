@@ -26,7 +26,7 @@ deploy:
     branch: master
     appveyor_repo_tag: false
 - provider: NuGet
-  skip_symbols: true
+  skip_symbols: false
   artifact: /.*\.nupkg/
   server: https://www.myget.org/F/steeltoedev/api/v2/package
   api_key:
