@@ -169,6 +169,52 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         }
 
         [Fact]
+        public void FromInstanceConfig_NonSecurePortFalse_SecurePortTrue_Correct()
+        {
+            EurekaInstanceConfig config = new EurekaInstanceConfig();
+            config.SecurePortEnabled = true;
+            config.IsNonSecurePortEnabled = false;
+            InstanceInfo info = InstanceInfo.FromInstanceConfig(config);
+            Assert.NotNull(info);
+
+            // Verify
+            Assert.Equal(config.GetHostName(false), info.InstanceId);
+            Assert.Equal(EurekaInstanceConfig.Default_Appname.ToUpperInvariant(), info.AppName);
+            Assert.Null(info.AppGroupName);
+            Assert.Equal(config.IpAddress, info.IpAddr);
+            Assert.Equal("na", info.Sid);
+            Assert.Equal(80, info.Port);
+            Assert.False(info.IsUnsecurePortEnabled);
+            Assert.Equal(443, info.SecurePort);
+            Assert.True(info.IsSecurePortEnabled);
+            Assert.Equal("https://" + config.GetHostName(false) + ":" + 443 + "/", info.HomePageUrl);
+            Assert.Equal("https://" + config.GetHostName(false) + ":" + 443 + "/Status", info.StatusPageUrl);
+            Assert.Equal("https://" + config.GetHostName(false) + ":" + 443 + "/healthcheck", info.HealthCheckUrl);
+            Assert.Null(info.SecureHealthCheckUrl);
+            Assert.Equal(config.GetHostName(false) + ":" + 80, info.VipAddress);
+            Assert.Equal(config.GetHostName(false) + ":" + 443, info.SecureVipAddress);
+            Assert.Equal(1, info.CountryId);
+            Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
+            Assert.Equal(config.GetHostName(false), info.HostName);
+            Assert.Equal(InstanceStatus.STARTING, info.Status);
+            Assert.Equal(InstanceStatus.UNKNOWN, info.OverriddenStatus);
+            Assert.NotNull(info.LeaseInfo);
+            Assert.Equal(30, info.LeaseInfo.RenewalIntervalInSecs);
+            Assert.Equal(90, info.LeaseInfo.DurationInSecs);
+            Assert.Equal(0, info.LeaseInfo.RegistrationTimestamp);
+            Assert.Equal(0, info.LeaseInfo.LastRenewalTimestamp);
+            Assert.Equal(0, info.LeaseInfo.LastRenewalTimestampLegacy);
+            Assert.Equal(0, info.LeaseInfo.EvictionTimestamp);
+            Assert.Equal(0, info.LeaseInfo.ServiceUpTimestamp);
+            Assert.False(info.IsCoordinatingDiscoveryServer);
+            Assert.NotNull(info.Metadata);
+            Assert.Equal(0, info.Metadata.Count);
+            Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
+            Assert.Equal(ActionType.ADDED, info.Actiontype);
+            Assert.Null(info.AsgName);
+        }
+
+        [Fact]
         public void ToJsonInstance_DefaultInstanceConfig_Correct()
         {
             EurekaInstanceConfig config = new EurekaInstanceConfig();

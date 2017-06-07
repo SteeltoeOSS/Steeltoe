@@ -428,7 +428,17 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             sb.Append(",");
             sb.Append("HostName=" + HostName);
             sb.Append(",");
+            sb.Append("IsUnsecurePortEnabled=" + IsUnsecurePortEnabled);
+            sb.Append(",");
             sb.Append("Port=" + Port);
+            sb.Append(",");
+            sb.Append("IsSecurePortEnabled=" + IsSecurePortEnabled);
+            sb.Append(",");
+            sb.Append("SecurePort=" + SecurePort);
+            sb.Append(",");
+            sb.Append("VipAddress=" + VipAddress);
+            sb.Append(",");
+            sb.Append("SecureVipAddress=" + SecureVipAddress);
             sb.Append("]");
             return sb.ToString();
 
@@ -622,7 +632,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             {
                 return explicitUrl;
             }
-            else if (!string.IsNullOrEmpty(relativeUrl))
+            else if (!string.IsNullOrEmpty(relativeUrl) && info.IsUnsecurePortEnabled)
             {
                 return "http://" + info.HostName + ":" + info.Port + relativeUrl;
             }
