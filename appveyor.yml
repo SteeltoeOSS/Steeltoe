@@ -20,20 +20,29 @@ artifacts:
 - path: 'src\Steeltoe.CloudFoundry.Connector.Rabbit\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.OAuth\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.Hystrix\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.MySql\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.Redis\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.PostgreSql\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.Rabbit\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.OAuth\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.Hystrix\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet
-  skip_symbols: true
+  skip_symbols: false
   artifact: /.*\.nupkg/
   server: https://www.myget.org/F/steeltoemaster/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoemaster/symbols/api/v2/package  
   api_key:
     secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
   on:
     branch: master
     appveyor_repo_tag: false
 - provider: NuGet
-  skip_symbols: true
+  skip_symbols: false
   artifact: /.*\.nupkg/
   server: https://www.myget.org/F/steeltoedev/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoemaster/symbols/api/v2/package  
   api_key:
     secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
   on:
