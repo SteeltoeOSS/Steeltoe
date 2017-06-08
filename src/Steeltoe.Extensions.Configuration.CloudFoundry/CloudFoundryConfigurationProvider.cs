@@ -34,6 +34,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         private const string CF_INSTANCE_INDEX = "CF_INSTANCE_INDEX";
         private const string CF_INSTANCE_PORT = "CF_INSTANCE_PORT";
         private const string CF_INSTANCE_IP = "CF_INSTANCE_IP";
+        private const string CF_INSTANCE_INTERNAL_IP = "CF_INSTANCE_INTERNAL_IP";
 
         public CloudFoundryConfigurationProvider()
         {
@@ -108,6 +109,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             }
 
             Data["vcap:application:instance_ip"] = Environment.GetEnvironmentVariable(CF_INSTANCE_IP);
+            Data["vcap:application:internal_ip"] = Environment.GetEnvironmentVariable(CF_INSTANCE_INTERNAL_IP);
 
         }
         internal IDictionary<string, string> Properties

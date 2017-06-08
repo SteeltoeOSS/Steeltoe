@@ -157,7 +157,14 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 return Vcap?.Application?.Instance_Ip;
             }
         }
-  
+        public string InternalIP
+        {
+            get
+            {
+                return Vcap?.Application?.Internal_Ip;
+            }
+        }
+
 
         private int GetInt(string strValue, int def)
         {
@@ -195,6 +202,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         public string[] Uris { get; set; }
         public string Version { get; set; }
         public string Instance_Ip { get; set; }
+        public string Internal_Ip { get; set; }
     }
     public class Limits
     {
