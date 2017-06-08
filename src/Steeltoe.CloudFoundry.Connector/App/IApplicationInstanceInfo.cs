@@ -32,5 +32,7 @@ namespace Steeltoe.CloudFoundry.Connector.App
         int DiskLimit { get;  }
         int MemoryLimit { get;  }
         int FileDescriptorLimit { get;  }
+        string InstanceIP { get; }
+        string InternalIP { get; }
     }
 }
