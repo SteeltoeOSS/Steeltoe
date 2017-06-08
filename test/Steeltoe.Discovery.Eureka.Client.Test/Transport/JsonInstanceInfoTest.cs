@@ -62,10 +62,10 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal(InstanceStatus.UP, result.Status);
             Assert.Equal(InstanceStatus.UNKNOWN, result.OverriddenStatus);
             var port = result.Port;
-            Assert.True(Boolean.Parse(port.Enabled));
+            Assert.True(port.Enabled);
             Assert.Equal(8080, port.Port);
             var securePort = result.SecurePort;
-            Assert.False(Boolean.Parse(securePort.Enabled));
+            Assert.False(securePort.Enabled);
             Assert.Equal(443, securePort.Port);
             Assert.Equal(1, result.CountryId);
             var dataCenterInfo = result.DataCenterInfo;
