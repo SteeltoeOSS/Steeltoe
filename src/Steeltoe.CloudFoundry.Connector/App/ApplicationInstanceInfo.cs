@@ -42,7 +42,8 @@ namespace Steeltoe.CloudFoundry.Connector.App
             DiskLimit = opts.DiskLimit;
             MemoryLimit = opts.MemoryLimit;
             FileDescriptorLimit = opts.FileDescriptorLimit;
-
+            InstanceIP = opts.InstanceIP;
+            InternalIP = opts.InternalIP;
         }
         public string InstanceId { get; internal protected set; }
         public string ApplicationId { get; internal protected set; }
@@ -58,6 +59,8 @@ namespace Steeltoe.CloudFoundry.Connector.App
         public int DiskLimit { get; internal protected set; }
         public int MemoryLimit { get; internal protected set; }
         public int FileDescriptorLimit { get; internal protected set; }
+        public string InstanceIP { get; internal protected set; }
+        public string InternalIP { get; internal protected set; }
 
         private string GetInstanceId(CloudFoundryApplicationOptions opts)
         {
