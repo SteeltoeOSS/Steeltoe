@@ -79,7 +79,7 @@ namespace Steeltoe.Discovery.Client.Test
 
             Assert.Equal("unknown", client.InstConfig.AppName);
             Assert.Equal("unknown", client.InstConfig.VirtualHostName);
-            var expectId = client.InstConfig.GetHostName(false) + ":" + "unknown" + ":" + "8080";
+            var expectId = client.InstConfig.GetHostName(false) + ":" + "unknown" + ":" + "80";
             Assert.Equal(expectId, client.InstConfig.InstanceId);
         }
     }
