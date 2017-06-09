@@ -24,7 +24,7 @@ namespace Steeltoe.Discovery.Client
 {
     public class EurekaInstanceOptions : AbstractOptions, IDiscoveryRegistrationOptions, IEurekaInstanceConfig
     {
-        public const int Default_NonSecurePort = 8080;
+        public const int Default_NonSecurePort = 80;
         public const int Default_SecurePort = 443;
         public const int Default_LeaseRenewalIntervalInSeconds = 30;
         public const int Default_LeaseExpirationDurationInSeconds = 90;
