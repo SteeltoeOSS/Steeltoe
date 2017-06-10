@@ -99,6 +99,11 @@ namespace Steeltoe.Discovery.Client
                 instConfig.VirtualHostName = instConfig.AppName;
             }
 
+            if (string.IsNullOrEmpty(instConfig.SecureVirtualHostName))
+            {
+                instConfig.SecureVirtualHostName = instConfig.AppName;
+            }
+
         }
 
         public virtual void ShutdownAsync()
