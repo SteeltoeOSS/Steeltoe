@@ -430,6 +430,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             sb.Append(",");
             sb.Append("IpAddr=" + IpAddr);
             sb.Append(",");
+            sb.Append("Status=" + Status.ToString());
+            sb.Append(",");
             sb.Append("IsUnsecurePortEnabled=" + IsUnsecurePortEnabled);
             sb.Append(",");
             sb.Append("Port=" + Port);
@@ -441,6 +443,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             sb.Append("VipAddress=" + VipAddress);
             sb.Append(",");
             sb.Append("SecureVipAddress=" + SecureVipAddress);
+            sb.Append(",");
+            sb.Append("ActionType=" + Actiontype.ToString());
             sb.Append("]");
             return sb.ToString();
 
