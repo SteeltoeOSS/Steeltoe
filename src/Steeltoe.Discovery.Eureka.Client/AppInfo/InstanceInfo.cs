@@ -428,6 +428,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             sb.Append(",");
             sb.Append("HostName=" + HostName);
             sb.Append(",");
+            sb.Append("IpAddr=" + IpAddr);
+            sb.Append(",");
             sb.Append("IsUnsecurePortEnabled=" + IsUnsecurePortEnabled);
             sb.Append(",");
             sb.Append("Port=" + Port);
