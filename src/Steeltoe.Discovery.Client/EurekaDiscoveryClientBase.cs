@@ -90,7 +90,7 @@ namespace Steeltoe.Discovery.Client
             {
                 var hostName = instConfig.GetHostName(false);
                 var appName = instConfig.AppName;
-                var index = instConfig.NonSecurePort.ToString();
+                var index = (instConfig.NonSecurePort == -1) ? EurekaInstanceOptions.Default_NonSecurePort.ToString() : instConfig.NonSecurePort.ToString();
                 instConfig.InstanceId = hostName + ":" + appName + ":" + index;
             }
 

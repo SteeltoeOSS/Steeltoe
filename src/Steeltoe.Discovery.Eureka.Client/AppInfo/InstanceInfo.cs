@@ -594,9 +594,9 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             info._dataCenterInfo = instanceConfig.DataCenterInfo;
             info._ipAddr = instanceConfig.IpAddress;
             info._hostName = defaultAddress;
-            info._port = instanceConfig.NonSecurePort;
+            info._port = (instanceConfig.NonSecurePort == -1) ? EurekaInstanceConfig.Default_NonSecurePort : instanceConfig.NonSecurePort;
             info._isUnsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
-            info._securePort = instanceConfig.SecurePort;
+            info._securePort = (instanceConfig.SecurePort == -1) ? EurekaInstanceConfig.Default_SecurePort : instanceConfig.SecurePort;
             info._isSecurePortEnabled = instanceConfig.SecurePortEnabled;
             info._vipAddress = instanceConfig.VirtualHostName;
             info._secureVipAddress = instanceConfig.SecureVirtualHostName;

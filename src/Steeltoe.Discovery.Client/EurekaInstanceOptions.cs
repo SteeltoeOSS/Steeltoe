@@ -327,16 +327,16 @@ namespace Steeltoe.Discovery.Client
             }
         }
 
-        private int _nonSecurePort = Default_NonSecurePort;
+        private int _nonSecurePort = -1;
         public int NonSecurePort
         {
             get
             {
-                if (_nonSecurePort != Default_NonSecurePort)
+                if (_nonSecurePort != -1)
                 {
                     return _nonSecurePort;
                 }
-                return GetInt(Eureka?.Instance?.Port, Default_NonSecurePort);
+                return GetInt(Eureka?.Instance?.Port, -1);
             }
 
             set
@@ -363,16 +363,16 @@ namespace Steeltoe.Discovery.Client
             }
         }
 
-        private int _securePort = Default_SecurePort;
+        private int _securePort = -1;
         public int SecurePort
         {
             get
             {
-                if (_securePort != Default_SecurePort)
+                if (_securePort != -1)
                 {
                     return _securePort;
                 }
-                return GetInt(Eureka?.Instance?.SecurePort, Default_SecurePort);
+                return GetInt(Eureka?.Instance?.SecurePort, -1);
             }
 
             set
@@ -635,7 +635,8 @@ namespace Steeltoe.Discovery.Client
         /// <summary>
         /// Configuration property: eureka:instance:securePort
         /// </summary>
-        public string SecurePort { get; set; }
+        public string SecurePort { get;
+            set; }
 
         /// <summary>
         /// Configuration property: eureka:instance:nonSecurePortEnabled

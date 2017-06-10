@@ -29,8 +29,8 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.Null(opts.AppName);
             Assert.Null(opts.AppGroupName);
             Assert.True(opts.IsInstanceEnabledOnInit);
-            Assert.Equal(EurekaInstanceOptions.Default_NonSecurePort, opts.NonSecurePort);
-            Assert.Equal(EurekaInstanceOptions.Default_SecurePort, opts.SecurePort);
+            Assert.Equal(-1, opts.NonSecurePort);
+            Assert.Equal(-1, opts.SecurePort);
             Assert.True(opts.IsNonSecurePortEnabled);
             Assert.False(opts.SecurePortEnabled);
             Assert.Equal(EurekaInstanceOptions.Default_LeaseRenewalIntervalInSeconds, opts.LeaseRenewalIntervalInSeconds);

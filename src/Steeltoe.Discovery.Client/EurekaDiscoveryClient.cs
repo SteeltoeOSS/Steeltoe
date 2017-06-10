@@ -60,7 +60,10 @@ namespace Steeltoe.Discovery.Client
         public IServiceInstance GetLocalServiceInstance()
         {
             return new ThisServiceInstance(InstConfig.GetHostName(false),
-                InstConfig.SecurePortEnabled, InstConfig.MetadataMap, InstConfig.NonSecurePort, InstConfig.AppName);
+                InstConfig.SecurePortEnabled, InstConfig.MetadataMap,
+                (InstConfig.NonSecurePort == -1) ? EurekaInstanceConfig.Default_NonSecurePort : InstConfig.NonSecurePort,
+                (InstConfig.SecurePort == -1) ? EurekaInstanceConfig.Default_SecurePort : InstConfig.SecurePort,
+                InstConfig.AppName);
         }
 
     }
@@ -71,18 +74,21 @@ namespace Steeltoe.Discovery.Client
         private bool _isSecure;
         private IDictionary<string, string> _metadata;
         private int _port;
+        private int _securePort;
         private string _serviceId;
         private Uri _uri;
 
-        public ThisServiceInstance(string host, bool isSecure, IDictionary<string, string> metadata, int port, string serviceId)
+        public ThisServiceInstance(string host, bool isSecure, IDictionary<string, string> metadata, int port, int securePort, string serviceId)
         {
             this._host = host;
             this._isSecure = isSecure;
             this._metadata = metadata;
             this._port = port;
+            this._securePort = securePort;
             this._serviceId = serviceId;
             string scheme = isSecure ? "https" : "http";
-            _uri = new Uri(scheme + "://" + host + ":" + port.ToString());
+            int uriPort = isSecure ? _securePort : _port;
+            _uri = new Uri(scheme + "://" + host + ":" + uriPort.ToString());
         }
         public string Host
         {
