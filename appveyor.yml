@@ -17,20 +17,26 @@ artifacts:
 - path: 'src\Steeltoe.CircuitBreaker.Hystrix.Core\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsStream\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.Hystrix\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.Hystrix.Core\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsStream\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet
-  skip_symbols: true
+  skip_symbols: false
   artifact: /.*\.nupkg/
   server: https://www.myget.org/F/steeltoemaster/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoemaster/symbols/api/v2/package
   api_key:
     secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
   on:
     branch: master
     appveyor_repo_tag: false
 - provider: NuGet
-  skip_symbols: true
+  skip_symbols: false
   artifact: /.*\.nupkg/
   server: https://www.myget.org/F/steeltoedev/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoedev/symbols/api/v2/package  
   api_key:
     secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
   on:
