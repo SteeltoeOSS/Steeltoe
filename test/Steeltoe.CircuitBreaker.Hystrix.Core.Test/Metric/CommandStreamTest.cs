@@ -97,7 +97,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 HystrixThreadPoolOptions topts = new HystrixThreadPoolOptions()
                 {
                     CoreSize = 10,
-                    MaxQueueSize = -1
+                    MaxQueueSize = -1,
+                    ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name)
                 };
 
                 HystrixCommandOptions setter = new HystrixCommandOptions()

@@ -65,7 +65,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             MetricsRollingStatisticalWindowBuckets = GetInteger(HYSTRIX_THREADPOOL_PREFIX, key.Name, "metrics.rollingPercentile.numBuckets", Default_ThreadPoolRollingNumberStatisticalWindowBuckets, defaults?.MetricsRollingStatisticalWindowBuckets);  
         }
 
-        public IHystrixThreadPoolKey ThreadPoolKey { get; }
+        public IHystrixThreadPoolKey ThreadPoolKey { get; internal set;}
 
         /// <summary>
         /// Core thread-pool size that gets passed to <seealso cref="ThreadPoolExecutor#setCorePoolSize(int)"/>
