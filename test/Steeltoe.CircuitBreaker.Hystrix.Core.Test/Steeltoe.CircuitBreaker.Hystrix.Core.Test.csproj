@@ -14,7 +14,7 @@
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <RetainVMGarbageCollection>true</RetainVMGarbageCollection>
-    <ThreadPoolMinThreads>25</ThreadPoolMinThreads>
+    <ThreadPoolMinThreads>50</ThreadPoolMinThreads>
     <ThreadPoolMaxThreads>1250</ThreadPoolMaxThreads>
   </PropertyGroup>
   
