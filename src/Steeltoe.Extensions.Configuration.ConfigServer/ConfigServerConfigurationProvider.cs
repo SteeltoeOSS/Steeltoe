@@ -242,6 +242,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             if (!string.IsNullOrEmpty(_settings.Token))
             {
+                RenewToken(_settings.Token);
                 request.Headers.Add(TOKEN_HEADER, _settings.Token);
             }
 
@@ -474,6 +475,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             IConfigurationRoot existing = config.Build();
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _environment, existing);
             return this;
+
+        }
+
+        internal protected virtual void RenewToken(string token)
+        {
 
         }
 
