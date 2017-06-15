@@ -79,10 +79,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal(ConfigServerClientSettings.DEFAULT_RETRY_ENABLED, options.RetryEnabled);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER, options.RetryMultiplier);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL, options.RetryMaxInterval);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_TIMEOUT_MILLISECONDS, options.Timeout);
             Assert.Null(options.Name);
             Assert.Null(options.Label);
             Assert.Null(options.Username);
             Assert.Null(options.Password);
+            Assert.Null(options.Token);
 
         }
         [Fact]

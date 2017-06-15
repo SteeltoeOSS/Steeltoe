@@ -44,7 +44,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public const string PREFIX = "spring:cloud:config";
 
-        private static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0, 0, 3);
+        public const string TOKEN_HEADER = "X-Config-Token";
+	    public const string STATE_HEADER = "X-Config-State";
+
         protected ConfigServerClientSettings _settings;
         protected IHostingEnvironment _environment;
         protected HttpClient _client;
@@ -238,6 +240,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 request.Headers.Authorization = auth;
             }
 
+            if (!string.IsNullOrEmpty(_settings.Token))
+            {
+                request.Headers.Add(TOKEN_HEADER, _settings.Token);
+            }
+
             return request;
         }
 
@@ -254,12 +261,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             Data["spring:cloud:config:password"] = _settings.Password;
             Data["spring:cloud:config:uri"] = _settings.Uri;
             Data["spring:cloud:config:username"] = _settings.Username;
+            Data["spring:cloud:config:token"] = _settings.Token;
+            Data["spring:cloud:config:timeout"] = _settings.Timeout.ToString();
             Data["spring:cloud:config:validate_certificates"] = _settings.ValidateCertificates.ToString();
             Data["spring:cloud:config:retry:enabled"] = _settings.RetryEnabled.ToString();
             Data["spring:cloud:config:retry:maxAttempts"] = _settings.RetryAttempts.ToString();
             Data["spring:cloud:config:retry:initialInterval"] = _settings.RetryInitialInterval.ToString();
             Data["spring:cloud:config:retry:maxInterval"] = _settings.RetryMaxInterval.ToString();
             Data["spring:cloud:config:retry:multiplier"] = _settings.RetryMultiplier.ToString();
+
         }
 
         /// <summary>
@@ -436,7 +446,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 client = new HttpClient();
             }
 #endif
-            client.Timeout = DEFAULT_TIMEOUT;
+            client.Timeout = TimeSpan.FromMilliseconds(settings.Timeout);
             return client;
         }
 

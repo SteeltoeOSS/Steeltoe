@@ -136,6 +136,21 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
         }
 
+        public string Token
+        {
+            get
+            {
+                return Spring?.Cloud?.Config?.Token;
+            }
+        }
+        public int Timeout
+        {
+            get
+            {
+                return GetInt(Spring?.Cloud?.Config?.Timeout,
+                    ConfigServerClientSettings.DEFAULT_TIMEOUT_MILLISECONDS);
+            }
+        }
 
         public ConfigServerClientSettings Settings
         {
@@ -159,6 +174,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                         ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL);
                 settings.RetryMultiplier = GetDouble(Spring?.Cloud?.Config?.Retry?.Multiplier,
                         ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER);
+                settings.Timeout = GetInt(Spring?.Cloud?.Config?.Timeout,
+                       ConfigServerClientSettings.DEFAULT_TIMEOUT_MILLISECONDS);
 
                 settings.Environment = Spring?.Cloud?.Config?.Env;
                 settings.Label = Spring?.Cloud?.Config?.Label;
@@ -166,6 +183,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 settings.Password = Spring?.Cloud?.Config?.Password;
                 settings.Uri = Spring?.Cloud?.Config?.Uri;
                 settings.Username = Spring?.Cloud?.Config?.Username;
+                settings.Token = Spring?.Cloud?.Config?.Token;
+
 
                 return settings;
             }
@@ -223,6 +242,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public string Password { get; set; }
         public string Uri { get; set; }
         public string Username { get; set; }
+        public string Token { get; set; }
+        public string Timeout { get; set; }
         public string Validate_Certificates { get; set; }
 
     }

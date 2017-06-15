@@ -427,7 +427,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             provider.Load();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
-            Assert.Equal(14, provider.Properties.Count);
+            Assert.Equal(16, provider.Properties.Count);
         }
 
         [Fact]
@@ -560,6 +560,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             settings.Uri = "http://foo.bar/";
             settings.Username = "username";
             settings.ValidateCertificates = false;
+            settings.Token = "vaulttoken";
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, envir);
 
 
@@ -587,6 +588,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("False", value);
             Assert.True(provider.TryGet("spring:cloud:config:validate_certificates", out value));
             Assert.Equal("False", value);
+            Assert.True(provider.TryGet("spring:cloud:config:token", out value));
+            Assert.Equal("vaulttoken", value);
+            Assert.True(provider.TryGet("spring:cloud:config:timeout", out value));
+            Assert.Equal("3000", value);
 
         }
         [Fact]
@@ -678,6 +683,27 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.NotNull(request.Headers.Authorization);
             Assert.Equal("Basic", request.Headers.Authorization.Scheme);
             Assert.Equal(provider.GetEncoded("user", "password"), request.Headers.Authorization.Parameter);
+        }
+
+        [Fact]
+        public void GetRequestMessage_AddsVaultToken_IfNeeded()
+        {
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerClientSettings settings = new ConfigServerClientSettings();
+            settings.Uri = "http://localhost:8888/";
+            settings.Name = "foo";
+            settings.Environment = "development";
+            settings.Token = "MyVaultToken";
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, envir);
+
+            string requestURI = provider.GetConfigServerUri(null);
+            var request = provider.GetRequestMessage(requestURI);
+
+            Assert.Equal(HttpMethod.Get, request.Method);
+            Assert.Equal(requestURI, request.RequestUri.ToString());
+            Assert.True(request.Headers.Contains(ConfigServerConfigurationProvider.TOKEN_HEADER));
+            var headerValues = request.Headers.GetValues(ConfigServerConfigurationProvider.TOKEN_HEADER);
+            Assert.Contains("MyVaultToken", headerValues);
         }
     }
 }

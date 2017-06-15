@@ -48,6 +48,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             settings.RetryMaxInterval = GetRetryMaxInterval(clientConfigsection, root, settings.RetryMaxInterval);
             settings.RetryMultiplier = GetRetryMultiplier(clientConfigsection, root, settings.RetryMultiplier);
             settings.RetryAttempts = GetRetryMaxAttempts(clientConfigsection, root, settings.RetryAttempts);
+            settings.Token = GetToken(clientConfigsection);
+            settings.Timeout = GetTimeout(clientConfigsection, settings.Timeout);
         }
    
         private static int GetRetryMaxAttempts(IConfigurationSection clientConfigsection, IConfigurationRoot root, int def)
@@ -85,6 +87,23 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return GetBoolean("enabled", clientConfigsection, root, def);
         }
 
+        private static string GetToken(IConfigurationSection clientConfigsection)
+        {
+            return clientConfigsection["token"];
+        }
+
+        private static int GetTimeout(IConfigurationSection clientConfigsection, int def)
+        {
+            var val = clientConfigsection["timeout"];
+            if (!string.IsNullOrEmpty(val))
+            {
+                int result;
+                if (int.TryParse(val, out result))
+                    return result;
+            }
+            return def;
+        }
+
         private static string GetUri(IConfigurationSection clientConfigsection, IConfigurationRoot root, string def)
         {
 
@@ -113,6 +132,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             return clientConfigsection["label"];
         }
+ 
 
         private static string GetApplicationName(IConfigurationSection clientConfigsection, IConfigurationRoot root)
         {
@@ -130,7 +150,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return env;
             }
 
-            // Otherwise use ASP.NET 5 defined value (i.e. ASPNET_ENV or Hosting:Environment) (its default is 'Production')
+            // Otherwise use ASP.NET Core defined value (i.e. ASPNET_ENV or Hosting:Environment) (its default is 'Production')
             return environment.EnvironmentName;
         }
 

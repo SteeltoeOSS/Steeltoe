@@ -75,6 +75,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public const bool DEFAULT_RETRY_ENABLED = false;
 
         /// <summary>
+        /// Default timeout in milliseconds
+        /// </summary>
+        public const int DEFAULT_TIMEOUT_MILLISECONDS = 3 * 1000;
+
+        /// <summary>
         /// Initialize Config Server client settings with defaults
         /// </summary>
         public ConfigServerClientSettings() : base()
@@ -89,6 +94,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             RetryMaxInterval = DEFAULT_MAX_RETRY_INTERVAL;
             RetryAttempts = DEFAULT_MAX_RETRY_ATTEMPTS;
             RetryMultiplier = DEFAULT_RETRY_MULTIPLIER;
+            Timeout = DEFAULT_TIMEOUT_MILLISECONDS;
         }
 
         /// <summary>
@@ -169,12 +175,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public virtual string RawUri
         {
-            get
-            {
-                return GetRawUri();
-            }
+            get { return GetRawUri(); }
         }
- 
+
+        /// <summary>
+        /// Returns the token use for Vault
+        /// </summary>
+        public virtual string Token { get; set; }
+
+        /// <summary>
+        /// Returns the request timeout in milliseconds
+        /// </summary>
+        public virtual int Timeout { get; set; }
+
 
         internal string GetRawUri()
         {

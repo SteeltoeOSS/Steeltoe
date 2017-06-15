@@ -114,6 +114,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             'label': 'myLabel',
             'username': 'myUsername',
             'password': 'myPassword',
+            'timeout': 10000,
+            'token' : 'vaulttoken',
             'retry': {
                 'enabled':'false',
                 'initialInterval':55555,
@@ -163,6 +165,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal(55555, settings.RetryInitialInterval);
             Assert.Equal(55555, settings.RetryMaxInterval);
             Assert.Equal(5.5, settings.RetryMultiplier);
+            Assert.Equal(10000, settings.Timeout);
+            Assert.Equal("vaulttoken", settings.Token);
 
         }
 
