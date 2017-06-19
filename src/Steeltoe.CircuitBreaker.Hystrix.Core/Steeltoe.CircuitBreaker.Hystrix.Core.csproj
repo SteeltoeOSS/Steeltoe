@@ -17,7 +17,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HdrHistogram" Version="$(HdrHistogramVersion)" />
+    <PackageReference Include="HdrHistogram" Version="2.24.0-xeywwyqu-PR58" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
