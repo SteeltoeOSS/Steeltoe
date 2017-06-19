@@ -6,14 +6,14 @@ dotnet restore --configfile ..\..\nuget.config
 IF NOT "%APPVEYOR_REPO_TAG_NAME%"=="" (
     IF NOT "%STEELTOE_VERSION_SUFFIX%"=="" (
         dotnet pack --configuration %BUILD_TYPE% --version-suffix %STEELTOE_VERSION_SUFFIX%
-        nuget add -source %USERPROFILE%\localfeed bin\%BUILD_TYPE%.\Steeltoe.CloudFoundry.Connector.%STEELTOE_VERSION%-%STEELTOE_VERSION_SUFFIX%.nupkg
+        nuget add -source %USERPROFILE%\localfeed bin\%BUILD_TYPE%\Steeltoe.CloudFoundry.Connector.%STEELTOE_VERSION%-%STEELTOE_VERSION_SUFFIX%.nupkg
     ) ELSE (
         dotnet pack --configuration %BUILD_TYPE%
         nuget add -source %USERPROFILE%\localfeed bin\%BUILD_TYPE%\Steeltoe.CloudFoundry.Connector.%STEELTOE_VERSION%.nupkg
     )    
 )
 IF "%APPVEYOR_REPO_TAG_NAME%"=="" (dotnet pack --configuration %BUILD_TYPE% --version-suffix %STEELTOE_VERSION_SUFFIX% --include-symbols --include-source)
-IF "%APPVEYOR_REPO_TAG_NAME%"=="" (nuget add -source %USERPROFILE%\localfeed bin\%BUILD_TYPE%.\Steeltoe.CloudFoundry.Connector.%STEELTOE_VERSION%-%STEELTOE_VERSION_SUFFIX%.nupkg)
+IF "%APPVEYOR_REPO_TAG_NAME%"=="" (nuget add -source %USERPROFILE%\localfeed bin\%BUILD_TYPE%\Steeltoe.CloudFoundry.Connector.%STEELTOE_VERSION%-%STEELTOE_VERSION_SUFFIX%.nupkg)
 cd %APPVEYOR_BUILD_FOLDER%
 
 cd src\Steeltoe.CloudFoundry.Connector.MySql
