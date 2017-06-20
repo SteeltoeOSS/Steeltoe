@@ -17,7 +17,7 @@
   </PropertyGroup>
 
 <ItemGroup>
-    <PackageReference Include="Steeltoe.CloudFoundry.Connector" Version="1.1.0-dev-00123" />
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector" Version="$(SteeltoeVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
 </ItemGroup>
 
