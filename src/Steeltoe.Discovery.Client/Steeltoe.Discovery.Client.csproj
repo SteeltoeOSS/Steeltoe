@@ -17,7 +17,7 @@
   </PropertyGroup>
 
 <ItemGroup>
-    <PackageReference Include="Steeltoe.Discovery.Eureka.Client" Version="$(SteeltoeVersion)-*" />
+    <PackageReference Include="Steeltoe.Discovery.Eureka.Client" Version="$(SteeltoeVersion)-$(VersionSuffix)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
 </ItemGroup>
