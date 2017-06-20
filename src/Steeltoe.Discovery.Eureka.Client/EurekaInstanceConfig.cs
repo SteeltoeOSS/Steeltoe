@@ -81,6 +81,7 @@ namespace Steeltoe.Discovery.Eureka
         public string HealthCheckUrl { get; set; }
         public string SecureHealthCheckUrl { get; set; }
         public string[] DefaultAddressResolutionOrder { get; set; }
+        public bool PreferIpAddress { get; set; }
         public string GetHostName(bool refresh)
         {
             if (refresh || string.IsNullOrEmpty(thisHostName))

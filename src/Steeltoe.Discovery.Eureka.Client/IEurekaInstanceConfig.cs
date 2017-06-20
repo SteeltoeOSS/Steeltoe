@@ -247,5 +247,6 @@ namespace Steeltoe.Discovery.Eureka
         string GetHostName(bool refresh);
 
         string HostName { get; set; }
+        bool PreferIpAddress { get; set; }
     }
 }

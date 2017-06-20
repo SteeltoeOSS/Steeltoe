@@ -584,7 +584,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             }
 
             string defaultAddress = instanceConfig.GetHostName(false);
-            if (string.IsNullOrEmpty(defaultAddress))
+            if (instanceConfig.PreferIpAddress || string.IsNullOrEmpty(defaultAddress))
             {
                 defaultAddress = instanceConfig.IpAddress;
             }

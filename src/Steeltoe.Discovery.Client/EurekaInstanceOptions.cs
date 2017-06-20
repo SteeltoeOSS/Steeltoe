@@ -502,9 +502,26 @@ namespace Steeltoe.Discovery.Client
             }
         }
 
+        private bool _preferIpAddress;
+        public bool PreferIpAddress
+        {
+            get
+            {
+                if (_preferIpAddress != false)
+                {
+                    return _preferIpAddress;
+                }
+                return GetBoolean(Eureka?.Instance?.PreferIpAddress, false);
+            }
 
+            set
+            {
+                _preferIpAddress = value;
+            }
+        }
         public string GetHostName(bool refresh)
         {
+            
             if (_hostName != null)
                 return _hostName;
 
@@ -718,6 +735,11 @@ namespace Steeltoe.Discovery.Client
         /// Configuration property: eureka:instance:hostName
         /// </summary>
         public string HostName { get; set; }
+
+        /// <summary>
+        /// Configuration property: eureka:instance:preferIpAddress
+        /// </summary>
+        public string PreferIpAddress { get; set; }
     }
 
 }
