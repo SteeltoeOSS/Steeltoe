@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\config\versions.props" />
+  <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
     <Description>ASP.NET Core Spring Cloud Config Server Configuration Provider</Description>
