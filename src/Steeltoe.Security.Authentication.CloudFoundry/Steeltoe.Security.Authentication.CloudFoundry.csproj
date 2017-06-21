@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Steeltoe.CloudFoundry.Connector.OAuth" Version="$(SteeltoeConnectorVersion)-*" />
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector.OAuth" Version="$(SteeltoeConnectorVersion)" />
   </ItemGroup>
 
 </Project>
