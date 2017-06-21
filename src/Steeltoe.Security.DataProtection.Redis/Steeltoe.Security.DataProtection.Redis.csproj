@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\config\versions.props" />
+  <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
     <Description>ASP.NET Core DataProtection Redis Key Store</Description>
@@ -19,7 +19,6 @@
 <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.Redis" Version="$(AspNetCoreDataProtectionRedisVersion)" />
-    <!--<PackageReference Include="StackExchange.Redis.StrongName" Version="$(StackExchangeVersion)" />-->
   </ItemGroup>
 
 </Project>

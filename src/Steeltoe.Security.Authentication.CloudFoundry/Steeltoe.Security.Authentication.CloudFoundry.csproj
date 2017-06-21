@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\config\versions.props" />
+  <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
     <Description>ASP.NET Core External Security Provider for CloudFoundry</Description>
@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Steeltoe.CloudFoundry.Connector.OAuth" Version="$(SteeltoeVersion)-*" />
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector.OAuth" Version="$(SteeltoeConnectorVersion)-*" />
   </ItemGroup>
 
 </Project>
