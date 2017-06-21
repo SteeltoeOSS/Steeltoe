@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\config\versions.props" />
+  <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
     <Description>Neflix Eureka Client</Description>
