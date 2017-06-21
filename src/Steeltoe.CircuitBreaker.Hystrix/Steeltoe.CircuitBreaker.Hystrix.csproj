@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
- <Import Project="..\..\config\versions.props" />
+
+ <Import Project="..\..\versions.props" />
+ 
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Client - ASPNET Core</Description>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
@@ -17,10 +19,17 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+      <ProjectReference Include="..\Steeltoe.CircuitBreaker.Hystrix.Core\Steeltoe.CircuitBreaker.Hystrix.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+      <PackageReference Include="Steeltoe.CircuitBreaker.Hystrix.Core" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Steeltoe.CircuitBreaker.Hystrix.Core" Version="$(SteeltoeVersion)-*" />
   </ItemGroup>
 
 </Project>

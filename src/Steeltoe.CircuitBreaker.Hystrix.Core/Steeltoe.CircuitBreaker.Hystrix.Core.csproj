@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
- <Import Project="..\..\config\versions.props" />
+
+ <Import Project="..\..\versions.props" />
+ 
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Client</Description>
     <Authors>Pivotal;dtillman</Authors>
@@ -16,8 +18,9 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="HdrHistogram" Version="2.24.0-xeywwyqu-PR58" />
+    <PackageReference Include="HdrHistogram" Version="$(HdrHistogramVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />

@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
- <Import Project="..\..\config\versions.props" />
+
+ <Import Project="..\..\versions.props" />
+ 
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.CircuitBreaker.Hystrix.Core</Description>
     <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
