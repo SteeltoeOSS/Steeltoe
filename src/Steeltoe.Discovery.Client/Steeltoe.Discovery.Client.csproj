@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\config\versions.props" />
+  <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
     <Description>Steeltoe Service Discovery Client</Description>
@@ -16,8 +16,15 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 
+<ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.Discovery.Eureka.Client\Steeltoe.Discovery.Eureka.Client.csproj" />
+</ItemGroup>
+
+<ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Discovery.Eureka.Client" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+</ItemGroup>
+
 <ItemGroup>
-    <PackageReference Include="Steeltoe.Discovery.Eureka.Client" Version="$(SteeltoeVersion)-$(VersionSuffix)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
 </ItemGroup>
