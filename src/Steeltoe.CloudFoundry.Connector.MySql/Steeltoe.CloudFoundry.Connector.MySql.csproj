@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\config\versions.props" />
+  <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
     <Description>CloudFoundry Connector for ASP.NET Core MySql Data Provider</Description>
@@ -20,8 +20,15 @@
     <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
 </ItemGroup>
 
+<ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.csproj" />
+</ItemGroup>
+
+<ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+</ItemGroup>
+
 <ItemGroup>
-    <PackageReference Include="Steeltoe.CloudFoundry.Connector" Version="$(SteeltoeVersion)-*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EFCoreVersion)" />
 </ItemGroup>
