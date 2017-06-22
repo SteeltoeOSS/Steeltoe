@@ -3,7 +3,7 @@
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
     <SteeltoeConnectorVersion>1.1.0-dev-00150</SteeltoeConnectorVersion>
-    <PivotalDiscoveryVersion>1.1.0-dev-00077</PivotalDiscoveryVersion>    
+    <PivotalDiscoveryVersion>1.1.0-dev-00087</PivotalDiscoveryVersion>    
     <AspNetCoreVersion>1.1.0</AspNetCoreVersion>
     <CoreFxVersion>4.3.0</CoreFxVersion>
     <JsonNetVersion>9.0.1</JsonNetVersion>

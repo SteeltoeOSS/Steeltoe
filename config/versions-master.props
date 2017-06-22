@@ -2,8 +2,8 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <SteeltoeConnectorVersion>1.1.0-master-00149</SteeltoeConnectorVersion>
-    <PivotalDiscoveryVersion>1.1.0-master-00078</PivotalDiscoveryVersion>
+    <SteeltoeConnectorVersion>1.1.0-master-00156</SteeltoeConnectorVersion>
+    <PivotalDiscoveryVersion>1.1.0-master-00085</PivotalDiscoveryVersion>
     <AspNetCoreVersion>1.1.0</AspNetCoreVersion>
     <CoreFxVersion>4.3.0</CoreFxVersion>
     <JsonNetVersion>9.0.1</JsonNetVersion>
