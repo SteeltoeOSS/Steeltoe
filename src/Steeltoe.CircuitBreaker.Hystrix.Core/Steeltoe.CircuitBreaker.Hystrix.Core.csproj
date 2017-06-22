@@ -4,7 +4,7 @@
  
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Client</Description>
-    <Authors>Pivotal;dtillman</Authors>
+    <Authors>Pivotal,dtillman</Authors>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>

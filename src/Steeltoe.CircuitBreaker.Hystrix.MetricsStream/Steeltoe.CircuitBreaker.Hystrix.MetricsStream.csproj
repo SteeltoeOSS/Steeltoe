@@ -2,12 +2,14 @@
  <Import Project="..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Metrics Event Stream</Description>
+    <Authors>Pivotal,dtillman</Authors>
     <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStream</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStream</PackageId>
     <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>

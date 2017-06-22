@@ -1,5 +1,6 @@
 language: csharp
 dist: trusty
+sudo: required
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true

@@ -6,7 +6,7 @@
     <Description>Steeltoe Neflix Hystrix Client - ASPNET Core</Description>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <Authors>Pivotal;dtillman</Authors>
+    <Authors>Pivotal,dtillman</Authors>
     <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix</PackageId>
