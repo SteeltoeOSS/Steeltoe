@@ -10,7 +10,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     public abstract class HystrixBaseOptions
     {
 
-        protected IHystrixDynamicOptions dynamic;
+        internal protected IHystrixDynamicOptions dynamic;
 
         protected HystrixBaseOptions(IHystrixDynamicOptions dynamicOptions)
         {

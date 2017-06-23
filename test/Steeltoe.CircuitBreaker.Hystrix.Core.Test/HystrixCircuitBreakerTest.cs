@@ -38,10 +38,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 metricsInstance.ResetStream();
             }
-
-            // HystrixCommandMetrics.Reset();
-            //HystrixCircuitBreakerFactory.Reset();
-            //Hystrix.Reset();
         }
         /**
           * Test that if all 'marks' are successes during the test window that it does NOT trip the circuit.

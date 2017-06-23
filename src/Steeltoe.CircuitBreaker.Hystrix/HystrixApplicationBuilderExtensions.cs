@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Microsoft.AspNetCore.Builder;
 
 
@@ -22,6 +23,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
         public static IApplicationBuilder UseHystrixRequestContext(this IApplicationBuilder builder)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+            
             return builder.UseMiddleware<HystrixRequestContextMiddleware>();
         }
     }
