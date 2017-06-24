@@ -19,7 +19,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Config;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
-
+using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 
@@ -28,30 +28,58 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
         public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
         {
+
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+
             services.AddSingleton<HystrixDashboardStream>(HystrixDashboardStream.GetInstance());
         }
 
         public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             services.AddSingleton<HystrixRequestEventsStream>(HystrixRequestEventsStream.GetInstance());
         }
 
         public static void AddHystrixUtilizationStream(this IServiceCollection services, IConfiguration config)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             services.AddSingleton<HystrixUtilizationStream>(HystrixUtilizationStream.GetInstance());
         }
 
         public static void AddHystrixConfigStream(this IServiceCollection services, IConfiguration config)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             services.AddSingleton<HystrixConfigurationStream>(HystrixConfigurationStream.GetInstance());
         }
 
         public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             services.AddHystrixMetricsStream(config);
             services.AddHystrixConfigStream(config);
             services.AddHystrixRequestEventStream(config);
             services.AddHystrixUtilizationStream(config);
         }
+
     }
 }

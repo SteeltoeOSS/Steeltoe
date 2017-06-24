@@ -17,3 +17,5 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.Core.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test")]

@@ -23,8 +23,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
 {
     public class HystrixStreamBaseController : Controller
     {
-        private IObservable<string> sampleStream;
+        internal IObservable<string> sampleStream;
 
+        internal IDisposable sampleSubscription = null;
 
         public HystrixStreamBaseController(IObservable<string> observable)
         {
@@ -39,7 +40,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
             Response.Headers.Add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
             Response.Headers.Add("Pragma", "no-cache");
 
-            IDisposable sampleSubscription = null;
             sampleSubscription = sampleStream
                 .ObserveOn(Scheduler.Default)
                 .Subscribe(

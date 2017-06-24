@@ -46,6 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
         {
             HandleRequest();
             await Request.HttpContext.RequestAborted;
+            sampleSubscription.Dispose();
         }
     }
 }
