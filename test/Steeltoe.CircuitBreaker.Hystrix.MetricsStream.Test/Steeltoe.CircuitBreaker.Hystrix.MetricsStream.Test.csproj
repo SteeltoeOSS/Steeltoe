@@ -21,13 +21,26 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.CircuitBreaker.Hystrix.MetricsStream\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.CircuitBreaker.Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj" />    
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
+    
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
+    
+    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
+    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
+    
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>

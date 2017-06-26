@@ -26,10 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)"  PrivateAssets="All" />
+    
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
     <PackageReference Include="Steeltoe.CloudFoundry.Connector.Hystrix" Version="$(SteeltoeConnectorVersion)" />

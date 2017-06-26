@@ -13,24 +13,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
-using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
-using System;
+using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
-    public static class HystrixApplicationBuilderExtensions
+    public static class CountDownEventExtensions
     {
-        public static IApplicationBuilder UseHystrixMetricsStream(this IApplicationBuilder builder)
+        public static void SignalEx(this CountdownEvent target)
         {
-            if (builder == null)
+            if (target.CurrentCount == 0)
             {
-                throw new ArgumentNullException(nameof(builder));
+                return;
             }
-
-            var service = builder.ApplicationServices.GetRequiredService<HystrixMetricsStreamPublisher>();
-            return builder;
+            target.Signal();
         }
     }
 }

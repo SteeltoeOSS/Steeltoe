@@ -15,13 +15,15 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+using Steeltoe.CloudFoundry.Connector.Hystrix;
 using System;
 
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
-    public class HystrixServiceCollectionExtensionsTest
+    public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     {
 
         [Fact]
@@ -42,8 +44,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
             var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixRequestEventStream(config));
             Assert.Contains(nameof(services), ex4.Message);
 
-            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams( config));
+            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(config));
             Assert.Contains(nameof(services), ex5.Message);
+        }
+
+        [Fact]
+        public void AddHystrixMetricsStream_AddsExpectedServices()
+        {
+            IServiceCollection services = new ServiceCollection();
+            IConfiguration config = new ConfigurationBuilder().Build();
+            services.AddHystrixMetricsStream(config);
+            var provider = services.BuildServiceProvider();
+            var dashStream = provider.GetService<HystrixDashboardStream>();
+            Assert.NotNull(dashStream);
+            var publisher = provider.GetService<HystrixMetricsStreamPublisher>();
+            Assert.NotNull(publisher);
+            var factory = provider.GetService<HystrixConnectionFactory>();
+            Assert.NotNull(factory);
+
+            publisher.sampleSubscription.Dispose();
+
         }
     }
 }

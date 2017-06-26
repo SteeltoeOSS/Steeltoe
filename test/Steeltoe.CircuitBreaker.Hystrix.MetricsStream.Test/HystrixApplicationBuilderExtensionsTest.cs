@@ -1,7 +1,4 @@
-//
-// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -13,30 +10,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit;
-using Xunit.Abstractions;
+
 using Microsoft.AspNetCore.Builder;
 using System;
+using System.Linq;
+using Xunit;
 
-
-namespace Steeltoe.CircuitBreaker.Hystrix.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
-    public class HystrixCircuitBreakerTest
+    public class HystrixApplicationBuilderExtensionsTest : HystrixTestBase
     {
-        ITestOutputHelper output;
-        public HystrixCircuitBreakerTest(ITestOutputHelper output) : base()
-        {
-            this.output = output;
-        }
-            
         [Fact]
-        public void UseHystrixRequestContext_ThrowsIfBuilderNull() 
+        public void UseHystrixMetricsStream_ThrowsIfBuilderNull()
         {
             IApplicationBuilder builder = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => HystrixApplicationBuilderExtensions.UseHystrixRequestContext(builder));
+            var ex = Assert.Throws<ArgumentNullException>(() => builder.UseHystrixMetricsStream());
             Assert.Contains(nameof(builder), ex.Message);
         }
-
     }
 }

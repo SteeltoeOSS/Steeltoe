@@ -41,7 +41,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
             Response.Headers.Add("Pragma", "no-cache");
 
             sampleSubscription = sampleStream
-                .ObserveOn(Scheduler.Default)
+                .ObserveOn(NewThreadScheduler.Default)
                 .Subscribe(
                     async (sampleDataAsString) =>
                     {

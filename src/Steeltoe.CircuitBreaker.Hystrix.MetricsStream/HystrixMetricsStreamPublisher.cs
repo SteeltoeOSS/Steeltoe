@@ -32,14 +32,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
     public class HystrixMetricsStreamPublisher
     {
         IObservable<List<string>> observable;
-        ConnectionFactory factory;
-        IDisposable sampleSubscription;
+        internal ConnectionFactory factory;
+        internal IDisposable sampleSubscription;
         IDiscoveryClient discoveryClient;
         ILogger<HystrixMetricsStreamPublisher> logger;
 
         private const string SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE = "spring.cloud.hystrix.stream";
 
-        public HystrixMetricsStreamPublisher(HystrixDashboardStream stream, HystrixConnectionFactory factory, ILogger<HystrixMetricsStreamPublisher> logger, IDiscoveryClient discoveryClient = null)
+        public HystrixMetricsStreamPublisher(HystrixDashboardStream stream, HystrixConnectionFactory factory, ILogger<HystrixMetricsStreamPublisher> logger = null, IDiscoveryClient discoveryClient = null)
         {
             this.discoveryClient = discoveryClient;
             this.logger = logger;
@@ -49,15 +49,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
             this.factory = factory.ConnectionFactory as ConnectionFactory;
 
-            Task.Factory.StartNew(() => { StartMetricsPublishing(); });
+            StartMetricsPublishing();
         }
 
         public void StartMetricsPublishing()
         {
-            logger.LogInformation("Hystrix Metrics starting");
+            logger?.LogInformation("Hystrix Metrics starting");
 
             sampleSubscription = observable
-            .ObserveOn(Scheduler.Default)
+            .ObserveOn(NewThreadScheduler.Default)
             .Subscribe(
                 (jsonList) =>
                 {
@@ -72,7 +72,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                                 {
                                     if (!string.IsNullOrEmpty(sampleDataAsString))
                                     {
-                                        logger.LogDebug("Hystrix Metrics: {0}", sampleDataAsString.ToString());
+                                        logger?.LogDebug("Hystrix Metrics: {0}", sampleDataAsString.ToString());
 
                                         var body = Encoding.UTF8.GetBytes(sampleDataAsString);
                                         var props = channel.CreateBasicProperties();
@@ -85,7 +85,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                     }
                     catch (Exception e)
                     {
-                        logger.LogError("Error sending metrics to Hystrix dashboard, metrics streaming disabled: {0}", e);
+                        logger?.LogError("Error sending metrics to Hystrix dashboard, metrics streaming disabled: {0}", e);
                         if (sampleSubscription != null)
                         {
                             sampleSubscription.Dispose();
@@ -96,7 +96,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                 },
                 (error) =>
                 {
-                    logger.LogError("Error sending metrics to Hystrix dashboard, metrics streaming disabled: {0}", error);
+                    logger?.LogError("Error sending metrics to Hystrix dashboard, metrics streaming disabled: {0}", error);
                     if (sampleSubscription != null)
                     {
                         sampleSubscription.Dispose();
@@ -105,7 +105,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                 },
                 () =>
                 {
-                    logger.LogInformation("Hystrix Metrics shutdown");
+                    logger?.LogInformation("Hystrix Metrics shutdown");
                     if (sampleSubscription != null)
                     {
                         sampleSubscription.Dispose();
