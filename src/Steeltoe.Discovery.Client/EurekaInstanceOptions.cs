@@ -585,14 +585,15 @@ namespace Steeltoe.Discovery.Client
 
         protected internal string GetAppName()
         {
-            if (!string.IsNullOrEmpty(Spring?.Application?.Name))
-            {
-                return Spring?.Application?.Name;
-            }
             if (!string.IsNullOrEmpty(Eureka?.Instance?.AppName))
             {
                 return Eureka?.Instance?.AppName;
             }
+            if (!string.IsNullOrEmpty(Spring?.Application?.Name))
+            {
+                return Spring?.Application?.Name;
+            }
+
             return null;
         }
 
