@@ -90,12 +90,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected new virtual void Run()
         {
+            var result = RunAsync().Result;
+            return;
         }
- 
+
         protected new virtual void RunFallback()
         {
-            throw new InvalidOperationException("No fallback available.");
+            var result = RunFallbackAsync().Result;
+            return;
         }
+
+        //protected virtual async Task RunAsync()
+        //{
+        //}
+
+        //protected new virtual async Task RunFallbackAsync()
+        //{
+        //    throw new InvalidOperationException("No fallback available.");
+        //}
 
         protected override Unit DoRun()
         {
@@ -260,13 +272,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected virtual TResult Run()
         {
-            return default(TResult);
+            return RunAsync().Result;
         }
 
         protected virtual TResult RunFallback()
         {
+            return RunFallbackAsync().Result;
+        }
+
+        protected virtual async Task<TResult> RunAsync()
+        {
+            return default(TResult);
+        }
+
+        protected virtual async Task<TResult> RunFallbackAsync()
+        {
             throw new InvalidOperationException("No fallback available.");
         }
+
 
         protected override TResult DoRun()
         {

@@ -834,12 +834,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.COMPLETED);
 
-                //if (options.ExecutionTimeoutEnabled)
-                //{
-
-                //    this.token = this.usersToken;
-                //}
-
                 Exception returned = WrapWithOnExecutionErrorHook(ex);
                 if (ex == returned)
                     throw;
@@ -848,8 +842,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         }
         private TResult ExecuteRunFallback()
         {
-       
-            return DoFallback();
+            try
+            {
+                return DoFallback();
+            } catch (AggregateException ex)
+            {
+                Exception flatten = GetException(ex);
+                throw flatten.InnerException;
+            }
 
         }
         private bool IsUnrecoverableError(Exception t)
