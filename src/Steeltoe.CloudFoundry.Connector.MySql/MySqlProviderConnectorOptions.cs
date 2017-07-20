@@ -48,6 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         public string Username { get; set; }
         public string Password { get; set;  }
         public string Database { get; set; }
+        public string SslMode { get; set; }
 
         public override string ToString()
         {
@@ -61,6 +62,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             AddKeyValue(sb, nameof(Username), Username);
             AddKeyValue(sb, nameof(Password), Password);
             AddKeyValue(sb, nameof(Database), Database);
+            AddKeyValue(sb, nameof(SslMode), SslMode);
             return sb.ToString();
         }
 
