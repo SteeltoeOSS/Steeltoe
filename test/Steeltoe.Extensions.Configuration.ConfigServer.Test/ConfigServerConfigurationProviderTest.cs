@@ -278,6 +278,57 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
+        public void ConvertArray_NotArrayValue()
+        {
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
+            string result = provider.ConvertArrayKey("foobar");
+            Assert.Equal("foobar", result);
+        }
+        [Fact]
+        public void ConvertArray_NotArrayValue2()
+        {
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
+            string result = provider.ConvertArrayKey("foobar[bar]");
+            Assert.Equal("foobar[bar]", result);
+        }
+
+        [Fact]
+        public void ConvertArray_WithArrayValue()
+        {
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
+            string result = provider.ConvertArrayKey("foobar[1234]");
+            Assert.Equal("foobar:1234", result);
+        }
+
+        [Fact]
+        public void ConvertArray_WithArrayArrayValue()
+        {
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
+            string result = provider.ConvertArrayKey("foobar[1234][5678]");
+            Assert.Equal("foobar:1234:5678", result);
+        }
+        [Fact]
+        public void ConvertArray_WithArrayArrayNotAtEnd()
+        {
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
+            string result = provider.ConvertArrayKey("foobar[1234][5678]barbar");
+            Assert.Equal("foobar[1234][5678]barbar", result);
+        }
+        [Fact]
+        public void ConvertKey_WithArrayArrayValue()
+        {
+            IHostingEnvironment envir = new HostingEnvironment();
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), envir);
+            string result = provider.ConvertKey("a.b.foobar[1234][5678].barfoo.boo[123]");
+            Assert.Equal("a:b:foobar:1234:5678:barfoo:boo:123", result);
+        }
+
+        [Fact]
         public async void RemoteLoadAsync_InvalidPath()
         {
             // Arrange

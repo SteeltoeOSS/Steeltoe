@@ -29,6 +29,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -398,8 +399,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 try
                 {
-                    string key = kvp.Key.Replace(".", ConfigurationPath.KeyDelimiter);
-                    string value = kvp.Value.ToString();
+                    string key = ConvertKey(kvp.Key);
+                    string value = ConvertValue(kvp.Value);
                     Data[key] = value;
                 }
                 catch (Exception e)
@@ -409,6 +410,42 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             }
         }
+     
+        internal protected virtual string ConvertKey(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return key;
+            }
+
+            string[] split = key.Split('.');
+            StringBuilder sb = new StringBuilder();
+            foreach(var part in split)
+            {
+                string keyPart = ConvertArrayKey(part);
+                sb.Append(keyPart);
+                sb.Append(ConfigurationPath.KeyDelimiter);
+     
+            }
+            return sb.ToString(0, sb.Length - 1);
+ 
+        }
+
+        private const string arrayPattern = @"(\[[0-9]+\])*$";
+        internal protected virtual string ConvertArrayKey(string key)
+        {
+            return Regex.Replace(key, arrayPattern, (match) =>
+            {
+                string result = match.Value.Replace("[", ":").Replace("]", string.Empty);
+                return result;
+            });
+        }
+
+        internal protected virtual string ConvertValue(object value)
+        {
+            return value.ToString();
+        }
+
         /// <summary>
         /// Encode the username password for a http request
         /// </summary>
