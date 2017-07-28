@@ -15,6 +15,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CloudFoundry.Connector.Hystrix;
 using System;
@@ -53,10 +54,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         {
             IServiceCollection services = new ServiceCollection();
             IConfiguration config = new ConfigurationBuilder().Build();
+            services.AddOptions();
             services.AddHystrixMetricsStream(config);
             var provider = services.BuildServiceProvider();
+
             var dashStream = provider.GetService<HystrixDashboardStream>();
             Assert.NotNull(dashStream);
+            var options = provider.GetService<IOptions<HystrixMetricsStreamOptions>>();
+            Assert.NotNull(options);
             var publisher = provider.GetService<HystrixMetricsStreamPublisher>();
             Assert.NotNull(publisher);
             var factory = provider.GetService<HystrixConnectionFactory>();

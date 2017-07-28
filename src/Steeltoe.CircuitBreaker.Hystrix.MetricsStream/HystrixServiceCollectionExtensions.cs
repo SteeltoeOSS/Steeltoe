@@ -28,6 +28,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public static class HystrixServiceCollectionExtensions
     {
+        private const string HYSTRIX_STREAM_PREFIX = "hystrix:stream";
+
         public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
@@ -37,6 +39,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             services.AddSingleton<HystrixDashboardStream>(HystrixDashboardStream.GetInstance());
             services.AddHystrixConnection(config);
+            services.Configure<HystrixMetricsStreamOptions>(config.GetSection(HYSTRIX_STREAM_PREFIX));
             services.AddSingleton<HystrixMetricsStreamPublisher>();
         }
 

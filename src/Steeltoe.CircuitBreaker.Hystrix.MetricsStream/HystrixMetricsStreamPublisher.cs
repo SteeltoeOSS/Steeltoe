@@ -25,6 +25,9 @@ using System.Text;
 using Steeltoe.CloudFoundry.Connector.Hystrix;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using System.Security.Authentication;
+using System.Net.Security;
+using Microsoft.Extensions.Options;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 {
@@ -36,20 +39,47 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
         internal IDisposable sampleSubscription;
         IDiscoveryClient discoveryClient;
         ILogger<HystrixMetricsStreamPublisher> logger;
+        HystrixMetricsStreamOptions options;
+        internal IConnection connection;
+        internal IModel channel;
 
         private const string SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE = "spring.cloud.hystrix.stream";
 
-        public HystrixMetricsStreamPublisher(HystrixDashboardStream stream, HystrixConnectionFactory factory, ILogger<HystrixMetricsStreamPublisher> logger = null, IDiscoveryClient discoveryClient = null)
+        public HystrixMetricsStreamPublisher(IOptions<HystrixMetricsStreamOptions> options, HystrixDashboardStream stream, HystrixConnectionFactory factory, ILogger<HystrixMetricsStreamPublisher> logger = null, IDiscoveryClient discoveryClient = null)
         {
             this.discoveryClient = discoveryClient;
             this.logger = logger;
+            this.options = options.Value;
 
             observable = stream.Observe().Map((data) => {
                 return Serialize.ToJsonList(data, this.discoveryClient); });
 
             this.factory = factory.ConnectionFactory as ConnectionFactory;
+            SslOption sslOption = this.factory.Ssl;
+            if (sslOption != null && sslOption.Enabled && !this.options.Validate_Certificates)
+            {
+                logger?.LogInformation("Hystrix Metrics disabling certificate validation");
+                sslOption.AcceptablePolicyErrors = SslPolicyErrors.RemoteCertificateChainErrors |
+                    SslPolicyErrors.RemoteCertificateNameMismatch | SslPolicyErrors.RemoteCertificateNotAvailable;
+            }
 
             StartMetricsPublishing();
+        }
+
+        private bool SetupConnection()
+        {
+            try
+            {
+                connection = this.factory.CreateConnection();
+                channel = connection.CreateModel();
+                logger?.LogInformation("Hystrix Metrics connected!");
+                return true;
+            }
+            catch (Exception e)
+            {
+                logger?.LogError("Error creating connection/channel, metrics streaming disabled: {0}", e);
+                return false;
+            }
         }
 
         public void StartMetricsPublishing()
@@ -61,26 +91,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             .Subscribe(
                 (jsonList) =>
                 {
-
+                    if (connection == null)
+                    {
+                        SetupConnection();
+                    }
                     try
                     {
-                        using (var connection = factory.CreateConnection())
+                        if (channel != null)
                         {
-                            using (var channel = connection.CreateModel())
+                            foreach (var sampleDataAsString in jsonList)
                             {
-                                foreach (var sampleDataAsString in jsonList)
+                                if (!string.IsNullOrEmpty(sampleDataAsString))
                                 {
-                                    if (!string.IsNullOrEmpty(sampleDataAsString))
-                                    {
-                                        logger?.LogDebug("Hystrix Metrics: {0}", sampleDataAsString.ToString());
+                                    logger?.LogDebug("Hystrix Metrics: {0}", sampleDataAsString.ToString());
 
-                                        var body = Encoding.UTF8.GetBytes(sampleDataAsString);
-                                        var props = channel.CreateBasicProperties();
-                                        props.ContentType = "application/json";
-                                        channel.BasicPublish(SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE, "", props, body);
-                                    }
+                                    var body = Encoding.UTF8.GetBytes(sampleDataAsString);
+                                    var props = channel.CreateBasicProperties();
+                                    props.ContentType = "application/json";
+                                    channel.BasicPublish(SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE, "", props, body);
                                 }
                             }
+                        } else
+                        {
+                            logger?.LogDebug("Discarding Hystrix Metrics, no channel");
                         }
                     }
                     catch (Exception e)
@@ -91,6 +124,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                             sampleSubscription.Dispose();
                             sampleSubscription = null;
                         }
+                        channel.Dispose();
+                        connection.Dispose();
+                        channel = null;
                     }
 
                 },
@@ -102,6 +138,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                         sampleSubscription.Dispose();
                         sampleSubscription = null;
                     }
+                    channel.Dispose();
+                    connection.Dispose();
+                    channel = null;
                 },
                 () =>
                 {
@@ -111,6 +150,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                         sampleSubscription.Dispose();
                         sampleSubscription = null;
                     }
+                    channel.Dispose();
+                    connection.Dispose();
+                    channel = null;
                 });
 
 

@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CloudFoundry.Connector.Hystrix;
@@ -27,12 +29,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         {
             var stream = HystrixDashboardStream.GetInstance();
             var factory = new HystrixConnectionFactory(new ConnectionFactory());
-
-            var publisher = new HystrixMetricsStreamPublisher(stream, factory);
+            var options = new OptionsWrapper<HystrixMetricsStreamOptions>()
+            {
+                Value = new HystrixMetricsStreamOptions()
+            };
+            var publisher = new HystrixMetricsStreamPublisher(options, stream, factory);
             Assert.NotNull(publisher.sampleSubscription);
             Assert.NotNull(publisher.factory);
             publisher.sampleSubscription.Dispose();
         }
 
+    }
+
+    class OptionsWrapper<T> : IOptions<T> where T: class, new()
+    {
+        public T Value { get; set; }
     }
 }

@@ -100,15 +100,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return;
         }
 
-        //protected virtual async Task RunAsync()
-        //{
-        //}
-
-        //protected new virtual async Task RunFallbackAsync()
-        //{
-        //    throw new InvalidOperationException("No fallback available.");
-        //}
-
         protected override Unit DoRun()
         {
             _run();
