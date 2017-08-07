@@ -23,7 +23,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
 {
-    public class EndpointServiceCollectionTest
+    public class EndpointServiceCollectionTest : BaseTest
     {
 
         [Fact]

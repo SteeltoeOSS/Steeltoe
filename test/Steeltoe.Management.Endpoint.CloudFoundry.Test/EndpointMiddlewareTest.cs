@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
-    public class EndpointMiddlewareTest
+    public class EndpointMiddlewareTest  : BaseTest
     {
         [Fact]
         public async void CloudFoundryActuator_ReturnsExpectedData()

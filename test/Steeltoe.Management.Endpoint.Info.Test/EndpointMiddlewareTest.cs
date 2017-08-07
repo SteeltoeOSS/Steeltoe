@@ -22,7 +22,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
 {
-    public class EndpointMiddlewareTest
+    public class EndpointMiddlewareTest : BaseTest
     {
         [Fact]
         public async void InfoActuator_ReturnsExpectedData()
