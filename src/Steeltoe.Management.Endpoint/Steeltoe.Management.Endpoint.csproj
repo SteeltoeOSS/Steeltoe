@@ -7,7 +7,7 @@
     <Authors>Pivotal;dtillman</Authors>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.Endpoint</AssemblyName>
     <PackageId>Steeltoe.Management.Endpoint</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
@@ -21,13 +21,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-    <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Steeltoe.Extensions.Logging.CloudFoundry\Steeltoe.Extensions.Logging.CloudFoundry.csproj" />
+    <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="$(CoreFxVersion)" />
+    <PackageReference Include="Steeltoe.Extensions.Logging.CloudFoundry" Version="$(SteeltoeLoggingVersion)" />
   </ItemGroup>
 
 </Project>

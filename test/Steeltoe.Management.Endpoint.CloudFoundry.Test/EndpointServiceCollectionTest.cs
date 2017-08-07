@@ -14,45 +14,45 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test
+namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
-    public class ManagementOptionsTest : BaseTest
+    public class EndpointServiceCollectionTest
     {
-
         [Fact]
-        public void InitializedWithDefaults()
+        public void AddCloudFoundryActuator_ThrowsOnNulls()
         {
-            ManagementOptions opts = ManagementOptions.GetInstance();
-            Assert.True(opts.Enabled);
-            Assert.False(opts.Sensitive);
-            Assert.Equal("/", opts.Path);
+            // Arrange
+            IServiceCollection services = null;
+            IServiceCollection services2 = new ServiceCollection();
+            IConfigurationRoot config = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddCloudFoundryActuator(services, config));
+            Assert.Contains(nameof(services), ex.Message);
+            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddCloudFoundryActuator(services2, config));
+            Assert.Contains(nameof(config), ex2.Message);
+
         }
 
         [Fact]
-        public void ThrowsIfConfigNull()
+        public void AddCloudFoundryActuator_AddsCorrectServices()
         {
-            IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => ManagementOptions.GetInstance(config));
-        }
-
-        [Fact]
-        public void BindsConfigurationCorrectly()
-        {
+            ServiceCollection services = new ServiceCollection();
             var appsettings = @"
 {
     'management': {
         'endpoints': {
             'enabled': false,
             'sensitive': false,
-            'path': '/management',
+            'path': '/cloudfoundryapplication',
             'info' : {
                 'enabled': true,
-                'sensitive': true,
-                'id': '/infomanagement'
+                'sensitive': false
             }
         }
     }
@@ -66,11 +66,14 @@ namespace Steeltoe.Management.Endpoint.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            ManagementOptions opts = ManagementOptions.GetInstance(config);
-            Assert.False(opts.Enabled);
-            Assert.False(opts.Sensitive);
-            Assert.Equal("/management", opts.Path);
-        }
+            services.AddCloudFoundryActuator(config);
 
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetService<ICloudFoundryOptions>();
+            Assert.NotNull(options);
+            var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
+            Assert.NotNull(ep);
+
+        }
     }
 }

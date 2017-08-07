@@ -8,7 +8,7 @@
     <Authors>Pivotal;dtillman</Authors>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.Endpoint.CloudFoundry</AssemblyName>
     <PackageId>Steeltoe.Management.Endpoint.CloudFoundry</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
@@ -24,8 +24,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.4" />
-
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
@@ -34,7 +32,6 @@
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Management.Endpoint" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-
   </ItemGroup>
 
 </Project>

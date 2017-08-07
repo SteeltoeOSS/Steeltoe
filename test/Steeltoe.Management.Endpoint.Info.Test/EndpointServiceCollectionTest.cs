@@ -13,20 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Info.Contributor;
 using System.IO;
-
+using Xunit;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
 {
-    public class Startup
+    public class EndpointServiceCollectionTest
     {
-        public IConfiguration Configuration { get; set; }
-        public Startup()
+
+        [Fact]
+        public void AddInfoActuator_AddsCorrectServices()
         {
+            ServiceCollection services = new ServiceCollection();
             var appsettings = @"
 {
     'management': {
@@ -40,22 +43,6 @@ namespace Steeltoe.Management.Endpoint.Info.Test
                 'id': 'infomanagement'
             }
         }
-    },
-    'info': {
-        'application': {
-            'name': 'foobar',
-            'version': '1.0.0',
-            'date': '5/1/2008',
-            'time' : '8:30:52 AM'
-        },
-        'NET': {
-            'type': 'Core',
-            'version': '1.1.0',
-            'ASPNET' : {
-                'type': 'Core',
-                'version': '1.1.0'
-            }
-        }
     }
 }";
             var path = TestHelpers.CreateTempFile(appsettings);
@@ -65,19 +52,39 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
-            Configuration = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
+
+            services.AddInfoActuator(config);
+
+            ILogger<InfoEndpoint> logger = new TestLogger();
+            services.AddSingleton<ILogger<InfoEndpoint>>(logger);
+
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetService<IInfoOptions>();
+            Assert.NotNull(options);
+            var contribs = serviceProvider.GetServices<IInfoContributor>();
+            Assert.NotNull(contribs);
+            Assert.Contains(contribs, (item) => { return item.GetType() == typeof(GitInfoContributor) || item.GetType() == typeof(AppSettingsInfoContributor); });
+            var ep = serviceProvider.GetService<InfoEndpoint>();
+            Assert.NotNull(ep);
         }
 
-        public void ConfigureServices(IServiceCollection services)
+    }
+    class TestLogger : ILogger<InfoEndpoint>
+    {
+        public IDisposable BeginScope<TState>(TState state)
         {
-            services.AddInfoActuator(Configuration);
-            services.AddMvc();
+            throw new NotImplementedException();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public bool IsEnabled(LogLevel logLevel)
         {
-            app.UseInfoActuator();
-            app.UseMvc();
+            throw new NotImplementedException();
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            throw new NotImplementedException();
         }
     }
 }

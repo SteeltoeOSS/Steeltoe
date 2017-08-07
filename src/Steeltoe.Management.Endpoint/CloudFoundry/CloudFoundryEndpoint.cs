@@ -1,8 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//
+// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
@@ -24,22 +33,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             var endpointOptions = Options.Global.EndpointOptions;
             var links = new Links();
-
-            //links._links.Add("self", new Link(baseUrl));
-            //links._links.Add("jolokia", new Link(baseUrl + "/" + "jolokia"));
-            //links._links.Add("health", new Link(baseUrl + "/" + "health"));
-            //links._links.Add("loggers", new Link(baseUrl + "/" + "loggers"));
-            //links._links.Add("heapdump", new Link(baseUrl + "/" + "heapdump"));
-            //links._links.Add("beans", new Link(baseUrl + "/" + "beans"));
-            //links._links.Add("auditevents", new Link(baseUrl + "/" + "auditevents"));
-            //links._links.Add("dump", new Link(baseUrl + "/" + "dump"));
-            //links._links.Add("mappings", new Link(baseUrl + "/" + "mappings"));
-            //links._links.Add("autoconfig", new Link(baseUrl + "/" + "autoconfig"));
-            //links._links.Add("configprops", new Link(baseUrl + "/" + "configprops"));
-            //links._links.Add("env", new Link(baseUrl + "/" + "env"));
-            //links._links.Add("trace", new Link(baseUrl + "/" + "trace"));
-            //links._links.Add("info", new Link(baseUrl + "/" + "info"));
-            //links._links.Add("metrics", new Link(baseUrl + "/" + "metrics"));
 
             foreach (var opt in endpointOptions)
             {
