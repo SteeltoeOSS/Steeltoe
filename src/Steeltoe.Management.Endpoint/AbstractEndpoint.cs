@@ -33,9 +33,9 @@ namespace Steeltoe.Management.Endpoint
         }
         public virtual string Id { get { return options.Id; } }
 
-        public virtual bool Enabled { get { return options.Enabled; } }
+        public virtual bool Enabled { get { return options.Enabled.Value; } }
 
-        public virtual bool Sensitive { get { return options.Sensitive; } }
+        public virtual bool Sensitive { get { return options.Sensitive.Value; } }
 
         public virtual IEndpointOptions Options { get { return options; } }
 

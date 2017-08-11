@@ -23,9 +23,29 @@ namespace Steeltoe.Management.Endpoint
     {
         private const string DEFAULT_PATH = "/";
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints";
-        public bool Enabled { get; set; }
 
-        public bool Sensitive { get; set; }
+        private bool? _enabled;
+        public bool? Enabled {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                _enabled = value;
+            }
+        }
+        private bool? _sensitive;
+        public bool? Sensitive {
+            get
+            {
+                return _sensitive;
+            }
+            set
+            {
+                _sensitive = value;
+            }
+        }
 
         public string Path { get; set; }
 
@@ -33,8 +53,6 @@ namespace Steeltoe.Management.Endpoint
 
         internal ManagementOptions() 
         {
-            Enabled = true;
-            Sensitive = false;
             Path = DEFAULT_PATH;
             EndpointOptions = new List<IEndpointOptions>();
         }

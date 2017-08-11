@@ -20,6 +20,7 @@ using Steeltoe.Management.Endpoint.Info.Contributor;
 using System.IO;
 using Xunit;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
 {
@@ -56,6 +57,8 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             services.AddInfoActuator(config);
 
+            IInfoContributor extra = new TestInfoContributor();
+            services.AddSingleton<IInfoContributor>(extra);
             ILogger<InfoEndpoint> logger = new TestLogger();
             services.AddSingleton<ILogger<InfoEndpoint>>(logger);
 
@@ -63,12 +66,29 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var options = serviceProvider.GetService<IInfoOptions>();
             Assert.NotNull(options);
             var contribs = serviceProvider.GetServices<IInfoContributor>();
+
             Assert.NotNull(contribs);
-            Assert.Contains(contribs, (item) => { return item.GetType() == typeof(GitInfoContributor) || item.GetType() == typeof(AppSettingsInfoContributor); });
+            var listOfContribs = contribs.ToList();
+            Assert.Equal(3, listOfContribs.Count);
+
+            Assert.Contains(contribs, (item) => {
+                return 
+                item.GetType() == typeof(GitInfoContributor) ||
+                item.GetType() == typeof(AppSettingsInfoContributor) || 
+                item.GetType() == typeof(TestInfoContributor); }
+            );
+            
             var ep = serviceProvider.GetService<InfoEndpoint>();
             Assert.NotNull(ep);
         }
 
+    }
+    class TestInfoContributor : IInfoContributor
+    {
+        public void Contribute(IInfoBuilder builder)
+        {
+            return;
+        }
     }
     class TestLogger : ILogger<InfoEndpoint>
     {

@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
     public class CloudFoundryOptionsTest : BaseTest
     {
         [Fact]
-        public void InitializedWithDefaults()
+        public void Constructor_InitializesWithDefaults()
         {
             var opts = new CloudFoundryOptions();
             Assert.True(opts.Enabled);
@@ -34,14 +34,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public void ThrowsIfConfigNull()
+        public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new CloudFoundryOptions(config));
         }
 
         [Fact]
-        public void BindsConfigurationCorrectly()
+        public void Contstructor_BindsConfigurationCorrectly()
         {
             var appsettings = @"
 {

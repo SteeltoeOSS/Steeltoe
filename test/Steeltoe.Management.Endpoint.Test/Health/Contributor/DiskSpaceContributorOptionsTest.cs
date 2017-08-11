@@ -13,46 +13,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
+
 using System;
-using System.IO;
 using Xunit;
+using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Test;
+using System.IO;
 
-namespace Steeltoe.Management.Endpoint.Test
+namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
 {
-    public class ManagementOptionsTest : BaseTest
+    public class DiskSpaceContributorOptionsTest
     {
-
         [Fact]
-        public void InitializedWithDefaults()
+        public void Constructor_InitializesWithDefaults()
         {
-            ManagementOptions opts = ManagementOptions.GetInstance();
-            Assert.False(opts.Enabled.HasValue);
-            Assert.False(opts.Sensitive.HasValue);
-            Assert.Equal("/", opts.Path);
+            var opts = new DiskSpaceContributorOptions();
+            Assert.Equal(".", opts.Path);
+            Assert.Equal(10 * 1024 * 1024, opts.Threshold);
         }
-
         [Fact]
-        public void ThrowsIfConfigNull()
+        public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => ManagementOptions.GetInstance(config));
+            Assert.Throws<ArgumentNullException>(() => new DiskSpaceContributorOptions(config));
         }
 
         [Fact]
-        public void BindsConfigurationCorrectly()
+        public void Contstructor_BindsConfigurationCorrectly()
         {
             var appsettings = @"
 {
     'management': {
         'endpoints': {
-            'enabled': false,
-            'sensitive': false,
-            'path': '/management',
-            'info' : {
-                'enabled': true,
-                'sensitive': true,
-                'id': '/infomanagement'
+            'health' : {
+                'enabled': true, 
+                'diskspace' : {
+                    'path': 'foobar',
+                    'threshold': 5
+                }
             }
         }
     }
@@ -66,11 +64,10 @@ namespace Steeltoe.Management.Endpoint.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            ManagementOptions opts = ManagementOptions.GetInstance(config);
-            Assert.False(opts.Enabled);
-            Assert.False(opts.Sensitive);
-            Assert.Equal("/management", opts.Path);
-        }
+            var opts = new DiskSpaceContributorOptions(config);
+            Assert.Equal("foobar", opts.Path);
+            Assert.Equal(5, opts.Threshold);
 
+        }
     }
 }

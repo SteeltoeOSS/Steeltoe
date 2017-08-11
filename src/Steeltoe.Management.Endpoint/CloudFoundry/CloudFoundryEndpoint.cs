@@ -13,10 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using Microsoft.Extensions.Logging;
+
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>
     {
+        private ILogger<CloudFoundryEndpoint> _logger;
+
         protected new ICloudFoundryOptions Options
         {
             get
@@ -25,8 +30,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
         }
 
-        public CloudFoundryEndpoint(ICloudFoundryOptions options) : base(options)
+        public CloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null) : base(options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            _logger = logger;
         }
 
         public override Links Invoke(string baseUrl)
@@ -34,9 +45,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             var endpointOptions = Options.Global.EndpointOptions;
             var links = new Links();
 
+            if (!Options.Enabled.Value)
+            {
+                return links;
+            }
+
             foreach (var opt in endpointOptions)
             {
-                if (!opt.Enabled)
+                if (!opt.Enabled.Value)
                     continue;
 
                 if (opt == Options)

@@ -14,6 +14,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.IO;
 using Xunit;
@@ -29,9 +30,10 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.True(opts.Enabled);
             Assert.False(opts.Sensitive);
             Assert.NotNull(opts.Global);
-            Assert.True(opts.Global.Enabled);
-            Assert.False(opts.Global.Sensitive);
+            Assert.False(opts.Global.Enabled.HasValue);
+            Assert.False(opts.Global.Sensitive.HasValue);
             Assert.Equal("/", opts.Global.Path);
+            Assert.Equal(Permissions.UNDEFINED, opts.RequiredPermissions);
         }
 
         [Fact]
@@ -72,7 +74,8 @@ namespace Steeltoe.Management.Endpoint.Test
             'info' : {
                 'enabled': true,
                 'sensitive': false,
-                'id': 'infomanagement'
+                'id': 'infomanagement',
+                'requiredPermissions': 'NONE'
             }
         }
     }
@@ -98,6 +101,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.False(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
             Assert.Equal("/management/infomanagement", opts.Path);
+            Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
 
         }
 
@@ -139,6 +143,42 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.Equal("infomanagement", opts.Id);
             Assert.Equal("/management/infomanagement", opts.Path);
 
+        }
+
+        [Fact]
+        public void IsAccessAllowed_ReturnsExpected()
+        {
+            TestOptions2 opt1 = new TestOptions2();
+            Assert.True(opt1.IsAccessAllowed(Permissions.FULL));
+            Assert.True(opt1.IsAccessAllowed(Permissions.RESTRICTED));
+            Assert.True(opt1.IsAccessAllowed(Permissions.NONE));
+
+            TestOptions2 opt2 = new TestOptions2()
+            {
+                RequiredPermissions = Permissions.NONE
+            };
+            Assert.True(opt2.IsAccessAllowed(Permissions.FULL));
+            Assert.True(opt2.IsAccessAllowed(Permissions.RESTRICTED));
+            Assert.True(opt2.IsAccessAllowed(Permissions.NONE));
+            Assert.False(opt2.IsAccessAllowed(Permissions.UNDEFINED));
+
+            TestOptions2 opt3 = new TestOptions2()
+            {
+                RequiredPermissions = Permissions.RESTRICTED
+            };
+            Assert.True(opt3.IsAccessAllowed(Permissions.FULL));
+            Assert.True(opt3.IsAccessAllowed(Permissions.RESTRICTED));
+            Assert.False(opt3.IsAccessAllowed(Permissions.NONE));
+            Assert.False(opt3.IsAccessAllowed(Permissions.UNDEFINED));
+
+            TestOptions2 opt4 = new TestOptions2()
+            {
+                RequiredPermissions = Permissions.FULL
+            };
+            Assert.True(opt4.IsAccessAllowed(Permissions.FULL));
+            Assert.False(opt4.IsAccessAllowed(Permissions.RESTRICTED));
+            Assert.False(opt4.IsAccessAllowed(Permissions.NONE));
+            Assert.False(opt4.IsAccessAllowed(Permissions.UNDEFINED));
         }
     }
 

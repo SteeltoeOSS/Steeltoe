@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 
 
@@ -30,7 +31,19 @@ namespace Steeltoe.Management.Endpoint.Health
             Health result = new Health();
             foreach(var contributor in contributors)
             {
-                var h = contributor.Health();
+                Health h = null;
+                try
+                {
+                    h = contributor.Health();
+                } catch (Exception)
+                {
+                    h = new Health()
+                    {
+                        Status = HealthStatus.UNKNOWN
+                    };
+            
+                }
+
                 if (h.Status > result.Status)
                 {
                     result.Status = h.Status;

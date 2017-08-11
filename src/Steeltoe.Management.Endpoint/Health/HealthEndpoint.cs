@@ -14,6 +14,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,9 +34,24 @@ namespace Steeltoe.Management.Endpoint.Health
             }
         }
 
-        public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger)
+        public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
            : base(options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (aggregator == null)
+            {
+                throw new ArgumentNullException(nameof(aggregator));
+            }
+
+            if (contributors == null)
+            {
+                throw new ArgumentNullException(nameof(contributors));
+            }
+
             _aggregator = aggregator;
             _contributors = contributors.ToList();
             _logger = logger;

@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Info
             }
         }
 
-        public InfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger) :
+        public InfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null) :
             base(options)
         {
             _logger = logger;
@@ -53,9 +53,9 @@ namespace Steeltoe.Management.Endpoint.Info
                 try
                 {
                     contributor.Contribute(builder);
-                } catch (Exception)
+                } catch (Exception e)
                 {
-                    // Log
+                    _logger?.LogError("Exception: {0}", e);
                 }
             }
 

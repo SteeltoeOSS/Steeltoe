@@ -13,34 +13,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test
+namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
-    public class ManagementOptionsTest : BaseTest
+    public class LoggersOptionsTest : BaseTest
     {
-
         [Fact]
-        public void InitializedWithDefaults()
+        public void Constructor_InitializesWithDefaults()
         {
-            ManagementOptions opts = ManagementOptions.GetInstance();
-            Assert.False(opts.Enabled.HasValue);
-            Assert.False(opts.Sensitive.HasValue);
-            Assert.Equal("/", opts.Path);
+            var opts = new LoggersOptions();
+            Assert.True(opts.Enabled);
+            Assert.True(opts.Sensitive);
+            Assert.Equal("loggers", opts.Id);
         }
 
         [Fact]
-        public void ThrowsIfConfigNull()
+        public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => ManagementOptions.GetInstance(config));
+            Assert.Throws<ArgumentNullException>(() => new LoggersOptions(config));
         }
 
         [Fact]
-        public void BindsConfigurationCorrectly()
+        public void Contstructor_BindsConfigurationCorrectly()
         {
             var appsettings = @"
 {
@@ -48,11 +50,14 @@ namespace Steeltoe.Management.Endpoint.Test
         'endpoints': {
             'enabled': false,
             'sensitive': false,
-            'path': '/management',
-            'info' : {
-                'enabled': true,
-                'sensitive': true,
-                'id': '/infomanagement'
+            'path': '/cloudfoundryapplication',
+            'loggers' : {
+                'enabled': false,
+                'sensitive' : true
+            },
+            'cloudfoundry': {
+                'validatecertificates' : true,
+                'enabled': true
             }
         }
     }
@@ -66,11 +71,20 @@ namespace Steeltoe.Management.Endpoint.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            ManagementOptions opts = ManagementOptions.GetInstance(config);
-            Assert.False(opts.Enabled);
-            Assert.False(opts.Sensitive);
-            Assert.Equal("/management", opts.Path);
-        }
+            var opts = new LoggersOptions(config);
+            CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
 
+            Assert.True(cloudOpts.Enabled);
+            Assert.False(cloudOpts.Sensitive);
+            Assert.Equal(string.Empty, cloudOpts.Id);
+            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.True(cloudOpts.ValidateCertificates);
+
+            Assert.False(opts.Enabled);
+            Assert.True(opts.Sensitive);
+            Assert.Equal("loggers", opts.Id);
+            Assert.Equal("/cloudfoundryapplication/loggers", opts.Path);
+
+        }
     }
 }

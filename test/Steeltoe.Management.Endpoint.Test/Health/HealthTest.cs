@@ -24,7 +24,25 @@ namespace Steeltoe.Management.Endpoint.Health.Test
     public class HealthTest : BaseTest
     {
         [Fact]
-        public void Serialize()
+        public void Constructor_InitializesDefaults()
+        {
+            var health = new Health();
+            Assert.Equal(HealthStatus.UNKNOWN, health.Status);
+            Assert.NotNull(health.Details);
+            Assert.Equal(0, health.Details.Count);
+            Assert.Null(health.Description);
+        }
+
+        [Fact]
+        public void Serialize_Default_ReturnsExpected()
+        {
+            Health health = new Health();
+            var json = Serialize(health);
+            Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
+        }
+
+        [Fact]
+        public void Serialize_WithDetails_ReturnsExpected()
         {
             Health health = new Health()
             {
@@ -40,6 +58,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var json = Serialize(health);
             Assert.Equal("{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"item1\":{\"StringProperty\":\"Testdata\",\"IntProperty\":100,\"BoolProperty\":true},\"item2\":\"String\",\"item3\":false}", json);
         }
+
         private string Serialize(Health result)
         {
             try

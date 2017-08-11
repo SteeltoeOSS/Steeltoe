@@ -14,6 +14,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 
 
@@ -33,18 +34,26 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
         }
 
-        public TraceEndpoint(ITraceOptions options, ITraceRepository repository, ILogger<TraceEndpoint> logger) :
+        public TraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null) :
             base(options)
         {
+            if (traceRepository == null)
+            {
+                throw new ArgumentNullException(nameof(traceRepository));
+            }
             _logger = logger;
-            _traceRepo = repository;
+            _traceRepo = traceRepository;
         }
 
         public override List<Trace> Invoke()
         {
-            return _traceRepo.GetTraces();
+            return DoInvoke(_traceRepo);
         }
 
+        public List<Trace> DoInvoke(ITraceRepository repo)
+        {
+            return repo.GetTraces();
+        }
     }
 
 }

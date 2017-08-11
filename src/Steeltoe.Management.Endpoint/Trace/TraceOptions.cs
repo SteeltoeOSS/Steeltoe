@@ -22,6 +22,8 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:trace";
         private const int DEFAULT_CAPACITY = 100;
+        protected override bool DefaultSensitive { get { return true; } }
+
         public TraceOptions() : base()
         {
             Id = "trace";

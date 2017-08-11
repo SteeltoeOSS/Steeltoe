@@ -15,6 +15,7 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging.CloudFoundry;
+using System;
 using System.Collections.Generic;
 
 
@@ -31,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
         }
 
-        public LoggersEndpoint(ILoggersOptions options, ILogger<LoggersEndpoint> logger) : base(options)
+        public LoggersEndpoint(ILoggersOptions options, ILogger<LoggersEndpoint> logger = null) : base(options)
         {
             _logger = logger;
         }
@@ -40,25 +41,24 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             _logger.LogDebug("Invoke({0})", request);
 
-            var provider = CloudFoundryLoggerProvider.Instance;
+            return DoInvoke(CloudFoundryLoggerProvider.Instance, request);
+
+        }
+
+        public virtual Dictionary<string, object> DoInvoke(ICloudFoundryLoggerProvider provider, LoggersChangeRequest request)
+        {
             Dictionary<string, object> result = new Dictionary<string, object>();
-            if (provider == null)
-            {
-                return result;
-            }
 
-            AddLevels(result);
-
-            var configuration = provider.GetLoggerConfigurations();
             if (request != null)
             {
-
-                provider.SetLogLevel(request.Name, LoggerLevels.MapLogLevel(request.Level));
-
-            } else
+                SetLogLevel(provider, request.Name, request.Level);
+            }
+            else
             {
+                AddLevels(result);
+                var configuration = GetLoggerConfigurations(provider);
                 Dictionary<string, LoggerLevels> loggers = new Dictionary<string, LoggerLevels>();
-                foreach(var c in configuration)
+                foreach (var c in configuration)
                 {
                     _logger.LogTrace("Adding " + c.ToString());
                     LoggerLevels lv = new LoggerLevels(c.ConfiguredLevel, c.EffectiveLevel);
@@ -68,13 +68,44 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
 
             return result;
-
         }
 
-        private void AddLevels(Dictionary<string, object> result)
+        public virtual void AddLevels(Dictionary<string, object> result)
         {
             result.Add("levels", levels);
         }
+
+        public virtual ICollection<ILoggerConfiguration> GetLoggerConfigurations(ICloudFoundryLoggerProvider provider)
+        {
+            if (provider == null)
+            {
+                _logger?.LogInformation("Unable to access Cloud Foundry Logging provider, log configuration unavailable");
+                return new List<ILoggerConfiguration>();
+            }
+            return provider.GetLoggerConfigurations();
+        }
+
+        public virtual void SetLogLevel(ICloudFoundryLoggerProvider provider, string name, string level)
+        {
+            if (provider == null)
+            {
+                _logger?.LogInformation("Unable to access Cloud Foundry Logging provider, log level not changed");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException(nameof(name));
+            }
+
+            if (string.IsNullOrEmpty(level))
+            {
+                throw new ArgumentException(nameof(level));
+            }
+
+            provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
+        }
+
         private static List<string> levels = new List<string>() {
             LoggerLevels.MapLogLevel(LogLevel.None),
             LoggerLevels.MapLogLevel(LogLevel.Critical),

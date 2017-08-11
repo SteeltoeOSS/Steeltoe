@@ -14,29 +14,33 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Security;
+using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.IO;
-using Steeltoe.Management.Endpoint.Test;
+
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Info.Test
+namespace Steeltoe.Management.Endpoint.Health.Test
 {
-    public class InfoOptionsTest : BaseTest
+    public class HealthOptionsTest : BaseTest
     {
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            InfoOptions opts = new InfoOptions();
+            var opts = new HealthOptions();
             Assert.True(opts.Enabled);
             Assert.False(opts.Sensitive);
-            Assert.Equal("info", opts.Id);
+            Assert.Equal("health", opts.Id);
+            Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }
 
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new InfoOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new HealthOptions(config));
         }
 
         [Fact]
@@ -48,11 +52,14 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         'endpoints': {
             'enabled': false,
             'sensitive': false,
-            'path': '/management',
-            'info' : {
-                'enabled': false,
-                'sensitive': false,
-                'id': 'infomanagement'
+            'path': '/cloudfoundryapplication',
+            'health' : {
+                'enabled': true,
+                'requiredPermissions' : 'NONE'
+            },
+            'cloudfoundry': {
+                'validatecertificates' : true,
+                'enabled': true
             }
         }
     }
@@ -66,16 +73,21 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            InfoOptions opts = new InfoOptions(config);
-            Assert.False(opts.Enabled);
+            var opts = new HealthOptions(config);
+            CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
+
+            Assert.True(cloudOpts.Enabled);
+            Assert.False(cloudOpts.Sensitive);
+            Assert.Equal(string.Empty, cloudOpts.Id);
+            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.True(cloudOpts.ValidateCertificates);
+
+            Assert.True(opts.Enabled);
             Assert.False(opts.Sensitive);
-            Assert.Equal("infomanagement", opts.Id);
+            Assert.Equal("health", opts.Id);
+            Assert.Equal("/cloudfoundryapplication/health", opts.Path);
+            Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
 
-
-            Assert.NotNull(opts.Global);
-            Assert.False(opts.Global.Enabled);
-            Assert.False(opts.Global.Sensitive);
-            Assert.Equal("/management", opts.Global.Path);
         }
     }
 }

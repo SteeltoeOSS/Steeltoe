@@ -52,11 +52,16 @@ namespace Steeltoe.Management.Endpoint.Test
     class TestOptions : IEndpointOptions
     {
         public string Id { get; set; }
-        public bool Enabled { get; set; }
-        public bool Sensitive { get; set; }
+        public bool? Enabled { get; set; }
+        public bool? Sensitive { get; set; }
         public IManagementOptions Global { get; set; }
         public string Path { get; set; }
         public Permissions RequiredPermissions { get; set; }
+
+        public bool IsEnabled { get { return Enabled.Value; } }
+
+        public bool IsSensitive { get { return Sensitive.Value; } }
+
         public bool IsAccessAllowed(Permissions permissions)
         {
             return false;

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
+using System;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using Xunit;
@@ -23,12 +23,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
     public class CloudFoundryEndpointTest : BaseTest
     {
         [Fact]
-        public void InvokeReturnsExpectedLinks()
+        public void Constructor_ThrowsOptionsNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => new CloudFoundryEndpoint(null));
+        }
+
+        [Fact]
+        public void Invoke_ReturnsExpectedLinks()
         {
             var infoOpts = new InfoOptions();
             var cloudOpts = new CloudFoundryOptions();
 
-            var ep = new CloudFoundryEndpoint(cloudOpts);
+            var ep = new CloudFoundryEndpoint(cloudOpts, null);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);
@@ -40,8 +46,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.Equal(2, info._links.Count);
         }
 
+
         [Fact]
-        public void InvokeReturnsExpectedLinks2()
+        public void Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
         {
             var cloudOpts = new CloudFoundryOptions();
 
@@ -53,6 +60,39 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.True(info._links.ContainsKey("self"));
             Assert.Equal("http://localhost:5000/foobar", info._links["self"].href);
             Assert.Equal(1, info._links.Count);
+        }
+
+        [Fact]
+        public void Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
+        {
+            var infoOpts = new InfoOptions();
+            infoOpts.Enabled = false;
+            var cloudOpts = new CloudFoundryOptions();
+
+            var ep = new CloudFoundryEndpoint(cloudOpts);
+
+            var info = ep.Invoke("http://localhost:5000/foobar");
+            Assert.NotNull(info);
+            Assert.NotNull(info._links);
+            Assert.True(info._links.ContainsKey("self"));
+            Assert.Equal("http://localhost:5000/foobar", info._links["self"].href);
+            Assert.False(info._links.ContainsKey("info"));
+            Assert.Equal(1, info._links.Count);
+        }
+        [Fact]
+        public void Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
+        {
+            var infoOpts = new InfoOptions();
+            infoOpts.Enabled = true;
+            var cloudOpts = new CloudFoundryOptions();
+            cloudOpts.Enabled = false;
+
+            var ep = new CloudFoundryEndpoint(cloudOpts);
+
+            var info = ep.Invoke("http://localhost:5000/foobar");
+            Assert.NotNull(info);
+            Assert.NotNull(info._links);
+            Assert.Equal(0, info._links.Count);
         }
     }
 }

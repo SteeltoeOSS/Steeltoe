@@ -20,8 +20,10 @@ namespace Steeltoe.Management.Endpoint
 {
     public interface IEndpointOptions
     {
-        bool Enabled { get; }
-        bool Sensitive { get;  }
+        bool IsEnabled { get; }
+        bool IsSensitive { get; }
+        bool? Enabled { get; }
+        bool? Sensitive { get;  }
         IManagementOptions Global { get; }
         string Id { get;  }
         string Path { get; }

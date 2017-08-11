@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
     {
 
         [Fact]
-        public void InvokeReturnsExpectedInfo()
+        public void Invoke_NoContributors_ReturnsExpectedInfo()
         {
 
             var opts = new InfoOptions();
@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         }
 
         [Fact]
-        public void InvokeCallsAllContributors()
+        public void Invoke_CallsAllContributors()
         {
             var opts = new InfoOptions();
             var contributors = new List<IInfoContributor>() { new TestContrib(), new TestContrib(), new TestContrib() };
@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         }
 
         [Fact]
-        public void InvokeHandlesExceptions()
+        public void Invoke_HandlesExceptions()
         {
             var opts = new InfoOptions();
             var contributors = new List<IInfoContributor>() { new TestContrib(), new TestContrib(true), new TestContrib() };

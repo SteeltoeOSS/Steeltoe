@@ -13,29 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
 
+using Steeltoe.Management.Endpoint.Test;
+using System;
+using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Loggers
+namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
-    public class LoggersOptions : AbstractOptions, ILoggersOptions
+    public class LoggersChangeRequestTest : BaseTest
     {
-        protected override bool DefaultSensitive { get { return true; } }
-
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
-        public LoggersOptions() : base()
+        [Fact]
+        public void Constructor_ThrowsOnNulls()
         {
-            Id = "loggers";
+            Assert.Throws<ArgumentException>(() => new LoggersChangeRequest(null, "foobar"));
+            Assert.Throws<ArgumentException>(() => new LoggersChangeRequest("foobar", null));
         }
 
-        public LoggersOptions(IConfiguration config) :
-             base(MANAGEMENT_INFO_PREFIX, config)
+        [Fact]
+        public void Constructor_SetsProperties()
         {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "loggers";
-            }
+            var cr = new LoggersChangeRequest("foo", "bar");
+            Assert.Equal("foo", cr.Name);
+            Assert.Equal("bar", cr.Level);
         }
-
     }
 }

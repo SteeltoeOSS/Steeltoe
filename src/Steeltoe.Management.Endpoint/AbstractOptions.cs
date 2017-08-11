@@ -21,24 +21,44 @@ namespace Steeltoe.Management.Endpoint
 {
     public abstract class AbstractOptions : IEndpointOptions
     {
-        private bool? _enabled;
-        public virtual bool Enabled
+        protected virtual bool DefaultEnabled { get; } = true;
+        protected virtual bool DefaultSensitive { get; } = false;
+
+        public virtual bool IsEnabled
         {
             get
             {
-                if (_enabled.HasValue) return _enabled.Value; else return Global.Enabled;
+                return Enabled.Value;
+            }
+        }
+
+        protected bool? _enabled;
+        public virtual bool? Enabled
+        {
+            get
+            {
+                if (_enabled.HasValue) return _enabled.Value; else if (Global.Enabled.HasValue) return Global.Enabled; else return DefaultEnabled;
             }
             set
             {
                 _enabled = value;
             }
         }
-        private bool? _sensitive;
-        public virtual bool Sensitive
+
+        public virtual bool IsSensitive
         {
             get
             {
-                if (_sensitive.HasValue) return _sensitive.Value; else return Global.Sensitive;
+                return Sensitive.Value;
+            }
+        }
+
+        protected bool? _sensitive;
+        public virtual bool? Sensitive
+        {
+            get
+            {
+                if (_sensitive.HasValue) return _sensitive.Value; else if (Global.Sensitive.HasValue) return Global.Sensitive; else return DefaultSensitive;
             }
             set
             {
@@ -94,6 +114,7 @@ namespace Steeltoe.Management.Endpoint
             {
                 section.Bind(this);
             }
+
         }
 
         public virtual bool IsAccessAllowed(Permissions permissions)
