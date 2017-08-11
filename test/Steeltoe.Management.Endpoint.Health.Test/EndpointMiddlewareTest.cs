@@ -16,31 +16,33 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Net;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
+namespace Steeltoe.Management.Endpoint.Health.Test
 {
     public class EndpointMiddlewareTest  : BaseTest
     {
         [Fact]
-        public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData()
+        public async void HealthActuator_ReturnsExpectedData()
         {
 
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
-                var links = JsonConvert.DeserializeObject<Links>(json);
-                Assert.NotNull(links);
-                Assert.True(links._links.ContainsKey("self"));
-                Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
-                Assert.True(links._links.ContainsKey("info"));
-                Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
+               Assert.NotNull(json);
+         
+                //{ "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
+                var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                Assert.NotNull(health);
+                Assert.True(health.ContainsKey("status"));
+                Assert.True(health.ContainsKey("diskSpace"));
+
             }
         }
     }

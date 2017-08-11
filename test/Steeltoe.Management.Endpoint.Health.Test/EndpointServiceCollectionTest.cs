@@ -17,30 +17,35 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
+using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
+namespace Steeltoe.Management.Endpoint.Health.Test
 {
     public class EndpointServiceCollectionTest : BaseTest
     {
         [Fact]
-        public void AddCloudFoundryActuator_ThrowsOnNulls()
+        public void AddHealthActuator_ThrowsOnNulls()
         {
             // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
+            IConfigurationRoot config2 = new ConfigurationBuilder().Build();
+            IHealthAggregator aggregator = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddCloudFoundryActuator(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services, config));
             Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddCloudFoundryActuator(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config));
             Assert.Contains(nameof(config), ex2.Message);
+            var ex3 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config2, aggregator));
+            Assert.Contains(nameof(aggregator), ex3.Message);
 
         }
 
         [Fact]
-        public void AddCloudFoundryActuator_AddsCorrectServices()
+        public void AddHealthActuator_AddsCorrectServices()
         {
             ServiceCollection services = new ServiceCollection();
             var appsettings = @"
@@ -50,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             'enabled': false,
             'sensitive': false,
             'path': '/cloudfoundryapplication',
-            'info' : {
+            'health' : {
                 'enabled': true,
                 'sensitive': false
             }
@@ -66,14 +71,41 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            services.AddCloudFoundryActuator(config);
+            services.AddHealthActuator(config);
 
             var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<ICloudFoundryOptions>();
+            var options = serviceProvider.GetService<IHealthOptions>();
             Assert.NotNull(options);
-            var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
+            var ep = serviceProvider.GetService<HealthEndpoint>();
             Assert.NotNull(ep);
+            var agg = serviceProvider.GetService<IHealthAggregator>();
+            Assert.NotNull(agg);
+            var contribs = serviceProvider.GetServices<IHealthContributor>();
+            Assert.NotNull(contribs);
+            var contribsList = contribs.ToList();
+            Assert.Equal(1, contribsList.Count);
+        }
 
+        [Fact]
+        public void AddHealthContributors_AddsServices()
+        {
+            ServiceCollection services = new ServiceCollection();
+            EndpointServiceCollectionExtensions.AddHealthContributors(services, new TestContributor());
+            var serviceProvider = services.BuildServiceProvider();
+            var contribs = serviceProvider.GetServices<IHealthContributor>();
+            Assert.NotNull(contribs);
+            var contribsList = contribs.ToList();
+            Assert.Equal(1, contribsList.Count);
+          
+        }
+    }
+    class TestContributor : IHealthContributor
+    {
+        public string Id { get; }
+
+        public Health Health()
+        {
+            return new Health();
         }
     }
 }

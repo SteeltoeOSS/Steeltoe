@@ -17,26 +17,19 @@ using Microsoft.AspNetCore.Builder;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
+namespace Steeltoe.Management.Endpoint.Health.Test
 {
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseCloudFoundryActuator_ThrowsIfNulls()
+        public void UseHealthActuator_ThrowsIfNulls()
         {
             IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundryActuator());
+            Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator());
 
         }
-        [Fact]
-        public void UseCloudFoundrySecurity_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundrySecurity());
-
-        }
 
     }
 

@@ -16,31 +16,35 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
+namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class EndpointServiceCollectionTest : BaseTest
     {
         [Fact]
-        public void AddCloudFoundryActuator_ThrowsOnNulls()
+        public void AddTraceActuator_ThrowsOnNulls()
         {
             // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
+  
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddCloudFoundryActuator(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddTraceActuator(services, config));
             Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddCloudFoundryActuator(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddTraceActuator(services2, config));
             Assert.Contains(nameof(config), ex2.Message);
+    
 
         }
 
         [Fact]
-        public void AddCloudFoundryActuator_AddsCorrectServices()
+        public void AddTraceActuator_AddsCorrectServices()
         {
             ServiceCollection services = new ServiceCollection();
             var appsettings = @"
@@ -50,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             'enabled': false,
             'sensitive': false,
             'path': '/cloudfoundryapplication',
-            'info' : {
+            'trace' : {
                 'enabled': true,
                 'sensitive': false
             }
@@ -66,14 +70,19 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            services.AddCloudFoundryActuator(config);
+            services.AddSingleton(new DiagnosticListener("Test"));
+
+            services.AddTraceActuator(config);
 
             var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<ICloudFoundryOptions>();
+            var options = serviceProvider.GetService<ITraceOptions>();
             Assert.NotNull(options);
-            var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
+            var repo = serviceProvider.GetService<ITraceRepository>();
+            Assert.NotNull(repo);
+            var ep = serviceProvider.GetService<TraceEndpoint>();
             Assert.NotNull(ep);
-
         }
+
     }
+
 }

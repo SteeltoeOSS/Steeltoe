@@ -16,32 +16,35 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
+namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class EndpointMiddlewareTest  : BaseTest
     {
         [Fact]
-        public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData()
+        public async void TraceActuator_ReturnsExpectedData()
         {
 
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/trace");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
-                var links = JsonConvert.DeserializeObject<Links>(json);
-                Assert.NotNull(links);
-                Assert.True(links._links.ContainsKey("self"));
-                Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
-                Assert.True(links._links.ContainsKey("info"));
-                Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
+               Assert.NotNull(json);
+         
+                //var loggers = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                //Assert.NotNull(loggers);
+                //Assert.True(loggers.ContainsKey("levels"));
+                //Assert.True(loggers.ContainsKey("loggers"));
+
             }
         }
+
     }
 }

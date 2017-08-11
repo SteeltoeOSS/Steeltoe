@@ -16,9 +16,5 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Info.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.CloudFoundry.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Health.Test")]
+
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Loggers.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Trace.Test")]

@@ -13,31 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
 using System;
-using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
+
+namespace Steeltoe.Management.Endpoint.Health.Test
 {
-    public class EndpointApplicationBuilderExtensionsTest : BaseTest
+    public class BaseTest : IDisposable
     {
-        [Fact]
-        public void UseCloudFoundryActuator_ThrowsIfNulls()
+        public BaseTest()
         {
-            IApplicationBuilder builder = null;
-
-            Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundryActuator());
-
-        }
-        [Fact]
-        public void UseCloudFoundrySecurity_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
-
-            Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundrySecurity());
-
+            ManagementOptions._instance = null;
         }
 
+        public void Dispose()
+        {
+            ManagementOptions._instance = null;
+        }
     }
-
 }

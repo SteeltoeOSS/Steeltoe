@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config)
         {
-            services.AddHealthActuator(config, new DefaultHealthAggregator(), GetDefaultContributors());
+            services.AddHealthActuator(config, new DefaultHealthAggregator(), GetDefaultHealthContributors());
         }
 
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, params IHealthContributor[] contributors)
@@ -47,14 +47,19 @@ namespace Steeltoe.Management.Endpoint.Health
                 throw new ArgumentNullException(nameof(config));
             }
 
+            if (aggregator == null)
+            {
+                throw new ArgumentNullException(nameof(aggregator));
+            }
+
             services.TryAddSingleton<IHealthOptions>(new HealthOptions(config));
-            AddContributors(services, contributors);
+            AddHealthContributors(services, contributors);
             services.TryAddSingleton<IHealthAggregator>(aggregator);
             services.TryAddSingleton<HealthEndpoint>();
 
         }
 
-        private static void AddContributors(IServiceCollection services, params IHealthContributor[] contributors)
+        internal static void AddHealthContributors(IServiceCollection services, params IHealthContributor[] contributors)
         {
             List<ServiceDescriptor> descriptors = new List<ServiceDescriptor>();
             foreach (var instance in contributors)
@@ -65,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddEnumerable(descriptors);
         }
 
-        private static IHealthContributor[] GetDefaultContributors()
+        internal static IHealthContributor[] GetDefaultHealthContributors()
         {
             return new IHealthContributor[]
             {

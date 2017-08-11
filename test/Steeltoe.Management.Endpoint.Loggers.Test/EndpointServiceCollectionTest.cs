@@ -17,30 +17,33 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
+using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
+namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
     public class EndpointServiceCollectionTest : BaseTest
     {
         [Fact]
-        public void AddCloudFoundryActuator_ThrowsOnNulls()
+        public void AddLoggersActuator_ThrowsOnNulls()
         {
             // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
+  
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddCloudFoundryActuator(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services, config));
             Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddCloudFoundryActuator(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services2, config));
             Assert.Contains(nameof(config), ex2.Message);
+    
 
         }
 
         [Fact]
-        public void AddCloudFoundryActuator_AddsCorrectServices()
+        public void AddLoggersActuator_AddsCorrectServices()
         {
             ServiceCollection services = new ServiceCollection();
             var appsettings = @"
@@ -50,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             'enabled': false,
             'sensitive': false,
             'path': '/cloudfoundryapplication',
-            'info' : {
+            'loggers' : {
                 'enabled': true,
                 'sensitive': false
             }
@@ -66,14 +69,15 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            services.AddCloudFoundryActuator(config);
+            services.AddLoggersActuator(config);
 
             var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<ICloudFoundryOptions>();
+            var options = serviceProvider.GetService<ILoggersOptions>();
             Assert.NotNull(options);
-            var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
+            var ep = serviceProvider.GetService<LoggersEndpoint>();
             Assert.NotNull(ep);
-
         }
+
     }
+
 }

@@ -31,11 +31,11 @@ namespace Steeltoe.Management.Endpoint.Trace
         private ILogger<TraceObserver> _logger;
         private ITraceOptions _options;
         private DiagnosticListener _listener;
-        private ConcurrentDictionary<string, PendingTrace> _pending = new ConcurrentDictionary<string, PendingTrace>();
-        private ConcurrentQueue<Trace> _queue = new ConcurrentQueue<Trace>();
+        internal ConcurrentDictionary<string, PendingTrace> _pending = new ConcurrentDictionary<string, PendingTrace>();
+        internal ConcurrentQueue<Trace> _queue = new ConcurrentQueue<Trace>();
         private long ticksPerMilli = Stopwatch.Frequency/1000;
 
-        public TraceObserver(DiagnosticListener listener, ITraceOptions options, ILogger<TraceObserver> logger)
+        public TraceObserver(DiagnosticListener listener, ITraceOptions options, ILogger<TraceObserver> logger = null)
         {
             _logger = logger;
             _listener = listener;
@@ -53,12 +53,12 @@ namespace Steeltoe.Management.Endpoint.Trace
         {
             _queue = null;
             _pending = null;
-            _logger.LogInformation("TraceObserver Shutdown");
+            _logger?.LogInformation("TraceObserver Shutdown");
         }
 
         public void OnError(Exception error)
         {
-            _logger.LogError("TraceObserver Exception: {0}", error);
+            _logger?.LogError("TraceObserver Exception: {0}", error);
         }
 
         public void OnNext(KeyValuePair<string, object> value)
@@ -76,7 +76,7 @@ namespace Steeltoe.Management.Endpoint.Trace
                 {
                     if (!_pending.TryAdd(context.TraceIdentifier, new PendingTrace(timeStamp)))
                     {
-                        _logger.LogDebug("BeginRequest - Dropped trace");
+                        _logger?.LogDebug("BeginRequest - Dropped trace");
                     }
                 }
 
@@ -97,14 +97,14 @@ namespace Steeltoe.Management.Endpoint.Trace
                             Trace discard;
                             if (!_queue.TryDequeue(out discard))
                             {
-                                _logger.LogDebug("EndRequest - Unable to remove trace");
+                                _logger?.LogDebug("EndRequest - Unable to remove trace");
                                 _queue = new ConcurrentQueue<Trace>();
                             }
                         }
 
                     } else
                     {
-                        _logger.LogDebug("EndRequest - Dropped trace");
+                        _logger?.LogDebug("EndRequest - Dropped trace");
                     }
                 }
             }
@@ -259,7 +259,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
             return (T)property.GetValue(o);
         }
-        class PendingTrace
+        internal class PendingTrace
         {
             public PendingTrace(long startTime)
             {
