@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         private RequestDelegate _next;
 
-        public HealthEndpointMiddleware(RequestDelegate next, HealthEndpoint endpoint, ILogger<HealthEndpointMiddleware> logger)
+        public HealthEndpointMiddleware(RequestDelegate next, HealthEndpoint endpoint, ILogger<HealthEndpointMiddleware> logger = null)
             : base(endpoint, logger)
         {
             _next = next;
@@ -43,17 +43,17 @@ namespace Steeltoe.Management.Endpoint.Health
             }
         }
 
-        private async Task HandleHealthRequestAsync(HttpContext context)
+        internal protected async Task HandleHealthRequestAsync(HttpContext context)
         {
    
             var serialInfo = base.HandleRequest();
-            logger.LogDebug("Returning: {0}", serialInfo);
+            logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
     
         }
 
-        private bool IsHealthRequest(HttpContext context)
+        internal protected bool IsHealthRequest(HttpContext context)
         {
             if (!context.Request.Method.Equals("GET")) { return false; }
             PathString path = new PathString(endpoint.Path);

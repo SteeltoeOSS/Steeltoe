@@ -14,15 +14,52 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
+using System;
+using System.IO;
 using System.Net;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
     public class EndpointMiddlewareTest  : BaseTest
     {
+        [Fact]
+        public void IsCloudFoundryRequest_ReturnsExpected()
+        {
+            var opts = new CloudFoundryOptions();
+            var ep = new CloudFoundryEndpoint(opts);
+            var middle = new CloudFoundryEndpointMiddleware(null, ep);
+
+            var context = CreateRequest("GET", "/");
+            Assert.True(middle.IsCloudFoundryRequest(context));
+
+            var context2 = CreateRequest("PUT", "/");
+            Assert.False(middle.IsCloudFoundryRequest(context2));
+
+            var context3 = CreateRequest("GET", "/badpath");
+            Assert.False(middle.IsCloudFoundryRequest(context3));
+
+        }
+
+        [Fact]
+        public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
+        {
+            var opts = new CloudFoundryOptions();
+            var ep = new TestCloudFoundryEndpoint(opts);
+            var middle = new CloudFoundryEndpointMiddleware(null, ep);
+            var context = CreateRequest("GET", "/");
+            await middle.HandleCloudFoundryRequestAsync(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            StreamReader rdr = new StreamReader(context.Response.Body);
+            string json = await rdr.ReadToEndAsync();
+            Assert.Equal("{\"_links\":{}}", json);
+
+        }
+
         [Fact]
         public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData()
         {
@@ -42,6 +79,29 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 Assert.True(links._links.ContainsKey("info"));
                 Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
             }
+        }
+        private HttpContext CreateRequest(string method, string path)
+        {
+            HttpContext context = new DefaultHttpContext();
+            context.TraceIdentifier = Guid.NewGuid().ToString();
+            context.Response.Body = new MemoryStream();
+            context.Request.Method = method;
+            context.Request.Path = new PathString(path);
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("localhost");
+            return context;
+        }
+    }
+
+    class TestCloudFoundryEndpoint : CloudFoundryEndpoint
+    {
+        public TestCloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null) 
+            : base(options, logger)
+        {
+        }
+        public override Links Invoke(string baseUrl)
+        {
+            return new Links();
         }
     }
 }

@@ -14,17 +14,57 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class EndpointMiddlewareTest  : BaseTest
     {
+        [Fact]
+        public void IsTraceRequest_ReturnsExpected()
+        {
+            var opts = new TraceOptions();
+            DiagnosticListener listener = new DiagnosticListener("test");
+
+            TraceObserver obs = new TraceObserver(listener, opts);
+            var ep = new TraceEndpoint(opts, obs);
+            var middle = new TraceEndpointMiddleware(null, ep);
+            var context = CreateRequest("GET", "/trace");
+            Assert.True(middle.IsTraceRequest(context));
+            var context2 = CreateRequest("PUT", "/trace");
+            Assert.False(middle.IsTraceRequest(context2));
+            var context3 = CreateRequest("GET", "/badpath");
+            Assert.False(middle.IsTraceRequest(context3));
+        }
+
+        [Fact]
+        public async void HandleTraceRequestAsync_ReturnsExpected()
+        {
+            var opts = new TraceOptions();
+            DiagnosticListener listener = new DiagnosticListener("test");
+
+            TraceObserver obs = new TraceObserver(listener, opts);
+            var ep = new TestTraceEndpoint(opts, obs);
+            var middle = new TraceEndpointMiddleware(null, ep);
+            var context = CreateRequest("GET", "/trace");
+            await middle.HandleTraceRequestAsync(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            StreamReader rdr = new StreamReader(context.Response.Body);
+            string json = await rdr.ReadToEndAsync();
+            Assert.Equal("[]", json);
+    
+        }
+
         [Fact]
         public async void TraceActuator_ReturnsExpectedData()
         {
@@ -37,14 +77,32 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                Assert.NotNull(json);
-         
-                //var loggers = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-                //Assert.NotNull(loggers);
-                //Assert.True(loggers.ContainsKey("levels"));
-                //Assert.True(loggers.ContainsKey("loggers"));
 
             }
         }
 
+        private HttpContext CreateRequest(string method, string path)
+        {
+            HttpContext context = new DefaultHttpContext();
+            context.TraceIdentifier = Guid.NewGuid().ToString();
+            context.Response.Body = new MemoryStream();
+            context.Request.Method = method;
+            context.Request.Path = new PathString(path);
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("localhost");
+            return context;
+        }
+
+    }
+    class TestTraceEndpoint : TraceEndpoint
+    {
+        public TestTraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null) 
+            : base(options, traceRepository, logger)
+        {
+        }
+        public override List<Trace> Invoke()
+        {
+            return new List<Trace>();
+        }
     }
 }

@@ -14,9 +14,14 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Steeltoe.Management.Endpoint.Health.Contributor;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using Xunit;
 
@@ -24,6 +29,41 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 {
     public class EndpointMiddlewareTest  : BaseTest
     {
+        [Fact]
+        public void IsHealthRequest_ReturnsExpected()
+        {
+            var opts = new HealthOptions();
+            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
+            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
+            var middle = new HealthEndpointMiddleware(null, ep);
+
+            var context = CreateRequest("GET", "/health");
+            Assert.True(middle.IsHealthRequest(context));
+
+            var context2 = CreateRequest("PUT", "/health");
+            Assert.False(middle.IsHealthRequest(context2));
+
+            var context3 = CreateRequest("GET", "/badpath");
+            Assert.False(middle.IsHealthRequest(context3));
+
+        }
+
+        [Fact]
+        public async void HandleHealthRequestAsync_ReturnsExpected()
+        {
+            var opts = new HealthOptions();
+            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
+            var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
+            var middle = new HealthEndpointMiddleware(null, ep);
+            var context = CreateRequest("GET", "/health");
+            await middle.HandleHealthRequestAsync(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            StreamReader rdr = new StreamReader(context.Response.Body);
+            string json = await rdr.ReadToEndAsync();
+            Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
+
+        }
+
         [Fact]
         public async void HealthActuator_ReturnsExpectedData()
         {
@@ -44,6 +84,29 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 Assert.True(health.ContainsKey("diskSpace"));
 
             }
+        }
+        private HttpContext CreateRequest(string method, string path)
+        {
+            HttpContext context = new DefaultHttpContext();
+            context.TraceIdentifier = Guid.NewGuid().ToString();
+            context.Response.Body = new MemoryStream();
+            context.Request.Method = method;
+            context.Request.Path = new PathString(path);
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("localhost");
+            return context;
+        }
+    }
+
+    class TestHealthEndpoint : HealthEndpoint
+    {
+        public TestHealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null) 
+            : base(options, aggregator, contributors, logger)
+        {
+        }
+        public override Health Invoke()
+        {
+            return new Health();
         }
     }
 }

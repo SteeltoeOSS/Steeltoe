@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private ICloudFoundryOptions _options;
         private RequestDelegate _next;
 
-        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointMiddleware> logger)
+        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointMiddleware> logger = null)
             : base(endpoint, logger)
         {
             _next = next;
@@ -45,18 +45,17 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
         }
 
-        private async Task HandleCloudFoundryRequestAsync(HttpContext context)
+        internal protected async Task HandleCloudFoundryRequestAsync(HttpContext context)
         {
 
             var serialInfo = base.HandleRequest(GetRequestUri(context.Request));
-            logger.LogDebug("Returning: {0}", serialInfo);
+            logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
-            context.Response.Headers.Add("X-Application-Context", "actuator:cloud:0");
             await context.Response.WriteAsync(serialInfo);
 
         }
 
-        private string GetRequestUri(HttpRequest request)
+        internal protected string GetRequestUri(HttpRequest request)
         {
             string scheme = request.Scheme;
 
@@ -69,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return scheme + "://" + request.Host.ToString() + request.Path.ToString();
         }
 
-        public bool IsCloudFoundryRequest(HttpContext context)
+        internal protected bool IsCloudFoundryRequest(HttpContext context)
         {
             if (!context.Request.Method.Equals("GET")) { return false; }
             PathString path = new PathString(endpoint.Path);

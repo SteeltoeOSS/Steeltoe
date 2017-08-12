@@ -14,16 +14,56 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using Xunit;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Info.Contributor;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
+        [Fact]
+        public void IsInfoRequest_ReturnsExpected()
+        {
+            var opts = new InfoOptions();
+            var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
+            var ep = new InfoEndpoint(opts, contribs);
+            var middle = new InfoEndpointMiddleware(null, ep);
+
+            var context = CreateRequest("GET", "/info");
+            Assert.True(middle.IsInfoRequest(context));
+
+            var context2 = CreateRequest("PUT", "/info");
+            Assert.False(middle.IsInfoRequest(context2));
+
+            var context3 = CreateRequest("GET", "/badpath");
+            Assert.False(middle.IsInfoRequest(context3));
+
+        }
+
+        [Fact]
+        public async void HandleInfoRequestAsync_ReturnsExpected()
+        {
+            var opts = new InfoOptions();
+            var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
+            var ep = new TestInfoEndpoint(opts, contribs);
+            var middle = new InfoEndpointMiddleware(null, ep);
+            var context = CreateRequest("GET", "/loggers");
+            await middle.HandleInfoRequestAsync(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            StreamReader rdr = new StreamReader(context.Response.Body);
+            string json = await rdr.ReadToEndAsync();
+            Assert.Equal("{}", json);
+
+        }
+
         [Fact]
         public async void InfoActuator_ReturnsExpectedData()
         {
@@ -68,6 +108,28 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             }
 
+        }
+        private HttpContext CreateRequest(string method, string path)
+        {
+            HttpContext context = new DefaultHttpContext();
+            context.TraceIdentifier = Guid.NewGuid().ToString();
+            context.Response.Body = new MemoryStream();
+            context.Request.Method = method;
+            context.Request.Path = new PathString(path);
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("localhost");
+            return context;
+        }
+    }
+    class TestInfoEndpoint : InfoEndpoint
+    {
+        public TestInfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null) 
+            : base(options, contributors, logger)
+        {
+        }
+        public override Dictionary<string, object> Invoke()
+        {
+            return new Dictionary<string, object>();
         }
     }
 }
