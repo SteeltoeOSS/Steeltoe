@@ -31,6 +31,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Health.Test", "test\Steeltoe.Management.Endpoint.Health.Test\Steeltoe.Management.Endpoint.Health.Test.csproj", "{A7705016-DF6D-44E8-AED0-A847E8600C41}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundry.Test", "test\Steeltoe.Management.CloudFoundry.Test\Steeltoe.Management.CloudFoundry.Test.csproj", "{EC710A62-1798-455C-823B-42E67E40DE94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundry", "src\Steeltoe.Management.CloudFoundry\Steeltoe.Management.CloudFoundry.csproj", "{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +89,14 @@ Global
 		{A7705016-DF6D-44E8-AED0-A847E8600C41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7705016-DF6D-44E8-AED0-A847E8600C41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7705016-DF6D-44E8-AED0-A847E8600C41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC710A62-1798-455C-823B-42E67E40DE94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC710A62-1798-455C-823B-42E67E40DE94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC710A62-1798-455C-823B-42E67E40DE94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC710A62-1798-455C-823B-42E67E40DE94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,5 +114,7 @@ Global
 		{C3EC32C7-C87C-4FDD-A61F-8A264ACEC5CF} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{F0675D8A-3E7E-449F-A13F-33D67CADF423} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{A7705016-DF6D-44E8-AED0-A847E8600C41} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
+		{EC710A62-1798-455C-823B-42E67E40DE94} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
+		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 	EndGlobalSection
 EndGlobal

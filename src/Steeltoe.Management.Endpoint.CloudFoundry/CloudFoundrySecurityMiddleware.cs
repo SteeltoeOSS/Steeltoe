@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
-//using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using Steeltoe.Management.Endpoint.Security;
-//
+﻿//
 // Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +13,11 @@ using Steeltoe.Management.Endpoint.Security;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
+using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Net;

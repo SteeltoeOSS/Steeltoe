@@ -32,6 +32,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.Contains(nameof(options), ex2.Message);
 
 
+            listener2.Dispose();
         }
         [Fact]
         public void GetSessionId_NoSession_ReturnsExpected()

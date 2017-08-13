@@ -45,6 +45,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.False(middle.IsTraceRequest(context2));
             var context3 = CreateRequest("GET", "/badpath");
             Assert.False(middle.IsTraceRequest(context3));
+            listener.Dispose();
         }
 
         [Fact]
@@ -62,7 +63,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
             Assert.Equal("[]", json);
-    
+            listener.Dispose();
+
         }
 
         [Fact]

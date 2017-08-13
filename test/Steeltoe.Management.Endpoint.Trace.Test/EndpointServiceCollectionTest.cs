@@ -69,8 +69,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
-
-            services.AddSingleton(new DiagnosticListener("Test"));
+            var listener = new DiagnosticListener("Test");
+            services.AddSingleton(listener);
 
             services.AddTraceActuator(config);
 
@@ -81,6 +81,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.NotNull(repo);
             var ep = serviceProvider.GetService<TraceEndpoint>();
             Assert.NotNull(ep);
+            listener.Dispose();
         }
 
     }

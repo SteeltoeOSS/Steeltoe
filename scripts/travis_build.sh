@@ -20,6 +20,6 @@ cd ../..
 cd src/Steeltoe.Managment.Endpoint.Trace
 dotnet restore --configfile ../../nuget.config
 cd ../..
-
-
-
+cd src/Steeltoe.Managment.CloudFoundry
+dotnet restore --configfile ../../nuget.config
+cd ../..
