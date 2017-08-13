@@ -25,6 +25,8 @@ artifacts:
 - path: 'src\Steeltoe.Management.Endpoint.Info\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Management.Endpoint.Loggers\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Management.Endpoint.Trace\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Management.CloudFoundry\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Management.CloudFoundry\bin\Release\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false
