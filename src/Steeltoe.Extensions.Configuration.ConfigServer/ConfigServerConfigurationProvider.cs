@@ -22,8 +22,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
+#if NET452
 using System.Net.Security;
-
+#else
+using System.Security.Authentication;
+#endif
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
@@ -294,8 +297,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 #if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
             if (!_settings.ValidateCertificates)
             {
+                prevProtocols = ServicePointManager.SecurityProtocol;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 prevValidator = ServicePointManager.ServerCertificateValidationCallback;
                 ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
             }
@@ -337,6 +343,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 #if NET452
             finally
             {
+                ServicePointManager.SecurityProtocol = prevProtocols;
                 ServicePointManager.ServerCertificateValidationCallback = prevValidator;
             }
 #endif
@@ -478,6 +485,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 var handler = new HttpClientHandler();
                 handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                handler.SslProtocols = SslProtocols.Tls12;
                 client = new HttpClient(handler);
             } else
             {
