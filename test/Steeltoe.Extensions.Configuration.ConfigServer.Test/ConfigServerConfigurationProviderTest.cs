@@ -238,11 +238,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.NotNull(env);
             Assert.Equal("testname", env.Name);
             Assert.NotNull(env.Profiles);
-            Assert.Equal(1, env.Profiles.Count);
+            Assert.Single(env.Profiles);
             Assert.Equal("testlabel", env.Label);
             Assert.Equal("testversion", env.Version);
             Assert.NotNull(env.PropertySources);
-            Assert.Equal(1, env.PropertySources.Count);
+            Assert.Single(env.PropertySources);
             Assert.Equal("source", env.PropertySources[0].Name);
             Assert.NotNull(env.PropertySources[0].Source);
             Assert.Equal(2, env.PropertySources[0].Source.Count);
@@ -444,11 +444,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.NotNull(env);
             Assert.Equal("testname", env.Name);
             Assert.NotNull(env.Profiles);
-            Assert.Equal(1, env.Profiles.Count);
+            Assert.Single(env.Profiles);
             Assert.Equal("testlabel", env.Label);
             Assert.Equal("testversion", env.Version);
             Assert.NotNull(env.PropertySources);
-            Assert.Equal(1, env.PropertySources.Count);
+            Assert.Single(env.PropertySources);
             Assert.Equal("source", env.PropertySources[0].Name);
             Assert.NotNull(env.PropertySources[0].Source);
             Assert.Equal(2, env.PropertySources[0].Source.Count);
@@ -654,7 +654,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal("", result[0]);
         }
 
@@ -668,7 +668,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal("", result[0]);
         }
         [Fact]
@@ -681,7 +681,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal("foobar", result[0]);
         }
         [Fact]

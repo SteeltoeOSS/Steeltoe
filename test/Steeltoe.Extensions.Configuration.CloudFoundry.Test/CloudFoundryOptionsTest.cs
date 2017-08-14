@@ -123,7 +123,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("my-app", options.ApplicationName);
 
             Assert.NotNull(options.ApplicationUris);
-            Assert.Equal(1, options.ApplicationUris.Length);
+            Assert.Single(options.ApplicationUris);
             Assert.Equal("my-app.10.244.0.34.xip.io", options.ApplicationUris[0]);
 
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.ApplicationVersion);
