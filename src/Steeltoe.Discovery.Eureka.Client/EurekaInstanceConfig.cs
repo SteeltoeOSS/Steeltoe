@@ -15,6 +15,7 @@
 //
 
 using Steeltoe.Discovery.Eureka.AppInfo;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -85,11 +86,28 @@ namespace Steeltoe.Discovery.Eureka
         public string GetHostName(bool refresh)
         {
             if (refresh || string.IsNullOrEmpty(thisHostName))
-                thisHostName = Dns.GetHostName();
+            {
+                thisHostName = ResolveHostName(); 
+                //thisHostName = Dns.GetHostName();
+            }
 
             return thisHostName;
 
         }
+
+        protected string ResolveHostName()
+        {
+            string result = Dns.GetHostName();
+            try
+            {
+                result = Dns.GetHostEntryAsync(result).Result.HostName;
+            } catch (Exception)
+            {
+                // Ignore
+            }
+            return result;
+        }
+
         public string HostName
         {
             get

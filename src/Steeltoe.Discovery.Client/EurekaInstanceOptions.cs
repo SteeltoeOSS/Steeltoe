@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Net;
 using System.Net.Sockets;
+using System;
 
 namespace Steeltoe.Discovery.Client
 {
@@ -528,11 +529,28 @@ namespace Steeltoe.Discovery.Client
             var boundValue = GetString(Eureka?.Instance?.HostName, null);
             if (!string.IsNullOrEmpty(boundValue))
                 return boundValue;
-            
+
 
             if (refresh || string.IsNullOrEmpty(_thisHostName))
-                _thisHostName = Dns.GetHostName();
+            {
+                //_thisHostName = Dns.GetHostName();
+                _thisHostName = ResolveHostName();
+            }
             return _thisHostName;
+        }
+
+        protected string ResolveHostName()
+        {
+            string result = Dns.GetHostName();
+            try
+            {
+                result = Dns.GetHostEntryAsync(result).Result.HostName;
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+            return result;
         }
 
         public EurekaConfig Eureka { get; set; }
