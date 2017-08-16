@@ -19,6 +19,7 @@
 
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp1.1'">
     <PackageReference Include="MySql.Data" Version="$(MySqlCoreVersion)" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="$(MySqlCoreVersion)" /> 
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net452'">
@@ -31,7 +32,7 @@
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="$(MySqlCoreVersion)" />
+
   </ItemGroup>
 
   <ItemGroup>
