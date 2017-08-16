@@ -34,7 +34,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             var clientConfigsection = root.GetSection(configPrefix);
 
-            settings.Name = ResovlePlaceholders(GetApplicationName(clientConfigsection, root), root);
+            settings.Name = ResovlePlaceholders(GetApplicationName(clientConfigsection, root, environment), root);
             settings.Environment = ResovlePlaceholders(GetEnvironment(clientConfigsection, environment), root);
             settings.Label = ResovlePlaceholders(GetLabel(clientConfigsection), root);
             settings.Username = ResovlePlaceholders(GetUsername(clientConfigsection), root);
@@ -134,11 +134,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         }
  
 
-        private static string GetApplicationName(IConfigurationSection clientConfigsection, IConfigurationRoot root)
+        private static string GetApplicationName(IConfigurationSection clientConfigsection, IConfigurationRoot root, IHostingEnvironment environment)
         {
-            // TODO: Figure out a sensible "default" app name (e.g apps assembly name?)
             var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
-            return GetSetting("name", clientConfigsection, appSection, null);
+            return GetSetting("name", clientConfigsection, appSection, environment.ApplicationName);
         }
 
         private static string GetEnvironment(IConfigurationSection section, IHostingEnvironment environment)
