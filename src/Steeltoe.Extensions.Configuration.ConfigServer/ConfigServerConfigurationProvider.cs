@@ -298,15 +298,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            if (!_settings.ValidateCertificates)
-            {
-                prevProtocols = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
 #endif
-
             // Invoke config server
             try
             {
@@ -343,8 +336,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 #if NET452
             finally
             {
-                ServicePointManager.SecurityProtocol = prevProtocols;
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+                RestoreCertificateValidation(prevProtocols, prevValidator);
             }
 #endif
 
@@ -527,6 +519,28 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
 
         }
+#if NET452
+        protected virtual void ConfigureCertificateValidatation(out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator) 
+        {
+            prevValidator = null;
+            protocolType = (SecurityProtocolType) 0;
+            if (!_settings.ValidateCertificates)
+            {
+                protocolType = ServicePointManager.SecurityProtocol;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+        }
+        protected virtual void RestoreCertificateValidation(SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator) 
+        {
+            if (!_settings.ValidateCertificates)
+            {
+                ServicePointManager.SecurityProtocol = protocolType;
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+        }
+#endif
 
         internal IDictionary<string, string> Properties
         {

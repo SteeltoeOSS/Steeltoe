@@ -27,6 +27,9 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
 
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
+
+    <!-- 4.3.0 of this package has problems on net46+, by default that version gets included, so we have to force using 4.3.1+ in apps -->
+    <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" />
   </ItemGroup>
 
   <ItemGroup>
