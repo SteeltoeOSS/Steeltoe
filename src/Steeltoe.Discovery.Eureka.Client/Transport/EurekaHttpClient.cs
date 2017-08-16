@@ -25,7 +25,11 @@ using System.Text;
 using Steeltoe.Discovery.Eureka.Util;
 using System.IO;
 using Microsoft.Extensions.Logging;
+#if NET452
 using System.Net.Security;
+#else
+using System.Security.Authentication;
+#endif
 using System.Net;
 
 namespace Steeltoe.Discovery.Eureka.Transport
@@ -84,11 +88,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!_config.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
 #endif
             try
             {
@@ -112,8 +113,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452                
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+#if NET452
+                RestoreCertificateValidation(prevProtocols, prevValidator);
 #endif
             }
 
@@ -154,11 +155,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!_config.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
 #endif
             try
             {
@@ -191,8 +189,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452                
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+#if NET452
+                RestoreCertificateValidation(prevProtocols, prevValidator);
 #endif
             }
         }
@@ -239,11 +237,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!_config.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
 #endif
             try
             {
@@ -273,8 +268,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452                
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+#if NET452
+                RestoreCertificateValidation(prevProtocols, prevValidator);
 #endif
             }
 
@@ -321,11 +316,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!_config.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
 #endif
             try
             {
@@ -346,8 +338,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452                
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+#if NET452
+                RestoreCertificateValidation(prevProtocols, prevValidator);
 #endif
             }
         }
@@ -381,11 +373,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!_config.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
 #endif
             try
             {
@@ -406,8 +395,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452                
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+#if NET452
+                RestoreCertificateValidation(prevProtocols, prevValidator);
 #endif
             }
 
@@ -445,11 +434,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!_config.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
 #endif
             try
             {
@@ -470,8 +456,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452                
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+#if NET452
+                RestoreCertificateValidation(prevProtocols, prevValidator);
 #endif
             }
         }
@@ -485,11 +471,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!_config.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
 #endif
             try
             {
@@ -520,8 +503,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452                
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+#if NET452
+                RestoreCertificateValidation(prevProtocols, prevValidator);
 #endif
             }
 
@@ -543,11 +526,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
 #if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!_config.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
 #endif
             try
             {
@@ -581,8 +561,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452                
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+#if NET452
+                RestoreCertificateValidation(prevProtocols, prevValidator);
 #endif
             }
         }
@@ -608,6 +588,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             if (config != null && !config.ValidateCertificates)
             {
                 var handler = new HttpClientHandler();
+                handler.SslProtocols = SslProtocols.Tls12;
                 handler.ServerCertificateCustomValidationCallback  = (sender, cert, chain, sslPolicyErrors) => true;
                 client = new HttpClient(handler);
             } else
@@ -680,6 +661,28 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 client.Dispose();
             }
         }
+#if NET452
+        protected virtual void ConfigureCertificateValidatation(out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator) 
+        {
+            prevValidator = null;
+            protocolType = (SecurityProtocolType) 0;
+            if (!_config.ValidateCertificates)
+            {
+                protocolType = ServicePointManager.SecurityProtocol;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+        }
+        protected virtual void RestoreCertificateValidation(SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator) 
+        {
+            if (!_config.ValidateCertificates)
+            {
+                ServicePointManager.SecurityProtocol = protocolType;
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+        }
+#endif
         protected internal static string MakeServiceUrl(string serviceUrl)
         {
             var url = new Uri(serviceUrl).ToString();

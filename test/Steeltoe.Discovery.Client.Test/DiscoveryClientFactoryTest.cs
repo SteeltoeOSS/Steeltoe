@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Client.Test
             DiscoveryClientFactory factory = new DiscoveryClientFactory(options);
             var client = factory.CreateClient();
             Assert.NotNull(client);
-            Assert.IsType(typeof(EurekaDiscoveryClient), client);
+            Assert.IsType<EurekaDiscoveryClient>(client);
         }
 
         [Fact]

@@ -739,11 +739,11 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         private volatile int _timerFuncCount;
-        public void TimerFunc()
+        private void TimerFunc()
         {
             ++_timerFuncCount;
         }
-        public void TimerFuncThrows()
+        private void TimerFuncThrows()
         {
             ++_timerFuncCount;
             throw new ArgumentException();

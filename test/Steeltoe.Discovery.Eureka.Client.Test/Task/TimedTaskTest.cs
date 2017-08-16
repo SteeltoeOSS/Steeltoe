@@ -36,7 +36,7 @@ namespace Steeltoe.Discovery.Eureka.Task.Test
 
 
         private volatile int _timerFuncCount;
-        public void TimerFunc()
+        private void TimerFunc()
         {
             ++_timerFuncCount;
             System.Threading.Thread.Sleep(3000);
