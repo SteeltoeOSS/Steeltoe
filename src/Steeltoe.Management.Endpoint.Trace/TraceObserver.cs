@@ -305,7 +305,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         private T GetProperty<T>(object o, string name)
         {
-            var property = o.GetType().GetTypeInfo().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+            var property = o.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
             if (property == null)
             {
                 return default(T);
