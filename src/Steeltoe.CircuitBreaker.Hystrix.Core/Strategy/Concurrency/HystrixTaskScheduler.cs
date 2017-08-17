@@ -22,6 +22,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 {
     public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskScheduler
     {
+        private const int DEFAULT_MIN_WORKTHREADS = 50;
+        
         protected int corePoolSize;
         protected TimeSpan keepAliveTime;
         protected int maximumPoolSize;
@@ -52,9 +54,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             this.keepAliveTime = TimeSpan.FromMinutes(options.KeepAliveTimeMinutes);
             this.queueSize = options.MaxQueueSize;
             this.queueSizeRejectionThreshold = options.QueueSizeRejectionThreshold;
-#if NET46
-            System.Threading.ThreadPool.SetMinThreads(20, 10);
-#endif
+
+            int workThreads = 0;
+            int compThreads = 0;
+            System.Threading.ThreadPool.GetMinThreads(out workThreads, out compThreads);
+           
+            System.Threading.ThreadPool.SetMinThreads(Math.Max(workThreads, DEFAULT_MIN_WORKTHREADS), compThreads);
+                                                        ;
+
         }
         #region IHystrixTaskScheduler
         public virtual int CurrentActiveCount

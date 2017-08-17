@@ -7,7 +7,7 @@
     <Authors>Pivotal,dtillman</Authors>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.Core</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.Core</PackageId>
     <PackageTags>Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
@@ -27,10 +27,10 @@
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
   </ItemGroup>
-
+<!-- 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-  
+   -->
 </Project>

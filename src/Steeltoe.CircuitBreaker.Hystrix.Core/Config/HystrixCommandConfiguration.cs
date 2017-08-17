@@ -21,8 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 {
     public class HystrixCommandConfiguration
     {
-        //The idea is for this object to be serialized off-box.  For future-proofing, I'm adding a version so that changing config over time can be handled gracefully
-        private static readonly String VERSION = "1";
+
         private readonly IHystrixCommandKey commandKey;
         private readonly IHystrixThreadPoolKey threadPoolKey;
         private readonly IHystrixCommandGroupKey groupKey;

@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
  <Import Project="..\..\versions.props" />
+
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Metrics Event Stream</Description>
     <Authors>Pivotal,dtillman</Authors>
-    <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStream</AssemblyName>
@@ -29,8 +31,8 @@
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)"  PrivateAssets="All" />
     
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreDepVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
     <PackageReference Include="Steeltoe.CloudFoundry.Connector.Hystrix" Version="$(SteeltoeConnectorVersion)" />

@@ -273,14 +273,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected virtual async Task<TResult> RunAsync()
         {
-            return default(TResult);
+            return await Task.FromResult(default(TResult));
         }
 
         protected virtual async Task<TResult> RunFallbackAsync()
         {
-            throw new InvalidOperationException("No fallback available.");
+            return await Task.FromException<TResult>(new InvalidOperationException("No fallback available."));
         }
-
 
         protected override TResult DoRun()
         {

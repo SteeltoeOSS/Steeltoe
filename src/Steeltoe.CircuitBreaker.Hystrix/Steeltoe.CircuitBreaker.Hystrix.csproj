@@ -7,7 +7,7 @@
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal,dtillman</Authors>
-    <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix</PackageId>
     <PackageTags>ASPNET Core;Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreDepVersion)" />
   </ItemGroup>
 
 </Project>

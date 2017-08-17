@@ -47,45 +47,39 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestTripCircuit()
         {
             String key = "cmd-A";
-            try
-            {
-                HystrixCommand<bool> cmd1 = new SuccessCommand(key, 1);
-                HystrixCommand<bool> cmd2 = new SuccessCommand(key, 1);
-                HystrixCommand<bool> cmd3 = new SuccessCommand(key, 1);
-                HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
+     
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd3 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
 
-                IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
+            IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                cmd1.Execute();
-                cmd2.Execute();
-                cmd3.Execute();
-                cmd4.Execute();
+            cmd1.Execute();
+            cmd2.Execute();
+            cmd3.Execute();
+            cmd4.Execute();
 
-                // this should still allow requests as everything has been successful
-                Time.Wait( 150);
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            // this should still allow requests as everything has been successful
+            Time.Wait( 150);
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-                // fail
-                HystrixCommand<bool> cmd5 = new FailureCommand(key, 1);
-                HystrixCommand<bool> cmd6 = new FailureCommand(key, 1);
-                HystrixCommand<bool> cmd7 = new FailureCommand(key, 1);
-                HystrixCommand<bool> cmd8 = new FailureCommand(key, 1);
-                Assert.False(cmd5.Execute());
-                Assert.False(cmd6.Execute());
-                Assert.False(cmd7.Execute());
-                Assert.False(cmd8.Execute());
+            // fail
+            HystrixCommand<bool> cmd5 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd6 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd7 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd8 = new FailureCommand(key, 1);
+            Assert.False(cmd5.Execute());
+            Assert.False(cmd6.Execute());
+            Assert.False(cmd7.Execute());
+            Assert.False(cmd8.Execute());
 
-                // everything has failed in the test window so we should return false now
-                Time.Wait( 150);
-                Assert.False(cb.AllowRequest);
-                Assert.True(cb.IsOpen);
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.False(true, "Error occurred: " + e.Message);
-            }
+            // everything has failed in the test window so we should return false now
+            Time.Wait( 150);
+            Assert.False(cb.AllowRequest);
+            Assert.True(cb.IsOpen);
+   
         }
         /**
          * Test that if the % of failures is higher than the threshold that the circuit trips.
@@ -94,42 +88,36 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestTripCircuitOnFailuresAboveThreshold()
         {
             String key = "cmd-B";
-            try
-            {
-                HystrixCommand<Boolean> cmd1 = new SuccessCommand(key, 60);
-                IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
+ 
+            HystrixCommand<Boolean> cmd1 = new SuccessCommand(key, 60);
+            IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                // this should start as allowing requests
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            // this should start as allowing requests
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-                // success with high latency
-                cmd1.Execute();
-                HystrixCommand<Boolean> cmd2 = new SuccessCommand(key, 1);
-                cmd2.Execute();
-                HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1);
-                cmd3.Execute();
-                HystrixCommand<Boolean> cmd4 = new SuccessCommand(key, 1);
-                cmd4.Execute();
-                HystrixCommand<Boolean> cmd5 = new FailureCommand(key, 1);
-                cmd5.Execute();
-                HystrixCommand<Boolean> cmd6 = new SuccessCommand(key, 1);
-                cmd6.Execute();
-                HystrixCommand<Boolean> cmd7 = new FailureCommand(key, 1);
-                cmd7.Execute();
-                HystrixCommand<Boolean> cmd8 = new FailureCommand(key, 1);
-                cmd8.Execute();
+            // success with high latency
+            cmd1.Execute();
+            HystrixCommand<Boolean> cmd2 = new SuccessCommand(key, 1);
+            cmd2.Execute();
+            HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1);
+            cmd3.Execute();
+            HystrixCommand<Boolean> cmd4 = new SuccessCommand(key, 1);
+            cmd4.Execute();
+            HystrixCommand<Boolean> cmd5 = new FailureCommand(key, 1);
+            cmd5.Execute();
+            HystrixCommand<Boolean> cmd6 = new SuccessCommand(key, 1);
+            cmd6.Execute();
+            HystrixCommand<Boolean> cmd7 = new FailureCommand(key, 1);
+            cmd7.Execute();
+            HystrixCommand<Boolean> cmd8 = new FailureCommand(key, 1);
+            cmd8.Execute();
 
-                // this should trip the circuit as the error percentage is above the threshold
-                Time.Wait( 150);
-                Assert.False(cb.AllowRequest);
-                Assert.True(cb.IsOpen);
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.False(true, "Error occurred: " + e.Message);
-            }
+            // this should trip the circuit as the error percentage is above the threshold
+            Time.Wait( 150);
+            Assert.False(cb.AllowRequest);
+            Assert.True(cb.IsOpen);
+    
         }
         /**
     * Test that if the % of failures is higher than the threshold that the circuit trips.
@@ -138,44 +126,38 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestCircuitDoesNotTripOnFailuresBelowThreshold()
         {
             String key = "cmd-C";
-            try
-            {
-                HystrixCommand<Boolean> cmd1 = new SuccessCommand(key, 60);
-                IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
+      
+            HystrixCommand<Boolean> cmd1 = new SuccessCommand(key, 60);
+            IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                // this should start as allowing requests
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            // this should start as allowing requests
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-                // success with high latency
-                cmd1.Execute();
-                HystrixCommand<Boolean> cmd2 = new SuccessCommand(key, 1);
-                cmd2.Execute();
-                HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1);
-                cmd3.Execute();
-                HystrixCommand<Boolean> cmd4 = new SuccessCommand(key, 1);
-                cmd4.Execute();
-                HystrixCommand<Boolean> cmd5 = new SuccessCommand(key, 1);
-                cmd5.Execute();
-                HystrixCommand<Boolean> cmd6 = new FailureCommand(key, 1);
-                cmd6.Execute();
-                HystrixCommand<Boolean> cmd7 = new SuccessCommand(key, 1);
-                cmd7.Execute();
-                HystrixCommand<Boolean> cmd8 = new FailureCommand(key, 1);
-                cmd8.Execute();
+            // success with high latency
+            cmd1.Execute();
+            HystrixCommand<Boolean> cmd2 = new SuccessCommand(key, 1);
+            cmd2.Execute();
+            HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1);
+            cmd3.Execute();
+            HystrixCommand<Boolean> cmd4 = new SuccessCommand(key, 1);
+            cmd4.Execute();
+            HystrixCommand<Boolean> cmd5 = new SuccessCommand(key, 1);
+            cmd5.Execute();
+            HystrixCommand<Boolean> cmd6 = new FailureCommand(key, 1);
+            cmd6.Execute();
+            HystrixCommand<Boolean> cmd7 = new SuccessCommand(key, 1);
+            cmd7.Execute();
+            HystrixCommand<Boolean> cmd8 = new FailureCommand(key, 1);
+            cmd8.Execute();
 
-                // this should remain closed as the failure threshold is below the percentage limit
-                Time.Wait( 150);
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.False(true, "Error occurred: " + e.Message);
-            }
+            // this should remain closed as the failure threshold is below the percentage limit
+            Time.Wait( 150);
+            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
+    
         }
 
         /**
@@ -185,34 +167,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestTripCircuitOnTimeouts()
         {
             String key = "cmd-D";
-            try
-            {
-                HystrixCommand<Boolean> cmd1 = new TimeoutCommand(key);
-                IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
+    
+            HystrixCommand<Boolean> cmd1 = new TimeoutCommand(key);
+            IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                // this should start as allowing requests
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            // this should start as allowing requests
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-                // success with high latency
-                cmd1.Execute();
-                HystrixCommand<Boolean> cmd2 = new TimeoutCommand(key);
-                cmd2.Execute();
-                HystrixCommand<Boolean> cmd3 = new TimeoutCommand(key);
-                cmd3.Execute();
-                HystrixCommand<Boolean> cmd4 = new TimeoutCommand(key);
-                cmd4.Execute();
+            // success with high latency
+            cmd1.Execute();
+            HystrixCommand<Boolean> cmd2 = new TimeoutCommand(key);
+            cmd2.Execute();
+            HystrixCommand<Boolean> cmd3 = new TimeoutCommand(key);
+            cmd3.Execute();
+            HystrixCommand<Boolean> cmd4 = new TimeoutCommand(key);
+            cmd4.Execute();
 
-                // everything has been a timeout so we should not allow any requests
-                Time.Wait( 150);
-                Assert.False(cb.AllowRequest);
-                Assert.True(cb.IsOpen);
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.False(true, "Error occurred: " + e.Message);
-            }
+            // everything has been a timeout so we should not allow any requests
+            Time.Wait( 150);
+            Assert.False(cb.AllowRequest);
+            Assert.True(cb.IsOpen);
+
         }
 
         /**
@@ -222,44 +198,38 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestTripCircuitOnTimeoutsAboveThreshold()
         {
             String key = "cmd-E";
-            try
-            {
-                HystrixCommand<Boolean> cmd1 = new SuccessCommand(key, 60);
-                IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
+ 
+            HystrixCommand<Boolean> cmd1 = new SuccessCommand(key, 60);
+            IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                // this should start as allowing requests
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            // this should start as allowing requests
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-                // success with high latency
-                cmd1.Execute();
-                HystrixCommand<Boolean> cmd2 = new SuccessCommand(key, 1);
-                cmd2.Execute();
-                HystrixCommand<Boolean> cmd3 = new TimeoutCommand(key);
-                cmd3.Execute();
-                HystrixCommand<Boolean> cmd4 = new SuccessCommand(key, 1);
-                cmd4.Execute();
-                HystrixCommand<Boolean> cmd5 = new TimeoutCommand(key);
-                cmd5.Execute();
-                HystrixCommand<Boolean> cmd6 = new TimeoutCommand(key);
-                cmd6.Execute();
-                HystrixCommand<Boolean> cmd7 = new SuccessCommand(key, 1);
-                cmd7.Execute();
-                HystrixCommand<Boolean> cmd8 = new TimeoutCommand(key);
-                cmd8.Execute();
-                HystrixCommand<Boolean> cmd9 = new TimeoutCommand(key);
-                cmd9.Execute();
+            // success with high latency
+            cmd1.Execute();
+            HystrixCommand<Boolean> cmd2 = new SuccessCommand(key, 1);
+            cmd2.Execute();
+            HystrixCommand<Boolean> cmd3 = new TimeoutCommand(key);
+            cmd3.Execute();
+            HystrixCommand<Boolean> cmd4 = new SuccessCommand(key, 1);
+            cmd4.Execute();
+            HystrixCommand<Boolean> cmd5 = new TimeoutCommand(key);
+            cmd5.Execute();
+            HystrixCommand<Boolean> cmd6 = new TimeoutCommand(key);
+            cmd6.Execute();
+            HystrixCommand<Boolean> cmd7 = new SuccessCommand(key, 1);
+            cmd7.Execute();
+            HystrixCommand<Boolean> cmd8 = new TimeoutCommand(key);
+            cmd8.Execute();
+            HystrixCommand<Boolean> cmd9 = new TimeoutCommand(key);
+            cmd9.Execute();
 
-                // this should trip the circuit as the error percentage is above the threshold
-                Time.Wait( 150);
-                Assert.False(cb.AllowRequest);
-                Assert.True(cb.IsOpen);
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.False(true, "Error occurred: " + e.Message);
-            }
+            // this should trip the circuit as the error percentage is above the threshold
+            Time.Wait( 150);
+            Assert.False(cb.AllowRequest);
+            Assert.True(cb.IsOpen);
+    
         }
 
         /**
@@ -269,45 +239,39 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestSingleTestOnOpenCircuitAfterTimeWindow()
         {
             String key = "cmd-F";
-            try
-            {
-                int sleepWindow = 200;
-                HystrixCommand<Boolean> cmd1 = new FailureCommand(key, 60);
-                IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
+  
+            int sleepWindow = 200;
+            HystrixCommand<Boolean> cmd1 = new FailureCommand(key, 60);
+            IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                // this should start as allowing requests
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            // this should start as allowing requests
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-                cmd1.Execute();
-                HystrixCommand<Boolean> cmd2 = new FailureCommand(key, 1);
-                cmd2.Execute();
-                HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1);
-                cmd3.Execute();
-                HystrixCommand<Boolean> cmd4 = new FailureCommand(key, 1);
-                cmd4.Execute();
+            cmd1.Execute();
+            HystrixCommand<Boolean> cmd2 = new FailureCommand(key, 1);
+            cmd2.Execute();
+            HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1);
+            cmd3.Execute();
+            HystrixCommand<Boolean> cmd4 = new FailureCommand(key, 1);
+            cmd4.Execute();
 
-                // everything has failed in the test window so we should return false now
-                Time.Wait( 150);
-                Assert.False(cb.AllowRequest);
-                Assert.True(cb.IsOpen);
+            // everything has failed in the test window so we should return false now
+            Time.Wait( 150);
+            Assert.False(cb.AllowRequest);
+            Assert.True(cb.IsOpen);
 
-                // wait for sleepWindow to pass
-                Time.Wait( sleepWindow + 50);
+            // wait for sleepWindow to pass
+            Time.Wait( sleepWindow + 50);
 
-                // we should now allow 1 request
-                Assert.True(cb.AllowRequest);
-                // but the circuit should still be open
-                Assert.True(cb.IsOpen);
-                // and further requests are still blocked
-                Assert.False(cb.AllowRequest);
+            // we should now allow 1 request
+            Assert.True(cb.AllowRequest);
+            // but the circuit should still be open
+            Assert.True(cb.IsOpen);
+            // and further requests are still blocked
+            Assert.False(cb.AllowRequest);
 
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.False(true, "Error occurred: " + e.Message);
-            }
+
         }
 
         /**
@@ -318,62 +282,56 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public async void TestCircuitClosedAfterSuccess()
         {
             String key = "cmd-G";
-            try
-            {
-                int sleepWindow = 100;
-                HystrixCommand<Boolean> cmd1 = new FailureCommand(key, 1, sleepWindow);
-                IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                // this should start as allowing requests
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            int sleepWindow = 100;
+            HystrixCommand<Boolean> cmd1 = new FailureCommand(key, 1, sleepWindow);
+            IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                cmd1.Execute();
-                HystrixCommand<Boolean> cmd2 = new FailureCommand(key, 1, sleepWindow);
-                cmd2.Execute();
-                HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1, sleepWindow);
-                cmd3.Execute();
-                HystrixCommand<Boolean> cmd4 = new TimeoutCommand(key, sleepWindow);
-                cmd4.Execute();
+            // this should start as allowing requests
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-                // everything has failed in the test window so we should return false now
-                Time.Wait( 150);
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                output.WriteLine("CircuitBreaker state 1 : " + cmd1.Metrics.Healthcounts);
-                Assert.False(cb.AllowRequest);
-                Assert.True(cb.IsOpen);
+            cmd1.Execute();
+            HystrixCommand<Boolean> cmd2 = new FailureCommand(key, 1, sleepWindow);
+            cmd2.Execute();
+            HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1, sleepWindow);
+            cmd3.Execute();
+            HystrixCommand<Boolean> cmd4 = new TimeoutCommand(key, sleepWindow);
+            cmd4.Execute();
 
-                // wait for sleepWindow to pass
-                Time.Wait( sleepWindow + 50);
+            // everything has failed in the test window so we should return false now
+            Time.Wait( 150);
+            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output.WriteLine("CircuitBreaker state 1 : " + cmd1.Metrics.Healthcounts);
+            Assert.False(cb.AllowRequest);
+            Assert.True(cb.IsOpen);
 
-                // but the circuit should still be open
-                Assert.True(cb.IsOpen);
+            // wait for sleepWindow to pass
+            Time.Wait( sleepWindow + 50);
 
-                // we should now allow 1 request, and upon success, should cause the circuit to be closed
-                HystrixCommand<bool> cmd5 = new SuccessCommand(key, 60, sleepWindow);
-                IObservable<bool> asyncResult = cmd5.Observe();
+            // but the circuit should still be open
+            Assert.True(cb.IsOpen);
 
-                // and further requests are still blocked while the singleTest command is in flight
-                Assert.False(cb.AllowRequest);
+            // we should now allow 1 request, and upon success, should cause the circuit to be closed
+            HystrixCommand<bool> cmd5 = new SuccessCommand(key, 60, sleepWindow);
+            IObservable<bool> asyncResult = cmd5.Observe();
 
-                await asyncResult.SingleAsync();
+            // and further requests are still blocked while the singleTest command is in flight
+            Assert.False(cb.AllowRequest);
 
-                // all requests should be open again
+            await asyncResult.SingleAsync();
 
-                Time.Wait( 150);
-                output.WriteLine("CircuitBreaker state 2 : " + cmd1.Metrics.Healthcounts);
-                Assert.True(cb.AllowRequest);
-                Assert.True(cb.AllowRequest);
-                Assert.True(cb.AllowRequest);
-                // and the circuit should be closed again
-                Assert.False(cb.IsOpen);
+            // all requests should be open again
 
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.False(true, "Error occurred: " + e.Message);
-            }
+            Time.Wait( 150);
+            output.WriteLine("CircuitBreaker state 2 : " + cmd1.Metrics.Healthcounts);
+            Assert.True(cb.AllowRequest);
+            Assert.True(cb.AllowRequest);
+            Assert.True(cb.AllowRequest);
+            // and the circuit should be closed again
+            Assert.False(cb.IsOpen);
+
+   
         }
 
         /**
@@ -385,108 +343,102 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public async void TestMultipleTimeWindowRetriesBeforeClosingCircuit()
         {
             String key = "cmd-H";
-            try
-            {
-                int sleepWindow = 200;
-                HystrixCommand<Boolean> cmd1 = new FailureCommand(key, 60);
-                IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                // this should start as allowing requests
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            int sleepWindow = 200;
+            HystrixCommand<Boolean> cmd1 = new FailureCommand(key, 60);
+            IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                cmd1.Execute();
-                HystrixCommand<Boolean> cmd2 = new FailureCommand(key, 1);
-                cmd2.Execute();
-                HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1);
-                cmd3.Execute();
-                HystrixCommand<Boolean> cmd4 = new TimeoutCommand(key);
-                cmd4.Execute();
+            // this should start as allowing requests
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-                // everything has failed in the test window so we should return false now
-                output.WriteLine("!!!! 1 4 failures, circuit will open on recalc");
-                Time.Wait( 150);
+            cmd1.Execute();
+            HystrixCommand<Boolean> cmd2 = new FailureCommand(key, 1);
+            cmd2.Execute();
+            HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1);
+            cmd3.Execute();
+            HystrixCommand<Boolean> cmd4 = new TimeoutCommand(key);
+            cmd4.Execute();
 
-                Assert.False(cb.AllowRequest);
-                Assert.True(cb.IsOpen);
+            // everything has failed in the test window so we should return false now
+            output.WriteLine("!!!! 1 4 failures, circuit will open on recalc");
+            Time.Wait( 150);
 
-                // wait for sleepWindow to pass
-                output.WriteLine("!!!! 2 Sleep window starting where all commands fail-fast");
-                Time.Wait( sleepWindow + 50);
-                output.WriteLine("!!!! 3 Sleep window over, should allow singleTest()");
+            Assert.False(cb.AllowRequest);
+            Assert.True(cb.IsOpen);
 
-                // but the circuit should still be open
-                Assert.True(cb.IsOpen);
+            // wait for sleepWindow to pass
+            output.WriteLine("!!!! 2 Sleep window starting where all commands fail-fast");
+            Time.Wait( sleepWindow + 50);
+            output.WriteLine("!!!! 3 Sleep window over, should allow singleTest()");
 
-                // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
-                HystrixCommand<bool> cmd5 = new FailureCommand(key, 60);
-                IObservable<bool> asyncResult5 = cmd5.Observe();
-                output.WriteLine("!!!! Kicked off the single-test");
+            // but the circuit should still be open
+            Assert.True(cb.IsOpen);
 
-                // and further requests are still blocked while the singleTest command is in flight
-                Assert.False(cb.AllowRequest);
-                output.WriteLine("!!!! Confirmed that no other requests go out during single-test");
+            // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
+            HystrixCommand<bool> cmd5 = new FailureCommand(key, 60);
+            IObservable<bool> asyncResult5 = cmd5.Observe();
+            output.WriteLine("!!!! Kicked off the single-test");
 
-                await asyncResult5.SingleAsync();
-                output.WriteLine("!!!! SingleTest just completed");
+            // and further requests are still blocked while the singleTest command is in flight
+            Assert.False(cb.AllowRequest);
+            output.WriteLine("!!!! Confirmed that no other requests go out during single-test");
 
-                // all requests should still be blocked, because the singleTest failed
-                Assert.False(cb.AllowRequest);
-                Assert.False(cb.AllowRequest);
-                Assert.False(cb.AllowRequest);
+            await asyncResult5.SingleAsync();
+            output.WriteLine("!!!! SingleTest just completed");
 
-                // wait for sleepWindow to pass
-                output.WriteLine("!!!! 2nd sleep window START");
-                Time.Wait( sleepWindow + 50);
-                output.WriteLine("!!!! 2nd sleep window over");
+            // all requests should still be blocked, because the singleTest failed
+            Assert.False(cb.AllowRequest);
+            Assert.False(cb.AllowRequest);
+            Assert.False(cb.AllowRequest);
 
-                // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
-                HystrixCommand<bool> cmd6 = new FailureCommand(key, 60);
-                IObservable<bool> asyncResult6 = cmd6.Observe();
-                output.WriteLine("2nd singleTest just kicked off");
+            // wait for sleepWindow to pass
+            output.WriteLine("!!!! 2nd sleep window START");
+            Time.Wait( sleepWindow + 50);
+            output.WriteLine("!!!! 2nd sleep window over");
 
-                //and further requests are still blocked while the singleTest command is in flight
-                Assert.False(cb.AllowRequest);
-                output.WriteLine("confirmed that 2nd singletest only happened once");
+            // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
+            HystrixCommand<bool> cmd6 = new FailureCommand(key, 60);
+            IObservable<bool> asyncResult6 = cmd6.Observe();
+            output.WriteLine("2nd singleTest just kicked off");
 
-                await asyncResult6.SingleAsync();
-                output.WriteLine("2nd singleTest now over");
+            //and further requests are still blocked while the singleTest command is in flight
+            Assert.False(cb.AllowRequest);
+            output.WriteLine("confirmed that 2nd singletest only happened once");
 
-                // all requests should still be blocked, because the singleTest failed
-                Assert.False(cb.AllowRequest);
-                Assert.False(cb.AllowRequest);
-                Assert.False(cb.AllowRequest);
+            await asyncResult6.SingleAsync();
+            output.WriteLine("2nd singleTest now over");
 
-                // wait for sleepWindow to pass
-                Time.Wait( sleepWindow + 50);
+            // all requests should still be blocked, because the singleTest failed
+            Assert.False(cb.AllowRequest);
+            Assert.False(cb.AllowRequest);
+            Assert.False(cb.AllowRequest);
 
-                // but the circuit should still be open
-                Assert.True(cb.IsOpen);
+            // wait for sleepWindow to pass
+            Time.Wait( sleepWindow + 50);
 
-                // we should now allow 1 request, and upon success, should cause the circuit to be closed
-                HystrixCommand<bool> cmd7 = new SuccessCommand(key, 60);
-                IObservable<bool> asyncResult7 = cmd7.Observe();
+            // but the circuit should still be open
+            Assert.True(cb.IsOpen);
 
-                // and further requests are still blocked while the singleTest command is in flight
-                Assert.False(cb.AllowRequest);
+            // we should now allow 1 request, and upon success, should cause the circuit to be closed
+            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 60);
+            IObservable<bool> asyncResult7 = cmd7.Observe();
 
-                await asyncResult7.SingleAsync();
+            // and further requests are still blocked while the singleTest command is in flight
+            Assert.False(cb.AllowRequest);
 
-                // all requests should be open again
-                Assert.True(cb.AllowRequest);
-                Assert.True(cb.AllowRequest);
-                Assert.True(cb.AllowRequest);
-                // and the circuit should be closed again
-                Assert.False(cb.IsOpen);
+            await asyncResult7.SingleAsync();
 
-                // and the circuit should be closed again
-                Assert.False(cb.IsOpen);
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.False(true, "Error occurred: " + e.Message);
-            }
+            // all requests should be open again
+            Assert.True(cb.AllowRequest);
+            Assert.True(cb.AllowRequest);
+            Assert.True(cb.AllowRequest);
+            // and the circuit should be closed again
+            Assert.False(cb.IsOpen);
+
+            // and the circuit should be closed again
+            Assert.False(cb.IsOpen);
+   
         }
 
         /**
@@ -497,37 +449,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestLowVolumeDoesNotTripCircuit()
         {
             String key = "cmd-I";
-            try
-            {
-                int sleepWindow = 200;
-                int lowVolume = 5;
+    
+            int sleepWindow = 200;
+            int lowVolume = 5;
 
-                HystrixCommand<Boolean> cmd1 = new FailureCommand(key, 60, sleepWindow, lowVolume);
-                IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
+            HystrixCommand<Boolean> cmd1 = new FailureCommand(key, 60, sleepWindow, lowVolume);
+            IHystrixCircuitBreaker cb = cmd1.circuitBreaker;
 
-                // this should start as allowing requests
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            // this should start as allowing requests
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-                cmd1.Execute();
-                HystrixCommand<Boolean> cmd2 = new FailureCommand(key, 1, sleepWindow, lowVolume);
-                cmd2.Execute();
-                HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1, sleepWindow, lowVolume);
-                cmd3.Execute();
-                HystrixCommand<Boolean> cmd4 = new FailureCommand(key, 1, sleepWindow, lowVolume);
-                cmd4.Execute();
+            cmd1.Execute();
+            HystrixCommand<Boolean> cmd2 = new FailureCommand(key, 1, sleepWindow, lowVolume);
+            cmd2.Execute();
+            HystrixCommand<Boolean> cmd3 = new FailureCommand(key, 1, sleepWindow, lowVolume);
+            cmd3.Execute();
+            HystrixCommand<Boolean> cmd4 = new FailureCommand(key, 1, sleepWindow, lowVolume);
+            cmd4.Execute();
 
-                // even though it has all failed we won't trip the circuit because the volume is low
-                Time.Wait( 150);
-                Assert.True(cb.AllowRequest);
-                Assert.False(cb.IsOpen);
+            // even though it has all failed we won't trip the circuit because the volume is low
+            Time.Wait( 150);
+            Assert.True(cb.AllowRequest);
+            Assert.False(cb.IsOpen);
 
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.False(true, "Error occurred: " + e.Message);
-            }
         }
 
 
