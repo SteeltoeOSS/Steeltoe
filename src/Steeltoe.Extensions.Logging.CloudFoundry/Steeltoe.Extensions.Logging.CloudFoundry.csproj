@@ -7,7 +7,7 @@
       <Authors>Pivotal;dtillman</Authors>
       <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
       <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-      <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
+      <TargetFrameworks>net452;netstandard1.3</TargetFrameworks>
       <AssemblyName>Steeltoe.Extensions.Logging.CloudFoundry</AssemblyName>
       <PackageId>Steeltoe.Extensions.Logging.CloudFoundry</PackageId>
       <PackageTags>Spring Cloud;Logging;Management</PackageTags>

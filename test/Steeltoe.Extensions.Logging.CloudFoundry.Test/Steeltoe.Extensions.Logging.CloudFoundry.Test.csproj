@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.Extensions.Logging.CloudFoundry</Description>
-    <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net452;netcoreapp1.1</TargetFrameworks>
     <AssemblyName>Steeltoe.Extensions.Logging.CloudFoundry.Test</AssemblyName>
     <PackageId>Steeltoe.Extensions.Logging.CloudFoundry.Test</PackageId>
     <PackageTags>Spring Cloud;Logging;Management;Monitoring</PackageTags>
