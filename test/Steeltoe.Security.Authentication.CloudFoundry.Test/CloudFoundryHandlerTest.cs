@@ -50,10 +50,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
 
             Assert.Equal(parameters["client_id"], opts.ClientId);
-            Assert.Equal(parameters["redirect_uri"], "redirectUri");
+            Assert.Equal( "redirectUri", parameters["redirect_uri"]);
             Assert.Equal(parameters["client_secret"], opts.ClientSecret);
-            Assert.Equal(parameters["code"], "code");
-            Assert.Equal(parameters["grant_type"], "authorization_code");
+            Assert.Equal( "code", parameters["code"]);
+            Assert.Equal( "authorization_code",parameters["grant_type"]);
 
         }
 
