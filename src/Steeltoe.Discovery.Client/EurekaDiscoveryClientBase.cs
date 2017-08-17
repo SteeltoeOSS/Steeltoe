@@ -5,6 +5,7 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Client
 {
@@ -106,10 +107,10 @@ namespace Steeltoe.Discovery.Client
 
         }
 
-        public virtual void ShutdownAsync()
+        public virtual Task ShutdownAsync()
         {
             ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.DOWN;
-            Client.ShutdownAsyc();
+            return Client.ShutdownAsync();
         }
     }
 }

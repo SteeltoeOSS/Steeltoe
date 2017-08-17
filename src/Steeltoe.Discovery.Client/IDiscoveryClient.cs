@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Client
 {
@@ -47,7 +47,7 @@ namespace Steeltoe.Discovery.Client
         IList<IServiceInstance> GetInstances(String serviceId);
 
 
-        void ShutdownAsync();
+        Task ShutdownAsync();
 
 
     }

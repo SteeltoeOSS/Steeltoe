@@ -22,7 +22,7 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Task;
 using Steeltoe.Discovery.Eureka.Transport;
 using System.Net;
-using System.Threading.Tasks;
+using T=System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Discovery.Eureka
@@ -264,7 +264,7 @@ namespace Steeltoe.Discovery.Eureka
             return results[index];
 
         }
-        public async void ShutdownAsyc()
+        public async T.Task ShutdownAsync()
         {
      
             int shutdown = Interlocked.Exchange(ref _shutdown, 1);
@@ -308,7 +308,7 @@ namespace Steeltoe.Discovery.Eureka
             return InstanceStatus.UNKNOWN;
         }
 
-        internal protected async Task<bool> FetchRegistryAsync(bool fullUpdate)
+        internal protected async T.Task<bool> FetchRegistryAsync(bool fullUpdate)
         {
             Applications fetched = null;
             try
@@ -350,7 +350,7 @@ namespace Steeltoe.Discovery.Eureka
             _logger?.LogDebug("FetchRegistry failed");
             return false;
         }
-        internal protected async Task<bool> UnregisterAsync()
+        internal protected async T.Task<bool> UnregisterAsync()
         {
             InstanceInfo inst = ApplicationInfoManager.Instance.InstanceInfo;
             if (inst == null)
@@ -371,7 +371,7 @@ namespace Steeltoe.Discovery.Eureka
             return false;
 
         }
-        internal protected async Task<bool> RegisterAsync()
+        internal protected async T.Task<bool> RegisterAsync()
         {
             InstanceInfo inst = ApplicationInfoManager.Instance.InstanceInfo;
             if (inst == null)
@@ -398,7 +398,7 @@ namespace Steeltoe.Discovery.Eureka
 
         }
 
-        internal protected async Task<bool> RenewAsync()
+        internal protected async T.Task<bool> RenewAsync()
         {
             InstanceInfo inst = ApplicationInfoManager.Instance.InstanceInfo;
             if (inst == null)
@@ -431,7 +431,7 @@ namespace Steeltoe.Discovery.Eureka
             return false;
         }
 
-        internal protected async Task<Applications> FetchFullRegistryAsync()
+        internal protected async T.Task<Applications> FetchFullRegistryAsync()
         {
             long startingCounter = _registryFetchCounter;
             EurekaHttpResponse<Applications> resp = null;
@@ -468,7 +468,7 @@ namespace Steeltoe.Discovery.Eureka
             return null;
         }
 
-        internal protected async Task<Applications> FetchRegistryDeltaAsync()
+        internal protected async T.Task<Applications> FetchRegistryDeltaAsync()
         {
             long startingCounter = _registryFetchCounter;
             Applications delta = null;

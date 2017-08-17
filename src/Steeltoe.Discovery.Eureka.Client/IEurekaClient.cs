@@ -16,6 +16,7 @@
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
+using T=System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka
 {
@@ -23,6 +24,6 @@ namespace Steeltoe.Discovery.Eureka
     {
         IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure);
 
-        void ShutdownAsyc();
+        T.Task ShutdownAsync();
     }
 }

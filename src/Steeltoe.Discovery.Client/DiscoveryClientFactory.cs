@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Client
 {
@@ -116,9 +117,9 @@ namespace Steeltoe.Discovery.Client
             return null;
         }
 
-        public void ShutdownAsync()
+        public Task ShutdownAsync()
         {
-            
+            return Task.FromResult(0);
         }
     }
 }

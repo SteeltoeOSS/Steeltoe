@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Client.Test
 {
@@ -110,7 +111,7 @@ namespace Steeltoe.Discovery.Client.Test
             throw new NotImplementedException();
         }
 
-        public void ShutdownAsync()
+        public Task ShutdownAsync()
         {
             throw new NotImplementedException();
         }
