@@ -2,9 +2,9 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <SteeltoeLoggingVersion>1.1.0-dev-00005</SteeltoeLoggingVersion>
+    <SteeltoeLoggingVersion>1.1.0-dev-00006</SteeltoeLoggingVersion>
     <DiagnosticSourceVersion>4.4.0</DiagnosticSourceVersion> 
-    <AspNetCoreVersion>1.1.0</AspNetCoreVersion>
+    <AspNetCoreVersion>1.1.2</AspNetCoreVersion>
     <CoreFxVersion>4.3.0</CoreFxVersion>
     <JsonNetVersion>9.0.1</JsonNetVersion>
     <TestSdkVersion>15.0.0</TestSdkVersion>
