@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.CircuitBreaker.Hystrix</Description>
-    <TargetFrameworks>net46;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.Test</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.Test</PackageId>
     <PackageTags>ASPNET Core;CircuitBreaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
