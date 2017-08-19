@@ -32,8 +32,8 @@ All new endpoint development is done on the dev branch. More stable versions of 
 # Building Pre-requisites
 To build and run the unit tests:
 
-1. .NET Core SDK 1.0.4 or greater
-2. .NET Core Runtime 1.1
+1. .NET Core SDK 
+2. .NET Core Runtime
 
 # Building Packages & Running Tests - Windows
 To build the packages on windows:
@@ -75,7 +75,7 @@ To run the unit tests:
 3. Install .NET Core SDK 
 4. dotnet restore --configfile nuget.config test
 5. cd test\ `<test project>` (e.g. cd test/Steeltoe.Management.Endpoint.Test)
-6. dotnet xunit -verbose -framework netcoreapp1.1
+6. dotnet xunit -verbose -framework netcoreapp2.0
 
 # Sample Applications
 See the [Samples](https://github.com/SteeltoeOSS/Samples) repo for examples of how to use these packages.
