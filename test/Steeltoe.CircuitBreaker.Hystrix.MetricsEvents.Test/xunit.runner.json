@@ -1,5 +1,4 @@
 ﻿{
   "maxParallelThreads": 1,
-  "parallelizeTestCollections": false,
-  "appDoman": "denied"
+  "parallelizeTestCollections": false
 }
