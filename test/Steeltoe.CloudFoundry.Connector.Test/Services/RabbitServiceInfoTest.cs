@@ -70,11 +70,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("fb03d693-91fe-4dc5-8203-ff7a6390df66", r3.Path);
             Assert.Null( r3.Query);
             Assert.NotNull(r3.Uris);
-            Assert.Equal(1, r3.Uris.Count);
+            Assert.Single(r3.Uris);
             Assert.Equal(uris[0], r3.Uris[0]);
             Assert.Equal(uri, r3.Uri);
             Assert.NotNull(r3.ManagementUris);
-            Assert.Equal(1, r3.ManagementUris.Count);
+            Assert.Single(r3.ManagementUris);
             Assert.Equal(managementUris[0], r3.ManagementUris[0]);
             Assert.Equal(managementUri, r3.ManagementUri);
 

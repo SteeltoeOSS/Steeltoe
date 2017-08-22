@@ -299,11 +299,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var connString = con.ConnectionString;
             Assert.NotNull(connString);
 
-            Assert.True(connString.Contains("cf_eabde00f_6383_4230_86df_98eb522bc87d"));
-            Assert.True(connString.Contains("3306"));
-            Assert.True(connString.Contains("192.168.0.80"));
-            Assert.True(connString.Contains("1solAZdtoCYfmjcj"));
-            Assert.True(connString.Contains("7JmJzJgm4VH4ZkOh"));
+            Assert.Contains("cf_eabde00f_6383_4230_86df_98eb522bc87d", connString);
+            Assert.Contains("3306", connString);
+            Assert.Contains("192.168.0.80", connString);
+            Assert.Contains("1solAZdtoCYfmjcj", connString);
+            Assert.Contains("7JmJzJgm4VH4ZkOh", connString);
 
         }
     }

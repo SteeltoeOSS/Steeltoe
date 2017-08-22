@@ -281,11 +281,11 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             var connString = con.ConnectionString;
             Assert.NotNull(connString);
 
-            Assert.True(connString.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff"));
-            Assert.True(connString.Contains("5432"));
-            Assert.True(connString.Contains("postgres.testcloud.com"));
-            Assert.True(connString.Contains("lmu7c96mgl99b2t1hvdgd5q94v"));
-            Assert.True(connString.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff"));
+            Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
+            Assert.Contains("5432", connString);
+            Assert.Contains("postgres.testcloud.com", connString);
+            Assert.Contains("lmu7c96mgl99b2t1hvdgd5q94v", connString);
+            Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
 
         }
     }
