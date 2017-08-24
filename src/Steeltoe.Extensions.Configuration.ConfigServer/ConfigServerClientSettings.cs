@@ -77,7 +77,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <summary>
         /// Default timeout in milliseconds
         /// </summary>
-        public const int DEFAULT_TIMEOUT_MILLISECONDS = 3 * 1000;
+        public const int DEFAULT_TIMEOUT_MILLISECONDS = 6 * 1000;
 
         /// <summary>
         /// Initialize Config Server client settings with defaults
