@@ -118,8 +118,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, SqlServerConfig, null);
             return factory.CreateConnectionString();
         }
-        private static string[] SqlServerEntityAssemblies = new string[] { "System.Data.SqlClient" };
-        private static string[] SqlServerEntityTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
+        private static string[] SqlServerEntityAssemblies = new string[] { "Microsoft.EntityFrameworkCore.SqlServer" };
+        private static string[] SqlServerEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.SqlServerDbContextOptionsExtensions" };
         private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object SqlServerOptionsAction = null)
         {
             Type extensionType = ConnectorHelpers.FindType(SqlServerEntityAssemblies, SqlServerEntityTypeNames);
