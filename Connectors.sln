@@ -34,7 +34,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Conne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Connector.Hystrix.Test", "test\Steeltoe.CloudFoundry.Connector.Hystrix.Test\Steeltoe.CloudFoundry.Connector.Hystrix.Test.csproj", "{8CA7BB64-5A46-4F91-BDA7-0D77BA552AC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Connector.SqlServer", "Steeltoe.CloudFoundry.Connector.SqlServer\Steeltoe.CloudFoundry.Connector.SqlServer.csproj", "{1547C8CD-8D81-450D-8964-9A5FD98E12A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Connector.SqlServer", "src\Steeltoe.CloudFoundry.Connector.SqlServer\Steeltoe.CloudFoundry.Connector.SqlServer.csproj", "{1547C8CD-8D81-450D-8964-9A5FD98E12A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
