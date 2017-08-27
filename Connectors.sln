@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9BB0395E-B595-4B95-89ED-F55AF12B4EE7}"
 EndProject
@@ -33,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Connector.Hystrix", "src\Steeltoe.CloudFoundry.Connector.Hystrix\Steeltoe.CloudFoundry.Connector.Hystrix.csproj", "{C247B7DD-DCA9-4003-B727-6B650952B2D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Connector.Hystrix.Test", "test\Steeltoe.CloudFoundry.Connector.Hystrix.Test\Steeltoe.CloudFoundry.Connector.Hystrix.Test.csproj", "{8CA7BB64-5A46-4F91-BDA7-0D77BA552AC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Connector.SqlServer", "Steeltoe.CloudFoundry.Connector.SqlServer\Steeltoe.CloudFoundry.Connector.SqlServer.csproj", "{1547C8CD-8D81-450D-8964-9A5FD98E12A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -212,6 +214,18 @@ Global
 		{8CA7BB64-5A46-4F91-BDA7-0D77BA552AC3}.Release|x64.Build.0 = Release|Any CPU
 		{8CA7BB64-5A46-4F91-BDA7-0D77BA552AC3}.Release|x86.ActiveCfg = Release|Any CPU
 		{8CA7BB64-5A46-4F91-BDA7-0D77BA552AC3}.Release|x86.Build.0 = Release|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Debug|x64.Build.0 = Debug|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Debug|x86.Build.0 = Debug|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Release|x64.ActiveCfg = Release|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Release|x64.Build.0 = Release|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Release|x86.ActiveCfg = Release|Any CPU
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -231,5 +245,9 @@ Global
 		{63E64B33-4236-4FC9-A9F5-4DF9A0091CB2} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
 		{C247B7DD-DCA9-4003-B727-6B650952B2D5} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
 		{8CA7BB64-5A46-4F91-BDA7-0D77BA552AC3} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
+		{1547C8CD-8D81-450D-8964-9A5FD98E12A5} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9CB88A54-DEBC-4FE2-833E-B8FF9602D0B2}
 	EndGlobalSection
 EndGlobal
