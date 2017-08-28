@@ -24,8 +24,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
     public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
     {
         public const string Default_Server = "localhost";
-        public const int Default_Port = 3306;
-        private const string MYSQL_CLIENT_SECTION_PREFIX = "mysql:client";
+        public const int Default_Port = 1433;
+        private const string SQL_CLIENT_SECTION_PREFIX = "sqlserver:client";
 
         public SqlServerProviderConnectorOptions()
         {
@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             {
                 throw new ArgumentNullException(nameof(config));
             }
-            var section = config.GetSection(MYSQL_CLIENT_SECTION_PREFIX);
+            var section = config.GetSection(SQL_CLIENT_SECTION_PREFIX);
             section.Bind(this);
         }
 
@@ -46,9 +46,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         public string Server { get; set; } = Default_Server;
         public int Port { get; set; } = Default_Port;
         public string Username { get; set; }
-        public string Password { get; set;  }
+        public string Password { get; set; }
         public string Database { get; set; }
-        public string SslMode { get; set; }
+        public string IntegratedSecurity { get; set; }
 
         public override string ToString()
         {
@@ -57,12 +57,12 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             }
 
             StringBuilder sb = new StringBuilder();
-            AddKeyValue(sb, nameof(Server), Server);
-            AddKeyValue(sb, nameof(Port), Port);
-            AddKeyValue(sb, nameof(Username), Username);
-            AddKeyValue(sb, nameof(Password), Password);
-            AddKeyValue(sb, nameof(Database), Database);
-            AddKeyValue(sb, nameof(SslMode), SslMode);
+            AddKeyValue(sb, "Data Source", Server);
+            //AddKeyValue(sb, nameof(Port), Port);
+            AddKeyValue(sb, "Initial Catalog", Database);
+            AddKeyValue(sb, "User Id", Username);
+            AddKeyValue(sb, "Password", Password);
+            AddKeyValue(sb, "Integrated Security", IntegratedSecurity);
             return sb.ToString();
         }
 
