@@ -15,6 +15,8 @@
 
 using Microsoft.AspNetCore.Http;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
@@ -34,6 +36,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var hystrix = HystrixRequestContext.InitializeContext();
 
             await _next.Invoke(context);
+
+            hystrix.Dispose();
+        }
+    }
+    public class HystrixRequestContextMiddlewareOwin
+    {
+        private readonly Func<IDictionary<string, object>, Task> _next;
+
+        public HystrixRequestContextMiddlewareOwin(Func<IDictionary<string, object>, Task> next)
+        {
+            _next = next;
+        }
+
+        public async Task Invoke(IDictionary<string, object> environment)
+        {
+            var hystrix = HystrixRequestContext.InitializeContext();
+
+            await _next(environment);
 
             hystrix.Dispose();
         }

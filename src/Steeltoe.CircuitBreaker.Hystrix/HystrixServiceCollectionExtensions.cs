@@ -223,7 +223,194 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 throw new ArgumentNullException(nameof(config));
             }
 
-            AddHystrixCommand<TService, TImplementation>(services, HystrixCommandGroupKeyDefault.AsKey(groupKey), HystrixCommandKeyDefault.AsKey(commandKey),   config);
+            AddHystrixCommand<TService, TImplementation>(services, HystrixCommandGroupKeyDefault.AsKey(groupKey), HystrixCommandKeyDefault.AsKey(commandKey), config);
+        }
+
+        public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, IHystrixCollapserKey collapserKey, IConfiguration config)
+    where TService : class where TImplementation : class, TService
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (collapserKey == null)
+            {
+                throw new ArgumentNullException(nameof(collapserKey));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            var strategy = HystrixPlugins.OptionsStrategy;
+            var dynOpts = strategy.GetDynamicOptions(config);
+
+            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
+
+            services.AddTransient<TService, TImplementation>((p) => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
+        }
+
+        public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, IHystrixCollapserKey collapserKey, RequestCollapserScope scope, IConfiguration config)
+            where TService : class where TImplementation : class, TService
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (collapserKey == null)
+            {
+                throw new ArgumentNullException(nameof(collapserKey));
+            }
+
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            var strategy = HystrixPlugins.OptionsStrategy;
+            var dynOpts = strategy.GetDynamicOptions(config);
+
+            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
+            services.AddTransient<TService, TImplementation>((p) => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
+        }
+        public static void AddHystrixCollapser<TService>(this IServiceCollection services, IHystrixCollapserKey collapserKey, IConfiguration config) where TService : class
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (collapserKey == null)
+            {
+                throw new ArgumentNullException(nameof(collapserKey));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            var strategy = HystrixPlugins.OptionsStrategy;
+            var dynOpts = strategy.GetDynamicOptions(config);
+
+            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
+
+            services.AddTransient<TService>((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+        }
+
+        public static void AddHystrixCollapser<TService>(this IServiceCollection services, IHystrixCollapserKey collapserKey, RequestCollapserScope scope, IConfiguration config) where TService : class
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (collapserKey == null)
+            {
+                throw new ArgumentNullException(nameof(collapserKey));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            var strategy = HystrixPlugins.OptionsStrategy;
+            var dynOpts = strategy.GetDynamicOptions(config);
+
+            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
+
+            services.AddTransient<TService>((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
+        }
+
+        public static void AddHystrixCollapser<TService>(this IServiceCollection services, string collapserKey, IConfiguration config) where TService : class
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (string.IsNullOrEmpty(collapserKey))
+            {
+                throw new ArgumentNullException(nameof(collapserKey));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            AddHystrixCollapser<TService>(services, HystrixCollapserKeyDefault.AsKey(collapserKey), config);
+        }
+
+        public static void AddHystrixCollapser<TService>(this IServiceCollection services, string collapserKey, RequestCollapserScope scope, IConfiguration config) where TService : class
+        {
+
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (string.IsNullOrEmpty(collapserKey))
+            {
+                throw new ArgumentNullException(nameof(collapserKey));
+            }
+
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            AddHystrixCollapser<TService>(services, HystrixCollapserKeyDefault.AsKey(collapserKey), scope, config);
+        }
+
+        public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, string collapserKey, IConfiguration config)
+            where TService : class where TImplementation : class, TService
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (string.IsNullOrEmpty(collapserKey))
+            {
+                throw new ArgumentNullException(nameof(collapserKey));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            AddHystrixCollapser<TService, TImplementation>(services, HystrixCollapserKeyDefault.AsKey(collapserKey), config);
+        }
+
+        public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, string collapserKey, RequestCollapserScope scope, IConfiguration config)
+             where TService : class where TImplementation : class, TService
+        {
+
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (string.IsNullOrEmpty(collapserKey))
+            {
+                throw new ArgumentNullException(nameof(collapserKey));
+            }
+
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            AddHystrixCollapser<TService, TImplementation>(services, HystrixCollapserKeyDefault.AsKey(collapserKey), scope, config);
         }
 
     }
