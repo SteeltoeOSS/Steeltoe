@@ -34,7 +34,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Conne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Connector.Hystrix.Test", "test\Steeltoe.CloudFoundry.Connector.Hystrix.Test\Steeltoe.CloudFoundry.Connector.Hystrix.Test.csproj", "{8CA7BB64-5A46-4F91-BDA7-0D77BA552AC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Connector.SqlServer", "src\Steeltoe.CloudFoundry.Connector.SqlServer\Steeltoe.CloudFoundry.Connector.SqlServer.csproj", "{1547C8CD-8D81-450D-8964-9A5FD98E12A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.SqlServer", "src\Steeltoe.CloudFoundry.Connector.SqlServer\Steeltoe.CloudFoundry.Connector.SqlServer.csproj", "{1547C8CD-8D81-450D-8964-9A5FD98E12A5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.SqlServer.Test", "test\Steeltoe.CloudFoundry.Connector.SqlServer.Test\Steeltoe.CloudFoundry.Connector.SqlServer.Test.csproj", "{2D215C7B-00C0-400D-B198-B85C2AD62E2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -226,6 +228,18 @@ Global
 		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Release|x64.Build.0 = Release|Any CPU
 		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Release|x86.ActiveCfg = Release|Any CPU
 		{1547C8CD-8D81-450D-8964-9A5FD98E12A5}.Release|x86.Build.0 = Release|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Debug|x64.Build.0 = Debug|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Debug|x86.Build.0 = Debug|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Release|x64.ActiveCfg = Release|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Release|x64.Build.0 = Release|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Release|x86.ActiveCfg = Release|Any CPU
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -246,6 +260,7 @@ Global
 		{C247B7DD-DCA9-4003-B727-6B650952B2D5} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
 		{8CA7BB64-5A46-4F91-BDA7-0D77BA552AC3} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
 		{1547C8CD-8D81-450D-8964-9A5FD98E12A5} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
+		{2D215C7B-00C0-400D-B198-B85C2AD62E2A} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9CB88A54-DEBC-4FE2-833E-B8FF9602D0B2}

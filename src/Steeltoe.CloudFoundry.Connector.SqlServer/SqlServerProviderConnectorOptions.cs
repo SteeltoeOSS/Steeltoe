@@ -25,7 +25,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
     {
         public const string Default_Server = "localhost";
         public const int Default_Port = 1433;
-        private const string SQL_CLIENT_SECTION_PREFIX = "sqlserver:client";
+        private const string SQL_CLIENT_SECTION_PREFIX = "sqlserver:credentials";
 
         public SqlServerProviderConnectorOptions()
         {
@@ -39,17 +39,31 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
                 throw new ArgumentNullException(nameof(config));
             }
             var section = config.GetSection(SQL_CLIENT_SECTION_PREFIX);
+
+            section.Bind(this);
+
+            if (uri != null)
+            {
+                Server = uri.Split(':')[2].Substring(2);
+            }
+            Username = uid;
+            Database = db;
+            Password = pw;
+
             section.Bind(this);
         }
 
         public string ConnectionString { get; set; }
         public string Server { get; set; } = Default_Server;
-        public int Port { get; set; } = Default_Port;
+        //public int Port { get; set; } = Default_Port;
         public string Username { get; set; }
         public string Password { get; set; }
         public string Database { get; set; }
         public string IntegratedSecurity { get; set; }
-
+        public string uid { get; set; }
+        public string uri { get; set; }
+        public string db { get; set; }
+        public string pw { get; set; }
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(ConnectionString)) {
@@ -59,9 +73,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             StringBuilder sb = new StringBuilder();
             AddKeyValue(sb, "Data Source", Server);
             //AddKeyValue(sb, nameof(Port), Port);
-            AddKeyValue(sb, "Initial Catalog", Database);
-            AddKeyValue(sb, "User Id", Username);
-            AddKeyValue(sb, "Password", Password);
+            AddKeyValue(sb, "Initial Catalog", db);
+            AddKeyValue(sb, "User Id", uid);
+            AddKeyValue(sb, "Password", pw);
             AddKeyValue(sb, "Integrated Security", IntegratedSecurity);
             return sb.ToString();
         }

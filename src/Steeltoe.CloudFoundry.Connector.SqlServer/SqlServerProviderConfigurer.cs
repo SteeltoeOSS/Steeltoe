@@ -21,14 +21,13 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
     public class SqlServerProviderConfigurer
     {
-        internal string Configure(SqlServerServiceInfo si, SqlServerProviderConnectorOptions configuration)
+        public string Configure(SqlServerServiceInfo si, SqlServerProviderConnectorOptions configuration)
         {
             UpdateConfiguration(si, configuration);
             return configuration.ToString();
-
-
         }
-        internal void UpdateConfiguration(SqlServerServiceInfo si, SqlServerProviderConnectorOptions configuration)
+
+        public void UpdateConfiguration(SqlServerServiceInfo si, SqlServerProviderConnectorOptions configuration)
         {
             if (si == null)
             {
@@ -37,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
             if (!string.IsNullOrEmpty(si.Uri) )
             {
-                configuration.Port = si.Port;
+                //configuration.Port = si.Port;
                 configuration.Username = si.UserName;
                 configuration.Password = si.Password;
                 configuration.Server = si.Host;

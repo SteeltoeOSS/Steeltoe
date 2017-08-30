@@ -19,7 +19,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     public class SqlServerServiceInfoFactory : RelationalServiceInfoFactory
     {
         public SqlServerServiceInfoFactory() :
-            base(new Tags(), SqlServerServiceInfo.SQLSERVER_SCHEME)
+            base(new Tags("sqlserver"), SqlServerServiceInfo.SQLSERVER_SCHEME)
         {
         }
 

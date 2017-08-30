@@ -14,26 +14,26 @@
 // limitations under the License.
 //
 #if !NET461
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.MySqlClient;
 using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
+namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
 {
-    public class MySqlDbContextOptionsExtensionsTest
+    public class SqlServerDbContextOptionsExtensionsTest
     {
-        public MySqlDbContextOptionsExtensionsTest()
+        public SqlServerDbContextOptionsExtensionsTest()
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
         }
 
         [Fact]
-        public void UseMySql_ThrowsIfDbContextOptionsBuilderNull()
+        public void UseSqlServer_ThrowsIfDbContextOptionsBuilderNull()
         {
             // Arrange
             DbContextOptionsBuilder optionsBuilder = null;
@@ -41,21 +41,21 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql(optionsBuilder, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
             Assert.Contains(nameof(optionsBuilder), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql(optionsBuilder, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql<GoodDbContext>(goodBuilder, config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config));
             Assert.Contains(nameof(optionsBuilder), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql<GoodDbContext>(goodBuilder, config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex4.Message);
 
         }
         [Fact]
-        public void UseMySql_ThrowsIfConfigurtionNull()
+        public void UseSqlServer_ThrowsIfConfigurtionNull()
         {
             // Arrange
             DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
@@ -63,22 +63,22 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql(optionsBuilder, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql(optionsBuilder, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql<GoodDbContext>(goodBuilder, config));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config));
             Assert.Contains(nameof(config), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql<GoodDbContext>(goodBuilder, config, "foobar"));
+            var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
             Assert.Contains(nameof(config), ex4.Message);
 
         }
 
         [Fact]
-        public void UseMySql_ThrowsIfServiceNameNull()
+        public void UseSqlServer_ThrowsIfServiceNameNull()
         {
             // Arrange
             DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
@@ -87,30 +87,28 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             string serviceName = null;
 
             // Act and Assert
-            var ex2 = Assert.Throws<ArgumentException>(() => MySqlDbContextOptionsExtensions.UseMySql(optionsBuilder, config, serviceName));
+            var ex2 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);
 
-            var ex4 = Assert.Throws<ArgumentException>(() => MySqlDbContextOptionsExtensions.UseMySql<GoodDbContext>(goodBuilder, config, serviceName));
+            var ex4 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, serviceName));
             Assert.Contains(nameof(serviceName), ex4.Message);
 
         }
         [Fact]
-        public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection()
+        public void AddDbContext_NoVCAPs_AddsDbContext_WithSqlServerConnection()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            services.AddDbContext<GoodDbContext>(options =>
-                    options.UseMySql(config));
+            services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
             var service = services.BuildServiceProvider().GetService<GoodDbContext>();
             Assert.NotNull(service);
             var con = service.Database.GetDbConnection();
             Assert.NotNull(con);
-            Assert.NotNull(con as MySqlConnection);
-
+            Assert.IsType<SqlServerConnection>(con);
         }
 
         [Fact]
@@ -121,14 +119,13 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            services.AddDbContext<GoodDbContext>(options =>
-                  options.UseMySql(config, "foobar"));
+            services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config, "foobar"));
 
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
             Assert.Contains("foobar", ex.Message);
         }
         [Fact]
-        public void AddDbContext_MultipleMySqlServices_ThrowsConnectorException()
+        public void AddDbContext_MultipleSqlServerServices_ThrowsConnectorException()
         {
             // Arrange
             var env1 = @"
@@ -212,7 +209,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
 
             // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
-                  options.UseMySql(config));
+                  options.UseSqlServer(config));
 
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
             Assert.Contains("Multiple", ex.Message);
@@ -284,7 +281,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
 
             // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
-                  options.UseMySql(config));
+                  options.UseSqlServer(config));
 
 
             var built = services.BuildServiceProvider();
@@ -293,13 +290,12 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
 
             var con = service.Database.GetDbConnection();
             Assert.NotNull(con);
-            Assert.IsType<MySqlConnection>(con);
+            Assert.IsType<SqlServerConnection>(con);
 
             var connString = con.ConnectionString;
             Assert.NotNull(connString);
 
             Assert.Contains("cf_eabde00f_6383_4230_86df_98eb522bc87d", connString);
-            Assert.Contains("3306", connString);
             Assert.Contains("192.168.0.80", connString);
             Assert.Contains("1solAZdtoCYfmjcj", connString);
             Assert.Contains("7JmJzJgm4VH4ZkOh", connString);
