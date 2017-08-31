@@ -67,16 +67,18 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             this.UriString = uristring;
 
             Uri uri = MakeUri(uristring);
-            Scheme = uri.Scheme;
-            Host = uri.Host;
-            Port = uri.Port;
-            Path = GetPath(uri.PathAndQuery);
-            Query = GetQuery(uri.PathAndQuery);
-    
+            if (uri != null) {
+                Scheme = uri.Scheme;
+                Host = uri.Host;
+                Port = uri.Port;
+                Path = GetPath(uri.PathAndQuery);
+                Query = GetQuery(uri.PathAndQuery);
+        
 
-            string[] userinfo = GetUserInfo(uri.UserInfo);
-            this.UserName = userinfo[0];
-            this.Password = userinfo[1];
+                string[] userinfo = GetUserInfo(uri.UserInfo);
+                this.UserName = userinfo[0];
+                this.Password = userinfo[1];
+            }
         }
 
         internal protected Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
@@ -113,8 +115,12 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         internal protected Uri MakeUri(string uriString)
         {
-            var builder = new UriBuilder(uriString);
-            return builder.Uri;
+            try {
+                var builder = new UriBuilder(uriString);
+                return builder.Uri;
+            } catch (Exception) {
+                return null;
+            }
         }
 
         private char[] QUESTION_MARK = new char[] { '?' };
