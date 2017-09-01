@@ -392,5 +392,183 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             var result8 = creator.GetServiceInfo<RedisServiceInfo>( "spring-cloud-broker-db2");
             Assert.Null(result8);
         }
+        [Fact]
+        public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMonogoBinding_BuildsExpected()
+        {
+            // Arrange
+            var environment1 = @"
+{
+      'limits': {
+        'fds': 16384,
+        'mem': 1024,
+        'disk': 1024
+      },
+      'application_name': 'spring-cloud-broker',
+      'application_uris': [
+        'spring-cloud-broker.apps.testcloud.com'
+      ],
+      'name': 'spring-cloud-broker',
+      'space_name': 'p-spring-cloud-services',
+      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
+      'uris': [
+        'spring-cloud-broker.apps.testcloud.com'
+      ],
+      'users': null,
+      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
+      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
+      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
+    }
+}";
+            var environment2 = @"
+ {
+      'p-redis': [
+        {
+          'credentials': {
+            'host': '10.66.32.54',
+            'password': '4254bd8b-7f83-4a8d-8f38-8206a9d7a9f7',
+            'port': 43887
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'p-redis',
+          'provider': null,
+          'plan': 'shared-vm',
+          'name': 'autosource_redis_cache',
+          'tags': [
+            'pivotal',
+            'redis'
+          ]
+        }
+      ],
+      'mongodb-odb': [
+        {
+          'credentials': {
+            'database': 'foo',
+            'password': 'bar',
+            'servers': [
+              '10.66.105.19:28000',
+              '10.66.105.39:28000',
+              '10.66.105.20:28000'
+            ],
+            'uri': 'mongodb://foo:bar@10.66.105.19:28000,10.66.105.39:28000,10.66.105.20:28000/foo?authSource=admin',
+            'username': 'foo'
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'mongodb-odb',
+          'provider': null,
+          'plan': 'replica_set',
+          'name': 'autosource_jobs_vehicle',
+          'tags': [
+            'mongodb'
+          ]
+        },
+        {
+          'credentials': {
+            'database': 'foo1',
+            'password': 'bar1',
+            'servers': [
+              '10.66.105.42:28000',
+              '10.66.105.45:28000',
+              '10.66.105.41:28000'
+            ],
+            'uri': 'mongodb://foo1:bar1@10.66.105.42:28000,10.66.105.45:28000,10.66.105.41:28000/foo1?authSource=admin',
+            'username': 'bar1'
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'mongodb-odb',
+          'provider': null,
+          'plan': 'replica_set',
+          'name': 'autosource_vehicle_service_mongodb',
+          'tags': [
+            'mongodb'
+          ]
+        }
+      ],
+      'p-service-registry': [
+        {
+          'credentials': {
+            'uri': 'https://eureka-a015d976-af2e-430c-81f6-4f99272ccd24.apps.preprdpcf01.foo.com',
+            'client_secret': 'foo',
+            'client_id': 'p-service-registry-bd61a360-f39a-45f8-b022-bbb',
+            'access_token_uri': 'https://p-spring-cloud-services.uaa.sys.preprdpcf01.foo.com/oauth/token'
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'p-service-registry',
+          'provider': null,
+          'plan': 'standard',
+          'name': 'autosource_service_registry',
+          'tags': [
+            'eureka',
+            'discovery',
+            'registry',
+            'spring-cloud'
+          ]
+        }
+      ],
+      'p-config-server': [
+        {
+          'credentials': {
+            'uri': 'https://config-86e87517-cf1f-4112-af74-c9c7c957e7df.apps.preprdpcf01.foo.com',
+            'client_secret': 'foo',
+            'client_id': 'p-config-server-4c82e877-1c3c-4029-a7cc-4886ae3f444',
+            'access_token_uri': 'https://p-spring-cloud-services.uaa.sys.preprdpcf01.foo.com/oauth/token'
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'p-config-server',
+          'provider': null,
+          'plan': 'standard',
+          'name': 'autosource_config_server',
+          'tags': [
+            'configuration',
+            'spring-cloud'
+          ]
+        }
+      ],
+      'user-provided': [
+        {
+          'credentials': {
+            'uri': '10.66.42.50:9001',
+            'accesskey': 'foo',
+            'secretkey': 'bar'
+          },
+          'syslog_drain_url': '',
+          'volume_mounts': [],
+          'label': 'user-provided',
+          'name': 'foo_minio',
+          'tags': []
+        }
+      ]
+    }
+  ";
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", environment1);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
+
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+            var creator = CloudFoundryServiceInfoCreator.Instance(config);
+            Assert.NotNull(creator.ServiceInfos);
+            Assert.Equal(4, creator.ServiceInfos.Count);
+
+            var result1 = creator.GetServiceInfos<RedisServiceInfo>();
+            Assert.NotNull(result1);
+            Assert.Single(result1);
+
+            var redis1 = result1[0];
+            Assert.Equal("10.66.32.54", redis1.Host);
+
+            var resutlt2 = creator.GetServiceInfos<MongoServiceInfo>();
+            Assert.Equal(2, resutlt2.Count);
+
+            var result3 = creator.GetServiceInfos<EurekaServiceInfo>();
+            Assert.Single(result3);
+            Assert.Equal("eureka-a015d976-af2e-430c-81f6-4f99272ccd24.apps.preprdpcf01.foo.com", result3[0].Host);
+
+        }
     }
 }
