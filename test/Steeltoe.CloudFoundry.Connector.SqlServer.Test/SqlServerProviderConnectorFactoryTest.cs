@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
+using System.Data.SqlClient;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
@@ -29,8 +30,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
                 Database = "database"
 
             };
-            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername;databaseName=de5aa3a747c134b3d8780f8cc80be519e");
-            var factory = new SqlServerProviderConnectorFactory(si, config, typeof(SqlServerConnection));
+            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e");
+            var factory = new SqlServerProviderConnectorFactory(si, config, typeof(SqlConnection));
             var connection = factory.Create(null);
             Assert.NotNull(connection);
         }

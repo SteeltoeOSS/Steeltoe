@@ -36,11 +36,11 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
             if (!string.IsNullOrEmpty(si.Uri) )
             {
-                //configuration.Port = si.Port;
+                configuration.Port = si.Port;
+                configuration.Server = si.Host;
+                configuration.Database = si.Path.Replace("databaseName=", "");
                 configuration.Username = si.UserName;
                 configuration.Password = si.Password;
-                configuration.Server = si.Host;
-                configuration.Database = si.Path;
             }
         }
     }

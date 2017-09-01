@@ -9,6 +9,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         SqlServerProviderConnectorOptions config = new SqlServerProviderConnectorOptions()
         {
             Server = "localhost",
+            Port = 1433,
             Username = "username",
             Password = "password",
             Database = "database"
@@ -29,7 +30,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         }
 
         [Fact]
-        public void UpdateConfiguration_WithSqlServiceInfo_ReturnsExpected()
+        public void Update_With_ServiceInfo_Updates()
         {
             SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
             SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e");
@@ -37,24 +38,25 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             configurer.UpdateConfiguration(si, config);
 
             Assert.Equal("servername", config.Server);
-            Assert.Equal("Dd6O1BPXUHdrmzbP", config.Username);
-            Assert.Equal("7E1LxXnlH2hhlPVt", config.Password);
             Assert.Equal("de5aa3a747c134b3d8780f8cc80be519e", config.Database);
+            // Not provided in uri!
+            //Assert.Equal("Dd6O1BPXUHdrmzbP", config.Username);
+            //Assert.Equal("7E1LxXnlH2hhlPVt", config.Password);
         }
 
         [Fact]
-        public void Configure_NoServiceInfo_ReturnsExpected()
+        public void Configure_Without_ServiceInfo_Returns_Config()
         {
             SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
             var opts = configurer.Configure(null, config);
-            Assert.Contains("Server=localhost;", opts);
-            Assert.Contains("Username=username;", opts);
+            Assert.Contains("Data Source=localhost", opts);
+            Assert.Contains("User Id=username;", opts);
             Assert.Contains("Password=password;", opts);
-            Assert.Contains("Database=database;", opts);
+            Assert.Contains("Initial Catalog=database;", opts);
         }
 
         [Fact]
-        public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
+        public void Configure_With_ServiceInfo_Overrides_Config()
         {
             SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
             
@@ -65,10 +67,11 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             var opts = configurer.Configure(si, config);
 
             // resulting options should contain values parsed from environment
-            Assert.Contains("Server=servername;", opts);
-            Assert.Contains("Username=Dd6O1BPXUHdrmzbP;", opts);
-            Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts);
-            Assert.Contains("Database=de5aa3a747c134b3d8780f8cc80be519e;", opts);
+            Assert.Contains("Data Source=servername", opts);
+            Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e;", opts);
+            // Not provided in uri!
+            //Assert.Contains("User Id=Dd6O1BPXUHdrmzbP;", opts);
+            //Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts);
         }
     }
 }
