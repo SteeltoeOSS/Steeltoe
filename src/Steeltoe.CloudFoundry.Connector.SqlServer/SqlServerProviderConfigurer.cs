@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-
 using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer

@@ -22,8 +22,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             }
 
             SqlServerServiceInfo info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
-
             DoAdd(services, info, config, contextLifetime);
+
             return services;
         }
 
@@ -43,14 +43,17 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             {
                 throw new ArgumentNullException(nameof(config));
             }
-            SqlServerServiceInfo info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
+            SqlServerServiceInfo info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
             DoAdd(services, info, config, contextLifetime);
+
             return services;
         }
 
         private static string[] SqlServerAssemblies = new string[] { "System.Data.SqlClient" };
+
         private static string[] SqlServerTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
+
         private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type SqlServerConnection = ConnectorHelpers.FindType(SqlServerAssemblies, SqlServerTypeNames);
@@ -63,6 +66,5 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, SqlServerConfig, SqlServerConnection);
             services.Add(new ServiceDescriptor(SqlServerConnection, factory.Create, contextLifetime));
         }
-
     }
 }

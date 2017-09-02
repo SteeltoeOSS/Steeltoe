@@ -52,8 +52,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
 
             var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex4.Message);
-
         }
+
         [Fact]
         public void UseSqlServer_ThrowsIfConfigurtionNull()
         {
@@ -74,7 +74,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
 
             var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
             Assert.Contains(nameof(config), ex4.Message);
-
         }
 
         [Fact]
@@ -92,8 +91,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
 
             var ex4 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, serviceName));
             Assert.Contains(nameof(serviceName), ex4.Message);
-
         }
+
         [Fact]
         public void AddDbContext_NoVCAPs_AddsDbContext_WithSqlServerConnection()
         {
@@ -125,79 +124,69 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
             Assert.Contains("foobar", ex.Message);
         }
 
-        [Fact(Skip = "not yet updated to work for SqlServer")]
+        [Fact]
         public void AddDbContext_MultipleSqlServerServices_ThrowsConnectorException()
         {
             // Arrange
             var env1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
+                        {
+                            'limits': {
+                                'fds': 16384,
+                                'mem': 1024,
+                                'disk': 1024
+                            },
+                            'application_name': 'spring-cloud-broker',
+                            'application_uris': [
+                                'spring-cloud-broker.apps.testcloud.com'
+                            ],
+                            'name': 'spring-cloud-broker',
+                            'space_name': 'p-spring-cloud-services',
+                            'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
+                            'uris': [
+                                'spring-cloud-broker.apps.testcloud.com'
+                            ],
+                            'users': null,
+                            'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
+                            'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
+                            'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
+                        }";
             var env2 = @"
-{
-        'p-mysql': [
-        {
-          'credentials': {
-            'hostname': '192.168.0.80',
-            'port': 3306,
-            'name': 'cf_eabde00f_6383_4230_86df_98eb522bc87c',
-            'username': '1solAZdtoCYfmjcj',
-            'password': '7JmJzJgm4VH4ZkOh',
-            'uri': 'mysql://1solAZdtoCYfmjcj:7JmJzJgm4VH4ZkOh@192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87c?reconnect=true',
-            'jdbcUrl': 'jdbc:mysql://192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87c?user=1solAZdtoCYfmjcj&password=7JmJzJgm4VH4ZkOh'
-          },
-          'syslog_drain_url': null,
-          'label': 'p-mysql',
-          'provider': null,
-          'plan': '100mb',
-          'name': 'myMySqlService',
-          'tags': [
-            'mysql',
-            'relational'
-          ]
-        },
-        {
-          'credentials': {
-            'hostname': '192.168.0.80',
-            'port': 3306,
-            'name': 'cf_eabde00f_6383_4230_86df_98eb522bc87d',
-            'username': '1solAZdtoCYfmjcj',
-            'password': '7JmJzJgm4VH4ZkOh',
-            'uri': 'mysql://1solAZdtoCYfmjcj:7JmJzJgm4VH4ZkOh@192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87d?reconnect=true',
-            'jdbcUrl': 'jdbc:mysql://192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87d?user=1solAZdtoCYfmjcj&password=7JmJzJgm4VH4ZkOh'
-          },
-          'syslog_drain_url': null,
-          'label': 'p-mysql',
-          'provider': null,
-          'plan': '100mb',
-          'name': 'myMySqlService2',
-          'tags': [
-            'mysql',
-            'relational'
-          ]
-        },
-      ]
-}
-";
+                        {
+                            'SqlServer': [
+                                {
+                                    'credentials': {
+                                        'uid': 'uf33b2b30783a4087948c30f6c3b0c90f',
+                                        'uri': 'jdbc:sqlserver://192.168.0.80:1433;databaseName=db1',
+                                        'db': 'de5aa3a747c134b3d8780f8cc80be519e',
+                                        'pw': 'Pefbb929c1e0945b5bab5b8f0d110c503'
+                                    },
+                                    'syslog_drain_url': null,
+                                    'label': 'SqlServer',
+                                    'provider': null,
+                                    'plan': 'sharedVM',
+                                    'name': 'mySqlServerService',
+                                    'tags': [
+                                        'sqlserver'
+                                    ]
+                                },
+                                {
+                                    'credentials': {
+                                        'uid': 'uf33b2b30783a4087948c30f6c3b0c90f',
+                                        'uri': 'jdbc:sqlserver://192.168.0.80:1433;databaseName=db2',
+                                        'db': 'de5aa3a747c134b3d8780f8cc80be519e',
+                                        'pw': 'Pefbb929c1e0945b5bab5b8f0d110c503'
+                                    },
+                                    'syslog_drain_url': null,
+                                    'label': 'SqlServer',
+                                    'provider': null,
+                                    'plan': 'sharedVM',
+                                    'name': 'mySqlServerService',
+                                    'tags': [
+                                        'sqlserver'
+                                    ]
+                                },
+                            ]
+                        }";
             // Arrange
             IServiceCollection services = new ServiceCollection();
 
@@ -214,62 +203,55 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
 
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
             Assert.Contains("Multiple", ex.Message);
-
         }
 
-        [Fact(Skip = "not yet updated to work for SqlServer")]
+        [Fact]
         public void AddDbContexts_WithVCAPs_AddsDbContexts()
         {
             // Arrange
             var env1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
+                        {
+                            'limits': {
+                                'fds': 16384,
+                                'mem': 1024,
+                                'disk': 1024
+                            },
+                            'application_name': 'spring-cloud-broker',
+                            'application_uris': [
+                                'spring-cloud-broker.apps.testcloud.com'
+                            ],
+                            'name': 'spring-cloud-broker',
+                            'space_name': 'p-spring-cloud-services',
+                            'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
+                            'uris': [
+                                'spring-cloud-broker.apps.testcloud.com'
+                            ],
+                            'users': null,
+                            'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
+                            'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
+                            'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
+                        }";
             var env2 = @"
-{
-        'p-mysql': [
-        {
-          'credentials': {
-            'hostname': '192.168.0.80',
-            'port': 3306,
-            'name': 'cf_eabde00f_6383_4230_86df_98eb522bc87d',
-            'username': '1solAZdtoCYfmjcj',
-            'password': '7JmJzJgm4VH4ZkOh',
-            'uri': 'mysql://1solAZdtoCYfmjcj:7JmJzJgm4VH4ZkOh@192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87d?reconnect=true',
-            'jdbcUrl': 'jdbc:mysql://192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87d?user=1solAZdtoCYfmjcj&password=7JmJzJgm4VH4ZkOh'
-          },
-          'syslog_drain_url': null,
-          'label': 'p-mysql',
-          'provider': null,
-          'plan': '100mb',
-          'name': 'myMySqlService',
-          'tags': [
-            'mysql',
-            'relational'
-          ]
-        },
-      ]
-}
-";
+                        {
+                            'SqlServer': [
+                                {
+                                    'credentials': {
+                                        'uid': 'uf33b2b30783a4087948c30f6c3b0c90f',
+                                        'uri': 'jdbc:sqlserver://192.168.0.80:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e',
+                                        'db': 'de5aa3a747c134b3d8780f8cc80be519e',
+                                        'pw': 'Pefbb929c1e0945b5bab5b8f0d110c503'
+                                    },
+                                    'syslog_drain_url': null,
+                                    'label': 'SqlServer',
+                                    'provider': null,
+                                    'plan': 'sharedVM',
+                                    'name': 'mySqlServerService',
+                                    'tags': [
+                                        'sqlserver'
+                                    ]
+                                },
+                            ]
+                        }";
             // Arrange
             IServiceCollection services = new ServiceCollection();
 
@@ -281,9 +263,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
             var config = builder.Build();
 
             // Act and Assert
-            services.AddDbContext<GoodDbContext>(options =>
-                  options.UseSqlServer(config));
-
+            services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
             var built = services.BuildServiceProvider();
             var service = built.GetService<GoodDbContext>();
@@ -295,12 +275,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
 
             var connString = con.ConnectionString;
             Assert.NotNull(connString);
-
-            Assert.Contains("cf_eabde00f_6383_4230_86df_98eb522bc87d", connString);
-            Assert.Contains("192.168.0.80", connString);
-            Assert.Contains("1solAZdtoCYfmjcj", connString);
-            Assert.Contains("7JmJzJgm4VH4ZkOh", connString);
-
+            Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e", connString);
+            Assert.Contains("Data Source=192.168.0.80", connString);
+            Assert.Contains("User Id=uf33b2b30783a4087948c30f6c3b0c90f", connString);
+            Assert.Contains("Password=Pefbb929c1e0945b5bab5b8f0d110c503", connString);
         }
     }
 

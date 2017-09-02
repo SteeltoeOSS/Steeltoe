@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
@@ -42,6 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             return DoUseSqlServer(optionsBuilder, connection, SqlServerOptionsAction);
 
         }
+
         public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object SqlServerOptionsAction = null)
         {
             if (optionsBuilder == null)
@@ -62,7 +62,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             var connection = GetConnection(config, serviceName);
 
             return DoUseSqlServer(optionsBuilder, connection, SqlServerOptionsAction);
-
         }
 
         public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object SqlServerOptionsAction = null) where TContext : DbContext
@@ -80,8 +79,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             var connection = GetConnection(config);
 
             return DoUseSqlServer<TContext>(optionsBuilder, connection, SqlServerOptionsAction);
-
         }
+
         public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object SqlServerOptionsAction = null) where TContext : DbContext
         {
             if (optionsBuilder == null)
@@ -102,24 +101,31 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             var connection = GetConnection(config, serviceName);
 
             return DoUseSqlServer<TContext>(optionsBuilder, connection, SqlServerOptionsAction);
-
         }
 
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
             SqlServerServiceInfo info = null;
             if (string.IsNullOrEmpty(serviceName))
+            {
                 info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            }
             else
+            {
                 info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+            }
 
             SqlServerProviderConnectorOptions SqlServerConfig = new SqlServerProviderConnectorOptions(config);
 
             SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, SqlServerConfig, null);
+
             return factory.CreateConnectionString();
         }
+
         private static string[] SqlServerEntityAssemblies = new string[] { "Microsoft.EntityFrameworkCore.SqlServer" };
+
         private static string[] SqlServerEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.SqlServerDbContextOptionsExtensions" };
+
         private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object SqlServerOptionsAction = null)
         {
             Type extensionType = ConnectorHelpers.FindType(SqlServerEntityAssemblies, SqlServerEntityTypeNames);
@@ -127,16 +133,19 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             {
                 throw new ConnectorException("Unable to find DbContextOptionsBuilder extension, are you missing SqlServer EntityFramework Core assembly");
             }
+
             MethodInfo useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)
             {
                 throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
             }
+
             object result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, SqlServerOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException(String.Format("Failed to invoke UseSqlServer extension, connection: {0}", connection));
             }
+
             return (DbContextOptionsBuilder)result;
         }
 
@@ -144,6 +153,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
         {
             return (DbContextOptionsBuilder<TContext>)DoUseSqlServer((DbContextOptionsBuilder)builder, connection, SqlServerOptionsAction);
         }
+
         public static MethodInfo FindUseSqlMethod(Type type, Type[] parameterTypes)
         {
             var typeInfo = type.GetTypeInfo();
@@ -153,11 +163,11 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             {
 
                 var parameters = ci.GetParameters();
-
-                if (parameters.Length == 3 && (ci.Name.Equals("UseSqlServer") || ci.Name.Equals("UseSqlServer")) &&
-                    parameters[0].ParameterType.Equals(parameterTypes[0]) &&
-                    parameters[1].ParameterType.Equals(parameterTypes[1]) &&
-                    ci.IsPublic && ci.IsStatic)
+                if (parameters.Length == 3 && 
+                        (ci.Name.Equals("UseSqlServer") || ci.Name.Equals("UseSqlServer")) &&
+                        parameters[0].ParameterType.Equals(parameterTypes[0]) &&
+                        parameters[1].ParameterType.Equals(parameterTypes[1]) &&
+                        ci.IsPublic && ci.IsStatic)
                 {
                     return ci;
                 }

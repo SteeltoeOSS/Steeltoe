@@ -28,9 +28,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
                 Password = "password",
                 Username = "username",
                 Database = "database"
-
             };
-            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e");
+            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e", "user", "pass");
             var factory = new SqlServerProviderConnectorFactory(si, config, typeof(SqlConnection));
             var connection = factory.Create(null);
             Assert.NotNull(connection);

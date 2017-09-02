@@ -20,7 +20,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     {
         public const string SQLSERVER_SCHEME = "sqlserver";
 
-        public SqlServerServiceInfo(string id, string url) : base(id, url.Replace("jdbc:", "").Replace(';', '/'))
+        public SqlServerServiceInfo(string id, string url, string username, string password) 
+            : base(id, url.Replace("jdbc:", "").Replace(';', '/'), username, password)
         {
         }
     }

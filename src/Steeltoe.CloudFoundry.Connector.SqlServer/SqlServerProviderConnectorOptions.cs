@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Text;
@@ -31,8 +30,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         {
         }
 
-        public SqlServerProviderConnectorOptions(IConfiguration config) :
-            base()
+        public SqlServerProviderConnectorOptions(IConfiguration config) : base()
         {
             if (config == null)
             {
@@ -54,16 +52,27 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         }
 
         public string ConnectionString { get; set; }
+
         public string Server { get; set; } = Default_Server;
+
         public int Port { get; set; } = Default_Port;
+
         public string Username { get; set; }
+
         public string Password { get; set; }
+
         public string Database { get; set; }
+
         public string IntegratedSecurity { get; set; }
+
         public string uid { get; set; }
+
         public string uri { get; set; }
+
         public string db { get; set; }
+
         public string pw { get; set; }
+
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(ConnectionString)) {
@@ -76,6 +85,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             AddKeyValue(sb, "User Id", Username);
             AddKeyValue(sb, "Password", Password);
             AddKeyValue(sb, "Integrated Security", IntegratedSecurity);
+
             return sb.ToString();
         }
 

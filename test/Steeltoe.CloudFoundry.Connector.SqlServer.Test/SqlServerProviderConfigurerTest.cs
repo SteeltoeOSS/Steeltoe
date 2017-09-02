@@ -26,22 +26,20 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Assert.Equal("password", config.Password);
             Assert.Equal("database", config.Database);
             Assert.Null(config.ConnectionString);
-
         }
 
         [Fact]
-        public void Update_With_ServiceInfo_Updates()
+        public void Update_With_ServiceInfo_Updates_Config()
         {
             SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
-            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e");
+            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://updatedserver:1433;databaseName=udpateddb", "updateduser", "updatedpassword");
 
             configurer.UpdateConfiguration(si, config);
 
-            Assert.Equal("servername", config.Server);
-            Assert.Equal("de5aa3a747c134b3d8780f8cc80be519e", config.Database);
-            // Not provided in uri!
-            //Assert.Equal("Dd6O1BPXUHdrmzbP", config.Username);
-            //Assert.Equal("7E1LxXnlH2hhlPVt", config.Password);
+            Assert.Equal("updatedserver", config.Server);
+            Assert.Equal("udpateddb", config.Database);
+            Assert.Equal("updateduser", config.Username);
+            Assert.Equal("updatedpassword", config.Password);
         }
 
         [Fact]
@@ -61,7 +59,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
             
             // override provided by environment
-            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e");
+            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
 
             // apply override
             var opts = configurer.Configure(si, config);
@@ -69,9 +67,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             // resulting options should contain values parsed from environment
             Assert.Contains("Data Source=servername", opts);
             Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e;", opts);
-            // Not provided in uri!
-            //Assert.Contains("User Id=Dd6O1BPXUHdrmzbP;", opts);
-            //Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts);
+            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP;", opts);
+            Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts);
         }
     }
 }

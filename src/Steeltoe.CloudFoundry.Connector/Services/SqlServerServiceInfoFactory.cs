@@ -14,19 +14,51 @@
 // limitations under the License.
 //
 
+using Steeltoe.Extensions.Configuration.CloudFoundry;
+
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
-    public class SqlServerServiceInfoFactory : RelationalServiceInfoFactory
+    public class SqlServerServiceInfoFactory : ServiceInfoFactory
     {
-        public SqlServerServiceInfoFactory() :
-            base(new Tags("sqlserver"), SqlServerServiceInfo.SQLSERVER_SCHEME)
+        public SqlServerServiceInfoFactory() : base(new Tags("sqlserver"), SqlServerServiceInfo.SQLSERVER_SCHEME)
         {
+
         }
 
-
-        public override IServiceInfo Create(string id, string url)
+        public SqlServerServiceInfoFactory(Tags tags, string scheme) : base(tags, scheme)
         {
-            return new SqlServerServiceInfo(id, url);
+
+        }
+
+        public SqlServerServiceInfoFactory(Tags tags, string[] schemes) : base(tags, schemes)
+        {
+
+        }
+
+        public override IServiceInfo Create(Service binding)
+        {
+            string uri = GetUriFromCredentials(binding.Credentials);
+            string username = GetUsernameFromCredentials(binding.Credentials);
+            string password = GetPasswordFromCredentials(binding.Credentials);
+
+            if (uri == null)
+            {
+                string host = GetHostFromCredentials(binding.Credentials);
+                int port = GetPortFromCredentials(binding.Credentials);
+
+                string database = GetStringFromCredentials(binding.Credentials, "name");
+
+                if (host != null)
+                {
+                    uri = new UriInfo(DefaultUriScheme, host, port, username, password, database).ToString();
+                }
+            }
+            return Create(binding.Name, uri, username, password);
+        }
+
+        public IServiceInfo Create(string id, string url, string username, string password)
+        {
+            return new SqlServerServiceInfo(id, url, username, password);
         }
     }
 }

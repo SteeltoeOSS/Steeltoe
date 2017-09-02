@@ -35,11 +35,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
 
             var sconfig = new SqlServerProviderConnectorOptions(config);
             Assert.Equal("servername", sconfig.Server);
-            //Assert.Equal(1433, sconfig.Port);
+            Assert.Equal(1433, sconfig.Port);
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("username", sconfig.Username);
             Assert.Null(sconfig.ConnectionString);
-
         }
     }
 }
