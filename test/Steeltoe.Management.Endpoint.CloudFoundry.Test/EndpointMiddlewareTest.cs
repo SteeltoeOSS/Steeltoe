@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
-            Assert.Equal("{\"_links\":{}}", json);
+            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
 
         }
 
