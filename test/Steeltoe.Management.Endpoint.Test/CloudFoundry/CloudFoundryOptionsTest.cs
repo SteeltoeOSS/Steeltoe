@@ -30,6 +30,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var opts = new CloudFoundryOptions();
             Assert.True(opts.Enabled);
             Assert.False(opts.Sensitive);
+            Assert.True(opts.ValidateCertificates);
             Assert.Equal(string.Empty, opts.Id);
         }
 
@@ -54,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 'enabled': true
             },
             'cloudfoundry': {
-                'validatecertificates' : true,
+                'validatecertificates' : false,
                 'enabled': true
             }
         }
@@ -76,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
             Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
-            Assert.True(cloudOpts.ValidateCertificates);
+            Assert.False(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.False(opts.Sensitive);

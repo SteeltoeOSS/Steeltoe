@@ -23,6 +23,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+#if NET46
+using System.Net.Security;
+#else
+using System.Security.Authentication;
+#endif
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -32,6 +37,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private RequestDelegate _next;
         private ILogger<CloudFoundrySecurityMiddleware> _logger;
         private ICloudFoundryOptions _options;
+        private int DEFAULT_TIMEOUT = 3000;
 
         private const string APPLICATION_ID_MISSING_MESSAGE = "Application id is not available";
         private const string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
@@ -120,12 +126,17 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
             AuthenticationHeaderValue auth = new AuthenticationHeaderValue("bearer", token);
             request.Headers.Authorization = auth;
-
+#if NET46
+            // If certificate validation is disabled, inject a callback to handle properly
+            RemoteCertificateValidationCallback prevValidator = null;
+            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
+            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
+#endif
             try
             {
                 _logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
 
-                using (var client = new HttpClient())
+                using (var client = GetHttpClient())
                 {
                     using (HttpResponseMessage response = await client.SendAsync(request))
                     {
@@ -153,6 +164,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                         e, checkPermissionsUri);
                 return new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
             }
+
+#if NET46
+            finally
+            {
+                RestoreCertificateValidation(prevProtocols, prevValidator);
+            }
+#endif
 
         }
 
@@ -233,6 +251,49 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger.LogDebug("GetPermisions returning: {0}", permissions);
             return permissions;
         }
+        protected HttpClient GetHttpClient()
+        {
+            HttpClient client = null;
+#if NET46
+            client = new HttpClient();
+#else
+            if (_options != null && !_options.ValidateCertificates)
+            {
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                handler.SslProtocols = SslProtocols.Tls12;
+                client = new HttpClient(handler);
+            }
+            else
+            {
+                client = new HttpClient();
+            }
+#endif
+            client.Timeout = TimeSpan.FromMilliseconds(DEFAULT_TIMEOUT);
+            return client;
+        }
+#if NET46
+        protected virtual void ConfigureCertificateValidatation(out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator) 
+        {
+            prevValidator = null;
+            protocolType = (SecurityProtocolType) 0;
+            if (!_options.ValidateCertificates)
+            {
+                protocolType = ServicePointManager.SecurityProtocol;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            }
+        }
+        protected virtual void RestoreCertificateValidation(SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator) 
+        {
+            if (!_options.ValidateCertificates)
+            {
+                ServicePointManager.SecurityProtocol = protocolType;
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+            }
+        }
+#endif
 
         private void LogError(HttpContext context, SecurityResult error)
         {
