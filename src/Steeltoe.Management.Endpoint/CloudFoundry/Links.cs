@@ -20,6 +20,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     public class Links 
     {
+        public string type = "steeltoe";
         public Dictionary<string, Link> _links = new Dictionary<string, Link>();
     }
 }

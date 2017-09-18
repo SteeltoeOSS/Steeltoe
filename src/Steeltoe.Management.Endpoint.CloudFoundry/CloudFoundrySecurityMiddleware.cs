@@ -259,6 +259,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 #else
             if (_options != null && !_options.ValidateCertificates)
             {
+                _logger.LogDebug("Disabling certificate validation");
                 var handler = new HttpClientHandler();
                 handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
                 handler.SslProtocols = SslProtocols.Tls12;
@@ -279,6 +280,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             protocolType = (SecurityProtocolType) 0;
             if (!_options.ValidateCertificates)
             {
+                _logger.LogDebug("Disabling certificate validation");
                 protocolType = ServicePointManager.SecurityProtocol;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 prevValidator = ServicePointManager.ServerCertificateValidationCallback;
