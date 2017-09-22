@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DDF8CFB6-491A-42BF-B9F0-D4CDE15A5CC4}"
 EndProject
@@ -15,6 +15,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServer.ITest", "test\Steeltoe.Extensions.Configuration.ConfigServer.ITest\Steeltoe.Extensions.Configuration.ConfigServer.ITest.csproj", "{1E021647-7B63-4B6B-85E5-ECCC6833391C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServer.Test", "test\Steeltoe.Extensions.Configuration.ConfigServer.Test\Steeltoe.Extensions.Configuration.ConfigServer.Test.csproj", "{A0466013-FB08-4873-83AA-F54898707D60}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{6830FBAB-F3EC-4750-B9B1-F2A961DD0381}"
+	ProjectSection(SolutionItems) = preProject
+		config\nuget-dev.config = config\nuget-dev.config
+		config\nuget-master.config = config\nuget-master.config
+		config\nuget.config = config\nuget.config
+		config\versions.props = config\versions.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -96,5 +104,8 @@ Global
 		{6F0B1A4C-CA98-4FD0-96CA-7C14D21FDBE9} = {20A89807-0815-44EC-83CC-C196F24B0DE9}
 		{1E021647-7B63-4B6B-85E5-ECCC6833391C} = {20A89807-0815-44EC-83CC-C196F24B0DE9}
 		{A0466013-FB08-4873-83AA-F54898707D60} = {20A89807-0815-44EC-83CC-C196F24B0DE9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FFD1405-3327-40A0-8B3A-8B1FE5A14FA6}
 	EndGlobalSection
 EndGlobal

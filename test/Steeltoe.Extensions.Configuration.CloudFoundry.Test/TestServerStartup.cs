@@ -22,7 +22,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
         public void Configure(IApplicationBuilder app)
         {
-            var addresses = ExpectedAddresses.DefaultIfEmpty("http://localhost:5000");
+            var addresses = ExpectedAddresses;
             Assert.Equal(addresses, app.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses);
             app.UseMvc();
         }
