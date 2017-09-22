@@ -3,7 +3,7 @@
 dotnet --info
 
 export CI_BUILD=True
-export STEELTOE_VERSION=1.1.1
+export STEELTOE_VERSION=2.0.0
 cp config/nuget.config ./nuget.config
 cp config/versions.props ./versions.props
 if [[ "$TRAVIS_BRANCH" == "master" ]]; then cp config/nuget-master.config ./nuget.config ; fi
