@@ -14,6 +14,7 @@ branches:
   only:
     - master
     - dev
+    - /^update[0-9]{3}/    
 script:
   - ./scripts/travis_install.sh
   - ./scripts/travis_build.sh
