@@ -7,7 +7,7 @@
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
-    <TargetFrameworks>net452;netstandard1.5</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.CloudFoundry.Connector.Redis</AssemblyName>
     <PackageId>Steeltoe.CloudFoundry.Connector.Redis</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Connectors;Redis</PackageTags>

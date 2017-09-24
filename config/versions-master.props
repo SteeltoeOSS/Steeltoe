@@ -3,18 +3,19 @@
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
     <SteeltoeConfigVersion>1.1.1-master-00149</SteeltoeConfigVersion>
-    <AspNetCoreVersion>1.1.0</AspNetCoreVersion>
-    <AspNetCoreTestVersion>1.1.2</AspNetCoreTestVersion>
-    <AspNetCoreMvcTestVersion>1.1.3</AspNetCoreMvcTestVersion>
-    <AspNetCoreDepTestVersion>1.1.1</AspNetCoreDepTestVersion>
-    <CoreFxVersion>4.3.0</CoreFxVersion>
+    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
+    <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
+    <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
+    <AspNetCoreDepTestVersion>2.0.0</AspNetCoreDepTestVersion>
+    <CoreFxVersion>4.4.0</CoreFxVersion>
     <EF6Version>6.1.3</EF6Version>
-    <EFCoreVersion>1.1.0</EFCoreVersion>
-    <EFCoreTestVersion>1.1.2</EFCoreTestVersion>
-    <StackExchangeVersion>1.1.605</StackExchangeVersion>
+    <EFCoreVersion>2.0.0</EFCoreVersion>
+    <MySqlEFCoreVersion>1.1.1</MySqlEFCoreVersion>
+    <EFCoreTestVersion>2.0.0</EFCoreTestVersion>
+    <StackExchangeVersion>1.2.4</StackExchangeVersion>
     <MySqlCoreVersion>8.0.8-dmr</MySqlCoreVersion>
-    <NpgsqlEFCoreVersion>1.1.1</NpgsqlEFCoreVersion>
-    <RabbitClientVersion>4.1.3</RabbitClientVersion>
+    <NpgsqlEFCoreVersion>2.0.0</NpgsqlEFCoreVersion>
+    <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <MySqlVersion>6.9.9</MySqlVersion>
     <JsonNetVersion>9.0.1</JsonNetVersion>
     <TestSdkVersion>15.3.0</TestSdkVersion>
