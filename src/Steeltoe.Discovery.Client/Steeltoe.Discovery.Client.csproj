@@ -7,7 +7,7 @@
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
-    <TargetFrameworks>net452;netstandard1.3</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Discovery.Client</AssemblyName>
     <PackageId>Steeltoe.Discovery.Client</PackageId>
     <PackageTags>Eureka, ASPNET Core, Spring, Spring Cloud</PackageTags>

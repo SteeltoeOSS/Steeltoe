@@ -7,7 +7,7 @@
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
-    <TargetFrameworks>net452;netstandard1.3</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Discovery.Eureka.Client</AssemblyName>
     <PackageId>Steeltoe.Discovery.Eureka.Client</PackageId>
     <PackageTags>Eureka, ASPNET Core, Spring, Spring Cloud</PackageTags>
@@ -16,12 +16,9 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 
-<ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-  <PackageReference Include="System.Collections" Version="$(CoreFxVersion)" />
-  <PackageReference Include="System.Net.NameResolution" Version="$(CoreFxVersion)" />
- </ItemGroup>
-
 <ItemGroup>
+  <!--<PackageReference Include="System.Collections" Version="$(CoreFxVersion)" />
+  <PackageReference Include="System.Net.NameResolution" Version="$(CoreFxVersion)" />-->
   <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
   <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
 

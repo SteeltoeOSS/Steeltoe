@@ -1,18 +1,46 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A0CD0464-8E5B-42DD-8464-13FC8E6F35FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.Client", "src\Steeltoe.Discovery.Client\Steeltoe.Discovery.Client.csproj", "{91404FB7-3E75-4ED5-98BC-A3A1AC254DCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Client", "src\Steeltoe.Discovery.Client\Steeltoe.Discovery.Client.csproj", "{91404FB7-3E75-4ED5-98BC-A3A1AC254DCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.Eureka.Client", "src\Steeltoe.Discovery.Eureka.Client\Steeltoe.Discovery.Eureka.Client.csproj", "{A05A7403-D287-4352-81EE-3266E71A895C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Eureka.Client", "src\Steeltoe.Discovery.Eureka.Client\Steeltoe.Discovery.Eureka.Client.csproj", "{A05A7403-D287-4352-81EE-3266E71A895C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{482BD4E0-A909-403B-B83A-D1D6377E0022}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.Client.Test", "test\Steeltoe.Discovery.Client.Test\Steeltoe.Discovery.Client.Test.csproj", "{04A48209-1BAF-4EA9-92AE-77D063323CEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Client.Test", "test\Steeltoe.Discovery.Client.Test\Steeltoe.Discovery.Client.Test.csproj", "{04A48209-1BAF-4EA9-92AE-77D063323CEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.Eureka.Client.Test", "test\Steeltoe.Discovery.Eureka.Client.Test\Steeltoe.Discovery.Eureka.Client.Test.csproj", "{0D6188DE-6400-49EB-B494-97F523E74E46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Eureka.Client.Test", "test\Steeltoe.Discovery.Eureka.Client.Test\Steeltoe.Discovery.Eureka.Client.Test.csproj", "{0D6188DE-6400-49EB-B494-97F523E74E46}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{31067C16-6457-41D5-97B1-8003D17E08DB}"
+	ProjectSection(SolutionItems) = preProject
+		config\nuget-dev.config = config\nuget-dev.config
+		config\nuget-master.config = config\nuget-master.config
+		config\nuget-update.config = config\nuget-update.config
+		config\nuget.config = config\nuget.config
+		config\versions-dev.props = config\versions-dev.props
+		config\versions-master.props = config\versions-master.props
+		config\versions-update.props = config\versions-update.props
+		config\versions.props = config\versions.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{7ED94E99-F5E2-4982-8FA8-84FA0EFB85D6}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\appveyor_build.cmd = scripts\appveyor_build.cmd
+		scripts\appveyor_install.cmd = scripts\appveyor_install.cmd
+		scripts\appveyor_tests.cmd = scripts\appveyor_tests.cmd
+		scripts\travis_build.sh = scripts\travis_build.sh
+		scripts\travis_install.sh = scripts\travis_install.sh
+		scripts\travis_test.sh = scripts\travis_test.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{91E84135-67DB-4759-8636-AA82E20C75AF}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+		appveyor.yml = appveyor.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,5 +109,8 @@ Global
 		{A05A7403-D287-4352-81EE-3266E71A895C} = {A0CD0464-8E5B-42DD-8464-13FC8E6F35FF}
 		{04A48209-1BAF-4EA9-92AE-77D063323CEB} = {482BD4E0-A909-403B-B83A-D1D6377E0022}
 		{0D6188DE-6400-49EB-B494-97F523E74E46} = {482BD4E0-A909-403B-B83A-D1D6377E0022}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09301AE1-862F-43FC-9E71-732151D4CDDF}
 	EndGlobalSection
 EndGlobal
