@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B86A4082-6F42-4BFC-A1F2-83CC422AD493}"
 EndProject
@@ -34,6 +34,28 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundry.Test", "test\Steeltoe.Management.CloudFoundry.Test\Steeltoe.Management.CloudFoundry.Test.csproj", "{EC710A62-1798-455C-823B-42E67E40DE94}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundry", "src\Steeltoe.Management.CloudFoundry\Steeltoe.Management.CloudFoundry.csproj", "{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{9764636B-4C42-4F38-8074-99C086B8FB74}"
+	ProjectSection(SolutionItems) = preProject
+		config\nuget-dev.config = config\nuget-dev.config
+		config\nuget-master.config = config\nuget-master.config
+		config\nuget-update.config = config\nuget-update.config
+		config\nuget.config = config\nuget.config
+		config\versions-dev.props = config\versions-dev.props
+		config\versions-master.props = config\versions-master.props
+		config\versions-update.props = config\versions-update.props
+		config\versions.props = config\versions.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{DF36AC60-A29B-433F-9011-435B6A4EF187}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\appveyor_build.cmd = scripts\appveyor_build.cmd
+		scripts\appveyor_install.cmd = scripts\appveyor_install.cmd
+		scripts\appveyor_tests.cmd = scripts\appveyor_tests.cmd
+		scripts\travis_build.sh = scripts\travis_build.sh
+		scripts\travis_install.sh = scripts\travis_install.sh
+		scripts\travis_test.sh = scripts\travis_test.sh
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,5 +138,8 @@ Global
 		{A7705016-DF6D-44E8-AED0-A847E8600C41} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{EC710A62-1798-455C-823B-42E67E40DE94} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7949396C-4BFF-4834-9BC2-F3A345E9CCE5}
 	EndGlobalSection
 EndGlobal

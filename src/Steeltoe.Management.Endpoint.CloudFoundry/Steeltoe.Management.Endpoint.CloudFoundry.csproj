@@ -8,7 +8,7 @@
     <Authors>Pivotal;dtillman</Authors>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Management.Endpoint.CloudFoundry</AssemblyName>
     <PackageId>Steeltoe.Management.Endpoint.CloudFoundry</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>

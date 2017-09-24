@@ -3,20 +3,20 @@
   <Import Project="..\..\versions.props" />
   
   <PropertyGroup>
-      <Description>Steeltoe Trace Management Endpoints</Description>
-      <Authors>Pivotal;dtillman</Authors>
-      <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
-      <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-      <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
-      <AssemblyName>Steeltoe.Management.Endpoint.Trace</AssemblyName>
-      <PackageId>Steeltoe.Management.Endpoint.Trace</PackageId>
-      <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
-      <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
-      <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
-      <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-      <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-      <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-      <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Description>Steeltoe Trace Management Endpoints</Description>
+    <Authors>Pivotal;dtillman</Authors>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Steeltoe.Management.Endpoint.Trace</AssemblyName>
+    <PackageId>Steeltoe.Management.Endpoint.Trace</PackageId>
+    <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
   <ItemGroup>

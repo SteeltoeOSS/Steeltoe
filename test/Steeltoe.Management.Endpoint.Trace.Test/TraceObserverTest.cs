@@ -12,6 +12,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
 {
@@ -441,9 +442,19 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             return Task.FromResult(0);   
         }
 
+        public Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return CommitAsync();
+        }
+
         public Task LoadAsync()
         {
             return Task.FromResult(0);
+        }
+
+        public Task LoadAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return LoadAsync();
         }
 
         public void Remove(string key)
