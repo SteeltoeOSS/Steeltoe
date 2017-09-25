@@ -1,27 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C687B093-C2A5-4600-99A7-853C581FBBC0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.Core", "src\Steeltoe.CircuitBreaker.Hystrix.Core\Steeltoe.CircuitBreaker.Hystrix.Core.csproj", "{72098E45-C212-440F-B10B-A424177F53AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.Core", "src\Steeltoe.CircuitBreaker.Hystrix.Core\Steeltoe.CircuitBreaker.Hystrix.Core.csproj", "{72098E45-C212-440F-B10B-A424177F53AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.Core.Test", "test\Steeltoe.CircuitBreaker.Hystrix.Core.Test\Steeltoe.CircuitBreaker.Hystrix.Core.Test.csproj", "{6A2F3E57-BEE2-41CB-92B2-6F64E6963B14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.Core.Test", "test\Steeltoe.CircuitBreaker.Hystrix.Core.Test\Steeltoe.CircuitBreaker.Hystrix.Core.Test.csproj", "{6A2F3E57-BEE2-41CB-92B2-6F64E6963B14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix", "src\Steeltoe.CircuitBreaker.Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj", "{AF1F71F5-920F-4CF7-8F1A-3A545154711A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix", "src\Steeltoe.CircuitBreaker.Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj", "{AF1F71F5-920F-4CF7-8F1A-3A545154711A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.Test", "test\Steeltoe.CircuitBreaker.Hystrix.Test\Steeltoe.CircuitBreaker.Hystrix.Test.csproj", "{A48B7B81-D205-4277-B3B2-7539EF2A27FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.Test", "test\Steeltoe.CircuitBreaker.Hystrix.Test\Steeltoe.CircuitBreaker.Hystrix.Test.csproj", "{A48B7B81-D205-4277-B3B2-7539EF2A27FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEvents", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.csproj", "{619EDE16-DB83-479A-808C-3C7D60EFC70F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEvents", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.csproj", "{619EDE16-DB83-479A-808C-3C7D60EFC70F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStream", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsStream\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.csproj", "{E37B90B2-6AF9-4371-92F9-4BFB834AB9B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStream", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsStream\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.csproj", "{E37B90B2-6AF9-4371-92F9-4BFB834AB9B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test.csproj", "{73F2D9A2-92EC-41A7-889F-D9DFB2F65C6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test.csproj", "{73F2D9A2-92EC-41A7-889F-D9DFB2F65C6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test.csproj", "{5E0D8C96-05D2-4AE1-8B9C-AD831472EA73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test.csproj", "{5E0D8C96-05D2-4AE1-8B9C-AD831472EA73}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4F262F8F-A478-4C8C-AA23-48B1103E5B8B}"
 	ProjectSection(SolutionItems) = preProject
@@ -29,6 +29,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		appveyor.yml = appveyor.yml
 		nuget.config = nuget.config
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{545DB4B8-9BA8-41B4-9C59-3DEFC0B1017A}"
+	ProjectSection(SolutionItems) = preProject
+		config\nuget-dev.config = config\nuget-dev.config
+		config\nuget-master.config = config\nuget-master.config
+		config\nuget-update.config = config\nuget-update.config
+		config\nuget.config = config\nuget.config
+		config\versions-dev.props = config\versions-dev.props
+		config\versions-master.props = config\versions-master.props
+		config\versions-update.props = config\versions-update.props
+		config\versions.props = config\versions.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{6889FABE-C550-4B2D-A668-9D64C73D6923}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\appveyor_build.cmd = scripts\appveyor_build.cmd
+		scripts\appveyor_install.cmd = scripts\appveyor_install.cmd
+		scripts\appveyor_tests.cmd = scripts\appveyor_tests.cmd
+		scripts\travis_build.sh = scripts\travis_build.sh
+		scripts\travis_install.sh = scripts\travis_install.sh
+		scripts\travis_test.sh = scripts\travis_test.sh
 	EndProjectSection
 EndProject
 Global
@@ -82,5 +104,8 @@ Global
 		{E37B90B2-6AF9-4371-92F9-4BFB834AB9B8} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
 		{73F2D9A2-92EC-41A7-889F-D9DFB2F65C6D} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
 		{5E0D8C96-05D2-4AE1-8B9C-AD831472EA73} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58720A8A-389C-477F-BD36-2DB217BAF674}
 	EndGlobalSection
 EndGlobal

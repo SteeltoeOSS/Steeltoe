@@ -3,7 +3,7 @@
 dotnet --info
 
 export CI_BUILD=True
-export STEELTOE_VERSION=1.1.0
+export STEELTOE_VERSION=2.0.0
 if [[ "$TRAVIS_BRANCH" == "master" ]]; then cp config/nuget-master.config ./nuget.config ; fi
 if [[ "$TRAVIS_BRANCH" == "dev" ]]; then cp config/nuget-dev.config ./nuget.config ; fi
 if [[ "${TRAVIS_BRANCH:0:3}" == "upd" ]]; then cp config/nuget-update.config ./nuget.config ; fi
