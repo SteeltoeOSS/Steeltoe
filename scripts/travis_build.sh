@@ -30,3 +30,7 @@ cd ../..
 cd src/Steeltoe.CloudFoundry.Connector.Hystrix
 dotnet restore --configfile ../../nuget.config
 cd ../..
+
+cd src/Steeltoe.CloudFoundry.Connector.SqlServer
+dotnet restore --configfile ../../nuget.config
+cd ../..
