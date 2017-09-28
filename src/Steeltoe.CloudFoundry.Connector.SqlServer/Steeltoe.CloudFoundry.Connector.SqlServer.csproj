@@ -7,7 +7,7 @@
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
-    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CloudFoundry.Connector.SqlServer</AssemblyName>
     <PackageId>Steeltoe.CloudFoundry.Connector.SqlServer</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Connectors;SqlServer</PackageTags>
@@ -16,7 +16,7 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 
-<ItemGroup Condition="'$(TargetFramework)'=='net452'">
+<ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
 </ItemGroup>
 
