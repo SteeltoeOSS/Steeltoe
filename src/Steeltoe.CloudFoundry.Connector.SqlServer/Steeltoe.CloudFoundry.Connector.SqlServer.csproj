@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\versions.props" />
+
+  <PropertyGroup>
+    <Description>CloudFoundry Connector for ASP.NET Core Sql Server Data Provider</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <AssemblyName>Steeltoe.CloudFoundry.Connector.SqlServer</AssemblyName>
+    <PackageId>Steeltoe.CloudFoundry.Connector.SqlServer</PackageId>
+    <PackageTags>CloudFoundry;ASPNET Core;Connectors;SqlServer</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+<ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
+</ItemGroup>
+
+<ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" />
+</ItemGroup>
+
+<ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.csproj" />
+</ItemGroup>
+
+<ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+</ItemGroup>
+
+</Project>

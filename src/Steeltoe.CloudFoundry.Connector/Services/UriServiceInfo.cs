@@ -29,7 +29,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             Info = new UriInfo(scheme, host, port, username, password, path);
         }
 
-        public UriServiceInfo(String id, String uriString) :
+        public UriServiceInfo(string id, string uriString, string username, string password) : base(id)
+        {
+            Info = new UriInfo(uriString, username, password);
+        }
+
+
+        public UriServiceInfo(string id, string uriString) :
             base(id)
         {
             Info = new UriInfo(uriString);

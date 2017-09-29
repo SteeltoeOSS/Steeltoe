@@ -162,11 +162,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("fb03d693-91fe-4dc5-8203-ff7a6390df66", info.Path);
             Assert.Null( info.Query);
             Assert.NotNull(info.Uris);
-            Assert.Equal(1, info.Uris.Count);
+            Assert.Single(info.Uris);
             Assert.Equal("amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66", info.Uris[0]);
             Assert.Equal("amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66", info.Uri);
             Assert.NotNull(info.ManagementUris);
-            Assert.Equal(1, info.ManagementUris.Count);
+            Assert.Single(info.ManagementUris);
             Assert.Equal("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/", info.ManagementUris[0]);
             Assert.Equal("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/", info.ManagementUri);
         }

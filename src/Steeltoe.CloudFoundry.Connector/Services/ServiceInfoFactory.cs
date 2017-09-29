@@ -130,14 +130,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             return false;
         }
 
-        private static List<string> _userList = new List<string>() { "user", "username" };
+        private static List<string> _userList = new List<string>() { "user", "username", "uid" };
         internal protected virtual string GetUsernameFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, _userList );
         }
+        private static List<string> _passwordList = new List<string>() { "password", "pw" };
         internal protected virtual string GetPasswordFromCredentials(Dictionary<string, Credential> credentials)
         {
-            return GetStringFromCredentials(credentials, "password");
+            return GetStringFromCredentials(credentials,_passwordList);
         }
         internal protected virtual int GetPortFromCredentials(Dictionary<string, Credential> credentials)
         {

@@ -261,11 +261,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             var service = services.BuildServiceProvider().GetService<MySqlConnection>();
             Assert.NotNull(service);
             var connString = service.ConnectionString;
-            Assert.True(connString.Contains("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355"));
-            Assert.True(connString.Contains("3306"));
-            Assert.True(connString.Contains("192.168.0.90"));
-            Assert.True(connString.Contains("Dd6O1BPXUHdrmzbP"));
-            Assert.True(connString.Contains("7E1LxXnlH2hhlPVt"));
+            Assert.Contains("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString);
+            Assert.Contains("3306", connString);
+            Assert.Contains("192.168.0.90", connString);
+            Assert.Contains("Dd6O1BPXUHdrmzbP", connString);
+            Assert.Contains("7E1LxXnlH2hhlPVt", connString);
         }
     }
 }

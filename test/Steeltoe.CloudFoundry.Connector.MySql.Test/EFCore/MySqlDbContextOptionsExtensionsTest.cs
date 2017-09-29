@@ -95,7 +95,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
 
         }
         [Fact]
-        public void AddDbContext_NoVCAPs_AddsDbContext_WithPostgresConnection()
+        public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -128,7 +128,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             Assert.Contains("foobar", ex.Message);
         }
         [Fact]
-        public void AddDbContext_MultiplePostgresServices_ThrowsConnectorException()
+        public void AddDbContext_MultipleMySqlServices_ThrowsConnectorException()
         {
             // Arrange
             var env1 = @"
@@ -293,17 +293,16 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
 
             var con = service.Database.GetDbConnection();
             Assert.NotNull(con);
-            var postCon = con as MySqlConnection;
-            Assert.NotNull(postCon);
+            Assert.IsType<MySqlConnection>(con);
 
             var connString = con.ConnectionString;
             Assert.NotNull(connString);
 
-            Assert.True(connString.Contains("cf_eabde00f_6383_4230_86df_98eb522bc87d"));
-            Assert.True(connString.Contains("3306"));
-            Assert.True(connString.Contains("192.168.0.80"));
-            Assert.True(connString.Contains("1solAZdtoCYfmjcj"));
-            Assert.True(connString.Contains("7JmJzJgm4VH4ZkOh"));
+            Assert.Contains("cf_eabde00f_6383_4230_86df_98eb522bc87d", connString);
+            Assert.Contains("3306", connString);
+            Assert.Contains("192.168.0.80", connString);
+            Assert.Contains("1solAZdtoCYfmjcj", connString);
+            Assert.Contains("7JmJzJgm4VH4ZkOh", connString);
 
         }
     }

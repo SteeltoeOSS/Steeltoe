@@ -43,6 +43,12 @@ dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 
+cd test\Steeltoe.CloudFoundry.Connector.SqlServer.Test
+dotnet restore --configfile ..\..\nuget.config
+dotnet xunit -verbose
+if not "%errorlevel%"=="0" goto failure
+cd ..\..
+
 echo Unit Tests Pass
 goto success
 :failure

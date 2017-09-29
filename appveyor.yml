@@ -21,6 +21,7 @@ artifacts:
 - path: 'src\Steeltoe.CloudFoundry.Connector.Rabbit\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.OAuth\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.Hystrix\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.SqlServer\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.MySql\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.Redis\bin\Debug\*.nupkg'
@@ -28,6 +29,7 @@ artifacts:
 - path: 'src\Steeltoe.CloudFoundry.Connector.Rabbit\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.OAuth\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.Hystrix\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.SqlServer\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false

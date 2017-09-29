@@ -14,15 +14,14 @@
 // limitations under the License.
 //
 
-
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class SqlServerServiceInfo : UriServiceInfo
     {
         public const string SQLSERVER_SCHEME = "sqlserver";
 
-        public SqlServerServiceInfo(string id, string url) :
-            base(id, url)
+        public SqlServerServiceInfo(string id, string url, string username, string password) 
+            : base(id, url.Replace("jdbc:", "").Replace(';', '/'), username, password)
         {
         }
     }

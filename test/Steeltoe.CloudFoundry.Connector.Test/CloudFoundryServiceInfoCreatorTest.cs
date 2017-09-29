@@ -250,19 +250,19 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             var creator = CloudFoundryServiceInfoCreator.Instance(config);
             var result = creator.GetServiceInfos<RedisServiceInfo>();
             Assert.NotNull(result);
-            Assert.Equal(0, result.Count);
+            Assert.Empty(result);
 
             var result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
             Assert.NotNull(result2);
-            Assert.Equal(0, result2.Count);
+            Assert.Empty(result2);
 
             var result3 = creator.GetServiceInfos<RedisServiceInfo>();
             Assert.NotNull(result3);
-            Assert.Equal(0, result3.Count);
+            Assert.Empty(result3);
 
             var result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
             Assert.NotNull(result4);
-            Assert.Equal(0, result4.Count);
+            Assert.Empty(result4);
 
             var result5 = creator.GetServiceInfo<MySqlServiceInfo>("foobar-db2");
             Assert.Null(result5);
@@ -372,11 +372,11 @@ namespace Steeltoe.CloudFoundry.Connector.Test
 
             var result3 = creator.GetServiceInfos<RedisServiceInfo>();
             Assert.NotNull(result3);
-            Assert.Equal(0, result3.Count);
+            Assert.Empty(result3);
 
             var result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
             Assert.NotNull(result4);
-            Assert.Equal(0, result4.Count);
+            Assert.Empty(result4);
 
             var result5 = creator.GetServiceInfo<MySqlServiceInfo>("foobar-db2");
             Assert.Null(result5);

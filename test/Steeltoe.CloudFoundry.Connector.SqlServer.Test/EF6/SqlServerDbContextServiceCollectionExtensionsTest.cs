@@ -13,57 +13,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+#if NET461
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 using Steeltoe.Extensions.Configuration;
 using System;
+using System.Data.Entity;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
+namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
 {
-    public class PostgresProviderServiceCollectionExtensionsTest
+    public class SqlServerDbContextServiceCollectionExtensionsTest
     {
-        public PostgresProviderServiceCollectionExtensionsTest()
+        public SqlServerDbContextServiceCollectionExtensionsTest()
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
         }
 
         [Fact]
-        public void AddPostgresConnection_ThrowsIfServiceCollectionNull()
+        public void AddDbContext_ThrowsIfServiceCollectionNull()
         {
             // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
-
         }
+
         [Fact]
-        public void AddPostgresConnection_ThrowsIfConfigurtionNull()
+        public void AddDbContext_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
-        public void AddPostgresConnection_ThrowsIfServiceNameNull()
+        public void AddDbContext_ThrowsIfServiceNameNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -71,41 +71,40 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             string serviceName = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
-
         }
 
         [Fact]
-        public void AddPostgresConnection_NoVCAPs_AddsPostgresConnection()
+        public void AddDbContext_NoVCAPs_AddsDbContext()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config);
 
-           var service = services.BuildServiceProvider().GetService<NpgsqlConnection>();
-           Assert.NotNull(service);
+            var service = services.BuildServiceProvider().GetService<GoodDbContext>();
+            Assert.NotNull(service);
 
         }
 
         [Fact]
-        public void AddPostgresConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
+        public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
 
         }
 
         [Fact]
-        public void AddPostgresConnection_MultiplePostgresServices_ThrowsConnectorException()
+        public void AddDbContext_MultipleSqlServerServices_ThrowsConnectorException()
         {
             // Arrange
             var env1 = @"
@@ -133,34 +132,39 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 }";
             var env2 = @"
 {
-        'EDB-Shared-PostgreSQL': [
-            {
-                'credentials': {
-                    'uri': 'postgres://1e9e5dae-ed26-43e7-abb4-169b4c3beaff:lmu7c96mgl99b2t1hvdgd5q94v@postgres.testcloud.com:5432/1e9e5dae-ed26-43e7-abb4-169b4c3beaff'
-                },
-            'syslog_drain_url': null,
-            'label': 'EDB-Shared-PostgreSQL',
-            'provider': null,
-            'plan': 'Basic PostgreSQL Plan',
-            'name': 'myPostgres',
-            'tags': [
-                'PostgreSQL',
-                'Database storage'
-            ]
-        },
+      'SqlServer': [
         {
-            'credentials': {
-                'uri': 'postgres://1e9e5dae-ed26-43e7-abb4-169b4c3beaff:lmu7c96mgl99b2t1hvdgd5q94v@postgres.testcloud.com:5432/1e9e5dae-ed26-43e7-abb4-169b4c3beaff'
-            },
-            'syslog_drain_url': null,
-            'label': 'EDB-Shared-PostgreSQL',
-            'provider': null,
-            'plan': 'Basic PostgreSQL Plan',
-            'name': 'myPostgres1',
-            'tags': [
-                'PostgreSQL',
-                'Database storage'
-            ]
+          'credentials': {
+            'uid': 'u79024cecd1c8460ab7befc45c1de57ae',
+            'uri': 'jdbc:sqlserver://10.194.59.187:1433;databaseName=d07833038adb541bba1bb6dc77df7a724',
+            'db': 'd07833038adb541bba1bb6dc77df7a724',
+            'pw': 'P39d904d42d4647878e8a29db9c4b1ce0'
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'SqlServer',
+          'provider': null,
+          'plan': 'sharedVM',
+          'name': 'mySqlServerService',
+          'tags': [
+            'sqlserver'
+          ]
+    },        {
+          'credentials': {
+            'uid': 'u79024cecd1c8460ab7befc45c1de57ae',
+            'uri': 'jdbc:sqlserver://10.194.59.187:1433;databaseName=d07833038adb541bba1bb6dc77df7a724',
+            'db': 'd07833038adb541bba1bb6dc77df7a724',
+            'pw': 'P39d904d42d4647878e8a29db9c4b1ce0'
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'SqlServer',
+          'provider': null,
+          'plan': 'sharedVM',
+          'name': 'mySqlServerService',
+          'tags': [
+            'sqlserver'
+          ]
         }
       ]
 }
@@ -176,12 +180,12 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             var config = builder.Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config));
+            var ex = Assert.Throws<ConnectorException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config));
             Assert.Contains("Multiple", ex.Message);
-
         }
+
         [Fact]
-        public void AddPostgresConnection_WithVCAPs_AddsPostgresConnection()
+        public void AddDbContexts_WithVCAPs_AddsDbContexts()
         {
             // Arrange
             var env1 = @"
@@ -209,20 +213,26 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 }";
             var env2 = @"
 {
-        'EDB-Shared-PostgreSQL': [
-            {
-                'credentials': {
-                    'uri': 'postgres://1e9e5dae-ed26-43e7-abb4-169b4c3beaff:lmu7c96mgl99b2t1hvdgd5q94v@postgres.testcloud.com:5432/1e9e5dae-ed26-43e7-abb4-169b4c3beaff'
-                },
-            'syslog_drain_url': null,
-            'label': 'EDB-Shared-PostgreSQL',
-            'provider': null,
-            'plan': 'Basic PostgreSQL Plan',
-            'name': 'myPostgres',
-            'tags': [
-                'PostgreSQL',
-                'Database storage'
-            ]
+      'p-msql': [
+        {
+          'credentials': {
+            'hostname': '192.168.0.90',
+            'port': 1433,
+            'name': 'cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355',
+            'username': 'Dd6O1BPXUHdrmzbP',
+            'password': '7E1LxXnlH2hhlPVt',
+            'uri': 'SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true',
+            'jdbcUrl': 'jdbc:SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt'
+          },
+          'syslog_drain_url': null,
+          'label': 'p-SqlServer',
+          'provider': null,
+          'plan': '100mb-dev',
+          'name': 'spring-cloud-broker-db',
+          'tags': [
+            'SqlServer',
+            'relational'
+          ]
         }
       ]
 }
@@ -238,16 +248,25 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             var config = builder.Build();
 
             // Act and Assert
-            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config);
+            SqlServerDbContextServiceCollectionExtensions.AddDbContext<Good2DbContext>(services, config);
 
-            var service = services.BuildServiceProvider().GetService<NpgsqlConnection>();
+            var built = services.BuildServiceProvider();
+            var service = built.GetService<GoodDbContext>();
             Assert.NotNull(service);
-            var connString = service.ConnectionString;
-            Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
-            Assert.Contains("5432", connString);
-            Assert.Contains("postgres.testcloud.com", connString);
-            Assert.Contains("lmu7c96mgl99b2t1hvdgd5q94v", connString);
-            Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
+
+            var service2 = built.GetService<Good2DbContext>();
+            Assert.NotNull(service2);
+
+        }
+    }
+
+    class Good2DbContext : DbContext
+    {
+        public Good2DbContext(string str)
+        {
+
         }
     }
 }
+#endif

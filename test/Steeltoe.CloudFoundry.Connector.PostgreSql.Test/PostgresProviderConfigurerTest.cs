@@ -82,11 +82,11 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 
             PostgresProviderConfigurer configurer = new PostgresProviderConfigurer();
             var opts = configurer.Configure(null, config);
-            Assert.True(opts.Contains("Host=localhost;"));
-            Assert.True(opts.Contains("Port=1234;"));
-            Assert.True(opts.Contains("Username=username;"));
-            Assert.True(opts.Contains("Password=password;"));
-            Assert.True(opts.Contains("Database=database;"));
+            Assert.Contains("Host=localhost;", opts);
+            Assert.Contains("Port=1234;", opts);
+            Assert.Contains("Username=username;", opts);
+            Assert.Contains("Password=password;", opts);
+            Assert.Contains("Database=database;", opts);
         }
 
         [Fact]
@@ -106,11 +106,11 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 
             var opts = configurer.Configure(si, config);
 
-            Assert.True(opts.Contains("Host=192.168.0.90;"));
-            Assert.True(opts.Contains("Port=5432;"));
-            Assert.True(opts.Contains("Username=Dd6O1BPXUHdrmzbP;"));
-            Assert.True(opts.Contains("Password=7E1LxXnlH2hhlPVt;"));
-            Assert.True(opts.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;"));
+            Assert.Contains("Host=192.168.0.90;", opts);
+            Assert.Contains("Port=5432;", opts);
+            Assert.Contains("Username=Dd6O1BPXUHdrmzbP;", opts);
+            Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts);
+            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", opts);
         }
     }
 }

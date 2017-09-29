@@ -81,6 +81,25 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
         }
 
+        public UriInfo(string uristring, string username, string password)
+        {
+            this.UriString = uristring;
+
+            Uri uri = MakeUri(uristring);
+            if (uri != null)
+            {
+                Scheme = uri.Scheme;
+                Host = uri.Host;
+                Port = uri.Port;
+                Path = GetPath(uri.PathAndQuery);
+                Query = GetQuery(uri.PathAndQuery);
+
+            }
+            this.UserName = username;
+            this.Password = password;
+        }
+
+
         internal protected Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
         {
  
