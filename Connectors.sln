@@ -60,6 +60,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.SqlServer", "src\Steeltoe.CloudFoundry.Connector.SqlServer\Steeltoe.CloudFoundry.Connector.SqlServer.csproj", "{1547C8CD-8D81-450D-8964-9A5FD98E12A5}"
@@ -289,9 +290,6 @@ Global
 		{8CA7BB64-5A46-4F91-BDA7-0D77BA552AC3} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
 		{1547C8CD-8D81-450D-8964-9A5FD98E12A5} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
 		{2D215C7B-00C0-400D-B198-B85C2AD62E2A} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {9CB88A54-DEBC-4FE2-833E-B8FF9602D0B2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {112EBBFA-82B9-483E-B258-8611B70B3A3A}
