@@ -19,7 +19,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
             {
                 throw new ArgumentNullException(nameof(dbContextType));
             }
-
         }
 
         public override object Create(IServiceProvider arg)
@@ -27,9 +26,15 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
             var connectionString = base.CreateConnectionString();
             object result = null;
             if (connectionString != null)
+            {
                 result = ConnectorHelpers.CreateInstance(_type, new object[] { connectionString });
+            }
+
             if (result == null)
+            {
                 throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor", _type));
+            }
+
             return result;
         }
     }

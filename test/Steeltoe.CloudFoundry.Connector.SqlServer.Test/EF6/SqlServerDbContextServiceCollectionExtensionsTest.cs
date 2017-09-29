@@ -45,10 +45,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
-
         }
+
         [Fact]
-        public void AddDbContext_ThrowsIfConfigurtionNull()
+        public void AddDbContext_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -60,7 +60,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
@@ -74,7 +73,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
-
         }
 
         [Fact]
@@ -134,45 +132,38 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
 }";
             var env2 = @"
 {
-      'p-msql': [
+      'SqlServer': [
         {
           'credentials': {
-            'hostname': '192.168.0.90',
-            'port': 3306,
-            'name': 'cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355',
-            'username': 'Dd6O1BPXUHdrmzbP',
-            'password': '7E1LxXnlH2hhlPVt',
-            'uri': 'SqlServer://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true',
-            'jdbcUrl': 'jdbc:SqlServer://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt'
+            'uid': 'u79024cecd1c8460ab7befc45c1de57ae',
+            'uri': 'jdbc:sqlserver://10.194.59.187:1433;databaseName=d07833038adb541bba1bb6dc77df7a724',
+            'db': 'd07833038adb541bba1bb6dc77df7a724',
+            'pw': 'P39d904d42d4647878e8a29db9c4b1ce0'
           },
           'syslog_drain_url': null,
-          'label': 'p-SqlServer',
+          'volume_mounts': [],
+          'label': 'SqlServer',
           'provider': null,
-          'plan': '100mb-dev',
-          'name': 'spring-cloud-broker-db',
+          'plan': 'sharedVM',
+          'name': 'mySqlServerService',
           'tags': [
-            'SqlServer',
-            'relational'
+            'sqlserver'
           ]
-        },
-        {
+    },        {
           'credentials': {
-            'hostname': '192.168.0.90',
-            'port': 3306,
-            'name': 'cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355',
-            'username': 'Dd6O1BPXUHdrmzbP',
-            'password': '7E1LxXnlH2hhlPVt',
-            'uri': 'SqlServer://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true',
-            'jdbcUrl': 'jdbc:SqlServer://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt'
+            'uid': 'u79024cecd1c8460ab7befc45c1de57ae',
+            'uri': 'jdbc:sqlserver://10.194.59.187:1433;databaseName=d07833038adb541bba1bb6dc77df7a724',
+            'db': 'd07833038adb541bba1bb6dc77df7a724',
+            'pw': 'P39d904d42d4647878e8a29db9c4b1ce0'
           },
           'syslog_drain_url': null,
-          'label': 'p-SqlServer',
+          'volume_mounts': [],
+          'label': 'SqlServer',
           'provider': null,
-          'plan': '100mb-dev',
-          'name': 'spring-cloud-broker-db2',
+          'plan': 'sharedVM',
+          'name': 'mySqlServerService',
           'tags': [
-            'SqlServer',
-            'relational'
+            'sqlserver'
           ]
         }
       ]
@@ -191,8 +182,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config));
             Assert.Contains("Multiple", ex.Message);
-
         }
+
         [Fact]
         public void AddDbContexts_WithVCAPs_AddsDbContexts()
         {
@@ -226,12 +217,12 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
         {
           'credentials': {
             'hostname': '192.168.0.90',
-            'port': 3306,
+            'port': 1433,
             'name': 'cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355',
             'username': 'Dd6O1BPXUHdrmzbP',
             'password': '7E1LxXnlH2hhlPVt',
-            'uri': 'SqlServer://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true',
-            'jdbcUrl': 'jdbc:SqlServer://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt'
+            'uri': 'SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true',
+            'jdbcUrl': 'jdbc:SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt'
           },
           'syslog_drain_url': null,
           'label': 'p-SqlServer',
