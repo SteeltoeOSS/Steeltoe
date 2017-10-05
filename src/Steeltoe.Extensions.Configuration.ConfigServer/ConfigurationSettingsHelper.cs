@@ -34,12 +34,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             var clientConfigsection = root.GetSection(configPrefix);
 
-            settings.Name = ResovlePlaceholders(GetApplicationName(clientConfigsection, root, environment), root);
-            settings.Environment = ResovlePlaceholders(GetEnvironment(clientConfigsection, environment), root);
-            settings.Label = ResovlePlaceholders(GetLabel(clientConfigsection), root);
-            settings.Username = ResovlePlaceholders(GetUsername(clientConfigsection), root);
-            settings.Password = ResovlePlaceholders(GetPassword(clientConfigsection), root);
-            settings.Uri = ResovlePlaceholders(GetUri(clientConfigsection, root, settings.Uri), root);
+            settings.Name = ResolvePlaceholders(GetApplicationName(clientConfigsection, root, environment), root);
+            settings.Environment = ResolvePlaceholders(GetEnvironment(clientConfigsection, environment), root);
+            settings.Label = ResolvePlaceholders(GetLabel(clientConfigsection), root);
+            settings.Username = ResolvePlaceholders(GetUsername(clientConfigsection), root);
+            settings.Password = ResolvePlaceholders(GetPassword(clientConfigsection), root);
+            settings.Uri = ResolvePlaceholders(GetUri(clientConfigsection, root, settings.Uri), root);
             settings.Enabled = GetEnabled(clientConfigsection, root, settings.Enabled);
             settings.FailFast = GetFailFast(clientConfigsection, root, settings.FailFast);
             settings.ValidateCertificates = GetCertificateValidation(clientConfigsection, root, settings.ValidateCertificates);
@@ -158,9 +158,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return GetBoolean("validate_certificates", clientConfigsection, root, def);
         }
 
-        private static string ResovlePlaceholders(string property, IConfiguration config)
+        private static string ResolvePlaceholders(string property, IConfiguration config)
         {
-            return PropertyPlaceholderHelper.ResovlePlaceholders(property, config);
+            return PropertyPlaceholderHelper.ResolvePlaceholders(property, config);
         }
 
         private static string GetSetting(string key, IConfigurationSection primary, IConfigurationSection secondary, string def)
@@ -188,7 +188,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             if (!string.IsNullOrEmpty(val))
             {
                 int result;
-                string resolved = ResovlePlaceholders(val, root);
+                string resolved = ResolvePlaceholders(val, root);
                 if (int.TryParse(resolved, out result))
                     return result;
             }
@@ -200,7 +200,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             if (!string.IsNullOrEmpty(val))
             {
                 double result;
-                string resolved = ResovlePlaceholders(val, root);
+                string resolved = ResolvePlaceholders(val, root);
                 if (double.TryParse(resolved, out result))
                     return result;
             }
@@ -213,7 +213,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             if (!string.IsNullOrEmpty(val))
             {
                 bool result;
-                string resolved = ResovlePlaceholders(val, root);
+                string resolved = ResolvePlaceholders(val, root);
                 if (Boolean.TryParse(resolved, out result))
                     return result;
             }

@@ -39,7 +39,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var config = builder.Build();
 
             // Act and Assert
-            string result = PropertyPlaceholderHelper.ResovlePlaceholders(text, config);
+            string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
             Assert.Equal("foo=bar", result);
         }
         [Fact]
@@ -59,7 +59,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var config = builder.Build();
 
             // Act and Assert
-            string result = PropertyPlaceholderHelper.ResovlePlaceholders(text, config);
+            string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
             Assert.Equal("foo=bar,bar=baz", result);
         }
         [Fact]
@@ -79,7 +79,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var config = builder.Build();
 
             // Act and Assert
-            string result = PropertyPlaceholderHelper.ResovlePlaceholders(text, config);
+            string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
             Assert.Equal("foo=bar", result);
         }
 
@@ -113,9 +113,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
 
             // Act and Assert
-            string result1 = PropertyPlaceholderHelper.ResovlePlaceholders(text1, config1);
+            string result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
             Assert.Equal("foo=bar", result1);
-            string result2 = PropertyPlaceholderHelper.ResovlePlaceholders(text2, config2);
+            string result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
             Assert.Equal("actualValue+actualValue", result2);
 
         }
@@ -135,7 +135,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var config = builder.Build();
 
             // Act and Assert
-            string result = PropertyPlaceholderHelper.ResovlePlaceholders(text, config);
+            string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
             Assert.Equal("foo=bar,bar=${bar}", result);
         }
 
@@ -183,7 +183,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             string text = "foo=${vcap:application:uris[1]}";
 
             // Act and Assert
-            string result = PropertyPlaceholderHelper.ResovlePlaceholders(text, config);
+            string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
             Assert.Equal("foo=my-app2.10.244.0.34.xip.io", result);
         }
 

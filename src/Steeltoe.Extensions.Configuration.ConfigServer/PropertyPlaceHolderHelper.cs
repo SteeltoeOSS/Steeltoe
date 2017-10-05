@@ -44,7 +44,7 @@ namespace Steeltoe.Extensions.Configuration
         /// <param name="config">the configuration used for finding replace values.</param>
         /// <param name="logger">optional logger</param>
         /// <returns>the supplied value with the placeholders replaced inline</returns>
-        public static string ResovlePlaceholders(string property, IConfiguration config, ILogger logger = null)
+        public static string ResolvePlaceholders(string property, IConfiguration config, ILogger logger = null)
         {
             return ParseStringValue(property, config, new HashSet<string>(), logger);
         }
