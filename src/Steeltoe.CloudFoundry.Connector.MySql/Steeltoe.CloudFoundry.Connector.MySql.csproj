@@ -16,21 +16,31 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 
-<ItemGroup Condition="'$(TargetFramework)'=='net461'">
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.CloudFoundry.Connector.MySql.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
-</ItemGroup>
+  </ItemGroup>
 
-<ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.csproj" />
-</ItemGroup>
+  </ItemGroup>
 
-<ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.CloudFoundry.Connector" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-</ItemGroup>
+  </ItemGroup>
 
-<ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(MySqlEFCoreVersion)" />
-</ItemGroup>
-
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
 </Project>

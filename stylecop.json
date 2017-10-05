@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+  "settings": {
+    "documentationRules": {
+      "copyrightText": "Copyright 2015 the original author or authors.",
+      "documentExposedElements": false,
+      "documentInternalElements": false,
+      "documentPrivateElements": false,
+      "xmlHeader": false
+    },
+    "orderingRules": {
+      "usingDirectivesPlacement": "preserve", 
+      "systemUsingDirectivesFirst":  false
+    },
+    "readabilityRules": { 
+    }
+  }
+}
