@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2015 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
@@ -178,9 +176,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             }
         }
 
-        //
         // Note: The code below lifted from StackExchange.Redis.Format {}
-        //
         internal static EndPoint TryParseEndPoint(string endpoint)
         {
             if (string.IsNullOrWhiteSpace(endpoint))

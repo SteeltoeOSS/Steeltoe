@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2015 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.App;
@@ -27,18 +25,23 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public class CloudFoundryServiceInfoCreator
     {
-        private IList<IServiceInfo> _serviceInfos = new List<IServiceInfo>();
-
-        public IList<IServiceInfo> ServiceInfos { get { return _serviceInfos;  } }
-
-        private IList<IServiceInfoFactory> _factories = new List<IServiceInfoFactory>();
-
-        internal IList<IServiceInfoFactory> Factories { get { return _factories;  } }
-
         private static IConfiguration _config;
         private static CloudFoundryServiceInfoCreator _me = null;
-
         private static object _lock = new object();
+
+        private IList<IServiceInfo> _serviceInfos = new List<IServiceInfo>();
+        private IList<IServiceInfoFactory> _factories = new List<IServiceInfoFactory>();
+
+        internal CloudFoundryServiceInfoCreator(IConfiguration config)
+        {
+            _config = config;
+            BuildServiceInfoFactories();
+            BuildServiceInfos();
+        }
+
+        public IList<IServiceInfo> ServiceInfos => _serviceInfos;
+
+        internal IList<IServiceInfoFactory> Factories => _factories;
 
         public static CloudFoundryServiceInfoCreator Instance(IConfiguration config)
         {
@@ -63,13 +66,6 @@ namespace Steeltoe.CloudFoundry.Connector
             }
 
             return _me;
-        }
-
-        internal CloudFoundryServiceInfoCreator(IConfiguration config)
-        {
-            _config = config;
-            BuildServiceInfoFactories();
-            BuildServiceInfos();
         }
 
         public List<SI> GetServiceInfos<SI>()

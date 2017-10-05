@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <NoWarn>SA1101;1591;1701;1702;1705</NoWarn>
+    <NoWarn>SA1101;SA1309;1591;1701;1702;1705</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">

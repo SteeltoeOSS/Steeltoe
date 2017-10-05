@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2015 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 
@@ -20,30 +18,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class UriInfo
     {
-        public string Scheme { get; internal protected set; }
-
-        public string Host { get; internal protected set; }
-
-        public int Port { get; internal protected set; }
-
-        public string UserName { get; internal protected set; }
-
-        public string Password { get; internal protected set; }
-
-        public string Path { get; internal protected set; }
-
-        public string Query { get; internal protected set; }
-
-        public string UriString { get; internal protected set; }
-
-        public Uri Uri
-        {
-            get
-            {
-                return MakeUri(UriString);
-            }
-        }
-
         public UriInfo(string scheme, string host, int port, string username, string password)
             : this(scheme, host, port, username, password, null, null)
         {
@@ -104,7 +78,31 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             this.Password = password;
         }
 
-        internal protected Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
+        public string Scheme { get; internal protected set; }
+
+        public string Host { get; internal protected set; }
+
+        public int Port { get; internal protected set; }
+
+        public string UserName { get; internal protected set; }
+
+        public string Password { get; internal protected set; }
+
+        public string Path { get; internal protected set; }
+
+        public string Query { get; internal protected set; }
+
+        public string UriString { get; internal protected set; }
+
+        public Uri Uri
+        {
+            get
+            {
+                return MakeUri(UriString);
+            }
+        }
+
+        protected internal Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
         {
             string cleanedPath = path == null || path.StartsWith("/") ? path : "/" + path;
             cleanedPath = query != null ? cleanedPath + "?" + query : cleanedPath;
@@ -135,7 +133,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
         }
 
-        internal protected Uri MakeUri(string uriString)
+        protected internal Uri MakeUri(string uriString)
         {
             try
             {
@@ -150,7 +148,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         private char[] QUESTION_MARK = new char[] { '?' };
 
-        internal protected string GetPath(string pathAndQuery)
+        protected internal string GetPath(string pathAndQuery)
         {
             if (string.IsNullOrEmpty(pathAndQuery))
             {
@@ -166,7 +164,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             return split[0].Substring(1);
         }
 
-        internal protected string GetQuery(string pathAndQuery)
+        protected internal string GetQuery(string pathAndQuery)
         {
             if (string.IsNullOrEmpty(pathAndQuery))
             {
@@ -184,7 +182,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         private char[] COLON = new char[] { ':' };
 
-        internal protected string[] GetUserInfo(string userPass)
+        protected internal string[] GetUserInfo(string userPass)
         {
             if (string.IsNullOrEmpty(userPass))
             {

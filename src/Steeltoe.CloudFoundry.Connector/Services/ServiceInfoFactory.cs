@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2015 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
@@ -66,19 +64,19 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public abstract IServiceInfo Create(Service binding);
 
-        internal virtual protected bool TagsMatch(Service binding)
+        protected virtual internal bool TagsMatch(Service binding)
         {
             var serviceTags = binding.Tags;
             return _tags.ContainsOne(serviceTags);
         }
 
-        internal virtual protected bool LabelStartsWithTag(Service binding)
+        protected virtual internal bool LabelStartsWithTag(Service binding)
         {
             string label = binding.Label;
             return _tags.StartsWith(label);
         }
 
-        internal virtual protected bool UriMatchesScheme(Service binding)
+        protected virtual internal bool UriMatchesScheme(Service binding)
         {
             if (_schemes == null)
             {
@@ -106,7 +104,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             return false;
         }
 
-        internal protected virtual bool UriKeyMatchesScheme(Service binding)
+        protected internal virtual bool UriKeyMatchesScheme(Service binding)
         {
             if (_schemes == null)
             {
@@ -133,56 +131,56 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         private static List<string> _userList = new List<string>() { "user", "username", "uid" };
 
-        internal protected virtual string GetUsernameFromCredentials(Dictionary<string, Credential> credentials)
+        protected internal virtual string GetUsernameFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, _userList);
         }
 
         private static List<string> _passwordList = new List<string>() { "password", "pw" };
 
-        internal protected virtual string GetPasswordFromCredentials(Dictionary<string, Credential> credentials)
+        protected internal virtual string GetPasswordFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, _passwordList);
         }
 
-        internal protected virtual int GetPortFromCredentials(Dictionary<string, Credential> credentials)
+        protected internal virtual int GetPortFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetIntFromCredentials(credentials, "port");
         }
 
         private static List<string> _hostList = new List<string>() { "hostname", "host" };
 
-        internal protected virtual string GetHostFromCredentials(Dictionary<string, Credential> credentials)
+        protected internal virtual string GetHostFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, _hostList);
         }
 
-        internal protected virtual string GetUriFromCredentials(Dictionary<string, Credential> credentials)
+        protected internal virtual string GetUriFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, uriKeys);
         }
 
-        internal protected virtual string GetClientIdFromCredentials(Dictionary<string, Credential> credentials)
+        protected internal virtual string GetClientIdFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, "client_id");
         }
 
-        internal protected virtual string GetClientSecretFromCredentials(Dictionary<string, Credential> credentials)
+        protected internal virtual string GetClientSecretFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, "client_secret");
         }
 
-        internal protected virtual string GetAccessTokenUriFromCredentials(Dictionary<string, Credential> credentials)
+        protected internal virtual string GetAccessTokenUriFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, "access_token_uri");
         }
 
-        internal protected virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, string key)
+        protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
             return GetStringFromCredentials(credentials, new List<string>() { key });
         }
 
-        internal protected virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
+        protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
         {
             if (credentials != null)
             {
@@ -198,7 +196,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             return null;
         }
 
-        internal protected virtual bool GetBoolFromCredentials(Dictionary<string, Credential> credentials, string key)
+        protected internal virtual bool GetBoolFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
             bool result = false;
             if (credentials != null)
@@ -212,12 +210,12 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             return result;
         }
 
-        internal protected virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, string key)
+        protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
             return GetIntFromCredentials(credentials, new List<string>() { key });
         }
 
-        internal protected virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
+        protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
         {
             int result = 0;
 
@@ -235,7 +233,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             return result;
         }
 
-        internal protected virtual List<string> GetListFromCredentials(Dictionary<string, Credential> credentials, string key)
+        protected internal virtual List<string> GetListFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
             List<string> result = new List<string>();
             if (credentials != null)

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2015 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using System;
@@ -49,17 +47,17 @@ namespace Steeltoe.CloudFoundry.Connector
             config.Bind(this);
         }
 
-        internal protected void AddKeyValue(StringBuilder sb, string key, int value)
+        protected internal void AddKeyValue(StringBuilder sb, string key, int value)
         {
             AddKeyValue(sb, key, value.ToString());
         }
 
-        internal protected void AddKeyValue(StringBuilder sb, string key, bool value)
+        protected internal void AddKeyValue(StringBuilder sb, string key, bool value)
         {
             AddKeyValue(sb, key, value.ToString().ToLowerInvariant());
         }
 
-        internal protected void AddKeyValue(StringBuilder sb, string key, string value)
+        protected internal void AddKeyValue(StringBuilder sb, string key, string value)
         {
             if (!string.IsNullOrEmpty(value))
             {
