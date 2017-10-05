@@ -24,32 +24,28 @@ using Microsoft.Extensions.Configuration.Json;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
-    public class CloudFoundryConfigurationProvider : ConfigurationProvider, IConfigurationSource
+    public class CloudFoundryConfigurationProvider : ConfigurationProvider
     {
-        private const string VCAP_PREFIX = "VCAP_";
-        private const string APPLICATION = "APPLICATION";
-        private const string SERVICES = "SERVICES";
+        private readonly ICloudFoundrySettingsReader _settingsReader;
 
-        private const string CF_INSTANCE_GUID = "CF_INSTANCE_GUID";
-        private const string CF_INSTANCE_INDEX = "CF_INSTANCE_INDEX";
-        private const string CF_INSTANCE_PORT = "CF_INSTANCE_PORT";
-        private const string CF_INSTANCE_IP = "CF_INSTANCE_IP";
-        private const string CF_INSTANCE_INTERNAL_IP = "CF_INSTANCE_INTERNAL_IP";
-
-        public CloudFoundryConfigurationProvider()
+        public CloudFoundryConfigurationProvider(ICloudFoundrySettingsReader settingsReader)
         {
+            if (settingsReader == null)
+            {
+                throw new ArgumentNullException(nameof(settingsReader));
+            }
+
+            this._settingsReader = settingsReader;
         }
+
         public override void Load()
         {
-            var builder = new ConfigurationBuilder();
-            builder.AddEnvironmentVariables(VCAP_PREFIX);
-            var vcap = builder.Build();
-            Process(vcap);
+            this.Process();
         }
 
-        private void Process(IConfigurationRoot vcap)
+        private void Process()
         {
-            string appJson = vcap[APPLICATION];
+            string appJson = this._settingsReader.ApplicationJson;
             if (!string.IsNullOrEmpty(appJson))
             {
 
@@ -75,7 +71,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 }
             }
 
-            string appServicesJson = vcap[SERVICES];
+            string appServicesJson = this._settingsReader.ServicesJson;
             if (!string.IsNullOrEmpty(appServicesJson))
             {
                 var memStream = GetMemoryStream(appServicesJson);
@@ -95,21 +91,21 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         {
             if (!Data.ContainsKey("vcap:application:instance_id"))
             {
-                Data["vcap:application:instance_id"] = Environment.GetEnvironmentVariable(CF_INSTANCE_GUID);
+                Data["vcap:application:instance_id"] = this._settingsReader.InstanceId;
             }
 
             if (!Data.ContainsKey("vcap:application:instance_index"))
             {
-                Data["vcap:application:instance_index"] = Environment.GetEnvironmentVariable(CF_INSTANCE_INDEX);
+                Data["vcap:application:instance_index"] = this._settingsReader.InstanceIndex;
             }
 
             if (!Data.ContainsKey("vcap:application:port"))
             {
-                Data["vcap:application:port"] = Environment.GetEnvironmentVariable(CF_INSTANCE_PORT);
+                Data["vcap:application:port"] = this._settingsReader.InstancePort;
             }
 
-            Data["vcap:application:instance_ip"] = Environment.GetEnvironmentVariable(CF_INSTANCE_IP);
-            Data["vcap:application:internal_ip"] = Environment.GetEnvironmentVariable(CF_INSTANCE_INTERNAL_IP);
+            Data["vcap:application:instance_ip"] = this._settingsReader.InstanceIp;
+            Data["vcap:application:internal_ip"] = this._settingsReader.InstanceInternalIp;
 
         }
         internal IDictionary<string, string> Properties
@@ -140,11 +136,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             if (string.IsNullOrEmpty(section.Value))
                 return;
             Data[prefix + ConfigurationPath.KeyDelimiter + section.Path] = section.Value;
-        }
-
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            return this;
         }
 
         internal static MemoryStream GetMemoryStream(string json)

@@ -24,8 +24,10 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
     public class CloudFoundryConfigurationProviderTest
     {
-        public CloudFoundryConfigurationProviderTest()
+        [Fact]
+        public void Ctor_NullReader()
         {
+            Assert.Throws<ArgumentNullException>(() => new CloudFoundryConfigurationProvider(null));
         }
 
         [Fact]
@@ -58,7 +60,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
   }";
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", environment);
-            var provider = new CloudFoundryConfigurationProvider();
+            var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
             // Act and Assert
             provider.Load();
@@ -110,7 +112,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
 
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
-            var provider = new CloudFoundryConfigurationProvider();
+            var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
             // Act and Assert
             provider.Load();
@@ -202,7 +204,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 }";
 
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
-            var provider = new CloudFoundryConfigurationProvider();
+            var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
             // Act and Assert
             provider.Load();
