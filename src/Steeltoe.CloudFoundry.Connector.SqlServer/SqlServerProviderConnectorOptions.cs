@@ -30,12 +30,14 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         {
         }
 
-        public SqlServerProviderConnectorOptions(IConfiguration config) : base()
+        public SqlServerProviderConnectorOptions(IConfiguration config)
+            : base()
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             var section = config.GetSection(SQL_CLIENT_SECTION_PREFIX);
 
             section.Bind(this);
@@ -44,6 +46,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             {
                 Server = uri.Split(':')[2].Substring(2);
             }
+
             Username = uid;
             Database = db;
             Password = pw;
@@ -75,7 +78,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString)) {
+            if (!string.IsNullOrEmpty(ConnectionString))
+            {
                 return ConnectionString;
             }
 
@@ -88,6 +92,5 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
             return sb.ToString();
         }
-
     }
 }

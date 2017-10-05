@@ -39,8 +39,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             var connection = GetConnection(config);
 
             return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
-
         }
+
         public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object npgsqlOptionsAction = null)
         {
             if (optionsBuilder == null)
@@ -60,8 +60,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return DoUseNpgsql(optionsBuilder,connection, npgsqlOptionsAction);
-
+            return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
         }
 
         public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object npgsqlOptionsAction = null) where TContext : DbContext
@@ -79,8 +78,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             var connection = GetConnection(config);
 
             return DoUseNpgsql<TContext>(optionsBuilder, connection, npgsqlOptionsAction);
-
         }
+
         public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object npgsqlOptionsAction = null) where TContext : DbContext
         {
             if (optionsBuilder == null)
@@ -101,16 +100,19 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             var connection = GetConnection(config, serviceName);
 
             return DoUseNpgsql<TContext>(optionsBuilder, connection, npgsqlOptionsAction);
-
         }
 
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
             PostgresServiceInfo info = null;
             if (string.IsNullOrEmpty(serviceName))
+            {
                 info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
+            }
             else
+            {
                 info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+            }
 
             PostgresProviderConnectorOptions postgresConfig = new PostgresProviderConnectorOptions(config);
 
@@ -118,37 +120,44 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             return factory.CreateConnectionString();
         }
 
-        private static string[] postgresEntityAssemblies = new string[] {"Npgsql.EntityFrameworkCore.PostgreSQL"};
-        private static string[] postgresEntityTypeNames = new string[] {" Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions"};
+        private static string[] postgresEntityAssemblies = new string[] { "Npgsql.EntityFrameworkCore.PostgreSQL" };
+        private static string[] postgresEntityTypeNames = new string[] { " Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions" };
+
         private static DbContextOptionsBuilder DoUseNpgsql(DbContextOptionsBuilder builder, string connection, object npgsqlOptionsAction = null)
         {
             Type extensionType = ConnectorHelpers.FindType(postgresEntityAssemblies, postgresEntityTypeNames);
-            if (extensionType == null) {
+            if (extensionType == null)
+            {
                 throw new ConnectorException("Unable to find DbContextOptionsBuilder extension, are you missing Postgres EntityFramework Core assembly");
             }
-            MethodInfo useMethod = FindUseNpgsqlMethod(extensionType, new Type[] {typeof(DbContextOptionsBuilder), typeof(string)});
-            if (extensionType == null) {
+
+            MethodInfo useMethod = FindUseNpgsqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
+            if (extensionType == null)
+            {
                 throw new ConnectorException("Unable to find UseNpgsql extension, are you missing Postgres EntityFramework Core assembly");
             }
-            object result = ConnectorHelpers.Invoke(useMethod, null, new object[] {builder, connection, npgsqlOptionsAction});
-            if (result == null) {
-                throw new ConnectorException(String.Format("Failed to invoke UseNpgsql extension, connection: {0}", connection));
+
+            object result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, npgsqlOptionsAction });
+            if (result == null)
+            {
+                throw new ConnectorException(string.Format("Failed to invoke UseNpgsql extension, connection: {0}", connection));
             }
-            return (DbContextOptionsBuilder) result;
+
+            return (DbContextOptionsBuilder)result;
         }
 
         private static DbContextOptionsBuilder<TContext> DoUseNpgsql<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object npgsqlOptionsAction = null) where TContext : DbContext
         {
-            return (DbContextOptionsBuilder<TContext>) DoUseNpgsql((DbContextOptionsBuilder)builder, connection, npgsqlOptionsAction);   
+            return (DbContextOptionsBuilder<TContext>)DoUseNpgsql((DbContextOptionsBuilder)builder, connection, npgsqlOptionsAction);
         }
-        public static MethodInfo FindUseNpgsqlMethod(Type type, Type[] parameterTypes) 
+
+        public static MethodInfo FindUseNpgsqlMethod(Type type, Type[] parameterTypes)
         {
             var typeInfo = type.GetTypeInfo();
             var declaredMethods = typeInfo.DeclaredMethods;
 
             foreach (MethodInfo ci in declaredMethods)
             {
-                    
                 var parameters = ci.GetParameters();
 
                 if (parameters.Length == 3 && ci.Name.Equals("UseNpgsql") &&
@@ -158,11 +167,9 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
                 {
                     return ci;
                 }
-            
             }
 
             return null;
         }
-
     }
 }

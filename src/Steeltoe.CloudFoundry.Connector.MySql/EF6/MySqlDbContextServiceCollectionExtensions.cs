@@ -22,7 +22,6 @@ using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Data.Entity;
 
-
 namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {
     public static class MySqlDbContextServiceCollectionExtensions
@@ -61,6 +60,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
@@ -69,13 +69,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 
         private static void DoAdd(IServiceCollection services, IConfiguration config, MySqlServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
-
             MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
 
             MySqlDbContextConnectorFactory factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
-       
     }
 }
 #endif

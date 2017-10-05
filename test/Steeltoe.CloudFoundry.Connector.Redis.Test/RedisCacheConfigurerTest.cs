@@ -39,7 +39,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             Assert.Equal("foobar", redisOptions.Configuration);
             Assert.Equal("instanceId", redisOptions.InstanceName);
-
         }
 
         [Fact]
@@ -51,14 +50,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             {
                 Host = "localhost",
                 Port = 1234,
-                Password ="password",
+                Password = "password",
                 InstanceId = "instanceId"
             };
             configurer.UpdateOptions(config, redisOptions);
 
             Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
             Assert.Equal("instanceId", redisOptions.InstanceName);
-
         }
 
         [Fact]
@@ -75,7 +73,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
             Assert.Null(connOptions.InstanceId);
-
         }
 
         [Fact]
@@ -132,7 +129,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 Host = "localhost",
                 Port = 1234,
                 Password = "password"
-
             };
             var opts = configurer.ConfigureConnection(null, config);
             Assert.NotNull(opts);
@@ -143,7 +139,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Equal("localhost", ep.Host);
             Assert.Equal(1234, ep.Port);
             Assert.Equal("password", opts.Password);
- 
         }
 
         [Fact]
@@ -155,7 +150,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 Host = "localhost",
                 Port = 1234,
                 Password = "password"
-       
             };
             RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword");
             si.ApplicationInfo = new ApplicationInstanceInfo()

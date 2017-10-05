@@ -34,7 +34,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             var opts = result.Value;
             Assert.NotNull(opts);
 
-
             Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
             Assert.Equal("myClientId", opts.ClientId);
             Assert.Equal("myClientSecret", opts.ClientSecret);

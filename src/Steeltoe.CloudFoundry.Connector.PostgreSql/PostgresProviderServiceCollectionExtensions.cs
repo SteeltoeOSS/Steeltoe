@@ -20,12 +20,10 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
     public static class PostgresProviderServiceCollectionExtensions
     {
-
         public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -60,17 +58,21 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             PostgresServiceInfo info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;
         }
-        private static string[] postgresAssemblies = new string[] {"Npgsql"};
-        private static string[] postgresTypeNames = new string[] {"Npgsql.NpgsqlConnection"};
+
+        private static string[] postgresAssemblies = new string[] { "Npgsql" };
+        private static string[] postgresTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
+
         private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type postgresConnection = ConnectorHelpers.FindType(postgresAssemblies, postgresTypeNames);
-            if (postgresConnection == null) {
+            if (postgresConnection == null)
+            {
                 throw new ConnectorException("Unable to find NpgsqlConnection, are you missing Postgres ADO.NET assembly");
             }
 
@@ -78,10 +80,5 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, PostgresConfig, postgresConnection);
             services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
         }
-
-        
-
- 
-
     }
 }

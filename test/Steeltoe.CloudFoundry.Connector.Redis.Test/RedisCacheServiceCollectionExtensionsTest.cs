@@ -46,8 +46,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
-
         }
+
         [Fact]
         public void AddDistributedRedisCache_ThrowsIfConfigurtionNull()
         {
@@ -61,7 +61,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
@@ -75,7 +74,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
-
         }
 
         [Fact]
@@ -90,7 +88,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
            var service = services.BuildServiceProvider().GetService<IDistributedCache>();
            Assert.NotNull(service);
-
         }
 
         [Fact]
@@ -103,7 +100,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
-
         }
 
         [Fact]
@@ -184,7 +180,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config));
             Assert.Contains("Multiple", ex.Message);
-
         }
 
         [Fact]
@@ -200,8 +195,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
-
         }
+
         [Fact]
         public void AddRedisConnectionMultiplexer_ThrowsIfConfigurtionNull()
         {
@@ -215,7 +210,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
@@ -229,7 +223,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
-
         }
 
         [Fact]
@@ -263,7 +256,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
             Assert.NotNull(service);
-
         }
 
         [Fact]
@@ -276,8 +268,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
-
         }
-
     }
 }

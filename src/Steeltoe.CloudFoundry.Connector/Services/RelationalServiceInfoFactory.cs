@@ -14,22 +14,21 @@
 // limitations under the License.
 //
 
-using System;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public abstract class RelationalServiceInfoFactory : ServiceInfoFactory
     {
-        public RelationalServiceInfoFactory(Tags tags, string scheme) :
-            base(tags, scheme)
+        public RelationalServiceInfoFactory(Tags tags, string scheme)
+            : base(tags, scheme)
         {
-
         }
-        public RelationalServiceInfoFactory(Tags tags, string[] schemes) :
-            base(tags, schemes)
-        {
 
+        public RelationalServiceInfoFactory(Tags tags, string[] schemes)
+            : base(tags, schemes)
+        {
         }
 
         public override IServiceInfo Create(Service binding)
@@ -37,19 +36,20 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             string uri = GetUriFromCredentials(binding.Credentials);
             if (uri == null)
             {
-                String host = GetHostFromCredentials(binding.Credentials);
+                string host = GetHostFromCredentials(binding.Credentials);
                 int port = GetPortFromCredentials(binding.Credentials);
 
-                String username = GetUsernameFromCredentials(binding.Credentials);
-                String password = GetPasswordFromCredentials(binding.Credentials);
+                string username = GetUsernameFromCredentials(binding.Credentials);
+                string password = GetPasswordFromCredentials(binding.Credentials);
 
-                String database = GetStringFromCredentials(binding.Credentials, "name");
+                string database = GetStringFromCredentials(binding.Credentials, "name");
 
                 if (host != null)
                 {
                     uri = new UriInfo(DefaultUriScheme, host, port, username, password, database).ToString();
                 }
             }
+
             return Create(binding.Name, uri);
         }
 

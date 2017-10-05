@@ -24,6 +24,7 @@ namespace Steeltoe.CloudFoundry.Connector
         {
             Value = value;
         }
+
         public T Value { get; internal protected set; }
     }
 }

@@ -28,7 +28,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             PostgresProviderConfigurer configurer = new PostgresProviderConfigurer();
             PostgresProviderConnectorOptions config = new PostgresProviderConnectorOptions()
             {
-                Host ="localhost",
+                Host = "localhost",
                 Port = 1234,
                 Username = "username",
                 Password = "password",
@@ -41,9 +41,9 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             Assert.Equal("username", config.Username);
             Assert.Equal("password", config.Password);
             Assert.Equal("database", config.Database);
-            Assert.Null( config.ConnectionString);
-
+            Assert.Null(config.ConnectionString);
         }
+
         [Fact]
         public void UpdateConfiguration_WithPostgresServiceInfo_ReturnsExpected()
         {
@@ -65,7 +65,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             Assert.Equal("Dd6O1BPXUHdrmzbP", config.Username);
             Assert.Equal("7E1LxXnlH2hhlPVt", config.Password);
             Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", config.Database);
-
         }
 
         [Fact]

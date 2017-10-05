@@ -16,7 +16,6 @@
 
 using System.Collections.Generic;
 
-
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class HystrixRabbitServiceInfo : ServiceInfo
@@ -24,12 +23,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         private RabbitServiceInfo rabbitInfo;
         private bool sslEnabled = false;
 
-        public HystrixRabbitServiceInfo(string id, string uri, bool sslEnabled) :
-            base(id)
+        public HystrixRabbitServiceInfo(string id, string uri, bool sslEnabled)
+            : base(id)
         {
             this.sslEnabled = sslEnabled;
             rabbitInfo = new RabbitServiceInfo(id, uri);
         }
+
         public HystrixRabbitServiceInfo(string id, string uri, List<string> uris, bool sslEnabled)
             : base(id)
         {
@@ -52,6 +52,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return rabbitInfo.Scheme;
             }
         }
+
         public string Query
         {
             get
@@ -59,6 +60,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return rabbitInfo.Query;
             }
         }
+
         public string Path
         {
             get
@@ -66,6 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return rabbitInfo.Path;
             }
         }
+
         public string Uri
         {
             get
@@ -73,6 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return rabbitInfo.Uri;
             }
         }
+
         public List<string> Uris
         {
             get
@@ -80,6 +84,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return rabbitInfo.Uris;
             }
         }
+
         public string Host
         {
             get
@@ -87,6 +92,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return rabbitInfo.Host;
             }
         }
+
         public int Port
         {
             get
@@ -94,6 +100,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return rabbitInfo.Port;
             }
         }
+
         public string UserName
         {
             get
@@ -101,6 +108,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return rabbitInfo.UserName;
             }
         }
+
         public string Password
         {
             get
@@ -108,6 +116,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return rabbitInfo.Password;
             }
         }
+
         public bool IsSslEnabled
         {
             get

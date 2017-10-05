@@ -64,6 +64,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             var inst2 = CloudFoundryServiceInfoCreator.Instance(config);
             Assert.Same(inst, inst2);
         }
+
         [Fact]
         public void Constructor_ReturnsNewInstance()
         {
@@ -78,6 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             var inst2 = CloudFoundryServiceInfoCreator.Instance(config2);
             Assert.NotSame(inst, inst2);
         }
+
         [Fact]
         public void BuildServiceInfoFactories_BuildsExpected()
         {
@@ -89,8 +91,8 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             Assert.NotNull(inst);
             Assert.NotNull(inst.Factories);
             Assert.Equal(11, inst.Factories.Count);
-
         }
+
         [Fact]
         public void BuildServiceInfos_NoCloudFoundryServices_BuildsExpected()
         {
@@ -389,9 +391,10 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             Assert.NotNull(result7);
             Assert.True(result7 is MySqlServiceInfo);
 
-            var result8 = creator.GetServiceInfo<RedisServiceInfo>( "spring-cloud-broker-db2");
+            var result8 = creator.GetServiceInfo<RedisServiceInfo>("spring-cloud-broker-db2");
             Assert.Null(result8);
         }
+
         [Fact]
         public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMonogoBinding_BuildsExpected()
         {
@@ -568,7 +571,6 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             var result3 = creator.GetServiceInfos<EurekaServiceInfo>();
             Assert.Single(result3);
             Assert.Equal("eureka-a015d976-af2e-430c-81f6-4f99272ccd24.apps.preprdpcf01.foo.com", result3[0].Host);
-
         }
     }
 }

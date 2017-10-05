@@ -21,13 +21,21 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     public class UriInfo
     {
         public string Scheme { get; internal protected set; }
+
         public string Host { get; internal protected set; }
+
         public int Port { get; internal protected set; }
+
         public string UserName { get; internal protected set; }
+
         public string Password { get; internal protected set; }
+
         public string Path { get; internal protected set; }
+
         public string Query { get; internal protected set; }
+
         public string UriString { get; internal protected set; }
+
         public Uri Uri
         {
             get
@@ -36,16 +44,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
         }
 
-        public UriInfo(string scheme, string host, int port, string username, string password) :
-            this(scheme, host, port, username, password, null, null)
+        public UriInfo(string scheme, string host, int port, string username, string password)
+            : this(scheme, host, port, username, password, null, null)
         {
-
         }
 
-        public UriInfo(string scheme, string host, int port, string username, string password, string path) :
-             this(scheme, host, port, username, password, path, null)
+        public UriInfo(string scheme, string host, int port, string username, string password, string path)
+            : this(scheme, host, port, username, password, path, null)
         {
-
         }
 
         public UriInfo(string scheme, string host, int port, string username, string password, string path, string query)
@@ -61,19 +67,18 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             UriString = MakeUri(scheme, host, port, username, password, path, query).ToString();
         }
 
- 
         public UriInfo(string uristring)
         {
             this.UriString = uristring;
 
             Uri uri = MakeUri(uristring);
-            if (uri != null) {
+            if (uri != null)
+            {
                 Scheme = uri.Scheme;
                 Host = uri.Host;
                 Port = uri.Port;
                 Path = GetPath(uri.PathAndQuery);
                 Query = GetQuery(uri.PathAndQuery);
-        
 
                 string[] userinfo = GetUserInfo(uri.UserInfo);
                 this.UserName = userinfo[0];
@@ -93,20 +98,18 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 Port = uri.Port;
                 Path = GetPath(uri.PathAndQuery);
                 Query = GetQuery(uri.PathAndQuery);
-
             }
+
             this.UserName = username;
             this.Password = password;
         }
 
-
         internal protected Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
         {
- 
             string cleanedPath = path == null || path.StartsWith("/") ? path : "/" + path;
             cleanedPath = query != null ? cleanedPath + "?" + query : cleanedPath;
 
-            if(!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
                 var builder = new UriBuilder()
                 {
@@ -118,7 +121,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     Path = cleanedPath
                 };
                 return builder.Uri;
-            } else
+            }
+            else
             {
                 var builder = new UriBuilder()
                 {
@@ -129,49 +133,63 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 };
                 return builder.Uri;
             }
-       
         }
 
         internal protected Uri MakeUri(string uriString)
         {
-            try {
+            try
+            {
                 var builder = new UriBuilder(uriString);
                 return builder.Uri;
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 return null;
             }
         }
 
         private char[] QUESTION_MARK = new char[] { '?' };
+
         internal protected string GetPath(string pathAndQuery)
         {
             if (string.IsNullOrEmpty(pathAndQuery))
+            {
                 return null;
+            }
 
             string[] split = pathAndQuery.Split(QUESTION_MARK);
             if (split.Length == 0)
+            {
                 return null;
-            return split[0].Substring(1);
+            }
 
+            return split[0].Substring(1);
         }
 
         internal protected string GetQuery(string pathAndQuery)
         {
             if (string.IsNullOrEmpty(pathAndQuery))
+            {
                 return null;
+            }
 
             string[] split = pathAndQuery.Split(QUESTION_MARK);
             if (split.Length <= 1)
+            {
                 return null;
+            }
+
             return split[1];
         }
 
         private char[] COLON = new char[] { ':' };
+
         internal protected string[] GetUserInfo(string userPass)
         {
-     
             if (string.IsNullOrEmpty(userPass))
+            {
                 return new string[2] { null, null };
+            }
 
             string[] split = userPass.Split(COLON);
             if (split.Length != 2)
@@ -181,7 +199,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
 
             return split;
-
         }
 
         public override string ToString()

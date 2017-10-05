@@ -44,8 +44,8 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
-
         }
+
         [Fact]
         public void AddOAuthServiceOptions_ThrowsIfConfigurtionNull()
         {
@@ -59,7 +59,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
@@ -73,7 +72,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
-
         }
 
         [Fact]
@@ -88,7 +86,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
 
             var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
             Assert.NotNull(service);
-
         }
 
         [Fact]
@@ -101,7 +98,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
-
         }
 
         [Fact]
@@ -176,8 +172,8 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => OAuthServiceCollectionExtensions.AddOAuthServiceOptions(services, config));
             Assert.Contains("Multiple", ex.Message);
-
         }
+
         [Fact]
         public void AddOAuthServiceOptions_WithVCAPs_AddsOAuthOptions()
         {
@@ -252,7 +248,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             Assert.Equal("https://sso.login.system.testcloud.com" + OAuthConnectorDefaults.Default_UserInfoUri, opts.UserInfoUrl);
             Assert.NotNull(opts.Scope);
             Assert.Equal(0, opts.Scope.Count);
-
         }
     }
 }

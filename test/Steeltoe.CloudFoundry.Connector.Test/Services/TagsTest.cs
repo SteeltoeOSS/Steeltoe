@@ -65,8 +65,5 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         {
             Assert.False(EMPTY_TAGS.StartsWith("test"));
         }
-
-
-
     }
 }

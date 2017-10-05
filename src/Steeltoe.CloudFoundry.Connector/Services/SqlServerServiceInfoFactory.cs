@@ -20,19 +20,19 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class SqlServerServiceInfoFactory : ServiceInfoFactory
     {
-        public SqlServerServiceInfoFactory() : base(new Tags("sqlserver"), SqlServerServiceInfo.SQLSERVER_SCHEME)
+        public SqlServerServiceInfoFactory()
+            : base(new Tags("sqlserver"), SqlServerServiceInfo.SQLSERVER_SCHEME)
         {
-
         }
 
-        public SqlServerServiceInfoFactory(Tags tags, string scheme) : base(tags, scheme)
+        public SqlServerServiceInfoFactory(Tags tags, string scheme)
+            : base(tags, scheme)
         {
-
         }
 
-        public SqlServerServiceInfoFactory(Tags tags, string[] schemes) : base(tags, schemes)
+        public SqlServerServiceInfoFactory(Tags tags, string[] schemes)
+            : base(tags, schemes)
         {
-
         }
 
         public override IServiceInfo Create(Service binding)
@@ -53,6 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     uri = new UriInfo(DefaultUriScheme, host, port, username, password, database).ToString();
                 }
             }
+
             return Create(binding.Name, uri, username, password);
         }
 

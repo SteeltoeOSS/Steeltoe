@@ -16,27 +16,26 @@
 
 using System;
 
-
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public abstract class UriServiceInfo : ServiceInfo
     {
         public UriInfo Info { get; internal protected set; }
 
-        public UriServiceInfo(string id, string scheme, string host, int port, string username, string password, string path) :
-            base(id)
+        public UriServiceInfo(string id, string scheme, string host, int port, string username, string password, string path)
+            : base(id)
         {
             Info = new UriInfo(scheme, host, port, username, password, path);
         }
 
-        public UriServiceInfo(string id, string uriString, string username, string password) : base(id)
+        public UriServiceInfo(string id, string uriString, string username, string password)
+            : base(id)
         {
             Info = new UriInfo(uriString, username, password);
         }
 
-
-        public UriServiceInfo(string id, string uriString) :
-            base(id)
+        public UriServiceInfo(string id, string uriString)
+            : base(id)
         {
             Info = new UriInfo(uriString);
         }
@@ -48,6 +47,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return Info.UriString;
             }
         }
+
         public string UserName
         {
             get
@@ -55,6 +55,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return Info.UserName;
             }
         }
+
         public string Password
         {
             get
@@ -62,6 +63,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return Info.Password;
             }
         }
+
         public string Host
         {
             get
@@ -69,6 +71,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return Info.Host;
             }
         }
+
         public int Port
         {
             get
@@ -76,6 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return Info.Port;
             }
         }
+
         public string Path
         {
             get
@@ -83,6 +87,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return Info.Path;
             }
         }
+
         public string Query
         {
             get
@@ -90,6 +95,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return Info.Query;
             }
         }
+
         public string Scheme
         {
             get
@@ -97,6 +103,5 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return Info.Scheme;
             }
         }
-
     }
 }

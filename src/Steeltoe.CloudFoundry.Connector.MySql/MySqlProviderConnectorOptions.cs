@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Text;
@@ -31,28 +30,36 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         {
         }
 
-        public MySqlProviderConnectorOptions(IConfiguration config) :
-            base()
+        public MySqlProviderConnectorOptions(IConfiguration config)
+            : base()
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             var section = config.GetSection(MYSQL_CLIENT_SECTION_PREFIX);
             section.Bind(this);
         }
 
         public string ConnectionString { get; set; }
+
         public string Server { get; set; } = Default_Server;
+
         public int Port { get; set; } = Default_Port;
+
         public string Username { get; set; }
+
         public string Password { get; set;  }
+
         public string Database { get; set; }
+
         public string SslMode { get; set; }
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString)) {
+            if (!string.IsNullOrEmpty(ConnectionString))
+            {
                 return ConnectionString;
             }
 
@@ -65,6 +72,5 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             AddKeyValue(sb, nameof(SslMode), SslMode);
             return sb.ToString();
         }
-
     }
 }

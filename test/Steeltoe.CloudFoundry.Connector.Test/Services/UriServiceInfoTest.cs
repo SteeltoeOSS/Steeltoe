@@ -24,7 +24,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_CreatesExpected()
         {
-            String uri = "mysql://joe:joes_password@localhost:1527/big_db";
+            string uri = "mysql://joe:joes_password@localhost:1527/big_db";
             UriServiceInfo r1 = new TestUriServiceInfo("myId", "mysql", "localhost", 1527, "joe", "joes_password", "big_db");
             UriServiceInfo r2 = new TestUriServiceInfo("myId", uri);
 
@@ -35,8 +35,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("joe", r1.UserName);
             Assert.Equal("joes_password", r1.Password);
             Assert.Equal("big_db", r1.Path);
-            Assert.Null( r1.Query);
-
+            Assert.Null(r1.Query);
 
             Assert.Equal("myId", r2.Id);
             Assert.Equal("mysql", r2.Scheme);
@@ -45,19 +44,19 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("joe", r2.UserName);
             Assert.Equal("joes_password", r2.Password);
             Assert.Equal("big_db", r2.Path);
-            Assert.Null( r2.Query);
+            Assert.Null(r2.Query);
         }
-    } 
+    }
 
     class TestUriServiceInfo : UriServiceInfo
     {
-        public TestUriServiceInfo(string id, string uri) :
-            base(id, uri)
+        public TestUriServiceInfo(string id, string uri)
+            : base(id, uri)
         {
         }
 
-        public TestUriServiceInfo(string id, string scheme, string host, int port, string username, string password, string path) :
-            base(id, scheme, host, port, username, password, path)
+        public TestUriServiceInfo(string id, string scheme, string host, int port, string username, string password, string path)
+            : base(id, scheme, host, port, username, password, path)
         {
         }
     }

@@ -21,7 +21,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     public interface IServiceInfo
     {
         string Id { get; }
+
         IApplicationInstanceInfo ApplicationInfo { get; }
-        
     }
 }

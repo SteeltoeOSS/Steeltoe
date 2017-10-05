@@ -6,14 +6,12 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
 {
     public class SqlServerDbContextConnectorFactory : SqlServerProviderConnectorFactory
     {
-
         internal SqlServerDbContextConnectorFactory()
         {
-
         }
 
-        public SqlServerDbContextConnectorFactory(SqlServerServiceInfo info, SqlServerProviderConnectorOptions config, Type dbContextType) :
-            base(info, config, dbContextType)
+        public SqlServerDbContextConnectorFactory(SqlServerServiceInfo info, SqlServerProviderConnectorOptions config, Type dbContextType)
+            : base(info, config, dbContextType)
         {
             if (dbContextType == null)
             {

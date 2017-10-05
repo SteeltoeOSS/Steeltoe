@@ -19,11 +19,8 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
 {
-
-
     public class OAuthConfigurerTest
     {
-
         [Fact]
         public void Update_WithDefaultConnectorOptions_UpdatesOAuthOptions_AsExpected()
         {
@@ -52,10 +49,9 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         {
             OAuthServiceOptions opts = new OAuthServiceOptions();
             SsoServiceInfo si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "http://foo.bar");
-     
+
             OAuthConfigurer configurer = new OAuthConfigurer();
             configurer.UpdateOptions(si, opts);
-            
 
             Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
             Assert.Equal("myClientId", opts.ClientId);
@@ -103,7 +99,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             Assert.NotNull(result);
             var opts = result.Value;
             Assert.NotNull(opts);
-
 
             Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
             Assert.Equal("myClientId", opts.ClientId);

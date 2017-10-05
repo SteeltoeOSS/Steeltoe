@@ -41,6 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             var cache = factory.CreateCache(null);
             Assert.NotNull(cache);
         }
+
         [Fact]
         public void CreateConnection_ReturnsConnectinMultiplexer()
         {
@@ -49,7 +50,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 Host = "localhost",
                 Port = 1234,
                 Password = "password",
-                InstanceId = "instanceId", 
+                InstanceId = "instanceId",
                 AbortOnConnectFail = false
             };
             RedisServiceInfo si = new RedisServiceInfo("myId", "127.0.0.1", 4321, "sipassword");

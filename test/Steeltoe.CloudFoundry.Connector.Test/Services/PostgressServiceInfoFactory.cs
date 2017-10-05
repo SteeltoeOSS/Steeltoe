@@ -30,10 +30,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "postgresql", "relational" },
                 Name = "postgresService",
                 Plan = "free",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -43,16 +44,18 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             PostgresServiceInfoFactory factory = new PostgresServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
+
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsServiceBinding()
         {
             Service s = new Service()
             {
                 Name = "postgresService",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -62,6 +65,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             PostgresServiceInfoFactory factory = new PostgresServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
+
         [Fact]
         public void Accept_AcceptsLabelNoTagsServiceBinding()
         {
@@ -70,10 +74,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Label = "elephantsql",
                 Name = "postgresService",
                 Plan = "free",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -93,10 +98,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("foobar://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -116,10 +122,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "postgresql", "relational" },
                 Name = "postgresService",
                 Plan = "free",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -147,10 +154,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "postgresql", "relational" },
                 Name = "postgresService",
                 Plan = "free",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") }
                     }

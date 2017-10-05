@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
+using Npgsql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using Xunit;
-using Npgsql;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 {
@@ -33,8 +33,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorFactory(si, config, typeof(NpgsqlConnection)));
             Assert.Contains(nameof(config), ex.Message);
-
         }
+
         [Fact]
         public void Create_ReturnsPostgresConnection()
         {
@@ -45,7 +45,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
                 Password = "password",
                 Username = "username",
                 Database = "database"
-                
             };
             PostgresServiceInfo si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var factory = new PostgresProviderConnectorFactory(si, config, typeof(NpgsqlConnection));

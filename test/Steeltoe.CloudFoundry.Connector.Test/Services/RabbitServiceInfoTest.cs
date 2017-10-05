@@ -42,11 +42,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("l5oq2q0unl35s6urfsuib0jvpo", r1.Password);
             Assert.Equal("03c7a684-6ff1-4bd0-ad45-d10374ffb2af", r1.UserName);
             Assert.Equal("fb03d693-91fe-4dc5-8203-ff7a6390df66", r1.Path);
-            Assert.Null( r1.Query);
+            Assert.Null(r1.Query);
             Assert.Null(r1.Uris);
             Assert.Equal(uri, r1.Uri);
             Assert.Null(r1.ManagementUris);
-            Assert.Null( r1.ManagementUri);
+            Assert.Null(r1.ManagementUri);
 
             Assert.Equal("myId", r2.Id);
             Assert.Equal("amqp", r2.Scheme);
@@ -55,7 +55,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("l5oq2q0unl35s6urfsuib0jvpo", r2.Password);
             Assert.Equal("03c7a684-6ff1-4bd0-ad45-d10374ffb2af", r2.UserName);
             Assert.Equal("fb03d693-91fe-4dc5-8203-ff7a6390df66", r2.Path);
-            Assert.Null( r2.Query);
+            Assert.Null(r2.Query);
             Assert.Null(r2.Uris);
             Assert.Equal(uri, r2.Uri);
             Assert.Null(r2.ManagementUris);
@@ -68,7 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("l5oq2q0unl35s6urfsuib0jvpo", r3.Password);
             Assert.Equal("03c7a684-6ff1-4bd0-ad45-d10374ffb2af", r3.UserName);
             Assert.Equal("fb03d693-91fe-4dc5-8203-ff7a6390df66", r3.Path);
-            Assert.Null( r3.Query);
+            Assert.Null(r3.Query);
             Assert.NotNull(r3.Uris);
             Assert.Single(r3.Uris);
             Assert.Equal(uris[0], r3.Uris[0]);
@@ -78,7 +78,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal(managementUris[0], r3.ManagementUris[0]);
             Assert.Equal(managementUri, r3.ManagementUri);
 
-
             Assert.Equal("myId", r4.Id);
             Assert.Equal("amqp", r4.Scheme);
             Assert.Equal("192.168.0.81", r4.Host);
@@ -86,12 +85,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("l5oq2q0unl35s6urfsuib0jvpo", r4.Password);
             Assert.Equal("03c7a684-6ff1-4bd0-ad45-d10374ffb2af", r4.UserName);
             Assert.Equal("fb03d693-91fe-4dc5-8203-ff7a6390df66", r4.Path);
-            Assert.Null( r4.Query);
+            Assert.Null(r4.Query);
             Assert.Null(r4.Uris);
             Assert.Equal(uri, r4.Uri);
             Assert.Null(r4.ManagementUris);
-            Assert.Null( r4.ManagementUri);
-
+            Assert.Null(r4.ManagementUri);
 
             Assert.Equal("myId", r5.Id);
             Assert.Equal("amqp", r5.Scheme);
@@ -100,13 +98,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("l5oq2q0unl35s6urfsuib0jvpo", r5.Password);
             Assert.Equal("03c7a684-6ff1-4bd0-ad45-d10374ffb2af", r5.UserName);
             Assert.Equal("fb03d693-91fe-4dc5-8203-ff7a6390df66", r5.Path);
-            Assert.Null( r5.Query);
+            Assert.Null(r5.Query);
             Assert.Null(r5.Uris);
             Assert.Equal(uri, r5.Uri);
             Assert.Null(r5.ManagementUris);
             Assert.Equal(managementUri, r5.ManagementUri);
         }
-
-
     }
 }

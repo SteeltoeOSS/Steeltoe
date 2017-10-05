@@ -14,20 +14,18 @@
 // limitations under the License.
 //
 
-
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
-using StackExchange.Redis;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public static class RedisCacheServiceCollectionExtensions
     {
-    
         public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -70,6 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             services.AddSingleton(typeof(IDistributedCache), factory.CreateCache);
             return services;
         }
+
         public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
@@ -112,6 +111,5 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             services.AddSingleton(typeof(IConnectionMultiplexer), factory.CreateConnection);
             return services;
         }
-
     }
 }

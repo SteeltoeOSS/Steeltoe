@@ -27,8 +27,8 @@ namespace Steeltoe.CloudFoundry.Connector
         protected const char Default_Terminator = ';';
         protected const char Default_Separator = '=';
 
-        protected AbstractServiceConnectorOptions() :
-            this(Default_Terminator, Default_Separator)
+        protected AbstractServiceConnectorOptions()
+            : this(Default_Terminator, Default_Separator)
         {
         }
 
@@ -38,13 +38,14 @@ namespace Steeltoe.CloudFoundry.Connector
             this._keyValueTerm = keyValueTerm;
         }
 
-        public AbstractServiceConnectorOptions(IConfiguration config, char terminator = Default_Terminator, char separator = Default_Separator) :
-            this(terminator, separator)
+        public AbstractServiceConnectorOptions(IConfiguration config, char terminator = Default_Terminator, char separator = Default_Separator)
+            : this(terminator, separator)
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             config.Bind(this);
         }
 
@@ -52,10 +53,12 @@ namespace Steeltoe.CloudFoundry.Connector
         {
             AddKeyValue(sb, key, value.ToString());
         }
+
         internal protected void AddKeyValue(StringBuilder sb, string key, bool value)
         {
             AddKeyValue(sb, key, value.ToString().ToLowerInvariant());
         }
+
         internal protected void AddKeyValue(StringBuilder sb, string key, string value)
         {
             if (!string.IsNullOrEmpty(value))

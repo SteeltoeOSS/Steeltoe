@@ -44,8 +44,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
-
         }
+
         [Fact]
         public void AddPostgresConnection_ThrowsIfConfigurtionNull()
         {
@@ -59,7 +59,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
@@ -73,7 +72,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
-
         }
 
         [Fact]
@@ -88,7 +86,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 
            var service = services.BuildServiceProvider().GetService<NpgsqlConnection>();
            Assert.NotNull(service);
-
         }
 
         [Fact]
@@ -101,7 +98,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
-
         }
 
         [Fact]
@@ -178,8 +174,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config));
             Assert.Contains("Multiple", ex.Message);
-
         }
+
         [Fact]
         public void AddPostgresConnection_WithVCAPs_AddsPostgresConnection()
         {

@@ -23,12 +23,11 @@ namespace Steeltoe.CloudFoundry.Connector.App
     {
         internal ApplicationInstanceInfo()
         {
-
         }
 
         internal ApplicationInstanceInfo(CloudFoundryApplicationOptions opts)
         {
-            InstanceId = GetInstanceId(opts) ;
+            InstanceId = GetInstanceId(opts);
             ApplicationId = opts.ApplicationId;
             ApplicationName = opts.ApplicationName;
             ApplicationUris = opts.ApplicationUris;
@@ -45,27 +44,46 @@ namespace Steeltoe.CloudFoundry.Connector.App
             InstanceIP = opts.InstanceIP;
             InternalIP = opts.InternalIP;
         }
+
         public string InstanceId { get; internal protected set; }
+
         public string ApplicationId { get; internal protected set; }
+
         public string ApplicationName { get; internal protected set; }
+
         public string[] ApplicationUris { get; internal protected set; }
+
         public string ApplicationVersion { get; internal protected set; }
+
         public int InstanceIndex { get; internal protected set; }
+
         public int Port { get; internal protected set; }
+
         public string SpaceId { get; internal protected set; }
+
         public string SpaceName { get; internal protected set; }
+
         public string[] Uris { get; internal protected set; }
+
         public string Version { get; internal protected set; }
+
         public int DiskLimit { get; internal protected set; }
+
         public int MemoryLimit { get; internal protected set; }
+
         public int FileDescriptorLimit { get; internal protected set; }
+
         public string InstanceIP { get; internal protected set; }
+
         public string InternalIP { get; internal protected set; }
 
         private string GetInstanceId(CloudFoundryApplicationOptions opts)
         {
             if (!string.IsNullOrEmpty(opts.InstanceId))
+            {
                 return opts.InstanceId;
+            }
+
             return Environment.GetEnvironmentVariable("CF_INSTANCE_GUID");
         }
     }

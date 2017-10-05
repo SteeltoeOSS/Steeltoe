@@ -82,8 +82,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             Assert.Equal(2, sconfig.Scope.Count);
             Assert.True(sconfig.Scope.Contains("foo") && sconfig.Scope.Contains("bar"));
             Assert.False(sconfig.Validate_Certificates);
-
         }
     }
 }
-

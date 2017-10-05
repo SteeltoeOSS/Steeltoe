@@ -57,7 +57,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         public void Configure_With_ServiceInfo_Overrides_Config()
         {
             SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
-            
+
             // override provided by environment
             SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
 

@@ -16,9 +16,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
 using Steeltoe.Extensions.Configuration;
 using System;
-using RabbitMQ.Client;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
@@ -48,7 +48,6 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
                 Assert.Throws<ArgumentNullException>(
                     () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
-
         }
 
         [Fact]
@@ -68,7 +67,6 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
                 Assert.Throws<ArgumentNullException>(
                     () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
@@ -84,7 +82,6 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
                 Assert.Throws<ArgumentNullException>(
                     () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
-
         }
 
         [Fact]
@@ -113,7 +110,6 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
                 Assert.Throws<ConnectorException>(
                     () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
-
         }
 
         [Fact]

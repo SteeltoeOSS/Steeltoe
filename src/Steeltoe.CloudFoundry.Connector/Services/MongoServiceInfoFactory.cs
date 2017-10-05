@@ -24,9 +24,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class MongoServiceInfoFactory : ServiceInfoFactory
     {
-        public MongoServiceInfoFactory() :
-            base(new Tags("mongodb"), MongoServiceInfo.MONGODB_SCHEME)
-        { 
+        public MongoServiceInfoFactory()
+            : base(new Tags("mongodb"), MongoServiceInfo.MONGODB_SCHEME)
+        {
         }
 
         public override IServiceInfo Create(Service binding)

@@ -15,11 +15,11 @@
 //
 
 using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System;
-using System.Text;
 using System.Globalization;
 using System.Net;
-using StackExchange.Redis;
+using System.Text;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
@@ -31,45 +31,59 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         private const string REDIS_CLIENT_SECTION_PREFIX = "redis:client";
 
-        public RedisCacheConnectorOptions() :
-            base(',', Default_Separator)
+        public RedisCacheConnectorOptions()
+            : base(',', Default_Separator)
         {
         }
 
-        public RedisCacheConnectorOptions(IConfiguration config) :
-            base(',', Default_Separator)
+        public RedisCacheConnectorOptions(IConfiguration config)
+            : base(',', Default_Separator)
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             var section = config.GetSection(REDIS_CLIENT_SECTION_PREFIX);
             section.Bind(this);
         }
 
-
-        // Configure either a single Host/Port or optionaly provide 
+        // Configure either a single Host/Port or optionaly provide
         // a list of endpoints (ie. host1:port1,host2:port2)
         public string Host { get; set; } = Default_Host;
+
         public int Port { get; set; } = Default_Port;
+
         public string EndPoints { get; set; }
 
         public string Password { get; set; }
+
         public bool AllowAdmin { get; set; } = false;
+
         public string ClientName { get; set; }
+
         public int ConnectRetry { get; set; }
+
         public int ConnectTimeout { get; set; }
+
         public bool AbortOnConnectFail { get; set; } = true;
+
         public int KeepAlive { get; set; }
+
         public bool ResolveDns { get; set; } = false;
+
         public string ServiceName { get; set; }
+
         public bool Ssl { get; set; } = false;
+
         public string SslHost { get; set; }
+
         public string TieBreaker { get; set; }
+
         public int WriteBuffer { get; set; }
 
         // You can use this instead of configuring each option seperately
-        // If a connection string is provided, the string will be used and 
+        // If a connection string is provided, the string will be used and
         // the optioons above will be ignored
         public string ConnectionString { get; set; }
 
@@ -91,11 +105,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             StringBuilder sb = new StringBuilder();
             if (!string.IsNullOrEmpty(this.EndPoints))
             {
-
                 string endpoints = EndPoints.Trim();
                 sb.Append(endpoints);
                 sb.Append(',');
-            } else
+            }
+            else
             {
                 sb.Append(this.Host + ":" + this.Port);
                 sb.Append(',');
@@ -106,15 +120,21 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             AddKeyValue(sb, "name", this.ClientName);
 
             if (this.ConnectRetry > 0)
+            {
                 AddKeyValue(sb, "connectRetry", this.ConnectRetry);
+            }
 
             if (this.ConnectTimeout > 0)
+            {
                 AddKeyValue(sb, "connectTimeout", this.ConnectTimeout);
+            }
 
             AddKeyValue(sb, "abortConnect", this.AbortOnConnectFail);
 
             if (this.KeepAlive > 0)
+            {
                 AddKeyValue(sb, "keepAlive", this.KeepAlive);
+            }
 
             AddKeyValue(sb, "resolveDns", this.ResolveDns);
             AddKeyValue(sb, "serviceName", this.ServiceName);
@@ -123,20 +143,23 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             AddKeyValue(sb, "tiebreaker", this.TieBreaker);
 
             if (this.WriteBuffer > 0)
+            {
                 AddKeyValue(sb, "writeBuffer", this.WriteBuffer);
-
+            }
 
             // Trim ending ','
             sb.Remove(sb.Length - 1, 1);
             return sb.ToString();
-
         }
 
         private static char[] COMMA = new char[] { ',' };
+
         internal void AddEndPoints(EndPointCollection result, string endpoints)
         {
             if (string.IsNullOrEmpty(endpoints))
+            {
                 return;
+            }
 
             endpoints = endpoints.Trim();
             if (!string.IsNullOrEmpty(endpoints))
@@ -156,12 +179,16 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             }
         }
 
-        // 
+        //
         // Note: The code below lifted from StackExchange.Redis.Format {}
-        // 
+        //
         internal static EndPoint TryParseEndPoint(string endpoint)
         {
-            if (string.IsNullOrWhiteSpace(endpoint)) return null;
+            if (string.IsNullOrWhiteSpace(endpoint))
+            {
+                return null;
+            }
+
             string host;
             int port;
             int i = endpoint.IndexOf(':');
@@ -174,10 +201,21 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             {
                 host = endpoint.Substring(0, i);
                 var portAsString = endpoint.Substring(i + 1);
-                if (string.IsNullOrEmpty(portAsString)) return null;
-                if (int.TryParse(portAsString, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out port)) return null;
+                if (string.IsNullOrEmpty(portAsString))
+                {
+                    return null;
+                }
+
+                if (int.TryParse(portAsString, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out port))
+                {
+                    return null;
+                }
             }
-            if (string.IsNullOrWhiteSpace(host)) return null;
+
+            if (string.IsNullOrWhiteSpace(host))
+            {
+                return null;
+            }
 
             return ParseEndPoint(host, port);
         }
@@ -185,7 +223,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         internal static EndPoint ParseEndPoint(string host, int port)
         {
             IPAddress ip;
-            if (IPAddress.TryParse(host, out ip)) return new IPEndPoint(ip, port);
+            if (IPAddress.TryParse(host, out ip))
+            {
+                return new IPEndPoint(ip, port);
+            }
+
             return new DnsEndPoint(host, port);
         }
     }

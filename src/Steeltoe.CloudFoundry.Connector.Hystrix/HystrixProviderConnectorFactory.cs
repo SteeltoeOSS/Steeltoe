@@ -28,38 +28,48 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
         protected Type _type;
 
         protected MethodInfo _setUri;
+
         internal HystrixProviderConnectorFactory()
         {
-
         }
+
         public HystrixProviderConnectorFactory(HystrixRabbitServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
            if (connectFactory == null)
             {
                 throw new ArgumentNullException(nameof(connectFactory));
             }
+
             _info = sinfo;
             _config = config;
             _type = connectFactory;
             _setUri = FindSetUriMethod(_type);
-            if (_setUri == null) {
+            if (_setUri == null)
+            {
                 throw new ConnectorException("Unable to find ConnectionFactory.SetUri(), incompatible RabbitMQ assembly");
             }
         }
+
         public virtual object Create(IServiceProvider provider)
         {
             var connectionString = CreateConnectionString();
             object result = null;
-            if (connectionString != null) 
+            if (connectionString != null)
+            {
                 result = CreateConnection(connectionString);
-            if (result == null)
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
-            return result;
+            }
 
+            if (result == null)
+            {
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+            }
+
+            return result;
         }
 
         public virtual string CreateConnectionString()
@@ -69,32 +79,32 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 
         public virtual object CreateConnection(string connectionString)
         {
-     
-            object inst =  ConnectorHelpers.CreateInstance(_type, null );
+            object inst = ConnectorHelpers.CreateInstance(_type, null);
             if (inst == null)
+            {
                 return null;
+            }
+
             Uri uri = new Uri(connectionString, UriKind.Absolute);
 
-            ConnectorHelpers.Invoke(_setUri, inst, new object[] {uri} );
+            ConnectorHelpers.Invoke(_setUri, inst, new object[] { uri });
             return new HystrixConnectionFactory(inst);
         }
 
-        public static MethodInfo FindSetUriMethod(Type type) 
+        public static MethodInfo FindSetUriMethod(Type type)
         {
             var typeInfo = type.GetTypeInfo();
             var declaredMethods = typeInfo.DeclaredMethods;
 
             foreach (MethodInfo ci in declaredMethods)
             {
-                if (ci.Name.Equals("SetUri")) 
+                if (ci.Name.Equals("SetUri"))
                 {
                     return ci;
                 }
-            
             }
 
             return null;
         }
-
     }
 }

@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Text;
@@ -31,27 +30,34 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         {
         }
 
-        public PostgresProviderConnectorOptions(IConfiguration config) :
-            base()
+        public PostgresProviderConnectorOptions(IConfiguration config)
+            : base()
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             var section = config.GetSection(POSTGRES_CLIENT_SECTION_PREFIX);
             section.Bind(this);
         }
 
         public string ConnectionString { get; set; }
+
         public string Host { get; set; } = Default_Host;
+
         public int Port { get; set; } = Default_Port;
+
         public string Username { get; set; }
+
         public string Password { get; set;  }
+
         public string Database { get; set; }
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString)) {
+            if (!string.IsNullOrEmpty(ConnectionString))
+            {
                 return ConnectionString;
             }
 
@@ -63,6 +69,5 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             AddKeyValue(sb, nameof(Database), Database);
             return sb.ToString();
         }
-
     }
 }

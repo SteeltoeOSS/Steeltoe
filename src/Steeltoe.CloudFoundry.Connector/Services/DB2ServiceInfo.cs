@@ -22,9 +22,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     {
         public const string DB2_SCHEME = "db2";
 
-        public DB2ServiceInfo(String id, String url) :
-            base(id, url)
+        public DB2ServiceInfo(string id, string url)
+            : base(id, url)
         {
         }
-    } 
+    }
 }

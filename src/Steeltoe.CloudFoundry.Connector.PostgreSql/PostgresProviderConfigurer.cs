@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-
 using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql
@@ -25,9 +24,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         {
             UpdateConfiguration(si, configuration);
             return configuration.ToString();
-
-
         }
+
         internal void UpdateConfiguration(PostgresServiceInfo si, PostgresProviderConnectorOptions configuration)
         {
             if (si == null)
@@ -35,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
                 return;
             }
 
-            if (!string.IsNullOrEmpty(si.Uri) )
+            if (!string.IsNullOrEmpty(si.Uri))
             {
                 configuration.Port = si.Port;
                 configuration.Username = si.UserName;

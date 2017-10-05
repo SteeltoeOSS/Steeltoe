@@ -41,18 +41,18 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("id", si.Id);
             Assert.Equal(info, si.ApplicationInfo);
         }
-
     }
 
     class TestServiceInfo : ServiceInfo
     {
-        public TestServiceInfo(string id, ApplicationInstanceInfo info) : base(id, info)
+        public TestServiceInfo(string id, ApplicationInstanceInfo info)
+            : base(id, info)
         {
-
         }
-        public TestServiceInfo(string id) : base(id, null)
-        {
 
+        public TestServiceInfo(string id)
+            : base(id, null)
+        {
         }
     }
 }

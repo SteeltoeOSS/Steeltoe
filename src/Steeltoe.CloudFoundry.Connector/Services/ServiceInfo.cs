@@ -14,18 +14,18 @@
 // limitations under the License.
 //
 
-using System;
 using Steeltoe.CloudFoundry.Connector.App;
+using System;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public abstract class ServiceInfo : IServiceInfo
     {
-        public ServiceInfo(string id) :
-            this(id, null)
+        public ServiceInfo(string id)
+            : this(id, null)
         {
-   
         }
+
         public ServiceInfo(string id, ApplicationInstanceInfo info)
         {
             if (string.IsNullOrEmpty(id))

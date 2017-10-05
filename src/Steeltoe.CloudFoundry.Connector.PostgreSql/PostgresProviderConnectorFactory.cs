@@ -25,10 +25,11 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         protected PostgresProviderConnectorOptions _config;
         protected PostgresProviderConfigurer _configurer = new PostgresProviderConfigurer();
         protected Type _type;
+
         internal PostgresProviderConnectorFactory()
         {
-
         }
+
         public PostgresProviderConnectorFactory(PostgresServiceInfo sinfo, PostgresProviderConnectorOptions config, Type type)
         {
             if (config == null)
@@ -40,26 +41,32 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             _config = config;
             _type = type;
         }
+
         public virtual object Create(IServiceProvider provider)
         {
             var connectionString = CreateConnectionString();
             object result = null;
-            if (connectionString != null) 
+            if (connectionString != null)
+            {
                 result = CreateConnection(connectionString);
-            if (result == null)
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
-            return result;
+            }
 
+            if (result == null)
+            {
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+            }
+
+            return result;
         }
 
         public virtual string CreateConnectionString()
         {
             return _configurer.Configure(_info, _config);
         }
-        
+
         public virtual object CreateConnection(string connectionString)
         {
-            return ConnectorHelpers.CreateInstance(_type, new object[] {connectionString} );
+            return ConnectorHelpers.CreateInstance(_type, new object[] { connectionString });
         }
     }
 }

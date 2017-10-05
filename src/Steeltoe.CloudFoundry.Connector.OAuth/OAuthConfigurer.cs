@@ -17,19 +17,16 @@
 using Microsoft.Extensions.Options;
 using Steeltoe.CloudFoundry.Connector.Services;
 
-
 namespace Steeltoe.CloudFoundry.Connector.OAuth
 {
     public class OAuthConfigurer
     {
-
         internal IOptions<OAuthServiceOptions> Configure(SsoServiceInfo si, OAuthConnectorOptions configuration)
         {
             OAuthServiceOptions ssoOptions = new OAuthServiceOptions();
             UpdateOptions(configuration, ssoOptions);
             UpdateOptions(si, ssoOptions);
             return new ConnectorIOptions<OAuthServiceOptions>(ssoOptions);
-
         }
 
         internal void UpdateOptions(SsoServiceInfo si, OAuthServiceOptions options)
@@ -54,6 +51,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
             {
                 return;
             }
+
             options.ClientId = config.ClientId;
             options.ClientSecret = config.ClientSecret;
             options.AccessTokenUrl = config.OAuthServiceUrl + config.AccessTokenUri;
@@ -64,7 +62,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
             options.ValidateCertificates = config.Validate_Certificates;
             if (config.Scope != null)
             {
-                foreach(var scope in config.Scope)
+                foreach (var scope in config.Scope)
                 {
                     options.Scope.Add(scope);
                 }
@@ -73,5 +71,4 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
             return;
         }
     }
-
 }

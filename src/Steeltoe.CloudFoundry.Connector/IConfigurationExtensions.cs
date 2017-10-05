@@ -14,12 +14,10 @@
 // limitations under the License.
 //
 
-
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Collections.Generic;
-
 
 namespace Steeltoe.CloudFoundry.Connector
 {
@@ -58,8 +56,10 @@ namespace Steeltoe.CloudFoundry.Connector
                 {
                     throw new ConnectorException(string.Format("Multiple services of type: {0}, bound to application.", typeof(SI)));
                 }
+
                 return results[0];
             }
+
             return null;
         }
 
@@ -70,6 +70,7 @@ namespace Steeltoe.CloudFoundry.Connector
             {
                 throw new ConnectorException(string.Format("No service with name: {0} found.", serviceName));
             }
+
             return info;
         }
     }

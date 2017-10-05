@@ -24,7 +24,6 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 {
     public static class RabbitProviderServiceCollectionExtensions
     {
-
         public static IServiceCollection AddRabbitConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -59,26 +58,27 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             RabbitServiceInfo info = config.GetRequiredServiceInfo<RabbitServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        
-        private static string[] rabbitAssemblies = new string[] {"RabbitMQ.Client"};
-        private static string[] rabbitTypeNames = new string[] {"RabbitMQ.Client.ConnectionFactory"};
+        private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
+        private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
+
         private static void DoAdd(IServiceCollection services, RabbitServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type rabbitFactory = ConnectorHelpers.FindType(rabbitAssemblies, rabbitTypeNames);
-            if (rabbitFactory == null) {
+            if (rabbitFactory == null)
+            {
                 throw new ConnectorException("Unable to find ConnectionFactory, are you missing RabbitMQ assembly");
             }
+
             RabbitProviderConnectorOptions rabbitConfig = new RabbitProviderConnectorOptions(config);
             RabbitProviderConnectorFactory factory = new RabbitProviderConnectorFactory(info, rabbitConfig, rabbitFactory);
             services.Add(new ServiceDescriptor(rabbitFactory, factory.Create, contextLifetime));
         }
-
-
     }
 }

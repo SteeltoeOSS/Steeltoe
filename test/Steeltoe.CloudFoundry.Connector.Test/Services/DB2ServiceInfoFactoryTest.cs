@@ -30,10 +30,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "db2", "relational" },
                 Name = "db2Service",
                 Plan = "100mb-dev",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("db2://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -53,10 +54,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "foobar", "relational" },
                 Name = "mysqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -76,10 +78,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "db2", "relational" },
                 Name = "db2Service",
                 Plan = "100mb-dev",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("db2://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -99,4 +102,3 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         }
     }
 }
-

@@ -14,22 +14,20 @@
 // limitations under the License.
 //
 
-
 using System;
 
 namespace Steeltoe.CloudFoundry.Connector
 {
     public class ConnectorException : Exception
     {
-        public ConnectorException(string message) :
-            base(message)
+        public ConnectorException(string message)
+            : base(message)
         {
-
         }
-        public ConnectorException(string message, Exception nested) : 
-            base(message, nested)
-        {
 
+        public ConnectorException(string message, Exception nested)
+            : base(message, nested)
+        {
         }
     }
 }

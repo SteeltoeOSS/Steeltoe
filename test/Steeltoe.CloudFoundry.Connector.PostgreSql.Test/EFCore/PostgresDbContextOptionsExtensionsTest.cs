@@ -52,8 +52,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
 
             var ex4 = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql<GoodDbContext>(goodBuilder, config, "foobar"));
             Assert.Contains(nameof(optionsBuilder), ex4.Message);
-
         }
+
         [Fact]
         public void UseNpgsql_ThrowsIfConfigurtionNull()
         {
@@ -74,7 +74,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
 
             var ex4 = Assert.Throws<ArgumentNullException>(() => PostgresDbContextOptionsExtensions.UseNpgsql<GoodDbContext>(goodBuilder, config, "foobar"));
             Assert.Contains(nameof(config), ex4.Message);
-
         }
 
         [Fact]
@@ -92,8 +91,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
 
             var ex4 = Assert.Throws<ArgumentException>(() => PostgresDbContextOptionsExtensions.UseNpgsql<GoodDbContext>(goodBuilder, config, serviceName));
             Assert.Contains(nameof(serviceName), ex4.Message);
-
         }
+
         [Fact]
         public void AddDbContext_NoVCAPs_AddsDbContext_WithPostgresConnection()
         {
@@ -110,7 +109,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             var con = service.Database.GetDbConnection();
             Assert.NotNull(con);
             Assert.NotNull(con as NpgsqlConnection);
-
         }
 
         [Fact]
@@ -127,6 +125,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
             Assert.Contains("foobar", ex.Message);
         }
+
         [Fact]
         public void AddDbContext_MultiplePostgresServices_ThrowsConnectorException()
         {
@@ -204,7 +203,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
 
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
             Assert.Contains("Multiple", ex.Message);
-
         }
 
         [Fact]
@@ -268,7 +266,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             services.AddDbContext<GoodDbContext>(options =>
                   options.UseNpgsql(config));
 
-
             var built = services.BuildServiceProvider();
             var service = built.GetService<GoodDbContext>();
             Assert.NotNull(service);
@@ -286,15 +283,14 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             Assert.Contains("postgres.testcloud.com", connString);
             Assert.Contains("lmu7c96mgl99b2t1hvdgd5q94v", connString);
             Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
-
         }
     }
 
     class GoodDbContext : DbContext
     {
-        public GoodDbContext(DbContextOptions<GoodDbContext> options) : base(options)
+        public GoodDbContext(DbContextOptions<GoodDbContext> options)
+            : base(options)
         {
-
         }
     }
 }

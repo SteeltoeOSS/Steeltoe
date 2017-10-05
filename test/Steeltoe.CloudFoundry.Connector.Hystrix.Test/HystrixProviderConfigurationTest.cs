@@ -64,10 +64,11 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             Assert.Equal(1234, sconfig.Port);
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("username", sconfig.Username);
-            Assert.Null( sconfig.Uri);
-            Assert.True( sconfig.SslEnabled);
+            Assert.Null(sconfig.Uri);
+            Assert.True(sconfig.SslEnabled);
             Assert.Equal(HystrixProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
         }
+
         [Fact]
         public void ToString_ReturnsValid()
         {
@@ -97,7 +98,6 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             var sconfig = new HystrixProviderConnectorOptions(config);
             string result = sconfig.ToString();
             Assert.Equal("amqps://username:password@localhost:5671/foobar", result);
-
         }
     }
 }

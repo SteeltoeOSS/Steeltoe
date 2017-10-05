@@ -26,6 +26,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             {
                 throw new ArgumentNullException(nameof(realFactory));
             }
+
             ConnectionFactory = realFactory;
         }
 

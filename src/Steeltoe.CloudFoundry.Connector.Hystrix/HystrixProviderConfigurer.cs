@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-
 using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.Hystrix
@@ -34,17 +33,18 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
                 return;
             }
 
-            if (!string.IsNullOrEmpty(si.Uri) )
-            {   
+            if (!string.IsNullOrEmpty(si.Uri))
+            {
                 if (si.Scheme.Equals(HystrixProviderConnectorOptions.Default_SSLScheme, System.StringComparison.OrdinalIgnoreCase))
                 {
                     configuration.SslEnabled = true;
                     configuration.SslPort = si.Port;
-                } else
+                }
+                else
                 {
                     configuration.Port = si.Port;
                 }
-      
+
                 configuration.Username = si.UserName;
                 configuration.Password = si.Password;
                 configuration.Server = si.Host;

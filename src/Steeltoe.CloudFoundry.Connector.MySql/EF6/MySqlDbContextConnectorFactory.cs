@@ -14,43 +14,43 @@
 // limitations under the License.
 //
 #if NET461
-
-using System;
 using Steeltoe.CloudFoundry.Connector.Services;
+using System;
 using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {
     public class MySqlDbContextConnectorFactory : MySqlProviderConnectorFactory
     {
-
-        internal MySqlDbContextConnectorFactory() 
+        internal MySqlDbContextConnectorFactory()
         {
-
         }
 
-        public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConnectorOptions config, Type dbContextType) :
-            base(info, config, dbContextType)
+        public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConnectorOptions config, Type dbContextType)
+            : base(info, config, dbContextType)
         {
             if (dbContextType == null)
             {
                 throw new ArgumentNullException(nameof(dbContextType));
             }
-            
         }
 
         public override object Create(IServiceProvider arg)
         {
             var connectionString = base.CreateConnectionString();
             object result = null;
-            if (connectionString != null) 
-                result = ConnectorHelpers.CreateInstance(_type, new object[] {connectionString} );
+            if (connectionString != null)
+            {
+                result = ConnectorHelpers.CreateInstance(_type, new object[] { connectionString });
+            }
+
             if (result == null)
+            {
                 throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor", _type));
+            }
+
             return result;
         }
-
     }
-    
 }
 #endif

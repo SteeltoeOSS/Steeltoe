@@ -24,7 +24,6 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 {
     public static class HystrixProviderServiceCollectionExtensions
     {
-
         public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -59,26 +58,27 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             HystrixRabbitServiceInfo info = config.GetRequiredServiceInfo<HystrixRabbitServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        
-        private static string[] rabbitAssemblies = new string[] {"RabbitMQ.Client"};
-        private static string[] rabbitTypeNames = new string[] {"RabbitMQ.Client.ConnectionFactory"};
+        private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
+        private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
+
         private static void DoAdd(IServiceCollection services, HystrixRabbitServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type rabbitFactory = ConnectorHelpers.FindType(rabbitAssemblies, rabbitTypeNames);
-            if (rabbitFactory == null) {
+            if (rabbitFactory == null)
+            {
                 throw new ConnectorException("Unable to find ConnectionFactory, are you missing RabbitMQ assembly");
             }
+
             HystrixProviderConnectorOptions hystrixConfig = new HystrixProviderConnectorOptions(config);
             HystrixProviderConnectorFactory factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
             services.Add(new ServiceDescriptor(typeof(HystrixConnectionFactory), factory.Create, contextLifetime));
         }
-
-
     }
 }

@@ -24,20 +24,19 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };
         public static readonly Tags RABBIT_SERVICE_TAGS = new Tags("rabbit");
 
-        public RabbitServiceInfoFactory() :
-            base(RABBIT_SERVICE_TAGS, _scheme)
+        public RabbitServiceInfoFactory()
+            : base(RABBIT_SERVICE_TAGS, _scheme)
         {
-
         }
 
         public override bool Accept(Service binding)
         {
-            bool result =  base.Accept(binding);
+            bool result = base.Accept(binding);
             if (result)
             {
-
-                result =  !HystrixRabbitServiceInfoFactory.HYSTRIX_RABBIT_SERVICE_TAGS.ContainsOne(binding.Tags);
+                result = !HystrixRabbitServiceInfoFactory.HYSTRIX_RABBIT_SERVICE_TAGS.ContainsOne(binding.Tags);
             }
+
             return result;
         }
 

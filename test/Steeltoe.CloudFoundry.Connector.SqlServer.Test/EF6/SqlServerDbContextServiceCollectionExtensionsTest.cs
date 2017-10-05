@@ -87,7 +87,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
 
             var service = services.BuildServiceProvider().GetService<GoodDbContext>();
             Assert.NotNull(service);
-
         }
 
         [Fact]
@@ -100,7 +99,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
-
         }
 
         [Fact]
@@ -257,7 +255,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
 
             var service2 = built.GetService<Good2DbContext>();
             Assert.NotNull(service2);
-
         }
     }
 
@@ -265,7 +262,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
     {
         public Good2DbContext(string str)
         {
-
         }
     }
 }

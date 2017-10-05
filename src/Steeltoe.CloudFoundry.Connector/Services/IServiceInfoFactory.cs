@@ -21,6 +21,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     interface IServiceInfoFactory
     {
         bool Accept(Service binding);
+
         IServiceInfo Create(Service binding);
     }
 }

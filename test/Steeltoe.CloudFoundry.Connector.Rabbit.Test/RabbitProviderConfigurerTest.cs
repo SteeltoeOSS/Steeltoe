@@ -19,14 +19,15 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 {
-    public class RabbitProviderConfigurerTest {
+    public class RabbitProviderConfigurerTest
+    {
         [Fact]
         public void UpdateConfiguration_WithNullRabbitServiceInfo_ReturnsInitialConfiguration()
         {
             RabbitProviderConfigurer configurer = new RabbitProviderConfigurer();
             RabbitProviderConnectorOptions config = new RabbitProviderConnectorOptions()
             {
-                Server ="localhost",
+                Server = "localhost",
                 Port = 1234,
                 Username = "username",
                 Password = "password",
@@ -39,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             Assert.Equal("username", config.Username);
             Assert.Equal("password", config.Password);
             Assert.Equal("vhost", config.VirtualHost);
-            Assert.Null( config.Uri);
+            Assert.Null(config.Uri);
         }
 
         [Fact]
@@ -65,6 +66,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             Assert.Equal("si_password", config.Password);
             Assert.Equal("si_vhost", config.VirtualHost);
         }
+
         [Fact]
         public void UpdateConfiguration_WithRabbitSSLServiceInfo_UpdatesConfigurationFromServiceInfo()
         {
@@ -88,6 +90,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             Assert.Equal("si_password", config.Password);
             Assert.Equal("si_vhost", config.VirtualHost);
         }
+
         [Fact]
         public void Configure_NoServiceInfo_ReturnsProvidedConnectorOptions()
         {
@@ -130,9 +133,9 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             var opts = configurer.Configure(si, config);
             var uri = new UriInfo(opts);
 
-            Assert.Equal("example.com", uri.Host );
-            Assert.Equal(5672, uri.Port );
-            Assert.Equal("si_username", uri.UserName );
+            Assert.Equal("example.com", uri.Host);
+            Assert.Equal(5672, uri.Port);
+            Assert.Equal("si_username", uri.UserName);
             Assert.Equal("si_password", uri.Password);
             Assert.Equal("si_vhost", uri.Path);
         }
@@ -156,10 +159,10 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             var uri = new UriInfo(opts);
 
             Assert.Equal("example.com", uri.Host);
-            Assert.Equal("amqps", uri.Scheme );
-            Assert.Equal("si_username", uri.UserName );
+            Assert.Equal("amqps", uri.Scheme);
+            Assert.Equal("si_username", uri.UserName);
             Assert.Equal("si_password", uri.Password);
-            Assert.Equal("si_vhost", uri.Path );
+            Assert.Equal("si_vhost", uri.Path);
         }
     }
 }

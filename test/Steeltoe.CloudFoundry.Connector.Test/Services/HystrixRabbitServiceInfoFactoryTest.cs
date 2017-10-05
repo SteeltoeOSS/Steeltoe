@@ -46,13 +46,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         {
             Service s = new Service()
             {
-              
                 Name = "myHystrixService",
                 Plan = "standard",
-                Credentials = new Credential() {
-                    { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com")},
-                    { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com")},
-                    { "amqp", new Credential() {
+                Credentials = new Credential()
+                {
+                    { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                    { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                    {
+                        "amqp", new Credential()
+                    {
                         { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
                         { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
                         { "uri", new Credential("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
@@ -71,13 +73,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         {
             Service s = new Service()
             {
-
                 Name = "myHystrixService",
                 Plan = "standard",
-                Credentials = new Credential() {
-                    { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com")},
-                    { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com")},
-                    { "amqp", new Credential() {
+                Credentials = new Credential()
+                {
+                    { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                    { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                    {
+                        "amqp", new Credential()
+                    {
                         { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
                         { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
                         { "uri", new Credential("amqps://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
@@ -98,10 +102,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Label = "p-circuit-breaker-dashboard",
                 Name = "myHystrixService",
                 Plan = "standard",
-                Credentials = new Credential() {
-                    { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com")},
-                    { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com")},
-                    { "amqp", new Credential() {
+                Credentials = new Credential()
+                {
+                    { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                    { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                    {
+                        "amqp", new Credential()
+                    {
                         { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
                         { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
                         { "uri", new Credential("amqps://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
@@ -113,7 +120,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 
             HystrixRabbitServiceInfoFactory factory = new HystrixRabbitServiceInfoFactory();
             Assert.False(factory.Accept(s));
-
         }
 
         [Fact]
@@ -125,10 +131,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -148,10 +155,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "rabbitmq", "rabbit" },
                 Name = "myService",
                 Plan = "Standard",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -271,8 +279,5 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 
             return opt.Services[0];
         }
-
-
     }
 }
-

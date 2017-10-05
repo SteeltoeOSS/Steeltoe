@@ -53,7 +53,6 @@ namespace Steeltoe.CloudFoundry.Connector.Test
 
             var sconfig = new TestServiceConfiguration(config);
             Assert.Equal("myString", sconfig.Test);
-
         }
     }
 
@@ -63,6 +62,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             : base(config)
         {
         }
+
         public string Test { get; set; }
     }
 }

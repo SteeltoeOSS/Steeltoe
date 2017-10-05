@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
@@ -28,14 +28,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         protected List<string> uriKeys = new List<string> { "uri", "url" };
 
-        public ServiceInfoFactory(Tags tags, string scheme) :
-            this(tags, new string[] { scheme })
+        public ServiceInfoFactory(Tags tags, string scheme)
+            : this(tags, new string[] { scheme })
         {
             if (string.IsNullOrEmpty(scheme))
             {
                 throw new ArgumentNullException(nameof(scheme));
             }
         }
+
         public ServiceInfoFactory(Tags tags, string[] schemes)
         {
             if (tags == null)
@@ -47,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             _schemes = schemes;
             if (schemes != null)
             {
-               foreach(string s in schemes)
+               foreach (string s in schemes)
                 {
                     uriKeys.Add(s + "Uri");
                     uriKeys.Add(s + "uri");
@@ -56,6 +57,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 }
             }
         }
+
         public virtual bool Accept(Service binding)
         {
             return TagsMatch(binding) || LabelStartsWithTag(binding) ||
@@ -64,17 +66,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public abstract IServiceInfo Create(Service binding);
 
-
         internal virtual protected bool TagsMatch(Service binding)
         {
-
             var serviceTags = binding.Tags;
             return _tags.ContainsOne(serviceTags);
         }
 
         internal virtual protected bool LabelStartsWithTag(Service binding)
         {
-            String label = binding.Label;
+            string label = binding.Label;
             return _tags.StartsWith(label);
         }
 
@@ -91,7 +91,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return false;
             }
 
-            String uri = GetStringFromCredentials(binding.Credentials, uriKeys);
+            string uri = GetStringFromCredentials(binding.Credentials, uriKeys);
             if (uri != null)
             {
                 foreach (string uriScheme in _schemes)
@@ -102,9 +102,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     }
                 }
             }
+
             return false;
         }
-
 
         internal protected virtual bool UriKeyMatchesScheme(Service binding)
         {
@@ -127,25 +127,31 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     return true;
                 }
             }
+
             return false;
         }
 
         private static List<string> _userList = new List<string>() { "user", "username", "uid" };
+
         internal protected virtual string GetUsernameFromCredentials(Dictionary<string, Credential> credentials)
         {
-            return GetStringFromCredentials(credentials, _userList );
+            return GetStringFromCredentials(credentials, _userList);
         }
+
         private static List<string> _passwordList = new List<string>() { "password", "pw" };
+
         internal protected virtual string GetPasswordFromCredentials(Dictionary<string, Credential> credentials)
         {
-            return GetStringFromCredentials(credentials,_passwordList);
+            return GetStringFromCredentials(credentials, _passwordList);
         }
+
         internal protected virtual int GetPortFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetIntFromCredentials(credentials, "port");
         }
 
         private static List<string> _hostList = new List<string>() { "hostname", "host" };
+
         internal protected virtual string GetHostFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, _hostList);
@@ -188,8 +194,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     }
                 }
             }
+
             return null;
         }
+
         internal protected virtual bool GetBoolFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
             bool result = false;
@@ -200,8 +208,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     bool.TryParse(credentials[key].Value, out result);
                 }
             }
+
             return result;
         }
+
         internal protected virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
             return GetIntFromCredentials(credentials, new List<string>() { key });
@@ -221,6 +231,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     }
                 }
             }
+
             return result;
         }
 
@@ -234,36 +245,37 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     Credential keyVal = credentials[key];
                     if (keyVal.Count > 0)
                     {
-                        foreach(KeyValuePair<string, Credential> kvp in keyVal)
+                        foreach (KeyValuePair<string, Credential> kvp in keyVal)
                         {
                             if (kvp.Value.Count != 0 || string.IsNullOrEmpty(kvp.Value.Value))
                             {
                                 throw new ConnectorException(string.Format("Unable to extract list from credentials: key={0}, value={1}/{2}", key, kvp.Key, kvp.Value));
-                            } else
+                            }
+                            else
                             {
                                 result.Add(kvp.Value.Value);
                             }
                         }
                     }
-
                 }
             }
 
             return result;
         }
 
-
         public virtual string DefaultUriScheme
         {
             get
             {
                 if (_schemes != null && _schemes.Length > 0)
+                {
                     return _schemes[0];
+                }
                 else
+                {
                     return null;
+                }
             }
-            
         }
-
     }
 }

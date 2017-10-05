@@ -18,16 +18,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class MongoServiceInfo : UriServiceInfo
     {
-
         public const string MONGODB_SCHEME = "mongodb";
 
-        public MongoServiceInfo(string id, string host, int port, string username, string password, string db) :
-           base(id, MONGODB_SCHEME, host, port, username, password, db)
+        public MongoServiceInfo(string id, string host, int port, string username, string password, string db)
+            : base(id, MONGODB_SCHEME, host, port, username, password, db)
         {
         }
 
-        public MongoServiceInfo(string id, string uri) :
-            base(id, uri)
+        public MongoServiceInfo(string id, string uri)
+            : base(id, uri)
         {
         }
     }

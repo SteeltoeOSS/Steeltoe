@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
-using System;
 using RabbitMQ.Client;
 using Steeltoe.CloudFoundry.Connector.Services;
+using System;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
@@ -33,8 +33,8 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
             Assert.Contains(nameof(config), ex.Message);
-
         }
+
         [Fact]
         public void Create_ReturnsRabbitConnection()
         {
@@ -45,7 +45,6 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
                 Password = "password",
                 Username = "username",
                 VirtualHost = "vhost"
-                
             };
             HystrixRabbitServiceInfo si = new HystrixRabbitServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
             var factory = new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory));

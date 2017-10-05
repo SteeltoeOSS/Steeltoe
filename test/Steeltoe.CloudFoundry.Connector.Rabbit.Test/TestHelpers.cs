@@ -16,7 +16,6 @@
 
 using System.IO;
 
-
 namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 {
     public class TestHelpers
@@ -26,8 +25,8 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             var tempFile = Path.GetTempFileName();
             File.WriteAllText(tempFile, contents);
             return tempFile;
-
         }
+
         public static Stream StringToStream(string str)
         {
             var memStream = new MemoryStream();

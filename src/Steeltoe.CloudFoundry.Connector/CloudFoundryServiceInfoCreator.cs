@@ -15,11 +15,11 @@
 //
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.App;
+using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -28,10 +28,12 @@ namespace Steeltoe.CloudFoundry.Connector
     public class CloudFoundryServiceInfoCreator
     {
         private IList<IServiceInfo> _serviceInfos = new List<IServiceInfo>();
+
         public IList<IServiceInfo> ServiceInfos { get { return _serviceInfos;  } }
 
         private IList<IServiceInfoFactory> _factories = new List<IServiceInfoFactory>();
-        internal IList<IServiceInfoFactory> Factories {  get { return _factories;  } }
+
+        internal IList<IServiceInfoFactory> Factories { get { return _factories;  } }
 
         private static IConfiguration _config;
         private static CloudFoundryServiceInfoCreator _me = null;
@@ -50,7 +52,7 @@ namespace Steeltoe.CloudFoundry.Connector
                 return _me;
             }
 
-            lock(_lock)
+            lock (_lock)
             {
                 if (config == _config)
                 {
@@ -59,22 +61,19 @@ namespace Steeltoe.CloudFoundry.Connector
 
                 _me = new CloudFoundryServiceInfoCreator(config);
             }
-            return _me;
 
+            return _me;
         }
 
         internal CloudFoundryServiceInfoCreator(IConfiguration config)
         {
-
             _config = config;
             BuildServiceInfoFactories();
             BuildServiceInfos();
-
         }
 
         public List<SI> GetServiceInfos<SI>() where SI : class
         {
-
             List<SI> results = new List<SI>();
             foreach (IServiceInfo info in _serviceInfos)
             {
@@ -83,31 +82,34 @@ namespace Steeltoe.CloudFoundry.Connector
                 {
                     results.Add(si);
                 }
-
             }
+
             return results;
         }
 
         public SI GetServiceInfo<SI>(string name) where SI : class
         {
             List<SI> typed = GetServiceInfos<SI>();
-            foreach(var si in typed)
+            foreach (var si in typed)
             {
                 var info = si as IServiceInfo;
                 if (info.Id.Equals(name))
+                {
                     return (SI)info;
+                }
             }
+
             return null;
         }
 
         public List<IServiceInfo> GetServiceInfos(Type type)
         {
-            return _serviceInfos.Where( (_info) => _info.GetType() == type ).ToList();
+            return _serviceInfos.Where((_info) => _info.GetType() == type).ToList();
         }
 
         public IServiceInfo GetServiceInfo(string name)
         {
-            return _serviceInfos.Where((_info) => _info.Id.Equals(name) ).FirstOrDefault();
+            return _serviceInfos.Where((_info) => _info.Id.Equals(name)).FirstOrDefault();
         }
 
         internal void BuildServiceInfoFactories()
@@ -116,7 +118,7 @@ namespace Steeltoe.CloudFoundry.Connector
 
             var assembly = GetType().GetTypeInfo().Assembly;
             var types = assembly.DefinedTypes;
-            foreach(var type in types)
+            foreach (var type in types)
             {
                 if (type.IsDefined(typeof(ServiceInfoFactoryAttribute)))
                 {
@@ -132,7 +134,7 @@ namespace Steeltoe.CloudFoundry.Connector
         private IServiceInfoFactory CreateServiceInfoFactory(IEnumerable<ConstructorInfo> declaredConstructors)
         {
             IServiceInfoFactory result = null;
-            foreach(ConstructorInfo ci in declaredConstructors)
+            foreach (ConstructorInfo ci in declaredConstructors)
             {
                 if (ci.GetParameters().Length == 0 && ci.IsPublic && !ci.IsStatic)
                 {
@@ -150,7 +152,7 @@ namespace Steeltoe.CloudFoundry.Connector
 
             CloudFoundryApplicationOptions appOpts = new CloudFoundryApplicationOptions();
             _config.Bind(appOpts);
-            ApplicationInstanceInfo appInfo = new ApplicationInstanceInfo(appOpts);  
+            ApplicationInstanceInfo appInfo = new ApplicationInstanceInfo(appOpts);
 
             CloudFoundryServicesOptions serviceOpts = new CloudFoundryServicesOptions();
             _config.Bind(serviceOpts);
@@ -179,6 +181,7 @@ namespace Steeltoe.CloudFoundry.Connector
                     return f;
                 }
             }
+
             return null;
         }
     }

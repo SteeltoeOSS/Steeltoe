@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("7E1LxXnlH2hhlPVt", r1.Password);
             Assert.Equal("Dd6O1BPXUHdrmzbP", r1.UserName);
             Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", r1.Path);
-            Assert.Null( r1.Query);
+            Assert.Null(r1.Query);
 
             Assert.Equal("myId", r2.Id);
             Assert.Equal("mongodb", r2.Scheme);
@@ -43,8 +43,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("7E1LxXnlH2hhlPVt", r2.Password);
             Assert.Equal("Dd6O1BPXUHdrmzbP", r2.UserName);
             Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", r2.Path);
-            Assert.Null( r2.Query);
-
+            Assert.Null(r2.Query);
         }
     }
 }

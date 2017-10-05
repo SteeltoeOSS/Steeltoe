@@ -24,7 +24,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_Uri()
         {
-            String uri = "mysql://joe:joes_password@localhost:1527/big_db";
+            string uri = "mysql://joe:joes_password@localhost:1527/big_db";
             UriInfo result = new UriInfo(uri);
 
             AssertUriInfoEquals(result, "localhost", 1527, "joe", "joes_password", "big_db", null);
@@ -44,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_WithQuery()
         {
-            String uri = "mysql://joe:joes_password@localhost:1527/big_db?p1=v1&p2=v2";
+            string uri = "mysql://joe:joes_password@localhost:1527/big_db?p1=v1&p2=v2";
             UriInfo result = new UriInfo(uri);
 
             AssertUriInfoEquals(result, "localhost", 1527, "joe", "joes_password", "big_db", "p1=v1&p2=v2");
@@ -54,18 +54,17 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_NoUsernamePassword()
         {
-            String uri = "mysql://localhost:1527/big_db";
+            string uri = "mysql://localhost:1527/big_db";
             UriInfo result = new UriInfo(uri);
 
             AssertUriInfoEquals(result, "localhost", 1527, null, null, "big_db", null);
             Assert.Equal(uri, result.UriString);
         }
 
-
         [Fact]
         public void Constructor_WithUsernameNoPassword()
         {
-            String uri = "mysql://joe@localhost:1527/big_db";
+            string uri = "mysql://joe@localhost:1527/big_db";
             var ex = Assert.Throws<ArgumentException>(() => new UriInfo(uri));
             Assert.Contains("joe", ex.Message);
         }
@@ -73,15 +72,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_WithExplicitParameters()
         {
-            String uri = "mysql://joe:joes_password@localhost:1527/big_db";
+            string uri = "mysql://joe:joes_password@localhost:1527/big_db";
             UriInfo result = new UriInfo("mysql", "localhost", 1527, "joe", "joes_password", "big_db");
 
             AssertUriInfoEquals(result, "localhost", 1527, "joe", "joes_password", "big_db", null);
             Assert.Equal(uri, result.UriString);
         }
 
-        private void AssertUriInfoEquals(UriInfo result, String host, int port,
-                                         String username, String password, String path, String query)
+        private void AssertUriInfoEquals(UriInfo result, string host, int port,
+                                         string username, string password, string path, string query)
         {
             Assert.Equal(host, result.Host);
             Assert.Equal(port, result.Port);

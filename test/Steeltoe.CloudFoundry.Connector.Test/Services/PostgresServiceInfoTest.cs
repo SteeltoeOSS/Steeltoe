@@ -34,7 +34,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("Dd6O1BPXUHdrmzbP", r1.UserName);
             Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", r1.Path);
             Assert.Equal("reconnect=true", r1.Query);
-
         }
     }
 }

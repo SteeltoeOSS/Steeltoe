@@ -1,18 +1,18 @@
-﻿using System;
+﻿using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class SsoServiceInfoFactory : ServiceInfoFactory
     {
-
-        public SsoServiceInfoFactory() : base(new Tags("p-identity"), "uaa")
+        public SsoServiceInfoFactory()
+            : base(new Tags("p-identity"), "uaa")
         {
         }
-   
+
         public override IServiceInfo Create(Service binding)
         {
             string clientId = GetClientIdFromCredentials(binding.Credentials);
@@ -29,6 +29,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             {
                 return new SsoServiceInfo(binding.Name, clientId, clientSecret, UpdateUaaScheme(uri));
             }
+
             return null;
         }
 
@@ -41,6 +42,5 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
             return uaaString;
         }
-    
     }
 }

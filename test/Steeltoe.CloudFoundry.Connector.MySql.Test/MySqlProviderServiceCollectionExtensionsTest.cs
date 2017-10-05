@@ -44,8 +44,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
-
         }
+
         [Fact]
         public void AddMySqlConnection_ThrowsIfConfigurtionNull()
         {
@@ -59,7 +59,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
@@ -73,7 +72,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
-
         }
 
         [Fact]
@@ -88,7 +86,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 
            var service = services.BuildServiceProvider().GetService<MySqlConnection>();
            Assert.NotNull(service);
-
         }
 
         [Fact]
@@ -101,7 +98,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
-
         }
 
         [Fact]
@@ -190,8 +186,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config));
             Assert.Contains("Multiple", ex.Message);
-
         }
+
         [Fact]
         public void AddMySqlConnection_WithVCAPs_AddsMySqlConnection()
         {

@@ -29,9 +29,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         internal SqlServerProviderConnectorFactory()
         {
-
         }
-  
+
         public SqlServerProviderConnectorFactory(SqlServerServiceInfo sinfo, SqlServerProviderConnectorOptions config, Type type)
         {
             if (config == null)
@@ -43,16 +42,22 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             _config = config;
             _type = type;
         }
+
         public virtual object Create(IServiceProvider provider)
         {
             var connectionString = CreateConnectionString();
             object result = null;
-            if (connectionString != null) 
+            if (connectionString != null)
+            {
                 result = CreateConnection(connectionString);
-            if (result == null)
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
-            return result;
+            }
 
+            if (result == null)
+            {
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+            }
+
+            return result;
         }
 
         public virtual string CreateConnectionString()
@@ -62,7 +67,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         public virtual object CreateConnection(string connectionString)
         {
-            return ConnectorHelpers.CreateInstance(_type, new object[] {connectionString} );
+            return ConnectorHelpers.CreateInstance(_type, new object[] { connectionString });
         }
     }
 }

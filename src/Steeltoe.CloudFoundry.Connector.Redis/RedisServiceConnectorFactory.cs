@@ -14,11 +14,10 @@
 // limitations under the License.
 //
 
-using System;
-
 using Microsoft.Extensions.Caching.Redis;
-using Steeltoe.CloudFoundry.Connector.Services;
 using StackExchange.Redis;
+using Steeltoe.CloudFoundry.Connector.Services;
+using System;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
@@ -27,11 +26,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         private RedisServiceInfo _info;
         private RedisCacheConnectorOptions _config;
         private RedisCacheConfigurer _configurer = new RedisCacheConfigurer();
+
         public RedisServiceConnectorFactory(RedisServiceInfo sinfo, RedisCacheConnectorOptions config)
         {
             _info = sinfo;
             _config = config;
         }
+
         public virtual RedisCache CreateCache(IServiceProvider provider)
         {
             var opts = _configurer.Configure(_info, _config);

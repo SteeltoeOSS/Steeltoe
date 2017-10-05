@@ -14,15 +14,15 @@
 // limitations under the License.
 //
 
-
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class DB2ServiceInfoFactory : RelationalServiceInfoFactory
     {
         private static Tags _db2tags = new Tags(new string[] { "sqldb", "dashDB", "db2" });
-        public DB2ServiceInfoFactory() :
-            base(_db2tags, DB2ServiceInfo.DB2_SCHEME)
-        { 
+
+        public DB2ServiceInfoFactory()
+            : base(_db2tags, DB2ServiceInfo.DB2_SCHEME)
+        {
         }
 
         public override IServiceInfo Create(string id, string url)

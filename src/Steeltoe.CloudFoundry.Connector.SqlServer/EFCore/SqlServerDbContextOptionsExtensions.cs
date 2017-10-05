@@ -39,7 +39,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             var connection = GetConnection(config);
 
             return DoUseSqlServer(optionsBuilder, connection, SqlServerOptionsAction);
-
         }
 
         public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object SqlServerOptionsAction = null)
@@ -143,7 +142,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             object result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, SqlServerOptionsAction });
             if (result == null)
             {
-                throw new ConnectorException(String.Format("Failed to invoke UseSqlServer extension, connection: {0}", connection));
+                throw new ConnectorException(string.Format("Failed to invoke UseSqlServer extension, connection: {0}", connection));
             }
 
             return (DbContextOptionsBuilder)result;
@@ -161,9 +160,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 
             foreach (MethodInfo ci in declaredMethods)
             {
-
                 var parameters = ci.GetParameters();
-                if (parameters.Length == 3 && 
+                if (parameters.Length == 3 &&
                         (ci.Name.Equals("UseSqlServer") || ci.Name.Equals("UseSqlServer")) &&
                         parameters[0].ParameterType.Equals(parameterTypes[0]) &&
                         parameters[1].ParameterType.Equals(parameterTypes[1]) &&
@@ -171,7 +169,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
                 {
                     return ci;
                 }
-
             }
 
             return null;

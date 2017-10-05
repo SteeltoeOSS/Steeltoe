@@ -20,12 +20,10 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-
 namespace Steeltoe.CloudFoundry.Connector.MySql
 {
     public static class MySqlProviderServiceCollectionExtensions
     {
-
         public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -60,18 +58,21 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        private static string[] mySqlAssemblies = new string[] {"MySql.Data", "MySqlConnector"};
-        private static string[] mySqlTypeNames = new string[] {"MySql.Data.MySqlClient.MySqlConnection","MySql.Data.MySqlClient.MySqlConnection"};
+        private static string[] mySqlAssemblies = new string[] { "MySql.Data", "MySqlConnector" };
+        private static string[] mySqlTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection", "MySql.Data.MySqlClient.MySqlConnection" };
+
         private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type mySqlConnection = ConnectorHelpers.FindType(mySqlAssemblies, mySqlTypeNames);
-            if (mySqlConnection == null) {
+            if (mySqlConnection == null)
+            {
                 throw new ConnectorException("Unable to find MySqlConnection, are you missing MySql ADO.NET assembly");
             }
 
@@ -79,6 +80,5 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
             services.Add(new ServiceDescriptor(mySqlConnection, factory.Create, contextLifetime));
         }
-
     }
 }

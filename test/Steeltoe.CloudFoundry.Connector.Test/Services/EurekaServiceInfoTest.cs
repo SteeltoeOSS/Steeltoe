@@ -39,7 +39,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("clientSecret", r1.ClientSecret);
             Assert.Equal("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token", r1.TokenUri);
             Assert.Equal("http://username:password@hostname:1111/", r1.Uri);
-
         }
     }
 }

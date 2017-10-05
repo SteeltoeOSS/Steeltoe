@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
@@ -32,6 +32,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfoFactory(new Tags("foo"), scheme));
             Assert.Contains(nameof(scheme), ex.Message);
         }
+
         [Fact]
         public void Constructor_ThrowsIfTagsNull()
         {
@@ -55,7 +56,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "bar" }
             };
             Assert.True(sif.TagsMatch(service1));
-
         }
 
         [Fact]
@@ -70,8 +70,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "noMatch" }
             };
             Assert.False(sif.TagsMatch(service1));
-
         }
+
         [Fact]
         public void LabelStartsWithTag_Matches()
         {
@@ -85,7 +85,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Label = "foobarfoo"
             };
             Assert.True(sif.LabelStartsWithTag(service1));
-
         }
 
         [Fact]
@@ -101,8 +100,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Label = "baby"
             };
             Assert.False(sif.LabelStartsWithTag(service1));
-
         }
+
         [Fact]
         public void UriMatchesScheme_Matches()
         {
@@ -116,11 +115,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Label = "noMatch",
                 Credentials = new Dictionary<string, Credential>()
                 {
-                    {"uri", new Credential("scheme://foo") }
+                    { "uri", new Credential("scheme://foo") }
                 }
             };
             Assert.True(sif.UriMatchesScheme(service1));
-
         }
 
         [Fact]
@@ -136,11 +134,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Label = "noMatch",
                 Credentials = new Dictionary<string, Credential>()
                 {
-                    {"uri", new Credential("nomatch://foo") }
+                    { "uri", new Credential("nomatch://foo") }
                 }
             };
             Assert.False(sif.UriMatchesScheme(service1));
-
         }
 
         [Fact]
@@ -148,7 +145,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         {
             var credentials = new Dictionary<string, Credential>()
             {
-                {"username", new Credential("username") }
+                { "username", new Credential("username") }
             };
             Tags tags = new Tags(new string[] { "foo", "bar" });
             string scheme = "scheme";
@@ -159,18 +156,16 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 
             credentials = new Dictionary<string, Credential>()
             {
-                {"user", new Credential("username") }
+                { "user", new Credential("username") }
             };
             uname = sif.GetUsernameFromCredentials(credentials);
             Assert.Equal("username", uname);
 
             credentials = new Dictionary<string, Credential>()
             {
-             
             };
             uname = sif.GetUsernameFromCredentials(credentials);
             Assert.Null(uname);
-
         }
 
         [Fact]
@@ -178,7 +173,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         {
             var credentials = new Dictionary<string, Credential>()
             {
-                {"password", new Credential("password") }
+                { "password", new Credential("password") }
             };
             Tags tags = new Tags(new string[] { "foo", "bar" });
             string scheme = "scheme";
@@ -188,11 +183,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("password", pwd);
             credentials = new Dictionary<string, Credential>()
             {
-
             };
             pwd = sif.GetPasswordFromCredentials(credentials);
             Assert.Null(pwd);
-
         }
 
         [Fact]
@@ -200,7 +193,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         {
             var credentials = new Dictionary<string, Credential>()
             {
-                {"port", new Credential("123") }
+                { "port", new Credential("123") }
             };
             Tags tags = new Tags(new string[] { "foo", "bar" });
             string scheme = "scheme";
@@ -210,11 +203,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal(123, port);
             credentials = new Dictionary<string, Credential>()
             {
-
             };
             port = sif.GetPortFromCredentials(credentials);
             Assert.Equal(0, port); ;
-
         }
 
         [Fact]
@@ -222,7 +213,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         {
             var credentials = new Dictionary<string, Credential>()
             {
-                {"host", new Credential("host") }
+                { "host", new Credential("host") }
             };
             Tags tags = new Tags(new string[] { "foo", "bar" });
             string scheme = "scheme";
@@ -233,18 +224,16 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 
             credentials = new Dictionary<string, Credential>()
             {
-                {"hostname", new Credential("hostname") }
+                { "hostname", new Credential("hostname") }
             };
             host = sif.GetHostFromCredentials(credentials);
             Assert.Equal("hostname", host);
 
             credentials = new Dictionary<string, Credential>()
             {
-
             };
             host = sif.GetHostFromCredentials(credentials);
             Assert.Null(host);
-
         }
 
         [Fact]
@@ -252,7 +241,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         {
             var credentials = new Dictionary<string, Credential>()
             {
-                {"uri", new Credential("http://boo:222") }
+                { "uri", new Credential("http://boo:222") }
             };
             Tags tags = new Tags(new string[] { "foo", "bar" });
             string scheme = "scheme";
@@ -263,25 +252,25 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 
             credentials = new Dictionary<string, Credential>()
             {
-                {"url", new Credential("http://boo:222") }
+                { "url", new Credential("http://boo:222") }
             };
             uri = sif.GetUriFromCredentials(credentials);
             Assert.Equal("http://boo:222", uri);
 
             credentials = new Dictionary<string, Credential>()
             {
-
             };
             uri = sif.GetUriFromCredentials(credentials);
             Assert.Null(uri);
-
         }
+
         [Fact]
         public void GetListFromCredentials_ReturnsCorrect()
         {
             var credentials = new Dictionary<string, Credential>()
             {
-                { "uris", new Credential()
+                {
+                    "uris", new Credential()
                         {
                             { "0", new Credential("http://foo:11") },
                             { "1", new Credential("http://bar:11") }
@@ -298,19 +287,21 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.True(list[0].Equals("http://foo:11") || list[0].Equals("http://bar:11"));
             Assert.True(list[1].Equals("http://foo:11") || list[1].Equals("http://bar:11"));
         }
+
         [Fact]
         public void GetListFromCredentials_ThrowsWhenListNotPossible()
         {
             var credentials = new Dictionary<string, Credential>()
             {
-                { "foo", new Credential()
+                {
+                    "foo", new Credential()
                         {
-                            { "bar", new Credential()
+                            {
+                                "bar", new Credential()
                                 {
                                     { "bang", new Credential("badabing") }
                                 }
                             },
-                          
                         }
                 }
             };
@@ -326,10 +317,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void GetIntFromCredentials_ThrowsFormatException()
         {
-
             var credentials = new Dictionary<string, Credential>()
             {
-                {"key", new Credential("foobar") }
+                { "key", new Credential("foobar") }
             };
             Tags tags = new Tags(new string[] { "foo", "bar" });
             string scheme = "scheme";
@@ -341,13 +331,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 
     class TestServiceInfoFactory : ServiceInfoFactory
     {
-        public TestServiceInfoFactory(Tags tags, string scheme) : base(tags, scheme)
+        public TestServiceInfoFactory(Tags tags, string scheme)
+            : base(tags, scheme)
         {
-
         }
-        public TestServiceInfoFactory(Tags tags, string[] schemes) : base(tags, schemes)
-        {
 
+        public TestServiceInfoFactory(Tags tags, string[] schemes)
+            : base(tags, schemes)
+        {
         }
 
         public override IServiceInfo Create(Service binding)

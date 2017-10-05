@@ -20,8 +20,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     {
         public const string ORACLE_SCHEME = "oracle";
 
-        public OracleServiceInfo(string id, string url) :
-            base(id, url)
+        public OracleServiceInfo(string id, string url)
+            : base(id, url)
         {
         }
     }

@@ -14,10 +14,9 @@
 // limitations under the License.
 //
 
-
 using Microsoft.Extensions.Configuration;
-using System;
 using Steeltoe.CloudFoundry.Connector.Services;
+using System;
 
 namespace Steeltoe.CloudFoundry.Connector.Hystrix
 {
@@ -34,29 +33,38 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
         {
         }
 
-        public HystrixProviderConnectorOptions(IConfiguration config) :
-            base()
+        public HystrixProviderConnectorOptions(IConfiguration config)
+            : base()
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             var section = config.GetSection(HYSTRIX_CLIENT_SECTION_PREFIX);
             section.Bind(this);
         }
 
         public bool SslEnabled { get; set; } = false;
+
         public string Uri { get; set; }
+
         public string Server { get; set; } = Default_Server;
+
         public int Port { get; set; } = Default_Port;
+
         public int SslPort { get; set; } = Default_SSLPort;
+
         public string Username { get; set; }
+
         public string Password { get; set;  }
+
         public string VirtualHost { get; set; }
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(Uri)) {
+            if (!string.IsNullOrEmpty(Uri))
+            {
                 return Uri;
             }
 
@@ -64,13 +72,13 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             if (SslEnabled)
             {
                 uri = new UriInfo(Default_SSLScheme, Server, SslPort, Username, Password, VirtualHost);
-            } else
+            }
+            else
             {
                 uri = new UriInfo(Default_Scheme, Server, Port, Username, Password, VirtualHost);
             }
 
             return uri.ToString();
         }
-
     }
 }

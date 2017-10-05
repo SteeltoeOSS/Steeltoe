@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
-using System;
 using RabbitMQ.Client;
 using Steeltoe.CloudFoundry.Connector.Services;
+using System;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
@@ -33,8 +33,8 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new RabbitProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
             Assert.Contains(nameof(config), ex.Message);
-
         }
+
         [Fact]
         public void Create_ReturnsRabbitConnection()
         {
@@ -45,7 +45,6 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
                 Password = "password",
                 Username = "username",
                 VirtualHost = "vhost"
-                
             };
             RabbitServiceInfo si = new RabbitServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
             var factory = new RabbitProviderConnectorFactory(si, config, typeof(ConnectionFactory));

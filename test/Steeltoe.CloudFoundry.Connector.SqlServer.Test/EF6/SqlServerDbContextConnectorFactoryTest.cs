@@ -23,11 +23,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
 {
     public class SqlServerDbContextConnectorFactoryTest
     {
-
         [Fact]
         public void Constructor_ThrowsIfTypeNull()
         {
-
             // Arrange
             SqlServerProviderConnectorOptions config = new SqlServerProviderConnectorOptions();
             SqlServerServiceInfo si = null;
@@ -36,13 +34,11 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerDbContextConnectorFactory(si, config, dbContextType));
             Assert.Contains(nameof(dbContextType), ex.Message);
-
         }
 
         [Fact]
         public void Create_ThrowsIfNoValidConstructorFound()
         {
-
             // Arrange
             SqlServerProviderConnectorOptions config = new SqlServerProviderConnectorOptions();
             SqlServerServiceInfo si = null;
@@ -51,7 +47,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => new SqlServerDbContextConnectorFactory(si, config, dbContextType).Create(null));
             Assert.Contains("BadDbContext", ex.Message);
-
         }
 
         // [Fact]
@@ -75,7 +70,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
                 Password = "password",
                 Username = "username",
                 Database = "database"
-
             };
             SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
             var factory = new SqlServerDbContextConnectorFactory(si, config, typeof(GoodDbContext));
@@ -83,20 +77,17 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             Assert.NotNull(context);
             GoodDbContext gcontext = context as GoodDbContext;
             Assert.NotNull(gcontext);
-
         }
     }
 
     public class BadDbContext : DbContext
     {
-
     }
 
     public class GoodDbContext : DbContext
     {
         public GoodDbContext(string str)
         {
-
         }
     }
 }

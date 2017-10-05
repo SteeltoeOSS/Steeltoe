@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
-  
     public class EurekaServiceInfoFactory : ServiceInfoFactory
     {
-        public EurekaServiceInfoFactory() :
-            base(new Tags("eureka"), new string[0])
+        public EurekaServiceInfoFactory()
+            : base(new Tags("eureka"), new string[0])
         {
         }
 

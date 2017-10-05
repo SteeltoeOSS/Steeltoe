@@ -18,11 +18,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class MySqlServiceInfoFactory : RelationalServiceInfoFactory
     {
-
-        public MySqlServiceInfoFactory() :
-            base(new Tags("mysql"), MySqlServiceInfo.MYSQL_SCHEME)
+        public MySqlServiceInfoFactory()
+            : base(new Tags("mysql"), MySqlServiceInfo.MYSQL_SCHEME)
         {
-
         }
 
         public override IServiceInfo Create(string id, string url)

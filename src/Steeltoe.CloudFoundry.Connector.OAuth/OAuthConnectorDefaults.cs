@@ -7,7 +7,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
 {
     public class OAuthConnectorDefaults
     {
-
         public const string Default_AuthorizationUri = "/oauth/authorize";
         public const string Default_AccessTokenUri = "/oauth/token";
         public const string Default_UserInfoUri = "/userinfo";

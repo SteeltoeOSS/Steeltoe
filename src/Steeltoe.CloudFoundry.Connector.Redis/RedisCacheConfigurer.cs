@@ -19,24 +19,21 @@ using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
 
-
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisCacheConfigurer
     {
-
         internal IOptions<RedisCacheOptions> Configure(RedisServiceInfo si, RedisCacheConnectorOptions options)
         {
             UpdateOptions(si, options);
-            
+
             RedisCacheOptions redisOptions = new RedisCacheOptions();
             UpdateOptions(options, redisOptions);
 
             return new ConnectorIOptions<RedisCacheOptions>(redisOptions);
-
         }
 
-        internal void UpdateOptions(RedisCacheConnectorOptions options, RedisCacheOptions redisOptions )
+        internal void UpdateOptions(RedisCacheConnectorOptions options, RedisCacheOptions redisOptions)
         {
             redisOptions.Configuration = options.ToString();
             redisOptions.InstanceName = options.InstanceId;
@@ -60,7 +57,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             {
                 options.Password = si.Password;
             }
-
         }
 
         internal ConfigurationOptions ConfigureConnection(RedisServiceInfo si, RedisCacheConnectorOptions options)
@@ -68,9 +64,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             UpdateOptions(si, options);
             ConfigurationOptions redisOptions = ConfigurationOptions.Parse(options.ToString());
             return redisOptions;
-
         }
     }
 }
-
-

@@ -8,7 +8,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
     public static class SqlServerProviderServiceCollectionExtensions
     {
-
         public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)

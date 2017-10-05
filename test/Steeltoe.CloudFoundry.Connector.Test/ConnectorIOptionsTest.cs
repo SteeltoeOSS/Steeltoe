@@ -35,7 +35,6 @@ namespace Steeltoe.CloudFoundry.Connector.Test
     {
         public MyOption()
         {
-
         }
     }
 }

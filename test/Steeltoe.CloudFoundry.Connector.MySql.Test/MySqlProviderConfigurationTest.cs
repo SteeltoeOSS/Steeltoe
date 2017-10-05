@@ -63,9 +63,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             Assert.Equal(1234, sconfig.Port);
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("username", sconfig.Username);
-            Assert.Null( sconfig.ConnectionString);
-
+            Assert.Null(sconfig.ConnectionString);
         }
     }
 }
-

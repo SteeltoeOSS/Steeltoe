@@ -24,11 +24,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
 {
     public class MySqlDbContextConnectorFactoryTest
     {
-
         [Fact]
         public void Constructor_ThrowsIfTypeNull()
         {
-
             // Arrange
             MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions();
             MySqlServiceInfo si = null;
@@ -37,13 +35,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new MySqlDbContextConnectorFactory(si, config, dbContextType));
             Assert.Contains(nameof(dbContextType), ex.Message);
-
         }
 
         [Fact]
         public void Create_ThrowsIfNoValidConstructorFound()
         {
-
             // Arrange
             MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions();
             MySqlServiceInfo si = null;
@@ -52,7 +48,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => new MySqlDbContextConnectorFactory(si, config, dbContextType).Create(null));
             Assert.Contains("BadDbContext", ex.Message);
-
         }
 
         // [Fact]
@@ -76,7 +71,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
                 Password = "password",
                 Username = "username",
                 Database = "database"
-
             };
             MySqlServiceInfo si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var factory = new MySqlDbContextConnectorFactory(si, config, typeof(GoodDbContext));
@@ -84,14 +78,12 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             Assert.NotNull(context);
             GoodDbContext gcontext = context as GoodDbContext;
             Assert.NotNull(gcontext);
-
         }
     }
 
     [DbConfigurationType(typeof(MySqlEFConfiguration))]
     public class BadDbContext : DbContext
     {
-
     }
 
     [DbConfigurationType(typeof(MySqlEFConfiguration))]
@@ -99,12 +91,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
     {
         public GoodDbContext(string str)
         {
-
         }
     }
 
     //public class MyMySqlEFConfiguration : MySqlEFConfiguration {
     //}
-
 }
 #endif

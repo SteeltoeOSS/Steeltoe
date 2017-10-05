@@ -30,12 +30,12 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             var ex2 = new ConnectorException("Test2", new Exception());
             Assert.Equal("Test2", ex2.Message);
         }
+
         [Fact]
         public void Constructor_CapturesNestedException()
         {
-
             var inner = new Exception();
-            var ex = new ConnectorException("Test2",inner);
+            var ex = new ConnectorException("Test2", inner);
             Assert.Equal(inner, ex.InnerException);
         }
     }

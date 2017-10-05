@@ -20,11 +20,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class RedisServiceInfoFactory : ServiceInfoFactory
     {
-
-        public RedisServiceInfoFactory() :
-            base(new Tags("redis"), RedisServiceInfo.REDIS_SCHEME)
+        public RedisServiceInfoFactory()
+            : base(new Tags("redis"), RedisServiceInfo.REDIS_SCHEME)
         {
-
         }
 
         public override IServiceInfo Create(Service binding)
@@ -37,7 +35,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 string password = GetPasswordFromCredentials(binding.Credentials);
 
                 return new RedisServiceInfo(binding.Name, host, port, password);
-            } else
+            }
+            else
             {
                 return new RedisServiceInfo(binding.Name, uri);
             }

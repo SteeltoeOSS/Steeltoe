@@ -46,8 +46,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
-
         }
+
         [Fact]
         public void AddDbContext_ThrowsIfConfigurtionNull()
         {
@@ -61,7 +61,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
 
             var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
@@ -75,7 +74,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
-
         }
 
         [Fact]
@@ -90,7 +88,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
 
             var service = services.BuildServiceProvider().GetService<GoodDbContext>();
             Assert.NotNull(service);
-
         }
 
         [Fact]
@@ -103,7 +100,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
-
         }
 
         [Fact]
@@ -192,8 +188,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config));
             Assert.Contains("Multiple", ex.Message);
-
         }
+
         [Fact]
         public void AddDbContexts_WithVCAPs_AddsDbContexts()
         {
@@ -267,7 +263,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
 
             var service2 = built.GetService<Good2DbContext>();
             Assert.NotNull(service2);
-
         }
     }
 
@@ -276,7 +271,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
     {
         public Good2DbContext(string str)
         {
-
         }
     }
 }

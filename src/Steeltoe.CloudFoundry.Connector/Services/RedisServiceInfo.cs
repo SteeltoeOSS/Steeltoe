@@ -16,22 +16,20 @@
 
 using System;
 
-
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class RedisServiceInfo : UriServiceInfo
     {
         public const string REDIS_SCHEME = "redis";
 
-        public RedisServiceInfo(String id, String host, int port, String password) :
-                 base(id, REDIS_SCHEME, host, port, null, password, null)
+        public RedisServiceInfo(string id, string host, int port, string password)
+            : base(id, REDIS_SCHEME, host, port, null, password, null)
         {
         }
 
-        public RedisServiceInfo(String id, String uri) :
-                    base(id, uri)
+        public RedisServiceInfo(string id, string uri)
+            : base(id, uri)
         {
         }
     }
 }
-

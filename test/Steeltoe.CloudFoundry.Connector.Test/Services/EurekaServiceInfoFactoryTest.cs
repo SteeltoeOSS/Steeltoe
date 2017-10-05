@@ -30,10 +30,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "eureka", "discovery", "registry", "spring-cloud" },
                 Name = "eurekaService",
                 Plan = "standard",
-                Credentials = new Credential() {
-                    { "client_id", new Credential("clientId")},
-                    { "client_secret", new Credential("clientSecret")},
-                    { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token")},
+                Credentials = new Credential()
+                {
+                    { "client_id", new Credential("clientId") },
+                    { "client_secret", new Credential("clientSecret") },
+                    { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token") },
                     { "uri", new Credential("http://username:password@192.168.0.90:1111/") },
                     }
             };
@@ -50,10 +51,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "foobar", "relational" },
                 Name = "mySqlService",
                 Plan = "100mb-dev",
-                Credentials = new Credential() {
-                    { "hostname", new Credential("192.168.0.90")},
-                    { "port", new Credential("3306")},
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355")},
+                Credentials = new Credential()
+                {
+                    { "hostname", new Credential("192.168.0.90") },
+                    { "port", new Credential("3306") },
+                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
@@ -73,10 +75,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "eureka", "discovery", "registry", "spring-cloud" },
                 Name = "eurekaService",
                 Plan = "standard",
-                Credentials = new Credential() {
-                    { "client_id", new Credential("clientId")},
-                    { "client_secret", new Credential("clientSecret")},
-                    { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token")},
+                Credentials = new Credential()
+                {
+                    { "client_id", new Credential("clientId") },
+                    { "client_secret", new Credential("clientSecret") },
+                    { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token") },
                     { "uri", new Credential("http://username:password@192.168.0.90:1111/") },
                     }
             };

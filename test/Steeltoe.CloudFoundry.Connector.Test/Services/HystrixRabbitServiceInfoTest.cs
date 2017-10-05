@@ -32,7 +32,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             bool isSSLEnabled = false;
 
             HystrixRabbitServiceInfo r1 = new HystrixRabbitServiceInfo("myId", uri, isSSLEnabled);
-            HystrixRabbitServiceInfo r2 = new HystrixRabbitServiceInfo("myId", uri, uris, isSSLEnabled );
+            HystrixRabbitServiceInfo r2 = new HystrixRabbitServiceInfo("myId", uri, uris, isSSLEnabled);
 
             Assert.Equal("myId", r1.Id);
             Assert.Equal("amqp", r1.Scheme);
@@ -44,7 +44,6 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             Assert.Null(r1.Query);
             Assert.Null(r1.Uris);
             Assert.Equal(uri, r1.Uri);
-  
 
             Assert.Equal("myId", r2.Id);
             Assert.Equal("amqp", r2.Scheme);
@@ -56,8 +55,6 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             Assert.Null(r2.Query);
             Assert.Equal(uris[0], r2.Uris[0]);
             Assert.Equal(uri, r2.Uri);
-
         }
-
     }
 }

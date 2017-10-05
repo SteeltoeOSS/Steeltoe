@@ -14,10 +14,9 @@
 // limitations under the License.
 //
 
-using System;
-
-using Steeltoe.CloudFoundry.Connector.Services;
 using Microsoft.Extensions.Options;
+using Steeltoe.CloudFoundry.Connector.Services;
+using System;
 
 namespace Steeltoe.CloudFoundry.Connector.OAuth
 {
@@ -32,6 +31,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
             _info = sinfo;
             _config = config;
         }
+
         public IOptions<OAuthServiceOptions> Create(IServiceProvider provider)
         {
             var opts = _configurer.Configure(_info, _config);

@@ -30,10 +30,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "redis", "pivotal" },
                 Name = "myRedisService",
                 Plan = "shared-vm",
-                Credentials = new Credential() {
-                    { "host", new Credential("192.168.0.103")},
-                    { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10")},
-                    { "port", new Credential("60287")}
+                Credentials = new Credential()
+                {
+                    { "host", new Credential("192.168.0.103") },
+                    { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
+                    { "port", new Credential("60287") }
                     }
             };
             RedisServiceInfoFactory factory = new RedisServiceInfoFactory();
@@ -49,10 +50,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "foobar", "pivotal" },
                 Name = "myRedisService",
                 Plan = "shared-vm",
-                Credentials = new Credential() {
-                    { "host", new Credential("192.168.0.103")},
-                    { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10")},
-                    { "port", new Credential("60287")}
+                Credentials = new Credential()
+                {
+                    { "host", new Credential("192.168.0.103") },
+                    { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
+                    { "port", new Credential("60287") }
                     }
             };
             RedisServiceInfoFactory factory = new RedisServiceInfoFactory();
@@ -68,10 +70,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Tags = new string[] { "redis", "pivotal" },
                 Name = "myRedisService",
                 Plan = "shared-vm",
-                Credentials = new Credential() {
-                    { "host", new Credential("192.168.0.103")},
-                    { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10")},
-                    { "port", new Credential("60287")}
+                Credentials = new Credential()
+                {
+                    { "host", new Credential("192.168.0.103") },
+                    { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
+                    { "port", new Credential("60287") }
                     }
             };
             RedisServiceInfoFactory factory = new RedisServiceInfoFactory();
@@ -82,6 +85,5 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("192.168.0.103", info.Host);
             Assert.Equal(60287, info.Port);
         }
-
     }
 }

@@ -22,24 +22,27 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     {
         internal Tags()
         {
-
         }
+
         public string[] Values { get; internal protected set; }
-        public Tags(string tag) :
-            this(new string[] { tag })
+
+        public Tags(string tag)
+            : this(new string[] { tag })
         {
         }
+
         public Tags(string[] tags)
         {
             if (tags == null)
             {
                 Values = new string[0];
-            } else
+            }
+            else
             {
                 Values = tags;
             }
-           
         }
+
         public bool ContainsOne(string[] tags)
         {
             if (tags != null)
@@ -58,12 +61,17 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
             return false;
         }
+
         public bool Contains(string tag)
         {
             if (Values == null)
+            {
                 return false;
+            }
+
             return Values.Contains(tag);
         }
+
         public bool StartsWith(string tag)
         {
             if (tag != null)
@@ -79,8 +87,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     }
                 }
             }
+
             return false;
         }
-
     }
 }

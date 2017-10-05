@@ -76,24 +76,20 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("instanceid", sconfig.InstanceId);
 
-            Assert.True( sconfig.AllowAdmin);
+            Assert.True(sconfig.AllowAdmin);
             Assert.Equal("foobar", sconfig.ClientName);
             Assert.Equal(100, sconfig.ConnectRetry);
             Assert.Equal(100, sconfig.ConnectTimeout);
-            Assert.True( sconfig.AbortOnConnectFail);
+            Assert.True(sconfig.AbortOnConnectFail);
             Assert.Equal(100, sconfig.KeepAlive);
-            Assert.True( sconfig.ResolveDns);
+            Assert.True(sconfig.ResolveDns);
             Assert.Equal("foobar", sconfig.ServiceName);
-            Assert.True( sconfig.Ssl);
+            Assert.True(sconfig.Ssl);
             Assert.Equal("foobar", sconfig.SslHost);
             Assert.Equal("foobar", sconfig.TieBreaker);
             Assert.Equal(100, sconfig.WriteBuffer);
 
-
-            Assert.Null( sconfig.ConnectionString);
-
-
+            Assert.Null(sconfig.ConnectionString);
     }
     }
 }
-

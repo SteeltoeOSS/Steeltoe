@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
@@ -25,11 +25,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };
         public static readonly Tags HYSTRIX_RABBIT_SERVICE_TAGS = new Tags("hystrix-amqp");
 
-        public HystrixRabbitServiceInfoFactory() :
-            base(HYSTRIX_RABBIT_SERVICE_TAGS, _scheme )
+        public HystrixRabbitServiceInfoFactory()
+            : base(HYSTRIX_RABBIT_SERVICE_TAGS, _scheme)
         {
-
         }
+
         public override bool Accept(Service binding)
         {
             return base.TagsMatch(binding) && UriCredentialsMatchesScheme(binding.Credentials);
@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             if (credentials.ContainsKey("amqp"))
             {
                 var amqpDict = credentials["amqp"];
-                String uri = GetStringFromCredentials(amqpDict, uriKeys);
+                string uri = GetStringFromCredentials(amqpDict, uriKeys);
                 if (uri != null)
                 {
                     foreach (string uriScheme in _schemes)
@@ -52,6 +52,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     }
                 }
             }
+
             return false;
         }
 

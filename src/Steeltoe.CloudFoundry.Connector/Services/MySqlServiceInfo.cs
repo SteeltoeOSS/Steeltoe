@@ -20,7 +20,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     {
         public const string MYSQL_SCHEME = "mysql";
 
-	    public MySqlServiceInfo(string id, string url) : base(id, url)
+        public MySqlServiceInfo(string id, string url)
+            : base(id, url)
         {
         }
     }
