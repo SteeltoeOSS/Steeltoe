@@ -79,8 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal(uri, result.UriString);
         }
 
-        private void AssertUriInfoEquals(UriInfo result, string host, int port,
-                                         string username, string password, string path, string query)
+        private void AssertUriInfoEquals(UriInfo result, string host, int port, string username, string password, string path, string query)
         {
             Assert.Equal(host, result.Host);
             Assert.Equal(port, result.Port);

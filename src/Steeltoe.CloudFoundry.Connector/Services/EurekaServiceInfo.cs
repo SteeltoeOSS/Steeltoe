@@ -7,12 +7,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class EurekaServiceInfo : UriServiceInfo
     {
-        public string ClientId { get; internal set; }
-
-        public string ClientSecret { get; internal set; }
-
-        public string TokenUri { get; internal set; }
-
         public EurekaServiceInfo(string id, string uri, string clientId, string clientSecret, string tokenUri)
             : base(id, uri)
         {
@@ -20,5 +14,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             ClientSecret = clientSecret;
             TokenUri = tokenUri;
         }
+
+        public string ClientId { get; internal set; }
+
+        public string ClientSecret { get; internal set; }
+
+        public string TokenUri { get; internal set; }
     }
 }

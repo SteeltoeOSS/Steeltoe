@@ -14,13 +14,11 @@
 // limitations under the License.
 //
 
-//using MySQL.Data.EntityFrameworkCore.Infraestructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Reflection;
-//using MySQL.Data.EntityFrameworkCore.Extensions;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 {
@@ -65,7 +63,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
             return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object mySqlOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object mySqlOptionsAction = null)
+            where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -82,7 +81,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
             return DoUseMySql<TContext>(optionsBuilder, connection, mySqlOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object mySqlOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object mySqlOptionsAction = null)
+            where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -148,7 +148,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
             return (DbContextOptionsBuilder)result;
         }
 
-        private static DbContextOptionsBuilder<TContext> DoUseMySql<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object mySqlOptionsAction = null) where TContext : DbContext
+        private static DbContextOptionsBuilder<TContext> DoUseMySql<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object mySqlOptionsAction = null)
+            where TContext : DbContext
         {
             return (DbContextOptionsBuilder<TContext>)DoUseMySql((DbContextOptionsBuilder)builder, connection, mySqlOptionsAction);
         }

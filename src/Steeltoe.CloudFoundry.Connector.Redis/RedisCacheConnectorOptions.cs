@@ -90,11 +90,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         // This configuration option specfic to https://github.com/aspnet/Caching
         public string InstanceId { get; set; }
 
-        // Add back in when https://github.com/aspnet/Caching updates to new StackExchange
-        //public bool HighPrioritySocketThreads { get; set; }
-        //public int ResponseTimeout { get; set; }
-        //public int? DefaultDatabase { get; set; }
-
+        // TODO: Add back in when https://github.com/aspnet/Caching updates to new StackExchange
+        // public bool HighPrioritySocketThreads { get; set; }
+        // public int ResponseTimeout { get; set; }
+        // public int? DefaultDatabase { get; set; }
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(ConnectionString))

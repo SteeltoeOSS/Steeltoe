@@ -205,7 +205,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             {
             };
             port = sif.GetPortFromCredentials(credentials);
-            Assert.Equal(0, port); ;
+            Assert.Equal(0, port);
         }
 
         [Fact]

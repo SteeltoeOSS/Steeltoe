@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
 
             OAuthConnectorOptions oauthConfig = new OAuthConnectorOptions(config);
             SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-            OAuthConnectorFactory factory = new OAuthConnectorFactory(info, oauthConfig); ;
+            OAuthConnectorFactory factory = new OAuthConnectorFactory(info, oauthConfig);
             services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
             return services;
         }

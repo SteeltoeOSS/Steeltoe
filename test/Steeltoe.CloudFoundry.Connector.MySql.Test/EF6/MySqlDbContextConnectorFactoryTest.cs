@@ -93,8 +93,5 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         {
         }
     }
-
-    //public class MyMySqlEFConfiguration : MySqlEFConfiguration {
-    //}
 }
 #endif

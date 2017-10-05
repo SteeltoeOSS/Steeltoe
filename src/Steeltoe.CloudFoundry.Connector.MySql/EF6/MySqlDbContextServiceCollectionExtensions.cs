@@ -26,7 +26,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {
     public static class MySqlDbContextServiceCollectionExtensions
     {
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null) where TContext : DbContext
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+            where TContext : DbContext
         {
             if (services == null)
             {
@@ -44,7 +45,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
             return services;
         }
 
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null) where TContext : DbContext
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+            where TContext : DbContext
         {
             if (services == null)
             {

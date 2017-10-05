@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceInfo info = config.GetSingletonServiceInfo<RedisServiceInfo>();
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig); ;
+            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig);
             services.AddSingleton(typeof(IDistributedCache), factory.CreateCache);
             return services;
         }
@@ -83,7 +83,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceInfo info = config.GetSingletonServiceInfo<RedisServiceInfo>();
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig); ;
+            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig);
             services.AddSingleton(typeof(IConnectionMultiplexer), factory.CreateConnection);
             return services;
         }

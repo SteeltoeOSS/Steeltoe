@@ -63,7 +63,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             return DoUseSqlServer(optionsBuilder, connection, SqlServerOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object SqlServerOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object SqlServerOptionsAction = null)
+            where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -80,7 +81,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             return DoUseSqlServer<TContext>(optionsBuilder, connection, SqlServerOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object SqlServerOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object SqlServerOptionsAction = null)
+            where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -148,7 +150,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             return (DbContextOptionsBuilder)result;
         }
 
-        private static DbContextOptionsBuilder<TContext> DoUseSqlServer<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object SqlServerOptionsAction = null) where TContext : DbContext
+        private static DbContextOptionsBuilder<TContext> DoUseSqlServer<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object SqlServerOptionsAction = null)
+            where TContext : DbContext
         {
             return (DbContextOptionsBuilder<TContext>)DoUseSqlServer((DbContextOptionsBuilder)builder, connection, SqlServerOptionsAction);
         }

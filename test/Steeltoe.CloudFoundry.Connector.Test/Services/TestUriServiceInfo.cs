@@ -14,18 +14,18 @@
 // limitations under the License.
 //
 
-using Microsoft.Extensions.Options;
-
-namespace Steeltoe.CloudFoundry.Connector
+namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
-    public class ConnectorIOptions<T> : IOptions<T>
-        where T : class, new()
+    internal class TestUriServiceInfo : UriServiceInfo
     {
-        public ConnectorIOptions(T value)
+        public TestUriServiceInfo(string id, string uri)
+            : base(id, uri)
         {
-            Value = value;
         }
 
-        public T Value { get; internal protected set; }
+        public TestUriServiceInfo(string id, string scheme, string host, int port, string username, string password, string path)
+            : base(id, scheme, host, port, username, password, path)
+        {
+        }
     }
 }

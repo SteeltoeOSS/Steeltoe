@@ -12,6 +12,9 @@
     </None>
   </ItemGroup>
 
+  <PropertyGroup>
+    <NoWarn>SA1101;SA1652;1591;1701;1702;1705</NoWarn>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.csproj" />

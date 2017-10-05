@@ -47,17 +47,4 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Null(r2.Query);
         }
     }
-
-    class TestUriServiceInfo : UriServiceInfo
-    {
-        public TestUriServiceInfo(string id, string uri)
-            : base(id, uri)
-        {
-        }
-
-        public TestUriServiceInfo(string id, string scheme, string host, int port, string username, string password, string path)
-            : base(id, scheme, host, port, username, password, path)
-        {
-        }
-    }
 }

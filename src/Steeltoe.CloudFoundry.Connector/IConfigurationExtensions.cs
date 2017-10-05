@@ -23,7 +23,8 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public static class IConfigurationExtensions
     {
-        public static List<SI> GetServiceInfos<SI>(this IConfiguration config) where SI : class
+        public static List<SI> GetServiceInfos<SI>(this IConfiguration config)
+            where SI : class
         {
             CloudFoundryServiceInfoCreator factory = CloudFoundryServiceInfoCreator.Instance(config);
             return factory.GetServiceInfos<SI>();
@@ -41,13 +42,15 @@ namespace Steeltoe.CloudFoundry.Connector
             return factory.GetServiceInfo(id);
         }
 
-        public static SI GetServiceInfo<SI>(this IConfiguration config, string id) where SI : class
+        public static SI GetServiceInfo<SI>(this IConfiguration config, string id)
+            where SI : class
         {
             CloudFoundryServiceInfoCreator factory = CloudFoundryServiceInfoCreator.Instance(config);
             return factory.GetServiceInfo<SI>(id);
         }
 
-        public static SI GetSingletonServiceInfo<SI>(this IConfiguration config) where SI : class
+        public static SI GetSingletonServiceInfo<SI>(this IConfiguration config)
+            where SI : class
         {
             List<SI> results = GetServiceInfos<SI>(config);
             if (results.Count > 0)
@@ -63,7 +66,8 @@ namespace Steeltoe.CloudFoundry.Connector
             return null;
         }
 
-        public static SI GetRequiredServiceInfo<SI>(this IConfiguration config, string serviceName) where SI : class
+        public static SI GetRequiredServiceInfo<SI>(this IConfiguration config, string serviceName)
+            where SI : class
         {
             var info = GetServiceInfo<SI>(config, serviceName);
             if (info == null)

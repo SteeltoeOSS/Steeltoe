@@ -72,7 +72,8 @@ namespace Steeltoe.CloudFoundry.Connector
             BuildServiceInfos();
         }
 
-        public List<SI> GetServiceInfos<SI>() where SI : class
+        public List<SI> GetServiceInfos<SI>()
+            where SI : class
         {
             List<SI> results = new List<SI>();
             foreach (IServiceInfo info in _serviceInfos)
@@ -87,7 +88,8 @@ namespace Steeltoe.CloudFoundry.Connector
             return results;
         }
 
-        public SI GetServiceInfo<SI>(string name) where SI : class
+        public SI GetServiceInfo<SI>(string name)
+            where SI : class
         {
             List<SI> typed = GetServiceInfos<SI>();
             foreach (var si in typed)

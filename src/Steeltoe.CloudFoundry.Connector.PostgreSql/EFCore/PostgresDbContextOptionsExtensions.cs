@@ -63,7 +63,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object npgsqlOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object npgsqlOptionsAction = null)
+            where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -80,7 +81,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             return DoUseNpgsql<TContext>(optionsBuilder, connection, npgsqlOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object npgsqlOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object npgsqlOptionsAction = null)
+            where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -146,7 +148,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             return (DbContextOptionsBuilder)result;
         }
 
-        private static DbContextOptionsBuilder<TContext> DoUseNpgsql<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object npgsqlOptionsAction = null) where TContext : DbContext
+        private static DbContextOptionsBuilder<TContext> DoUseNpgsql<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object npgsqlOptionsAction = null)
+            where TContext : DbContext
         {
             return (DbContextOptionsBuilder<TContext>)DoUseNpgsql((DbContextOptionsBuilder)builder, connection, npgsqlOptionsAction);
         }
