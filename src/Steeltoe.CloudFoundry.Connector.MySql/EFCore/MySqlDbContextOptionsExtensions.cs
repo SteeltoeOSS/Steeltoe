@@ -22,6 +22,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 {
     public static class MySqlDbContextOptionsExtensions
     {
+        private static string[] mySqlEntityAssemblies = new string[] { "MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql" };
+        private static string[] mySqlEntityTypeNames = new string[] { "MySQL.Data.EntityFrameworkCore.Extensions.MySQLDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsExtensions" };
+
         public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object mySqlOptionsAction = null)
         {
             if (optionsBuilder == null)
@@ -119,9 +122,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
             MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, null);
             return factory.CreateConnectionString();
         }
-
-        private static string[] mySqlEntityAssemblies = new string[] { "MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql" };
-        private static string[] mySqlEntityTypeNames = new string[] { "MySQL.Data.EntityFrameworkCore.Extensions.MySQLDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsExtensions" };
 
         private static DbContextOptionsBuilder DoUseMySql(DbContextOptionsBuilder builder, string connection, object mySqlOptionsAction = null)
         {

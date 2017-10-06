@@ -22,7 +22,11 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 {
     public static class SqlServerDbContextOptionsExtensions
     {
-        public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object SqlServerOptionsAction = null)
+        private static string[] sqlServerEntityAssemblies = new string[] { "Microsoft.EntityFrameworkCore.SqlServer" };
+
+        private static string[] sqlServerEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.SqlServerDbContextOptionsExtensions" };
+
+        public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object sqlServerOptionsAction = null)
         {
             if (optionsBuilder == null)
             {
@@ -36,10 +40,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 
             var connection = GetConnection(config);
 
-            return DoUseSqlServer(optionsBuilder, connection, SqlServerOptionsAction);
+            return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
         }
 
-        public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object SqlServerOptionsAction = null)
+        public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object sqlServerOptionsAction = null)
         {
             if (optionsBuilder == null)
             {
@@ -58,10 +62,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return DoUseSqlServer(optionsBuilder, connection, SqlServerOptionsAction);
+            return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object SqlServerOptionsAction = null)
+        public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object sqlServerOptionsAction = null)
             where TContext : DbContext
         {
             if (optionsBuilder == null)
@@ -76,10 +80,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 
             var connection = GetConnection(config);
 
-            return DoUseSqlServer<TContext>(optionsBuilder, connection, SqlServerOptionsAction);
+            return DoUseSqlServer<TContext>(optionsBuilder, connection, sqlServerOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object SqlServerOptionsAction = null)
+        public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object sqlServerOptionsAction = null)
             where TContext : DbContext
         {
             if (optionsBuilder == null)
@@ -99,59 +103,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return DoUseSqlServer<TContext>(optionsBuilder, connection, SqlServerOptionsAction);
-        }
-
-        private static string GetConnection(IConfiguration config, string serviceName = null)
-        {
-            SqlServerServiceInfo info = null;
-            if (string.IsNullOrEmpty(serviceName))
-            {
-                info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
-            }
-
-            SqlServerProviderConnectorOptions SqlServerConfig = new SqlServerProviderConnectorOptions(config);
-
-            SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, SqlServerConfig, null);
-
-            return factory.CreateConnectionString();
-        }
-
-        private static string[] SqlServerEntityAssemblies = new string[] { "Microsoft.EntityFrameworkCore.SqlServer" };
-
-        private static string[] SqlServerEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.SqlServerDbContextOptionsExtensions" };
-
-        private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object SqlServerOptionsAction = null)
-        {
-            Type extensionType = ConnectorHelpers.FindType(SqlServerEntityAssemblies, SqlServerEntityTypeNames);
-            if (extensionType == null)
-            {
-                throw new ConnectorException("Unable to find DbContextOptionsBuilder extension, are you missing SqlServer EntityFramework Core assembly");
-            }
-
-            MethodInfo useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
-            if (extensionType == null)
-            {
-                throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
-            }
-
-            object result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, SqlServerOptionsAction });
-            if (result == null)
-            {
-                throw new ConnectorException(string.Format("Failed to invoke UseSqlServer extension, connection: {0}", connection));
-            }
-
-            return (DbContextOptionsBuilder)result;
-        }
-
-        private static DbContextOptionsBuilder<TContext> DoUseSqlServer<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object SqlServerOptionsAction = null)
-            where TContext : DbContext
-        {
-            return (DbContextOptionsBuilder<TContext>)DoUseSqlServer((DbContextOptionsBuilder)builder, connection, SqlServerOptionsAction);
+            return DoUseSqlServer<TContext>(optionsBuilder, connection, sqlServerOptionsAction);
         }
 
         public static MethodInfo FindUseSqlMethod(Type type, Type[] parameterTypes)
@@ -173,6 +125,54 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             }
 
             return null;
+        }
+
+        private static string GetConnection(IConfiguration config, string serviceName = null)
+        {
+            SqlServerServiceInfo info = null;
+            if (string.IsNullOrEmpty(serviceName))
+            {
+                info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            }
+            else
+            {
+                info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+            }
+
+            SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);
+
+            SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, null);
+
+            return factory.CreateConnectionString();
+        }
+
+        private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
+        {
+            Type extensionType = ConnectorHelpers.FindType(sqlServerEntityAssemblies, sqlServerEntityTypeNames);
+            if (extensionType == null)
+            {
+                throw new ConnectorException("Unable to find DbContextOptionsBuilder extension, are you missing SqlServer EntityFramework Core assembly");
+            }
+
+            MethodInfo useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
+            if (extensionType == null)
+            {
+                throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
+            }
+
+            object result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, sqlServerOptionsAction });
+            if (result == null)
+            {
+                throw new ConnectorException(string.Format("Failed to invoke UseSqlServer extension, connection: {0}", connection));
+            }
+
+            return (DbContextOptionsBuilder)result;
+        }
+
+        private static DbContextOptionsBuilder<TContext> DoUseSqlServer<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object sqlServerOptionsAction = null)
+            where TContext : DbContext
+        {
+            return (DbContextOptionsBuilder<TContext>)DoUseSqlServer((DbContextOptionsBuilder)builder, connection, sqlServerOptionsAction);
         }
     }
 }

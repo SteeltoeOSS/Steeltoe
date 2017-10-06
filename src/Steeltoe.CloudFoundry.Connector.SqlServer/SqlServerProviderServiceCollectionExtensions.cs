@@ -22,6 +22,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
     public static class SqlServerProviderServiceCollectionExtensions
     {
+        private static string[] sqlServerAssemblies = new string[] { "System.Data.SqlClient" };
+
+        private static string[] sqlServerTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
+
         public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -63,21 +67,17 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             return services;
         }
 
-        private static string[] SqlServerAssemblies = new string[] { "System.Data.SqlClient" };
-
-        private static string[] SqlServerTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
-
         private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            Type SqlServerConnection = ConnectorHelpers.FindType(SqlServerAssemblies, SqlServerTypeNames);
-            if (SqlServerConnection == null)
+            Type sqlServerConnection = ConnectorHelpers.FindType(sqlServerAssemblies, sqlServerTypeNames);
+            if (sqlServerConnection == null)
             {
                 throw new ConnectorException("Unable to find SqlServerConnection, are you missing SqlServer ADO.NET assembly");
             }
 
-            SqlServerProviderConnectorOptions SqlServerConfig = new SqlServerProviderConnectorOptions(config);
-            SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, SqlServerConfig, SqlServerConnection);
-            services.Add(new ServiceDescriptor(SqlServerConnection, factory.Create, contextLifetime));
+            SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);
+            SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
+            services.Add(new ServiceDescriptor(sqlServerConnection, factory.Create, contextLifetime));
         }
     }
 }

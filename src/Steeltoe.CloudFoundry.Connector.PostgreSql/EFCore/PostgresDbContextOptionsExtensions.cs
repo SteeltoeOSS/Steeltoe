@@ -22,6 +22,9 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 {
     public static class PostgresDbContextOptionsExtensions
     {
+        private static string[] postgresEntityAssemblies = new string[] { "Npgsql.EntityFrameworkCore.PostgreSQL" };
+        private static string[] postgresEntityTypeNames = new string[] { " Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions" };
+
         public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object npgsqlOptionsAction = null)
         {
             if (optionsBuilder == null)
@@ -119,9 +122,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgresConfig, null);
             return factory.CreateConnectionString();
         }
-
-        private static string[] postgresEntityAssemblies = new string[] { "Npgsql.EntityFrameworkCore.PostgreSQL" };
-        private static string[] postgresEntityTypeNames = new string[] { " Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions" };
 
         private static DbContextOptionsBuilder DoUseNpgsql(DbContextOptionsBuilder builder, string connection, object npgsqlOptionsAction = null)
         {

@@ -22,6 +22,9 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 {
     public static class HystrixProviderServiceCollectionExtensions
     {
+        private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
+        private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
+
         public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -62,9 +65,6 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             DoAdd(services, info, config, contextLifetime);
             return services;
         }
-
-        private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
-        private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
 
         private static void DoAdd(IServiceCollection services, HystrixRabbitServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {

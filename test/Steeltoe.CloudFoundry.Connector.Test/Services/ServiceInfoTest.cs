@@ -41,7 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         }
     }
 
-    class TestServiceInfo : ServiceInfo
+    internal class TestServiceInfo : ServiceInfo
     {
         public TestServiceInfo(string id, ApplicationInstanceInfo info)
             : base(id, info)

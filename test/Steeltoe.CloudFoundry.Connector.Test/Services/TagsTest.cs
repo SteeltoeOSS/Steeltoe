@@ -18,7 +18,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
     public class TagsTest
     {
-        private static Tags EMPTY_TAGS = new Tags();
+        private static Tags emptyTags = new Tags();
 
         [Fact]
         public void ContainsOne()
@@ -32,7 +32,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void ContainsOne_WithEmptyTags()
         {
-            Assert.False(EMPTY_TAGS.ContainsOne(new string[] { "test" }));
+            Assert.False(emptyTags.ContainsOne(new string[] { "test" }));
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Contains_WithEmptyTags()
         {
-            Assert.False(EMPTY_TAGS.Contains("test"));
+            Assert.False(emptyTags.Contains("test"));
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void StartsWith_WithEmptyTags()
         {
-            Assert.False(EMPTY_TAGS.StartsWith("test"));
+            Assert.False(emptyTags.StartsWith("test"));
         }
     }
 }

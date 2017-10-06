@@ -259,7 +259,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
         }
     }
 
-    class Good2DbContext : DbContext
+    internal class Good2DbContext : DbContext
     {
         public Good2DbContext(string str)
         {

@@ -268,7 +268,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
     }
 
     [DbConfigurationType(typeof(MySqlEFConfiguration))]
-    class Good2DbContext : DbContext
+    internal class Good2DbContext : DbContext
     {
         public Good2DbContext(string str)
         {

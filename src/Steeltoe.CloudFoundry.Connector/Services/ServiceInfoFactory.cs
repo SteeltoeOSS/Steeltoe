@@ -21,6 +21,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     [ServiceInfoFactory]
     public abstract class ServiceInfoFactory : IServiceInfoFactory
     {
+        private static List<string> _userList = new List<string>() { "user", "username", "uid" };
+        private static List<string> _passwordList = new List<string>() { "password", "pw" };
+        private static List<string> _hostList = new List<string>() { "hostname", "host" };
+
         protected Tags _tags;
         protected string[] _schemes;
 
@@ -56,6 +60,21 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
         }
 
+        public virtual string DefaultUriScheme
+        {
+            get
+            {
+                if (_schemes != null && _schemes.Length > 0)
+                {
+                    return _schemes[0];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
         public virtual bool Accept(Service binding)
         {
             return TagsMatch(binding) || LabelStartsWithTag(binding) ||
@@ -64,19 +83,19 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public abstract IServiceInfo Create(Service binding);
 
-        protected virtual internal bool TagsMatch(Service binding)
+        protected internal virtual bool TagsMatch(Service binding)
         {
             var serviceTags = binding.Tags;
             return _tags.ContainsOne(serviceTags);
         }
 
-        protected virtual internal bool LabelStartsWithTag(Service binding)
+        protected internal virtual bool LabelStartsWithTag(Service binding)
         {
             string label = binding.Label;
             return _tags.StartsWith(label);
         }
 
-        protected virtual internal bool UriMatchesScheme(Service binding)
+        protected internal virtual bool UriMatchesScheme(Service binding)
         {
             if (_schemes == null)
             {
@@ -129,14 +148,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             return false;
         }
 
-        private static List<string> _userList = new List<string>() { "user", "username", "uid" };
-
         protected internal virtual string GetUsernameFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, _userList);
         }
-
-        private static List<string> _passwordList = new List<string>() { "password", "pw" };
 
         protected internal virtual string GetPasswordFromCredentials(Dictionary<string, Credential> credentials)
         {
@@ -147,8 +162,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             return GetIntFromCredentials(credentials, "port");
         }
-
-        private static List<string> _hostList = new List<string>() { "hostname", "host" };
 
         protected internal virtual string GetHostFromCredentials(Dictionary<string, Credential> credentials)
         {
@@ -259,21 +272,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
 
             return result;
-        }
-
-        public virtual string DefaultUriScheme
-        {
-            get
-            {
-                if (_schemes != null && _schemes.Length > 0)
-                {
-                    return _schemes[0];
-                }
-                else
-                {
-                    return null;
-                }
-            }
         }
     }
 }

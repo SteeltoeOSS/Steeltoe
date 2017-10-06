@@ -16,7 +16,7 @@ using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
-    interface IServiceInfoFactory
+    internal interface IServiceInfoFactory
     {
         bool Accept(Service binding);
 

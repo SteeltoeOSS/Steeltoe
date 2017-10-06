@@ -29,7 +29,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         }
     }
 
-    class MyOption
+    internal class MyOption
     {
         public MyOption()
         {

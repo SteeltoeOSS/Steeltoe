@@ -20,10 +20,10 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public abstract class AbstractServiceConnectorOptions
     {
-        protected char _keyValueTerm;
-        protected char _keyValueSep;
         protected const char Default_Terminator = ';';
         protected const char Default_Separator = '=';
+        protected char _keyValueTerm;
+        protected char _keyValueSep;
 
         protected AbstractServiceConnectorOptions()
             : this(Default_Terminator, Default_Separator)

@@ -286,7 +286,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
         }
     }
 
-    class GoodDbContext : DbContext
+    internal class GoodDbContext : DbContext
     {
         public GoodDbContext(DbContextOptions<GoodDbContext> options)
             : base(options)

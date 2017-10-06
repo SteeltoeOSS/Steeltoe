@@ -22,6 +22,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 {
     public static class MySqlProviderServiceCollectionExtensions
     {
+        private static string[] mySqlAssemblies = new string[] { "MySql.Data", "MySqlConnector" };
+        private static string[] mySqlTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection", "MySql.Data.MySqlClient.MySqlConnection" };
+
         public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -62,9 +65,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             DoAdd(services, info, config, contextLifetime);
             return services;
         }
-
-        private static string[] mySqlAssemblies = new string[] { "MySql.Data", "MySqlConnector" };
-        private static string[] mySqlTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection", "MySql.Data.MySqlClient.MySqlConnection" };
 
         private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {

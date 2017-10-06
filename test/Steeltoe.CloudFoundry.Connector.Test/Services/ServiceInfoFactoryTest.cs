@@ -327,7 +327,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         }
     }
 
-    class TestServiceInfoFactory : ServiceInfoFactory
+    internal class TestServiceInfoFactory : ServiceInfoFactory
     {
         public TestServiceInfoFactory(Tags tags, string scheme)
             : base(tags, scheme)

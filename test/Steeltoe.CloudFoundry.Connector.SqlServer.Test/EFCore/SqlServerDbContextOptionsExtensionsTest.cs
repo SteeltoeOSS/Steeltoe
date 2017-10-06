@@ -283,7 +283,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
         }
     }
 
-    class GoodDbContext : DbContext
+    internal class GoodDbContext : DbContext
     {
         public GoodDbContext(DbContextOptions<GoodDbContext> options)
             : base(options)

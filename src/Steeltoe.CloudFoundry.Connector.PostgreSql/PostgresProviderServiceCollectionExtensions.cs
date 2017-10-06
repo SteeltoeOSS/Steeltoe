@@ -22,6 +22,9 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
     public static class PostgresProviderServiceCollectionExtensions
     {
+        private static string[] postgresAssemblies = new string[] { "Npgsql" };
+        private static string[] postgresTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
+
         public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -63,9 +66,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             return services;
         }
 
-        private static string[] postgresAssemblies = new string[] { "Npgsql" };
-        private static string[] postgresTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
-
         private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type postgresConnection = ConnectorHelpers.FindType(postgresAssemblies, postgresTypeNames);
@@ -74,8 +74,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
                 throw new ConnectorException("Unable to find NpgsqlConnection, are you missing Postgres ADO.NET assembly");
             }
 
-            PostgresProviderConnectorOptions PostgresConfig = new PostgresProviderConnectorOptions(config);
-            PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, PostgresConfig, postgresConnection);
+            PostgresProviderConnectorOptions postgresConfig = new PostgresProviderConnectorOptions(config);
+            PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
             services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
         }
     }

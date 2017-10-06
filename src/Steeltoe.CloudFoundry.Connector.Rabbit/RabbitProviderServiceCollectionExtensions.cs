@@ -22,6 +22,9 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 {
     public static class RabbitProviderServiceCollectionExtensions
     {
+        private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
+        private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
+
         public static IServiceCollection AddRabbitConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -62,9 +65,6 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
             DoAdd(services, info, config, contextLifetime);
             return services;
         }
-
-        private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
-        private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
 
         private static void DoAdd(IServiceCollection services, RabbitServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {

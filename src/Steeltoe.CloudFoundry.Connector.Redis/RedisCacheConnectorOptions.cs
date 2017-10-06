@@ -23,11 +23,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     {
+        private static char[] comma = new char[] { ',' };
+
         public const string Default_Host = "localhost";
         public const int Default_Port = 6379;
         public static string Default_EndPoints = Default_Host + ":" + Default_Port;
 
-        private const string REDIS_CLIENT_SECTION_PREFIX = "redis:client";
+        private const string RedisClientSectionPrefix = "redis:client";
 
         public RedisCacheConnectorOptions()
             : base(',', Default_Separator)
@@ -42,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var section = config.GetSection(REDIS_CLIENT_SECTION_PREFIX);
+            var section = config.GetSection(RedisClientSectionPrefix);
             section.Bind(this);
         }
 
@@ -149,8 +151,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             return sb.ToString();
         }
 
-        private static char[] COMMA = new char[] { ',' };
-
         internal void AddEndPoints(EndPointCollection result, string endpoints)
         {
             if (string.IsNullOrEmpty(endpoints))
@@ -161,7 +161,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             endpoints = endpoints.Trim();
             if (!string.IsNullOrEmpty(endpoints))
             {
-                string[] points = endpoints.Split(COMMA);
+                string[] points = endpoints.Split(comma);
                 if (points.Length > 0)
                 {
                     foreach (string point in points)

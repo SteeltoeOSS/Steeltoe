@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <NoWarn>SA1101;SA1309;SA1652;1591;1701;1702;1705</NoWarn>
+    <NoWarn>SA1100;SA1101;SA1202;SA1204;SA1309;SA1310;SA1313;SA1600;SA1652;1591;1701;1702;1705</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -18,6 +18,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class RabbitServiceInfo : UriServiceInfo
     {
+        public const string AMQP_SCHEME = "amqp";
+        public const string AMQPS_SCHEME = "amqps";
+
         public RabbitServiceInfo(string id, string host, int port, string username, string password, string virtualHost)
             : this(id, host, port, username, password, virtualHost, null)
         {
@@ -46,9 +49,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             ManagementUri = managementUri;
         }
-
-        public const string AMQP_SCHEME = "amqp";
-        public const string AMQPS_SCHEME = "amqps";
 
         public string ManagementUri { get; internal protected set; }
 
