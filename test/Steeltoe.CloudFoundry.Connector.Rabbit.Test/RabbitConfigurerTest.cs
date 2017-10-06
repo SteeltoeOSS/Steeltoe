@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 {
-    public class RabbitProviderConfigurerTest
+    public class RabbitConfigurerTest
     {
         [Fact]
         public void UpdateConfiguration_WithNullRabbitServiceInfo_ReturnsInitialConfiguration()
