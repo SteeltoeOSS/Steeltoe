@@ -36,11 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(config));
             }
 
-            RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
-            RedisServiceInfo info = config.GetSingletonServiceInfo<RedisServiceInfo>();
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig);
-            services.AddSingleton(typeof(IDistributedCache), factory.CreateCache);
-            return services;
+            return services.AddDistributedRedisCache(config, config, null);
         }
 
         public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName, ILoggerFactory logFactory = null)
@@ -60,9 +56,22 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(config));
             }
 
-            RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
-            RedisServiceInfo info = config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig);
+            return services.AddDistributedRedisCache(config, config, serviceName);
+        }
+
+        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (applicationConfiguration == null)
+            {
+                throw new ArgumentNullException(nameof(applicationConfiguration));
+            }
+
+            var factory = applicationConfiguration.CreateRedisServiceConnectorFactory(connectorConfiguration ?? applicationConfiguration, serviceName);
             services.AddSingleton(typeof(IDistributedCache), factory.CreateCache);
             return services;
         }
@@ -79,11 +88,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(config));
             }
 
-            RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
-            RedisServiceInfo info = config.GetSingletonServiceInfo<RedisServiceInfo>();
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig);
-            services.AddSingleton(typeof(IConnectionMultiplexer), factory.CreateConnection);
-            return services;
+            return services.AddRedisConnectionMultiplexer(config, config, null);
         }
 
         public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, string serviceName)
@@ -103,9 +108,22 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(config));
             }
 
-            RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
-            RedisServiceInfo info = config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig);
+            return services.AddRedisConnectionMultiplexer(config, config, serviceName);
+        }
+
+        public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (applicationConfiguration == null)
+            {
+                throw new ArgumentNullException(nameof(applicationConfiguration));
+            }
+
+            var factory = applicationConfiguration.CreateRedisServiceConnectorFactory(connectorConfiguration ?? applicationConfiguration, serviceName);
             services.AddSingleton(typeof(IConnectionMultiplexer), factory.CreateConnection);
             return services;
         }
