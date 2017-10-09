@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,8 @@
 // limitations under the License.
 //
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test

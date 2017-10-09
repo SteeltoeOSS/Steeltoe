@@ -3,27 +3,25 @@
   <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
-    <Description>ASP.NET Core CloudFoundry Environment Variable Configuration Provider</Description>
+    <Description>CloudFoundry Environment Variable Configuration Provider</Description>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Extensions.Configuration.CloudFoundry</AssemblyName>
     <PackageId>Steeltoe.Extensions.Configuration.CloudFoundry</PackageId>
-    <PackageTags>CloudFoundry;ASPNET Core;Spring;Spring Cloud</PackageTags>
+    <PackageTags>CloudFoundry;NET Core;NET Framework</PackageTags>
     <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 
-<ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
+
 </Project>
+

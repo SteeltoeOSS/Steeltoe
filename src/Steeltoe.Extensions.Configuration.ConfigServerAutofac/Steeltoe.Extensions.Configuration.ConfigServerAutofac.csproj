@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\versions.props" />
+
+  <PropertyGroup>
+    <Description>Spring Cloud Config Server Configuration Provider Autofac</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Steeltoe.Extensions.Configuration.ConfigServerAutofac</AssemblyName>
+    <PackageId>Steeltoe.Extensions.Configuration.ConfigServerAutofac</PackageId>
+    <PackageTags>ASPNET;Autofac;Spring Cloud;Spring Cloud Config Server</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
+    <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeCommonVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.Extensions.Configuration.ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServer" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+</Project>
+

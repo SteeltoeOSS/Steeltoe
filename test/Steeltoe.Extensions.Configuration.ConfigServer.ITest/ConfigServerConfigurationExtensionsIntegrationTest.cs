@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 using Xunit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 using System.IO;
@@ -69,7 +68,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-           
+
             var hostingEnv = new HostingEnvironment();
             configurationBuilder.AddJsonFile(fileName);
 
@@ -92,12 +91,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             var builder = new WebHostBuilder().UseStartup<TestServerStartup>();
 
             // Act and Assert (TestServer expects Spring Cloud Config server to be running)
-            using (var server = new TestServer(builder)) { 
+            using (var server = new TestServer(builder))
+            {
                 var client = server.CreateClient();
                 string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                 Assert.Equal("spam" +
-                    "from foo development" + 
+                    "from foo development" +
                     "Spring Cloud Samples" +
                     "https://github.com/spring-cloud-samples", result);
             }

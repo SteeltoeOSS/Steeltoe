@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,28 +15,30 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
     public class CloudFoundryServicesOptions
     {
-        public Vcap Vcap { get; set; }
+        public const string CONFIGURATION_PREFIX = "vcap";
 
-        public IList<Service> Services
+        public CloudFoundryServicesOptions()
+        {
+        }
+
+        public Dictionary<string, Service[]> Services { get; set; } = new Dictionary<string, Service[]>();
+
+        public IList<Service> ServicesList
         {
             get
             {
                 List<Service> results = new List<Service>();
-                var services = Vcap?.Services;
-                if (services != null)
+                if (Services != null)
                 {
-                    foreach(KeyValuePair<string, Service[]> kvp in services)
+                    foreach (KeyValuePair<string, Service[]> kvp in Services)
                     {
                         results.AddRange(kvp.Value);
                     }
@@ -51,13 +53,14 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
     {
         public string Name { get; set; }
         public string Label { get; set; }
-        public string[] Tags { get; set;  }
+        public string[] Tags { get; set; }
         public string Plan { get; set; }
         public Dictionary<string, Credential> Credentials { get; set; }
     }
 
     [TypeConverter(typeof(CredentialConverter))]
-    public class Credential : Dictionary<string, Credential> {
+    public class Credential : Dictionary<string, Credential>
+    {
 
         private string _value;
         public Credential()

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 
@@ -32,16 +31,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Arrange
             string configPrefix = null;
             ConfigServerClientSettings settings = null;
-            IHostingEnvironment environment = null;
-            ConfigurationRoot root = null;
+            IConfiguration config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(configPrefix, settings, environment, root));
+            var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(configPrefix, settings, config));
             Assert.Contains(nameof(configPrefix), ex.Message);
-            ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", settings, environment, root));
+            ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", settings, config));
             Assert.Contains(nameof(settings), ex.Message);
-            ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", new ConfigServerClientSettings(), environment, root));
-            Assert.Contains(nameof(environment), ex.Message);
+            ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", new ConfigServerClientSettings(), config));
+            Assert.Contains(nameof(config), ex.Message);
         }
 
         [Fact]
@@ -51,10 +49,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             string prefix = "spring:cloud:config";
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             HostingEnvironment env = new HostingEnvironment();
-            ConfigurationRoot root = new ConfigurationRoot(new List<IConfigurationProvider>());
+            IConfiguration config = new ConfigurationRoot(new List<IConfigurationProvider>());
 
             // Act and Assert
-            ConfigurationSettingsHelper.Initialize(prefix, settings, env, root);
+            ConfigurationSettingsHelper.Initialize(prefix, settings, config);
             TestHelpers.VerifyDefaults(settings);
 
 

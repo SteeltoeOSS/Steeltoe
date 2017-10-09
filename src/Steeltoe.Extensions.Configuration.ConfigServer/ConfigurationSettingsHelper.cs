@@ -1,5 +1,21 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿//
+// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Configuration;
 using System;
 
 
@@ -9,7 +25,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     {
         private const string SPRING_APPLICATION_PREFIX = "spring:application";
 
-        public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IHostingEnvironment environment, IConfigurationRoot root)
+        public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IConfiguration config)
         {
             if (configPrefix == null)
             {
@@ -21,70 +37,65 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            if (environment == null)
+            if (config == null)
             {
-                throw new ArgumentNullException(nameof(environment));
-            }
-
-            if (root == null)
-            {
-                throw new ArgumentNullException(nameof(root));
+                throw new ArgumentNullException(nameof(config));
             }
 
 
-            var clientConfigsection = root.GetSection(configPrefix);
+            var clientConfigsection = config.GetSection(configPrefix);
 
-            settings.Name = ResolvePlaceholders(GetApplicationName(clientConfigsection, root, environment), root);
-            settings.Environment = ResolvePlaceholders(GetEnvironment(clientConfigsection, environment), root);
-            settings.Label = ResolvePlaceholders(GetLabel(clientConfigsection), root);
-            settings.Username = ResolvePlaceholders(GetUsername(clientConfigsection), root);
-            settings.Password = ResolvePlaceholders(GetPassword(clientConfigsection), root);
-            settings.Uri = ResolvePlaceholders(GetUri(clientConfigsection, root, settings.Uri), root);
-            settings.Enabled = GetEnabled(clientConfigsection, root, settings.Enabled);
-            settings.FailFast = GetFailFast(clientConfigsection, root, settings.FailFast);
-            settings.ValidateCertificates = GetCertificateValidation(clientConfigsection, root, settings.ValidateCertificates);
-            settings.RetryEnabled = GetRetryEnabled(clientConfigsection, root, settings.RetryEnabled);
-            settings.RetryInitialInterval = GetRetryInitialInterval(clientConfigsection, root, settings.RetryInitialInterval);
-            settings.RetryMaxInterval = GetRetryMaxInterval(clientConfigsection, root, settings.RetryMaxInterval);
-            settings.RetryMultiplier = GetRetryMultiplier(clientConfigsection, root, settings.RetryMultiplier);
-            settings.RetryAttempts = GetRetryMaxAttempts(clientConfigsection, root, settings.RetryAttempts);
+            settings.Name = ResolvePlaceholders(GetApplicationName(clientConfigsection, config, settings.Name), config);
+            settings.Environment = ResolvePlaceholders(GetEnvironment(clientConfigsection, settings.Environment), config);
+            settings.Label = ResolvePlaceholders(GetLabel(clientConfigsection), config);
+            settings.Username = ResolvePlaceholders(GetUsername(clientConfigsection), config);
+            settings.Password = ResolvePlaceholders(GetPassword(clientConfigsection), config);
+            settings.Uri = ResolvePlaceholders(GetUri(clientConfigsection, config, settings.Uri), config);
+            settings.Enabled = GetEnabled(clientConfigsection, config, settings.Enabled);
+            settings.FailFast = GetFailFast(clientConfigsection, config, settings.FailFast);
+            settings.ValidateCertificates = GetCertificateValidation(clientConfigsection, config, settings.ValidateCertificates);
+            settings.RetryEnabled = GetRetryEnabled(clientConfigsection, config, settings.RetryEnabled);
+            settings.RetryInitialInterval = GetRetryInitialInterval(clientConfigsection, config, settings.RetryInitialInterval);
+            settings.RetryMaxInterval = GetRetryMaxInterval(clientConfigsection, config, settings.RetryMaxInterval);
+            settings.RetryMultiplier = GetRetryMultiplier(clientConfigsection, config, settings.RetryMultiplier);
+            settings.RetryAttempts = GetRetryMaxAttempts(clientConfigsection, config, settings.RetryAttempts);
             settings.Token = GetToken(clientConfigsection);
             settings.Timeout = GetTimeout(clientConfigsection, settings.Timeout);
         }
-   
-        private static int GetRetryMaxAttempts(IConfigurationSection clientConfigsection, IConfigurationRoot root, int def)
+
+        private static int GetRetryMaxAttempts(IConfigurationSection clientConfigsection, IConfiguration config, int def)
         {
-            return GetInt("retry:maxAttempts", clientConfigsection, root, def);
+            return GetInt("retry:maxAttempts", clientConfigsection, config, def);
         }
 
-        private static double GetRetryMultiplier(IConfigurationSection clientConfigsection, IConfigurationRoot root, double def)
+        private static double GetRetryMultiplier(IConfigurationSection clientConfigsection, IConfiguration config, double def)
         {
-            return GetDouble("retry:multiplier", clientConfigsection, root, def);
+            return GetDouble("retry:multiplier", clientConfigsection, config, def);
         }
 
-        private static int GetRetryMaxInterval(IConfigurationSection clientConfigsection, IConfigurationRoot root, int def)
+        private static int GetRetryMaxInterval(IConfigurationSection clientConfigsection, IConfiguration config, int def)
         {
-            return GetInt("retry:maxInterval", clientConfigsection, root, def);
+            return GetInt("retry:maxInterval", clientConfigsection, config, def);
         }
 
-        private static int GetRetryInitialInterval(IConfigurationSection clientConfigsection, IConfigurationRoot root, int def)
+        private static int GetRetryInitialInterval(IConfigurationSection clientConfigsection, IConfiguration config, int def)
         {
-            return GetInt("retry:initialInterval", clientConfigsection, root, def);
+            return GetInt("retry:initialInterval", clientConfigsection, config, def);
         }
 
-        private static bool GetRetryEnabled(IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
+        private static bool GetRetryEnabled(IConfigurationSection clientConfigsection, IConfiguration config, bool def)
         {
-            return GetBoolean("retry:enabled", clientConfigsection, root, def);
+            return GetBoolean("retry:enabled", clientConfigsection, config, def);
         }
 
-        private static bool GetFailFast(IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
+        private static bool GetFailFast(IConfigurationSection clientConfigsection, IConfiguration config, bool def)
         {
-            return GetBoolean("failFast", clientConfigsection, root, def);
+            return GetBoolean("failFast", clientConfigsection, config, def);
         }
 
-        private static bool GetEnabled(IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
+        private static bool GetEnabled(IConfigurationSection clientConfigsection, IConfiguration config, bool def)
         {
-            return GetBoolean("enabled", clientConfigsection, root, def);
+            return GetBoolean("enabled", clientConfigsection, config, def);
         }
 
         private static string GetToken(IConfigurationSection clientConfigsection)
@@ -104,7 +115,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return def;
         }
 
-        private static string GetUri(IConfigurationSection clientConfigsection, IConfigurationRoot root, string def)
+        private static string GetUri(IConfigurationSection clientConfigsection, IConfiguration config, string def)
         {
 
             // First check for spring:cloud:config:uri
@@ -132,15 +143,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             return clientConfigsection["label"];
         }
- 
 
-        private static string GetApplicationName(IConfigurationSection clientConfigsection, IConfigurationRoot root, IHostingEnvironment environment)
+
+        private static string GetApplicationName(IConfigurationSection clientConfigsection, IConfiguration config, string defName)
         {
-            var appSection = root.GetSection(SPRING_APPLICATION_PREFIX);
-            return GetSetting("name", clientConfigsection, appSection, environment.ApplicationName);
+            var appSection = config.GetSection(SPRING_APPLICATION_PREFIX);
+            return GetSetting("name", clientConfigsection, appSection, defName);
         }
 
-        private static string GetEnvironment(IConfigurationSection section, IHostingEnvironment environment)
+        private static string GetEnvironment(IConfigurationSection section, string environment)
         {
             // if spring:cloud:config:env present, use it
             var env = section["env"];
@@ -149,13 +160,17 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return env;
             }
 
-            // Otherwise use ASP.NET Core defined value (i.e. ASPNET_ENV or Hosting:Environment) (its default is 'Production')
-            return environment.EnvironmentName;
+            if (string.IsNullOrEmpty(environment))
+            {
+                return "Production";
+            }
+
+            return environment;
         }
 
-        private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
+        private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, IConfiguration config, bool def)
         {
-            return GetBoolean("validate_certificates", clientConfigsection, root, def);
+            return GetBoolean("validate_certificates", clientConfigsection, config, def);
         }
 
         private static string ResolvePlaceholders(string property, IConfiguration config)
@@ -182,38 +197,38 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return def;
         }
 
-        private static int GetInt(string key, IConfigurationSection clientConfigsection, IConfigurationRoot root, int def)
+        private static int GetInt(string key, IConfigurationSection clientConfigsection, IConfiguration config, int def)
         {
             var val = clientConfigsection[key];
             if (!string.IsNullOrEmpty(val))
             {
                 int result;
-                string resolved = ResolvePlaceholders(val, root);
+                string resolved = ResolvePlaceholders(val, config);
                 if (int.TryParse(resolved, out result))
                     return result;
             }
             return def;
         }
-        private static double GetDouble(string key, IConfigurationSection clientConfigsection, IConfigurationRoot root, double def)
+        private static double GetDouble(string key, IConfigurationSection clientConfigsection, IConfiguration config, double def)
         {
             var val = clientConfigsection[key];
             if (!string.IsNullOrEmpty(val))
             {
                 double result;
-                string resolved = ResolvePlaceholders(val, root);
+                string resolved = ResolvePlaceholders(val, config);
                 if (double.TryParse(resolved, out result))
                     return result;
             }
             return def;
         }
 
-        private static bool GetBoolean(string key, IConfigurationSection clientConfigsection, IConfigurationRoot root, bool def)
+        private static bool GetBoolean(string key, IConfigurationSection clientConfigsection, IConfiguration config, bool def)
         {
             var val = clientConfigsection[key];
             if (!string.IsNullOrEmpty(val))
             {
                 bool result;
-                string resolved = ResolvePlaceholders(val, root);
+                string resolved = ResolvePlaceholders(val, config);
                 if (Boolean.TryParse(resolved, out result))
                     return result;
             }

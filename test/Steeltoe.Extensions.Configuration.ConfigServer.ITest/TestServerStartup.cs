@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,13 +50,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             string fileName = Path.GetFileName(path);
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.SetBasePath(directory);
-            
+
             builder.AddJsonFile(fileName)
                 .AddConfigServer(environment);
             Configuration = builder.Build();
 
         }
-  
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();

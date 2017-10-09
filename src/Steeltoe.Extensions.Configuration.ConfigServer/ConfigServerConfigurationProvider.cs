@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,18 +21,12 @@ using System.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
-using System.Net.Http.Headers;
-#if NET452
 using System.Net.Security;
-#else
-using System.Security.Authentication;
-#endif
-using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Hosting;
 using System.Threading;
 using System.Text.RegularExpressions;
+using Steeltoe.Common.Http;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -49,21 +43,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public const string PREFIX = "spring:cloud:config";
 
         public const string TOKEN_HEADER = "X-Config-Token";
-	    public const string STATE_HEADER = "X-Config-State";
+        public const string STATE_HEADER = "X-Config-State";
 
         protected ConfigServerClientSettings _settings;
-        protected IHostingEnvironment _environment;
         protected HttpClient _client;
         protected ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/> with default
         /// configuration settings. <see cref="ConfigServerClientSettings"/>
-        /// <param name="environment">required Hosting environment, used in establishing config server profile</param>
         /// <param name="logFactory">optional logging factory</param>
         /// </summary>
-        public ConfigServerConfigurationProvider(IHostingEnvironment environment, ILoggerFactory logFactory = null) :
-            this(new ConfigServerClientSettings(), environment, logFactory)
+        public ConfigServerConfigurationProvider(ILoggerFactory logFactory = null) :
+            this(new ConfigServerClientSettings(), logFactory)
         {
         }
 
@@ -71,26 +63,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/>.
         /// </summary>
         /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
-        /// <param name="environment">required Hosting environment, used in establishing config server profile</param>
         /// <param name="logFactory">optional logging factory</param>
         /// </summary>
-        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, IHostingEnvironment environment, ILoggerFactory logFactory = null) 
+        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            if (environment == null)
-            {
-                throw new ArgumentNullException(nameof(environment));
-            }
-
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
             _settings = settings;
             _client = null;
-            _environment = environment;
-           
+
         }
 
         /// <summary>
@@ -100,10 +85,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// accessing the server.</param>
         /// <param name="httpClient">a HttpClient the provider uses to make requests of
         /// the server.</param>
-        /// <param name="environment">required Hosting environment, used in establishing config server profile</param>
         /// <param name="logFactory">optional logging factory</param>
         /// </summary>
-        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, IHostingEnvironment environment, ILoggerFactory logFactory = null) 
+        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
         {
             if (settings == null)
             {
@@ -115,15 +99,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 throw new ArgumentNullException(nameof(httpClient));
             }
 
-            if (environment == null)
-            {
-                throw new ArgumentNullException(nameof(environment));
-            }
-
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
             _settings = settings;
             _client = httpClient;
-            _environment = environment;
         }
 
 
@@ -177,7 +155,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
                 } while (true);
 
-            } else
+            }
+            else
             {
                 _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
                 DoLoad();
@@ -207,7 +186,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                         if (sources != null)
                         {
                             int index = sources.Count - 1;
-                            for( ; index>=0; index--)
+                            for (; index >= 0; index--)
                             {
                                 AddPropertySource(sources[index]);
                             }
@@ -236,13 +215,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The HttpRequestMessage built from the path</returns>
         internal protected virtual HttpRequestMessage GetRequestMessage(string requestUri)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            if (!string.IsNullOrEmpty(_settings.Password))
-            {
-                AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Basic",
-                    GetEncoded(_settings.Username, _settings.Password));
-                request.Headers.Authorization = auth;
-            }
+            var request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, _settings.Username, _settings.Password);
 
             if (!string.IsNullOrEmpty(_settings.Token))
             {
@@ -294,12 +267,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             // Get the request message 
             var request = GetRequestMessage(requestUri);
 
-#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(_settings.ValidateCertificates, out prevProtocols, out prevValidator);
+
             // Invoke config server
             try
             {
@@ -333,12 +305,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 _logger?.LogError("Config Server exception: {0}, path: {1}", e, requestUri);
                 throw;
             }
-#if NET452
             finally
             {
-                RestoreCertificateValidation(prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
             }
-#endif
 
         }
 
@@ -349,19 +319,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The ConfigEnvironment object representing the response from the server</returns>
         internal protected virtual ConfigEnvironment Deserialize(Stream stream)
         {
-            try
-            {
-                using (JsonReader reader = new JsonTextReader(new StreamReader(stream)))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    return (ConfigEnvironment)serializer.Deserialize(reader, typeof(ConfigEnvironment));
-                }
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError("Config Server serialization exception: {0}", e);
-            }
-            return null;
+            return SerializationHelper.Deserialize<ConfigEnvironment>(stream, _logger);
         }
 
         /// <summary>
@@ -376,9 +334,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             if (!string.IsNullOrWhiteSpace(label))
                 path = path + "/" + label;
 
-            if (!_settings.RawUri.EndsWith("/")) 
-               path = "/" + path;
-       
+            if (!_settings.RawUri.EndsWith("/"))
+                path = "/" + path;
+
             return _settings.RawUri + path;
 
         }
@@ -409,7 +367,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             }
         }
-     
+
         internal protected virtual string ConvertKey(string key)
         {
             if (string.IsNullOrEmpty(key))
@@ -419,15 +377,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             string[] split = key.Split('.');
             StringBuilder sb = new StringBuilder();
-            foreach(var part in split)
+            foreach (var part in split)
             {
                 string keyPart = ConvertArrayKey(part);
                 sb.Append(keyPart);
                 sb.Append(ConfigurationPath.KeyDelimiter);
-     
+
             }
             return sb.ToString(0, sb.Length - 1);
- 
+
         }
 
         private const string arrayPattern = @"(\[[0-9]+\])*$";
@@ -453,11 +411,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns></returns>
         internal protected string GetEncoded(string user, string password)
         {
-            if (user == null)
-                user = string.Empty;
-            if (password == null)
-                password = string.Empty;
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
+            return HttpClientHelper.GetEncodedUserPassword(user, password);
         }
 
 
@@ -469,23 +423,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The HttpClient used by the provider</returns>
         protected static HttpClient GetHttpClient(ConfigServerClientSettings settings)
         {
-            HttpClient client = null;
-#if NET452
-            client = new HttpClient();
-#else
-            if (settings != null && !settings.ValidateCertificates)
-            {
-                var handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                handler.SslProtocols = SslProtocols.Tls12;
-                client = new HttpClient(handler);
-            } else
-            {
-                client = new HttpClient();
-            }
-#endif
-            client.Timeout = TimeSpan.FromMilliseconds(settings.Timeout);
-            return client;
+            return HttpClientHelper.GetHttpClient(settings.ValidateCertificates, settings.Timeout);
         }
 
         internal string[] GetLabels()
@@ -509,38 +447,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 }
                 config.Add(s);
             }
-            IConfigurationRoot existing = config.Build();
-            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _environment, existing);
+            IConfiguration existing = config.Build();
+            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, existing);
             return this;
 
         }
 
         internal protected virtual void RenewToken(string token)
         {
-
         }
-#if NET452
-        protected virtual void ConfigureCertificateValidatation(out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator) 
-        {
-            prevValidator = null;
-            protocolType = (SecurityProtocolType) 0;
-            if (!_settings.ValidateCertificates)
-            {
-                protocolType = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
-        }
-        protected virtual void RestoreCertificateValidation(SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator) 
-        {
-            if (!_settings.ValidateCertificates)
-            {
-                ServicePointManager.SecurityProtocol = protocolType;
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
-        }
-#endif
 
         internal IDictionary<string, string> Properties
         {

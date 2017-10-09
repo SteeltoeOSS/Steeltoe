@@ -3,14 +3,14 @@
   <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
-    <Description>ASP.NET Core Spring Cloud Config Server Configuration Provider</Description>
+    <Description>Spring Cloud Config Server Configuration Provider</Description>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Extensions.Configuration.ConfigServer</AssemblyName>
     <PackageId>Steeltoe.Extensions.Configuration.ConfigServer</PackageId>
-    <PackageTags>ASPNET Core;Spring;Spring Cloud;Spring Cloud Config Server</PackageTags>
+    <PackageTags>Spring Cloud;Spring Cloud Config Server</PackageTags>
     <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
@@ -19,12 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-        <!-- 4.3.0 of this package has problems on net46+, by default that version gets included, so we have to force using 4.3.1+  -->
-    <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" />
+    <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
   </ItemGroup>
 
 </Project>

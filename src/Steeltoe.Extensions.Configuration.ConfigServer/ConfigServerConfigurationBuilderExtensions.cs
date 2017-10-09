@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,52 +15,30 @@
 //
 
 using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Hosting;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 
 namespace Steeltoe.Extensions.Configuration
 {
-    /// <summary>
-    /// Extension methods for adding <see cref="ConfigServerConfigurationProvider"/>.
-    /// </summary>
+
     public static class ConfigServerConfigurationBuilderExtensions
     {
 
-        /// <summary>
-        /// Adds the Spring Cloud Config Server provider <see cref="ConfigServerConfigurationProvider"/> 
-        /// to <paramref name="configurationBuilder"/>.
-        /// <param name="configurationBuilder">The <see cref="IConfigurationBuilder"/> to add to.</param>
-        /// <param name="environment">The hosting enviroment settings.</param>
-        /// <param name="logFactory">optional logging factory. Used to enable logging in Config Server client.</param>
-        /// <returns>The <see cref="IConfigurationBuilder"/>.</returns>
-        /// 
-        /// Default Spring Config Server settings <see cref="ConfigServerClientSettings" /> will be used unless
-        /// overriden by values found in providers previously added to the <paramref name="configurationBuilder"/>. 
-        /// Example:
-        ///         var configurationBuilder = new ConfigurationBuilder();
-        ///         configurationBuilder.AddJsonFile("appsettings.json")
-        ///                             .AddEnvironmentVariables()
-        ///                             .AddConfigServer()
-        ///                             .Build();
-        ///     would use default Config Server setting unless overriden by values found in appsettings.json or
-        ///     environment variables.
-        /// </summary>
-        public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostingEnvironment environment, ILoggerFactory logFactory = null)
+        public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
         {
             if (configurationBuilder == null)
             {
                 throw new ArgumentNullException(nameof(configurationBuilder));
             }
 
-            if (environment == null)
+            if (settings == null)
             {
-                throw new ArgumentNullException(nameof(environment));
+                throw new ArgumentNullException(nameof(settings));
             }
 
-            configurationBuilder.Add(new ConfigServerConfigurationProvider(new ConfigServerClientSettings(), environment, logFactory));
+            configurationBuilder.Add(new ConfigServerConfigurationProvider(settings, logFactory));
             return configurationBuilder;
         }
     }

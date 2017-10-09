@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
     public class CloudFoundryConfigurationProviderTest
     {
         [Fact]
-        public void Ctor_NullReader()
+        public void Constructor_NullReader()
         {
             Assert.Throws<ArgumentNullException>(() => new CloudFoundryConfigurationProvider(null));
         }
@@ -263,7 +263,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
   }";
             var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
             var source = new JsonStreamConfigurationSource(memStream);
-            var provider = new JsonStreamConfigurationProvider(source, memStream);
+            var provider = new JsonStreamConfigurationProvider(source);
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.Add(source);
             var root = builder.Build();
@@ -278,16 +278,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
     public class JsonStreamConfigurationProviderTest
     {
-        [Fact]
-        public void Constructor_Throws_StreamNull()
-        {
-            // Arrange
-            MemoryStream stream = null;
-
-            // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(new MemoryStream()), stream));
-            Assert.Contains(nameof(stream), ex.Message);
-        }
 
         [Fact]
         public void Load_LoadsProvidedStream()
@@ -371,7 +361,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 }";
 
             var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
-            var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(memStream), memStream);
+            var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(memStream));
             provider.Load();
 
             string value = null;
@@ -395,5 +385,5 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         }
 
     }
-   
+
 }

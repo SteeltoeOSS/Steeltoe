@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Configuration.ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Configuration.ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj" />
     <ProjectReference Include="..\..\test\Steeltoe.Extensions.Configuration.ConfigServer.Test\Steeltoe.Extensions.Configuration.ConfigServer.Test.csproj" />
   </ItemGroup>
 

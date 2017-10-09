@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\versions.props" />
+
+  <PropertyGroup>
+    <Description>NET Core Spring Cloud Config Server Configuration Provider</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Steeltoe.Extensions.Configuration.ConfigServerCore</AssemblyName>
+    <PackageId>Steeltoe.Extensions.Configuration.ConfigServerCore</PackageId>
+    <PackageTags>ASPNET Core;Spring;Spring Cloud;Config Server</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.Extensions.Configuration.ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServer" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+</Project>

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ using Microsoft.Extensions.Configuration;
 using Xunit;
 using System;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.Hosting;
 using System.IO;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
@@ -31,23 +29,23 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = null;
-            var environment = new HostingEnvironment();
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, environment));
+            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, new ConfigServerClientSettings()));
             Assert.Contains(nameof(configurationBuilder), ex.Message);
 
         }
 
         [Fact]
-        public void AddConfigServer_ThrowsIfHostingEnvironmentNull()
+        public void AddConfigServer_ThrowsIfSettingsNull()
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            IHostingEnvironment environment = null;
+            ConfigServerClientSettings settings = null;
+
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, environment));
-            Assert.Contains(nameof(environment), ex.Message);
+            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, settings));
+            Assert.Contains(nameof(settings), ex.Message);
 
         }
 
@@ -56,10 +54,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
-            var environment = new HostingEnvironment();
+            var settings = new ConfigServerClientSettings();
 
             // Act and Assert
-            configurationBuilder.AddConfigServer(environment);
+            configurationBuilder.AddConfigServer(settings);
 
             ConfigServerConfigurationProvider configServerProvider = null;
             foreach (IConfigurationProvider provider in configurationBuilder.Sources)
@@ -78,10 +76,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
             var loggerFactory = new LoggerFactory();
-            var environment = new HostingEnvironment();
+            var settings = new ConfigServerClientSettings();
 
             // Act and Assert
-            configurationBuilder.AddConfigServer(environment,loggerFactory);
+            configurationBuilder.AddConfigServer(settings, loggerFactory);
 
             ConfigServerConfigurationProvider configServerProvider = null;
             foreach (IConfigurationProvider provider in configurationBuilder.Sources)
@@ -127,18 +125,18 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
       }
     }
 }";
-     
+
             var path = TestHelpers.CreateTempFile(appsettings);
             string directory = Path.GetDirectoryName(path);
             string fileName = Path.GetFileName(path);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var environment = new HostingEnvironment();
+            var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert
-            configurationBuilder.AddConfigServer(environment);
+            configurationBuilder.AddConfigServer(csettings);
 
             ConfigServerConfigurationProvider configServerProvider = null;
             foreach (IConfigurationSource source in configurationBuilder.Sources)
@@ -197,11 +195,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var environment = new HostingEnvironment();
+            var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddXmlFile(fileName);
 
             // Act and Assert
-            configurationBuilder.AddConfigServer(environment);
+            configurationBuilder.AddConfigServer(csettings);
             IConfigurationRoot root = configurationBuilder.Build();
 
             ConfigServerConfigurationProvider configServerProvider = null;
@@ -222,7 +220,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
-   
+
 
         }
         [Fact]
@@ -245,11 +243,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var environment = new HostingEnvironment();
+            var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddIniFile(fileName);
 
             // Act and Assert
-            configurationBuilder.AddConfigServer(environment);
+            configurationBuilder.AddConfigServer(csettings);
             IConfigurationRoot root = configurationBuilder.Build();
 
             ConfigServerConfigurationProvider configServerProvider = null;
@@ -291,11 +289,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 };
 
             var configurationBuilder = new ConfigurationBuilder();
-            var environment = new HostingEnvironment();
+            var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddCommandLine(appsettings);
 
             // Act and Assert
-            configurationBuilder.AddConfigServer(environment);
+            configurationBuilder.AddConfigServer(csettings);
             IConfigurationRoot root = configurationBuilder.Build();
 
             ConfigServerConfigurationProvider configServerProvider = null;
@@ -312,10 +310,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.False(settings.FailFast);
             Assert.Equal("http://foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
-            Assert.Equal("myName", settings.Name );
-            Assert.Equal("myLabel", settings.Label );
+            Assert.Equal("myName", settings.Name);
+            Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
-            Assert.Equal("myPassword", settings.Password );
+            Assert.Equal("myPassword", settings.Password);
 
 
         }
@@ -355,12 +353,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             string fileName = Path.GetFileName(path);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
-      
-            var environment = new HostingEnvironment();
+
+            var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert
-            configurationBuilder.AddConfigServer(environment);
+            configurationBuilder.AddConfigServer(csettings);
             IConfigurationRoot root = configurationBuilder.Build();
 
             ConfigServerConfigurationProvider configServerProvider = null;

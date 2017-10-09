@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ using System;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Extensions.Configuration.ConfigServer;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Steeltoe.Extensions.Configuration
 {
@@ -28,16 +28,8 @@ namespace Steeltoe.Extensions.Configuration
     /// </summary>
     public static class ConfigServerServiceCollectionExtensions
     {
-        /// <summary>
-        /// A convenience extension method that can optionally be used to add Spring Cloud Config Server client services to the 
-        /// ServiceCollection. It adds the IOptions service to the IServiceCollection and then configures IOption service
-        /// with the ClientSettingsOptions.  It also adds the IConfigurationRoot as a service instance to the Collection. 
-        /// After a call to this method, you will be able to use the DI mechanism to get access to these components.
-        /// </summary>
-        /// <param name="services">the service collection to add the services to (required)</param>
-        /// <param name="config">the Iconfiguration root (required)</param>
-        /// <returns>update IServiceCollection</returns>
-        public static IServiceCollection AddConfigServer(this IServiceCollection services, IConfigurationRoot config)
+
+        public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
@@ -50,8 +42,35 @@ namespace Steeltoe.Extensions.Configuration
             }
 
             services.AddOptions();
-            services.Configure<ConfigServerClientSettingsOptions>(config);
-            services.AddSingleton<IConfigurationRoot>(config);
+
+            var section = config.GetSection(ConfigServerClientSettingsOptions.CONFIGURATION_PREFIX);
+            services.Configure<ConfigServerClientSettingsOptions>(section);
+
+            return services;
+        }
+
+        public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration config)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            services.AddOptions();
+
+            services.TryAddSingleton<IConfiguration>(config);
+
+            var root = config as IConfigurationRoot;
+            if (root != null)
+            {
+                services.TryAddSingleton<IConfigurationRoot>(root);
+            }
+
             return services;
         }
     }

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 // limitations under the License.
 //
 
-
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Extensions.Configuration.ConfigServer;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 {
     public class ConfigServerClientSettingsOptionsTest
     {
@@ -36,7 +36,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var builder = new ConfigurationBuilder().AddConfigServer(environment);
             var config = builder.Build();
 
-            services.Configure<ConfigServerClientSettingsOptions>(config);
+            services.ConfigureConfigServerClientOptions(config);
             var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();
             Assert.NotNull(service);
             var options = service.Value;

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
 // limitations under the License.
 //
 
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using System.IO;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
@@ -65,9 +64,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                     }
 
                     AddDiegoVariables();
-
-                   
-
                 }
             }
 
@@ -122,7 +118,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             {
                 return;
             }
-            foreach(IConfigurationSection section in sections)
+            foreach (IConfigurationSection section in sections)
             {
                 LoadSection(prefix, section);
                 LoadData(prefix, section.GetChildren());
@@ -152,24 +148,24 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
     class JsonStreamConfigurationProvider : JsonConfigurationProvider
     {
-        MemoryStream _stream;
-        internal JsonStreamConfigurationProvider(JsonConfigurationSource source, MemoryStream stream) : base(source)
+        private JsonStreamConfigurationSource _source;
+        internal JsonStreamConfigurationProvider(JsonStreamConfigurationSource source) : base(source)
         {
-            if (stream == null)
+            if (source == null)
             {
-                throw new ArgumentNullException(nameof(stream));
+                throw new ArgumentNullException(nameof(source));
             }
-            _stream = stream;
+            _source = source;
         }
         public override void Load()
         {
-            base.Load(_stream);
+            base.Load(_source.Stream);
         }
     }
 
     class JsonStreamConfigurationSource : JsonConfigurationSource
     {
-        private MemoryStream _stream;
+        internal MemoryStream Stream { get; }
 
         internal JsonStreamConfigurationSource(MemoryStream stream)
         {
@@ -177,11 +173,11 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             {
                 throw new ArgumentNullException(nameof(stream));
             }
-            _stream = stream;
+            Stream = stream;
         }
         public override IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new JsonStreamConfigurationProvider(this, _stream);
+            return new JsonStreamConfigurationProvider(this);
         }
     }
 }

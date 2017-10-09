@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,40 +18,41 @@ using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
 
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 {
     public class ConfigServerConfigServerServiceCollectionExtensionsTest
     {
         [Fact]
-        public void AddConfigServer_ThrowsIfServiceCollectionNull()
+        public void ConfigureConfigServerClientOptions_ThrowsIfServiceCollectionNull()
         {
             // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerServiceCollectionExtensions.AddConfigServer(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions(config));
             Assert.Contains(nameof(services), ex.Message);
 
         }
         [Fact]
-        public void AddConfigServer_ThrowsIfConfigurtionNull()
+        public void ConfigureConfigServerClientOptions_ThrowsIfConfigurtionNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerServiceCollectionExtensions.AddConfigServer(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions(config));
             Assert.Contains(nameof(config), ex.Message);
 
         }
         [Fact]
-        public void AddConfigServer_ConfiguresConfigServerClientSettingsOptions_WithDefaults()
+        public void ConfigureConfigServerClientOptions_ConfiguresConfigServerClientSettingsOptions_WithDefaults()
         {
             // Arrange
             var services = new ServiceCollection();
@@ -60,7 +61,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             var builder = new ConfigurationBuilder().AddConfigServer(environment);
             var config = builder.Build();
-            ConfigServerServiceCollectionExtensions.AddConfigServer(services, config);
+            services.ConfigureConfigServerClientOptions(config);
 
             var serviceProvider = services.BuildServiceProvider();
             var service = serviceProvider.GetService<IOptions<ConfigServerClientSettingsOptions>>();
@@ -87,21 +88,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Null(options.Token);
 
         }
-        [Fact]
-        public void AddConfigServer_AddsConfigurationAsService()
-        {
-            // Arrange
-            var services = new ServiceCollection();
-            var environment = new HostingEnvironment();
 
-            // Act and Assert
-            var builder = new ConfigurationBuilder().AddConfigServer(environment);
-            var config = builder.Build();
-            ConfigServerServiceCollectionExtensions.AddConfigServer(services, config);
-
-            var service = services.BuildServiceProvider().GetService<IConfigurationRoot>();
-            Assert.NotNull(service);
-
-        }
     }
 }

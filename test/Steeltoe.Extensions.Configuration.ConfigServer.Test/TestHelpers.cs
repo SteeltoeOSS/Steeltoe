@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-using System;
 using System.IO;
 
 using Xunit;
@@ -30,7 +29,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var tempFile = Path.GetTempFileName();
             File.WriteAllText(tempFile, contents);
             return tempFile;
-            
+
         }
         public static Stream StringToStream(string str)
         {
@@ -75,7 +74,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
     public class TestConfigServerStartup
     {
 
-        public static string Response { get; set; } 
+        public static string Response { get; set; }
         public static int ReturnStatus { get; set; } = 200;
 
         public static HttpRequest LastRequest { get; set; }
@@ -87,11 +86,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             LastRequest = null;
         }
 
-        
+
         public void Configure(IApplicationBuilder app)
         {
             app.Run(async context =>
-            { 
+            {
                 LastRequest = context.Request;
                 RequestCount++;
                 context.Response.StatusCode = ReturnStatus;
