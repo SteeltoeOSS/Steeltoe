@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="..\..\versions.props" />
-
   <PropertyGroup>
     <Description>CloudFoundry Connector for ASP.NET Core and OAuth Services</Description>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
@@ -11,9 +9,9 @@
     <AssemblyName>Steeltoe.CloudFoundry.Connector.OAuth</AssemblyName>
     <PackageId>Steeltoe.CloudFoundry.Connector.OAuth</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Connectors;OAuth2;SSO;Security</PackageTags>
-    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 
   <PropertyGroup>
