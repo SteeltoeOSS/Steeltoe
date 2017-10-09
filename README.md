@@ -11,6 +11,7 @@ Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/
 Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Common.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Common)
 
 # Nuget Feeds
+
 All new development is done on the dev branch. More stable versions of the packages can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
@@ -20,12 +21,14 @@ All new development is done on the dev branch. More stable versions of the packa
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/. 
 
 # Building Pre-requisites
+
 To build and run the unit tests:
 
 1. .NET Core SDK 2.0.0 or greater
 2. .NET Core Runtime 2.0
 
 # Building Packages & Running Tests - Windows
+
 To build the packages on windows:
 
 1. git clone ...
@@ -45,6 +48,7 @@ To run the unit tests:
 5. dotnet xunit -verbose
 
 # Building Packages & Running Tests - Linux/OSX
+
 To build the packages on Linux/OSX:
 
 1. git clone ...
