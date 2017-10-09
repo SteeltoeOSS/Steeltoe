@@ -65,7 +65,7 @@ namespace Steeltoe.Common.Http.Test
             RemoteCertificateValidationCallback prevValidator;
             SecurityProtocolType protocolType;
 
-            HttpClientHelper.ConfigureCertificateValidatation(false, out protocolType, out prevValidator);
+            HttpClientHelper.ConfigureCertificateValidatation(true, out protocolType, out prevValidator);
 
             if (Platform.IsNetCore)
             {
@@ -112,7 +112,7 @@ namespace Steeltoe.Common.Http.Test
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType protocolType = SecurityProtocolType.Tls;
 
-            HttpClientHelper.RestoreCertificateValidation(false, protocolType, prevValidator);
+            HttpClientHelper.RestoreCertificateValidation(true, protocolType, prevValidator);
 
             if (Platform.IsNetCore)
             {
