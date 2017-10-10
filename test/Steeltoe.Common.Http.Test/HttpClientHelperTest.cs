@@ -176,8 +176,14 @@ namespace Steeltoe.Common.Http.Test
             Assert.Equal("Basic", message.Headers.Authorization.Scheme);
             Assert.Equal(bytes, message.Headers.Authorization.Parameter);
         }
+
+        [Fact]
+        public void GetAccessToken_ThrowsNulls()
+        {
+            Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken(null, null, null));
+            Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("http://foo/bar", null, null));
+            Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("http://foo/bar", "clientid", null));
+        }
     }
-    //public static void RestoreCertificateValidation(bool validateCertificates, SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator)
-    //{
-    //}
+
 }
