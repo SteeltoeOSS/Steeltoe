@@ -51,6 +51,10 @@ namespace Steeltoe.Common.Configuration
         private static string ParseStringValue(string property, IConfiguration config, ISet<string> visitedPlaceHolders, ILogger logger = null)
         {
 
+            if (config == null)
+            {
+                return property;
+            }
 
             if (string.IsNullOrEmpty(property))
                 return property;
