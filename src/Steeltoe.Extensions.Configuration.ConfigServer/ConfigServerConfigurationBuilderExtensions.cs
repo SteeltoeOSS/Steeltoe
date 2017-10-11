@@ -25,20 +25,22 @@ namespace Steeltoe.Extensions.Configuration
 
     public static class ConfigServerConfigurationBuilderExtensions
     {
-
-        public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
+        public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string environment, ILoggerFactory logFactory = null) =>
+            configurationBuilder.AddConfigServer(new ConfigServerClientSettings() { Environment = environment }, logFactory);
+    
+        public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientSettings defaultSettings, ILoggerFactory logFactory = null)
         {
             if (configurationBuilder == null)
             {
                 throw new ArgumentNullException(nameof(configurationBuilder));
             }
 
-            if (settings == null)
+            if (defaultSettings == null)
             {
-                throw new ArgumentNullException(nameof(settings));
+                throw new ArgumentNullException(nameof(defaultSettings));
             }
 
-            configurationBuilder.Add(new ConfigServerConfigurationProvider(settings, logFactory));
+            configurationBuilder.Add(new ConfigServerConfigurationProvider(defaultSettings, logFactory));
             return configurationBuilder;
         }
     }
