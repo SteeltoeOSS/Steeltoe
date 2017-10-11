@@ -19,10 +19,10 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
     public class PostgresProviderConnectorFactory
     {
-        protected PostgresServiceInfo _info;
-        protected PostgresProviderConnectorOptions _config;
-        protected PostgresProviderConfigurer _configurer = new PostgresProviderConfigurer();
-        protected Type _type;
+        private PostgresServiceInfo _info;
+        private PostgresProviderConnectorOptions _config;
+        private PostgresProviderConfigurer _configurer = new PostgresProviderConfigurer();
+        private Type _type;
 
         internal PostgresProviderConnectorFactory()
         {

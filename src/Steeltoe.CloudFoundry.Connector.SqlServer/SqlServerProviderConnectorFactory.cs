@@ -19,11 +19,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
     public class SqlServerProviderConnectorFactory
     {
-        protected SqlServerServiceInfo _info;
-        protected SqlServerProviderConnectorOptions _config;
-        protected SqlServerProviderConfigurer _configurer = new SqlServerProviderConfigurer();
-
-        protected Type _type;
+        private SqlServerServiceInfo _info;
+        private SqlServerProviderConnectorOptions _config;
+        private SqlServerProviderConfigurer _configurer = new SqlServerProviderConfigurer();
 
         internal SqlServerProviderConnectorFactory()
         {
@@ -31,15 +29,12 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         public SqlServerProviderConnectorFactory(SqlServerServiceInfo sinfo, SqlServerProviderConnectorOptions config, Type type)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
+            _config = config ?? throw new ArgumentNullException(nameof(config));
             _info = sinfo;
-            _config = config;
-            _type = type;
+            ConnectorType = type;
         }
+
+        protected Type ConnectorType { get; set; }
 
         public virtual object Create(IServiceProvider provider)
         {
@@ -52,7 +47,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", ConnectorType));
             }
 
             return result;
@@ -65,7 +60,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         public virtual object CreateConnection(string connectionString)
         {
-            return ConnectorHelpers.CreateInstance(_type, new object[] { connectionString });
+            return ConnectorHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
         }
     }
 }

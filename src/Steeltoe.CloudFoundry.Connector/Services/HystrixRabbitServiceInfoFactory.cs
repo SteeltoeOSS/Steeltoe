@@ -38,10 +38,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             if (credentials.ContainsKey("amqp"))
             {
                 var amqpDict = credentials["amqp"];
-                string uri = GetStringFromCredentials(amqpDict, uriKeys);
+                string uri = GetStringFromCredentials(amqpDict, UriKeys);
                 if (uri != null)
                 {
-                    foreach (string uriScheme in _schemes)
+                    foreach (string uriScheme in UriSchemes)
                     {
                         if (uri.StartsWith(uriScheme + "://"))
                         {

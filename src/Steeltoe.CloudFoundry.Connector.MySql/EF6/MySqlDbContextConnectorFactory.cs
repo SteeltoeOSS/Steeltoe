@@ -40,12 +40,12 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
             object result = null;
             if (connectionString != null)
             {
-                result = ConnectorHelpers.CreateInstance(_type, new object[] { connectionString });
+                result = ConnectorHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
             }
 
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor", _type));
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor", ConnectorType));
             }
 
             return result;
