@@ -20,12 +20,10 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 {
     public class RabbitProviderConnectorFactory
     {
-        protected RabbitServiceInfo _info;
-        protected RabbitProviderConnectorOptions _config;
-        protected RabbitProviderConfigurer _configurer = new RabbitProviderConfigurer();
-        protected Type _type;
-
-        protected MethodInfo _setUri;
+        private RabbitServiceInfo _info;
+        private RabbitProviderConnectorOptions _config;
+        private RabbitProviderConfigurer _configurer = new RabbitProviderConfigurer();
+        private MethodInfo _setUri;
 
         internal RabbitProviderConnectorFactory()
         {
@@ -33,25 +31,17 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 
         public RabbitProviderConnectorFactory(RabbitServiceInfo sinfo, RabbitProviderConnectorOptions config, Type connectFactory)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-           if (connectFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectFactory));
-            }
-
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            ConnectorType = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
             _info = sinfo;
-            _config = config;
-            _type = connectFactory;
-            _setUri = FindSetUriMethod(_type);
+            _setUri = FindSetUriMethod(ConnectorType);
             if (_setUri == null)
             {
                 throw new ConnectorException("Unable to find ConnectionFactory.SetUri(), incompatible RabbitMQ assembly");
             }
         }
+
+        protected Type ConnectorType { get; set; }
 
         public virtual object Create(IServiceProvider provider)
         {
@@ -64,7 +54,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", ConnectorType));
             }
 
             return result;
@@ -77,7 +67,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 
         public virtual object CreateConnection(string connectionString)
         {
-            object inst = ConnectorHelpers.CreateInstance(_type, null);
+            object inst = ConnectorHelpers.CreateInstance(ConnectorType, null);
             if (inst == null)
             {
                 return null;

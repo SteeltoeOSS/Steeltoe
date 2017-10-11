@@ -23,13 +23,12 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     {
+        private const string Default_Host = "localhost";
+        private const int Default_Port = 6379;
+        private const string RedisClientSectionPrefix = "redis:client";
         private static char[] comma = new char[] { ',' };
 
-        public const string Default_Host = "localhost";
-        public const int Default_Port = 6379;
-        public static string Default_EndPoints = Default_Host + ":" + Default_Port;
-
-        private const string RedisClientSectionPrefix = "redis:client";
+        private static string default_EndPoints = Default_Host + ":" + Default_Port;
 
         public RedisCacheConnectorOptions()
             : base(',', Default_Separator)

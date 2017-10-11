@@ -22,8 +22,8 @@ namespace Steeltoe.CloudFoundry.Connector
     {
         protected const char Default_Terminator = ';';
         protected const char Default_Separator = '=';
-        protected char _keyValueTerm;
-        protected char _keyValueSep;
+        private char _keyValueTerm;
+        private char _keyValueSep;
 
         protected AbstractServiceConnectorOptions()
             : this(Default_Terminator, Default_Separator)

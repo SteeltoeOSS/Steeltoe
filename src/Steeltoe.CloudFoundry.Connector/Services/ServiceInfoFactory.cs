@@ -25,11 +25,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         private static List<string> _passwordList = new List<string>() { "password", "pw" };
         private static List<string> _hostList = new List<string>() { "hostname", "host" };
 
-        protected Tags _tags;
-        protected string[] _schemes;
-
-        protected List<string> uriKeys = new List<string> { "uri", "url" };
-
         public ServiceInfoFactory(Tags tags, string scheme)
             : this(tags, new string[] { scheme })
         {
@@ -46,27 +41,33 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 throw new ArgumentNullException(nameof(tags));
             }
 
-            _tags = tags;
-            _schemes = schemes;
+            ServiceInfoTags = tags;
+            UriSchemes = schemes;
             if (schemes != null)
             {
                foreach (string s in schemes)
                 {
-                    uriKeys.Add(s + "Uri");
-                    uriKeys.Add(s + "uri");
-                    uriKeys.Add(s + "Url");
-                    uriKeys.Add(s + "url");
+                    UriKeys.Add(s + "Uri");
+                    UriKeys.Add(s + "uri");
+                    UriKeys.Add(s + "Url");
+                    UriKeys.Add(s + "url");
                 }
             }
         }
+
+        protected Tags ServiceInfoTags { get; set; }
+
+        protected List<string> UriKeys { get; set; } = new List<string> { "uri", "url" };
+
+        protected string[] UriSchemes { get; set; }
 
         public virtual string DefaultUriScheme
         {
             get
             {
-                if (_schemes != null && _schemes.Length > 0)
+                if (UriSchemes != null && UriSchemes.Length > 0)
                 {
-                    return _schemes[0];
+                    return UriSchemes[0];
                 }
                 else
                 {
@@ -86,18 +87,18 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         protected internal virtual bool TagsMatch(Service binding)
         {
             var serviceTags = binding.Tags;
-            return _tags.ContainsOne(serviceTags);
+            return ServiceInfoTags.ContainsOne(serviceTags);
         }
 
         protected internal virtual bool LabelStartsWithTag(Service binding)
         {
             string label = binding.Label;
-            return _tags.StartsWith(label);
+            return ServiceInfoTags.StartsWith(label);
         }
 
         protected internal virtual bool UriMatchesScheme(Service binding)
         {
-            if (_schemes == null)
+            if (UriSchemes == null)
             {
                 return false;
             }
@@ -108,10 +109,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return false;
             }
 
-            string uri = GetStringFromCredentials(binding.Credentials, uriKeys);
+            string uri = GetStringFromCredentials(binding.Credentials, UriKeys);
             if (uri != null)
             {
-                foreach (string uriScheme in _schemes)
+                foreach (string uriScheme in UriSchemes)
                 {
                     if (uri.StartsWith(uriScheme + "://"))
                     {
@@ -125,7 +126,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         protected internal virtual bool UriKeyMatchesScheme(Service binding)
         {
-            if (_schemes == null)
+            if (UriSchemes == null)
             {
                 return false;
             }
@@ -136,7 +137,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return false;
             }
 
-            foreach (string uriScheme in _schemes)
+            foreach (string uriScheme in UriSchemes)
             {
                 if (credentials.ContainsKey(uriScheme + "Uri") || credentials.ContainsKey(uriScheme + "uri") ||
                         credentials.ContainsKey(uriScheme + "Url") || credentials.ContainsKey(uriScheme + "url"))
@@ -170,7 +171,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         protected internal virtual string GetUriFromCredentials(Dictionary<string, Credential> credentials)
         {
-            return GetStringFromCredentials(credentials, uriKeys);
+            return GetStringFromCredentials(credentials, UriKeys);
         }
 
         protected internal virtual string GetClientIdFromCredentials(Dictionary<string, Credential> credentials)

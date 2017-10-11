@@ -19,11 +19,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 {
     public class MySqlProviderConnectorFactory
     {
-        protected MySqlServiceInfo _info;
-        protected MySqlProviderConnectorOptions _config;
-        protected MySqlProviderConfigurer _configurer = new MySqlProviderConfigurer();
-
-        protected Type _type;
+        private MySqlServiceInfo _info;
+        private MySqlProviderConnectorOptions _config;
+        private MySqlProviderConfigurer _configurer = new MySqlProviderConfigurer();
 
         public MySqlProviderConnectorFactory()
         {
@@ -38,8 +36,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             _info = sinfo;
             _config = config;
-            _type = type;
+            ConnectorType = type;
         }
+
+        protected Type ConnectorType { get; set; }
 
         public virtual object Create(IServiceProvider provider)
         {
@@ -52,7 +52,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             if (result == null)
             {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", ConnectorType));
             }
 
             return result;
@@ -65,7 +65,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
         public virtual object CreateConnection(string connectionString)
         {
-            return ConnectorHelpers.CreateInstance(_type, new object[] { connectionString });
+            return ConnectorHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
         }
     }
 }

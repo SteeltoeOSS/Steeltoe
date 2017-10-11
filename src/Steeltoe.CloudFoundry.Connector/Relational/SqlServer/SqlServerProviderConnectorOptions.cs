@@ -40,14 +40,14 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
             section.Bind(this);
 
-            if (uri != null)
+            if (Uri != null)
             {
-                Server = uri.Split(':')[2].Substring(2);
+                Server = Uri.Split(':')[2].Substring(2);
             }
 
-            Username = uid;
-            Database = db;
-            Password = pw;
+            Username = Uid;
+            Database = Db;
+            Password = Pw;
 
             section.Bind(this);
         }
@@ -66,13 +66,13 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         public string IntegratedSecurity { get; set; }
 
-        public string uid { get; set; }
+        public string Uid { get; set; }
 
-        public string uri { get; set; }
+        public string Uri { get; set; }
 
-        public string db { get; set; }
+        public string Db { get; set; }
 
-        public string pw { get; set; }
+        public string Pw { get; set; }
 
         public override string ToString()
         {
