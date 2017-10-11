@@ -41,11 +41,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            ConfigServerClientSettings settings = null;
+            ConfigServerClientSettings defaultSettings = null;
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, settings));
-            Assert.Contains(nameof(settings), ex.Message);
+            Assert.Contains(nameof(defaultSettings), ex.Message);
 
         }
 
