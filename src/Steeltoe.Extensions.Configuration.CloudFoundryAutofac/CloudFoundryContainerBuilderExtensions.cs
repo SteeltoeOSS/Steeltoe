@@ -17,7 +17,6 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Options.Autofac;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 
 
