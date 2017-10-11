@@ -24,7 +24,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
     {
 
         [Fact]
-        public void AddCloudFoundry_ThrowsIfHostBuilderNull()
+        public void UseCloudFoundryHosting_ThrowsIfHostBuilderNull()
         {
             // Arrange
             IWebHostBuilder webHostBuilder = null;
@@ -35,7 +35,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         }
 
         [Fact]
-        public void AddCloudFoundry_DoNotSetUrlsIfNull()
+        public void UseCloudFoundryHosting_DoNotSetUrlsIfNull()
         {
             // Arrange
             Environment.SetEnvironmentVariable("PORT", null);
@@ -52,7 +52,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         }
 
         [Fact]
-        public void AddCloudFoundry_MakeSureThePortIsSet()
+        public void UseCloudFoundryHosting_MakeSureThePortIsSet()
         {
             // Arrange
             Environment.SetEnvironmentVariable("PORT", "42");

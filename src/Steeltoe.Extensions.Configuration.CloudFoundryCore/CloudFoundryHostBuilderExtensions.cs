@@ -50,7 +50,7 @@ namespace Steeltoe.Extensions.Configuration
 
             return webHostBuilder;
         }
-        public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder hostBuilder)
+        public static IWebHostBuilder AddCloudFoundry(this IWebHostBuilder hostBuilder)
         {
             hostBuilder.ConfigureAppConfiguration((context, config) =>
             {
