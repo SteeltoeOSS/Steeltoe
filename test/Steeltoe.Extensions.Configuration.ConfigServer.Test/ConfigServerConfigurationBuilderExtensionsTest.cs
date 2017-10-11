@@ -44,7 +44,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerClientSettings defaultSettings = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, settings));
+            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, defaultSettings));
             Assert.Contains(nameof(defaultSettings), ex.Message);
 
         }
