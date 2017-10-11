@@ -21,7 +21,7 @@ using Steeltoe.Extensions.Configuration.ConfigServer;
 using Autofac;
 using Steeltoe.Common.Options.Autofac;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     /// <summary>
     /// Extension methods for adding services related to Spring Cloud Config Server.

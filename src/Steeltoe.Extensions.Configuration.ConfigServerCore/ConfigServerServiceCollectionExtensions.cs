@@ -21,7 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     /// <summary>
     /// Extension methods for adding services related to Spring Cloud Config Server.

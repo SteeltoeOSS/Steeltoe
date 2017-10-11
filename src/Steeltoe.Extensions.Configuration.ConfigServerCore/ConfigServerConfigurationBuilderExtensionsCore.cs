@@ -20,15 +20,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     /// <summary>
     /// Extension methods for adding <see cref="ConfigServerConfigurationProvider"/>.
     /// </summary>
     public static class ConfigServerConfigurationBuilderExtensionsCore
     {
-
-
         public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostingEnvironment environment, ILoggerFactory logFactory = null)
         {
             if (configurationBuilder == null)

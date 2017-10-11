@@ -16,7 +16,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     public static class ConfigServerHostBuilderExtensions
     {
