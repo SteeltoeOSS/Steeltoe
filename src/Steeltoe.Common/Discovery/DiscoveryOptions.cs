@@ -22,7 +22,7 @@ namespace Steeltoe.Common.Discovery
 {
     public class DiscoveryOptions
     {
-        public DiscoveryOptions(IConfiguration config)
+        public DiscoveryOptions(IConfiguration config) : this()
         {
             if (config == null)
             {
@@ -49,6 +49,10 @@ namespace Steeltoe.Common.Discovery
         {
             get
             {
+                if (string.IsNullOrEmpty(_type))
+                {
+                    return DiscoveryClientType.UNKNOWN;
+                }
                 return (DiscoveryClientType)System.Enum.Parse(typeof(DiscoveryClientType), _type);
             }
             set
@@ -84,6 +88,7 @@ namespace Steeltoe.Common.Discovery
         }
         public virtual void Configure(IConfiguration config)
         {
+            ClientType = DiscoveryClientType.UNKNOWN;
         }
 
     }
