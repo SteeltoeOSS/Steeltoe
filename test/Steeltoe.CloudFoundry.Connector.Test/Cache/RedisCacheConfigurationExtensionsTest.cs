@@ -22,6 +22,7 @@ using Steeltoe.Extensions.Configuration;
 using System;
 using System.IO;
 using Xunit;
+using System.Collections.Generic;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
@@ -99,24 +100,16 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         public void CreateRedisServiceConnectorFactory_NoVCAPs_CreatesFactory()
         {
             // Arrange
-            var appsettings = @"
-{
-   'redis': {
-        'client': {
-            'host': '127.0.0.1',
-            'port': 1234,
-            'password': 'password',
-            'abortOnConnectFail': false
-        }
-   }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["redis:client:host"] = "127.0.0.1",
+                ["redis:client:port"] = "1234",
+                ["redis:client:password"] = "password",
+                ["redis:client:abortOnConnectFail"] = "false"
+            };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var connectorOptions = new RedisCacheConnectorOptions(config);
 

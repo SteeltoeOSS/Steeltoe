@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
 using System;
-using System.IO;
-
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
@@ -36,35 +35,23 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = @"
-{
-   'security': {
-        'oauth2': {
-            'client': {
-                'oauthServiceUrl': 'http://foo.bar',
-                'clientId': 'clientid',
-                'clientSecret': 'clientsecret',
-                'userAuthorizationUri': 'userauthorizationuri',
-                'accessTokenUri': 'accesstokenuri',
-                'validate_certificates': false,
-                'scope': ['foo','bar']
-            },
-            'resource' : {
-                'userInfoUri' : 'userinfouri',
-                'tokenInfoUri' : 'tokeninfouri',
-                'jwtKeyUri' : 'jwtkeyuri'
-            }
-        }
-   }
-}";
-
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["security:oauth2:client:oauthServiceUrl"] = "http://foo.bar",
+                ["security:oauth2:client:clientid"] = "clientid",
+                ["security:oauth2:client:clientSecret"] = "clientsecret",
+                ["security:oauth2:client:userAuthorizationUri"] = "userauthorizationuri",
+                ["security:oauth2:client:accessTokenUri"] = "accesstokenuri",
+                ["security:oauth2:client:validate_certificates"] = "false",
+                ["security:oauth2:client:scope:0"] = "foo",
+                ["security:oauth2:client:scope:1"] = "bar",
+                ["security:oauth2:resource:userInfoUri"] = "userinfouri",
+                ["security:oauth2:resource:tokenInfoUri"] = "tokeninfouri",
+                ["security:oauth2:resource:jwtKeyUri"] = "jwtkeyuri"
+            };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             var sconfig = new OAuthConnectorOptions(config);

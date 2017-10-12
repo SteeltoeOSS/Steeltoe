@@ -14,7 +14,7 @@
 
 using System.IO;
 
-namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
+namespace Steeltoe.CloudFoundry.Connector.Test
 {
     public class TestHelpers
     {

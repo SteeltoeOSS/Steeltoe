@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
@@ -35,37 +35,28 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = @"
-{
-   'redis': {
-        'client': {
-            'host': 'localhost',
-            'port': 1234,
-            'password': 'password',
-            'instanceid': 'instanceid',
-            'allowAdmin': true,
-            'clientName': 'foobar',
-            'connectRetry': 100,
-            'connectTimeout': 100,
-            'abortOnConnectFail': true,
-            'keepAlive': 100,
-            'resolveDns': true,
-            'serviceName': 'foobar',
-            'ssl': true,
-            'sslHost': 'foobar',
-            'writeBuffer': 100,
-            'tieBreaker': 'foobar'
-        }
-   }
-}";
-
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["redis:client:host"] = "localhost",
+                ["redis:client:port"] = "1234",
+                ["redis:client:password"] = "password",
+                ["redis:client:instanceid"] = "instanceid",
+                ["redis:client:allowAdmin"] = "true",
+                ["redis:client:clientName"] = "foobar",
+                ["redis:client:connectRetry"] = "100",
+                ["redis:client:connectTimeout"] = "100",
+                ["redis:client:abortOnConnectFail"] = "true",
+                ["redis:client:keepAlive"] = "100",
+                ["redis:client:resolveDns"] = "true",
+                ["redis:client:serviceName"] = "foobar",
+                ["redis:client:ssl"] = "true",
+                ["redis:client:sslHost"] = "foobar",
+                ["redis:client:writeBuffer"] = "100",
+                ["redis:client:tieBreaker"] = "foobar"
+            };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             var sconfig = new RedisCacheConnectorOptions(config);

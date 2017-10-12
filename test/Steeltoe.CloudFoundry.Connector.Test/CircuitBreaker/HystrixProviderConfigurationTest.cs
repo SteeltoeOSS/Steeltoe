@@ -16,10 +16,11 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using Xunit;
+using System.Collections.Generic;
 
-namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
+namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
 {
-    public class RabbitConfigurationTest
+    public class HystrixProviderConfigurationTest
     {
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
@@ -28,72 +29,54 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             IConfiguration config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new RabbitProviderConnectorOptions(config));
+            var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
 
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = @"
-{
-   'rabbit': {
-        'client': {
-            'sslEnabled': true,
-            'server': 'localhost',
-            'port': 1234,
-            'password': 'password',
-            'username': 'username'
-        }
-   }
-}";
-
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["hystrix:client:server"] = "localhost",
+                ["hystrix:client:port"] = "1234",
+                ["hystrix:client:password"] = "password",
+                ["hystrix:client:username"] = "username",
+                ["hystrix:client:sslEnabled"] = "true"
+            };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var sconfig = new RabbitProviderConnectorOptions(config);
+            var sconfig = new HystrixProviderConnectorOptions(config);
             Assert.Equal("localhost", sconfig.Server);
             Assert.Equal(1234, sconfig.Port);
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("username", sconfig.Username);
             Assert.Null(sconfig.Uri);
             Assert.True(sconfig.SslEnabled);
-            Assert.Equal(RabbitProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
+            Assert.Equal(HystrixProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
         }
 
         [Fact]
         public void ToString_ReturnsValid()
         {
-            var appsettings = @"
-{
-   'rabbit': {
-        'client': {
-            'sslEnabled': true,
-            'server': 'localhost',
-            'port': 1234,
-            'password': 'password',
-            'username': 'username',
-            'virtualHost': 'foobar'
-        }
-   }
-}";
-
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["hystrix:client:server"] = "localhost",
+                ["hystrix:client:port"] = "1234",
+                ["hystrix:client:password"] = "password",
+                ["hystrix:client:username"] = "username",
+                ["hystrix:client:virtualHost"] = "foobar",
+                ["hystrix:client:sslEnabled"] = "true"
+            };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var sconfig = new RabbitProviderConnectorOptions(config);
+            var sconfig = new HystrixProviderConnectorOptions(config);
             string result = sconfig.ToString();
             Assert.Equal("amqps://username:password@localhost:5671/foobar", result);
         }
