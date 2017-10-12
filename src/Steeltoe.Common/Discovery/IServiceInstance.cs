@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Common.Discovery
 {
     public interface IServiceInstance
     {

@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Common.Discovery
 {
     public interface IDiscoveryClientOptions
     {

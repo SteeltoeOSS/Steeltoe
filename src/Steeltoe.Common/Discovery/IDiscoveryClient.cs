@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Common.Discovery
 {
     public interface IDiscoveryClient
     {
