@@ -82,7 +82,7 @@ namespace Steeltoe.Common.Discovery
                 _registrationOptions = value;
             }
         }
-        internal protected virtual void Configure(IConfiguration config)
+        public virtual void Configure(IConfiguration config)
         {
         }
 
