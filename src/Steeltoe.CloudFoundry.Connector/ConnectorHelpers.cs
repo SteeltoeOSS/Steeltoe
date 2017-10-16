@@ -36,15 +36,18 @@ namespace Steeltoe.CloudFoundry.Connector
 
         public static Type FindType(string[] assemblyNames, string[] typeNames)
         {
-            for (int i = 0; i < assemblyNames.Length; i++)
+            foreach (var assemblyName in assemblyNames)
             {
-                Assembly a = ConnectorHelpers.FindAssembly(assemblyNames[i]);
-                if (a != null)
+                Assembly assembly = ConnectorHelpers.FindAssembly(assemblyName);
+                if (assembly != null)
                 {
-                    Type result = ConnectorHelpers.FindType(a, typeNames[i]);
-                    if (result != null)
+                    foreach(var type in typeNames)
                     {
-                        return result;
+                        Type result = ConnectorHelpers.FindType(assembly, type);
+                        if (result != null)
+                        {
+                            return result;
+                        }
                     }
                 }
             }
@@ -57,6 +60,24 @@ namespace Steeltoe.CloudFoundry.Connector
             try
             {
                 return assembly.GetType(typeName);
+            }
+            catch (Exception)
+            {
+            }
+
+            return null;
+        }
+
+        public static MethodInfo FindMethod(Type type, string methodName, Type[] parameters)
+        {
+            try
+            {
+                if (parameters != null)
+                {
+                    return type.GetMethod(methodName, parameters);
+                }
+
+                return type.GetMethod(methodName);
             }
             catch (Exception)
             {

@@ -1,5 +1,19 @@
-﻿using System;
-using System.Linq;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
 
@@ -45,9 +59,16 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             {
                 throw new ArgumentNullException(nameof(connectorOptions));
             }
+            string[] redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName", "Microsoft.Extensions.Caching.Redis" };
+            string[] redisTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer", "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
+            string[] redisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions", "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
+
+            Type redisConnection = ConnectorHelpers.FindType(redisAssemblies, redisTypeNames);
+            Type redisOptions = ConnectorHelpers.FindType(redisAssemblies, redisOptionNames);
+            MethodInfo initializer = ConnectorHelpers.FindMethod(redisConnection, "Connect", null);
 
             var info = serviceName == null ? config.GetSingletonServiceInfo<RedisServiceInfo>() : config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
-            return new RedisServiceConnectorFactory(info, connectorOptions);
+            return new RedisServiceConnectorFactory(info, connectorOptions, redisConnection, redisOptions, initializer ?? null);
         }
     }
 }

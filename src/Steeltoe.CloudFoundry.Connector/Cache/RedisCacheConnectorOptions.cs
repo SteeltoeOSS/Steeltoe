@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using StackExchange.Redis;
 using System;
 using System.Globalization;
 using System.Net;
@@ -87,7 +86,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         public string ConnectionString { get; set; }
 
         // This configuration option specfic to https://github.com/aspnet/Caching
-        public string InstanceId { get; set; }
+        public string InstanceName { get; set; }
 
         // TODO: Add back in when https://github.com/aspnet/Caching updates to new StackExchange
         // public bool HighPrioritySocketThreads { get; set; }
@@ -101,7 +100,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             }
 
             StringBuilder sb = new StringBuilder();
-            if (!string.IsNullOrEmpty(this.EndPoints))
+            if (!string.IsNullOrEmpty(EndPoints))
             {
                 string endpoints = EndPoints.Trim();
                 sb.Append(endpoints);
@@ -109,40 +108,40 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             }
             else
             {
-                sb.Append(this.Host + ":" + this.Port);
+                sb.Append(Host + ":" + Port);
                 sb.Append(',');
             }
 
-            AddKeyValue(sb, "password", this.Password);
-            AddKeyValue(sb, "allowAdmin", this.AllowAdmin);
-            AddKeyValue(sb, "name", this.ClientName);
+            AddKeyValue(sb, "password", Password);
+            AddKeyValue(sb, "allowAdmin", AllowAdmin);
+            AddKeyValue(sb, "name", ClientName);
 
-            if (this.ConnectRetry > 0)
+            if (ConnectRetry > 0)
             {
-                AddKeyValue(sb, "connectRetry", this.ConnectRetry);
+                AddKeyValue(sb, "connectRetry", ConnectRetry);
             }
 
-            if (this.ConnectTimeout > 0)
+            if (ConnectTimeout > 0)
             {
-                AddKeyValue(sb, "connectTimeout", this.ConnectTimeout);
+                AddKeyValue(sb, "connectTimeout", ConnectTimeout);
             }
 
-            AddKeyValue(sb, "abortConnect", this.AbortOnConnectFail);
+            AddKeyValue(sb, "abortConnect", AbortOnConnectFail);
 
-            if (this.KeepAlive > 0)
+            if (KeepAlive > 0)
             {
-                AddKeyValue(sb, "keepAlive", this.KeepAlive);
+                AddKeyValue(sb, "keepAlive", KeepAlive);
             }
 
-            AddKeyValue(sb, "resolveDns", this.ResolveDns);
-            AddKeyValue(sb, "serviceName", this.ServiceName);
-            AddKeyValue(sb, "ssl", this.Ssl);
-            AddKeyValue(sb, "sslHost", this.SslHost);
-            AddKeyValue(sb, "tiebreaker", this.TieBreaker);
+            AddKeyValue(sb, "resolveDns", ResolveDns);
+            AddKeyValue(sb, "serviceName", ServiceName);
+            AddKeyValue(sb, "ssl", Ssl);
+            AddKeyValue(sb, "sslHost", SslHost);
+            AddKeyValue(sb, "tiebreaker", TieBreaker);
 
-            if (this.WriteBuffer > 0)
+            if (WriteBuffer > 0)
             {
-                AddKeyValue(sb, "writeBuffer", this.WriteBuffer);
+                AddKeyValue(sb, "writeBuffer", WriteBuffer);
             }
 
             // Trim ending ','
@@ -150,30 +149,55 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             return sb.ToString();
         }
 
-        internal void AddEndPoints(EndPointCollection result, string endpoints)
+        /// <summary>
+        /// Get a Redis configuration object for use with Microsoft.Extensions.Caching.Redis
+        /// </summary>
+        /// <param name="optionsType">Expects Microsoft.Extensions.Caching.Redis.RedisCacheOptions</param>
+        /// <returns>This object typed as RedisCacheOptions</returns>
+        public object ToMicrosoftExtensionObject(Type optionsType)
         {
-            if (string.IsNullOrEmpty(endpoints))
-            {
-                return;
-            }
+            var MsftConnection = Activator.CreateInstance(optionsType);
+            MsftConnection.GetType().GetProperty("Configuration").SetValue(MsftConnection, ToString());
+            MsftConnection.GetType().GetProperty("InstanceName").SetValue(MsftConnection, InstanceName);
 
-            endpoints = endpoints.Trim();
-            if (!string.IsNullOrEmpty(endpoints))
-            {
-                string[] points = endpoints.Split(comma);
-                if (points.Length > 0)
-                {
-                    foreach (string point in points)
-                    {
-                        EndPoint p = TryParseEndPoint(point);
-                        if (p != null)
-                        {
-                            result.Add(p);
-                        }
-                    }
-                }
-            }
+            return MsftConnection;
         }
+
+        /// <summary>
+        /// Get a Redis configuration object for use with StackExchange.Redis
+        /// </summary>
+        /// <param name="optionsType">Expects StackExchange.Redis.ConfigurationOptions</param>
+        /// <returns>This object typed as ConfigurationOptions</returns>
+        public object ToStackExchangeObject(Type optionsType)
+        {
+            var StackObject = Activator.CreateInstance(optionsType);
+            return StackObject.GetType().GetMethod("Parse", new Type[] { typeof(string) }).Invoke(StackObject, new object[] { ToString() });
+        }
+
+        //internal void AddEndPoints(EndPointCollection result, string endpoints)
+        //{
+        //    if (string.IsNullOrEmpty(endpoints))
+        //    {
+        //        return;
+        //    }
+
+        //    endpoints = endpoints.Trim();
+        //    if (!string.IsNullOrEmpty(endpoints))
+        //    {
+        //        string[] points = endpoints.Split(comma);
+        //        if (points.Length > 0)
+        //        {
+        //            foreach (string point in points)
+        //            {
+        //                EndPoint p = TryParseEndPoint(point);
+        //                if (p != null)
+        //                {
+        //                    result.Add(p);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         // Note: The code below lifted from StackExchange.Redis.Format {}
         internal static EndPoint TryParseEndPoint(string endpoint)
@@ -216,8 +240,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         internal static EndPoint ParseEndPoint(string host, int port)
         {
-            IPAddress ip;
-            if (IPAddress.TryParse(host, out ip))
+            if (IPAddress.TryParse(host, out IPAddress ip))
             {
                 return new IPEndPoint(ip, port);
             }

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Caching.Redis;
-using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
+using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
@@ -25,22 +24,59 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         private RedisCacheConnectorOptions _config;
         private RedisCacheConfigurer _configurer = new RedisCacheConfigurer();
 
-        public RedisServiceConnectorFactory(RedisServiceInfo sinfo, RedisCacheConnectorOptions config)
+        /// <summary>
+        /// Factory for creating Redis connections with either Microsoft.Extensions.Caching.Redis or StackExchange.Redis
+        /// </summary>
+        /// <param name="sinfo"></param>
+        /// <param name="config"></param>
+        /// <param name="connectionType">Redis connection Type</param>
+        /// <param name="optionsType">Options Type used to establish connection</param>
+        /// <param name="initalizer">Method used to open connection</param>
+        public RedisServiceConnectorFactory(RedisServiceInfo sinfo, RedisCacheConnectorOptions config, Type connectionType, Type optionsType, MethodInfo initalizer)
         {
             _info = sinfo;
-            _config = config;
+            _config = config ?? throw new ArgumentNullException(nameof(config), "Cache connector options must be provided");
+            ConnectorType = connectionType;
+            OptionsType = optionsType;
+            Initializer = initalizer;
         }
 
-        public virtual RedisCache CreateCache(IServiceProvider provider)
+        protected Type ConnectorType { get; set; }
+
+        protected Type OptionsType { get; set; }
+
+        protected MethodInfo Initializer { get; set; }
+
+        /// <summary>
+        /// Open the Redis connection
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public virtual object Create(IServiceProvider provider)
         {
-            var opts = _configurer.Configure(_info, _config);
-            return new RedisCache(opts);
+            var connectionOptions = _configurer.Configure(_info, _config);
+
+            object result = null;
+            if (Initializer == null)
+            {
+                result = CreateConnection(connectionOptions.ToMicrosoftExtensionObject(OptionsType));
+            }
+            else
+            { 
+                result = CreateConnectionByMethod(connectionOptions.ToStackExchangeObject(OptionsType));
+            }
+
+            return result;
         }
 
-        public virtual ConnectionMultiplexer CreateConnection(IServiceProvider provider)
+        private object CreateConnection(object options)
         {
-            var opts = _configurer.ConfigureConnection(_info, _config);
-            return ConnectionMultiplexer.Connect(opts);
+            return ConnectorHelpers.CreateInstance(ConnectorType, new object[] { options });
+        }
+
+        private object CreateConnectionByMethod(object options)
+        {
+            return Initializer.Invoke(ConnectorType, new object[] { options, null });
         }
     }
 }

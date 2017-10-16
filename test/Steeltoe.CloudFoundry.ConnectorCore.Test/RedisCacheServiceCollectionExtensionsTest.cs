@@ -14,7 +14,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
@@ -88,11 +88,12 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
+            // Act
             RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config);
+            var service = services.BuildServiceProvider().GetService<RedisCache>();
 
-           var service = services.BuildServiceProvider().GetService<IDistributedCache>();
-           Assert.NotNull(service);
+            // Assert
+            Assert.NotNull(service);
         }
 
         [Fact]
@@ -250,7 +251,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Arrange
             var appsettings = new Dictionary<string, string>()
             {
-                ["redis: client: host"] = "127.0.0.1",
+                ["redis:client:host"] = "127.0.0.1",
                 ["redis:client:port"] = "1234",
                 ["redis:client:password"] = "password",
                 ["redis:client:abortOnConnectFail"] = "false"
@@ -264,12 +265,12 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             // Act and Assert
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
-            var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
+            var service = services.BuildServiceProvider().GetService<ConnectionMultiplexer>();
             Assert.NotNull(service);
 
             IServiceCollection services2 = new ServiceCollection();
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services2, config, config, null);
-            var service2 = services2.BuildServiceProvider().GetService<IConnectionMultiplexer>();
+            var service2 = services2.BuildServiceProvider().GetService<ConnectionMultiplexer>();
             Assert.NotNull(service2);
         }
 

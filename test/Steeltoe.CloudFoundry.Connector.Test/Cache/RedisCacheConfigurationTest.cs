@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 ["redis:client:host"] = "localhost",
                 ["redis:client:port"] = "1234",
                 ["redis:client:password"] = "password",
-                ["redis:client:instanceid"] = "instanceid",
+                ["redis:client:instancename"] = "instanceid",
                 ["redis:client:allowAdmin"] = "true",
                 ["redis:client:clientName"] = "foobar",
                 ["redis:client:connectRetry"] = "100",
@@ -63,7 +63,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Equal("localhost", sconfig.Host);
             Assert.Equal(1234, sconfig.Port);
             Assert.Equal("password", sconfig.Password);
-            Assert.Equal("instanceid", sconfig.InstanceId);
+            Assert.Equal("instanceid", sconfig.InstanceName);
 
             Assert.True(sconfig.AllowAdmin);
             Assert.Equal("foobar", sconfig.ClientName);

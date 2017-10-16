@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.IO;
+using System.Reflection;
+using Microsoft.Extensions.Caching.Redis;
+using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Xunit;
@@ -21,44 +26,61 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
     public class RedisServiceConnectorFactoryTest
     {
         [Fact]
-        public void CreateCache_ReturnsRedisCache()
+        public void Create_CanReturnRedisCache()
         {
+            // arrange
             RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
                 Password = "password",
-                InstanceId = "instanceId"
+                InstanceName = "instanceId"
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword");
-            si.ApplicationInfo = new ApplicationInstanceInfo()
+            RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword")
             {
-                InstanceId = "instanceId"
+                ApplicationInfo = new ApplicationInstanceInfo()
+                {
+                    InstanceId = "instanceId"
+                }
             };
-            var factory = new RedisServiceConnectorFactory(si, config);
-            var cache = factory.CreateCache(null);
+
+            // act
+            var factory = new RedisServiceConnectorFactory(si, config, typeof(RedisCache), typeof(RedisCacheOptions), null);
+            var cache = factory.Create(null);
+
+            // assert
             Assert.NotNull(cache);
+            Assert.IsType<RedisCache>(cache);
         }
 
         [Fact]
-        public void CreateConnection_ReturnsConnectinMultiplexer()
+        public void Create_CanReturnConnectionMultiplexer()
         {
+            // arrange
             RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
                 Password = "password",
-                InstanceId = "instanceId",
+                InstanceName = "instanceId",
                 AbortOnConnectFail = false
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", "127.0.0.1", 4321, "sipassword");
-            si.ApplicationInfo = new ApplicationInstanceInfo()
+            RedisServiceInfo si = new RedisServiceInfo("myId", "127.0.0.1", 4321, "sipassword")
             {
-                InstanceId = "instanceId"
+                ApplicationInfo = new ApplicationInstanceInfo()
+                {
+                    InstanceId = "instanceId"
+                }
             };
-            var factory = new RedisServiceConnectorFactory(si, config);
-            var multi = factory.CreateConnection(null);
+            MethodInfo initializer = typeof(ConnectionMultiplexer).GetMethod("Connect", new Type[] { typeof(ConfigurationOptions), typeof(TextWriter) });
+
+            // act
+            var factory = new RedisServiceConnectorFactory(si, config, typeof(ConnectionMultiplexer), typeof(ConfigurationOptions), initializer);
+            var multi = factory.Create(null);
+
+            // assert
             Assert.NotNull(multi);
+            Assert.IsType<ConnectionMultiplexer>(multi);
         }
     }
 }

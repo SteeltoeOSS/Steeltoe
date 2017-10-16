@@ -12,32 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Caching.Redis;
-using Microsoft.Extensions.Options;
-using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisCacheConfigurer
     {
-        internal IOptions<RedisCacheOptions> Configure(RedisServiceInfo si, RedisCacheConnectorOptions options)
+        /// <summary>
+        /// Create a configuration object to be used to connect to Redis
+        /// </summary>
+        /// <param name="si"></param>
+        /// <param name="configuration">Configuration parameters</param>
+        /// <returns>A dynamically typed object for use connecting to Redis</returns>
+        public RedisCacheConnectorOptions Configure(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
         {
-            UpdateOptions(si, options);
-
-            RedisCacheOptions redisOptions = new RedisCacheOptions();
-            UpdateOptions(options, redisOptions);
-
-            return new ConnectorIOptions<RedisCacheOptions>(redisOptions);
+            // apply service info to exising configuration
+            UpdateOptions(si, configuration);
+            return configuration;
         }
 
-        internal void UpdateOptions(RedisCacheConnectorOptions options, RedisCacheOptions redisOptions)
-        {
-            redisOptions.Configuration = options.ToString();
-            redisOptions.InstanceName = options.InstanceId;
-        }
-
-        internal void UpdateOptions(RedisServiceInfo si, RedisCacheConnectorOptions options)
+        internal void UpdateOptions(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
         {
             if (si == null)
             {
@@ -46,22 +40,15 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             if (!string.IsNullOrEmpty(si.Host))
             {
-                options.Host = si.Host;
-                options.Port = si.Port;
-                options.EndPoints = null;
+                configuration.Host = si.Host;
+                configuration.Port = si.Port;
+                configuration.EndPoints = null;
             }
 
             if (!string.IsNullOrEmpty(si.Password))
             {
-                options.Password = si.Password;
+                configuration.Password = si.Password;
             }
-        }
-
-        internal ConfigurationOptions ConfigureConnection(RedisServiceInfo si, RedisCacheConnectorOptions options)
-        {
-            UpdateOptions(si, options);
-            ConfigurationOptions redisOptions = ConfigurationOptions.Parse(options.ToString());
-            return redisOptions;
         }
     }
 }
