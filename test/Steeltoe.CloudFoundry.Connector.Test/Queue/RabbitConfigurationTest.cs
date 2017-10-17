@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test

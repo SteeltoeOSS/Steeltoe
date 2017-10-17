@@ -17,8 +17,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
@@ -29,10 +29,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <summary>
         /// Add IDistributedCache to ServiceCollection
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="config"></param>
-        /// <param name="logFactory"></param>
-        /// <returns></returns>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -51,11 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <summary>
         /// Add IDistributedCache to ServiceCollection
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="config"></param>
-        /// <param name="serviceName"></param>
-        /// <param name="logFactory"></param>
-        /// <returns></returns>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -79,12 +72,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <summary>
         /// Add IDistributedCache to ServiceCollection
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="applicationConfiguration"></param>
-        /// <param name="connectorConfiguration"></param>
-        /// <param name="serviceName"></param>
-        /// <param name="contextLifetime"></param>
-        /// <returns></returns>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
@@ -119,9 +107,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <summary>
         /// Add Redis Connection Multiplexer to ServiceCollection
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="config"></param>
-        /// <returns></returns>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
@@ -140,10 +126,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <summary>
         /// Add Redis Connection Multiplexer to ServiceCollection
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="config"></param>
-        /// <param name="serviceName"></param>
-        /// <returns></returns>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, string serviceName)
         {
             if (services == null)
@@ -167,12 +150,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <summary>
         /// Add Redis Connection Multiplexer to ServiceCollection
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="applicationConfiguration"></param>
-        /// <param name="connectorConfiguration"></param>
-        /// <param name="serviceName"></param>
-        /// <param name="contextLifetime"></param>
-        /// <returns></returns>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
@@ -186,7 +164,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             }
 
             var configToConfigure = connectorConfiguration ?? applicationConfiguration;
-            // RedisServiceInfo info = configToConfigure.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
             RedisServiceInfo info = serviceName == null ? configToConfigure.GetSingletonServiceInfo<RedisServiceInfo>() : configToConfigure.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
             DoAddConnectionMultiplexer(services, info, configToConfigure, contextLifetime);
             return services;

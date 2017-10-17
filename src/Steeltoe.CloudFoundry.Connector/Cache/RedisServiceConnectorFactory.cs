@@ -25,10 +25,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         private RedisCacheConfigurer _configurer = new RedisCacheConfigurer();
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="RedisServiceConnectorFactory"/> class.
         /// Factory for creating Redis connections with either Microsoft.Extensions.Caching.Redis or StackExchange.Redis
         /// </summary>
-        /// <param name="sinfo"></param>
-        /// <param name="config"></param>
+        /// <param name="sinfo">Service Info</param>
+        /// <param name="config">Service Configuration</param>
         /// <param name="connectionType">Redis connection Type</param>
         /// <param name="optionsType">Options Type used to establish connection</param>
         /// <param name="initalizer">Method used to open connection</param>
@@ -50,8 +51,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <summary>
         /// Open the Redis connection
         /// </summary>
-        /// <param name="provider"></param>
-        /// <returns></returns>
+        /// <param name="provider">IServiceProvider</param>
+        /// <returns>Initialized Redis connection</returns>
         public virtual object Create(IServiceProvider provider)
         {
             var connectionOptions = _configurer.Configure(_info, _config);
@@ -62,7 +63,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 result = CreateConnection(connectionOptions.ToMicrosoftExtensionObject(OptionsType));
             }
             else
-            { 
+            {
                 result = CreateConnectionByMethod(connectionOptions.ToStackExchangeObject(OptionsType));
             }
 

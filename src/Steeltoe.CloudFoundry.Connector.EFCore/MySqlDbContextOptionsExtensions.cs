@@ -114,7 +114,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
             foreach (MethodInfo ci in declaredMethods)
             {
                 var parameters = ci.GetParameters();
-                if (parameters.Length == 3 && 
+                if (parameters.Length == 3 &&
                     ci.Name.Equals("UseMySQL", StringComparison.InvariantCultureIgnoreCase) &&
                     parameters[0].ParameterType.Equals(parameterTypes[0]) &&
                     parameters[1].ParameterType.Equals(parameterTypes[1]) &&

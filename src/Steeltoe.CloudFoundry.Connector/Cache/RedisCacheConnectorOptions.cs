@@ -156,11 +156,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <returns>This object typed as RedisCacheOptions</returns>
         public object ToMicrosoftExtensionObject(Type optionsType)
         {
-            var MsftConnection = Activator.CreateInstance(optionsType);
-            MsftConnection.GetType().GetProperty("Configuration").SetValue(MsftConnection, ToString());
-            MsftConnection.GetType().GetProperty("InstanceName").SetValue(MsftConnection, InstanceName);
+            var msftConnection = Activator.CreateInstance(optionsType);
+            msftConnection.GetType().GetProperty("Configuration").SetValue(msftConnection, ToString());
+            msftConnection.GetType().GetProperty("InstanceName").SetValue(msftConnection, InstanceName);
 
-            return MsftConnection;
+            return msftConnection;
         }
 
         /// <summary>
@@ -170,17 +170,16 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <returns>This object typed as ConfigurationOptions</returns>
         public object ToStackExchangeObject(Type optionsType)
         {
-            var StackObject = Activator.CreateInstance(optionsType);
-            return StackObject.GetType().GetMethod("Parse", new Type[] { typeof(string) }).Invoke(StackObject, new object[] { ToString() });
+            var stackObject = Activator.CreateInstance(optionsType);
+            return stackObject.GetType().GetMethod("Parse", new Type[] { typeof(string) }).Invoke(stackObject, new object[] { ToString() });
         }
 
-        //internal void AddEndPoints(EndPointCollection result, string endpoints)
-        //{
+        // internal void AddEndPoints(EndPointCollection result, string endpoints)
+        // {
         //    if (string.IsNullOrEmpty(endpoints))
         //    {
         //        return;
         //    }
-
         //    endpoints = endpoints.Trim();
         //    if (!string.IsNullOrEmpty(endpoints))
         //    {
@@ -197,7 +196,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         //            }
         //        }
         //    }
-        //}
+        // }
 
         // Note: The code below lifted from StackExchange.Redis.Format {}
         internal static EndPoint TryParseEndPoint(string endpoint)

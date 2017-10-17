@@ -15,12 +15,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.CloudFoundry.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration;
 using System;
 using System.Data.SqlClient;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
+namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
 {
     public class SqlServerDbContextOptionsExtensionsTest
     {

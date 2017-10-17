@@ -16,12 +16,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
-using Steeltoe.CloudFoundry.Connector.EFCore;
+using Steeltoe.CloudFoundry.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
+namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
 {
     public class MySqlDbContextOptionsExtensionsTest
     {

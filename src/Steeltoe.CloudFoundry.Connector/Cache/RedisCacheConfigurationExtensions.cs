@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
+using System;
+using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
@@ -59,6 +59,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             {
                 throw new ArgumentNullException(nameof(connectorOptions));
             }
+
             string[] redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName", "Microsoft.Extensions.Caching.Redis" };
             string[] redisTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer", "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
             string[] redisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions", "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };

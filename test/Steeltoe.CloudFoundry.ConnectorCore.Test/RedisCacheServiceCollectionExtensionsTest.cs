@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using Steeltoe.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test

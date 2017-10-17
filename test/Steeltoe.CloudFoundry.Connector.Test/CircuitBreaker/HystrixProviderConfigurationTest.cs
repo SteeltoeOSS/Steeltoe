@@ -14,9 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
-using System.IO;
-using Xunit;
 using System.Collections.Generic;
+using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
 {

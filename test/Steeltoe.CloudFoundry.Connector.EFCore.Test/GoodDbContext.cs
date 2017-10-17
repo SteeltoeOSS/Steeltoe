@@ -16,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
 {
-
     internal class GoodDbContext : DbContext
     {
         public GoodDbContext(DbContextOptions<GoodDbContext> options)

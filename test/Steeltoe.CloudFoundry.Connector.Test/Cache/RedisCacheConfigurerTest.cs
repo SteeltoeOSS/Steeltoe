@@ -23,9 +23,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
     public class RedisCacheConfigurerTest
     {
-        //[Fact]
-        //public void UpdateOptions_FromConfig_WithConnectionString_ReturnsExpected()
-        //{
+        // [Fact]
+        // public void UpdateOptions_FromConfig_WithConnectionString_ReturnsExpected()
+        // {
         //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
         //    RedisCacheOptions redisOptions = new RedisCacheOptions();
         //    RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
@@ -34,14 +34,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         //        InstanceName = "instanceId"
         //    };
         //    configurer.UpdateOptions(config, redisOptions);
-
         //    Assert.Equal("foobar", redisOptions.Configuration);
         //    Assert.Equal("instanceId", redisOptions.InstanceName);
-        //}
+        // }
 
-        //[Fact]
-        //public void UpdateOptions_FromConfig_WithOutConnectionString_ReturnsExcpected()
-        //{
+        // [Fact]
+        // public void UpdateOptions_FromConfig_WithOutConnectionString_ReturnsExcpected()
+        // {
         //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
         //    RedisCacheOptions redisOptions = new RedisCacheOptions();
         //    RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
@@ -52,10 +51,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         //        InstanceName = "instanceId"
         //    };
         //    configurer.UpdateOptions(config, redisOptions);
-
         //    Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
         //    Assert.Equal("instanceId", redisOptions.InstanceName);
-        //}
+        //// }
 
         [Fact]
         public void UpdateOptions_FromServiceInfo_ReturnsExcpected()
@@ -135,11 +133,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // act
             var opts = configurer.Configure(null, config);
             Assert.NotNull(opts);
-            var SEOptions = (ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions));
 
             // assert
-            Assert.NotNull(SEOptions.EndPoints);
-            var ep = SEOptions.EndPoints[0] as DnsEndPoint;
+            Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
+            var ep = ((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints[0] as DnsEndPoint;
             Assert.NotNull(ep);
             Assert.Equal("localhost", ep.Host);
             Assert.Equal(1234, ep.Port);
@@ -168,11 +165,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // act
             var opts = configurer.Configure(si, config);
             Assert.NotNull(opts);
-            var SEOptions = (ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions));
 
             // assert
-            Assert.NotNull(SEOptions.EndPoints);
-            var ep = SEOptions.EndPoints[0] as DnsEndPoint;
+            Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
+            var ep = ((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints[0] as DnsEndPoint;
             Assert.NotNull(ep);
             Assert.Equal("foobar", ep.Host);
             Assert.Equal(4321, ep.Port);
