@@ -15,11 +15,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.Connector.SqlServer;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.EFCore
+namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 {
     public static class SqlServerDbContextOptionsExtensions
     {
