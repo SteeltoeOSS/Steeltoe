@@ -196,41 +196,45 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            string[] redisAssemblies = new string[] { "Microsoft.Extensions.Caching.Redis" };
-            string[] redisTypeNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCache" };
+            string[] redisAssemblies = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis" };
+            string[] redisInterfaceTypeNames = new string[] { "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
+            string[] redisImplementationTypeNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCache" };
             string[] redisOptionNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
 
-            Type redisConnection = ConnectorHelpers.FindType(redisAssemblies, redisTypeNames);
+            Type redisInterface = ConnectorHelpers.FindType(redisAssemblies, redisInterfaceTypeNames);
+            Type redisConnection = ConnectorHelpers.FindType(redisAssemblies, redisImplementationTypeNames);
             Type redisOptions = ConnectorHelpers.FindType(redisAssemblies, redisOptionNames);
 
-            if (redisConnection == null || redisOptions == null)
+            if (redisInterface == null || redisConnection == null || redisOptions == null)
             {
                 throw new ConnectorException("Unable to find required Redis types, are you missing the Microsoft.Extensions.Caching.Redis Nuget package?");
             }
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisConnection, redisOptions, null);
-            services.Add(new ServiceDescriptor(redisConnection, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
         }
 
         private static void DoAddConnectionMultiplexer(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             string[] redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName" };
-            string[] redisTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
+            string[] redisInterfaceTypeNames = new string[] { "StackExchange.Redis.IConnectionMultiplexer" };
+            string[] redisImplementationTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
             string[] redisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions" };
 
-            Type redisConnection = ConnectorHelpers.FindType(redisAssemblies, redisTypeNames);
+            Type redisInterface = ConnectorHelpers.FindType(redisAssemblies, redisInterfaceTypeNames);
+            Type redisImplementation = ConnectorHelpers.FindType(redisAssemblies, redisImplementationTypeNames);
             Type redisOptions = ConnectorHelpers.FindType(redisAssemblies, redisOptionNames);
-            MethodInfo initializer = ConnectorHelpers.FindMethod(redisConnection, "Connect", new Type[] { redisOptions, typeof(TextWriter) });
+            MethodInfo initializer = ConnectorHelpers.FindMethod(redisImplementation, "Connect", new Type[] { redisOptions, typeof(TextWriter) });
 
-            if (redisConnection == null || redisOptions == null || initializer == null)
+            if (redisInterface == null || redisImplementation == null || redisOptions == null || initializer == null)
             {
                 throw new ConnectorException("Unable to find required Redis types, are you missing a StackExchange.Redis Nuget Package?");
             }
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisConnection, redisOptions, initializer != null ? initializer : null);
-            services.Add(new ServiceDescriptor(redisConnection, factory.Create, contextLifetime));
+            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer != null ? initializer : null);
+            services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
         }
     }
 }

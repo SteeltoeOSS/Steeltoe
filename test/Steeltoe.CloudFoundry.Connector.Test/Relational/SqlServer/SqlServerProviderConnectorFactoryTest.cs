@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Data.SqlClient;
@@ -29,7 +28,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             SqlServerProviderConnectorOptions config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorFactory(null, config, typeof(SqlServerConnection)));
+            var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorFactory(null, config, typeof(SqlConnection)));
             Assert.Contains(nameof(config), ex.Message);
         }
 

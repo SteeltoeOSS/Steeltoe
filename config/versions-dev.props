@@ -10,7 +10,7 @@
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <EF6Version>6.1.3</EF6Version>
     <EFCoreVersion>2.0.0</EFCoreVersion>
-    <MySqlEFCoreVersion>1.1.1</MySqlEFCoreVersion>
+    <MySqlEFCoreVersion>2.0.0</MySqlEFCoreVersion>
     <EFCoreTestVersion>2.0.0</EFCoreTestVersion>
     <StackExchangeVersion>1.2.4</StackExchangeVersion>
     <MySqlCoreVersion>8.0.8-dmr</MySqlCoreVersion>

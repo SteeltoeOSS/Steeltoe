@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -90,10 +91,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             // Act
             RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config);
-            var service = services.BuildServiceProvider().GetService<RedisCache>();
+            var service = services.BuildServiceProvider().GetService<IDistributedCache>();
 
             // Assert
             Assert.NotNull(service);
+            Assert.IsType<RedisCache>(service);
         }
 
         [Fact]
@@ -262,16 +264,20 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             var config = configurationBuilder.Build();
 
             IServiceCollection services = new ServiceCollection();
-
-            // Act and Assert
-            RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
-            var service = services.BuildServiceProvider().GetService<ConnectionMultiplexer>();
-            Assert.NotNull(service);
-
             IServiceCollection services2 = new ServiceCollection();
+
+            // Act
+            RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
+            var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
+
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services2, config, config, null);
-            var service2 = services2.BuildServiceProvider().GetService<ConnectionMultiplexer>();
+            var service2 = services2.BuildServiceProvider().GetService<IConnectionMultiplexer>();
+
+            // Assert
+            Assert.NotNull(service);
+            Assert.IsType<ConnectionMultiplexer>(service);
             Assert.NotNull(service2);
+            Assert.IsType<ConnectionMultiplexer>(service2);
         }
 
         [Fact]
