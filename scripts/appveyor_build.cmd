@@ -16,7 +16,7 @@ IF "%APPVEYOR_REPO_TAG_NAME%"=="" (dotnet pack --configuration %BUILD_TYPE% --ve
 IF "%APPVEYOR_REPO_TAG_NAME%"=="" (nuget add -Source %USERPROFILE%\localfeed bin\%BUILD_TYPE%\Steeltoe.Discovery.Eureka.Client.%STEELTOE_VERSION%-%STEELTOE_VERSION_SUFFIX%.nupkg)
 cd ..\..
 
-cd src\Steeltoe.Discovery.Client
+cd src\Steeltoe.Discovery.ClientCore
 dotnet restore --configfile ..\..\nuget.config
 IF NOT "%APPVEYOR_REPO_TAG_NAME%"=="" (
     IF NOT "%STEELTOE_VERSION_SUFFIX%"=="" (

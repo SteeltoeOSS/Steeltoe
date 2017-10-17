@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace Steeltoe.Discovery.Eureka.Client.Test
+namespace Steeltoe.Discovery.Eureka.Test
 {
     public abstract class AbstractBaseTest
     {

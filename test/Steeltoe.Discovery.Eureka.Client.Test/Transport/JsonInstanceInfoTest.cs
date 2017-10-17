@@ -18,8 +18,8 @@ using System.IO;
 using Xunit;
 
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Client.Test;
 using System;
+using Steeltoe.Discovery.Eureka.Test;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test
 {

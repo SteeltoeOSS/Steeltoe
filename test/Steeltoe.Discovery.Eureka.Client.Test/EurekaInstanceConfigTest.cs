@@ -15,7 +15,6 @@
 //
 
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Client.Test;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test
@@ -44,7 +43,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(EurekaInstanceConfig.Default_HomePageUrlPath, config.HomePageUrlPath);
             Assert.Equal(EurekaInstanceConfig.Default_HealthCheckUrlPath, config.HealthCheckUrlPath);
             Assert.NotNull(config.MetadataMap);
-            Assert.Equal(0, config.MetadataMap.Count);
+            Assert.Empty(config.MetadataMap);
             Assert.Equal(DataCenterName.MyOwn, config.DataCenterInfo.Name);
         }
     }

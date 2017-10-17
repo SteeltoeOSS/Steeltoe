@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-using Steeltoe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Concurrent;
@@ -197,7 +197,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
 
 
             Assert.NotNull(apps.VirtualHostInstanceMap);
-            Assert.Equal(1, apps.VirtualHostInstanceMap.Count);
+            Assert.Single(apps.VirtualHostInstanceMap);
             Assert.False(apps.VirtualHostInstanceMap.ContainsKey("vapp1".ToUpperInvariant()));
             Assert.True(apps.VirtualHostInstanceMap.ContainsKey("vapp2".ToUpperInvariant()));
             ConcurrentDictionary<string, InstanceInfo> tryValue = null;
@@ -205,7 +205,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(2, apps.VirtualHostInstanceMap["vapp2".ToUpperInvariant()].Count);
 
             Assert.NotNull(apps.SecureVirtualHostInstanceMap);
-            Assert.Equal(1, apps.SecureVirtualHostInstanceMap.Count);
+            Assert.Single(apps.SecureVirtualHostInstanceMap);
             Assert.False(apps.SecureVirtualHostInstanceMap.ContainsKey("svapp1".ToUpperInvariant()));
             Assert.True(apps.SecureVirtualHostInstanceMap.ContainsKey("svapp2".ToUpperInvariant()));
             tryValue = null;
@@ -680,7 +680,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal("AppsHashCode", apps.AppsHashCode);
             Assert.Equal(1, apps.Version);
             Assert.NotNull(apps.ApplicationMap);
-            Assert.Equal(1, apps.ApplicationMap.Count);
+            Assert.Single(apps.ApplicationMap);
 
             Application app = apps.GetRegisteredApplication("myApp");
 
@@ -723,7 +723,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(635935705417080000L, info.LeaseInfo.ServiceUpTimestamp);
             Assert.False(info.IsCoordinatingDiscoveryServer);
             Assert.NotNull(info.Metadata);
-            Assert.Equal(0, info.Metadata.Count);
+            Assert.Empty(info.Metadata);
             Assert.Equal(635935705417080000L, info.LastUpdatedTimestamp);
             Assert.Equal(635935705417080000L, info.LastDirtyTimestamp);
             Assert.Equal(ActionType.ADDED, info.Actiontype);

@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.TestHost;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Client.Test;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using Xunit;

@@ -15,6 +15,7 @@
 //
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Discovery;
 using System;
 using Xunit;
 

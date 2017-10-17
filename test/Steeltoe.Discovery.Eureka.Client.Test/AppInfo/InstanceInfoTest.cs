@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-using Steeltoe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Generic;
@@ -117,7 +117,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(635935705417080000L, info.LeaseInfo.ServiceUpTimestamp);
             Assert.False(info.IsCoordinatingDiscoveryServer);
             Assert.NotNull(info.Metadata);
-            Assert.Equal(0, info.Metadata.Count);
+            Assert.Empty(info.Metadata);
             Assert.Equal(635935705417080000L, info.LastUpdatedTimestamp);
             Assert.Equal(635935705417080000L, info.LastDirtyTimestamp);
             Assert.Equal(ActionType.ADDED, info.Actiontype);
@@ -162,7 +162,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(0, info.LeaseInfo.ServiceUpTimestamp);
             Assert.False(info.IsCoordinatingDiscoveryServer);
             Assert.NotNull(info.Metadata);
-            Assert.Equal(0, info.Metadata.Count);
+            Assert.Empty(info.Metadata);
             Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
             Assert.Equal(ActionType.ADDED, info.Actiontype);
             Assert.Null(info.AsgName);
@@ -208,7 +208,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(0, info.LeaseInfo.ServiceUpTimestamp);
             Assert.False(info.IsCoordinatingDiscoveryServer);
             Assert.NotNull(info.Metadata);
-            Assert.Equal(0, info.Metadata.Count);
+            Assert.Empty(info.Metadata);
             Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
             Assert.Equal(ActionType.ADDED, info.Actiontype);
             Assert.Null(info.AsgName);
@@ -258,7 +258,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(0, jinfo.LeaseInfo.ServiceUpTimestamp);
             Assert.False(jinfo.IsCoordinatingDiscoveryServer);
             Assert.NotNull(jinfo.Metadata);
-            Assert.Equal(1, jinfo.Metadata.Count);
+            Assert.Single(jinfo.Metadata);
             Assert.True(jinfo.Metadata.ContainsKey("@class"));
             Assert.True(jinfo.Metadata.ContainsValue("java.util.Collections$EmptyMap"));
             Assert.Equal(jinfo.LastDirtyTimestamp, jinfo.LastUpdatedTimestamp);

@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-using Steeltoe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using Xunit;

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
 // limitations under the License.
 //
 
-using Steeltoe.Discovery.Eureka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 using System.IO;
+using Steeltoe.Common.Discovery;
+using Microsoft.AspNetCore.Hosting;
+using System.Threading;
+using Steeltoe.Discovery.Eureka;
 
 namespace Steeltoe.Discovery.Client.Test
 {
-    public class DiscoveryServiceCollectionExtensionsTest : AbstractBaseTest
+    public class DiscoveryServiceCollectionExtensionsTest 
     {
-        public DiscoveryServiceCollectionExtensionsTest() : base()
-        {
-        }
 
         [Fact]
         public void AddDiscoveryClient_ThrowsIfServiceCollectionNull()
@@ -128,6 +128,8 @@ namespace Steeltoe.Discovery.Client.Test
             var config = configurationBuilder.Build();
 
             var services = new ServiceCollection();
+            services.AddOptions();
+            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
             services.AddDiscoveryClient(config);
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
@@ -157,11 +159,8 @@ namespace Steeltoe.Discovery.Client.Test
             var config = configurationBuilder.Build();
 
             var services = new ServiceCollection();
-            services.AddDiscoveryClient(config);
+            Assert.Throws<ArgumentException>(() => services.AddDiscoveryClient(config));
 
-            var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
-            Assert.NotNull(service);
-            Assert.Equal("Unknown", service.Description);
 
         }
 
@@ -181,6 +180,7 @@ namespace Steeltoe.Discovery.Client.Test
             };
 
             var services = new ServiceCollection();
+            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
             services.AddDiscoveryClient(options);
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
@@ -189,7 +189,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void AddDiscoveryClient_WithDiscoveryOptions_MissingOptions_AddsDiscoveryClient()
+        public void AddDiscoveryClient_WithDiscoveryOptions_MissingOptions_Throws()
         {
             // Arrange
             DiscoveryOptions options = new DiscoveryOptions()
@@ -201,10 +201,9 @@ namespace Steeltoe.Discovery.Client.Test
             };
 
             var services = new ServiceCollection();
-            services.AddDiscoveryClient(options);
+            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
+            Assert.Throws<ArgumentException>(() => services.AddDiscoveryClient(options));
 
-            var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
-            Assert.NotNull(service);
 
         }
         [Fact]
@@ -212,6 +211,7 @@ namespace Steeltoe.Discovery.Client.Test
         {
             // Arrange
             var services = new ServiceCollection();
+            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
             services.AddDiscoveryClient((options) =>
            {
                options.ClientType = DiscoveryClientType.EUREKA;
@@ -227,6 +227,20 @@ namespace Steeltoe.Discovery.Client.Test
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
 
+        }
+    }
+
+    class TestApplicationLifetime : IApplicationLifetime
+    {
+        public CancellationToken ApplicationStarted => throw new NotImplementedException();
+
+        public CancellationToken ApplicationStopping => new CancellationTokenSource().Token;
+
+        public CancellationToken ApplicationStopped => throw new NotImplementedException();
+
+        public void StopApplication()
+        {
+            throw new NotImplementedException();
         }
     }
 }

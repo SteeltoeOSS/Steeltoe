@@ -15,7 +15,7 @@
 //
 
 using Newtonsoft.Json;
-using Steeltoe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.Test;
 using System.IO;
 using Xunit;
 

@@ -14,8 +14,9 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
+using System.Threading;
+using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Client
 {
@@ -38,7 +39,7 @@ namespace Steeltoe.Discovery.Client
             _config = config;
         }
 
-        internal protected virtual object Create(IServiceProvider provider)
+        public virtual object Create(IServiceProvider provider)
         {
             if (provider == null)
             {
@@ -74,7 +75,13 @@ namespace Steeltoe.Discovery.Client
                 }
 
                 var instOpts = _config.RegistrationOptions as EurekaInstanceOptions;
-                return new EurekaDiscoveryClient(clientOpts, instOpts, lifeCycle, logFactory);
+                CancellationToken cancelationToken = default(CancellationToken);
+                if (lifeCycle != null)
+                {
+                    cancelationToken = lifeCycle.ApplicationStopping;
+                }
+
+                return new EurekaDiscoveryClient(clientOpts, instOpts, cancelationToken, logFactory);
             } else
             {
                 logger?.LogWarning("Failed to create DiscoveryClient, unknown ClientType: {0}", _config.ClientType.ToString());

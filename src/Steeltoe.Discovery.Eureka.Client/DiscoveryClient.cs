@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Task;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -25,18 +24,21 @@ using System.Net;
 using T=System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
+
 namespace Steeltoe.Discovery.Eureka
 {
     public class DiscoveryClient : IEurekaClient
     {
-        private Timer _heartBeatTimer;
-        private Timer _cacheRefreshTimer;
-        private volatile Applications _localRegionApps;
-        private long _registryFetchCounter = 0;
-        private IEurekaHttpClient _httpClient;
-        private Random _random = new Random();
-        private ILogger _logger;
-        private int _shutdown = 0;
+
+        protected Timer _heartBeatTimer;
+        protected Timer _cacheRefreshTimer;
+        protected volatile Applications _localRegionApps;
+        protected long _registryFetchCounter = 0;
+        protected IEurekaHttpClient _httpClient;
+        protected Random _random = new Random();
+        protected ILogger _logger;
+        protected int _shutdown = 0;
+        protected ApplicationInfoManager _appInfoManager;
 
         public long LastGoodHeartbeatTimestamp { get; internal set; }
         public long LastGoodFullRegistryFetchTimestamp { get; internal set; }
@@ -88,9 +90,25 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        public IEurekaClientConfig ClientConfig { get; internal set; }
+    
+        private IEurekaClientConfig _config;
+
+        public virtual IEurekaClientConfig ClientConfig
+        {
+            get
+            {
+                return _config;
+            }
+        }
 
         public IHealthCheckHandler HealthCheckHandler { get; set; }
+
+        // Constructor used by Dependency Injection
+        protected DiscoveryClient(ApplicationInfoManager appInfoManager, ILoggerFactory logFactory = null)
+        {
+            _appInfoManager = appInfoManager;
+            _logger = logFactory?.CreateLogger<DiscoveryClient>();
+        }
 
         public DiscoveryClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
         {
@@ -99,10 +117,10 @@ namespace Steeltoe.Discovery.Eureka
                 throw new ArgumentNullException(nameof(clientConfig));
             }
 
+            _appInfoManager = ApplicationInfoManager.Instance;
             _logger = logFactory?.CreateLogger<DiscoveryClient>();
-            ClientConfig = clientConfig;
-            _localRegionApps = new Applications();
-            _localRegionApps.ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances;
+            _config = clientConfig;
+
             _httpClient = httpClient;
 
             if (_httpClient == null)
@@ -110,21 +128,31 @@ namespace Steeltoe.Discovery.Eureka
                 _httpClient = new EurekaHttpClient(clientConfig, logFactory);
             }
 
+            Initialize();
+        }
+
+        protected void Initialize()
+        {
+
+            _localRegionApps = new Applications();
+            _localRegionApps.ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances;
+
+
             if (!ClientConfig.ShouldRegisterWithEureka && !ClientConfig.ShouldFetchRegistry)
             {
                 return;
             }
 
-            if (ClientConfig.ShouldRegisterWithEureka && ApplicationInfoManager.Instance.InstanceInfo != null)
+            if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
             {
                 var result = RegisterAsync();
                 result.Wait();
 
-                var intervalInMilli = ApplicationInfoManager.Instance.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
+                var intervalInMilli = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
                 _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, this.HeartBeatTaskAsync);
                 if (ClientConfig.ShouldOnDemandUpdateStatusChange)
                 {
-                    ApplicationInfoManager.Instance.StatusChangedEvent += Instance_StatusChangedEvent;
+                    _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;
                 }
 
             }
@@ -264,7 +292,7 @@ namespace Steeltoe.Discovery.Eureka
             return results[index];
 
         }
-        public async T.Task ShutdownAsync()
+        public virtual async T.Task ShutdownAsync()
         {
      
             int shutdown = Interlocked.Exchange(ref _shutdown, 1);
@@ -285,12 +313,12 @@ namespace Steeltoe.Discovery.Eureka
 
             if (ClientConfig.ShouldOnDemandUpdateStatusChange)
             {
-                ApplicationInfoManager.Instance.StatusChangedEvent -= Instance_StatusChangedEvent;
+                _appInfoManager.StatusChangedEvent -= Instance_StatusChangedEvent;
             }
 
             if (ClientConfig.ShouldRegisterWithEureka)
             {
-                InstanceInfo info = ApplicationInfoManager.Instance.InstanceInfo;
+                InstanceInfo info = _appInfoManager.InstanceInfo;
                 if (info != null)
                 {
                     info.Status = InstanceStatus.DOWN;
@@ -352,7 +380,7 @@ namespace Steeltoe.Discovery.Eureka
         }
         internal protected async T.Task<bool> UnregisterAsync()
         {
-            InstanceInfo inst = ApplicationInfoManager.Instance.InstanceInfo;
+            InstanceInfo inst = _appInfoManager.InstanceInfo;
             if (inst == null)
                 return false;
             try
@@ -373,7 +401,7 @@ namespace Steeltoe.Discovery.Eureka
         }
         internal protected async T.Task<bool> RegisterAsync()
         {
-            InstanceInfo inst = ApplicationInfoManager.Instance.InstanceInfo;
+            InstanceInfo inst = _appInfoManager.InstanceInfo;
             if (inst == null)
                 return false;
             try
@@ -400,7 +428,7 @@ namespace Steeltoe.Discovery.Eureka
 
         internal protected async T.Task<bool> RenewAsync()
         {
-            InstanceInfo inst = ApplicationInfoManager.Instance.InstanceInfo;
+            InstanceInfo inst = _appInfoManager.InstanceInfo;
             if (inst == null)
                 return false;
 
@@ -508,13 +536,13 @@ namespace Steeltoe.Discovery.Eureka
         }
         internal protected void RefreshInstanceInfo()
         {
-            InstanceInfo info = ApplicationInfoManager.Instance.InstanceInfo;
+            InstanceInfo info = _appInfoManager.InstanceInfo;
             if (info == null)
             {
                 return;
             }
 
-            ApplicationInfoManager.Instance.RefreshLeaseInfo();
+            _appInfoManager.RefreshLeaseInfo();
 
             InstanceStatus status = InstanceStatus.UNKNOWN;
             if (HealthCheckHandler != null)
@@ -541,7 +569,7 @@ namespace Steeltoe.Discovery.Eureka
         {
 
             // Log StatusChangedArgs
-            InstanceInfo info = ApplicationInfoManager.Instance.InstanceInfo;
+            InstanceInfo info = _appInfoManager.InstanceInfo;
             if (info != null)
             {
                 RefreshInstanceInfo();

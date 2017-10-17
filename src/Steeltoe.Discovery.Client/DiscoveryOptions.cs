@@ -15,6 +15,7 @@
 //
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Discovery;
 using System;
 using System.Linq;
 

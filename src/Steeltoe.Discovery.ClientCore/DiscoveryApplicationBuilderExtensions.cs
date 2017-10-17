@@ -14,14 +14,19 @@
 // limitations under the License.
 //
 
-using Steeltoe.Discovery.Eureka;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Client
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public interface IDiscoveryClientOptions
+    public static class DiscoveryApplicationBuilderExtensions
     {
+
+        public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
+        {
+            var service = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
+            return app;
+        }
     }
 }

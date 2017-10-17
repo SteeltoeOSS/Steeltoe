@@ -29,17 +29,17 @@ namespace Steeltoe.Discovery.Eureka
         public const int Default_LeaseRenewalIntervalInSeconds = 30;
         public const int Default_LeaseExpirationDurationInSeconds = 90;
         public const string Default_Appname = "unknown";
-        public const string Default_StatusPageUrlPath = "/Status";  // TODO: /info for spring
+        public const string Default_StatusPageUrlPath = "/Status";
         public const string Default_HomePageUrlPath = "/";
-        public const string Default_HealthCheckUrlPath = "/healthcheck"; // TODO: /health for spring
+        public const string Default_HealthCheckUrlPath = "/healthcheck"; 
 
-        private string thisHostAddress;
-        private string thisHostName;
+        protected string _thisHostAddress;
+        protected string _thisHostName;
 
         public EurekaInstanceConfig()
         {
-            thisHostName = GetHostName(true);
-            thisHostAddress = GetHostAddress(true);
+            _thisHostName = GetHostName(true);
+            _thisHostAddress = GetHostAddress(true);
 
             IsInstanceEnabledOnInit = false;
             NonSecurePort = Default_NonSecurePort;
@@ -48,81 +48,118 @@ namespace Steeltoe.Discovery.Eureka
             SecurePortEnabled = false;
             LeaseRenewalIntervalInSeconds = Default_LeaseRenewalIntervalInSeconds;
             LeaseExpirationDurationInSeconds = Default_LeaseExpirationDurationInSeconds;
-            VirtualHostName = thisHostName + ":" + NonSecurePort;
-            SecureVirtualHostName = thisHostName + ":" + SecurePort;
-            IpAddress = thisHostAddress;
+            VirtualHostName = _thisHostName + ":" + NonSecurePort;
+            SecureVirtualHostName = _thisHostName + ":" + SecurePort;
+            IpAddress = _thisHostAddress;
             AppName = Default_Appname;
             StatusPageUrlPath = Default_StatusPageUrlPath;
             HomePageUrlPath = Default_HomePageUrlPath;
             HealthCheckUrlPath = Default_HealthCheckUrlPath;
             MetadataMap = new Dictionary<string, string>();
             DataCenterInfo = new DataCenterInfo(DataCenterName.MyOwn);
+            PreferIpAddress = false;
         }
-        public string InstanceId { get; set; }
-        public string AppName { get; set; }
-        public string AppGroupName { get; set; }
-        public bool IsInstanceEnabledOnInit { get; set; }
-        public int NonSecurePort { get; set; }
-        public int SecurePort { get; set; }
-        public bool IsNonSecurePortEnabled { get; set; }
-        public bool SecurePortEnabled { get; set; }
-        public int LeaseRenewalIntervalInSeconds { get; set; }
-        public int LeaseExpirationDurationInSeconds { get; set; }
-        public string VirtualHostName { get; set; }
-        public string SecureVirtualHostName { get; set; }
-        public string ASGName { get; set; }
-        public IDictionary<string, string> MetadataMap { get; set; }
-        public IDataCenterInfo DataCenterInfo { get; set; }
-        public string IpAddress { get; set; }
-        public string StatusPageUrlPath { get; set; }
-        public string StatusPageUrl { get; set; }
-        public string HomePageUrlPath { get; set; }
-        public string HomePageUrl { get; set; }
-        public string HealthCheckUrlPath { get; set; }
-        public string HealthCheckUrl { get; set; }
-        public string SecureHealthCheckUrl { get; set; }
-        public string[] DefaultAddressResolutionOrder { get; set; }
-        public bool PreferIpAddress { get; set; }
-        public string GetHostName(bool refresh)
+
+        // eureka:instance:instanceId, spring:application:instance_id, null
+        public virtual string InstanceId { get; set; }
+
+        // eureka:instance:appName, spring:application:name, null
+        public virtual string AppName { get; set; }
+
+        // eureka:instance:securePort
+        public virtual int SecurePort { get; set; }
+
+        // eureka:instance:securePortEnabled
+        public virtual bool SecurePortEnabled { get; set; }
+
+        // eureka:instance:leaseRenewalIntervalInSeconds
+        public virtual int LeaseRenewalIntervalInSeconds { get; set; }
+
+        // eureka:instance:leaseExpirationDurationInSeconds
+        public virtual int LeaseExpirationDurationInSeconds { get; set; }
+
+        // eureka:instance:asgName, null
+        public virtual string ASGName { get; set; }
+
+        // eureka:instance:metadataMap
+        public virtual IDictionary<string, string> MetadataMap { get; set; }
+
+        // eureka:instance:statusPageUrlPath
+        public virtual string StatusPageUrlPath { get; set; }
+
+        // eureka:instance:statusPageUrl
+        public virtual string StatusPageUrl { get; set; }
+
+        // eureka:instance:homePageUrlPath
+        public virtual string HomePageUrlPath { get; set; }
+
+        // eureka:instance:homePageUrl
+        public virtual string HomePageUrl { get; set; }
+
+        // eureka:instance:healthCheckUrlPath
+        public virtual string HealthCheckUrlPath { get; set; }
+
+        //  eureka:instance:healthCheckUrl
+        public virtual string HealthCheckUrl { get; set; }
+
+        // eureka:instance:secureHealthCheckUrl
+        public virtual string SecureHealthCheckUrl { get; set; }
+
+        // eureka:instance:preferIpAddress
+        public virtual bool PreferIpAddress { get; set; }
+
+        // eureka:instance:hostName
+        public virtual string HostName
         {
-            if (refresh || string.IsNullOrEmpty(thisHostName))
+            get
             {
-                thisHostName = ResolveHostName(); 
+                return _thisHostName;
+            }
+            set
+            {
+                _thisHostName = value;
+            }
+        }
+
+        public virtual string IpAddress { get; set; }
+        public virtual string AppGroupName { get; set; }
+        public virtual bool IsInstanceEnabledOnInit { get; set; }
+        public virtual int NonSecurePort { get; set; }
+        public virtual bool IsNonSecurePortEnabled { get; set; }
+        public virtual string VirtualHostName { get; set; }
+        public virtual string SecureVirtualHostName { get; set; }
+        public virtual IDataCenterInfo DataCenterInfo { get; set; }
+        public virtual string[] DefaultAddressResolutionOrder { get; set; }
+
+        public virtual string GetHostName(bool refresh)
+        {
+            if (refresh || string.IsNullOrEmpty(_thisHostName))
+            {
+                _thisHostName = ResolveHostName();
                 //thisHostName = Dns.GetHostName();
             }
 
-            return thisHostName;
+            return _thisHostName;
 
         }
 
-        protected string ResolveHostName()
+        protected virtual string ResolveHostName()
         {
             string result = Dns.GetHostName();
             try
             {
                 result = Dns.GetHostEntryAsync(result).Result.HostName;
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 // Ignore
             }
             return result;
         }
 
-        public string HostName
+        internal virtual string GetHostAddress(bool refresh)
         {
-            get
-            {
-                return thisHostName;
-            }
-            set
-            {
-                thisHostName = value;
-            }
-        }
-
-        internal string GetHostAddress(bool refresh)
-        {
-            if (refresh || string.IsNullOrEmpty(thisHostAddress))
+            if (refresh || string.IsNullOrEmpty(_thisHostAddress))
             {
                 string hostName = GetHostName(refresh);
                 var task = Dns.GetHostAddressesAsync(hostName);
@@ -133,13 +170,13 @@ namespace Steeltoe.Discovery.Eureka
                     {
                         if (result.AddressFamily.Equals(AddressFamily.InterNetwork))
                         {
-                            thisHostAddress = result.ToString();
+                            _thisHostAddress = result.ToString();
                             break;
                         }
                     }
                 }
             }
-            return thisHostAddress;
+            return _thisHostAddress;
 
         }
 

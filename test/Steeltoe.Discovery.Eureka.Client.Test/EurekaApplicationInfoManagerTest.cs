@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,20 @@
 // limitations under the License.
 //
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Discovery.Eureka.Test
 {
-    public static class DiscoveryApplicationBuilderExtensions
+    public class EurekaApplicationInfoManagerTest : AbstractBaseTest
     {
-
-        public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
+   
+        [Fact]
+        public void Constructor_Initializes_Correctly()
         {
-            var service = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
-            return app;
+            var instOptions = new EurekaInstanceOptions();
+            var wrap = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instOptions);
+            var mgr = new EurekaApplicationInfoManager(wrap);
+            Assert.Equal(instOptions, mgr.InstanceConfig);
         }
     }
 }

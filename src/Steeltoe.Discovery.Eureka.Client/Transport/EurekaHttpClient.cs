@@ -25,12 +25,9 @@ using System.Text;
 using Steeltoe.Discovery.Eureka.Util;
 using System.IO;
 using Microsoft.Extensions.Logging;
-#if NET452
 using System.Net.Security;
-#else
-using System.Security.Authentication;
-#endif
 using System.Net;
+using Steeltoe.Common.Http;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
@@ -38,7 +35,17 @@ namespace Steeltoe.Discovery.Eureka.Transport
     {
         protected string _serviceUrl;
         protected IDictionary<string, string> _headers;
+
+
         protected IEurekaClientConfig _config;
+
+        protected virtual IEurekaClientConfig Config
+        {
+            get
+            {
+                return _config;
+            }
+        }
 
         protected HttpClient _client;
         protected ILogger _logger;
@@ -64,14 +71,18 @@ namespace Steeltoe.Discovery.Eureka.Transport
             {
                 throw new ArgumentNullException(nameof(config));
             }
+            _config = config;
+            Initialize(headers, logFactory);
+        }
 
+        protected void Initialize(IDictionary<string, string> headers, ILoggerFactory logFactory)
+        {
             if (headers == null)
             {
                 throw new ArgumentNullException(nameof(headers));
             }
             _logger = logFactory?.CreateLogger<EurekaHttpClient>();
-            _config = config;
-            _serviceUrl = MakeServiceUrl(config.EurekaServerServiceUrls);
+            _serviceUrl = MakeServiceUrl(Config.EurekaServerServiceUrls);
             _headers = headers;
         }
 
@@ -82,15 +93,14 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 throw new ArgumentNullException(nameof(info));
             }
 
-            HttpClient client = GetHttpClient(_config);
+            HttpClient client = GetHttpClient(Config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + info.AppName);
             var request = GetRequestMessage(HttpMethod.Post, requestUri);
-#if NET452
+
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
             try
             {
                 request.Content = GetRequestContent(new JsonInstanceInfoRoot(info.ToJsonInstance()));
@@ -113,9 +123,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452
-                RestoreCertificateValidation(prevProtocols, prevValidator);
-#endif
+                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+
             }
 
         }
@@ -149,15 +158,14 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 queryArgs.Add("overriddenstatus", overriddenStatus.ToString());
             }
 
-            HttpClient client = GetHttpClient(_config);
+            HttpClient client = GetHttpClient(Config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + info.AppName + "/" + id, queryArgs);
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
-#if NET452
+
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -189,9 +197,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452
-                RestoreCertificateValidation(prevProtocols, prevValidator);
-#endif
+                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
             }
         }
 
@@ -231,15 +237,13 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 throw new ArgumentException(nameof(appName));
             }
 
-            HttpClient client = GetHttpClient(_config);
+            HttpClient client = GetHttpClient(Config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
-#if NET452
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -268,9 +272,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452
-                RestoreCertificateValidation(prevProtocols, prevValidator);
-#endif
+                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
             }
 
         }
@@ -310,15 +312,15 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 throw new ArgumentException(nameof(id));
             }
 
-            HttpClient client = GetHttpClient(_config);
+            HttpClient client = GetHttpClient(Config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName + "/" + id);
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
-#if NET452
+
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -338,9 +340,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452
-                RestoreCertificateValidation(prevProtocols, prevValidator);
-#endif
+                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
             }
         }
 
@@ -367,15 +367,14 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 {  "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
             };
 
-            HttpClient client = GetHttpClient(_config);
+            HttpClient client = GetHttpClient(Config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName + "/" + id + "/status", queryArgs);
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
-#if NET452
+
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -395,9 +394,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452
-                RestoreCertificateValidation(prevProtocols, prevValidator);
-#endif
+                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
             }
 
         }
@@ -428,15 +425,15 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             };
 
-            HttpClient client = GetHttpClient(_config);
+            HttpClient client = GetHttpClient(Config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName + "/" + id + "/status", queryArgs);
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
-#if NET452
+
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -456,9 +453,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452
-                RestoreCertificateValidation(prevProtocols, prevValidator);
-#endif
+
+                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+
             }
         }
         protected virtual async Task<EurekaHttpResponse<InstanceInfo>> DoGetInstanceAsync(string path)
@@ -467,13 +464,13 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             var requestUri = GetRequestUri(_serviceUrl + path);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
-            HttpClient client = GetHttpClient(_config);
-#if NET452
+            HttpClient client = GetHttpClient(Config);
+
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -503,9 +500,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452
-                RestoreCertificateValidation(prevProtocols, prevValidator);
-#endif
+
+                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+
             }
 
         }
@@ -520,15 +517,15 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 queryArgs.Add("regions", regionParams);
             }
 
-            HttpClient client = GetHttpClient(_config);
+            HttpClient client = GetHttpClient(Config);
             var requestUri = GetRequestUri(_serviceUrl + path, queryArgs);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
-#if NET452
+
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -561,9 +558,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-#if NET452
-                RestoreCertificateValidation(prevProtocols, prevValidator);
-#endif
+
+                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+
             }
         }
 
@@ -580,30 +577,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             {
                 return _client;
             }
-
-            HttpClient client = null;
-#if NET452
-            client = new HttpClient();
-#else
-            if (config != null && !config.ValidateCertificates)
-            {
-                var handler = new HttpClientHandler();
-                handler.SslProtocols = SslProtocols.Tls12;
-                handler.ServerCertificateCustomValidationCallback  = (sender, cert, chain, sslPolicyErrors) => true;
-                client = new HttpClient(handler);
-            } else
-            {
-                client = new HttpClient();
-            }
-#endif
-
-            if (config != null)
-            {
-                client.Timeout = new TimeSpan(0, 0, config.EurekaServerConnectTimeoutSeconds);
-            }
-
-            return client;
-
+            return HttpClientHelper.GetHttpClient(config.ValidateCertificates, config.EurekaServerConnectTimeoutSeconds * 1000);
         }
 
         protected internal virtual HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
@@ -661,28 +635,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 client.Dispose();
             }
         }
-#if NET452
-        protected virtual void ConfigureCertificateValidatation(out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator) 
-        {
-            prevValidator = null;
-            protocolType = (SecurityProtocolType) 0;
-            if (!_config.ValidateCertificates)
-            {
-                protocolType = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
-        }
-        protected virtual void RestoreCertificateValidation(SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator) 
-        {
-            if (!_config.ValidateCertificates)
-            {
-                ServicePointManager.SecurityProtocol = protocolType;
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
-        }
-#endif
+
         protected internal static string MakeServiceUrl(string serviceUrl)
         {
             var url = new Uri(serviceUrl).ToString();

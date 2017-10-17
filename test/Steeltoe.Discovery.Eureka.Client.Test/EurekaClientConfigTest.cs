@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-using Steeltoe.Discovery.Eureka.Client.Test;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test

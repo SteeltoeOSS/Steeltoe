@@ -40,23 +40,37 @@ namespace Steeltoe.Discovery.Eureka
             ValidateCertificates = true;
 
         }
+
+        /// Configuration property: eureka:client:registryFetchIntervalSeconds
         public int RegistryFetchIntervalSeconds { get; set; }
+        /// Configuration property: eureka:client:instanceInfoReplicationIntervalSeconds
         public int InstanceInfoReplicationIntervalSeconds { get; set; }
+        ///  Configuration property: eureka:client:shouldRegisterWithEureka
+        public bool ShouldRegisterWithEureka { get; set; }
+        ///  Configuration property: eureka:client:allowRedirects
+        public bool AllowRedirects { get; set; }
+        ///  Configuration property: eureka:client:shouldDisableDelta
+        public bool ShouldDisableDelta { get; set; }
+        ///  Configuration property: eureka:client:shouldFilterOnlyUpInstances
+        public bool ShouldFilterOnlyUpInstances { get; set; }
+        ///  Configuration property: eureka:client:shouldFetchRegistry
+        public bool ShouldFetchRegistry { get; set; }
+        ///  Configuration property: eureka:client:registryRefreshSingleVipAddress
+        public string RegistryRefreshSingleVipAddress { get; set; }
+        ///  Configuration property: eureka:client:shouldOnDemandUpdateStatusChange
+        public bool ShouldOnDemandUpdateStatusChange { get; set; }
+        ///  Configuration property: eureka:client:enabled
+        public bool Enabled { get; set; } = true;
+
+        public string EurekaServerServiceUrls { get; set; }
+        public int EurekaServerConnectTimeoutSeconds { get; set; }
         public string ProxyHost { get; set; }
         public int ProxyPort { get; set; }
         public string ProxyUserName { get; set; }
         public string ProxyPassword { get; set; }
         public bool ShouldGZipContent { get; set; }
-        public int EurekaServerConnectTimeoutSeconds { get; set; }
-        public bool ShouldRegisterWithEureka { get; set; }
-        public bool AllowRedirects { get; set; }
-        public bool ShouldDisableDelta { get; set; }
-        public bool ShouldFilterOnlyUpInstances { get; set; }
-        public bool ShouldFetchRegistry { get; set; }
-        public string RegistryRefreshSingleVipAddress { get; set; }
-        public bool ShouldOnDemandUpdateStatusChange { get; set; }
-        public string EurekaServerServiceUrls { get; set; }
         public bool ValidateCertificates { get; set; }
 
     }
+
 }

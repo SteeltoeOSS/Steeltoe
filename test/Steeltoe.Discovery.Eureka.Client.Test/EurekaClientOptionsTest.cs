@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,46 +13,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+
 using Microsoft.Extensions.Configuration;
-using System;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Discovery.Client.Test
+namespace Steeltoe.Discovery.Eureka.Test
 {
-    public class DiscoveryOptionsTest : AbstractBaseTest
+    public class EurekaClientOptionsTest : AbstractBaseTest
     {
-        [Fact]
-        public void Constructor_Initializes_ClientType_Unknown()
-        {
-            var option = new DiscoveryOptions();
-            Assert.Equal(DiscoveryClientType.UNKNOWN, option.ClientType);
-        }
 
         [Fact]
-        public void Constructor_ThrowsIfConfigNull()
+        public void Constructor_Intializes_Defaults()
         {
-            // Arrange
-            IConfiguration config = null;
-
-            // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryOptions(config));
-            Assert.Contains(nameof(config), ex.Message);
+            EurekaClientOptions opts = new EurekaClientOptions();
+            Assert.True(opts.Enabled);
+            Assert.Equal(EurekaClientOptions.Default_RegistryFetchIntervalSeconds, opts.RegistryFetchIntervalSeconds);
+            Assert.Equal(EurekaClientOptions.Default_InstanceInfoReplicationIntervalSeconds, opts.InstanceInfoReplicationIntervalSeconds);
+            Assert.Null(opts.ProxyHost);
+            Assert.Equal(0, opts.ProxyPort);
+            Assert.Null(opts.ProxyUserName);
+            Assert.Null(opts.ProxyPassword);
+            Assert.True(opts.ShouldGZipContent);
+            Assert.Equal(EurekaClientOptions.Default_EurekaServerConnectTimeoutSeconds, opts.EurekaServerConnectTimeoutSeconds);
+            Assert.True(opts.ShouldRegisterWithEureka);
+            Assert.False(opts.AllowRedirects);
+            Assert.False(opts.ShouldDisableDelta);
+            Assert.True(opts.ShouldFilterOnlyUpInstances);
+            Assert.True(opts.ShouldFetchRegistry);
+            Assert.Null(opts.RegistryRefreshSingleVipAddress);
+            Assert.True(opts.ShouldOnDemandUpdateStatusChange);
+            Assert.Equal(EurekaClientOptions.Default_ServerServiceUrl, opts.EurekaServerServiceUrls);
         }
-
         [Fact]
         public void Constructor_ConfiguresEurekaDiscovery_Correctly()
         {
             // Arrange
             var appsettings = @"
 {
-'spring': {
-    'cloud': {
-        'discovery': {
-            'registrationMethod' : 'foobar'
-        }
-    }
-},
 'eureka': {
     'client': {
         'eurekaServer': {
@@ -75,6 +73,7 @@ namespace Steeltoe.Discovery.Client.Test
         'serviceUrl': 'http://localhost:8761/eureka/'
     },
     'instance': {
+        'registrationMethod' : 'foobar',
         'hostName': 'myHostName',
         'instanceId': 'instanceId',
         'appName': 'appName',
@@ -113,11 +112,10 @@ namespace Steeltoe.Discovery.Client.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            var options = new DiscoveryOptions(config);
-            Assert.Equal(DiscoveryClientType.EUREKA, options.ClientType);
+            var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+            var co = new EurekaClientOptions();
+            clientSection.Bind(co);
 
-            var co = options.ClientOptions as EurekaClientOptions;
-            Assert.NotNull(co);
             Assert.Equal("proxyHost", co.ProxyHost);
             Assert.Equal(100, co.ProxyPort);
             Assert.Equal("proxyPassword", co.ProxyPassword);
@@ -134,41 +132,6 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.True(co.ShouldGZipContent);
             Assert.True(co.ShouldOnDemandUpdateStatusChange);
             Assert.True(co.ShouldRegisterWithEureka);
-
-            var ro = options.RegistrationOptions as EurekaInstanceOptions;
-            Assert.NotNull(ro);
-
-
-            Assert.Equal("instanceId", ro.InstanceId);
-            Assert.Equal("appName", ro.AppName);
-            Assert.Equal("appGroup", ro.AppGroupName);
-            Assert.True(ro.IsInstanceEnabledOnInit);
-            Assert.Equal(100, ro.NonSecurePort);
-            Assert.Equal(100, ro.SecurePort);
-            Assert.True(ro.IsNonSecurePortEnabled);
-            Assert.True(ro.SecurePortEnabled);
-            Assert.Equal(100, ro.LeaseExpirationDurationInSeconds);
-            Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
-            Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
-            Assert.Equal("vipAddress", ro.VirtualHostName);
-            Assert.Equal("asgName", ro.ASGName);
-
-            Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
-            Assert.Equal("statusPageUrl", ro.StatusPageUrl);
-            Assert.Equal("homePageUrlPath", ro.HomePageUrlPath);
-            Assert.Equal("homePageUrl", ro.HomePageUrl);
-            Assert.Equal("healthCheckUrlPath", ro.HealthCheckUrlPath);
-            Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
-            Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
-            Assert.Equal("myHostName", ro.GetHostName(false));
-            Assert.Equal("myHostName", ro.HostName);
-            Assert.Equal("foobar", ro.RegistrationMethod);
-            var map = ro.MetadataMap;
-            Assert.NotNull(map);
-            Assert.Equal(2, map.Count);
-            Assert.Equal("bar", map["foo"]);
-            Assert.Equal("foo", map["bar"]);
-
         }
     }
 }

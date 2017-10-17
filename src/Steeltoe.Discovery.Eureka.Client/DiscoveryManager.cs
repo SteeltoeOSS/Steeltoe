@@ -20,10 +20,13 @@ using System;
 
 namespace Steeltoe.Discovery.Eureka
 {
+
+
     public class DiscoveryManager
     {
-        private DiscoveryManager() { }
-        private static readonly DiscoveryManager _instance = new DiscoveryManager();
+   
+        protected DiscoveryManager() { }
+        protected static DiscoveryManager _instance = new DiscoveryManager();
         public static DiscoveryManager Instance
         {
             get
@@ -31,10 +34,10 @@ namespace Steeltoe.Discovery.Eureka
                 return _instance;
             }
         }
-        public DiscoveryClient Client { get; internal set; }
-        public IEurekaClientConfig ClientConfig { get; internal set; }
-        public IEurekaInstanceConfig InstanceConfig { get; internal set; }
-        public ILookupService LookupService
+        public virtual DiscoveryClient Client { get; protected internal set; }
+        public virtual IEurekaClientConfig ClientConfig { get; protected internal set; }
+        public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
+        public virtual ILookupService LookupService
         {
             get
             {
@@ -42,20 +45,20 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        private ILogger _logger;
+        protected ILogger _logger;
 
-        public void Initialize(IEurekaClientConfig clientConfig, ILoggerFactory logFactory = null)
+        public virtual void Initialize(IEurekaClientConfig clientConfig, ILoggerFactory logFactory = null)
         {
             Initialize(clientConfig, (IEurekaHttpClient)null, logFactory);
         }
 
-        public void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
+        public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
         {
             Initialize(clientConfig, instanceConfig, null, logFactory);
 
         }
 
-        public void Initialize(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
+        public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
         {
             if (clientConfig == null)
             {
@@ -66,7 +69,7 @@ namespace Steeltoe.Discovery.Eureka
             Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
         }
 
-        public void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
+        public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
         {
 
             if (clientConfig == null)

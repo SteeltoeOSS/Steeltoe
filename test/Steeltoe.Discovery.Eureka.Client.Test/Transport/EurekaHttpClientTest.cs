@@ -18,13 +18,13 @@ using System;
 using System.Net.Http;
 using Xunit;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Client.Test;
 using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using System.Collections.Generic;
 using Steeltoe.Discovery.Eureka.Util;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting;
+using Steeltoe.Discovery.Eureka.Test;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test
 {
@@ -266,7 +266,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.NotNull(resp.Headers);
             Assert.NotNull(resp.Response);
             Assert.NotNull(resp.Response.ApplicationMap);
-            Assert.Equal(1, resp.Response.ApplicationMap.Count);
+            Assert.Single(resp.Response.ApplicationMap);
             var app = resp.Response.GetRegisteredApplication("foo");
 
             Assert.NotNull(app);

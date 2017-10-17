@@ -22,17 +22,17 @@ namespace Steeltoe.Discovery.Eureka
 {
     public class ApplicationInfoManager
     {
-        private ApplicationInfoManager() { }
-        private static readonly ApplicationInfoManager _instance = new ApplicationInfoManager();
-        private ILogger _logger;
+        protected ApplicationInfoManager() { }
+        protected static ApplicationInfoManager _instance = new ApplicationInfoManager();
+        protected ILogger _logger;
         private object _statusChangedLock = new object();
 
-        public IEurekaInstanceConfig InstanceConfig { get; internal set; }
-        public InstanceInfo InstanceInfo { get; internal set; }
+        public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
+        public virtual InstanceInfo InstanceInfo { get; protected internal set; }
 
-        public event StatusChangedHandler StatusChangedEvent;
+        public virtual event StatusChangedHandler StatusChangedEvent;
 
-        public InstanceStatus InstanceStatus
+        public virtual InstanceStatus InstanceStatus
         {
             get
             {
@@ -76,7 +76,7 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        public void Initialize(IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
+        public virtual void Initialize(IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
         {
             if (instanceConfig == null)
             {
@@ -87,7 +87,7 @@ namespace Steeltoe.Discovery.Eureka
             InstanceInfo = InstanceInfo.FromInstanceConfig(instanceConfig);
         }
 
-        public void RefreshLeaseInfo()
+        public virtual void RefreshLeaseInfo()
         {
             if (InstanceInfo == null || InstanceConfig == null)
             {

@@ -15,7 +15,6 @@
 //
 
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Client.Test;
 using System;
 using Xunit;
 

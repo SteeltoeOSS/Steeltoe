@@ -14,13 +14,12 @@
 // limitations under the License.
 //
 
+using Microsoft.Extensions.Options;
 using System;
 using System.IO;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Discovery.Eureka.Test
+
+namespace Steeltoe.Discovery.Client.Test
 {
     public static class TestHelpers
     {
@@ -31,7 +30,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             return tempFile;
 
         }
-
         public static Stream StringToStream(string str)
         {
             var memStream = new MemoryStream();
@@ -52,49 +50,5 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
     }
-    class TestOptionMonitorWrapper<T> : IOptionsMonitor<T>
-    {
-        private T _opt;
-        public TestOptionMonitorWrapper(T opt)
-        {
-            _opt = opt;
-        }
-        public T CurrentValue => _opt;
 
-        public T Get(string name)
-        {
-            return _opt;
-        }
-
-        public IDisposable OnChange(Action<T, string> listener)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class TestConfigServerStartup
-    {
-
-        public static string Response { get; set; }
-        public static int ReturnStatus { get; set; } = 200;
-        public static HttpRequest LastRequest { get; set; }
-        public static Stream RequestBody { get; set; }
-        public TestConfigServerStartup()
-        {
-            LastRequest = null;
-            RequestBody = new MemoryStream();
-        }
-        public void Configure(IApplicationBuilder app)
-        {
-            app.Run(async context =>
-            {
-                LastRequest = context.Request;
-                LastRequest.Body.CopyTo(RequestBody);
-                RequestBody.Seek(0, SeekOrigin.Begin);
-                context.Response.StatusCode = ReturnStatus;
-                await context.Response.WriteAsync(Response);
-            });
-        }
-
-    }
 }

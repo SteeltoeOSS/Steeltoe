@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-using Steeltoe.Discovery.Eureka.Client.Test;
+using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
 using System.Collections.Generic;
 using Xunit;
@@ -189,7 +189,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(635935705417080000L, info.LeaseInfo.ServiceUpTimestamp);
             Assert.False(info.IsCoordinatingDiscoveryServer);
             Assert.NotNull(info.Metadata);
-            Assert.Equal(0, info.Metadata.Count);
+            Assert.Empty(info.Metadata);
             Assert.Equal(635935705417080000L, info.LastUpdatedTimestamp);
             Assert.Equal(635935705417080000L, info.LastDirtyTimestamp);
             Assert.Equal(ActionType.ADDED, info.Actiontype);
