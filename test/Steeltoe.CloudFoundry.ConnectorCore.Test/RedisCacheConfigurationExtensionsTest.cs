@@ -18,6 +18,7 @@ using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {

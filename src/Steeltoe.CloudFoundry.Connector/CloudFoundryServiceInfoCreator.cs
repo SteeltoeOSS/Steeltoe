@@ -74,8 +74,7 @@ namespace Steeltoe.CloudFoundry.Connector
             List<SI> results = new List<SI>();
             foreach (IServiceInfo info in _serviceInfos)
             {
-                SI si = info as SI;
-                if (si != null)
+                if (info is SI si)
                 {
                     results.Add(si);
                 }
@@ -155,16 +154,18 @@ namespace Steeltoe.CloudFoundry.Connector
             CloudFoundryServicesOptions serviceOpts = new CloudFoundryServicesOptions();
             _config.Bind(serviceOpts);
 
-            foreach (Service s in serviceOpts.Services)
+            foreach (KeyValuePair<string, Service[]> serviceopt in serviceOpts.Services)
             {
-                IServiceInfoFactory factory = FindFactory(s);
-                if (factory != null)
+                foreach (Service s in serviceopt.Value)
                 {
-                    var info = factory.Create(s) as ServiceInfo;
-                    if (info != null)
+                    IServiceInfoFactory factory = FindFactory(s);
+                    if (factory != null)
                     {
-                        info.ApplicationInfo = appInfo;
-                        _serviceInfos.Add(info);
+                        if (factory.Create(s) is ServiceInfo info)
+                        {
+                            info.ApplicationInfo = appInfo;
+                            _serviceInfos.Add(info);
+                        }
                     }
                 }
             }

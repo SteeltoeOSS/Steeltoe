@@ -18,6 +18,7 @@ using RabbitMQ.Client;
 using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 {

@@ -18,6 +18,7 @@ using RabbitMQ.Client;
 using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
 {
@@ -406,8 +407,9 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
+            builder.AddEnvironmentVariables();
             var config = builder.Build();
+            services.ConfigureCloudFoundryOptions(config);
 
             // Act and Assert
             HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config);
