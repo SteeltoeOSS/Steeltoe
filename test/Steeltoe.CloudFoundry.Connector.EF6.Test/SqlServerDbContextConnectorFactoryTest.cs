@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.EF6;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Data.Entity;

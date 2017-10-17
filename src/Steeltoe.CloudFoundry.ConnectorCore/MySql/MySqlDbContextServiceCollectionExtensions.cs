@@ -1,4 +1,4 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// Copyright 2015 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,16 +16,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.Connector.SqlServer;
 using System;
-using System.Data.Entity;
 
-namespace Steeltoe.CloudFoundry.Connector.EF6
+namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {
-    public static class SqlServerDbContextServiceCollectionExtensions
+    public static class MySqlDbContextServiceCollectionExtensions
     {
         public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
-            where TContext : DbContext
         {
             if (services == null)
             {
@@ -37,14 +34,13 @@ namespace Steeltoe.CloudFoundry.Connector.EF6
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
         }
 
         public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
-            where TContext : DbContext
         {
             if (services == null)
             {
@@ -61,17 +57,17 @@ namespace Steeltoe.CloudFoundry.Connector.EF6
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+            MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, IConfiguration config, SqlServerServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, IConfiguration config, MySqlServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
-            SqlServerProviderConnectorOptions mySqlConfig = new SqlServerProviderConnectorOptions(config);
+            MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
 
-            SqlServerDbContextConnectorFactory factory = new SqlServerDbContextConnectorFactory(info, mySqlConfig, dbContextType);
+            MySqlDbContextConnectorFactory factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
     }

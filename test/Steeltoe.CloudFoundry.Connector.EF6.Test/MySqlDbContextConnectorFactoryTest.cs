@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using MySql.Data.Entity;
-using Steeltoe.CloudFoundry.Connector.EF6;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Data.Entity;

@@ -14,12 +14,11 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.PostgreSql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.EFCore
+namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 {
     public static class PostgresDbContextOptionsExtensions
     {

@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.MySql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
-using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.EF6
+namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
 {
-    public class MySqlDbContextConnectorFactory : MySqlProviderConnectorFactory
+    public class SqlServerDbContextConnectorFactory : SqlServerProviderConnectorFactory
     {
-        internal MySqlDbContextConnectorFactory()
+        internal SqlServerDbContextConnectorFactory()
         {
         }
 
-        public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConnectorOptions config, Type dbContextType)
+        public SqlServerDbContextConnectorFactory(SqlServerServiceInfo info, SqlServerProviderConnectorOptions config, Type dbContextType)
             : base(info, config, dbContextType)
         {
             if (dbContextType == null)
