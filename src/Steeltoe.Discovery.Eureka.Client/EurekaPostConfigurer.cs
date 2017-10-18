@@ -27,16 +27,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options)
         {
-
             var defaultId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
-            if (defaultId.Equals(options.InstanceId))
-            {
-                string springInstanceId = config.GetValue<string>(SPRING_APPLICATION_INSTANCEID_KEY);
-                if (!string.IsNullOrEmpty(springInstanceId))
-                {
-                    options.InstanceId = springInstanceId;
-                }
-            }
 
             if (EurekaInstanceOptions.Default_Appname.Equals(options.AppName))
             {
@@ -46,6 +37,15 @@ namespace Steeltoe.Discovery.Eureka
                     options.AppName = springAppName;
                     options.VirtualHostName = springAppName;
                     options.SecureVirtualHostName = springAppName;
+                }
+            }
+ 
+            if (defaultId.Equals(options.InstanceId))
+            {
+                string springInstanceId = config.GetValue<string>(SPRING_APPLICATION_INSTANCEID_KEY);
+                if (!string.IsNullOrEmpty(springInstanceId))
+                {
+                    options.InstanceId = springInstanceId;
                 }
             }
 
