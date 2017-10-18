@@ -14,10 +14,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
