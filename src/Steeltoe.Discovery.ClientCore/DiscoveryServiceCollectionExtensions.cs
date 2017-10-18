@@ -62,12 +62,7 @@ namespace Steeltoe.Discovery.Client
 
                 services.AddSingleton<IOptionsMonitor<EurekaInstanceOptions>>(new OptionsMonitorWrapper<EurekaInstanceOptions>(regOptions));
 
-                services.AddSingleton<EurekaApplicationInfoManager>();
-                services.AddSingleton<EurekaDiscoveryManager>();
-
-                services.AddSingleton<EurekaDiscoveryClient>();
-                services.AddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
-                services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
+                AddEurekaServices(services);
             }
             else
             {
@@ -109,6 +104,13 @@ namespace Steeltoe.Discovery.Client
                 throw new ArgumentNullException(nameof(config));
             }
 
+            AddDiscoveryServices(services, config);
+
+            return services;
+
+        }
+        private static void AddDiscoveryServices(IServiceCollection services, IConfiguration config)
+        {
             var clientConfigsection = config.GetSection(EUREKA_PREFIX);
             int childCount = clientConfigsection.GetChildren().Count();
             if (childCount > 0)
@@ -119,20 +121,23 @@ namespace Steeltoe.Discovery.Client
                 var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
                 services.Configure<EurekaInstanceOptions>(instSection);
 
-                services.AddSingleton<EurekaApplicationInfoManager>();
-                services.AddSingleton<EurekaDiscoveryManager>();
-
-                services.AddSingleton<EurekaDiscoveryClient>();
-                services.AddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
-                services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
-
-            } else
+                AddEurekaServices(services);
+            }
+            else
             {
                 throw new ArgumentException("Discovery client type UNKNOWN, check configuration");
             }
 
-            return services;
+        }
 
+        private static void AddEurekaServices(IServiceCollection services)
+        {
+            services.AddSingleton<EurekaApplicationInfoManager>();
+            services.AddSingleton<EurekaDiscoveryManager>();
+
+            services.AddSingleton<EurekaDiscoveryClient>();
+            services.AddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
+            services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
         }
 
         public class ApplicationLifecycle : IDiscoveryLifecycle

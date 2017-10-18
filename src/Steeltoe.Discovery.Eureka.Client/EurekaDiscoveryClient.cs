@@ -39,12 +39,8 @@ namespace Steeltoe.Discovery.Eureka
                 }
             }
 
-            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null) :
-            this(config, new Dictionary<string, string>(), logFactory)
-            {
-            }
+            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null) 
 
-            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, IDictionary<string, string> headers, ILoggerFactory logFactory = null)
             {
                 if (config == null)
                 {
@@ -52,7 +48,7 @@ namespace Steeltoe.Discovery.Eureka
                 }
                 _config = null;
                 _configOptions = config;
-                base.Initialize(headers, logFactory);
+                base.Initialize(new Dictionary<string, string>(), logFactory);
             }
 
         }

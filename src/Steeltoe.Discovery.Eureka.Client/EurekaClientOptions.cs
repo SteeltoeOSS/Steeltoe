@@ -20,7 +20,7 @@ using Steeltoe.Common.Discovery;
 namespace Steeltoe.Discovery.Eureka
 {
 
-    public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions, IEurekaClientConfig
+    public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
     {
         public const string EUREKA_CLIENT_CONFIGURATION_PREFIX = "eureka:client";
 
@@ -32,6 +32,12 @@ namespace Steeltoe.Discovery.Eureka
             EurekaServer = new EurekaServerConfig(this);
         }
 
+        ///  Configuration property: eureka:client:accessTokenUri
+        public string AccessTokenUri { get; set; }
+        ///  Configuration property: eureka:client:clientSecret
+        public string ClientSecret { get; set; }
+        ///  Configuration property: eureka:client:clientId
+        public string ClientId { get; set; }
         ///  Configuration property: eureka:client:serviceUrl
         public string ServiceUrl
         {
