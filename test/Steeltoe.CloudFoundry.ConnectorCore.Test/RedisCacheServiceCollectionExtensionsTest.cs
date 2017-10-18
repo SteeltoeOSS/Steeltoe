@@ -17,6 +17,7 @@ using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
+using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -117,73 +118,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         public void AddDistributedRedisCache_MultipleRedisServices_ThrowsConnectorException()
         {
             // Arrange
-            var env1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
-            var env2 = @"
-{
-      'p-redis': [
-        {
-            'credentials': {
-                'host': '192.168.0.103',
-                'password': '133de7c8-9f3a-4df1-8a10-676ba7ddaa10',
-                'port': 60287
-            },
-          'syslog_drain_url': null,
-          'label': 'p-redis',
-          'provider': null,
-          'plan': 'shared-vm',
-          'name': 'myRedisService1',
-          'tags': [
-            'pivotal',
-            'redis'
-          ]
-        }, 
-        {
-            'credentials': {
-                'host': '192.168.0.103',
-                'password': '133de7c8-9f3a-4df1-8a10-676ba7ddaa10',
-                'port': 60287
-            },
-          'syslog_drain_url': null,
-          'label': 'p-redis',
-          'provider': null,
-          'plan': 'shared-vm',
-          'name': 'myRedisService2',
-          'tags': [
-            'pivotal',
-            'redis'
-          ]
-        } 
-      ]
-}
-";
-
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVCAP);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();

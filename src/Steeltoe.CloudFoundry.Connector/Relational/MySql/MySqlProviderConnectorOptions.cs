@@ -23,6 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         public const string Default_Server = "localhost";
         public const int Default_Port = 3306;
         private const string MYSQL_CLIENT_SECTION_PREFIX = "mysql:client";
+        private bool CloudFoundryConfigFound = false;
 
         public MySqlProviderConnectorOptions()
         {
@@ -38,6 +39,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             var section = config.GetSection(MYSQL_CLIENT_SECTION_PREFIX);
             section.Bind(this);
+
+            CloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         public string ConnectionString { get; set; }
@@ -48,7 +51,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
         public string Username { get; set; }
 
-        public string Password { get; set;  }
+        public string Password { get; set; }
 
         public string Database { get; set; }
 
@@ -56,7 +59,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString))
+            if (!string.IsNullOrEmpty(ConnectionString) && !CloudFoundryConfigFound)
             {
                 return ConnectionString;
             }

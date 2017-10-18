@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.CloudFoundry.Connector
 {
@@ -74,6 +75,16 @@ namespace Steeltoe.CloudFoundry.Connector
             }
 
             return info;
+        }
+
+        /// <summary>
+        /// Evaluate whether an IConfiguration contains services bound by Cloud Foundry
+        /// </summary>
+        /// <param name="config">Application Configuration</param>
+        /// <returns>true if vcap:services found in config, othwerwise false</returns>
+        public static bool HasCloudFoundryServiceConfigurations(this IConfiguration config)
+        {
+            return config.GetSection("vcap:services").GetChildren().Any();
         }
     }
 }

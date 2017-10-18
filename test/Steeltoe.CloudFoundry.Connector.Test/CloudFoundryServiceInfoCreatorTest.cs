@@ -111,29 +111,6 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         public void BuildServiceInfos_WithCloudFoundryServices_BuildsExpected()
         {
             // Arrange
-            var environment1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
             var environment2 = @"
 {
       'p-mysql': [
@@ -230,7 +207,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
     }
   }";
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", environment1);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -281,29 +258,6 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         public void GetServiceInfosType_WithVCAPs_ReturnsExpected()
         {
             // Arrange
-            var environment1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
             var environment2 = @"
 {
       'p-mysql': [
@@ -350,7 +304,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
       ]
   }";
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", environment1);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -397,29 +351,6 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMonogoBinding_BuildsExpected()
         {
             // Arrange
-            var environment1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
             var environment2 = @"
  {
       'p-redis': [
@@ -546,7 +477,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
     }
   ";
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", environment1);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();

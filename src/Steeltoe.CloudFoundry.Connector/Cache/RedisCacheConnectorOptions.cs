@@ -28,6 +28,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         private static char[] comma = new char[] { ',' };
 
         private static string default_EndPoints = Default_Host + ":" + Default_Port;
+        private bool CloudFoundryConfigFound = false;
 
         public RedisCacheConnectorOptions()
             : base(',', Default_Separator)
@@ -44,6 +45,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             var section = config.GetSection(RedisClientSectionPrefix);
             section.Bind(this);
+
+            CloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         // Configure either a single Host/Port or optionaly provide
@@ -94,7 +97,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         // public int? DefaultDatabase { get; set; }
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString))
+            if (!string.IsNullOrEmpty(ConnectionString) && !CloudFoundryConfigFound)
             {
                 return ConnectionString;
             }

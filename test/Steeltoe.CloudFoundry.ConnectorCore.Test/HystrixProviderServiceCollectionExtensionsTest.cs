@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
+using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
@@ -114,29 +115,6 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
         public void AddHystrixConnection_MultipleHystrixServices_ThrowsConnectorException()
         {
             // Arrange
-            var env1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
             var env2 = @"
 {
       'p-circuit-breaker-dashboard': [
@@ -283,7 +261,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             // Arrange
             IServiceCollection services = new ServiceCollection();
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -301,29 +279,6 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
         public void AddHystrixConnection_WithVCAPs_AddsHystrixConnectionFactory()
         {
             // Arrange
-            var env1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
             var env2 = @"
 {
       'p-circuit-breaker-dashboard': [
@@ -402,7 +357,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             // Arrange
             IServiceCollection services = new ServiceCollection();
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();

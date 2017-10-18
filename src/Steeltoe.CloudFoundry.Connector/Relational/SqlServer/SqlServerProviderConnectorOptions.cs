@@ -23,6 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         public const string Default_Server = "localhost";
         public const int Default_Port = 1433;
         private const string SQL_CLIENT_SECTION_PREFIX = "sqlserver:credentials";
+        private bool CloudFoundryConfigFound = false;
 
         public SqlServerProviderConnectorOptions()
         {
@@ -50,6 +51,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             Password = Pw;
 
             section.Bind(this);
+
+            CloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         public string ConnectionString { get; set; }
@@ -76,7 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString))
+            if (!string.IsNullOrEmpty(ConnectionString) && !CloudFoundryConfigFound)
             {
                 return ConnectionString;
             }

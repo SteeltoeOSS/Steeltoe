@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.Connector.EFCore\Steeltoe.CloudFoundry.Connector.EFCore.csproj" />
     <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.csproj" />
+    <ProjectReference Include="..\Steeltoe.CloudFoundry.Connector.Test\Steeltoe.CloudFoundry.Connector.Test.csproj" />
   </ItemGroup>
 
   <ItemGroup>

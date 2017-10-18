@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public abstract class UriServiceInfo : ServiceInfo
@@ -38,68 +36,20 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public UriInfo Info { get; internal protected set; }
 
-        public string Uri
-        {
-            get
-            {
-                return Info.UriString;
-            }
-        }
+        public string Uri => Info.UriString;
 
-        public string UserName
-        {
-            get
-            {
-                return Info.UserName;
-            }
-        }
+        public string UserName => Info.UserName;
 
-        public string Password
-        {
-            get
-            {
-                return Info.Password;
-            }
-        }
+        public string Password => Info.Password;
 
-        public string Host
-        {
-            get
-            {
-                return Info.Host;
-            }
-        }
+        public string Host => Info.Host;
 
-        public int Port
-        {
-            get
-            {
-                return Info.Port;
-            }
-        }
+        public int Port => Info.Port;
 
-        public string Path
-        {
-            get
-            {
-                return Info.Path;
-            }
-        }
+        public string Path => Info.Path;
 
-        public string Query
-        {
-            get
-            {
-                return Info.Query;
-            }
-        }
+        public string Query => Info.Query;
 
-        public string Scheme
-        {
-            get
-            {
-                return Info.Scheme;
-            }
-        }
+        public string Scheme => Info.Scheme;
     }
 }

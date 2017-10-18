@@ -13,13 +13,15 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
-    public class RedisCacheConfigurationTest
+    public class RedisCacheConnectorOptionsTest
     {
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
@@ -80,5 +82,51 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 
             Assert.Null(sconfig.ConnectionString);
     }
+
+        [Fact]
+        public void ConnectionString_Returned_AsConfigured()
+        {
+            // arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["redis:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
+            };
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new RedisCacheConnectorOptions(config);
+
+            // assert
+            Assert.Equal(appsettings["redis:client:ConnectionString"], sconfig.ToString());
+        }
+
+        [Fact]
+        public void ConnectionString_Overridden_By_CloudFoundryConfig()
+        {
+            // arrange
+            // simulate an appsettings file
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["redis:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
+            };
+            // add environment variables as Cloud Foundry would
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP);
+
+            // add settings to config
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddEnvironmentVariables();
+            configurationBuilder.AddCloudFoundry();
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new RedisCacheConnectorOptions(config);
+
+            // assert
+            Assert.NotEqual(appsettings["redis:client:ConnectionString"], sconfig.ToString());
+        }
     }
 }

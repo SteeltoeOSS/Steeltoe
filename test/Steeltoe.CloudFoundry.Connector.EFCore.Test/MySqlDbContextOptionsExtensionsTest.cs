@@ -17,6 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using Steeltoe.CloudFoundry.Connector.EFCore.Test;
+using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.CloudFoundry.Connector.Test.MySql;
 using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
@@ -100,8 +102,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            services.AddDbContext<GoodDbContext>(options =>
-                    options.UseMySql(config));
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 
             var service = services.BuildServiceProvider().GetService<GoodDbContext>();
             Assert.NotNull(service);
@@ -117,10 +118,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
-            services.AddDbContext<GoodDbContext>(options =>
-                  options.UseMySql(config, "foobar"));
+            // Act
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "foobar"));
 
+            // Assert
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
             Assert.Contains("foobar", ex.Message);
         }
@@ -129,90 +130,19 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
         public void AddDbContext_MultipleMySqlServices_ThrowsConnectorException()
         {
             // Arrange
-            var env1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
-            var env2 = @"
-{
-        'p-mysql': [
-        {
-          'credentials': {
-            'hostname': '192.168.0.80',
-            'port': 3306,
-            'name': 'cf_eabde00f_6383_4230_86df_98eb522bc87c',
-            'username': '1solAZdtoCYfmjcj',
-            'password': '7JmJzJgm4VH4ZkOh',
-            'uri': 'mysql://1solAZdtoCYfmjcj:7JmJzJgm4VH4ZkOh@192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87c?reconnect=true',
-            'jdbcUrl': 'jdbc:mysql://192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87c?user=1solAZdtoCYfmjcj&password=7JmJzJgm4VH4ZkOh'
-          },
-          'syslog_drain_url': null,
-          'label': 'p-mysql',
-          'provider': null,
-          'plan': '100mb',
-          'name': 'myMySqlService',
-          'tags': [
-            'mysql',
-            'relational'
-          ]
-        },
-        {
-          'credentials': {
-            'hostname': '192.168.0.80',
-            'port': 3306,
-            'name': 'cf_eabde00f_6383_4230_86df_98eb522bc87d',
-            'username': '1solAZdtoCYfmjcj',
-            'password': '7JmJzJgm4VH4ZkOh',
-            'uri': 'mysql://1solAZdtoCYfmjcj:7JmJzJgm4VH4ZkOh@192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87d?reconnect=true',
-            'jdbcUrl': 'jdbc:mysql://192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87d?user=1solAZdtoCYfmjcj&password=7JmJzJgm4VH4ZkOh'
-          },
-          'syslog_drain_url': null,
-          'label': 'p-mysql',
-          'provider': null,
-          'plan': '100mb',
-          'name': 'myMySqlService2',
-          'tags': [
-            'mysql',
-            'relational'
-          ]
-        },
-      ]
-}
-";
-
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
-            services.AddDbContext<GoodDbContext>(options =>
-                  options.UseMySql(config));
+            // Act
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 
+            // Assert
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
             Assert.Contains("Multiple", ex.Message);
         }
@@ -221,69 +151,16 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
         public void AddDbContexts_WithVCAPs_AddsDbContexts()
         {
             // Arrange
-            var env1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
-            var env2 = @"
-{
-        'p-mysql': [
-        {
-          'credentials': {
-            'hostname': '192.168.0.80',
-            'port': 3306,
-            'name': 'cf_eabde00f_6383_4230_86df_98eb522bc87d',
-            'username': '1solAZdtoCYfmjcj',
-            'password': '7JmJzJgm4VH4ZkOh',
-            'uri': 'mysql://1solAZdtoCYfmjcj:7JmJzJgm4VH4ZkOh@192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87d?reconnect=true',
-            'jdbcUrl': 'jdbc:mysql://192.168.0.80:3306/cf_eabde00f_6383_4230_86df_98eb522bc87d?user=1solAZdtoCYfmjcj&password=7JmJzJgm4VH4ZkOh'
-          },
-          'syslog_drain_url': null,
-          'label': 'p-mysql',
-          'provider': null,
-          'plan': '100mb',
-          'name': 'myMySqlService',
-          'tags': [
-            'mysql',
-            'relational'
-          ]
-        },
-      ]
-}
-";
-
-            // Arrange
             IServiceCollection services = new ServiceCollection();
-
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVCAP);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
             // Act and Assert
-            services.AddDbContext<GoodDbContext>(options =>
-                  options.UseMySql(config));
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 
             var built = services.BuildServiceProvider();
             var service = built.GetService<GoodDbContext>();
@@ -295,12 +172,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
 
             var connString = con.ConnectionString;
             Assert.NotNull(connString);
-
-            Assert.Contains("cf_eabde00f_6383_4230_86df_98eb522bc87d", connString);
-            Assert.Contains("3306", connString);
-            Assert.Contains("192.168.0.80", connString);
-            Assert.Contains("1solAZdtoCYfmjcj", connString);
-            Assert.Contains("7JmJzJgm4VH4ZkOh", connString);
+            Assert.Contains("Server=192.168.0.90", connString);
+            Assert.Contains("Port=3306", connString);
+            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString);
+            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString);
+            Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString);
         }
     }
 }
