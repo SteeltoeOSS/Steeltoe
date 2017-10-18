@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
-
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
@@ -272,10 +271,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
             var opt = new CloudFoundryServicesOptions();
-            config.Bind(opt);
-            Assert.Equal(1, opt.Services.Count);
+            var section = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
+            section.Bind(opt);
+            Assert.Single(opt.Services);
 
-            return opt.Services[0];
+            return opt.Services.First().Value[0];
         }
     }
 }

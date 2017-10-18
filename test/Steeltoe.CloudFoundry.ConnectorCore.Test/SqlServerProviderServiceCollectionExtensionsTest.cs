@@ -19,6 +19,7 @@ using Steeltoe.Extensions.Configuration;
 using System;
 using System.Data.SqlClient;
 using Xunit;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
 {

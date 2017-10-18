@@ -14,9 +14,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.CloudFoundry.Connector.SqlServer.Test;
 using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.Extensions.Configuration;
 using System;
 using System.Data.Entity;
 using Xunit;

@@ -43,32 +43,24 @@ namespace Steeltoe.CloudFoundry.Connector.App.Test
         public static CloudFoundryApplicationOptions MakeCloudFoundryApplicationOptions()
         {
             CloudFoundryApplicationOptions opts = new CloudFoundryApplicationOptions()
-            {
-                Vcap = new Vcap()
+            { 
+                Application_Id = "Application_Id",
+                Application_Name = "Application_Name",
+                Application_Uris = new string[] { "Application_Uris" },
+                Application_Version = "Application_Version",
+                Instance_Id = "Instance_Id",
+                Limits = new Limits()
                 {
-                    Application = new Application()
-                    {
-                        Application_Id = "Application_Id",
-                        Application_Name = "Application_Name",
-                        Application_Uris = new string[] { "Application_Uris" },
-                        Application_Version = "Application_Version",
-                        Instance_Id = "Instance_Id",
-                        Instance_Index = "Instance_Index",
-                        Limits = new Limits()
-                        {
-                            Disk = "1",
-                            Fds = "1",
-                            Mem = "1"
-                        },
-                        Name = "Name",
-                        Port = "Port",
-                        Space_Id = "Space_Id",
-                        Space_Name = "Space_Name",
-                        Start = "Start",
-                        Uris = new string[] { "uris" },
-                        Version = "Version",
-                    }
-                }
+                    Disk = 1,
+                    Fds = 1,
+                    Mem = 1
+                },
+                Name = "Name",
+                Space_Id = "Space_Id",
+                Space_Name = "Space_Name",
+                Start = "Start",
+                Uris = new string[] { "uris" },
+                Version = "Version",
             };
             return opts;
         }

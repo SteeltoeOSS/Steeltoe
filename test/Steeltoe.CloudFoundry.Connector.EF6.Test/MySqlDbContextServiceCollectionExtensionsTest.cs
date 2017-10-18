@@ -15,9 +15,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.Entity;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.CloudFoundry.Connector.Test.MySql;
-using Steeltoe.Extensions.Configuration;
 using System;
 using System.Data.Entity;
 using Xunit;
