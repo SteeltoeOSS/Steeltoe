@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +23,7 @@ using System.Globalization;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
-    public class CloudFoundryServicesOptions
+    public class CloudFoundryServicesOptions : AbstractOptions
     {
         public const string CONFIGURATION_PREFIX = "vcap";
 
@@ -29,6 +31,15 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         {
         }
 
+        public CloudFoundryServicesOptions(IConfigurationRoot root) : base(root, CONFIGURATION_PREFIX)
+        {
+
+        }
+
+        public CloudFoundryServicesOptions(IConfiguration config) : base(config)
+        {
+
+        }
         public Dictionary<string, Service[]> Services { get; set; } = new Dictionary<string, Service[]>();
 
         public IList<Service> ServicesList

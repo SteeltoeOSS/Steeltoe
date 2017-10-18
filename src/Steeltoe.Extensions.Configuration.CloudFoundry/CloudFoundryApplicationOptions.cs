@@ -13,15 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Options;
+
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
 
-    public class CloudFoundryApplicationOptions
+    public class CloudFoundryApplicationOptions : AbstractOptions
     {
         public const string CONFIGURATION_PREFIX = "vcap:application";
 
         public CloudFoundryApplicationOptions()
         {
+        }
+        public CloudFoundryApplicationOptions(IConfigurationRoot root) : base(root, CONFIGURATION_PREFIX)
+        {
+
+        }
+
+        public CloudFoundryApplicationOptions(IConfiguration config) : base(config)
+        {
+
         }
 
         public string CF_Api { get; set; }

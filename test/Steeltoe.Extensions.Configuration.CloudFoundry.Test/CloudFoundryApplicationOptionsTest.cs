@@ -34,7 +34,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var options = new CloudFoundryApplicationOptions();
             var appSection = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
             appSection.Bind(options);
-
+            
             Assert.Null(options.CF_Api);
             Assert.Null(options.ApplicationId);
             Assert.Null(options.Application_Id);

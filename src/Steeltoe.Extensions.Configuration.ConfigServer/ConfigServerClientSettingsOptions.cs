@@ -15,14 +15,27 @@
 //
 
 
+using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Options;
+
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
-    public class ConfigServerClientSettingsOptions
+    public class ConfigServerClientSettingsOptions : AbstractOptions
     {
         public const string CONFIGURATION_PREFIX = "spring:cloud:config";
 
         public ConfigServerClientSettingsOptions()
         {
+        }
+
+        public ConfigServerClientSettingsOptions(IConfigurationRoot root) : base(root, CONFIGURATION_PREFIX)
+        {
+
+        }
+
+        public ConfigServerClientSettingsOptions(IConfiguration config) : base(config)
+        {
+
         }
 
         public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED;
