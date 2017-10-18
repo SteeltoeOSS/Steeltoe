@@ -407,9 +407,8 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
-            builder.AddEnvironmentVariables();
+            builder.AddCloudFoundry();
             var config = builder.Build();
-            services.ConfigureCloudFoundryOptions(config);
 
             // Act and Assert
             HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config);

@@ -148,11 +148,13 @@ namespace Steeltoe.CloudFoundry.Connector
             _serviceInfos.Clear();
 
             CloudFoundryApplicationOptions appOpts = new CloudFoundryApplicationOptions();
-            _config.Bind(appOpts);
-            ApplicationInstanceInfo appInfo = new ApplicationInstanceInfo(appOpts);
+            var aopSection = _config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
+            aopSection.Bind(appOpts);
 
+            ApplicationInstanceInfo appInfo = new ApplicationInstanceInfo(appOpts);
+            var serviceSection = _config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
             CloudFoundryServicesOptions serviceOpts = new CloudFoundryServicesOptions();
-            _config.Bind(serviceOpts);
+            serviceSection.Bind(serviceOpts);
 
             foreach (KeyValuePair<string, Service[]> serviceopt in serviceOpts.Services)
             {
