@@ -120,7 +120,10 @@ namespace Steeltoe.Discovery.Client
 
                 var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
                 services.Configure<EurekaInstanceOptions>(instSection);
-
+                services.PostConfigure<EurekaInstanceOptions>((options) =>
+                {
+                    EurekaPostConfigurer.UpdateConfiguration(config, options);
+                });
                 AddEurekaServices(services);
             }
             else
