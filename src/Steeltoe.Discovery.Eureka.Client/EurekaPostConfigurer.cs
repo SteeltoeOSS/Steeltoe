@@ -46,6 +46,9 @@ namespace Steeltoe.Discovery.Eureka
                 if (!string.IsNullOrEmpty(springInstanceId))
                 {
                     options.InstanceId = springInstanceId;
+                } else
+                {
+                    options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
                 }
             }
 
