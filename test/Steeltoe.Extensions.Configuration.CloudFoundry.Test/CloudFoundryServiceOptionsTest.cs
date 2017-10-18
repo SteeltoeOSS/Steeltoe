@@ -282,5 +282,121 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("cf_0f5dda44_e678_4727_993f_30e6d455cc31", options.ServicesList[1].Credentials["name"].Value);
 
         }
+        [Fact]
+        public void Constructor_WithIConfigurationRootBinds()
+        {
+            // Arrange
+            var configJson = @"
+{ 'vcap': {
+    'services' : {
+            'p-config-server': [
+            {
+            'credentials': {
+                'access_token_uri': 'https://p-spring-cloud-services.uaa.wise.com/oauth/token',
+                'client_id': 'p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef',
+                'client_secret': 'e8KF1hXvAnGd',
+                'uri': 'http://localhost:8888'
+            },
+            'label': 'p-config-server',
+            'name': 'My Config Server',
+            'plan': 'standard',
+            'tags': [
+                'configuration',
+                'spring-cloud'
+                ]
+            }
+            ]
+        }
+    }
+}";
+            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+            var jsonSource = new JsonStreamConfigurationSource(memStream);
+            var builder = new ConfigurationBuilder().Add(jsonSource);
+            var config = builder.Build();
+
+            var options = new CloudFoundryServicesOptions(config);
+
+
+            Assert.NotNull(options.Services);
+            Assert.Single(options.Services);
+
+            Assert.NotNull(options.Services["p-config-server"]);
+            Assert.Single(options.Services["p-config-server"]);
+
+            Assert.Equal("p-config-server", options.ServicesList[0].Label);
+            Assert.Equal("My Config Server", options.ServicesList[0].Name);
+            Assert.Equal("standard", options.ServicesList[0].Plan);
+
+            Assert.NotNull(options.ServicesList[0].Tags);
+            Assert.Equal(2, options.ServicesList[0].Tags.Length);
+            Assert.Equal("configuration", options.ServicesList[0].Tags[0]);
+            Assert.Equal("spring-cloud", options.ServicesList[0].Tags[1]);
+
+            Assert.NotNull(options.ServicesList[0].Credentials);
+            Assert.Equal(4, options.ServicesList[0].Credentials.Count);
+            Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", options.ServicesList[0].Credentials["access_token_uri"].Value);
+            Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", options.ServicesList[0].Credentials["client_id"].Value);
+            Assert.Equal("e8KF1hXvAnGd", options.ServicesList[0].Credentials["client_secret"].Value);
+            Assert.Equal("http://localhost:8888", options.ServicesList[0].Credentials["uri"].Value);
+        }
+
+        [Fact]
+        public void Constructor_WithIConfigurationBinds()
+        {
+            // Arrange
+            var configJson = @"
+{ 'vcap': {
+    'services' : {
+            'p-config-server': [
+            {
+            'credentials': {
+                'access_token_uri': 'https://p-spring-cloud-services.uaa.wise.com/oauth/token',
+                'client_id': 'p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef',
+                'client_secret': 'e8KF1hXvAnGd',
+                'uri': 'http://localhost:8888'
+            },
+            'label': 'p-config-server',
+            'name': 'My Config Server',
+            'plan': 'standard',
+            'tags': [
+                'configuration',
+                'spring-cloud'
+                ]
+            }
+            ]
+        }
+    }
+}";
+            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+            var jsonSource = new JsonStreamConfigurationSource(memStream);
+            var builder = new ConfigurationBuilder().Add(jsonSource);
+            var config = builder.Build();
+
+     
+            var servSection = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
+            var options = new CloudFoundryServicesOptions(servSection);
+
+            Assert.NotNull(options.Services);
+            Assert.Single(options.Services);
+
+            Assert.NotNull(options.Services["p-config-server"]);
+            Assert.Single(options.Services["p-config-server"]);
+
+            Assert.Equal("p-config-server", options.ServicesList[0].Label);
+            Assert.Equal("My Config Server", options.ServicesList[0].Name);
+            Assert.Equal("standard", options.ServicesList[0].Plan);
+
+            Assert.NotNull(options.ServicesList[0].Tags);
+            Assert.Equal(2, options.ServicesList[0].Tags.Length);
+            Assert.Equal("configuration", options.ServicesList[0].Tags[0]);
+            Assert.Equal("spring-cloud", options.ServicesList[0].Tags[1]);
+
+            Assert.NotNull(options.ServicesList[0].Credentials);
+            Assert.Equal(4, options.ServicesList[0].Credentials.Count);
+            Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", options.ServicesList[0].Credentials["access_token_uri"].Value);
+            Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", options.ServicesList[0].Credentials["client_id"].Value);
+            Assert.Equal("e8KF1hXvAnGd", options.ServicesList[0].Credentials["client_secret"].Value);
+            Assert.Equal("http://localhost:8888", options.ServicesList[0].Credentials["uri"].Value);
+        }
     }
 }
