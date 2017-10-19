@@ -23,8 +23,7 @@ namespace Steeltoe.Common.Http
 {
     public abstract class DiscoveryHttpClientHandlerBase : HttpClientHandler
     {
-        protected static Random _random = new Random();
-
+     
         public DiscoveryHttpClientHandlerBase()
         {
         }

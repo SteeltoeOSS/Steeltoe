@@ -24,9 +24,10 @@ namespace Steeltoe.Common.Http
     public class DiscoveryHttpClientHandler : DiscoveryHttpClientHandlerBase
     {
         private IDiscoveryClient _client;
-        private ILogger<DiscoveryHttpClientHandler> _logger;
+        private ILogger _logger;
+        protected static Random _random = new Random();
 
-        public DiscoveryHttpClientHandler(IDiscoveryClient client, ILogger<DiscoveryHttpClientHandler> logger = null) : base()
+        public DiscoveryHttpClientHandler(IDiscoveryClient client, ILogger logger = null) : base()
         {
             if (client == null)
             {
