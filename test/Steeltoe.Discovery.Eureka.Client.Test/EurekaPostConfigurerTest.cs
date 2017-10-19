@@ -15,6 +15,7 @@
 //
 
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -43,6 +44,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("registrationMethod", instOpts.RegistrationMethod);
         }
 
+
         [Fact]
         public void UpdateConfiguration_UpdatesCorrectly()
         {
@@ -68,6 +70,28 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("dontChange", instOpts.AppName);
             Assert.Equal("dontChange", instOpts.InstanceId);
             Assert.Equal("dontChange", instOpts.RegistrationMethod);
+        }
+
+
+        [Fact]
+        public void UpdateConfiguration_UpdatesCorrectly2()
+        {
+            var builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            {
+                {"spring:application:name", "bar" },
+                {"spring:cloud:discovery:registrationMethod", "registrationMethod" },
+            });
+
+            IConfigurationRoot root = builder.Build();
+
+            var instOpts = new EurekaInstanceOptions();
+
+            EurekaPostConfigurer.UpdateConfiguration(root, instOpts);
+
+            Assert.Equal("bar", instOpts.AppName);
+            Assert.EndsWith("bar:80", instOpts.InstanceId, StringComparison.OrdinalIgnoreCase);
+            Assert.Equal("registrationMethod", instOpts.RegistrationMethod);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Steeltoe.Discovery.Client
     {
         public const string EUREKA_PREFIX = "eureka";
 
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, DiscoveryOptions discoveryOptions)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, DiscoveryOptions discoveryOptions, IDiscoveryLifecycle lifecycle = null)
         {
             if (services == null)
             {
@@ -62,7 +62,7 @@ namespace Steeltoe.Discovery.Client
 
                 services.AddSingleton<IOptionsMonitor<EurekaInstanceOptions>>(new OptionsMonitorWrapper<EurekaInstanceOptions>(regOptions));
 
-                AddEurekaServices(services);
+                AddEurekaServices(services, lifecycle);
             }
             else
             {
@@ -72,7 +72,7 @@ namespace Steeltoe.Discovery.Client
             return services;
         }
 
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, Action<DiscoveryOptions> setupOptions)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, Action<DiscoveryOptions> setupOptions, IDiscoveryLifecycle lifecycle = null)
         {
             if (services == null)
             {
@@ -92,7 +92,7 @@ namespace Steeltoe.Discovery.Client
         }
 
 
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null)
         {
             if (services == null)
             {
@@ -104,12 +104,12 @@ namespace Steeltoe.Discovery.Client
                 throw new ArgumentNullException(nameof(config));
             }
 
-            AddDiscoveryServices(services, config);
+            AddDiscoveryServices(services, config, lifecycle);
 
             return services;
 
         }
-        private static void AddDiscoveryServices(IServiceCollection services, IConfiguration config)
+        private static void AddDiscoveryServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)
         {
             var clientConfigsection = config.GetSection(EUREKA_PREFIX);
             int childCount = clientConfigsection.GetChildren().Count();
@@ -124,7 +124,7 @@ namespace Steeltoe.Discovery.Client
                 {
                     EurekaPostConfigurer.UpdateConfiguration(config, options);
                 });
-                AddEurekaServices(services);
+                AddEurekaServices(services, lifecycle);
             }
             else
             {
@@ -133,13 +133,19 @@ namespace Steeltoe.Discovery.Client
 
         }
 
-        private static void AddEurekaServices(IServiceCollection services)
+        private static void AddEurekaServices(IServiceCollection services, IDiscoveryLifecycle lifecycle)
         {
             services.AddSingleton<EurekaApplicationInfoManager>();
             services.AddSingleton<EurekaDiscoveryManager>();
 
             services.AddSingleton<EurekaDiscoveryClient>();
-            services.AddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
+            if (lifecycle == null)
+            {
+                services.AddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
+            } else
+            {
+                services.AddSingleton(lifecycle);
+            }
             services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
         }
 

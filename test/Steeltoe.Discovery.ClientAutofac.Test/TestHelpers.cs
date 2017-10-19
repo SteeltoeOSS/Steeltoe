@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 
@@ -49,4 +50,5 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
     }
+
 }
