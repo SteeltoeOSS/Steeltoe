@@ -16,7 +16,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class SqlServerServiceInfo : UriServiceInfo
     {
-        public const string SQLSERVER_SCHEME = "sqlserver";
+        public static readonly string[] SQLSERVER_SCHEME = { "sqlserver", "jdbc:sqlserver" };
 
         public SqlServerServiceInfo(string id, string url, string username, string password)
             : base(id, url.Replace("jdbc:", string.Empty).Replace(';', '/'), username, password)
