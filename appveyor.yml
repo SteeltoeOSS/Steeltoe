@@ -15,8 +15,10 @@ build_script:
   - scripts\appveyor_build.cmd
 artifacts:
 - path: 'src\Steeltoe.Discovery.ClientCore\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Discovery.ClientAutofac\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Discovery.Eureka.Client\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Discovery.ClientCore\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Discovery.ClientAutofac\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Discovery.Eureka.Client\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet

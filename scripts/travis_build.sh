@@ -10,4 +10,7 @@ cd src/Steeltoe.Discovery.ClientCore
 dotnet restore --configfile ../../nuget.config
 cd ../..
 
+cd src/Steeltoe.Discovery.ClientAutofac
+dotnet restore --configfile ../../nuget.config
+cd ../..
 

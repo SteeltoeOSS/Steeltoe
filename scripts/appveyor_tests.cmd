@@ -7,6 +7,13 @@ dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 
+:: Run unit tests 
+cd test\Steeltoe.Discovery.ClientAutofac.Test
+dotnet restore --configfile ..\..\nuget.config
+dotnet xunit -verbose
+if not "%errorlevel%"=="0" goto failure
+cd ..\..
+
 cd test\Steeltoe.Discovery.Eureka.Client.Test
 dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose
