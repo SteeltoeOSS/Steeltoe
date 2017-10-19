@@ -57,5 +57,21 @@ namespace Steeltoe.Common.Options.Autofac
             container.RegisterInstance(new NamedConfigureFromConfigurationOptions<TOption>(name, config)).As<IConfigureOptions<TOption>>().SingleInstance();
         }
 
+        public static void RegisterPostConfigure<TOptions>(this ContainerBuilder container, Action<TOptions> configureOptions) where TOptions : class
+            => container.RegisterPostConfigure(Microsoft.Extensions.Options.Options.DefaultName, configureOptions);
+
+        public static void RegisterPostConfigure<TOptions>(this ContainerBuilder container, string name, Action<TOptions> configureOptions) where TOptions : class
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (configureOptions == null)
+            {
+                throw new ArgumentNullException(nameof(configureOptions));
+            }
+            container.RegisterInstance(new PostConfigureOptions<TOptions>(name, configureOptions)).As<IPostConfigureOptions<TOptions>>().SingleInstance();
+        }
     }
 }

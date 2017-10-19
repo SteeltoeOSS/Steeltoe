@@ -63,6 +63,33 @@ namespace Steeltoe.Common.Options.Autofac.Test
             Assert.Equal("foobar", service.Value.f1);
         }
 
+ 
+        [Fact]
+        public void RegisterPostConfigure_Registers_RunsPostAction()
+        {
+            ContainerBuilder container = new ContainerBuilder();
+            var dict = new Dictionary<string, string>()
+            {
+                { "f1", "foobar" }
+            };
+
+            IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
+            container.RegisterOptions();
+
+            container.RegisterOption<MyOption>(config);
+            container.RegisterPostConfigure<MyOption>((opt) =>
+            {
+                opt.f1 = "changed";
+            });
+
+            var built = container.Build();
+
+            var service = built.Resolve<IOptions<MyOption>>();
+            Assert.NotNull(service);
+            Assert.NotNull(service.Value);
+            Assert.Equal("changed", service.Value.f1);
+        }
+
         class MyOption
         {
             public string f1 { get; set; }
