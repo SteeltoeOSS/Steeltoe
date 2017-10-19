@@ -7,43 +7,19 @@ dotnet xunit -verbose -framework netcoreapp2.0
 if [[ $? != 0 ]]; then exit 1 ; fi
 cd ../..
 
-cd test/Steeltoe.CloudFoundry.Connector.PostgreSql.Test
+cd test/Steeltoe.CloudFoundry.Connector.EF6.Test
 dotnet restore --configfile ../../nuget.config
 dotnet xunit -verbose -framework netcoreapp2.0
 if [[ $? != 0 ]]; then exit 1 ; fi
 cd ../..
 
-cd test/Steeltoe.CloudFoundry.Connector.Rabbit.Test
+cd test/Steeltoe.CloudFoundry.Connector.EFCore.Test
 dotnet restore --configfile ../../nuget.config
 dotnet xunit -verbose -framework netcoreapp2.0
 if [[ $? != 0 ]]; then exit 1 ; fi
 cd ../..
 
-cd test/Steeltoe.CloudFoundry.Connector.OAuth.Test
-dotnet restore --configfile ../../nuget.config
-dotnet xunit -verbose -framework netcoreapp2.0
-if [[ $? != 0 ]]; then exit 1 ; fi
-cd ../..
-
-cd test/Steeltoe.CloudFoundry.Connector.MySql.Test
-dotnet restore --configfile ../../nuget.config
-dotnet xunit -verbose -framework netcoreapp2.0
-if [[ $? != 0 ]]; then exit 1 ; fi
-cd ../..
-
-cd test/Steeltoe.CloudFoundry.Connector.Redis.Test
-dotnet restore --configfile ../../nuget.config
-dotnet xunit -verbose -framework netcoreapp2.0
-if [[ $? != 0 ]]; then exit 1 ; fi
-cd ../..
-
-cd test/Steeltoe.CloudFoundry.Connector.Hystrix.Test
-dotnet restore --configfile ../../nuget.config
-dotnet xunit -verbose -framework netcoreapp2.0
-if [[ $? != 0 ]]; then exit 1 ; fi
-cd ../..
-
-cd test/Steeltoe.CloudFoundry.Connector.SqlServer.Test
+cd test/Steeltoe.CloudFoundry.ConnectorCore.Test
 dotnet restore --configfile ../../nuget.config
 dotnet xunit -verbose -framework netcoreapp2.0
 if [[ $? != 0 ]]; then exit 1 ; fi

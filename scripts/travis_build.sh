@@ -7,30 +7,10 @@ cd src/Steeltoe.CloudFoundry.Connector
 dotnet restore --configfile ../../nuget.config
 cd ../..
 
-cd src/Steeltoe.CloudFoundry.Connector.PostgreSql
+cd src/Steeltoe.CloudFoundry.Connector.EFCore
 dotnet restore --configfile ../../nuget.config
 cd ../..
 
-cd src/Steeltoe.CloudFoundry.Connector.Rabbit
-dotnet restore --configfile ../../nuget.config
-cd ../..
-
-cd src/Steeltoe.CloudFoundry.Connector.OAuth
-dotnet restore --configfile ../../nuget.config
-cd ../..
-
-cd src/Steeltoe.CloudFoundry.Connector.MySql
-dotnet restore --configfile ../../nuget.config
-cd ../..
-
-cd src/Steeltoe.CloudFoundry.Connector.Redis
-dotnet restore --configfile ../../nuget.config
-cd ../..
-
-cd src/Steeltoe.CloudFoundry.Connector.Hystrix
-dotnet restore --configfile ../../nuget.config
-cd ../..
-
-cd src/Steeltoe.CloudFoundry.Connector.SqlServer
+cd src/Steeltoe.CloudFoundry.ConnectorCore
 dotnet restore --configfile ../../nuget.config
 cd ../..

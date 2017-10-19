@@ -15,21 +15,11 @@ build_script:
   - scripts\appveyor_build.cmd
 artifacts:
 - path: 'src\Steeltoe.CloudFoundry.Connector\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.MySql\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.Redis\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.PostgreSql\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.Rabbit\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.OAuth\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.Hystrix\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.SqlServer\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.EFCore\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.ConnectorCore\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.MySql\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.Redis\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.PostgreSql\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.Rabbit\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.OAuth\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.Hystrix\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.SqlServer\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.EFCore\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.ConnectorCore\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false
