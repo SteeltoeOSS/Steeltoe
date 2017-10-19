@@ -1,4 +1,20 @@
-﻿using Steeltoe.Common.Discovery;
+﻿//
+// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Http.Test
 {
-    public class DiscoveryHttpClientHandlerTest
+    public class DiscoveryHttpClientHandlerBaseTest
     {
         [Fact]
         public void Constructor_ThrowsIfClientNull()
@@ -16,7 +32,7 @@ namespace Steeltoe.Common.Http.Test
             IDiscoveryClient client = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryHttpClientHandler(client));
+            var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryHttpClientHandlerBase(client));
             Assert.Contains(nameof(client), ex.Message);
         }
 
@@ -25,7 +41,7 @@ namespace Steeltoe.Common.Http.Test
         {
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
-            DiscoveryHttpClientHandler handler = new DiscoveryHttpClientHandler(client);
+            DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
             Uri uri = new Uri("http://foo:8080/test");
             // Act and Assert
             var result = handler.LookupService(uri);
@@ -36,7 +52,7 @@ namespace Steeltoe.Common.Http.Test
         {
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
-            DiscoveryHttpClientHandler handler = new DiscoveryHttpClientHandler(client);
+            DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
             Uri uri = new Uri("http://foo/test");
 
             // Act and Assert
@@ -49,7 +65,7 @@ namespace Steeltoe.Common.Http.Test
         {
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("http://foundit:5555")));
-            DiscoveryHttpClientHandler handler = new DiscoveryHttpClientHandler(client);
+            DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
             Uri uri = new Uri("http://foo/test/bar/foo?test=1&test2=2");
             // Act and Assert
             var result = handler.LookupService(uri);

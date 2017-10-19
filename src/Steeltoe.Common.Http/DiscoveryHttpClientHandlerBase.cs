@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Discovery;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -21,11 +23,24 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Http
 {
-    public abstract class DiscoveryHttpClientHandlerBase : HttpClientHandler
+    public class DiscoveryHttpClientHandlerBase : HttpClientHandler
     {
-     
+        protected IDiscoveryClient _client;
+        protected ILogger _logger;
+        protected static Random _random = new Random();
+
         public DiscoveryHttpClientHandlerBase()
         {
+        }
+        public DiscoveryHttpClientHandlerBase(IDiscoveryClient client, ILogger logger = null)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            _client = client;
+            _logger = logger;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -43,7 +58,24 @@ namespace Steeltoe.Common.Http
 
         }
 
-        public abstract Uri LookupService(Uri current);
+        public virtual Uri LookupService(Uri current)
+        {
+            _logger?.LogDebug("LookupService({0})", current.ToString());
+            if (!current.IsDefaultPort)
+            {
+                return current;
+            }
+
+            var instances = _client.GetInstances(current.Host);
+            if (instances.Count > 0)
+            {
+                int indx = _random.Next(instances.Count);
+                current = new Uri(instances[indx].Uri, current.PathAndQuery);
+            }
+            _logger?.LogDebug("LookupService() returning {0} ", current.ToString());
+            return current;
+
+        }
 
     }
 }
