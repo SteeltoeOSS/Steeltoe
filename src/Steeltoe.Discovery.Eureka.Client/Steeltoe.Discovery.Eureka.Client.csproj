@@ -20,7 +20,6 @@
   <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
   <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreVersion)" />
   <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-  <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeCommonVersion)" />
   <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
 </ItemGroup>
 

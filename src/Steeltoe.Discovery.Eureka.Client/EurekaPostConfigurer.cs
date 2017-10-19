@@ -27,7 +27,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options)
         {
-            var defaultId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
+            var defaultId = options.GetHostName(false) + ":" + EurekaInstanceOptions.Default_Appname + ":" + EurekaInstanceOptions.Default_NonSecurePort;
 
             if (EurekaInstanceOptions.Default_Appname.Equals(options.AppName))
             {
