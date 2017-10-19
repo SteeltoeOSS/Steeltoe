@@ -16,10 +16,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 {
@@ -106,7 +105,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Arrange
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP_EDB);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
@@ -124,7 +123,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_EDB);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();

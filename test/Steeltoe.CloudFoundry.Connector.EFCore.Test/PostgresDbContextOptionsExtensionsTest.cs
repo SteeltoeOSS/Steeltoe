@@ -134,7 +134,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP_EDB);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
@@ -149,13 +149,13 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
         }
 
         [Fact]
-        public void AddDbContexts_WithVCAPs_AddsDbContexts()
+        public void AddDbContexts_WithEDBVCAPs_AddsDbContexts()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_EDB);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
@@ -182,6 +182,42 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             Assert.Contains("postgres.testcloud.com", connString);
             Assert.Contains("lmu7c96mgl99b2t1hvdgd5q94v", connString);
             Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
+        }
+
+        [Fact]
+        public void AddDbContexts_WithECrunchyVCAPs_AddsDbContexts()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_Crunchy);
+
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act and Assert
+            services.AddDbContext<GoodDbContext>(options =>
+                  options.UseNpgsql(config));
+
+            var built = services.BuildServiceProvider();
+            var service = built.GetService<GoodDbContext>();
+            Assert.NotNull(service);
+
+            var con = service.Database.GetDbConnection();
+            Assert.NotNull(con);
+            var postCon = con as NpgsqlConnection;
+            Assert.NotNull(postCon);
+
+            var connString = con.ConnectionString;
+            Assert.NotNull(connString);
+
+            Assert.Contains("Host=10.194.59.205", connString);
+            Assert.Contains("Port=5432", connString);
+            Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString);
+            Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString);
+            Assert.Contains("Database=steeltoe", connString);
         }
     }
 }

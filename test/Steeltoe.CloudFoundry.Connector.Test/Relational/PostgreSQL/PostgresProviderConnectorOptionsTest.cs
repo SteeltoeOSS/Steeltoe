@@ -87,7 +87,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             };
             // add environment variables as Cloud Foundry would
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_EDB);
 
             // add settings to config
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();

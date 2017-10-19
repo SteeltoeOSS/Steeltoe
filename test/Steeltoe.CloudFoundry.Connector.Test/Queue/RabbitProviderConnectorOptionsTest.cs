@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
 {
-    public class RabbitConfigurationTest
+    public class RabbitProviderConnectorOptionsTest
     {
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
