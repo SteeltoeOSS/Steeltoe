@@ -15,13 +15,12 @@
 //
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Discovery;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Common.Http
+namespace Steeltoe.Common.Discovery
 {
     public class DiscoveryHttpClientHandlerBase : HttpClientHandler
     {
@@ -29,9 +28,6 @@ namespace Steeltoe.Common.Http
         protected ILogger _logger;
         protected static Random _random = new Random();
 
-        public DiscoveryHttpClientHandlerBase()
-        {
-        }
         public DiscoveryHttpClientHandlerBase(IDiscoveryClient client, ILogger logger = null)
         {
             if (client == null)
@@ -50,6 +46,10 @@ namespace Steeltoe.Common.Http
             {
                 request.RequestUri = LookupService(current);
                 return await base.SendAsync(request, cancellationToken);
+            } catch(Exception e)
+            {
+                _logger?.LogDebug(e, "Exception during SendAsync()");
+                throw;
             }
             finally
             {
