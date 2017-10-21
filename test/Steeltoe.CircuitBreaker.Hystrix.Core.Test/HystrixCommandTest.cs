@@ -968,7 +968,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                                            //This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
             HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
             Assert.Equal(3, requestLog.AllExecutedCommands.Count);
-            Assert.True(requestLog.GetExecutedCommandsAsString().Contains("Executed"));
+            Assert.Contains("Executed", requestLog.GetExecutedCommandsAsString());
 
             //block on the outstanding work, so we don't inadvertently affect any other tests
             long startTime = DateTime.Now.Ticks / 10000;
@@ -1222,10 +1222,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             // only 1 value is expected as the other should have thrown an exception
-            Assert.Equal(1, results.Count);
+            Assert.Single(results);
             // should contain only a true result
-            Assert.True(results.Contains(true));
-            Assert.False(results.Contains(false));
+            Assert.Contains(true, results);
+            Assert.DoesNotContain(false, results);
             AssertCommandExecutionEvents(command1, HystrixEventType.SUCCESS);
             AssertCommandExecutionEvents(command2, HystrixEventType.SUCCESS);
             AssertCommandExecutionEvents(command3, HystrixEventType.SEMAPHORE_REJECTED, HystrixEventType.FALLBACK_MISSING);
@@ -1287,8 +1287,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // both threads should have returned values
             Assert.Equal(2, results.Count);
             // should contain both a true and false result
-            Assert.True(results.Contains(true));
-            Assert.True(results.Contains(false));
+            Assert.Contains(true, results);
+            Assert.Contains(false, results);
             AssertCommandExecutionEvents(command1, HystrixEventType.SUCCESS);
             AssertCommandExecutionEvents(command2, HystrixEventType.SEMAPHORE_REJECTED, HystrixEventType.FALLBACK_SUCCESS);
             Assert.Equal(0, circuitBreaker.metrics.CurrentConcurrentExecutionCount);
@@ -1455,7 +1455,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // verifies that some executions failed
             //Assert.Equal(sharedSemaphore.numberOfPermits.get().longValue(), failureCount.get());
             HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
-            Assert.True(requestLog.GetExecutedCommandsAsString().Contains("SEMAPHORE_REJECTED"));
+            Assert.Contains("SEMAPHORE_REJECTED", requestLog.GetExecutedCommandsAsString());
             Assert.Equal(0, circuitBreaker.metrics.CurrentConcurrentExecutionCount);
         }
         [Fact]

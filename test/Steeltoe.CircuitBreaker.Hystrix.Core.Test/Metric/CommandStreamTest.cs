@@ -37,7 +37,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             readonly String arg;
 
-            readonly HystrixEventType executionResult;
+           readonly HystrixEventType executionResult2;
             public readonly int executionLatency;
             readonly HystrixEventType fallbackExecutionResult;
             readonly int fallbackExecutionLatency;
@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
                 base(setter)
             {
-                this.executionResult = executionResult;
+                this.executionResult2 = executionResult;
                 this.executionLatency = executionLatency;
                 this.fallbackExecutionResult = fallbackExecutionResult;
                 this.fallbackExecutionLatency = fallbackExecutionLatency;
@@ -165,7 +165,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                     sw.Stop();
                     this.token.ThrowIfCancellationRequested();
           
-                    switch (executionResult)
+                    switch (executionResult2)
                     {
                         case HystrixEventType.SUCCESS:
                             return 1;

@@ -6,17 +6,17 @@ dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
-cd test\Steeltoe.CircuitBreaker.Hystrix.Test
+cd test\Steeltoe.CircuitBreaker.HystrixCore.Test
 dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
-cd test\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
+cd test\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test
 dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
-cd test\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
+cd test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test
 dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure

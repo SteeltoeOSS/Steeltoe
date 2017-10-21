@@ -1,39 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
  <Import Project="..\..\versions.props" />
- 
+
   <PropertyGroup>
-    <Description>Unit test project for Steeltoe.CircuitBreaker.Hystrix.MetricsStream</Description>
+    <Description>Unit test project for Steeltoe.CircuitBreaker.HystrixCore</Description>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test</AssemblyName>
-    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test</PackageId>
+    <AssemblyName>Steeltoe.CircuitBreaker.HystrixCore.Test</AssemblyName>
+    <PackageId>Steeltoe.CircuitBreaker.HystrixCore.Test</PackageId>
     <PackageTags>ASPNET Core;CircuitBreaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
-    
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreDepTestVersion)" />
-    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
-    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
     
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
-  </ItemGroup>
 
+
+  </ItemGroup>
+  
   <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+    <ProjectReference Include="..\..\src\Steeltoe.CircuitBreaker.HystrixCore\Steeltoe.CircuitBreaker.HystrixCore.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
 </Project>

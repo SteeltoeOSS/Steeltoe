@@ -19,6 +19,10 @@
     <ThreadPoolMinThreads>50</ThreadPoolMinThreads>
     <ThreadPoolMaxThreads>1250</ThreadPoolMaxThreads>
   </PropertyGroup>
+ 
+  <PropertyGroup>
+    <NoWarn>1701;1702;1705;618</NoWarn>
+  </PropertyGroup>
   
   <ItemGroup>
     <None Update="xunit.runner.json">

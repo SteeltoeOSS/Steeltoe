@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Pivotal.Discovery.Client;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using System;
 using Steeltoe.CircuitBreaker.Hystrix.Serial;
@@ -7,6 +6,7 @@ using System.IO;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using System.Collections.Generic;
+using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 {

@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
  <Import Project="..\..\versions.props" />
-
+ 
   <PropertyGroup>
-    <Description>Steeltoe Neflix Hystrix Metrics Event Stream</Description>
-    <Authors>Pivotal,dtillman</Authors>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Steeltoe Neflix Hystrix Client - ASPNET Core</Description>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStream</AssemblyName>
-    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStream</PackageId>
-    <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
+    <Authors>Pivotal,dtillman</Authors>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Steeltoe.CircuitBreaker.HystrixCore</AssemblyName>
+    <PackageId>Steeltoe.CircuitBreaker.HystrixCore</PackageId>
+    <PackageTags>ASPNET Core;Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
     <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
@@ -28,15 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
-    
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
-    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
-    <PackageReference Include="Steeltoe.CloudFoundry.Connector.Hystrix" Version="$(SteeltoeConnectorVersion)" />
-    <PackageReference Include="Pivotal.Discovery.Client" Version="$(PivotalDiscoveryVersion)" />
   </ItemGroup>
-  
+
 </Project>

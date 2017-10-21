@@ -11,11 +11,6 @@
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.CircuitBreaker.Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj" />
-  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreTestVersion)" />

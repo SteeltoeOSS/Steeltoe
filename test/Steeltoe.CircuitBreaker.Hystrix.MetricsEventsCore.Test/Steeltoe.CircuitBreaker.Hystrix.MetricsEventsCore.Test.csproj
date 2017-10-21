@@ -3,10 +3,10 @@
  <Import Project="..\..\versions.props" />
  
   <PropertyGroup>
-    <Description>Unit test project for Steeltoe.CircuitBreaker.Hystrix.MetricsEvents</Description>
+    <Description>Unit test project for Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore</Description>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test</AssemblyName>
-    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test</PackageId>
+    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test</AssemblyName>
+    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test</PackageId>
     <PackageTags>ASPNET Core;CircuitBreaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
@@ -34,7 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+    <ProjectReference Include="..\..\src\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.CircuitBreaker.HystrixCore\Steeltoe.CircuitBreaker.HystrixCore.csproj" />
   </ItemGroup>
 
 </Project>

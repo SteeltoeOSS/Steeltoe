@@ -3,13 +3,13 @@
  <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
-    <Description>Steeltoe Neflix Hystrix Metrics Event Stream</Description>
+    <Description>Steeltoe Neflix Hystrix Metrics Event Stream ASP.NET Core</Description>
     <Authors>Pivotal,dtillman</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsEvents</AssemblyName>
-    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsEvents</PackageId>
+    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore</AssemblyName>
+    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore</PackageId>
     <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
     <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
@@ -28,14 +28,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
+    
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
+    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorCore" Version="$(SteeltoeConnectorVersion)" />
+    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeCommonVersion)" />
   </ItemGroup>
-  
-  <!-- <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup> -->
   
 </Project>

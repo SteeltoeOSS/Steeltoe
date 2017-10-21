@@ -46,7 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixThreadPoolFactory.Shutdown();
 
             // ensure all pools were removed from the cache
-            Assert.Equal(0, HystrixThreadPoolFactory.threadPools.Count);
+            Assert.Empty(HystrixThreadPoolFactory.threadPools);
             Assert.True(pool.GetScheduler().IsShutdown);
         }
         class HystrixMetricsPublisherThreadPoolContainer : IHystrixMetricsPublisherThreadPool

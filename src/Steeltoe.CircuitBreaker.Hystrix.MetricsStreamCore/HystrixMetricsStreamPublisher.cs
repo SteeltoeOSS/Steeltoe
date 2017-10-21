@@ -18,15 +18,13 @@ using RabbitMQ.Client;
 using System.Reactive.Observable.Aliases;
 using System.Reactive.Linq;
 using System.Reactive.Concurrency;
-using System.Threading.Tasks;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Pivotal.Discovery.Client;
 using System.Text;
-using Steeltoe.CloudFoundry.Connector.Hystrix;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using System.Security.Authentication;
 using System.Net.Security;
+using Steeltoe.Common.Discovery;
+using Steeltoe.CloudFoundry.Connector.Hystrix;
 using Microsoft.Extensions.Options;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream

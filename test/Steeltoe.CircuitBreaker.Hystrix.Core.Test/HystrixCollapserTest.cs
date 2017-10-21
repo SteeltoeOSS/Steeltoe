@@ -545,7 +545,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             Assert.NotNull(rv);
             // they should have all been removed as part of ThreadContext.remove()
-            Assert.Equal(0, timer.tasks.Count);
+            Assert.Empty(timer.tasks);
         }
         [Fact]
         public void TestRequestVariableLifecycle2()
@@ -627,7 +627,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             Assert.NotNull(rv);
             // they should have all been removed as part of ThreadContext.remove()
-            Assert.Equal(0, timer.tasks.Count);
+            Assert.Empty(timer.tasks);
 
         }
         [Fact]
@@ -673,8 +673,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList().First();
             output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
             Assert.Equal(2, command.ExecutionEvents.Count);
-            Assert.True(command.ExecutionEvents.Contains(HystrixEventType.SUCCESS));
-            Assert.True(command.ExecutionEvents.Contains(HystrixEventType.COLLAPSED));
+            Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
+            Assert.Contains(HystrixEventType.COLLAPSED, command.ExecutionEvents);
 
 
             Assert.Equal(1, command.NumberCollapsed);
@@ -728,8 +728,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList().First();
             output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
             Assert.Equal(2, command.ExecutionEvents.Count);
-            Assert.True(command.ExecutionEvents.Contains(HystrixEventType.SUCCESS));
-            Assert.True(command.ExecutionEvents.Contains(HystrixEventType.COLLAPSED));
+            Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
+            Assert.Contains(HystrixEventType.COLLAPSED, command.ExecutionEvents);
 
 
         }
@@ -786,8 +786,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList()[0];
             Assert.Equal(2, command.ExecutionEvents.Count);
-            Assert.True(command.ExecutionEvents.Contains(HystrixEventType.SUCCESS));
-            Assert.True(command.ExecutionEvents.Contains(HystrixEventType.COLLAPSED));
+            Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
+            Assert.Contains(HystrixEventType.COLLAPSED, command.ExecutionEvents);
 
 
             Assert.Equal(2, command.NumberCollapsed);
@@ -845,14 +845,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // we expect to see it with SUCCESS and COLLAPSED and both
             IHystrixInvokableInfo commandA = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList()[0];
             Assert.Equal(2, commandA.ExecutionEvents.Count);
-            Assert.True(commandA.ExecutionEvents.Contains(HystrixEventType.SUCCESS));
-            Assert.True(commandA.ExecutionEvents.Contains(HystrixEventType.COLLAPSED));
+            Assert.Contains(HystrixEventType.SUCCESS, commandA.ExecutionEvents);
+            Assert.Contains(HystrixEventType.COLLAPSED, commandA.ExecutionEvents);
 
             // we expect to see it with SUCCESS and COLLAPSED and both
             IHystrixInvokableInfo commandB = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList()[1];
             Assert.Equal(2, commandB.ExecutionEvents.Count);
-            Assert.True(commandB.ExecutionEvents.Contains(HystrixEventType.SUCCESS));
-            Assert.True(commandB.ExecutionEvents.Contains(HystrixEventType.COLLAPSED));
+            Assert.Contains(HystrixEventType.SUCCESS, commandB.ExecutionEvents);
+            Assert.Contains(HystrixEventType.COLLAPSED, commandB.ExecutionEvents);
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(2, cmdIterator[0].NumberCollapsed);  //1 for A, 1 for B.  Batch contains only unique arguments (no duplicates)
@@ -880,11 +880,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal("NULL", GetResult(f2, 1000));
 
             // it should have executed 1 command
-            Assert.Equal(1, commands.Count);
+            Assert.Single(commands);
             HystrixCommand<List<String>> peek = null;
             commands.TryPeek(out peek);
-            Assert.True(peek.ExecutionEvents.Contains(HystrixEventType.SUCCESS));
-            Assert.True(peek.ExecutionEvents.Contains(HystrixEventType.COLLAPSED));
+            Assert.Contains(HystrixEventType.SUCCESS, peek.ExecutionEvents);
+            Assert.Contains(HystrixEventType.COLLAPSED, peek.ExecutionEvents);
 
             Task<String> f3 = command1.ExecuteAsync();
 
@@ -894,7 +894,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal("NULL", GetResult(f3, 1000));
 
             // it should still be 1 ... no new executions
-            Assert.Equal(1, commands.Count);
+            Assert.Single(commands);
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
@@ -927,12 +927,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             // it should have executed 1 command
-            Assert.Equal(1, commands.Count);
+            Assert.Single(commands);
             HystrixCommand<List<String>> peek = null;
             commands.TryPeek(out peek);
 
-            Assert.True(peek.ExecutionEvents.Contains(HystrixEventType.FAILURE));
-            Assert.True(peek.ExecutionEvents.Contains(HystrixEventType.COLLAPSED));
+            Assert.Contains(HystrixEventType.FAILURE, peek.ExecutionEvents);
+            Assert.Contains(HystrixEventType.COLLAPSED, peek.ExecutionEvents);
 
             Task<String> f3 = command1.ExecuteAsync();
 
@@ -950,7 +950,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             // it should still be 1 ... no new executions
-            Assert.Equal(1, commands.Count);
+            Assert.Single(commands);
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
@@ -988,11 +988,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             // it should have executed 1 command
-            Assert.Equal(1, commands.Count);
+            Assert.Single(commands);
             HystrixCommand<List<String>> peek = null;
             commands.TryPeek(out peek);
-            Assert.True(peek.ExecutionEvents.Contains(HystrixEventType.TIMEOUT));
-            Assert.True(peek.ExecutionEvents.Contains(HystrixEventType.COLLAPSED));
+            Assert.Contains(HystrixEventType.TIMEOUT, peek.ExecutionEvents);
+            Assert.Contains(HystrixEventType.COLLAPSED, peek.ExecutionEvents);
 
 
             Task<String> f3 = command1.ExecuteAsync();
@@ -1011,7 +1011,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             // it should still be 1 ... no new executions
-            Assert.Equal(1, commands.Count);
+            Assert.Single(commands);
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
@@ -1108,7 +1108,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 Assert.True(e.InnerException is InvalidOperationException);
-                Assert.True(e.InnerException.Message.StartsWith("No response set by"));
+                Assert.StartsWith("No response set by", e.InnerException.Message);
             }
 
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);

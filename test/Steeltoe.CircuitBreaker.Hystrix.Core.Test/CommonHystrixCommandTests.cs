@@ -100,7 +100,9 @@ public abstract class CommonHystrixCommandTests<C> : HystrixTestBase where C: Hy
             {
                 try
                 {
+
                     command.Observe().ToList().Single();
+
                 }
                 catch (Exception )
                 {
@@ -185,7 +187,7 @@ public abstract class CommonHystrixCommandTests<C> : HystrixTestBase where C: Hy
             try
             {
                 Assert.Equal(numCommands, currentRequestLog.AllExecutedCommands.Count);
-                Assert.False(currentRequestLog.GetExecutedCommandsAsString().Contains("Executed"));
+                Assert.DoesNotContain("Executed", currentRequestLog.GetExecutedCommandsAsString());
                 Assert.True(currentRequestLog.AllExecutedCommands.First().ExecutionEvents.Count >= 1);
                 //Most commands should have 1 execution event, but fallbacks / responses from cache can cause more than 1.  They should never have 0
             }

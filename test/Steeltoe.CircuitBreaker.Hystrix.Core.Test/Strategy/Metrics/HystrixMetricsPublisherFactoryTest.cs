@@ -61,7 +61,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             Task.WaitAll(threads.ToArray());
 
             Assert.Equal(2, factory.commandPublishers.Count);
-            Assert.Equal(1, factory.threadPoolPublishers.Count);
+            Assert.Single(factory.threadPoolPublishers);
 
             // we should see 2 commands and 1 threadPool publisher created
             Assert.Equal(2, publisher.commandCounter.Value);

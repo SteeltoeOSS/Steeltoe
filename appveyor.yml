@@ -16,14 +16,14 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\Steeltoe.CircuitBreaker.Hystrix\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.HystrixCore\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CircuitBreaker.Hystrix.Core\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsStream\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CircuitBreaker.Hystrix\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.HystrixCore\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.CircuitBreaker.Hystrix.Core\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsStream\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false

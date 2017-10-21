@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Steeltoe.CircuitBreaker.Hystrix.MetricsEvents")]
+[assembly: AssemblyProduct("Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -16,4 +16,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test")]
