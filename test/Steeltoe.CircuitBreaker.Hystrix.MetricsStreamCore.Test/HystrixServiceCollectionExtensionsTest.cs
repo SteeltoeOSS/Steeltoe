@@ -62,7 +62,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
             Assert.NotNull(dashStream);
             var options = provider.GetService<IOptions<HystrixMetricsStreamOptions>>();
             Assert.NotNull(options);
-            var publisher = provider.GetService<HystrixMetricsStreamPublisher>();
+            var publisher = provider.GetService<RabbitMetricsStreamPublisher>();
             Assert.NotNull(publisher);
             var factory = provider.GetService<HystrixConnectionFactory>();
             Assert.NotNull(factory);

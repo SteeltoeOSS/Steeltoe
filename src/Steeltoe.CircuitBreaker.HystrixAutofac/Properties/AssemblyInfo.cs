@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Steeltoe.CircuitBreaker.Hystrix.Core")]
+[assembly: AssemblyProduct("Steeltoe.CircuitBreaker.HystrixAutofac")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -15,9 +15,4 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.Core.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.HystrixCore.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.HystrixAutofac.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test")]

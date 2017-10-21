@@ -3,14 +3,14 @@
  <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
-    <Description>Steeltoe Neflix Hystrix Metrics Event Stream ASP.NET Core</Description>
+    <Description>Steeltoe Neflix Hystrix Metrics Event Stream Autofac</Description>
     <Authors>Pivotal,dtillman</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore</AssemblyName>
-    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore</PackageId>
-    <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
+    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac</AssemblyName>
+    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac</PackageId>
+    <PackageTags>ASPNET;Autofac;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
     <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
@@ -29,9 +29,9 @@
 
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorCore" Version="$(SteeltoeConnectorVersion)" />
+    <PackageReference Include="Steeltoe.CloudFoundry.Connector" Version="$(SteeltoeConnectorVersion)" />
+    <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeCommonVersion)" />
 
   </ItemGroup>
   

@@ -53,6 +53,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hys
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixCore.Test", "test\Steeltoe.CircuitBreaker.HystrixCore.Test\Steeltoe.CircuitBreaker.HystrixCore.Test.csproj", "{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac", "src\Steeltoe.CircuitBreaker.HystrixAutofac\Steeltoe.CircuitBreaker.HystrixAutofac.csproj", "{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac.Test", "test\Steeltoe.CircuitBreaker.HystrixAutofac.Test\Steeltoe.CircuitBreaker.HystrixAutofac.Test.csproj", "{FB2330AF-37FA-4794-B16C-7AC1046DE307}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.csproj", "{4BC245DD-2067-4938-8C09-AB938FFF8BCD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test.csproj", "{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +99,22 @@ Global
 		{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +128,10 @@ Global
 		{84885CB3-FAA5-45D3-AF10-5AC89059D2FE} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
 		{096BAA83-F1C2-43D9-8358-4A1A46BFB3B9} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
 		{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58720A8A-389C-477F-BD36-2DB217BAF674}

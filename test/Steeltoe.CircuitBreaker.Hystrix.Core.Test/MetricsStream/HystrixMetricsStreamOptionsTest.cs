@@ -13,22 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Steeltoe.CircuitBreaker.Hystrix.Test;
+using System.IO;
+using Xunit;
 
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
 {
-    [Route("test/test.command")]
-    public class TestController : Controller
+    public class HystrixMetricsStreamOptionsTest : HystrixTestBase
     {
-        [HttpGet]
-        public async Task<IActionResult> RunCommand()
+        [Fact]
+        public void Constructor_InitializesDefaults()
         {
-            MyCommand cmd = new MyCommand();
-            await cmd.ExecuteAsync();
-            return Ok();
+            HystrixMetricsStreamOptions opts = new HystrixMetricsStreamOptions();
+            Assert.True(opts.Validate_Certificates);
+            Assert.Equal(500, opts.SendRate);
+            Assert.Equal(500, opts.GatherRate);
+
         }
+
     }
 }

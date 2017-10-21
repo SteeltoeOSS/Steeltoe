@@ -23,15 +23,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
     public class HystrixMetricsStreamOptionsTest : HystrixTestBase
     {
-        [Fact]
-        public void Constructor_InitializesDefaults()
-        {
-            HystrixMetricsStreamOptions opts = new HystrixMetricsStreamOptions();
-            Assert.True(opts.Validate_Certificates);
-            Assert.Equal(500, opts.SendRate);
-            Assert.Equal(500, opts.GatherRate);
-
-        }
 
         [Fact]
         public void Configure_SetsProperties()

@@ -13,9 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Autofac;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Options.Autofac;
 using System.IO;
 using Xunit;
 
@@ -23,15 +25,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
     public class HystrixMetricsStreamOptionsTest : HystrixTestBase
     {
-        [Fact]
-        public void Constructor_InitializesDefaults()
-        {
-            HystrixMetricsStreamOptions opts = new HystrixMetricsStreamOptions();
-            Assert.True(opts.Validate_Certificates);
-            Assert.Equal(500, opts.SendRate);
-            Assert.Equal(500, opts.GatherRate);
-
-        }
 
         [Fact]
         public void Configure_SetsProperties()
@@ -53,12 +46,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
             builder.AddJsonFile(fileName);
             IConfiguration config = builder.Build();
 
-            IServiceCollection services = new ServiceCollection();
-            services.AddOptions();
-            services.Configure<HystrixMetricsStreamOptions>(config.GetSection("hystrix:stream"));
-            var provider = services.BuildServiceProvider();
+            ContainerBuilder services = new ContainerBuilder();
+            services.RegisterOptions();
+            services.RegisterOption<HystrixMetricsStreamOptions>(config.GetSection("hystrix:stream"));
+            var provider = services.Build();
 
-            var options = provider.GetService<IOptions<HystrixMetricsStreamOptions>>();
+            var options = provider.Resolve<IOptions<HystrixMetricsStreamOptions>>();
             Assert.NotNull(options);
             var opts = options.Value;
             Assert.NotNull(opts);

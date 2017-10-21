@@ -22,7 +22,7 @@ using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
-    public class HystrixMetricsStreamPublisherTest: HystrixTestBase
+    public class RabbitMetricsStreamPublisherTest: HystrixTestBase
     {
         [Fact]
         public void Constructor_SetsupStream()
@@ -33,7 +33,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
             {
                 Value = new HystrixMetricsStreamOptions()
             };
-            var publisher = new HystrixMetricsStreamPublisher(options, stream, factory);
+            var publisher = new RabbitMetricsStreamPublisher(options, stream, factory);
             Assert.NotNull(publisher.sampleSubscription);
             Assert.NotNull(publisher.factory);
             publisher.sampleSubscription.Dispose();

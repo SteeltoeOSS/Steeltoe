@@ -15,9 +15,9 @@
 
 
 using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CloudFoundry.Connector.Hystrix;
+using Steeltoe.CircuitBreaker.Hystrix.Test;
+
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
@@ -28,14 +28,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         public void Constructor_SetsupStream()
         {
             var stream = HystrixDashboardStream.GetInstance();
-            var factory = new HystrixConnectionFactory(new ConnectionFactory());
             var options = new OptionsWrapper<HystrixMetricsStreamOptions>()
             {
                 Value = new HystrixMetricsStreamOptions()
             };
-            var publisher = new HystrixMetricsStreamPublisher(options, stream, factory);
+            var publisher = new HystrixMetricsStreamPublisher(options, stream);
             Assert.NotNull(publisher.sampleSubscription);
-            Assert.NotNull(publisher.factory);
             publisher.sampleSubscription.Dispose();
         }
 

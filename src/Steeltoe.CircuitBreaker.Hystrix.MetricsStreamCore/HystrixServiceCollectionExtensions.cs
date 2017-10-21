@@ -40,7 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             services.AddSingleton<HystrixDashboardStream>(HystrixDashboardStream.GetInstance());
             services.AddHystrixConnection(config);
             services.Configure<HystrixMetricsStreamOptions>(config.GetSection(HYSTRIX_STREAM_PREFIX));
-            services.AddSingleton<HystrixMetricsStreamPublisher>();
+            services.AddSingleton<RabbitMetricsStreamPublisher>();
         }
 
         public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)

@@ -26,6 +26,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
+    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeCommonVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 <!-- 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">

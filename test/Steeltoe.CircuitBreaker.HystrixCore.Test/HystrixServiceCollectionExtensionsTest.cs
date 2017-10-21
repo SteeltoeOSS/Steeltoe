@@ -145,6 +145,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options.dynamic);
 
+            services = new ServiceCollection();
             HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, "GroupKey", config);
             provider = services.BuildServiceProvider();
             command = provider.GetService<DummyCommand>();
@@ -192,6 +193,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options.dynamic);
 
+
+            services = new ServiceCollection();
             HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, "GroupKey", "CommandKey", config);
             provider = services.BuildServiceProvider();
             command = provider.GetService<DummyCommand>();
