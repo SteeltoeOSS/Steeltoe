@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Autofac
+namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public static class HystrixContainerBuilderExtensions
     {

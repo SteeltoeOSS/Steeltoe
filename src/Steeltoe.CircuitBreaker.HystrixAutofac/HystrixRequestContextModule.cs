@@ -17,7 +17,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using System;
 using System.Web;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Autfac
+namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public class HystrixRequestContextModule : IHttpModule
     {
