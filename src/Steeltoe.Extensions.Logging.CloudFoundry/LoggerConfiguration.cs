@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-
 
 namespace Steeltoe.Extensions.Logging.CloudFoundry
 {
@@ -37,6 +35,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         {
             return base.GetHashCode();
         }
+
         public override bool Equals(object obj)
         {
             LoggerConfiguration lc = obj as LoggerConfiguration;
@@ -44,10 +43,12 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             {
                 return false;
             }
-            return this.Name == lc.Name && 
-                this.ConfiguredLevel == lc.ConfiguredLevel && 
+
+            return this.Name == lc.Name &&
+                this.ConfiguredLevel == lc.ConfiguredLevel &&
                 this.EffectiveLevel == lc.EffectiveLevel;
         }
+
         public override string ToString()
         {
             return "[" + Name + "," + ConfiguredLevel + "," + EffectiveLevel + "]";

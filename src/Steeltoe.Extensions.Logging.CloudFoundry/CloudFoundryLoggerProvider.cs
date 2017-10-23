@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,46 +13,25 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System;
-using Microsoft.Extensions.Logging.Console;
 
 namespace Steeltoe.Extensions.Logging.CloudFoundry
 {
-
-    public class CloudFoundryLoggerProvider :  ICloudFoundryLoggerProvider
+    public class CloudFoundryLoggerProvider : ICloudFoundryLoggerProvider
     {
-
         private ConcurrentDictionary<string, ConsoleLogger> _loggers = new ConcurrentDictionary<string, ConsoleLogger>();
-
         private ConsoleLoggerProvider _delegate;
-
         private bool _filter = false;
         private ICloudFoundryLoggerSettings _settings;
+        private static CloudFoundryLoggerProvider _self;
 
-        internal static CloudFoundryLoggerProvider _self;
-
-        public static ICloudFoundryLoggerProvider Instance { get { return _self; } }
-
-        internal static ILoggerProvider CreateSingleton(Func<string, LogLevel, bool> filter, bool includeScopes)
+        public CloudFoundryLoggerProvider(ICloudFoundryLoggerSettings settings)
         {
-            if (_self != null)
-            {
-                throw new InvalidOperationException("CloudFoundryLoggerProvider already created");
-            }
-
-            return _self = new CloudFoundryLoggerProvider(filter, includeScopes);
-        }
-
-        internal static ILoggerProvider CreateSingleton(ICloudFoundryLoggerSettings settings)
-        {
-            if (_self != null)
-            {
-                throw new InvalidOperationException("CloudFoundryLoggerProvider already created");
-            }
-
-            return _self = new CloudFoundryLoggerProvider(settings);
+            _delegate = new ConsoleLoggerProvider(settings);
+            _settings = settings;
         }
 
         public CloudFoundryLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
@@ -63,31 +41,13 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             _settings = null;
         }
 
-        public CloudFoundryLoggerProvider(ICloudFoundryLoggerSettings settings)
-        {
-            _delegate = new ConsoleLoggerProvider(settings);
-            _settings = settings;
-        }
+        public static ICloudFoundryLoggerProvider Instance => _self;
 
         public ILogger CreateLogger(string name)
         {
             ConsoleLogger created = _delegate.CreateLogger(name) as ConsoleLogger;
-            return _loggers.GetOrAdd(name, created);
-        }
 
-        private IEnumerable<string> GetKeyPrefixes(string name)
-        {
-            while (!string.IsNullOrEmpty(name))
-            {
-                yield return name;
-                var lastIndexOfDot = name.LastIndexOf('.');
-                if (lastIndexOfDot == -1)
-                {
-                    yield return "Default";
-                    break;
-                }
-                name = name.Substring(0, lastIndexOfDot);
-            }
+            return _loggers.GetOrAdd(name, created);
         }
 
         public void Dispose()
@@ -109,7 +69,6 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             results.Add("Default", new LoggerConfiguration("Default", configuredDefault, effictiveDefault));
             foreach (var logger in _loggers)
             {
-               
                 foreach (var prefix in GetKeyPrefixes(logger.Value.Name))
                 {
                     if (prefix != "Default")
@@ -125,24 +84,59 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
                                 throw new InvalidProgramException("Shouldn't happen");
                             }
                         }
-                        results[name] = config;
-        
-                    }
 
+                        results[name] = config;
+                    }
                 }
             }
+
             return results.Values;
         }
-
 
         public void SetLogLevel(string category, LogLevel level)
         {
             if (!_filter)
-            { 
+            {
                 _settings.SetLogLevel(category, level);
             }
-
         }
+
+        internal static ILoggerProvider CreateSingleton(Func<string, LogLevel, bool> filter, bool includeScopes)
+        {
+            if (_self != null)
+            {
+                throw new InvalidOperationException("CloudFoundryLoggerProvider already created");
+            }
+
+            return _self = new CloudFoundryLoggerProvider(filter, includeScopes);
+        }
+
+        internal static ILoggerProvider CreateSingleton(ICloudFoundryLoggerSettings settings)
+        {
+            if (_self != null)
+            {
+                throw new InvalidOperationException("CloudFoundryLoggerProvider already created");
+            }
+
+            return _self = new CloudFoundryLoggerProvider(settings);
+        }
+
+        private IEnumerable<string> GetKeyPrefixes(string name)
+        {
+            while (!string.IsNullOrEmpty(name))
+            {
+                yield return name;
+                var lastIndexOfDot = name.LastIndexOf('.');
+                if (lastIndexOfDot == -1)
+                {
+                    yield return "Default";
+                    break;
+                }
+
+                name = name.Substring(0, lastIndexOfDot);
+            }
+        }
+
         private LogLevel GetEffectiveLevel(string name)
         {
             if (_filter)
@@ -154,8 +148,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             {
                 foreach (var prefix in GetKeyPrefixes(name))
                 {
-                    LogLevel level;
-                    if (_settings.TryGetSwitch(prefix, out level))
+                    if (_settings.TryGetSwitch(prefix, out LogLevel level))
                     {
                         return level;
                     }
@@ -164,6 +157,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
 
             return LogLevel.None;
         }
+
         private LogLevel? GetConfiguredLevel(string name)
         {
             if (_filter)
@@ -173,16 +167,13 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
 
             if (_settings != null)
             {
-                    LogLevel level;
-                if (_settings.TryGetSwitch(name, out level))
+                if (_settings.TryGetSwitch(name, out LogLevel level))
                 {
                     return level;
                 }
-                
             }
 
             return null;
         }
     }
 }
-

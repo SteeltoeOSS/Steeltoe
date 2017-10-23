@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Primitives;
+using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Logging.CloudFoundry
-
 {
     public class CloudFoundryLoggerSettings : ICloudFoundryLoggerSettings
     {
         private IConsoleLoggerSettings _settings;
         private ConfigurationReloadToken _changeToken;
-        
-        private IDictionary<string, LogLevel> DynamicSwitches { get; set; } 
 
         public CloudFoundryLoggerSettings()
         {
@@ -42,19 +38,9 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             DynamicSwitches = new Dictionary<string, LogLevel>();
         }
 
+        private IDictionary<string, LogLevel> DynamicSwitches { get; set; }
 
-
-        private void OnConfigurationReload(object obj)
-        {
-            // Configuration changed;
-            _changeToken.OnReload();
-        }
-
-
-        public IChangeToken ChangeToken {
-            get { return _changeToken;  }
-               
-        }
+        public IChangeToken ChangeToken => _changeToken;
 
         public bool IncludeScopes
         {
@@ -78,8 +64,8 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             {
                 return true;
             }
+
             return _settings.TryGetSwitch(name, out level);
-     
         }
 
         public void SetLogLevel(string category, LogLevel level)
@@ -87,6 +73,11 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             DynamicSwitches[category] = level;
             _changeToken.OnReload();
         }
+
+        private void OnConfigurationReload(object obj)
+        {
+            // Configuration changed;
+            _changeToken.OnReload();
+        }
     }
 }
-

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -85,13 +84,13 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
             Assert.True(logger.IsEnabled(LogLevel.Information));
             Assert.True(logger.IsEnabled(LogLevel.Debug));
 
-
             provider.SetLogLevel("A", LogLevel.Information);
             Assert.True(logger.IsEnabled(LogLevel.Information));
             Assert.False(logger.IsEnabled(LogLevel.Debug));
 
             provider.Dispose();
         }
+
         [Fact]
         public void GetLoggerConfigurations_ReturnsExpected()
         {
@@ -127,7 +126,6 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
             Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
 
             provider.Dispose();
-
         }
 
         private IConfiguration GetConfig(string json)
@@ -143,9 +141,4 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
             return config;
         }
     }
-}
-
-namespace A.B.C.D
-{
-    class TestClass { }
 }

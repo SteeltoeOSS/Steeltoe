@@ -36,5 +36,14 @@
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
-
+  
+  <PropertyGroup>
+    <NoWarn>SA1100;SA1101;SA1124;SA1202;SA1204;SA1309;SA1310;SA1313;SA1600;SA1611;SA1652;1591;1701;1702;1705</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
 </Project>
