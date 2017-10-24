@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var builder = new InfoBuilder();
             var built = builder.Build();
             Assert.NotNull(built);
-            Assert.Equal(0, built.Count);
+            Assert.Empty(built);
         }
 
         [Fact]
@@ -37,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             builder.WithInfo("foo", "bar");
             var built = builder.Build();
             Assert.NotNull(built);
-            Assert.Equal(1, built.Count);
+            Assert.Single(built);
             Assert.Equal("bar", built["foo"]);
         }
 

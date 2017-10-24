@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +14,6 @@
 
 using Microsoft.Extensions.Configuration;
 
-
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     public class CloudFoundryOptions : AbstractOptions, ICloudFoundryOptions
@@ -25,13 +23,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private const string VCAP_APPLICATION_CLOUDFOUNDRY_API_KEY = "vcap:application:cf_api";
         private const bool Default_ValidateCertificates = true;
 
-        public CloudFoundryOptions() : base()
+        public CloudFoundryOptions()
+            : base()
         {
             Id = string.Empty;
         }
 
-        public CloudFoundryOptions(IConfiguration config) :
-             base(MANAGEMENT_INFO_PREFIX, config)
+        public CloudFoundryOptions(IConfiguration config)
+            : base(MANAGEMENT_INFO_PREFIX, config)
         {
             Id = string.Empty;
             ApplicationId = config[VCAP_APPLICATION_ID_KEY];
@@ -39,8 +38,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         }
 
         public bool ValidateCertificates { get; set; } = Default_ValidateCertificates;
-        public string ApplicationId { get; set; }
-        public string CloudFoundryApi { get; set; }
 
+        public string ApplicationId { get; set; }
+
+        public string CloudFoundryApi { get; set; }
     }
 }

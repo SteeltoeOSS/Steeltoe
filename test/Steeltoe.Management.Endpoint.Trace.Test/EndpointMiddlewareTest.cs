@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,19 +15,17 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Net.Http;
 using Xunit;
-using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
 {
-    public class EndpointMiddlewareTest  : BaseTest
+    public class EndpointMiddlewareTest : BaseTest
     {
         [Fact]
         public void IsTraceRequest_ReturnsExpected()
@@ -64,13 +61,11 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             string json = await rdr.ReadToEndAsync();
             Assert.Equal("[]", json);
             listener.Dispose();
-
         }
 
         [Fact]
         public async void TraceActuator_ReturnsExpectedData()
         {
-
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
@@ -79,7 +74,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                Assert.NotNull(json);
-
             }
         }
 
@@ -93,18 +87,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             context.Request.Scheme = "http";
             context.Request.Host = new HostString("localhost");
             return context;
-        }
-
-    }
-    class TestTraceEndpoint : TraceEndpoint
-    {
-        public TestTraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null) 
-            : base(options, traceRepository, logger)
-        {
-        }
-        public override List<Trace> Invoke()
-        {
-            return new List<Trace>();
         }
     }
 }

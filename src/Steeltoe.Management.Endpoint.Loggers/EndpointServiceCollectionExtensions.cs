@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
-
-
 namespace Steeltoe.Management.Endpoint.Loggers
 {
     public static class EndpointServiceCollectionExtensions
@@ -35,11 +32,10 @@ namespace Steeltoe.Management.Endpoint.Loggers
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             services.TryAddSingleton<ILoggersOptions>(new LoggersOptions(config));
-    
+
             services.TryAddSingleton<LoggersEndpoint>();
         }
-
-  
     }
 }

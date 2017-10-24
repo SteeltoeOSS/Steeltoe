@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,19 +21,16 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 {
     public class InfoEndpointTest : BaseTest
     {
-
         [Fact]
         public void Invoke_NoContributors_ReturnsExpectedInfo()
         {
-
             var opts = new InfoOptions();
             var contributors = new List<IInfoContributor>();
             var ep = new InfoEndpoint(opts, contributors, GetLogger<InfoEndpoint>());
 
             var info = ep.Invoke();
             Assert.NotNull(info);
-            Assert.Equal(0, info.Count);
-
+            Assert.Empty(info);
         }
 
         [Fact]
@@ -46,10 +42,10 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             var info = ep.Invoke();
 
-            foreach(var contrib in contributors)
+            foreach (var contrib in contributors)
             {
                 TestContrib tc = (TestContrib)contrib;
-                Assert.True(tc.called);
+                Assert.True(tc.Called);
             }
         }
 
@@ -58,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         {
             var opts = new InfoOptions();
             var contributors = new List<IInfoContributor>() { new TestContrib(), new TestContrib(true), new TestContrib() };
-      
+
             var ep = new InfoEndpoint(opts, contributors, GetLogger<InfoEndpoint>());
 
             var info = ep.Invoke();
@@ -66,33 +62,15 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             foreach (var contrib in contributors)
             {
                 TestContrib tc = (TestContrib)contrib;
-                if (tc.throws)
-                    Assert.False(tc.called);
+                if (tc.Throws)
+                {
+                    Assert.False(tc.Called);
+                }
                 else
-                    Assert.True(tc.called);
+                {
+                    Assert.True(tc.Called);
+                }
             }
-        }
-    }
-
-    class TestContrib : IInfoContributor
-    {
-        public bool called = false;
-        public bool throws = false;
-        public TestContrib()
-        {
-            this.throws = false;
-        }
-        public TestContrib(bool throws)
-        {
-            this.throws = throws;
-        }
-        public void Contribute(IInfoBuilder builder)
-        {
-            if (throws)
-            {
-                throw new Exception();
-            }
-            called = true;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +13,13 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-
     public class TraceEndpointMiddleware : EndpointMiddleware<List<Trace>>
     {
         private RequestDelegate _next;
@@ -44,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
         }
 
-        internal protected async Task HandleTraceRequestAsync(HttpContext context)
+        protected internal async Task HandleTraceRequestAsync(HttpContext context)
         {
             var serialInfo = base.HandleRequest();
             logger?.LogDebug("Returning: {0}", serialInfo);
@@ -52,12 +50,15 @@ namespace Steeltoe.Management.Endpoint.Trace
             await context.Response.WriteAsync(serialInfo);
         }
 
-        internal protected bool IsTraceRequest(HttpContext context)
+        protected internal bool IsTraceRequest(HttpContext context)
         {
-            if (!context.Request.Method.Equals("GET")) { return false; }
+            if (!context.Request.Method.Equals("GET"))
+            {
+                return false;
+            }
+
             PathString path = new PathString(endpoint.Path);
             return context.Request.Path.Equals(path);
         }
-
     }
 }

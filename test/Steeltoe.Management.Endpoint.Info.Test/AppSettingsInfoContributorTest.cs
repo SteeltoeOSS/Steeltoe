@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,8 +32,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             contributor.Contribute(builder);
             var result = builder.Build();
             Assert.NotNull(result);
-            Assert.Equal(0, result.Count);
-
+            Assert.Empty(result);
         }
 
         [Fact]
@@ -67,6 +65,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             Assert.Throws<ArgumentNullException>(() => settings.Contribute(null));
         }
+
         [Fact]
         public void ContributeAddsToBuilder()
         {
@@ -102,7 +101,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             InfoBuilder builder = new InfoBuilder();
             settings.Contribute(builder);
 
-            Dictionary<string,object> info = builder.Build();
+            Dictionary<string, object> info = builder.Build();
             Assert.NotNull(info);
             Assert.Equal(2, info.Count);
             Assert.True(info.ContainsKey("application"));
@@ -118,6 +117,5 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             Assert.NotNull(netNode["ASPNET"]);
         }
-
     }
 }

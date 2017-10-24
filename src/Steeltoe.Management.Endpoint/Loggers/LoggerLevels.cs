@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +24,16 @@ namespace Steeltoe.Management.Endpoint.Loggers
             ConfiguredLevel = configured.HasValue ? MapLogLevel(configured.Value) : null;
             EffectiveLevel = MapLogLevel(effective);
         }
+
         [JsonProperty("configuredLevel")]
         public string ConfiguredLevel { get; }
+
         [JsonProperty("effectiveLevel")]
         public string EffectiveLevel { get; }
-       
+
         public static string MapLogLevel(LogLevel level)
         {
-            switch(level)
+            switch (level)
             {
                 case LogLevel.None:
                     return "OFF";
@@ -52,6 +53,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                     return "OFF";
             }
         }
+
         public static LogLevel MapLogLevel(string level)
         {
             switch (level)

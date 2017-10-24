@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.AspNetCore.Builder;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Trace;
-using Microsoft.AspNetCore.Builder;
 
 namespace Steeltoe.Management.CloudFoundry
 {
     public static class CloudFoundryApplicationBuilderExtensions
     {
-   
         public static void UseCloudFoundryActuators(this IApplicationBuilder app)
         {
             app.UseCors(builder =>

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,21 +33,19 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     public class CloudFoundrySecurityMiddleware
     {
-        private RequestDelegate _next;
-        private ILogger<CloudFoundrySecurityMiddleware> _logger;
-        private ICloudFoundryOptions _options;
-        private int DEFAULT_TIMEOUT = 3000;
-
         private const string APPLICATION_ID_MISSING_MESSAGE = "Application id is not available";
         private const string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
         private const string AUTHORIZATION_HEADER_INVALID = "Authorization header is missing or invalid";
         private const string CLOUDFOUNDRY_API_MISSING_MESSAGE = "Cloud controller URL is not available";
         private const string CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE = "Cloud controller not reachable";
         private const string ACCESS_DENIED_MESSAGE = "Access denied";
-        //private const string UNABLE_TO_READ_TOKEN = "Unable to read token";
         private const string AUTHORIZATION_HEADER = "Authorization";
         private const string BEARER = "bearer";
         private const string READ_SENSITIVE_DATA = "read_sensitive_data";
+        private RequestDelegate _next;
+        private ILogger<CloudFoundrySecurityMiddleware> _logger;
+        private ICloudFoundryOptions _options;
+        private int defaultTimeout = 3000;
 
         public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityMiddleware> logger)
         {
@@ -81,7 +78,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, ENDPOINT_NOT_CONFIGURED_MESSAGE));
                     return;
                 }
-                
+
                 var sr = await GetPermissions(context);
                 if (sr.Code != HttpStatusCode.OK)
                 {
@@ -96,14 +93,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     return;
                 }
             }
-       
+
             await _next(context);
         }
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
             var configEndpoints = this._options.Global.EndpointOptions;
-            foreach(var ep in configEndpoints)
+            foreach (var ep in configEndpoints)
             {
                 PathString epPath = new PathString(ep.Path);
                 if (path.StartsWithSegments(epPath))
@@ -111,6 +108,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     return ep;
                 }
             }
+
             return null;
         }
 
@@ -142,26 +140,31 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     {
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
-                            _logger?.LogInformation("Cloud Foundry returned status: {0} while obtaining permissions from: {1}",
-                                response.StatusCode, checkPermissionsUri);
+                            _logger?.LogInformation(
+                                "Cloud Foundry returned status: {0} while obtaining permissions from: {1}",
+                                response.StatusCode,
+                                checkPermissionsUri);
 
                             if (response.StatusCode == HttpStatusCode.Forbidden)
                             {
                                 return new SecurityResult(HttpStatusCode.Forbidden, ACCESS_DENIED_MESSAGE);
-                            } else
+                            }
+                            else
                             {
                                 return new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
                             }
-                            
                         }
+
                         return new SecurityResult(await GetPermissions(response));
-                        
                     }
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
-                _logger?.LogError("Cloud Foundry returned execption: {0} while obtaining permissions from: {1}",
-                        e, checkPermissionsUri);
+                _logger?.LogError(
+                    "Cloud Foundry returned execption: {0} while obtaining permissions from: {1}",
+                        e,
+                        checkPermissionsUri);
                 return new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
             }
 
@@ -174,28 +177,26 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         }
 
-
         private async Task ReturnError(HttpContext context, SecurityResult error)
         {
-
             LogError(context, error);
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
             context.Response.StatusCode = (int)error.Code;
             await context.Response.WriteAsync(Serialize(error));
-
         }
 
         private string GetAccessToken(HttpRequest request)
         {
-            StringValues headerVal ;
+            StringValues headerVal;
             if (request.Headers.TryGetValue(AUTHORIZATION_HEADER, out headerVal))
             {
                 string header = headerVal.ToString();
                 if (header.StartsWith(BEARER, StringComparison.OrdinalIgnoreCase))
                 {
-                    return header.Substring(BEARER.Length +1);
+                    return header.Substring(BEARER.Length + 1);
                 }
             }
+
             return null;
         }
 
@@ -215,9 +216,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             {
                 _logger.LogError("Serialization Exception: {0}", e);
             }
+
             return string.Empty;
         }
-
 
         private async Task<Permissions> GetPermissions(HttpResponseMessage response)
         {
@@ -237,13 +238,16 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 {
                     bool boolResult = (bool)perm;
                     if (boolResult)
+                    {
                         permissions = Permissions.FULL;
+                    }
                     else
+                    {
                         permissions = Permissions.RESTRICTED;
+                    }
                 }
-          
-
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 _logger.LogError("Exception {0} extracting permissions from {1}", e, json);
             }
@@ -251,6 +255,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger.LogDebug("GetPermisions returning: {0}", permissions);
             return permissions;
         }
+
         protected HttpClient GetHttpClient()
         {
             HttpClient client = null;
@@ -260,9 +265,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             if (_options != null && !_options.ValidateCertificates)
             {
                 _logger.LogDebug("Disabling certificate validation");
-                var handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                handler.SslProtocols = SslProtocols.Tls12;
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+                    SslProtocols = SslProtocols.Tls12
+                };
                 client = new HttpClient(handler);
             }
             else
@@ -270,7 +277,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 client = new HttpClient();
             }
 #endif
-            client.Timeout = TimeSpan.FromMilliseconds(DEFAULT_TIMEOUT);
+            client.Timeout = TimeSpan.FromMilliseconds(defaultTimeout);
             return client;
         }
 #if NET46
@@ -308,32 +315,5 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 }
             }
         }
-    }
-
-    class SecurityResult
-    {
-        public SecurityResult(Permissions level)
-        {
-            Code = HttpStatusCode.OK;
-            Message = string.Empty;
-            Permissions = level;
-        }
-
-        public SecurityResult(HttpStatusCode code, string message)
-        {
-            Code = code;
-            Message = message;
-            Permissions = Permissions.NONE;
-        }
-
-        [JsonIgnore]
-        public HttpStatusCode Code;
-
-        [JsonIgnore]
-        public Permissions Permissions;
-
-        [JsonProperty("security_error")]
-        public string Message;
-
     }
 }

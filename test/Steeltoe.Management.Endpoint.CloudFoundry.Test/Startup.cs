@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +18,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Info;
 using System.IO;
 
-
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; set; }
         public Startup()
         {
             var appsettings = @"
@@ -67,6 +64,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Configuration = configurationBuilder.Build();
         }
 
+        public IConfiguration Configuration { get; set; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCloudFoundryActuator(Configuration);
@@ -76,7 +75,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 
         public void Configure(IApplicationBuilder app)
         {
-     
             app.UseCloudFoundryActuator();
             app.UseInfoActuator();
             app.UseMvc();

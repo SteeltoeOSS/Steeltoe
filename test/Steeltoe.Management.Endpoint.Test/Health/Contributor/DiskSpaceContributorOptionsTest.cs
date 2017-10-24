@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-using System;
-using Xunit;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Test;
+using System;
 using System.IO;
+using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
 {
@@ -31,6 +29,7 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
             Assert.Equal(".", opts.Path);
             Assert.Equal(10 * 1024 * 1024, opts.Threshold);
         }
+
         [Fact]
         public void Contstructor_ThrowsIfConfigNull()
         {
@@ -67,7 +66,6 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
             var opts = new DiskSpaceContributorOptions(config);
             Assert.Equal("foobar", opts.Path);
             Assert.Equal(5, opts.Threshold);
-
         }
     }
 }

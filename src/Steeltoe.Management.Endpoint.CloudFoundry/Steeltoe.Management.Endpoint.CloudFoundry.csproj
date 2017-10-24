@@ -1,6 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-
   <Import Project="..\..\versions.props" />
   
   <PropertyGroup>
@@ -12,17 +10,21 @@
     <AssemblyName>Steeltoe.Management.Endpoint.CloudFoundry</AssemblyName>
     <PackageId>Steeltoe.Management.Endpoint.CloudFoundry</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
-    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
-  
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Management.Endpoint.CloudFoundry.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
     <!-- 4.3.0 of this package has problems on net46+, by default that version gets included, so we have to force using 4.3.1+  -->
     <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" />
   </ItemGroup>
@@ -34,5 +36,13 @@
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Management.Endpoint" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
-
+  <PropertyGroup>
+    <NoWarn>SA1100;SA1101;SA1124;SA1202;SA1204;SA1309;SA1310;SA1313;SA1401;SA1600;SA1611;1591;1701;1702;1705</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 
-
 namespace Steeltoe.Management.Endpoint.Health
 {
     public class DefaultHealthAggregator : IHealthAggregator
@@ -29,27 +27,29 @@ namespace Steeltoe.Management.Endpoint.Health
             }
 
             Health result = new Health();
-            foreach(var contributor in contributors)
+            foreach (var contributor in contributors)
             {
                 Health h = null;
                 try
                 {
                     h = contributor.Health();
-                } catch (Exception)
+                }
+                catch (Exception)
                 {
                     h = new Health()
                     {
                         Status = HealthStatus.UNKNOWN
                     };
-            
                 }
 
                 if (h.Status > result.Status)
                 {
                     result.Status = h.Status;
                 }
+
                 result.Details.Add(contributor.Id, h.Details);
             }
+
             return result;
         }
     }

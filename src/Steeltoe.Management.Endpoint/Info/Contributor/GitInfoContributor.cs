@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor
 {
@@ -25,13 +24,17 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         private const string GITSETTINGS_PREFIX = "git";
         private const string GITPROPERTIES_FILE = "git.properties";
 
+        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
         private string _propFile;
-        public GitInfoContributor() 
+
+        public GitInfoContributor()
             : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GITPROPERTIES_FILE)
         {
         }
 
-        public GitInfoContributor(string propFile) : base()
+        public GitInfoContributor(string propFile)
+            : base()
         {
             _propFile = propFile;
         }
@@ -52,11 +55,12 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
                     Dictionary<string, string> dict = new Dictionary<string, string>();
                     foreach (var line in lines)
                     {
-                        if (line.StartsWith("#") || 
+                        if (line.StartsWith("#") ||
                             !line.StartsWith("git.", StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }
+
                         string[] keyVal = line.Split('=');
                         if (keyVal == null || keyVal.Length != 2)
                         {
@@ -68,11 +72,13 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
 
                         dict[key] = val;
                     }
+
                     ConfigurationBuilder builder = new ConfigurationBuilder();
                     builder.AddInMemoryCollection(dict);
                     return builder.Build();
                 }
             }
+
             return null;
         }
 
@@ -85,13 +91,10 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
             {
                 DateTime dt = DateTime.Parse(value);
                 DateTime utc = dt.ToUniversalTime();
-                valueToInsert = (utc.Ticks - baseTime.Ticks)/10000;
+                valueToInsert = (utc.Ticks - baseTime.Ticks) / 10000;
             }
 
             dict[keyToInsert] = valueToInsert;
         }
-
-        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     }
-
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 
-
 namespace Steeltoe.Management.Endpoint.Info.Test
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; set; }
         public Startup()
         {
             var appsettings = @"
@@ -67,6 +63,8 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             configurationBuilder.AddJsonFile(fileName);
             Configuration = configurationBuilder.Build();
         }
+
+        public IConfiguration Configuration { get; set; }
 
         public void ConfigureServices(IServiceCollection services)
         {

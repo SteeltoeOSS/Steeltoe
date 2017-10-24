@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,23 +18,22 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor
 {
     public class DiskSpaceContributor : IHealthContributor
     {
-        private DiskSpaceContributorOptions _options;
         private const string ID = "diskSpace";
+        private DiskSpaceContributorOptions _options;
 
         public DiskSpaceContributor(DiskSpaceContributorOptions options = null)
         {
             if (options == null)
             {
                 _options = new DiskSpaceContributorOptions();
-            } else
+            }
+            else
             {
                 _options = options;
             }
-   
         }
 
         public string Id { get; } = ID;
-   
 
         public Health Health()
         {
@@ -51,15 +49,18 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor
                 if (freeSpace >= _options.Threshold)
                 {
                     result.Status = HealthStatus.UP;
-                } else
+                }
+                else
                 {
                     result.Status = HealthStatus.DOWN;
                 }
+
                 result.Details.Add("total", d.TotalSize);
                 result.Details.Add("free", freeSpace);
                 result.Details.Add("threshold", _options.Threshold);
                 result.Details.Add("status", result.Status.ToString());
             }
+
             return result;
         }
     }

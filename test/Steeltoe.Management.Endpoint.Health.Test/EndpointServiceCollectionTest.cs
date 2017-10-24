@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +40,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.Contains(nameof(config), ex2.Message);
             var ex3 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config2, aggregator));
             Assert.Contains(nameof(aggregator), ex3.Message);
-
         }
 
         [Fact]
@@ -83,7 +81,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = serviceProvider.GetServices<IHealthContributor>();
             Assert.NotNull(contribs);
             var contribsList = contribs.ToList();
-            Assert.Equal(1, contribsList.Count);
+            Assert.Single(contribsList);
         }
 
         [Fact]
@@ -95,17 +93,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = serviceProvider.GetServices<IHealthContributor>();
             Assert.NotNull(contribs);
             var contribsList = contribs.ToList();
-            Assert.Equal(1, contribsList.Count);
-          
-        }
-    }
-    class TestContributor : IHealthContributor
-    {
-        public string Id { get; }
-
-        public Health Health()
-        {
-            return new Health();
+            Assert.Single(contribsList);
         }
     }
 }

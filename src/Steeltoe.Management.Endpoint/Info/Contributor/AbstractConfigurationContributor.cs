@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +25,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         protected AbstractConfigurationContributor()
         {
         }
+
         protected AbstractConfigurationContributor(IConfiguration config)
         {
             _config = config;
@@ -54,12 +54,13 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
                 if (keepPrefix)
                 {
                     result[prefix] = dict = new Dictionary<string, object>();
-                } 
-      
+                }
+
                 foreach (var child in children)
                 {
                     AddChildren(dict, children);
                 }
+
                 return result;
             }
 
@@ -89,6 +90,5 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         {
             dict[key] = value;
         }
-
     }
 }

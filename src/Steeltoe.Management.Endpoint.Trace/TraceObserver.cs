@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +24,7 @@ using System.Reflection;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-
-    class TraceObserver : IObserver<KeyValuePair<string, object>>, ITraceRepository
+    internal class TraceObserver : IObserver<KeyValuePair<string, object>>, ITraceRepository
     {
         internal const string BEGIN_REQUEST = "Microsoft.AspNetCore.Hosting.BeginRequest";
         internal const string END_REQUEST = "Microsoft.AspNetCore.Hosting.EndRequest";
@@ -36,21 +34,14 @@ namespace Steeltoe.Management.Endpoint.Trace
         private DiagnosticListener _listener;
         internal ConcurrentDictionary<string, PendingTrace> _pending = new ConcurrentDictionary<string, PendingTrace>();
         internal ConcurrentQueue<Trace> _queue = new ConcurrentQueue<Trace>();
-        internal long ticksPerMilli = Stopwatch.Frequency/1000;
+        internal long TicksPerMilli = Stopwatch.Frequency / 1000;
+        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public TraceObserver(DiagnosticListener listener, ITraceOptions options, ILogger<TraceObserver> logger = null)
         {
-            if (listener == null)
-            {
-                throw new ArgumentNullException(nameof(listener));
-            }
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            _listener = listener ?? throw new ArgumentNullException(nameof(listener));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
-            _listener = listener;
-            _options = options;
             _listener.Subscribe(this);
         }
 
@@ -81,9 +72,8 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             if (value.Key.Equals(BEGIN_REQUEST))
             {
-  
                 HttpContext context = null;
-                long timeStamp =0;
+                long timeStamp = 0;
 
                 GetProperties(value.Value, out context, out timeStamp);
 
@@ -94,10 +84,9 @@ namespace Steeltoe.Management.Endpoint.Trace
                         _logger?.LogDebug("BeginRequest - Add failed, dropped trace");
                     }
                 }
-
-            } else if (value.Key.Equals(END_REQUEST))
+            }
+            else if (value.Key.Equals(END_REQUEST))
             {
-
                 HttpContext context = null;
                 long timeStamp = 0;
 
@@ -119,8 +108,8 @@ namespace Steeltoe.Management.Endpoint.Trace
                                 _logger?.LogDebug("EndRequest - Dequeue failed");
                             }
                         }
-
-                    } else
+                    }
+                    else
                     {
                         _logger?.LogDebug("EndRequest - Remove pending failed, dropped trace");
                     }
@@ -128,17 +117,17 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
         }
 
-
-        internal protected Trace MakeTrace(HttpContext context, long startTime, long endTime)
+        protected internal Trace MakeTrace(HttpContext context, long startTime, long endTime)
         {
             var request = context.Request;
             var response = context.Response;
 
-            Dictionary<string, object> details = new Dictionary<string, object>();
-            details.Add("method", request.Method);
-            details.Add("path", GetPathInfo(request));
+            Dictionary<string, object> details = new Dictionary<string, object>
+            {
+                { "method", request.Method },
+                { "path", GetPathInfo(request) }
+            };
 
-            
             Dictionary<string, object> headers = new Dictionary<string, object>();
             details.Add("headers", headers);
 
@@ -179,7 +168,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             if (_options.AddRemoteAddress)
             {
-                details.Add("remoteAddress", GetRemoteAddress(context) );
+                details.Add("remoteAddress", GetRemoteAddress(context));
             }
 
             if (_options.AddSessionId)
@@ -193,46 +182,44 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
 
             return new Trace(GetJavaTime(DateTime.Now.Ticks), details);
-
         }
 
-        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        internal protected long GetJavaTime(long ticks)
+        protected internal long GetJavaTime(long ticks)
         {
             long javaTicks = ticks - baseTime.Ticks;
             return javaTicks / 10000;
         }
 
-        internal protected string GetSessionId(HttpContext context)
+        protected internal string GetSessionId(HttpContext context)
         {
             var sessionFeature = context.Features.Get<ISessionFeature>();
             return sessionFeature == null ? null : context.Session.Id;
         }
 
-        internal protected string GetTimeTaken(long ticks)
+        protected internal string GetTimeTaken(long ticks)
         {
-            long timeInMilli = ticks / ticksPerMilli;
+            long timeInMilli = ticks / TicksPerMilli;
             return timeInMilli.ToString();
         }
 
-        internal protected string GetAuthType(HttpRequest request)
+        protected internal string GetAuthType(HttpRequest request)
         {
             return string.Empty;
         }
 
-        internal protected Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
+        protected internal Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
         {
             Dictionary<string, string[]> parameters = new Dictionary<string, string[]>();
             var query = request.Query;
-            foreach(var p in query)
+            foreach (var p in query)
             {
                 parameters.Add(p.Key, p.Value.ToArray());
             }
-  
+
             if (request.HasFormContentType && request.Form != null)
             {
                 var formData = request.Form;
-                foreach(var p in formData)
+                foreach (var p in formData)
                 {
                     parameters.Add(p.Key, p.Value.ToArray());
                 }
@@ -241,63 +228,67 @@ namespace Steeltoe.Management.Endpoint.Trace
             return parameters;
         }
 
-        internal protected string GetRequestUri(HttpRequest request)
+        protected internal string GetRequestUri(HttpRequest request)
         {
             return request.Scheme + "://" + request.Host.Value + request.Path.Value;
         }
 
-        internal protected string GetPathInfo(HttpRequest request)
+        protected internal string GetPathInfo(HttpRequest request)
         {
             return request.Path.Value;
         }
 
-        internal protected string GetUserPrincipal(HttpContext context)
+        protected internal string GetUserPrincipal(HttpContext context)
         {
             return context?.User?.Identity?.Name;
         }
 
-        internal protected string GetRemoteAddress(HttpContext context)
+        protected internal string GetRemoteAddress(HttpContext context)
         {
             return context?.Connection?.RemoteIpAddress?.ToString();
         }
 
-        internal protected Dictionary<string,object> GetHeaders(int status, IHeaderDictionary headers)
+        protected internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
         {
             var result = GetHeaders(headers);
             result.Add("status", status.ToString());
             return result;
         }
 
-        internal protected Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
+        protected internal Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
-            foreach(var h in headers)
+            foreach (var h in headers)
             {
                 // Add filtering
                 result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
             }
+
             return result;
         }
 
-        internal protected object GetHeaderValue(StringValues values)
+        protected internal object GetHeaderValue(StringValues values)
         {
             List<string> result = new List<string>();
-            foreach(var v in values)
+            foreach (var v in values)
             {
                 result.Add(v);
             }
+
             if (result.Count == 1)
             {
                 return result[0];
             }
+
             if (result.Count == 0)
             {
                 return string.Empty;
             }
+
             return result;
         }
 
-        internal protected void GetProperties(object obj, out HttpContext context, out long timeStamp)
+        protected internal void GetProperties(object obj, out HttpContext context, out long timeStamp)
         {
             context = GetProperty<HttpContext>(obj, "httpContext");
             timeStamp = GetProperty<long>(obj, "timestamp");
@@ -310,6 +301,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             {
                 return default(T);
             }
+
             return (T)property.GetValue(o);
         }
 
@@ -319,6 +311,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             {
                 StartTime = startTime;
             }
+
             public long StartTime { get; }
         }
     }

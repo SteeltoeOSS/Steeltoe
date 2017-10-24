@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +26,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
 {
-    public class EndpointMiddlewareTest  : BaseTest
+    public class EndpointMiddlewareTest : BaseTest
     {
         [Fact]
         public void IsHealthRequest_ReturnsExpected()
@@ -45,7 +44,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
             var context3 = CreateRequest("GET", "/badpath");
             Assert.False(middle.IsHealthRequest(context3));
-
         }
 
         [Fact]
@@ -61,13 +59,11 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
             Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
-
         }
 
         [Fact]
         public async void HealthActuator_ReturnsExpectedData()
         {
-
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
@@ -76,15 +72,15 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                Assert.NotNull(json);
-         
-                //{ "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
+
+                // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
                 var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 Assert.NotNull(health);
                 Assert.True(health.ContainsKey("status"));
                 Assert.True(health.ContainsKey("diskSpace"));
-
             }
         }
+
         private HttpContext CreateRequest(string method, string path)
         {
             HttpContext context = new DefaultHttpContext();
@@ -95,18 +91,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             context.Request.Scheme = "http";
             context.Request.Host = new HostString("localhost");
             return context;
-        }
-    }
-
-    class TestHealthEndpoint : HealthEndpoint
-    {
-        public TestHealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null) 
-            : base(options, aggregator, contributors, logger)
-        {
-        }
-        public override Health Invoke()
-        {
-            return new Health();
         }
     }
 }

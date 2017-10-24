@@ -15,7 +15,6 @@
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
 {
@@ -35,17 +34,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var result = ep.DoInvoke(repo);
             Assert.NotNull(result);
             Assert.True(repo.GetTracesCalled);
-
-        }
-
-    }
-    class TestTraceRepo : ITraceRepository
-    {
-        public bool GetTracesCalled { get; set; }
-        public List<Trace> GetTraces()
-        {
-            GetTracesCalled = true;
-            return new List<Trace>();
         }
     }
 }

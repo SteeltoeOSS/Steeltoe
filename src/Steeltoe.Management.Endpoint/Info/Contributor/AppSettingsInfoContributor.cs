@@ -1,6 +1,4 @@
-﻿
-//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,14 +14,13 @@
 
 using Microsoft.Extensions.Configuration;
 
-
 namespace Steeltoe.Management.Endpoint.Info.Contributor
 {
     public class AppSettingsInfoContributor : AbstractConfigurationContributor, IInfoContributor
     {
         private const string APPSETTINGS_PREFIX = "info";
 
-        public AppSettingsInfoContributor(IConfiguration config) 
+        public AppSettingsInfoContributor(IConfiguration config)
             : base(config)
         {
         }
@@ -32,6 +29,5 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         {
             base.Contribute(builder, APPSETTINGS_PREFIX, false);
         }
-
     }
 }

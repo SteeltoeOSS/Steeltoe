@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,21 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
-
-    public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string,object>>
+    public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
     {
         private RequestDelegate _next;
 
-        public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger=null)
+        public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger = null)
             : base(endpoint, logger)
         {
             _next = next;
@@ -45,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.Info
             }
         }
 
-        internal protected async Task HandleInfoRequestAsync(HttpContext context)
+        protected internal async Task HandleInfoRequestAsync(HttpContext context)
         {
             var serialInfo = base.HandleRequest();
             logger?.LogDebug("Returning: {0}", serialInfo);
@@ -53,12 +50,15 @@ namespace Steeltoe.Management.Endpoint.Info
             await context.Response.WriteAsync(serialInfo);
         }
 
-        internal protected bool IsInfoRequest(HttpContext context)
+        protected internal bool IsInfoRequest(HttpContext context)
         {
-            if (!context.Request.Method.Equals("GET")) { return false; }
+            if (!context.Request.Method.Equals("GET"))
+            {
+                return false;
+            }
+
             PathString path = new PathString(endpoint.Path);
             return context.Request.Path.Equals(path);
         }
-
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +14,7 @@
 
 using System.IO;
 
-
-namespace Steeltoe.Management.Endpoint.Trace.Test
+namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
     public static class TestHelpers
     {
@@ -25,8 +23,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var tempFile = Path.GetTempFileName();
             File.WriteAllText(tempFile, contents);
             return tempFile;
-
         }
+
         public static Stream StringToStream(string str)
         {
             var memStream = new MemoryStream();
@@ -45,6 +43,5 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
             return reader.ReadToEnd();
         }
-
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +24,7 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
             var contrib = new DiskSpaceContributor();
             Assert.Equal("diskSpace", contrib.Id);
         }
+
         [Fact]
         public void Health_InitializedWithDefaults_ReturnsExpected()
         {
@@ -38,7 +38,6 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
             Assert.True(result.Details.ContainsKey("free"));
             Assert.True(result.Details.ContainsKey("threshold"));
             Assert.True(result.Details.ContainsKey("status"));
-
         }
     }
 }

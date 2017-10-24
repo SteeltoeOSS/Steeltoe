@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +14,6 @@
 
 using System;
 
-
 namespace Steeltoe.Management.Endpoint
 {
     public abstract class AbstractEndpoint : IEndpoint
@@ -24,27 +22,25 @@ namespace Steeltoe.Management.Endpoint
 
         public AbstractEndpoint(IEndpointOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            this.options = options;
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
         }
-        public virtual string Id { get { return options.Id; } }
 
-        public virtual bool Enabled { get { return options.Enabled.Value; } }
+        public virtual string Id => options.Id;
 
-        public virtual bool Sensitive { get { return options.Sensitive.Value; } }
+        public virtual bool Enabled => options.Enabled.Value;
 
-        public virtual IEndpointOptions Options { get { return options; } }
+        public virtual bool Sensitive => options.Sensitive.Value;
 
-        public string Path { get { return options.Path; } }
+        public virtual IEndpointOptions Options => options;
+
+        public string Path => options.Path;
     }
 
+#pragma warning disable SA1402 // File may only contain a single class
     public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TResult>
     {
-        public AbstractEndpoint(IEndpointOptions options) : base(options)
+        public AbstractEndpoint(IEndpointOptions options)
+            : base(options)
         {
         }
 
@@ -56,7 +52,8 @@ namespace Steeltoe.Management.Endpoint
 
     public abstract class AbstractEndpoint<TResult, TRequest> : AbstractEndpoint, IEndpoint<TResult, TRequest>
     {
-        public AbstractEndpoint(IEndpointOptions options) : base(options)
+        public AbstractEndpoint(IEndpointOptions options)
+            : base(options)
         {
         }
 
@@ -65,4 +62,5 @@ namespace Steeltoe.Management.Endpoint
             return default(TResult);
         }
     }
+#pragma warning restore SA1402 // File may only contain a single class
 }

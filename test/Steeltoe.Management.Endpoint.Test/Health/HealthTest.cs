@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var health = new Health();
             Assert.Equal(HealthStatus.UNKNOWN, health.Status);
             Assert.NotNull(health.Details);
-            Assert.Equal(0, health.Details.Count);
+            Assert.Empty(health.Details);
             Assert.Null(health.Description);
         }
 
@@ -50,9 +49,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 Description = "Test",
                 Details = new Dictionary<string, object>()
                 {
-                    {"item1", new HealtData()},
-                    {"item2", "String" },
-                    {"item3", false }
+                    { "item1", new HealthData() },
+                    { "item2", "String" },
+                    { "item3", false }
                 }
             };
             var json = Serialize(health);
@@ -65,19 +64,11 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             {
                 return JsonConvert.SerializeObject(result, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
             }
-            catch (Exception )
+            catch (Exception)
             {
-                
             }
+
             return string.Empty;
         }
-
-
-    }
-    class HealtData
-    {
-        public string StringProperty { get; set; } = "Testdata";
-        public int IntProperty { get; set; } = 100;
-        public bool BoolProperty { get; set; } = true;
     }
 }

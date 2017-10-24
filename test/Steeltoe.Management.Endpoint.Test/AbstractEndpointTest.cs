@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 using Xunit;
-
 
 namespace Steeltoe.Management.Endpoint.Test
 {
@@ -36,35 +34,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.False(ep.Enabled);
             Assert.Equal("foo", ep.Id);
             Assert.Equal(0, ep.Invoke());
-        }
-
-    }
-
-    class TestEndpoint : AbstractEndpoint<int>
-    {
-
-        public TestEndpoint(IEndpointOptions opts) : base(opts)
-        {
-
-        }
-    }
-
-    class TestOptions : IEndpointOptions
-    {
-        public string Id { get; set; }
-        public bool? Enabled { get; set; }
-        public bool? Sensitive { get; set; }
-        public IManagementOptions Global { get; set; }
-        public string Path { get; set; }
-        public Permissions RequiredPermissions { get; set; }
-
-        public bool IsEnabled { get { return Enabled.Value; } }
-
-        public bool IsSensitive { get { return Sensitive.Value; } }
-
-        public bool IsAccessAllowed(Permissions permissions)
-        {
-            return false;
         }
     }
 }

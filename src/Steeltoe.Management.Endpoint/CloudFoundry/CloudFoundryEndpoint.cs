@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
@@ -22,15 +21,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
     {
         private ILogger<CloudFoundryEndpoint> _logger;
 
-        protected new ICloudFoundryOptions Options
-        {
-            get
-            {
-                return options as ICloudFoundryOptions;
-            }
-        }
-
-        public CloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null) : base(options)
+        public CloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null)
+            : base(options)
         {
             if (options == null)
             {
@@ -39,6 +31,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
             _logger = logger;
         }
+
+        protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
 
         public override Links Invoke(string baseUrl)
         {
@@ -53,7 +47,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             foreach (var opt in endpointOptions)
             {
                 if (!opt.Enabled.Value)
+                {
                     continue;
+                }
 
                 if (opt == Options)
                 {
@@ -66,8 +62,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
 
             return links;
-            
         }
-    
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +13,12 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
-using Steeltoe.Management.Endpoint.Middleware;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Middleware;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-
     public class HealthEndpointMiddleware : EndpointMiddleware<Health>
     {
         private RequestDelegate _next;
@@ -43,22 +41,23 @@ namespace Steeltoe.Management.Endpoint.Health
             }
         }
 
-        internal protected async Task HandleHealthRequestAsync(HttpContext context)
+        protected internal async Task HandleHealthRequestAsync(HttpContext context)
         {
-   
             var serialInfo = base.HandleRequest();
             logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
-    
         }
 
-        internal protected bool IsHealthRequest(HttpContext context)
+        protected internal bool IsHealthRequest(HttpContext context)
         {
-            if (!context.Request.Method.Equals("GET")) { return false; }
+            if (!context.Request.Method.Equals("GET"))
+            {
+                return false;
+            }
+
             PathString path = new PathString(endpoint.Path);
             return context.Request.Path.Equals(path);
         }
-
     }
 }

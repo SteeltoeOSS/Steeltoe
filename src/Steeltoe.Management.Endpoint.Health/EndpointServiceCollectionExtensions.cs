@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +18,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using System;
 using System.Collections.Generic;
-
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -56,7 +54,6 @@ namespace Steeltoe.Management.Endpoint.Health
             AddHealthContributors(services, contributors);
             services.TryAddSingleton<IHealthAggregator>(aggregator);
             services.TryAddSingleton<HealthEndpoint>();
-
         }
 
         internal static void AddHealthContributors(IServiceCollection services, params IHealthContributor[] contributors)
@@ -76,8 +73,6 @@ namespace Steeltoe.Management.Endpoint.Health
             {
                 new DiskSpaceContributor()
             };
-
         }
     }
 }
-

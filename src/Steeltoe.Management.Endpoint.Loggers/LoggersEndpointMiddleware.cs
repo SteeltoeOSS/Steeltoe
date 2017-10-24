@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,19 +13,18 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
-using Steeltoe.Management.Endpoint.Middleware;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Steeltoe.Management.Endpoint.Middleware;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
-
-    public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string,object>, LoggersChangeRequest>
+    public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
     {
         private RequestDelegate _next;
 
@@ -48,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
         }
 
-        internal protected async Task HandleLoggersRequestAsync(HttpContext context)
+        protected internal async Task HandleLoggersRequestAsync(HttpContext context)
         {
             HttpRequest request = context.Request;
             HttpResponse response = context.Response;
@@ -61,7 +59,8 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 PathString remaining;
                 if (request.Path.StartsWithSegments(epPath, out remaining))
                 {
-                    if (remaining.HasValue) {
+                    if (remaining.HasValue)
+                    {
                         string loggerName = remaining.Value.TrimStart('/');
 
                         var change = Deserialize(request.Body);
@@ -79,27 +78,29 @@ namespace Steeltoe.Management.Endpoint.Loggers
                         }
                     }
                 }
-       
+
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return;
             }
-            
+
             // GET request
             var serialInfo = base.HandleRequest(null);
             logger?.LogDebug("Returning: {0}", serialInfo);
             response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
-
         }
 
-        internal protected bool IsLoggerRequest(HttpContext context)
+        protected internal bool IsLoggerRequest(HttpContext context)
         {
-            if (!context.Request.Method.Equals("GET") && !context.Request.Method.Equals("POST")) { return false; }
+            if (!context.Request.Method.Equals("GET") && !context.Request.Method.Equals("POST"))
+            {
+                return false;
+            }
+
             PathString path = new PathString(endpoint.Path);
             return context.Request.Path.StartsWithSegments(path);
         }
 
-  
         private Dictionary<string, string> Deserialize(Stream stream)
         {
             try
@@ -110,10 +111,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 {
                     using (var jsonTextReader = new JsonTextReader(sr))
                     {
-                        return serializer.Deserialize<Dictionary<string,string>>(jsonTextReader);
+                        return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
                     }
                 }
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 logger?.LogError("Error {0} deserializing", e);
             }

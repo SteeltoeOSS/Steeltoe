@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,14 +16,19 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-
 namespace Steeltoe.Management.Endpoint.Trace
 {
     public class TraceEndpoint : AbstractEndpoint<List<Trace>>
     {
-
         private ILogger<TraceEndpoint> _logger;
         private ITraceRepository _traceRepo;
+
+        public TraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
+            : base(options)
+        {
+            _traceRepo = traceRepository ?? throw new ArgumentNullException(nameof(traceRepository));
+            _logger = logger;
+        }
 
         public new ITraceOptions Options
         {
@@ -32,17 +36,6 @@ namespace Steeltoe.Management.Endpoint.Trace
             {
                 return options as ITraceOptions;
             }
-        }
-
-        public TraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null) :
-            base(options)
-        {
-            if (traceRepository == null)
-            {
-                throw new ArgumentNullException(nameof(traceRepository));
-            }
-            _logger = logger;
-            _traceRepo = traceRepository;
         }
 
         public override List<Trace> Invoke()
@@ -55,5 +48,4 @@ namespace Steeltoe.Management.Endpoint.Trace
             return repo.GetTraces();
         }
     }
-
 }

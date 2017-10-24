@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor
 {
@@ -22,27 +21,31 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:health:diskspace";
         private const long DEFAULT_THRESHOLD = 10 * 1024 * 1024;
-        public DiskSpaceContributorOptions() 
+
+        public DiskSpaceContributorOptions()
         {
             Path = ".";
             Threshold = DEFAULT_THRESHOLD;
         }
 
-        public DiskSpaceContributorOptions(IConfiguration config) 
+        public DiskSpaceContributorOptions(IConfiguration config)
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             var section = config.GetSection(MANAGEMENT_INFO_PREFIX);
             if (section != null)
             {
                 section.Bind(this);
             }
+
             if (string.IsNullOrEmpty(Path))
             {
                 Path = ".";
             }
+
             if (Threshold == -1)
             {
                 Threshold = DEFAULT_THRESHOLD;
@@ -50,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor
         }
 
         public string Path { get; set; }
-        public long Threshold { get; set; } = -1;
 
+        public long Threshold { get; set; } = -1;
     }
 }

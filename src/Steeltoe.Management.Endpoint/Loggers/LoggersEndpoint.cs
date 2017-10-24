@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +17,28 @@ using Steeltoe.Extensions.Logging.CloudFoundry;
 using System;
 using System.Collections.Generic;
 
-
 namespace Steeltoe.Management.Endpoint.Loggers
 {
     public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>
     {
-        ILogger<LoggersEndpoint> _logger;
+        private ILogger<LoggersEndpoint> _logger;
+        private static List<string> levels = new List<string>()
+        {
+            LoggerLevels.MapLogLevel(LogLevel.None),
+            LoggerLevels.MapLogLevel(LogLevel.Critical),
+            LoggerLevels.MapLogLevel(LogLevel.Error),
+            LoggerLevels.MapLogLevel(LogLevel.Warning),
+            LoggerLevels.MapLogLevel(LogLevel.Information),
+            LoggerLevels.MapLogLevel(LogLevel.Debug),
+            LoggerLevels.MapLogLevel(LogLevel.Trace)
+        };
+
+        public LoggersEndpoint(ILoggersOptions options, ILogger<LoggersEndpoint> logger = null)
+            : base(options)
+        {
+            _logger = logger;
+        }
+
         protected new ILoggersOptions Options
         {
             get
@@ -32,17 +47,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
         }
 
-        public LoggersEndpoint(ILoggersOptions options, ILogger<LoggersEndpoint> logger = null) : base(options)
-        {
-            _logger = logger;
-        }
-
         public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
         {
             _logger.LogDebug("Invoke({0})", request);
 
             return DoInvoke(CloudFoundryLoggerProvider.Instance, request);
-
         }
 
         public virtual Dictionary<string, object> DoInvoke(ICloudFoundryLoggerProvider provider, LoggersChangeRequest request)
@@ -64,6 +73,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                     LoggerLevels lv = new LoggerLevels(c.ConfiguredLevel, c.EffectiveLevel);
                     loggers.Add(c.Name, lv);
                 }
+
                 result.Add("loggers", loggers);
             }
 
@@ -82,6 +92,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 _logger?.LogInformation("Unable to access Cloud Foundry Logging provider, log configuration unavailable");
                 return new List<ILoggerConfiguration>();
             }
+
             return provider.GetLoggerConfigurations();
         }
 
@@ -105,15 +116,5 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
             provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
         }
-
-        private static List<string> levels = new List<string>() {
-            LoggerLevels.MapLogLevel(LogLevel.None),
-            LoggerLevels.MapLogLevel(LogLevel.Critical),
-            LoggerLevels.MapLogLevel(LogLevel.Error),
-            LoggerLevels.MapLogLevel(LogLevel.Warning),
-            LoggerLevels.MapLogLevel(LogLevel.Information),
-            LoggerLevels.MapLogLevel(LogLevel.Debug),
-            LoggerLevels.MapLogLevel(LogLevel.Trace)
-        };
     }
 }

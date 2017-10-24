@@ -1,18 +1,26 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
 {
@@ -32,9 +40,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var ex2 = Assert.Throws<ArgumentNullException>(() => new TraceObserver(listener2, options));
             Assert.Contains(nameof(options), ex2.Message);
 
-
             listener2.Dispose();
         }
+
         [Fact]
         public void GetSessionId_NoSession_ReturnsExpected()
         {
@@ -94,6 +102,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.Equal("MyTestName", result);
             listener.Dispose();
         }
+
         [Fact]
         public void GetRemoteAddress_NoConnection_ReturnsExpected()
         {
@@ -105,7 +114,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var result = obs.GetRemoteAddress(context);
             Assert.Null(result);
             listener.Dispose();
-
         }
 
         [Fact]
@@ -116,12 +124,12 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
             TraceObserver obs = new TraceObserver(listener, option);
             HttpContext context = CreateRequest();
-            
+
             var result = obs.GetPathInfo(context.Request);
             Assert.Equal("/myPath", result);
             listener.Dispose();
-
         }
+
         [Fact]
         public void GetRequestUri_ReturnsExpected()
         {
@@ -148,10 +156,10 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.True(result.ContainsKey("foo"));
             Assert.True(result.ContainsKey("bar"));
             var fooVal = result["foo"];
-            Assert.Equal(1, fooVal.Length);
+            Assert.Single(fooVal);
             Assert.Equal("bar", fooVal[0]);
             var barVal = result["bar"];
-            Assert.Equal(1, barVal.Length);
+            Assert.Single(barVal);
             Assert.Equal("foo", barVal[0]);
             listener.Dispose();
         }
@@ -165,11 +173,12 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             TraceObserver obs = new TraceObserver(listener, option);
             HttpContext context = CreateRequest();
             var result = obs.GetTimeTaken(10000000);
-            var expected = (10000000 / obs.ticksPerMilli).ToString();
+            var expected = (10000000 / obs.TicksPerMilli).ToString();
             Assert.Equal(expected, result);
 
             listener.Dispose();
         }
+
         [Fact]
         public void GetHeaders_ReturnsExpected()
         {
@@ -252,7 +261,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.True(headers.ContainsKey("response"));
             var timeTaken = result.Info["timeTaken"] as string;
             Assert.NotNull(timeTaken);
-            var expected = ((20000000 - 10000000) / obs.ticksPerMilli).ToString();
+            var expected = ((20000000 - 10000000) / obs.TicksPerMilli).ToString();
             Assert.Equal(expected, timeTaken);
             listener.Dispose();
         }
@@ -267,8 +276,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
             KeyValuePair<string, object> ignore = new KeyValuePair<string, object>("foobar", null);
             obs.OnNext(ignore);
-            Assert.Equal(0, obs._pending.Count);
-            Assert.Equal(0, obs._queue.Count);
+            Assert.Empty(obs._pending);
+            Assert.Empty(obs._queue);
             listener.Dispose();
         }
 
@@ -282,17 +291,18 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             long expectedTime = Stopwatch.GetTimestamp();
             var expectedContext = CreateRequest();
 
-            KeyValuePair<string, object> begin = new KeyValuePair<string, object>(TraceObserver.BEGIN_REQUEST, 
+            KeyValuePair<string, object> begin = new KeyValuePair<string, object>(
+                TraceObserver.BEGIN_REQUEST,
                 new { httpContext = expectedContext, timestamp = expectedTime });
 
             obs.OnNext(begin);
 
-            Assert.Equal(1, obs._pending.Count);
+            Assert.Single(obs._pending);
             Assert.True(obs._pending.ContainsKey(expectedContext.TraceIdentifier));
             var pending = obs._pending[expectedContext.TraceIdentifier];
             Assert.Equal(expectedTime, pending.StartTime);
 
-            Assert.Equal(0, obs._queue.Count);
+            Assert.Empty(obs._queue);
             listener.Dispose();
         }
 
@@ -306,16 +316,18 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             long start = Stopwatch.GetTimestamp();
             var context = CreateRequest();
 
-            KeyValuePair<string, object> begin = new KeyValuePair<string, object>(TraceObserver.BEGIN_REQUEST,
+            KeyValuePair<string, object> begin = new KeyValuePair<string, object>(
+                TraceObserver.BEGIN_REQUEST,
                 new { httpContext = context, timestamp = start });
             obs.OnNext(begin);
 
-            KeyValuePair<string, object> end = new KeyValuePair<string, object>(TraceObserver.END_REQUEST,
-                new { httpContext = context, timestamp = start + 100000});
+            KeyValuePair<string, object> end = new KeyValuePair<string, object>(
+                TraceObserver.END_REQUEST,
+                new { httpContext = context, timestamp = start + 100000 });
             obs.OnNext(end);
 
-            Assert.Equal(0, obs._pending.Count);
-            Assert.Equal(1, obs._queue.Count);
+            Assert.Empty(obs._pending);
+            Assert.Single(obs._queue);
 
             Trace result = null;
             Assert.True(obs._queue.TryPeek(out result));
@@ -333,11 +345,12 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.True(headers.ContainsKey("response"));
             var timeTaken = result.Info["timeTaken"] as string;
             Assert.NotNull(timeTaken);
-            var expected = ((100000) / obs.ticksPerMilli).ToString();
+            var expected = (100000 / obs.TicksPerMilli).ToString();
             Assert.Equal(expected, timeTaken);
 
             listener.Dispose();
         }
+
         [Fact]
         public void OnNext_HonorsCapacity()
         {
@@ -350,20 +363,23 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
                 long start = Stopwatch.GetTimestamp();
                 var context = CreateRequest();
 
-                KeyValuePair<string, object> begin = new KeyValuePair<string, object>(TraceObserver.BEGIN_REQUEST,
+                KeyValuePair<string, object> begin = new KeyValuePair<string, object>(
+                    TraceObserver.BEGIN_REQUEST,
                     new { httpContext = context, timestamp = start });
                 obs.OnNext(begin);
 
-                KeyValuePair<string, object> end = new KeyValuePair<string, object>(TraceObserver.END_REQUEST,
+                KeyValuePair<string, object> end = new KeyValuePair<string, object>(
+                    TraceObserver.END_REQUEST,
                     new { httpContext = context, timestamp = start + 100000 });
                 obs.OnNext(end);
-
             }
-            Assert.Equal(0, obs._pending.Count);
+
+            Assert.Empty(obs._pending);
             Assert.Equal(option.Capacity, obs._queue.Count);
 
             listener.Dispose();
         }
+
         [Fact]
         public void GetTraces_ReturnsTraces()
         {
@@ -376,16 +392,18 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
                 long start = Stopwatch.GetTimestamp();
                 var context = CreateRequest();
 
-                KeyValuePair<string, object> begin = new KeyValuePair<string, object>(TraceObserver.BEGIN_REQUEST,
+                KeyValuePair<string, object> begin = new KeyValuePair<string, object>(
+                    TraceObserver.BEGIN_REQUEST,
                     new { httpContext = context, timestamp = start });
                 obs.OnNext(begin);
 
-                KeyValuePair<string, object> end = new KeyValuePair<string, object>(TraceObserver.END_REQUEST,
+                KeyValuePair<string, object> end = new KeyValuePair<string, object>(
+                    TraceObserver.END_REQUEST,
                     new { httpContext = context, timestamp = start + 100000 });
                 obs.OnNext(end);
-
             }
-            Assert.Equal(0, obs._pending.Count);
+
+            Assert.Empty(obs._pending);
             Assert.Equal(option.Capacity, obs._queue.Count);
             List<Trace> traces = obs.GetTraces();
             Assert.Equal(option.Capacity, traces.Count);
@@ -393,6 +411,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
             listener.Dispose();
         }
+
         private HttpContext CreateRequest()
         {
             HttpContext context = new DefaultHttpContext();
@@ -406,70 +425,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             context.Request.Headers.Add("Header1", new StringValues("header1Value"));
             context.Request.Headers.Add("Header2", new StringValues("header2Value"));
             return context;
-        }
-
-    }
-
-    class MyIdentity : IIdentity
-    {
-        public string Name { get; } = "MyTestName";
-
-        public string AuthenticationType { get; } = "MyTestAuthType";
-
-        public bool IsAuthenticated { get; } = true;
-    }
-    class SessionFeature : ISessionFeature
-    {
-        public ISession Session { get; set; }
-    }
-    class TestSession : ISession
-    {
-        private Dictionary<string, byte[]> _store
-                = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
-        public bool IsAvailable { get; } = true;
-
-        public string Id { get; set; } = "TestSessionId";
-
-        public IEnumerable<string> Keys { get { return _store.Keys; } }
-
-        public void Clear()
-        {
-            _store.Clear();
-        }
-
-        public Task CommitAsync()
-        {
-            return Task.FromResult(0);   
-        }
-
-        public Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return CommitAsync();
-        }
-
-        public Task LoadAsync()
-        {
-            return Task.FromResult(0);
-        }
-
-        public Task LoadAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return LoadAsync();
-        }
-
-        public void Remove(string key)
-        {
-            _store.Remove(key);
-        }
-
-        public void Set(string key, byte[] value)
-        {
-            _store[key] = value;
-        }
-
-        public bool TryGetValue(string key, out byte[] value)
-        {
-            return _store.TryGetValue(key, out value);
         }
     }
 }

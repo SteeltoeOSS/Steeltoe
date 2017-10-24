@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,14 +15,14 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Steeltoe.Management.Endpoint.Info.Contributor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using Xunit;
-using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Info.Contributor;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
 {
@@ -45,7 +44,6 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             var context3 = CreateRequest("GET", "/badpath");
             Assert.False(middle.IsInfoRequest(context3));
-
         }
 
         [Fact]
@@ -61,15 +59,13 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
             Assert.Equal("{}", json);
-
         }
 
         [Fact]
         public async void InfoActuator_ReturnsExpectedData()
         {
-            // Note: This test pulls in from git.properties and appsettings created 
+            // Note: This test pulls in from git.properties and appsettings created
             // in the Startup class
-
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
@@ -103,12 +99,9 @@ namespace Steeltoe.Management.Endpoint.Info.Test
                 Assert.True(gitNode.ContainsKey("dirty"));
                 Assert.True(gitNode.ContainsKey("remote"));
                 Assert.True(gitNode.ContainsKey("tags"));
-
-
-
             }
-
         }
+
         private HttpContext CreateRequest(string method, string path)
         {
             HttpContext context = new DefaultHttpContext();
@@ -119,17 +112,6 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             context.Request.Scheme = "http";
             context.Request.Host = new HostString("localhost");
             return context;
-        }
-    }
-    class TestInfoEndpoint : InfoEndpoint
-    {
-        public TestInfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null) 
-            : base(options, contributors, logger)
-        {
-        }
-        public override Dictionary<string, object> Invoke()
-        {
-            return new Dictionary<string, object>();
         }
     }
 }

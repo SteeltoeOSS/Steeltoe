@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +35,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.Contains(nameof(services), ex.Message);
             var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddCloudFoundryActuator(services2, config));
             Assert.Contains(nameof(config), ex2.Message);
-
         }
 
         [Fact]
@@ -73,7 +71,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.NotNull(options);
             var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
             Assert.NotNull(ep);
-
         }
     }
 }

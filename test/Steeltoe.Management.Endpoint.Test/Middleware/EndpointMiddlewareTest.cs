@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,20 +29,21 @@ namespace Steeltoe.Management.Endpoint.Middleware.Test
         }
     }
 
-    class TestMiddleware1 : EndpointMiddleware<string>
+#pragma warning disable SA1402 // File may only contain a single class
+    internal class TestMiddleware1 : EndpointMiddleware<string>
     {
-        public TestMiddleware1(IEndpoint<string> endpoint, ILogger logger) 
+        public TestMiddleware1(IEndpoint<string> endpoint, ILogger logger)
             : base(endpoint, logger)
         {
-
         }
     }
-    class TestMiddleware2 : EndpointMiddleware<string, string>
+
+    internal class TestMiddleware2 : EndpointMiddleware<string, string>
     {
-        public TestMiddleware2(IEndpoint<string,string> endpoint, ILogger logger) 
+        public TestMiddleware2(IEndpoint<string, string> endpoint, ILogger logger)
             : base(endpoint, logger)
         {
-
         }
     }
+#pragma warning restore SA1402 // File may only contain a single class
 }

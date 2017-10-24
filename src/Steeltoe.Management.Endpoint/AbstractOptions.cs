@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,79 +13,16 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using System;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 
 namespace Steeltoe.Management.Endpoint
 {
     public abstract class AbstractOptions : IEndpointOptions
     {
-        protected virtual bool DefaultEnabled { get; } = true;
-        protected virtual bool DefaultSensitive { get; } = false;
-
-        public virtual bool IsEnabled
-        {
-            get
-            {
-                return Enabled.Value;
-            }
-        }
-
         protected bool? _enabled;
-        public virtual bool? Enabled
-        {
-            get
-            {
-                if (_enabled.HasValue) return _enabled.Value; else if (Global.Enabled.HasValue) return Global.Enabled; else return DefaultEnabled;
-            }
-            set
-            {
-                _enabled = value;
-            }
-        }
-
-        public virtual bool IsSensitive
-        {
-            get
-            {
-                return Sensitive.Value;
-            }
-        }
 
         protected bool? _sensitive;
-        public virtual bool? Sensitive
-        {
-            get
-            {
-                if (_sensitive.HasValue) return _sensitive.Value; else if (Global.Sensitive.HasValue) return Global.Sensitive; else return DefaultSensitive;
-            }
-            set
-            {
-                _sensitive = value;
-            }
-
-        }
-        public virtual IManagementOptions Global { get; set; }
-
-        public virtual string Id { get; set; }
-
-        public virtual string Path
-        {
-            get
-            {
-                string path = Global.Path;
-                if (string.IsNullOrEmpty(Id))
-                    return path;
-
-                if (!path.EndsWith("/"))
-                {
-                    path = path + "/";
-                }
-                return path + Id;
-            }
-        }
-
-        public Permissions RequiredPermissions { get; set; } = Permissions.UNDEFINED;
 
         public AbstractOptions()
         {
@@ -114,8 +50,100 @@ namespace Steeltoe.Management.Endpoint
             {
                 section.Bind(this);
             }
-
         }
+
+        protected virtual bool DefaultEnabled { get; } = true;
+
+        protected virtual bool DefaultSensitive { get; } = false;
+
+        public virtual bool IsEnabled
+        {
+            get
+            {
+                return Enabled.Value;
+            }
+        }
+
+        public virtual bool? Enabled
+        {
+            get
+            {
+                if (_enabled.HasValue)
+                {
+                    return _enabled.Value;
+                }
+                else if (Global.Enabled.HasValue)
+                {
+                    return Global.Enabled;
+                }
+                else
+                {
+                    return DefaultEnabled;
+                }
+            }
+
+            set
+            {
+                _enabled = value;
+            }
+        }
+
+        public virtual bool IsSensitive
+        {
+            get
+            {
+                return Sensitive.Value;
+            }
+        }
+
+        public virtual bool? Sensitive
+        {
+            get
+            {
+                if (_sensitive.HasValue)
+                {
+                    return _sensitive.Value;
+                }
+                else if (Global.Sensitive.HasValue)
+                {
+                    return Global.Sensitive;
+                }
+                else
+                {
+                    return DefaultSensitive;
+                }
+            }
+
+            set
+            {
+                _sensitive = value;
+            }
+        }
+
+        public virtual IManagementOptions Global { get; set; }
+
+        public virtual string Id { get; set; }
+
+        public virtual string Path
+        {
+            get
+            {
+                string path = Global.Path;
+                if (string.IsNullOrEmpty(Id))
+                {
+                    return path;
+                }
+
+                if (!path.EndsWith("/"))
+                {
+                    path = path + "/";
+                }
+
+                return path + Id;
+            }
+        }
+
+        public Permissions RequiredPermissions { get; set; } = Permissions.UNDEFINED;
 
         public virtual bool IsAccessAllowed(Permissions permissions)
         {

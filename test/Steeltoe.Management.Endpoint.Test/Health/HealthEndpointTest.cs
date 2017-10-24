@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -36,7 +35,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Invoke_NoContributors_ReturnsExpectedHealth()
         {
-
             var opts = new HealthOptions();
             var contributors = new List<IHealthContributor>();
             var agg = new DefaultHealthAggregator();
@@ -45,7 +43,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var health = ep.Invoke();
             Assert.NotNull(health);
             Assert.Equal(HealthStatus.UNKNOWN, health.Status);
-
         }
 
         [Fact]
@@ -60,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             foreach (var contrib in contributors)
             {
                 TestContrib tc = (TestContrib)contrib;
-                Assert.True(tc.called);
+                Assert.True(tc.Called);
             }
         }
 
@@ -68,7 +65,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void Invoke_HandlesExceptions_ReturnsExpectedHealth()
         {
             var opts = new HealthOptions();
-            var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2",true), new TestContrib("h3") };
+            var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2", true), new TestContrib("h3") };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contributors);
 
             var info = ep.Invoke();
@@ -76,45 +73,17 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             foreach (var contrib in contributors)
             {
                 TestContrib tc = (TestContrib)contrib;
-                if (tc.throws)
-                    Assert.False(tc.called);
+                if (tc.Throws)
+                {
+                    Assert.False(tc.Called);
+                }
                 else
-                    Assert.True(tc.called);
+                {
+                    Assert.True(tc.Called);
+                }
             }
+
             Assert.Equal(HealthStatus.UP, info.Status);
         }
-
-    }
-    class TestContrib : IHealthContributor
-    {
-  
-        public string Id { get; private set; } 
-
-        public Health Health()
-        {
-            if (throws)
-            {
-                throw new Exception();
-            }
-            called = true;
-            return new Health()
-            {
-                Status = HealthStatus.UP
-            };
-
-        }
-        public bool called = false;
-        public bool throws = false;
-        public TestContrib(string id)
-        {
-            this.Id = id;
-            this.throws = false;
-        }
-        public TestContrib(string id, bool throws)
-        {
-            this.Id = id;
-            this.throws = throws;
-        }
- 
     }
 }

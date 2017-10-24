@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,10 +15,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Management.Endpoint.Info.Contributor;
 using System;
 using System.Collections.Generic;
-using Steeltoe.Management.Endpoint.Info.Contributor;
-
 
 namespace Steeltoe.Management.Endpoint.Info
 {
@@ -41,6 +39,7 @@ namespace Steeltoe.Management.Endpoint.Info
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             services.TryAddSingleton<IInfoOptions>(new InfoOptions(config));
             AddContributors(services, contributors);
             services.TryAddSingleton<InfoEndpoint>();

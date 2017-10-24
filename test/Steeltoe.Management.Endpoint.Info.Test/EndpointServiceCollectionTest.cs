@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,16 +16,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Info.Contributor;
-using System.IO;
-using Xunit;
 using System;
+using System.IO;
 using System.Linq;
+using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
 {
     public class EndpointServiceCollectionTest : BaseTest
     {
-
         [Fact]
         public void AddInfoActuator_AddsCorrectServices()
         {
@@ -71,40 +69,16 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var listOfContribs = contribs.ToList();
             Assert.Equal(3, listOfContribs.Count);
 
-            Assert.Contains(contribs, (item) => {
-                return 
+            Assert.Contains(contribs, (item) =>
+            {
+                return
                 item.GetType() == typeof(GitInfoContributor) ||
-                item.GetType() == typeof(AppSettingsInfoContributor) || 
-                item.GetType() == typeof(TestInfoContributor); }
-            );
-            
+                item.GetType() == typeof(AppSettingsInfoContributor) ||
+                item.GetType() == typeof(TestInfoContributor);
+            });
+
             var ep = serviceProvider.GetService<InfoEndpoint>();
             Assert.NotNull(ep);
-        }
-
-    }
-    class TestInfoContributor : IInfoContributor
-    {
-        public void Contribute(IInfoBuilder builder)
-        {
-            return;
-        }
-    }
-    class TestLogger : ILogger<InfoEndpoint>
-    {
-        public IDisposable BeginScope<TState>(TState state)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +20,10 @@ using System;
 using System.IO;
 using System.Net;
 using Xunit;
-using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
-    public class EndpointMiddlewareTest  : BaseTest
+    public class EndpointMiddlewareTest : BaseTest
     {
         [Fact]
         public void IsCloudFoundryRequest_ReturnsExpected()
@@ -42,7 +40,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 
             var context3 = CreateRequest("GET", "/badpath");
             Assert.False(middle.IsCloudFoundryRequest(context3));
-
         }
 
         [Fact]
@@ -57,13 +54,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
-
         }
 
         [Fact]
         public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData()
         {
-
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
@@ -75,11 +70,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 var links = JsonConvert.DeserializeObject<Links>(json);
                 Assert.NotNull(links);
                 Assert.True(links._links.ContainsKey("self"));
-                Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
+                Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].Href);
                 Assert.True(links._links.ContainsKey("info"));
-                Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
+                Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].Href);
             }
         }
+
         private HttpContext CreateRequest(string method, string path)
         {
             HttpContext context = new DefaultHttpContext();
@@ -90,18 +86,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             context.Request.Scheme = "http";
             context.Request.Host = new HostString("localhost");
             return context;
-        }
-    }
-
-    class TestCloudFoundryEndpoint : CloudFoundryEndpoint
-    {
-        public TestCloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null) 
-            : base(options, logger)
-        {
-        }
-        public override Links Invoke(string baseUrl)
-        {
-            return new Links();
         }
     }
 }

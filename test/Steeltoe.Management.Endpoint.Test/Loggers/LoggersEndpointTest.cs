@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
+using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
+using System;
 using System.Collections.Generic;
 using Xunit;
-using Microsoft.Extensions.Logging;
-using System;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
@@ -33,12 +31,12 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions());
             ep.AddLevels(dict);
 
-            Assert.Equal(1, dict.Count);
+            Assert.Single(dict);
             Assert.True(dict.ContainsKey("levels"));
             var levs = dict["levels"] as List<string>;
             Assert.NotNull(levs);
             Assert.Equal(7, levs.Count);
-   
+
             Assert.Contains("OFF", levs);
             Assert.Contains("FATAL", levs);
             Assert.Contains("ERROR", levs);
@@ -90,8 +88,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var result = ep.GetLoggerConfigurations(provider);
             Assert.NotNull(result);
             Assert.True(provider.GetLoggerConfigurationsCalled);
-
         }
+
         [Fact]
         public void DoInvoke_NoChangeRequest_ReturnsExpected()
         {
@@ -108,36 +106,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             Assert.True(result.ContainsKey("loggers"));
             var loggers = result["loggers"] as Dictionary<string, LoggerLevels>;
             Assert.NotNull(loggers);
-            Assert.Equal(0, loggers.Count);
-        }
-    }
-
-    class TestLogProvider : ICloudFoundryLoggerProvider
-    {
-        public string Category { get; set; }
-        public LogLevel Level { get; set; }
-        public bool GetLoggerConfigurationsCalled { get; set;
-        }
-        public ILogger CreateLogger(string categoryName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ICollection<ILoggerConfiguration> GetLoggerConfigurations()
-        {
-            GetLoggerConfigurationsCalled = true;
-            return new List<ILoggerConfiguration>();
-        }
-
-        public void SetLogLevel(string category, LogLevel level)
-        {
-            Category = category;
-            Level = level;
+            Assert.Empty(loggers);
         }
     }
 }

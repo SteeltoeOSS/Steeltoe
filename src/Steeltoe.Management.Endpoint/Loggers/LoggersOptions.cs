@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +14,20 @@
 
 using Microsoft.Extensions.Configuration;
 
-
 namespace Steeltoe.Management.Endpoint.Loggers
 {
     public class LoggersOptions : AbstractOptions, ILoggersOptions
     {
-        protected override bool DefaultSensitive { get { return true; } }
-
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
-        public LoggersOptions() : base()
+
+        public LoggersOptions()
+            : base()
         {
             Id = "loggers";
         }
 
-        public LoggersOptions(IConfiguration config) :
-             base(MANAGEMENT_INFO_PREFIX, config)
+        public LoggersOptions(IConfiguration config)
+            : base(MANAGEMENT_INFO_PREFIX, config)
         {
             if (string.IsNullOrEmpty(Id))
             {
@@ -37,5 +35,6 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
         }
 
+        protected override bool DefaultSensitive => true;
     }
 }

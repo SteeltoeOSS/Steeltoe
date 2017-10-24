@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,12 +14,13 @@
 
 using System.Collections.Generic;
 
-
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
-    public class Links 
+    public class Links
     {
+#pragma warning disable SA1307 // Accessible fields must begin with upper-case letter
         public string type = "steeltoe";
+#pragma warning restore SA1307 // Accessible fields must begin with upper-case letter
         public Dictionary<string, Link> _links = new Dictionary<string, Link>();
     }
 }

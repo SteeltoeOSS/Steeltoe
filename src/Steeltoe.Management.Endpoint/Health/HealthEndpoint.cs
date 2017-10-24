@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,14 +25,6 @@ namespace Steeltoe.Management.Endpoint.Health
         private IList<IHealthContributor> _contributors;
         private ILogger<HealthEndpoint> _logger;
 
-        public new IHealthOptions Options
-        {
-            get
-            {
-                return options as IHealthOptions;
-            }
-        }
-
         public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
            : base(options)
         {
@@ -57,16 +48,22 @@ namespace Steeltoe.Management.Endpoint.Health
             _logger = logger;
         }
 
+        public new IHealthOptions Options
+        {
+            get
+            {
+                return options as IHealthOptions;
+            }
+        }
+
         public override Health Invoke()
         {
             return BuildHealth(_aggregator, _contributors);
-         
         }
 
         protected virtual Health BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors)
         {
             return _aggregator.Aggregate(contributors);
         }
-
     }
 }

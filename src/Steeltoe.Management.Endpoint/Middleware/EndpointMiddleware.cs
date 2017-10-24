@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,15 +28,10 @@ namespace Steeltoe.Management.Endpoint.Middleware
             this.logger = logger;
         }
 
-        public EndpointMiddleware(IEndpoint<TResult> endpoint, ILogger logger) 
+        public EndpointMiddleware(IEndpoint<TResult> endpoint, ILogger logger)
             : this(logger)
         {
-            if (endpoint == null)
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
-
-            this.endpoint = endpoint;
+            this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public virtual string HandleRequest()
@@ -50,31 +44,28 @@ namespace Steeltoe.Management.Endpoint.Middleware
         {
             try
             {
-                return JsonConvert.SerializeObject(result, 
-                    new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }
-                    );
-            } catch (Exception e)
+                return JsonConvert.SerializeObject(
+                    result,
+                    new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+            }
+            catch (Exception e)
             {
                 logger?.LogError("Error {0} serializaing {1}", e, result);
             }
+
             return string.Empty;
         }
-
     }
 
+#pragma warning disable SA1402 // File may only contain a single class
     public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
     {
         protected new IEndpoint<TResult, TRequest> endpoint;
 
-        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, ILogger logger) 
+        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, ILogger logger)
             : base(logger)
         {
-            if (endpoint == null)
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
-
-            this.endpoint = endpoint;
+            this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public virtual string HandleRequest(TRequest arg)
@@ -83,5 +74,5 @@ namespace Steeltoe.Management.Endpoint.Middleware
             return Serialize(result);
         }
     }
-
+#pragma warning restore SA1402 // File may only contain a single class
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,19 +24,19 @@ namespace Steeltoe.Management.Endpoint.Info
         private IList<IInfoContributor> _contributors;
         private ILogger<InfoEndpoint> _logger;
 
+        public InfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
+            : base(options)
+        {
+            _logger = logger;
+            _contributors = contributors.ToList();
+        }
+
         public new IInfoOptions Options
         {
             get
             {
                 return options as IInfoOptions;
             }
-        }
-
-        public InfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null) :
-            base(options)
-        {
-            _logger = logger;
-            _contributors = contributors.ToList();
         }
 
         public override Dictionary<string, object> Invoke()
@@ -53,7 +52,8 @@ namespace Steeltoe.Management.Endpoint.Info
                 try
                 {
                     contributor.Contribute(builder);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     _logger?.LogError("Exception: {0}", e);
                 }
@@ -61,6 +61,5 @@ namespace Steeltoe.Management.Endpoint.Info
 
             return builder.Build();
         }
-
     }
 }

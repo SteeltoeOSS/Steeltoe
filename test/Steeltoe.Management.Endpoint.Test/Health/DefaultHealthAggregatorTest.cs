@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +44,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.NotNull(result.Details);
         }
 
-
         [Fact]
         public void Aggregate_MultipleContributor_ReturnsExpectedHealth()
         {
@@ -71,66 +69,12 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 new UpContributor(),
                 new OutOfSserviceContributor(),
                 new UnknownContributor()
-
             };
             var agg = new DefaultHealthAggregator();
             var result = agg.Aggregate(contribs);
             Assert.NotNull(result);
             Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
             Assert.NotNull(result.Details);
-        }
-
-    }
-    class UnknownContributor : IHealthContributor
-    {
-        public string Id { get; } = "Unknown";
-
-        public Health Health()
-        {
-            return new Health()
-            {
-                Status = HealthStatus.UNKNOWN
-            };
-
-        }
-    }
-    class UpContributor : IHealthContributor
-    {
-        public string Id { get; } = "Up";
-
-        public Health Health()
-        {
-            return new Health()
-            {
-                Status = HealthStatus.UP
-            };
-            
-        }
-    }
-    class DownContributor : IHealthContributor
-    {
-        public string Id { get; } = "Down";
-
-        public Health Health()
-        {
-            return new Health()
-            {
-                Status = HealthStatus.DOWN
-            };
-
-        }
-    }
-    class OutOfSserviceContributor : IHealthContributor
-    {
-        public string Id { get; } = "Out";
-
-        public Health Health()
-        {
-            return new Health()
-            {
-                Status = HealthStatus.OUT_OF_SERVICE
-            };
-
         }
     }
 }

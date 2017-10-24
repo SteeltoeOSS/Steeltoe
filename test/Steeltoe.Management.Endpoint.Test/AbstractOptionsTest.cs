@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,7 +88,6 @@ namespace Steeltoe.Management.Endpoint.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-
             TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
 
             Assert.NotNull(opts.Global);
@@ -102,7 +100,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.Equal("infomanagement", opts.Id);
             Assert.Equal("/management/infomanagement", opts.Path);
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
-
         }
 
         [Fact]
@@ -130,7 +127,6 @@ namespace Steeltoe.Management.Endpoint.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-
             TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
 
             Assert.NotNull(opts.Global);
@@ -142,7 +138,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.True(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
             Assert.Equal("/management/infomanagement", opts.Path);
-
         }
 
         [Fact]
@@ -179,18 +174,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.False(opt4.IsAccessAllowed(Permissions.RESTRICTED));
             Assert.False(opt4.IsAccessAllowed(Permissions.NONE));
             Assert.False(opt4.IsAccessAllowed(Permissions.UNDEFINED));
-        }
-    }
-
-    class TestOptions2 : AbstractOptions
-    {
-        public TestOptions2() : base()
-        {
-
-        }
-        public TestOptions2(string section, IConfiguration config) :base(section, config)
-        {
-
         }
     }
 }

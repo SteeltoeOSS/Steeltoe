@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.IO;
-using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
@@ -70,7 +69,6 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             Assert.False(opts.Enabled);
             Assert.False(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
-
 
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled);

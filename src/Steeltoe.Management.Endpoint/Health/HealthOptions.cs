@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,21 +15,21 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
 
-
 namespace Steeltoe.Management.Endpoint.Health
 {
     public class HealthOptions : AbstractOptions, IHealthOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:health";
 
-        public HealthOptions() : base()
+        public HealthOptions()
+            : base()
         {
             Id = "health";
             RequiredPermissions = Permissions.RESTRICTED;
         }
 
-        public HealthOptions(IConfiguration config) :
-             base(MANAGEMENT_INFO_PREFIX, config)
+        public HealthOptions(IConfiguration config)
+            : base(MANAGEMENT_INFO_PREFIX, config)
         {
             if (string.IsNullOrEmpty(Id))
             {
@@ -41,7 +40,6 @@ namespace Steeltoe.Management.Endpoint.Health
             {
                 RequiredPermissions = Permissions.RESTRICTED;
             }
-
         }
     }
 }

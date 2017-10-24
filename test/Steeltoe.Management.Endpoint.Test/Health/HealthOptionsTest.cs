@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +18,6 @@ using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.IO;
-
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -87,7 +85,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.Equal("health", opts.Id);
             Assert.Equal("/cloudfoundryapplication/health", opts.Path);
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
-
         }
     }
 }

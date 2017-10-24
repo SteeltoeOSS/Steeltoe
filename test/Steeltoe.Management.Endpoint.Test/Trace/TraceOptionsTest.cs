@@ -23,8 +23,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class TraceOptionsTest : BaseTest
     {
-
-
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
@@ -55,7 +53,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void Contstructor_BindsConfigurationCorrectly()
         {
-
             var appsettings = @"
 {
     'management': {
@@ -122,7 +119,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.True(opts.AddAuthType);
             Assert.True(opts.AddRemoteAddress);
             Assert.True(opts.AddSessionId);
-
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,43 +20,21 @@ namespace Steeltoe.Management.Endpoint
 {
     public class ManagementOptions : IManagementOptions
     {
+        internal static ManagementOptions _instance;
         private const string DEFAULT_PATH = "/";
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints";
 
         private bool? _enabled;
-        public bool? Enabled {
-            get
-            {
-                return _enabled;
-            }
-            set
-            {
-                _enabled = value;
-            }
-        }
         private bool? _sensitive;
-        public bool? Sensitive {
-            get
-            {
-                return _sensitive;
-            }
-            set
-            {
-                _sensitive = value;
-            }
-        }
 
-        public string Path { get; set; }
-
-        public List<IEndpointOptions> EndpointOptions { get; set; }
-
-        internal ManagementOptions() 
+        internal ManagementOptions()
         {
             Path = DEFAULT_PATH;
             EndpointOptions = new List<IEndpointOptions>();
         }
 
-        internal ManagementOptions(IConfiguration config) : this()
+        internal ManagementOptions(IConfiguration config)
+            : this()
         {
             if (config == null)
             {
@@ -71,7 +48,35 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        internal static ManagementOptions _instance;
+        public bool? Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+
+            set
+            {
+                _enabled = value;
+            }
+        }
+
+        public bool? Sensitive
+        {
+            get
+            {
+                return _sensitive;
+            }
+
+            set
+            {
+                _sensitive = value;
+            }
+        }
+
+        public string Path { get; set; }
+
+        public List<IEndpointOptions> EndpointOptions { get; set; }
 
         public static ManagementOptions GetInstance()
         {
@@ -79,16 +84,18 @@ namespace Steeltoe.Management.Endpoint
             {
                 _instance = new ManagementOptions();
             }
+
             return _instance;
         }
+
         public static ManagementOptions GetInstance(IConfiguration config)
         {
             if (_instance == null)
             {
                 _instance = new ManagementOptions(config);
             }
+
             return _instance;
         }
-
     }
 }

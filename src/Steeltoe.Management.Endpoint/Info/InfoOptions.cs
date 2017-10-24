@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,21 +15,21 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
 
-
 namespace Steeltoe.Management.Endpoint.Info
 {
     public class InfoOptions : AbstractOptions, IInfoOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:info";
 
-        public InfoOptions() : base()
+        public InfoOptions()
+            : base()
         {
             Id = "info";
             RequiredPermissions = Permissions.RESTRICTED;
         }
 
-        public InfoOptions(IConfiguration config) :
-             base(MANAGEMENT_INFO_PREFIX, config)
+        public InfoOptions(IConfiguration config)
+            : base(MANAGEMENT_INFO_PREFIX, config)
         {
             if (string.IsNullOrEmpty(Id))
             {

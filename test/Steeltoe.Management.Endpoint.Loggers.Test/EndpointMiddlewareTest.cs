@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +15,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -23,17 +23,16 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using Xunit;
-using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
-    public class EndpointMiddlewareTest  : BaseTest
+    public class EndpointMiddlewareTest : BaseTest
     {
         [Fact]
         public void IsLoggersRequest_ReturnsExpected()
         {
             var opts = new LoggersOptions();
- 
+
             var ep = new LoggersEndpoint(opts);
             var middle = new LoggersEndpointMiddleware(null, ep);
 
@@ -57,7 +56,6 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 
             var context7 = CreateRequest("POST", "/badpath/Foo.Bar.Class");
             Assert.False(middle.IsLoggerRequest(context7));
-
         }
 
         [Fact]
@@ -73,13 +71,11 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
             Assert.Equal("{}", json);
-
         }
 
         [Fact]
         public async void LoggersActuator_ReturnsExpectedData()
         {
-
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
@@ -88,19 +84,17 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                Assert.NotNull(json);
-         
+
                 var loggers = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 Assert.NotNull(loggers);
                 Assert.True(loggers.ContainsKey("levels"));
                 Assert.True(loggers.ContainsKey("loggers"));
-
             }
         }
 
         [Fact]
         public async void LoggersActuator_AcceptsPost()
         {
-
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
@@ -130,17 +124,6 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             context.Request.Scheme = "http";
             context.Request.Host = new HostString("localhost");
             return context;
-        }
-    }
-    class TestLoggersEndpoint : LoggersEndpoint
-    {
-        public TestLoggersEndpoint(ILoggersOptions options, ILogger<LoggersEndpoint> logger = null) 
-            : base(options, logger)
-        {
-        }
-        public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
-        {
-            return new Dictionary<string, object>();
         }
     }
 }
