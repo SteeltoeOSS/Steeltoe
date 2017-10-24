@@ -1,7 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\versions.props" />
+
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Steeltoe Common Library</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>Steeltoe.Common.Net</AssemblyName>
+    <PackageId>Steeltoe.Common.Net</PackageId>
+    <PackageTags>NET Core;NET Framework</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+  </ItemGroup>
 
 </Project>
