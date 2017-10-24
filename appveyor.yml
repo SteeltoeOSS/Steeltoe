@@ -16,9 +16,11 @@ build_script:
 artifacts:
 - path: 'src\Steeltoe.Common\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Common.Http\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Common.Net\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Common.Autofac\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Common\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Common.Http\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Common.Net\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Common.Autofac\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet

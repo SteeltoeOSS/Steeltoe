@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D9798FDE-76F4-4848-8AE0-95249C0101F0}"
 EndProject
@@ -48,6 +48,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http.Test",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Test", "test\Steeltoe.Common.Test\Steeltoe.Common.Test.csproj", "{101DF01E-FDE9-4B97-9666-C3777CC308D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Common.Net", "Steeltoe.Common.Net\Steeltoe.Common.Net.csproj", "{EF3D5EEB-57A6-4FE0-91E2-50A6AC056F91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{101DF01E-FDE9-4B97-9666-C3777CC308D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{101DF01E-FDE9-4B97-9666-C3777CC308D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{101DF01E-FDE9-4B97-9666-C3777CC308D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF3D5EEB-57A6-4FE0-91E2-50A6AC056F91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF3D5EEB-57A6-4FE0-91E2-50A6AC056F91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF3D5EEB-57A6-4FE0-91E2-50A6AC056F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF3D5EEB-57A6-4FE0-91E2-50A6AC056F91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +95,7 @@ Global
 		{A2C46127-6D02-46FA-9AFC-9C27A11F1FB6} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
 		{7FF75564-423A-4EE6-B7AD-9D35C428757F} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
 		{101DF01E-FDE9-4B97-9666-C3777CC308D0} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
+		{EF3D5EEB-57A6-4FE0-91E2-50A6AC056F91} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4A85F9DA-2C2D-48E9-A28C-9B35C473C150}
