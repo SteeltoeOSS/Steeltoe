@@ -56,8 +56,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 // POST - change a logger level
                 logger?.LogDebug("Incoming path: {0}", request.Path.Value);
                 PathString epPath = new PathString(endpoint.Path);
-                PathString remaining;
-                if (request.Path.StartsWithSegments(epPath, out remaining))
+                if (request.Path.StartsWithSegments(epPath, out PathString remaining))
                 {
                     if (remaining.HasValue)
                     {
@@ -65,8 +64,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
                         var change = Deserialize(request.Body);
 
-                        string level = null;
-                        change.TryGetValue("configuredLevel", out level);
+                        change.TryGetValue("configuredLevel", out string level);
 
                         logger?.LogDebug("Change Request: {0}, {1}", loggerName, level);
                         if (!string.IsNullOrEmpty(loggerName) && !string.IsNullOrEmpty(level))
