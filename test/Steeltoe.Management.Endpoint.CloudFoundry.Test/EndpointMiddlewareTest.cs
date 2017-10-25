@@ -70,9 +70,27 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 var links = JsonConvert.DeserializeObject<Links>(json);
                 Assert.NotNull(links);
                 Assert.True(links._links.ContainsKey("self"));
-                Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
+                Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].Href);
                 Assert.True(links._links.ContainsKey("info"));
-                Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
+                Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].Href);
+            }
+        }
+
+        [Fact]
+        public async void CloudFoundryEndpointMiddleware_ServiceContractNotBroken()
+        {
+            // arrange a server and client
+            var builder = new WebHostBuilder().UseStartup<Startup>();
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+
+                // send the request
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+                var json = await result.Content.ReadAsStringAsync();
+
+                // assert
+                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\"},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\"}}}", json);
             }
         }
 

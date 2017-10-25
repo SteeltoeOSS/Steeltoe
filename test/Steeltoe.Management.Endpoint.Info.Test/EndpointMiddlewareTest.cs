@@ -79,14 +79,14 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
                 Assert.Equal(3, dict.Count);
                 Assert.True(dict.ContainsKey("application"));
-                Assert.True(dict.ContainsKey("NET"));
+                Assert.True(dict.ContainsKey("net"));
                 Assert.True(dict.ContainsKey("git"));
 
                 var appNode = dict["application"] as Dictionary<string, object>;
                 Assert.NotNull(appNode);
                 Assert.Equal("foobar", appNode["name"]);
 
-                var netNode = dict["NET"] as Dictionary<string, object>;
+                var netNode = dict["net"] as Dictionary<string, object>;
                 Assert.NotNull(netNode);
                 Assert.Equal("Core", netNode["type"]);
 
