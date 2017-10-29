@@ -73,7 +73,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// Add IDistributedCache to ServiceCollection
         /// </summary>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
+        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
             {
@@ -151,7 +151,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// Add Redis Connection Multiplexer to ServiceCollection
         /// </summary>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
+        public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
             {
