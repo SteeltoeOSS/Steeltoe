@@ -36,16 +36,20 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
     {
+        ILogger<CloudFoundryOAuthHandler> _logger;
         public CloudFoundryOAuthHandler(
              IOptionsMonitor<CloudFoundryOAuthOptions> options,
              ILoggerFactory logger,
              UrlEncoder encoder,
              ISystemClock clock) : base(options, logger, encoder, clock)
         {
+            _logger = logger?.CreateLogger<CloudFoundryOAuthHandler>();
         }
 
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(string code, string redirectUri)
         {
+
+            _logger?.LogDebug("ExchangeCodeAsync({code},{redirectUri})", code, redirectUri);
 
             HttpRequestMessage requestMessage = GetTokenRequestMessage(code, redirectUri);
             HttpClient client = GetHttpClient();
@@ -67,6 +71,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
+
+                _logger?.LogDebug("ExchangeCodeAsync() received json: {json}", result);
+
                 var payload = JObject.Parse(result);
                 var tokenResponse = OAuthTokenResponse.Success(payload);
                 return tokenResponse;
@@ -81,6 +88,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
         {
+            _logger?.LogDebug("CreateTicketAsync()");
 
             HttpRequestMessage request = GetTokenInfoRequestMessage(tokens);
             HttpClient client = GetHttpClient();
@@ -101,10 +109,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             if (!response.IsSuccessStatusCode)
             {
+                _logger?.LogDebug("CreateTicketAsync() failure getting token info from {requesturi}", request.RequestUri);
                 throw new HttpRequestException($"An error occurred when retrieving token information ({response.StatusCode}).");
             }
 
             var resp = await response.Content.ReadAsStringAsync();
+
+            _logger?.LogDebug("CreateTicketAsync() received json: {json}", resp);
+
             var payload = JObject.Parse(resp);
 
             var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
@@ -125,6 +137,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri)
         {
+            _logger?.LogDebug("BuildChallengeUrl({redirectUri}) with {clientId}", redirectUri, Options.ClientId);
+
             var scope = FormatScope();
 
             var queryStrings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -146,6 +160,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         internal protected virtual Dictionary<string, string> GetTokenInfoRequestParameters(OAuthTokenResponse tokens)
         {
+            _logger?.LogDebug("GetTokenInfoRequestParameters() using token: {token}", tokens.AccessToken);
+
             return new Dictionary<string, string>()
             {
                 { "token", tokens.AccessToken }
@@ -155,6 +171,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         internal protected virtual HttpRequestMessage GetTokenInfoRequestMessage(OAuthTokenResponse tokens)
         {
+            _logger?.LogDebug("GetTokenInfoRequestMessage({token}) with {clientId}", tokens.AccessToken, Options.ClientId);
+
             var tokenRequestParameters = GetTokenInfoRequestParameters(tokens);
 
             var requestContent = new FormUrlEncodedContent(tokenRequestParameters);
