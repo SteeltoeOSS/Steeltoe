@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
 // limitations under the License.
 //
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -68,6 +71,46 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         {
             LastRequest = request;
             return Task.FromResult<HttpResponseMessage>(Response);
+        }
+    }
+    class TestClock : ISystemClock
+    {
+        public TestClock()
+        {
+            UtcNow = new DateTimeOffset(2013, 6, 11, 12, 34, 56, 789, TimeSpan.Zero);
+        }
+
+        public DateTimeOffset UtcNow { get; set; }
+
+        public void Add(TimeSpan timeSpan)
+        {
+            UtcNow = UtcNow + timeSpan;
+        }
+    }
+    class MonitorWrapper<T> : IOptionsMonitor<T>
+    {
+        private T _options;
+
+        public MonitorWrapper(T options)
+        {
+            _options = options;
+        }
+        public T CurrentValue
+        {
+            get
+            {
+                return _options;
+            }
+        }
+
+        public T Get(string name)
+        {
+            return _options;
+        }
+
+        public IDisposable OnChange(Action<T, string> listener)
+        {
+            throw new NotImplementedException();
         }
     }
 

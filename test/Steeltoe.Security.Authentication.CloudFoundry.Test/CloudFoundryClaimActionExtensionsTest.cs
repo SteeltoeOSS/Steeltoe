@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +13,21 @@
 // limitations under the License.
 //
 
+using Microsoft.AspNetCore.Authentication.OAuth.Claims;
+using System.Linq;
+using Xunit;
 
-using Microsoft.IdentityModel.Tokens;
-
-
-namespace Steeltoe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
-    public static class CloudFoundryTokenValidator
+    public class CloudFoundryClaimActionExtensionsTest
     {
-        public static string ValidateIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
+        [Fact]
+        public void MapScopes_AddsClaimAction()
         {
-            if (issuer.Contains("uaa"))
-            {
-                return issuer;
-            }
-            return null;
+            ClaimActionCollection col = new ClaimActionCollection();
+            col.MapScopes();
+            Assert.Single(col);
+            Assert.IsType<CloudFoundryScopeClaimAction>(col.FirstOrDefault());
         }
-
     }
 }

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,36 +15,52 @@
 //
 
 using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Xunit;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging.Console;
 using System.Text.Encodings.Web;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http.Features;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http.Authentication;
-using Newtonsoft.Json.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
-    public class CloudFoundryHandlerTest
+
+    public class CloudFoundryOAuthHandlerTest
     {
+
+       private MyTestCloudFoundryHandler GetTestHandler(CloudFoundryOAuthOptions options)
+        {
+            LoggerFactory loggerFactory = new LoggerFactory();
+            IOptionsMonitor<CloudFoundryOAuthOptions> monitor = new MonitorWrapper<CloudFoundryOAuthOptions>(options);
+            UrlEncoder encoder = UrlEncoder.Default;
+            TestClock clock = new TestClock();
+            MyTestCloudFoundryHandler testHandler = new MyTestCloudFoundryHandler(monitor, loggerFactory, encoder, clock);
+            testHandler.InitializeAsync(
+                 new AuthenticationScheme(CloudFoundryDefaults.AuthenticationScheme, CloudFoundryDefaults.AuthenticationScheme, typeof(CloudFoundryOAuthHandler)),
+                 new DefaultHttpContext()).Wait();
+            return testHandler;
+        }
 
         [Fact]
         public void GetTokenRequestParameters_ReturnsCorrectly()
         {
-            HttpClient client = new HttpClient(new TestMessageHandler());
-            MyTestCloudFoundryHandler testHandler = new MyTestCloudFoundryHandler(client);
-            var opts = new CloudFoundryOptions();
-            testHandler.InitializeAsync(opts, new DefaultHttpContext(), new ConsoleLogger("test", null, false), UrlEncoder.Default);
    
+            var opts = new CloudFoundryOAuthOptions()
+            {
+                Backchannel = new HttpClient(new TestMessageHandler())
+            };
+     
+            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
+
             var parameters = testHandler.GetTokenRequestParameters("code", "redirectUri");
             Assert.NotNull(parameters);
 
@@ -60,10 +76,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void GetTokenRequestMessage_ReturnsCorrectly()
         {
-            HttpClient client = new HttpClient(new TestMessageHandler());
-            MyTestCloudFoundryHandler testHandler = new MyTestCloudFoundryHandler(client);
-            var opts = new CloudFoundryOptions();
-            testHandler.InitializeAsync(opts, new DefaultHttpContext(), new ConsoleLogger("test", null, false), UrlEncoder.Default);
+            var opts = new CloudFoundryOAuthOptions()
+            {
+                Backchannel = new HttpClient(new TestMessageHandler())
+            };
+
+            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
             var message = testHandler.GetTokenRequestMessage("code", "redirectUri");
             Assert.NotNull(message);
@@ -84,22 +102,19 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             handler.Response = response;
 
             HttpClient client = new HttpClient(handler);
-            MyTestCloudFoundryHandler testHandler = new MyTestCloudFoundryHandler(client);
-            var opts = new CloudFoundryOptions();
-           
-            var context = new DefaultHttpContext();
-            context.Features.Set<IHttpResponseFeature>(new TestResponse());
 
-            var logger = new LoggerFactory().CreateLogger("ExchangeCodeAsync_SendsTokenRequest");
-            
-            await testHandler.InitializeAsync(opts, context, logger, UrlEncoder.Default);
+            var opts = new CloudFoundryOAuthOptions()
+            {
+                Backchannel = client
+            };
 
+            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
             var resp = await testHandler.TestExchangeCodeAsync("code", "redirectUri");
 
             Assert.NotNull(handler.LastRequest);
             Assert.Equal(HttpMethod.Post, handler.LastRequest.Method);
-            Assert.Equal(opts.TokenEndpoint.ToLowerInvariant(),handler.LastRequest.RequestUri.ToString().ToLowerInvariant());
-        
+            Assert.Equal(opts.TokenEndpoint.ToLowerInvariant(), handler.LastRequest.RequestUri.ToString().ToLowerInvariant());
+
 
             Assert.NotNull(resp);
             Assert.NotNull(resp.Response);
@@ -117,16 +132,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             handler.Response = response;
 
             HttpClient client = new HttpClient(handler);
-            MyTestCloudFoundryHandler testHandler = new MyTestCloudFoundryHandler(client);
-            var opts = new CloudFoundryOptions();
+            var opts = new CloudFoundryOAuthOptions()
+            {
+                Backchannel = client
+            };
 
-            var context = new DefaultHttpContext();
-            context.Features.Set<IHttpResponseFeature>(new TestResponse());
-
+            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
             var logger = new LoggerFactory().CreateLogger("ExchangeCodeAsync_SendsTokenRequest");
-
-            await testHandler.InitializeAsync(opts, context, logger, UrlEncoder.Default);
-
             var resp = await testHandler.TestExchangeCodeAsync("code", "redirectUri");
 
             Assert.NotNull(handler.LastRequest);
@@ -136,11 +148,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             Assert.NotNull(resp);
             Assert.NotNull(resp.Error);
-            Assert.True(resp.Error.Message.Contains("OAuth token endpoint failure"));
+            Assert.Contains("OAuth token endpoint failure", resp.Error.Message);
         }
 
         [Fact]
-        public async void BuildChallengeUrl_CreatesCorrectUrl()
+        public void BuildChallengeUrl_CreatesCorrectUrl()
         {
             TestMessageHandler handler = new TestMessageHandler();
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
@@ -148,17 +160,17 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             handler.Response = response;
 
             HttpClient client = new HttpClient(handler);
-            MyTestCloudFoundryHandler testHandler = new MyTestCloudFoundryHandler(client);
-            var opts = new CloudFoundryOptions();
 
-            var context = new DefaultHttpContext();
-            context.Features.Set<IHttpResponseFeature>(new TestResponse());
+            var opts = new CloudFoundryOAuthOptions()
+            {
+                Backchannel = client
+            };
+            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
             var logger = new LoggerFactory().CreateLogger("ExchangeCodeAsync_SendsTokenRequest");
-            await testHandler.InitializeAsync(opts, context, logger, UrlEncoder.Default);
 
             AuthenticationProperties props = new AuthenticationProperties();
-            string result =  testHandler.TestBuildChallengeUrl(props, "http://foo.bar/redirect");
+            string result = testHandler.TestBuildChallengeUrl(props, "http://foo.bar/redirect");
             Assert.Equal("http://Default_OAuthServiceUrl/oauth/authorize?response_type=code&client_id=Default_ClientId&redirect_uri=http%3A%2F%2Ffoo.bar%2Fredirect&scope=", result);
         }
 
@@ -166,9 +178,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetTokenInfoRequestParameters_ReturnsCorrectly()
         {
             HttpClient client = new HttpClient(new TestMessageHandler());
-            MyTestCloudFoundryHandler testHandler = new MyTestCloudFoundryHandler(client);
-            var opts = new CloudFoundryOptions();
-            testHandler.InitializeAsync(opts, new DefaultHttpContext(), new ConsoleLogger("test", null, false), UrlEncoder.Default);
+            var opts = new CloudFoundryOAuthOptions()
+            {
+                Backchannel = client
+            };
+
+            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
             var payload = JObject.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
@@ -185,9 +200,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetTokenInfoRequestMessage_ReturnsCorrectly()
         {
             HttpClient client = new HttpClient(new TestMessageHandler());
-            MyTestCloudFoundryHandler testHandler = new MyTestCloudFoundryHandler(client);
-            var opts = new CloudFoundryOptions();
-            testHandler.InitializeAsync(opts, new DefaultHttpContext(), new ConsoleLogger("test", null, false), UrlEncoder.Default);
+            var opts = new CloudFoundryOAuthOptions()
+            {
+                Backchannel = client
+            };
+            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
             var payload = JObject.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
@@ -211,15 +228,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             handler.Response = response;
 
             HttpClient client = new HttpClient(handler);
-            MyTestCloudFoundryHandler testHandler = new MyTestCloudFoundryHandler(client);
-            var opts = new CloudFoundryOptions();
+            var opts = new CloudFoundryOAuthOptions()
+            {
+                Backchannel = client
+            };
+            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
-            var context = new DefaultHttpContext();
-            context.Features.Set<IHttpResponseFeature>(new TestResponse());
 
             var logger = new LoggerFactory().CreateLogger("CreateTicketAsync_SendsTokenRequest");
-
-            await testHandler.InitializeAsync(opts, context, logger, UrlEncoder.Default);
 
             ClaimsIdentity identity = new ClaimsIdentity();
 
@@ -243,12 +259,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
     }
 
-    class MyTestCloudFoundryHandler : CloudFoundryHandler
+    class MyTestCloudFoundryHandler : CloudFoundryOAuthHandler
     {
-        public MyTestCloudFoundryHandler(HttpClient httpClient) : base(httpClient)
+        public MyTestCloudFoundryHandler(
+            IOptionsMonitor<CloudFoundryOAuthOptions> options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            ISystemClock clock) : base(options, logger, encoder, clock)
         {
-            
         }
+
         public async Task<AuthenticationTicket> TestCreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
         {
             return await base.CreateTicketAsync(identity, properties, tokens);

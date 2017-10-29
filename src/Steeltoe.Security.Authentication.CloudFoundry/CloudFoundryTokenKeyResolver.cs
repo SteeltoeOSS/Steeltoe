@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
 //
 
 using Microsoft.IdentityModel.Tokens;
+using Steeltoe.Common;
+using Steeltoe.Common.Http;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -27,18 +30,23 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryTokenKeyResolver
     {
-        public CloudFoundryOptions Options { get; internal protected set; }
 
-        public Dictionary<string, SecurityKey> Resolved { get; internal protected set; }
+        internal static ConcurrentDictionary<string, SecurityKey> Resolved { get; set; } = new ConcurrentDictionary<string, SecurityKey>();
 
-        public CloudFoundryTokenKeyResolver(CloudFoundryOptions options)
+        private string _jwtKeyUrl;
+        private HttpMessageHandler _httpHandler;
+        private bool _validateCertificates;
+
+        public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)
         {
-            if (options == null)
+            if (string.IsNullOrEmpty(jwtKeyUrl ))
             {
-                throw new ArgumentNullException(nameof(options));
+                throw new ArgumentException(nameof(jwtKeyUrl));
             }
-            Options = options;
-            Resolved = new Dictionary<string, SecurityKey>();
+
+            _jwtKeyUrl = jwtKeyUrl;
+            _httpHandler = httpHandler;
+            _validateCertificates = validateCertificates;
         }
 
         public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
@@ -49,10 +57,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 return new List<SecurityKey> { resolved };
             }
 
-            JsonWebKeySet keyset = FetchKeySet().GetAwaiter().GetResult();
+            JsonWebKeySet keyset = FetchKeySet().ConfigureAwait(false).GetAwaiter().GetResult();
             if (keyset != null)
             {
-                foreach(JsonWebKey key in keyset.Keys)
+                foreach (JsonWebKey key in keyset.Keys)
                 {
                     FixupKey(key);
                     Resolved[key.Kid] = key;
@@ -68,15 +76,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public JsonWebKey FixupKey(JsonWebKey key)
         {
 
-#if NET452
-            
-            byte[] existing = Base64UrlEncoder.DecodeBytes(key.N);
-            TrimKey(key, existing);
-#endif
+            if (Platform.IsFullFramework)
+            {
+
+                byte[] existing = Base64UrlEncoder.DecodeBytes(key.N);
+                TrimKey(key, existing);
+            }
             return key;
         }
 
-#if NET452
+
         private void TrimKey(JsonWebKey key, byte[] existing)
         {
             byte[] signRemoved = new byte[existing.Length -1];
@@ -84,22 +93,18 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             string withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
             key.N = withSignRemoved;
         }
-#endif
 
         public virtual async Task<JsonWebKeySet> FetchKeySet()
         {
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, Options.JwtKeyUrl);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, _jwtKeyUrl);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             HttpClient client = GetHttpClient();
-#if NET452
+
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!Options.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
-#endif
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(_validateCertificates, out prevProtocols, out prevValidator);
+
             HttpResponseMessage response = null;
             try
             {
@@ -107,9 +112,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
             finally
             {
-#if NET452
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-#endif
+                HttpClientHelper.RestoreCertificateValidation(_validateCertificates, prevProtocols, prevValidator);
             }
 
             if (response.IsSuccessStatusCode)
@@ -127,9 +130,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public virtual HttpClient GetHttpClient()
         {
-            if (Options.BackchannelHttpHandler != null)
+            if (_httpHandler != null)
             {
-                return new HttpClient(Options.BackchannelHttpHandler);
+                return new HttpClient(_httpHandler);
             }
             return new HttpClient();
         }

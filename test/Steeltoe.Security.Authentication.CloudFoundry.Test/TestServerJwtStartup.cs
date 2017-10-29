@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,15 @@
 // limitations under the License.
 //
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Steeltoe.CloudFoundry.Connector.OAuth;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 
 
@@ -30,9 +31,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
     public class TestServerJwtStartup
     {
 
-        public static CloudFoundryOptions CloudFoundryOptions { get; set; }
-
-        public static OAuthServiceOptions ServiceOptions { get; set; }
+        public static CloudFoundryJwtBearerOptions CloudFoundryOptions { get; set; }
 
         public IConfigurationRoot Configuration { get; }
 
@@ -41,6 +40,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var builder = new ConfigurationBuilder()
                .SetBasePath(env.ContentRootPath)
                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddCloudFoundry()
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
@@ -50,12 +50,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         {
             services.AddOptions();
 
-            services.AddAuthentication();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddCloudFoundryJwtBearer(Configuration);
 
-            if (ServiceOptions != null)
-            {
-                services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), Options.Create(ServiceOptions));
-            }
 
         }
 
@@ -80,15 +77,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 }
             });
 
-            if (CloudFoundryOptions != null)
-                app.UseCloudFoundryJwtAuthentication(CloudFoundryOptions);
-            else
-                app.UseCloudFoundryJwtAuthentication();
-
+            app.UseAuthentication();
 
             app.Run(async context =>
             {
-                await context.Authentication.ChallengeAsync();
+                await context.ChallengeAsync();
                 return;
 
             });
@@ -96,5 +89,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
     }
+
 
 }

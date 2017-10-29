@@ -14,22 +14,29 @@
 // limitations under the License.
 //
 
-
-using Microsoft.IdentityModel.Tokens;
-
+using Microsoft.AspNetCore.Authentication.OAuth.Claims;
+using Newtonsoft.Json.Linq;
+using System.Security.Claims;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public static class CloudFoundryTokenValidator
+    public class CloudFoundryScopeClaimAction : ClaimAction
     {
-        public static string ValidateIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
+        public CloudFoundryScopeClaimAction(string claimType, string valueType) 
+            : base(claimType, valueType)
         {
-            if (issuer.Contains("uaa"))
-            {
-                return issuer;
-            }
-            return null;
         }
 
+        public override void Run(JObject userData, ClaimsIdentity identity, string issuer)
+        {
+            var scopes = CloudFoundryHelper.GetScopes(userData);
+            if (scopes != null)
+            {
+                foreach (var s in scopes)
+                {
+                    identity.AddClaim(new Claim(ClaimType, s, ValueType, issuer));
+                }
+            }
+        }
     }
 }

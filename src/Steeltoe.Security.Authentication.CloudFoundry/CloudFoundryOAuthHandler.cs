@@ -1,5 +1,5 @@
 //
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,8 @@
 // limitations under the License.
 //
 
-
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.Http.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -26,33 +24,24 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Net.Http.Headers;
+using System.Text;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
+using System.Text.Encodings.Web;
+using Steeltoe.Common.Http;
 using System.Net.Security;
 using System.Net;
-using System.Text;
-using Microsoft.AspNetCore.Http.Features.Authentication;
-using Steeltoe.Security.Authentication.CloudFoundry;
-using static Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenValidator;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    internal class CloudFoundryHandler : OAuthHandler<CloudFoundryOptions>
+    public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
     {
-        public CloudFoundryHandler(HttpClient httpClient)
-            : base(httpClient)
+        public CloudFoundryOAuthHandler(
+             IOptionsMonitor<CloudFoundryOAuthOptions> options,
+             ILoggerFactory logger,
+             UrlEncoder encoder,
+             ISystemClock clock) : base(options, logger, encoder, clock)
         {
-        }
-
-        protected override async Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
-        {
-            if (Context.Items.ContainsKey(COOKIE_VALIDATOR_RESULT_KEY))
-            {
-                int valResult = (int)Context.Items[COOKIE_VALIDATOR_RESULT_KEY];
-                if (valResult == VALID)
-                    return await base.HandleUnauthorizedAsync(context);
-                return false;
-            }
-
-            return await base.HandleUnauthorizedAsync(context);
         }
 
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(string code, string redirectUri)
@@ -60,14 +49,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             HttpRequestMessage requestMessage = GetTokenRequestMessage(code, redirectUri);
             HttpClient client = GetHttpClient();
-#if NET452
+
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!Options.ValidateCertificates)
-            {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
-#endif
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(Options.ValidateCertificates, out prevProtocols, out prevValidator);
+
             HttpResponseMessage response = null;
             try
             {
@@ -75,16 +61,15 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
             finally
             {
-#if NET452
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-#endif
+                HttpClientHelper.RestoreCertificateValidation(Options.ValidateCertificates, prevProtocols, prevValidator);
             }
-
+            
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
                 var payload = JObject.Parse(result);
-                return OAuthTokenResponse.Success(payload);
+                var tokenResponse = OAuthTokenResponse.Success(payload);
+                return tokenResponse;
             }
             else
             {
@@ -100,14 +85,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpRequestMessage request = GetTokenInfoRequestMessage(tokens);
             HttpClient client = GetHttpClient();
 
-#if NET452
             RemoteCertificateValidationCallback prevValidator = null;
-            if (!Options.ValidateCertificates)
-            {
-            prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-            ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
-#endif
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(Options.ValidateCertificates, out prevProtocols, out prevValidator);
 
             HttpResponseMessage response = null;
             try
@@ -116,61 +96,30 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
             finally
             {
-#if NET452
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-#endif
+                HttpClientHelper.RestoreCertificateValidation(Options.ValidateCertificates, prevProtocols, prevValidator);
             }
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"An error occurred when retrieving token information ({response.StatusCode}).");
+            }
 
             var resp = await response.Content.ReadAsStringAsync();
             var payload = JObject.Parse(resp);
 
-            var identifier = CloudFoundryHelper.GetId(payload);
-            if (!string.IsNullOrEmpty(identifier))
+            var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
+            context.RunClaimActions();
+            await Events.CreatingTicket(context);
+
+            if (Options.UseTokenLifetime)
             {
-                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, identifier, ClaimValueTypes.String, Options.ClaimsIssuer));
+                properties.IssuedUtc = CloudFoundryHelper.GetIssueTime(payload);
+                properties.ExpiresUtc = CloudFoundryHelper.GetExpTime(payload);
             }
 
-            var givenName = CloudFoundryHelper.GetGivenName(payload);
-            if (!string.IsNullOrEmpty(givenName))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.GivenName, givenName, ClaimValueTypes.String, Options.ClaimsIssuer));
-            }
-
-            var familyName = CloudFoundryHelper.GetFamilyName(payload);
-            if (!string.IsNullOrEmpty(familyName))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.Surname, familyName, ClaimValueTypes.String, Options.ClaimsIssuer));
-            }
-
-            var name = CloudFoundryHelper.GetName(payload);
-            if (!string.IsNullOrEmpty(name))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.Name, name, ClaimValueTypes.String, Options.ClaimsIssuer));
-            }
-
-            var email = CloudFoundryHelper.GetEmail(payload);
-            if (!string.IsNullOrEmpty(email))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.Email, email, ClaimValueTypes.String, Options.ClaimsIssuer));
-            }
-
-            var scopes = CloudFoundryHelper.GetScopes(payload);
-            if (scopes != null)
-            {
-                foreach (var s in scopes)
-                {
-                    identity.AddClaim(new Claim("scope", s, ClaimValueTypes.String, Options.ClaimsIssuer));
-                }
-            }
-
-            var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), properties, Options.AuthenticationScheme);
-            var context = new OAuthCreatingTicketContext(ticket, Context, Options, Backchannel, tokens, payload);
-
-            await Options.Events.CreatingTicket(context);
-
-            return context.Ticket;
+            await Events.CreatingTicket(context);
+            var ticket = new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
+            return ticket;
         }
 
 

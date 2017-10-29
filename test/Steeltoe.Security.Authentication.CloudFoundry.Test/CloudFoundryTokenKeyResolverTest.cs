@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,12 +27,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Constructor_ThrowsIfOptionsNull()
         {
-            // Arrange
-            CloudFoundryOptions options = null;
-
+   
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new CloudFoundryTokenKeyResolver(options));
-            Assert.Contains(nameof(options), ex.Message);
+            var ex = Assert.Throws<ArgumentException>(() => new CloudFoundryTokenKeyResolver(null, null, false));
 
         }
         [Fact]
@@ -43,8 +40,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var keys = JsonWebKeySet.Create(keyset);
             var webKey = keys.Keys[0];
 
-            var resolver = new CloudFoundryTokenKeyResolver(new CloudFoundryOptions());
-            resolver.Resolved["legacy-token-key"] = webKey;
+            CloudFoundryTokenKeyResolver.Resolved.Clear();
+
+            var resolver = new CloudFoundryTokenKeyResolver("http://foo.bar", null, false);
+            CloudFoundryTokenKeyResolver.Resolved["legacy-token-key"] = webKey;
 
             var result = resolver.ResolveSigningKey(token, null, "legacy-token-key", null);
             Assert.True(result.First() == webKey);
@@ -59,15 +58,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             response.Content = new StringContent(keyset);
             handler.Response = response;
-            CloudFoundryOptions options = new CloudFoundryOptions()
-            {
-                BackchannelHttpHandler = handler
-            };
 
-            var resolver = new CloudFoundryTokenKeyResolver(options);
+            CloudFoundryTokenKeyResolver.Resolved.Clear();
+
+            var resolver = new CloudFoundryTokenKeyResolver("http://foo.bar", handler, true);
             var result = resolver.ResolveSigningKey(token, null, "legacy-token-key", null);
             Assert.NotNull(handler.LastRequest);
-            Assert.NotNull(resolver.Resolved["legacy-token-key"]);
+            Assert.NotNull(CloudFoundryTokenKeyResolver.Resolved["legacy-token-key"]);
             Assert.NotNull(result);
         }
 
@@ -80,15 +77,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             response.Content = new StringContent(keyset);
             handler.Response = response;
-            CloudFoundryOptions options = new CloudFoundryOptions()
-            {
-                BackchannelHttpHandler = handler
-            };
 
-            var resolver = new CloudFoundryTokenKeyResolver(options);
+            CloudFoundryTokenKeyResolver.Resolved.Clear();
+
+            var resolver = new CloudFoundryTokenKeyResolver("http://foo.bar", handler, true);
             var result = resolver.ResolveSigningKey(token, null, "legacy-token-key", null);
             Assert.NotNull(handler.LastRequest);
-            Assert.False(resolver.Resolved.ContainsKey("legacy-token-key"));
+            Assert.False(CloudFoundryTokenKeyResolver.Resolved.ContainsKey("legacy-token-key"));
             Assert.Null(result);
         }
 
@@ -100,12 +95,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             response.Content = new StringContent(keyset);
             handler.Response = response;
-            CloudFoundryOptions options = new CloudFoundryOptions()
-            {
-                BackchannelHttpHandler = handler
-            };
 
-            var resolver = new CloudFoundryTokenKeyResolver(options);
+            CloudFoundryTokenKeyResolver.Resolved.Clear();
+
+            var resolver = new CloudFoundryTokenKeyResolver("http://foo.bar", handler, true);
             var result = await resolver.FetchKeySet();
             Assert.NotNull(result);
         }
@@ -113,8 +106,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void GetJsonWebKey_DecodesValidJson()
         {
+            CloudFoundryTokenKeyResolver.Resolved.Clear();
+
             var webKey = @"{'keys':[{'kid':'legacy-token-key','alg':'SHA256withRSA','value':'-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk+7xH35bYBppsn54cBW+\nFlrveTe+3L4xl7ix13XK8eBcCmNOyBhNzhks6toDiRjrgw5QW76cFirVRFIVQkiZ\nsUwDyGOax3q8NOJyBFXiplIUScrx8aI0jkY/Yd6ixAc5yBSBfXThy4EF9T0xCyt4\nxWLYNXMRwe88Y+i+MEoLNXWRbhjJm76LN7rsdIxALbS0vJNWUDALWjtE6FeYX6uU\nL9msAzlCQkdnSvwMmr8Ij2O3IVMxHDJXOZinFqt9zVfXwO11o7ZmiskZnRz1/V0f\nvbUQAadkcDEUt1gk9cbrAhiipg8VWDMsC7VUXuekJZjme5f8oWTwpsgP6cTUzwSS\n6wIDAQAB\n-----END PUBLIC KEY-----','kty':'RSA','use':'sig','n':'AJPu8R9+W2AaabJ+eHAVvhZa73k3vty+MZe4sdd1yvHgXApjTsgYTc4ZLOraA4kY64MOUFu+nBYq1URSFUJImbFMA8hjmsd6vDTicgRV4qZSFEnK8fGiNI5GP2HeosQHOcgUgX104cuBBfU9MQsreMVi2DVzEcHvPGPovjBKCzV1kW4YyZu+ize67HSMQC20tLyTVlAwC1o7ROhXmF+rlC/ZrAM5QkJHZ0r8DJq/CI9jtyFTMRwyVzmYpxarfc1X18DtdaO2ZorJGZ0c9f1dH721EAGnZHAxFLdYJPXG6wIYoqYPFVgzLAu1VF7npCWY5nuX/KFk8KbID+nE1M8Ekus=','e':'AQAB'}]}";
-            CloudFoundryTokenKeyResolver resolver = new CloudFoundryTokenKeyResolver(new CloudFoundryOptions());
+            CloudFoundryTokenKeyResolver resolver = new CloudFoundryTokenKeyResolver("http://foo.bar", null, false);
             var webKeySet = resolver.GetJsonWebKeySet(webKey);
             Assert.NotNull(webKeySet);
             Assert.NotNull(webKeySet.Keys);
@@ -125,12 +120,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetHttpClient_AddsHandler()
         {
             TestMessageHandler handler = new TestMessageHandler();
-            CloudFoundryOptions options = new CloudFoundryOptions()
-            {
-                BackchannelHttpHandler = handler
-            };
 
-            var resolver = new CloudFoundryTokenKeyResolver(options);
+            var resolver = new CloudFoundryTokenKeyResolver("http://foo.bar", handler, false);
             var client = resolver.GetHttpClient();
             client.GetAsync("http://localhost/");
             Assert.NotNull(handler.LastRequest);

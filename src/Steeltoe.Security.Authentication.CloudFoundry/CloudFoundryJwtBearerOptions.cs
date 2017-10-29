@@ -14,22 +14,24 @@
 // limitations under the License.
 //
 
-
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public static class CloudFoundryTokenValidator
+    public class CloudFoundryJwtBearerOptions : JwtBearerOptions
     {
-        public static string ValidateIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
-        {
-            if (issuer.Contains("uaa"))
-            {
-                return issuer;
-            }
-            return null;
-        }
+        public string JwtKeyUrl { get; set; }
+        public bool Validate_Certificates { get; set; } = true;
+        public bool ValidateCertificates => Validate_Certificates;
 
+        public CloudFoundryJwtBearerOptions()
+        {
+            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+            ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme; 
+            JwtKeyUrl = authURL + CloudFoundryDefaults.JwtTokenKey;
+            SaveToken = true;
+
+        }
     }
 }

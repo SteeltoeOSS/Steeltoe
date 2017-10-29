@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,72 +17,38 @@
 using System;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Net.Http;
+using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
 
     public static class CloudFoundryHelper
     {
-
-        public static string GetId(JObject user)
+        public static DateTime GetIssueTime(JObject payload)
         {
-            if (user == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException(nameof(user));
+                throw new ArgumentNullException(nameof(payload));
             }
-
-            return user.Value<string>("user_id");
+            var time = payload.Value<long>("iat");
+            return ToAbsoluteUTC(time);
         }
 
-        public static string GetUserName(JObject user)
+        public static DateTime GetExpTime(JObject payload)
         {
-            if (user == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException(nameof(user));
+                throw new ArgumentNullException(nameof(payload));
             }
-
-            return user.Value<string>("user_name");
+            var time = payload.Value<long>("exp");
+            return ToAbsoluteUTC(time);
         }
 
-        public static string GetName(JObject user)
+        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static DateTime ToAbsoluteUTC(long secondsPastEpoch)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return user.Value<string>("user_name");
-        }
-
-        public static string GetGivenName(JObject user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return user.Value<string>("given_name");
-        }
-
-        public static string GetFamilyName(JObject user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return user.Value<string>("family_name");
-        }
-
-
-        public static string GetEmail(JObject user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return user.Value<string>("email");
+            return baseTime.AddSeconds(secondsPastEpoch);
         }
 
         public static List<string> GetScopes(JObject user)
@@ -116,42 +82,25 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             return result;
         }
 
-        // Get the given subProperty from a property.
-        private static string TryGetValue(JObject user, string propertyName, string subProperty)
+        public static HttpMessageHandler GetBackChannelHandler(bool validateCertificates)
         {
-            JToken value;
-            if (user.TryGetValue(propertyName, out value))
+
+            if (Platform.IsFullFramework)
             {
-                var subObject = JObject.Parse(value.ToString());
-                if (subObject != null && subObject.TryGetValue(subProperty, out value))
-                {
-                    return value.ToString();
-                }
+                return null;
             }
-            return null;
+            else
+            {
+                if (!validateCertificates)
+                {
+                    var handler = new HttpClientHandler();
+                    handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                    return handler;
+                }
+                return null;
+            }
         }
 
-        // Get the given subProperty from a list property.
-        private static string TryGetFirstValue(JObject user, string propertyName, string subProperty)
-        {
-            JToken value;
-            if (user.TryGetValue(propertyName, out value))
-            {
-                var array = JArray.Parse(value.ToString());
-                if (array != null && array.Count > 0)
-                {
-                    var subObject = JObject.Parse(array.First.ToString());
-                    if (subObject != null)
-                    {
-                        if (subObject.TryGetValue(subProperty, out value))
-                        {
-                            return value.ToString();
-                        }
-                    }
-                }
-            }
-            return null;
-        }
     }
 }
 

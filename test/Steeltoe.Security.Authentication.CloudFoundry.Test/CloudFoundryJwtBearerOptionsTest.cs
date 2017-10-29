@@ -14,22 +14,23 @@
 // limitations under the License.
 //
 
+using Xunit;
 
-using Microsoft.IdentityModel.Tokens;
-
-
-namespace Steeltoe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
-    public static class CloudFoundryTokenValidator
+    public class CloudFoundryJwtBearerOptionsTest
     {
-        public static string ValidateIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
-        {
-            if (issuer.Contains("uaa"))
-            {
-                return issuer;
-            }
-            return null;
-        }
 
+        [Fact]
+        public void DefaultConstructor_SetsupDefaultOptions()
+        {
+            CloudFoundryJwtBearerOptions opts = new CloudFoundryJwtBearerOptions();
+
+            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+            Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
+            Assert.Equal(authURL + CloudFoundryDefaults.JwtTokenKey, opts.JwtKeyUrl);
+            Assert.True(opts.SaveToken);
+
+        }
     }
 }

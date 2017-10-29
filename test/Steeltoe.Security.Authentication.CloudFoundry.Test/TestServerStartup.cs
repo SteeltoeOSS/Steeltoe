@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2015 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,19 +22,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Steeltoe.CloudFoundry.Connector.OAuth;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
-
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class TestServerStartup
     {
-
-        public static CloudFoundryOptions CloudFoundryOptions { get; set; }
-
-        public static OAuthServiceOptions ServiceOptions { get; set; }
 
         public IConfigurationRoot Configuration { get; }
 
@@ -42,21 +37,28 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var builder = new ConfigurationBuilder()
                .SetBasePath(env.ContentRootPath)
                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
-
+               .AddCloudFoundry()
+               .AddEnvironmentVariables();
+ 
             Configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-
-            services.AddAuthentication(sharedOptions => sharedOptions.SignInScheme = CloudFoundryOptions.AUTHENTICATION_SCHEME);
-
-            if (ServiceOptions != null)
+            services.AddAuthentication((options) =>
             {
-                services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), Options.Create(ServiceOptions));
-            }
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CloudFoundryDefaults.AuthenticationScheme;
+
+            })
+            .AddCookie((options) =>
+            {
+                options.AccessDeniedPath = new PathString("/Home/AccessDenied");
+
+            })
+            .AddCloudFoundryOAuth(Configuration);
+
 
         }
 
@@ -81,15 +83,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 }
             });
 
-            if (CloudFoundryOptions != null)
-                app.UseCloudFoundryAuthentication(CloudFoundryOptions);
-            else
-                app.UseCloudFoundryAuthentication();
-
+            app.UseAuthentication();
 
             app.Run(async context =>
             {
-                await context.Authentication.ChallengeAsync(CloudFoundryOptions.OAUTH_AUTHENTICATION_SCHEME);
+                await context.ChallengeAsync();
                 return;
 
             });
