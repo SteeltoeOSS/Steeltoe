@@ -2,11 +2,11 @@
 
 echo Code is built in Unit Tests
 
-cd src/Steeltoe.Security.Authentication.CloudFoundry
+cd src/Steeltoe.Security.Authentication.CloudFoundryCore
 dotnet restore --configfile ../../nuget.config
 cd ../..
 
-cd src/Steeltoe.Security.DataProtection.Redis
+cd src/Steeltoe.Security.DataProtection.RedisCore
 dotnet restore --configfile ../../nuget.config
 cd ../..
 

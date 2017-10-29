@@ -3,4 +3,4 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 
-[assembly: InternalsVisibleTo("Steeltoe.Security.DataProtection.Redis.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundryCore.Test")]

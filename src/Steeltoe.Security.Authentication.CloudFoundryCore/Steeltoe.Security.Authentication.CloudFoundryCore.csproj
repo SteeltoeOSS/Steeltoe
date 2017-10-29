@@ -8,8 +8,8 @@
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Security.Authentication.CloudFoundry</AssemblyName>
-    <PackageId>Steeltoe.Security.Authentication.CloudFoundry</PackageId>
+    <AssemblyName>Steeltoe.Security.Authentication.CloudFoundryCore</AssemblyName>
+    <PackageId>Steeltoe.Security.Authentication.CloudFoundryCore</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Security;OAuth2;SSO</PackageTags>
     <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
