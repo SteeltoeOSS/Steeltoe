@@ -12,13 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using System;
 
 namespace Steeltoe.Extensions.Logging.CloudFoundry
 {
-    public interface ICloudFoundryLoggerSettings : IConsoleLoggerSettings
+    public static class CloudFoundryLoggingBuilder
     {
-        void SetLogLevel(string category, LogLevel level);
+        public static ILoggingBuilder AddCloudFoundry(this ILoggingBuilder builder, IConfiguration configuration, ILogger logger = null, bool dispose = false)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            var settings = new ConsoleLoggerSettings();
+            builder.AddProvider(new CloudFoundryLoggerProvider(settings.FromConfiguration(configuration)));
+            return builder;
+        }
     }
 }

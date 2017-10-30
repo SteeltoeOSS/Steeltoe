@@ -18,6 +18,12 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
 {
     public class LoggerConfiguration : ILoggerConfiguration
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggerConfiguration"/> class.
+        /// </summary>
+        /// <param name="name">Namespace</param>
+        /// <param name="configured">Original log level</param>
+        /// <param name="effective">Currently effective log level</param>
         public LoggerConfiguration(string name, LogLevel? configured, LogLevel effective)
         {
             Name = name;
@@ -25,10 +31,19 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             EffectiveLevel = effective;
         }
 
+        /// <summary>
+        /// Gets namespace this configuration is applied to
+        /// </summary>
         public string Name { get; }
 
+        /// <summary>
+        /// Gets level from base app configuration (if present)
+        /// </summary>
         public LogLevel? ConfiguredLevel { get; }
 
+        /// <summary>
+        /// Gets running level of the logger
+        /// </summary>
         public LogLevel EffectiveLevel { get; }
 
         public override int GetHashCode()
