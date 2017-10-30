@@ -15,8 +15,11 @@
 //
 
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Security.DataProtection.Redis;
 using System;
 
@@ -32,8 +35,16 @@ namespace Steeltoe.Security.DataProtection
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-
             builder.Services.TryAddSingleton<IXmlRepository, CloudFoundryRedisXmlRepository>();
+
+            builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>((p) =>
+            {
+                var config = new ConfigureNamedOptions<KeyManagementOptions>(Options.DefaultName, (options) =>
+                {
+                    options.XmlRepository = p.GetRequiredService<IXmlRepository>();
+                });
+                return config;
+            });
             return builder;
         }
     }
