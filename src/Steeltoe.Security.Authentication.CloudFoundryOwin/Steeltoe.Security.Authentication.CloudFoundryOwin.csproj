@@ -10,7 +10,7 @@
     <TargetFrameworks>net461</TargetFrameworks>
     <AssemblyName>Steeltoe.Security.Authentication.CloudFoundryOwin</AssemblyName>
     <PackageId>Steeltoe.Security.Authentication.CloudFoundryOwin</PackageId>
-    <PackageTags>CloudFoundry;ASPNET Core;Security;OAuth2;SSO</PackageTags>
+    <PackageTags>CloudFoundry;ASPNET;Security;OAuth2;SSO</PackageTags>
     <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>

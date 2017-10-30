@@ -21,7 +21,7 @@ using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Security.Infrastructure;
 using Owin;
 
-namespace Steeltoe.Security.Authentication.CloudFoundryOwin
+namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     public class OpenIDConnectAuthenticationMiddleware : AuthenticationMiddleware<OpenIDConnectOptions>
     {

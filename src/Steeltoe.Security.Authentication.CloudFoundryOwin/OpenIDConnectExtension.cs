@@ -14,7 +14,7 @@
 using Owin;
 using System.Net;
 
-namespace Steeltoe.Security.Authentication.CloudFoundryOwin
+namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     public static class OpenIDConnectExtension
     {

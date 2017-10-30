@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-namespace Steeltoe.Security.Authentication.CloudFoundryOwin
+namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     public static class Constants
     {

@@ -22,7 +22,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Security.Authentication.CloudFoundryOwin
+namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     internal class TokenExchanger
     {

@@ -20,7 +20,7 @@ using Microsoft.Owin.Security.Infrastructure;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Security.Authentication.CloudFoundryOwin
+namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     class OpenIDConnectAuthenticationHandler : AuthenticationHandler<OpenIDConnectOptions>
     {

@@ -17,7 +17,7 @@
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 
-namespace Steeltoe.Security.Authentication.CloudFoundryOwin
+namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     public class OpenIDConnectOptions : AuthenticationOptions
     {

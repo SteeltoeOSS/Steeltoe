@@ -15,7 +15,7 @@ using Microsoft.Owin.Infrastructure;
 using System;
 
 
-namespace Steeltoe.Security.Authentication.CloudFoundryOwin
+namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     internal static class UriUtility
     {
