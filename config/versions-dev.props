@@ -14,6 +14,9 @@
     <TestSdkVersion>15.3.0</TestSdkVersion>
     <XunitVersion>2.3.0-beta4-build3742</XunitVersion>
     <XunitStudioVersion>2.3.0-beta4-build3742</XunitStudioVersion>
-    <StackExchangeVersion>1.1.605</StackExchangeVersion>
+    <HttpClientVersion>4.3.3</HttpClientVersion>
+    <OwinOAuthVerions>3.1.0</OwinOAuthVerions>
+    <JwtTokensVerions>5.1.4</JwtTokensVerions>
+    <CSharpVerion>4.4.0</CSharpVerion>
   </PropertyGroup>
 </Project>
