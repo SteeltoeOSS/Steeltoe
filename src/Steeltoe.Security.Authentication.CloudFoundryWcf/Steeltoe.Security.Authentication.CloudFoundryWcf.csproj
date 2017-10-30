@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\versions.props" />
+
+  <PropertyGroup>
+    <Description>External Security Provider for CloudFoundry - WCF</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>net461</TargetFrameworks>
+    <AssemblyName>Steeltoe.Security.Authentication.CloudFoundryWcf</AssemblyName>
+    <PackageId>Steeltoe.Security.Authentication.CloudFoundryWcf</PackageId>
+    <PackageTags>CloudFoundry;ASPNET;Security;Jwt;OAuth2;Bearer;SSO</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(JwtTokensVerions)" />
+    <PackageReference Include="System.Net.Http" Version="$(HttpClientVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+
+</Project>
