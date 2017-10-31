@@ -2,10 +2,10 @@
   <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
-    <Description>Unit test project for Steeltoe.Management.CloudFoundry</Description>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Management.CloudFoundry.Test</AssemblyName>
-    <PackageId>Steeltoe.Management.CloudFoundry.Test</PackageId>
+    <Description>Unit test project for Steeltoe.Management.CloudFoundryCore</Description>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <AssemblyName>Steeltoe.Management.CloudFoundryCore.Test</AssemblyName>
+    <PackageId>Steeltoe.Management.CloudFoundryCore.Test</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring;CloudFoundry</PackageTags>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
@@ -18,12 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Management.CloudFoundry\Steeltoe.Management.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.Management.CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
-    
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreDepTestVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />    
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />

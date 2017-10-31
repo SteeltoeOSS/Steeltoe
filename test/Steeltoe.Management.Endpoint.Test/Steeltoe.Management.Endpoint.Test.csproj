@@ -24,6 +24,15 @@
     <None Update="git.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Info\empty.git.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Info\garbage.git.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Info\git.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -31,13 +40,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.Management.Endpoint\Steeltoe.Management.Endpoint.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(AspNetCoreTestVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(AspNetCoreTestVersion)" />
-
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
 
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />

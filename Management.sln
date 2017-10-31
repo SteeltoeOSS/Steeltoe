@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B86A4082-6F42-4BFC-A1F2-83CC422AD493}"
 EndProject
@@ -10,26 +10,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint", "src\Steeltoe.Management.Endpoint\Steeltoe.Management.Endpoint.csproj", "{4FEC20E5-25AC-426D-BBE7-77824AE2E0A2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Test", "test\Steeltoe.Management.Endpoint.Test\Steeltoe.Management.Endpoint.Test.csproj", "{259D106E-BDAF-4ABE-A555-964E7DF45D9D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Info", "src\Steeltoe.Management.Endpoint.Info\Steeltoe.Management.Endpoint.Info.csproj", "{7DBDA3D0-2700-43D0-B0A1-9136CA698881}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Info.Test", "test\Steeltoe.Management.Endpoint.Info.Test\Steeltoe.Management.Endpoint.Info.Test.csproj", "{FD82DA2A-D2CD-4E47-A3A7-3E443486C59C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.CloudFoundry", "src\Steeltoe.Management.Endpoint.CloudFoundry\Steeltoe.Management.Endpoint.CloudFoundry.csproj", "{872FBB75-B16C-4811-8E63-CE253BBEFA7E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.CloudFoundry.Test", "test\Steeltoe.Management.Endpoint.CloudFoundry.Test\Steeltoe.Management.Endpoint.CloudFoundry.Test.csproj", "{9A6FC178-42A6-46BA-903F-544B24C6AB96}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Health", "src\Steeltoe.Management.Endpoint.Health\Steeltoe.Management.Endpoint.Health.csproj", "{ED42EAB9-D7D7-44A1-9427-9A8B70D4B2DA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Loggers", "src\Steeltoe.Management.Endpoint.Loggers\Steeltoe.Management.Endpoint.Loggers.csproj", "{4343BF01-8D1E-4226-AF93-1F432743CC0C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Trace", "src\Steeltoe.Management.Endpoint.Trace\Steeltoe.Management.Endpoint.Trace.csproj", "{A23DB8AB-B64F-4F01-BE49-95B45967FE57}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Loggers.Test", "test\Steeltoe.Management.Endpoint.Loggers.Test\Steeltoe.Management.Endpoint.Loggers.Test.csproj", "{C3EC32C7-C87C-4FDD-A61F-8A264ACEC5CF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Trace.Test", "test\Steeltoe.Management.Endpoint.Trace.Test\Steeltoe.Management.Endpoint.Trace.Test.csproj", "{F0675D8A-3E7E-449F-A13F-33D67CADF423}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint.Health.Test", "test\Steeltoe.Management.Endpoint.Health.Test\Steeltoe.Management.Endpoint.Health.Test.csproj", "{A7705016-DF6D-44E8-AED0-A847E8600C41}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundry.Test", "test\Steeltoe.Management.CloudFoundry.Test\Steeltoe.Management.CloudFoundry.Test.csproj", "{EC710A62-1798-455C-823B-42E67E40DE94}"
 EndProject
@@ -64,6 +44,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Management.EndpointCore", "src\Steeltoe.Management.EndpointCore\Steeltoe.Management.EndpointCore.csproj", "{D544C805-F83B-46D8-9F64-AA783F924DB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Management.CloudFoundryCore", "src\Steeltoe.Management.CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj", "{B886C97F-548C-4FEF-8E95-950A3EBFE901}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundryCore.Test", "test\Steeltoe.Management.CloudFoundryCore.Test\Steeltoe.Management.CloudFoundryCore.Test.csproj", "{B94F21CC-3A87-4D9A-8F9F-39BC4B7447D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,46 +64,6 @@ Global
 		{259D106E-BDAF-4ABE-A555-964E7DF45D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{259D106E-BDAF-4ABE-A555-964E7DF45D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{259D106E-BDAF-4ABE-A555-964E7DF45D9D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7DBDA3D0-2700-43D0-B0A1-9136CA698881}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DBDA3D0-2700-43D0-B0A1-9136CA698881}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DBDA3D0-2700-43D0-B0A1-9136CA698881}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DBDA3D0-2700-43D0-B0A1-9136CA698881}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD82DA2A-D2CD-4E47-A3A7-3E443486C59C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD82DA2A-D2CD-4E47-A3A7-3E443486C59C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD82DA2A-D2CD-4E47-A3A7-3E443486C59C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD82DA2A-D2CD-4E47-A3A7-3E443486C59C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{872FBB75-B16C-4811-8E63-CE253BBEFA7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{872FBB75-B16C-4811-8E63-CE253BBEFA7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{872FBB75-B16C-4811-8E63-CE253BBEFA7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{872FBB75-B16C-4811-8E63-CE253BBEFA7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A6FC178-42A6-46BA-903F-544B24C6AB96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A6FC178-42A6-46BA-903F-544B24C6AB96}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A6FC178-42A6-46BA-903F-544B24C6AB96}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A6FC178-42A6-46BA-903F-544B24C6AB96}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED42EAB9-D7D7-44A1-9427-9A8B70D4B2DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED42EAB9-D7D7-44A1-9427-9A8B70D4B2DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED42EAB9-D7D7-44A1-9427-9A8B70D4B2DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED42EAB9-D7D7-44A1-9427-9A8B70D4B2DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4343BF01-8D1E-4226-AF93-1F432743CC0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4343BF01-8D1E-4226-AF93-1F432743CC0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4343BF01-8D1E-4226-AF93-1F432743CC0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4343BF01-8D1E-4226-AF93-1F432743CC0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A23DB8AB-B64F-4F01-BE49-95B45967FE57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A23DB8AB-B64F-4F01-BE49-95B45967FE57}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A23DB8AB-B64F-4F01-BE49-95B45967FE57}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A23DB8AB-B64F-4F01-BE49-95B45967FE57}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C3EC32C7-C87C-4FDD-A61F-8A264ACEC5CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3EC32C7-C87C-4FDD-A61F-8A264ACEC5CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C3EC32C7-C87C-4FDD-A61F-8A264ACEC5CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3EC32C7-C87C-4FDD-A61F-8A264ACEC5CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F0675D8A-3E7E-449F-A13F-33D67CADF423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F0675D8A-3E7E-449F-A13F-33D67CADF423}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F0675D8A-3E7E-449F-A13F-33D67CADF423}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F0675D8A-3E7E-449F-A13F-33D67CADF423}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7705016-DF6D-44E8-AED0-A847E8600C41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7705016-DF6D-44E8-AED0-A847E8600C41}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7705016-DF6D-44E8-AED0-A847E8600C41}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7705016-DF6D-44E8-AED0-A847E8600C41}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC710A62-1798-455C-823B-42E67E40DE94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC710A62-1798-455C-823B-42E67E40DE94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC710A62-1798-455C-823B-42E67E40DE94}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -126,6 +72,18 @@ Global
 		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D544C805-F83B-46D8-9F64-AA783F924DB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D544C805-F83B-46D8-9F64-AA783F924DB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D544C805-F83B-46D8-9F64-AA783F924DB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D544C805-F83B-46D8-9F64-AA783F924DB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B886C97F-548C-4FEF-8E95-950A3EBFE901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B886C97F-548C-4FEF-8E95-950A3EBFE901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B886C97F-548C-4FEF-8E95-950A3EBFE901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B886C97F-548C-4FEF-8E95-950A3EBFE901}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B94F21CC-3A87-4D9A-8F9F-39BC4B7447D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B94F21CC-3A87-4D9A-8F9F-39BC4B7447D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B94F21CC-3A87-4D9A-8F9F-39BC4B7447D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B94F21CC-3A87-4D9A-8F9F-39BC4B7447D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,18 +91,11 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4FEC20E5-25AC-426D-BBE7-77824AE2E0A2} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{259D106E-BDAF-4ABE-A555-964E7DF45D9D} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
-		{7DBDA3D0-2700-43D0-B0A1-9136CA698881} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
-		{FD82DA2A-D2CD-4E47-A3A7-3E443486C59C} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
-		{872FBB75-B16C-4811-8E63-CE253BBEFA7E} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
-		{9A6FC178-42A6-46BA-903F-544B24C6AB96} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
-		{ED42EAB9-D7D7-44A1-9427-9A8B70D4B2DA} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
-		{4343BF01-8D1E-4226-AF93-1F432743CC0C} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
-		{A23DB8AB-B64F-4F01-BE49-95B45967FE57} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
-		{C3EC32C7-C87C-4FDD-A61F-8A264ACEC5CF} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
-		{F0675D8A-3E7E-449F-A13F-33D67CADF423} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
-		{A7705016-DF6D-44E8-AED0-A847E8600C41} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{EC710A62-1798-455C-823B-42E67E40DE94} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{C79DDE3B-2CED-4C0E-AE6F-7E2FC42AA3EC} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+		{D544C805-F83B-46D8-9F64-AA783F924DB5} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+		{B886C97F-548C-4FEF-8E95-950A3EBFE901} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+		{B94F21CC-3A87-4D9A-8F9F-39BC4B7447D1} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7949396C-4BFF-4834-9BC2-F3A345E9CCE5}
