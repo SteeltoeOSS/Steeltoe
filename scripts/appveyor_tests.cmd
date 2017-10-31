@@ -6,32 +6,12 @@ dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
-cd test\Steeltoe.Management.Endpoint.CloudFoundry.Test
-dotnet restore --configfile ..\..\nuget.config
-dotnet xunit -verbose
-if not "%errorlevel%"=="0" goto failure
-cd ..\..
-cd test\Steeltoe.Management.Endpoint.Health.Test
-dotnet restore --configfile ..\..\nuget.config
-dotnet xunit -verbose
-if not "%errorlevel%"=="0" goto failure
-cd ..\..
-cd test\Steeltoe.Management.Endpoint.Info.Test
-dotnet restore --configfile ..\..\nuget.config
-dotnet xunit -verbose
-if not "%errorlevel%"=="0" goto failure
-cd ..\..
-cd test\Steeltoe.Management.Endpoint.Loggers.Test
-dotnet restore --configfile ..\..\nuget.config
-dotnet xunit -verbose
-if not "%errorlevel%"=="0" goto failure
-cd ..\..
-cd test\Steeltoe.Management.Endpoint.Trace.Test
-dotnet restore --configfile ..\..\nuget.config
-dotnet xunit -verbose
-if not "%errorlevel%"=="0" goto failure
-cd ..\..
 cd test\Steeltoe.Management.CloudFoundry.Test
+dotnet restore --configfile ..\..\nuget.config
+dotnet xunit -verbose
+if not "%errorlevel%"=="0" goto failure
+cd ..\..
+cd test\Steeltoe.Management.CloudFoundryCore.Test
 dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure

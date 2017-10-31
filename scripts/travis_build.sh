@@ -2,24 +2,15 @@
 
 echo Code is built in Unit Tests
 
-cd src/Steeltoe.Managment.Endpoint
+cd src/Steeltoe.Management.Endpoint
 dotnet restore --configfile ../../nuget.config
 cd ../..
-cd src/Steeltoe.Managment.Endpoint.CloudFoundry
+cd src/Steeltoe.Management.EndpointCore
 dotnet restore --configfile ../../nuget.config
 cd ../..
-cd src/Steeltoe.Managment.Endpoint.Health
+cd src/Steeltoe.Management.CloudFoundry
 dotnet restore --configfile ../../nuget.config
 cd ../..
-cd src/Steeltoe.Managment.Endpoint.Info
-dotnet restore --configfile ../../nuget.config
-cd ../..
-cd src/Steeltoe.Managment.Endpoint.Loggers
-dotnet restore --configfile ../../nuget.config
-cd ../..
-cd src/Steeltoe.Managment.Endpoint.Trace
-dotnet restore --configfile ../../nuget.config
-cd ../..
-cd src/Steeltoe.Managment.CloudFoundry
+cd src/Steeltoe.Management.CloudFoundryCore
 dotnet restore --configfile ../../nuget.config
 cd ../..
