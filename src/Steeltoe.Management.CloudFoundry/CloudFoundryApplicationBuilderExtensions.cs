@@ -23,6 +23,10 @@ namespace Steeltoe.Management.CloudFoundry
 {
     public static class CloudFoundryApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Add all CloudFoundry Actuators (Info, Health, Loggers, Trace) and configure CORS
+        /// </summary>
+        /// <param name="app">AppBuilder needing actuators added</param>
         public static void UseCloudFoundryActuators(this IApplicationBuilder app)
         {
             app.UseCors(builder =>

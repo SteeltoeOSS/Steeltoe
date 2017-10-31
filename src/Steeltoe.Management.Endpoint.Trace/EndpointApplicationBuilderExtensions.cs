@@ -19,6 +19,10 @@ namespace Steeltoe.Management.Endpoint.Trace
 {
     public static class EndpointApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Enable the trace middleware
+        /// </summary>
+        /// <param name="builder">Your application builder</param>
         public static void UseTraceActuator(this IApplicationBuilder builder)
         {
             if (builder == null)

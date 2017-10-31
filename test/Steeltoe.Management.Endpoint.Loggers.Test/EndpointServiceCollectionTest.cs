@@ -15,8 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IO;
-using System.Linq;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test
@@ -42,27 +41,17 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         public void AddLoggersActuator_AddsCorrectServices()
         {
             ServiceCollection services = new ServiceCollection();
-            var appsettings = @"
-{
-    'management': {
-        'endpoints': {
-            'enabled': false,
-            'sensitive': false,
-            'path': '/cloudfoundryapplication',
-            'loggers' : {
-                'enabled': true,
-                'sensitive': false
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:sensitive"] = "false",
+                ["management:endpoints:path"] = "/cloudfoundryapplication",
+                ["management:endpoints:loggers:enabled"] = "true",
+                ["management:endpoints:loggers:sensitive"] = "false",
+            };
 
-            configurationBuilder.AddJsonFile(fileName);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             services.AddLoggersActuator(config);

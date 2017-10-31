@@ -15,7 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test
@@ -63,29 +63,18 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void BindsConfigurationCorrectly()
         {
-            var appsettings = @"
-{
-    'management': {
-        'endpoints': {
-            'enabled': false,
-            'sensitive': true,
-            'path': '/management',
-            'info' : {
-                'enabled': true,
-                'sensitive': false,
-                'id': 'infomanagement',
-                'requiredPermissions': 'NONE'
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:sensitive"] = "true",
+                ["management:endpoints:path"] = "/management",
+                ["management:endpoints:info:enabled"] = "true",
+                ["management:endpoints:info:sensitive"] = "false",
+                ["management:endpoints:info:id"] = "infomanagement",
+                ["management:endpoints:info:requiredPermissions"] = "NONE"
+            };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
@@ -105,26 +94,15 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void GlobalSettinsConfigureCorrectly()
         {
-            var appsettings = @"
-{
-    'management': {
-        'endpoints': {
-            'enabled': false,
-            'sensitive': true,
-            'path': '/management',
-            'info' : {
-                'id': 'infomanagement'
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:sensitive"] = "true",
+                ["management:endpoints:path"] = "/management",
+                ["management:endpoints:info:id"] = "infomanagement"
+            };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             TestOptions2 opts = new TestOptions2("management:endpoints:info", config);

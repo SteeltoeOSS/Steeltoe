@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Test;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
@@ -38,29 +37,16 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
         }
 
         [Fact]
-        public void Contstructor_BindsConfigurationCorrectly()
+        public void Constructor_BindsConfigurationCorrectly()
         {
-            var appsettings = @"
-{
-    'management': {
-        'endpoints': {
-            'health' : {
-                'enabled': true, 
-                'diskspace' : {
-                    'path': 'foobar',
-                    'threshold': 5
-                }
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:health:enabled"] = "true",
+                ["management:endpoints:health:diskspace:path"] = "foobar",
+                ["management:endpoints:health:diskspace:threshold"] = "5"
+            };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             var opts = new DiskSpaceContributorOptions(config);

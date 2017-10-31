@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
             {
                 return JsonConvert.SerializeObject(
                     result,
-                    new JsonSerializerSettings() { ContractResolver = new CamelCasePropertyNamesContractResolver(), NullValueHandling = NullValueHandling.Ignore });
+                    new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
             }
             catch (Exception e)
             {

@@ -15,7 +15,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -28,12 +28,25 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
+        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        {
+            ["Logging:IncludeScopes"] = "false",
+            ["Logging:LogLevel:Default"] = "Warning",
+            ["Logging:LogLevel:Pivotal"] = "Information",
+            ["Logging:LogLevel:Steeltoe"] = "Information",
+            ["management:endpoints:enabled"] = "true",
+            ["management:endpoints:sensitive"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:loggers:enabled"] = "true",
+            ["management:endpoints:loggers:sensitive"] = "false",
+        };
+
         [Fact]
         public void IsLoggersRequest_ReturnsExpected()
         {
             var opts = new LoggersOptions();
 
-            var ep = new LoggersEndpoint(opts);
+            var ep = new LoggersEndpoint(opts, null);
             var middle = new LoggersEndpointMiddleware(null, ep);
 
             var context = CreateRequest("GET", "/loggers");
@@ -76,26 +89,10 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public async void LoggersActuator_ReturnsExpectedData()
         {
-            var builder = new WebHostBuilder().UseStartup<Startup>();
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-               Assert.NotNull(json);
+            var builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings));
 
-                var loggers = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-                Assert.NotNull(loggers);
-                Assert.True(loggers.ContainsKey("levels"));
-                Assert.True(loggers.ContainsKey("loggers"));
-            }
-        }
-
-        [Fact]
-        public async void LoggersActuator_AcceptsPost()
-        {
-            var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
@@ -108,16 +105,43 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                 Assert.NotNull(loggers);
                 Assert.True(loggers.ContainsKey("levels"));
                 Assert.True(loggers.ContainsKey("loggers"));
-                HttpContent content = new StringContent("{\"configuredLevel\":\"WARN\"}");
-                var result2 = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Steeltoe.Management.Endpoint.Loggers.LoggersEndpointMiddleware", content);
-                Assert.Equal(HttpStatusCode.OK, result2.StatusCode);
+
+                // at least one logger should be returned
+                Assert.True(loggers["loggers"].ToString().Length > 2);
+
+                // parse the response into a dynamic object, verify that Default was returned and configured at Warning
+                dynamic parsedObject = JsonConvert.DeserializeObject(json);
+                Assert.Equal("WARN", parsedObject.loggers.Default.configuredLevel.ToString());
+            }
+        }
+
+        [Fact]
+        public async void LoggersActuator_AcceptsPost()
+        {
+             var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
+                var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Default", content);
+                Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
+
+                var validationResult = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
+                var json = await validationResult.Content.ReadAsStringAsync();
+                dynamic parsedObject = JsonConvert.DeserializeObject(json);
+                Assert.Equal("ERROR", parsedObject.loggers.Default.configuredLevel.ToString());
             }
         }
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

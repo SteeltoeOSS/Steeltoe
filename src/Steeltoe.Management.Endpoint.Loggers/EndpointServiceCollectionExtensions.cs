@@ -15,12 +15,18 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Extensions.Logging.CloudFoundry;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
     public static class EndpointServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds components of the Loggers actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add logging to</param>
+        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:loggers)</param>
         public static void AddLoggersActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
@@ -33,8 +39,8 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 throw new ArgumentNullException(nameof(config));
             }
 
+            services.AddLogging(lb => lb.AddCloudFoundry(config));
             services.TryAddSingleton<ILoggersOptions>(new LoggersOptions(config));
-
             services.TryAddSingleton<LoggersEndpoint>();
         }
     }

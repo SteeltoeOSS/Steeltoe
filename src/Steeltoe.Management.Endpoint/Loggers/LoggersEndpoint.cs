@@ -16,12 +16,14 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging.CloudFoundry;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
     public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>
     {
         private ILogger<LoggersEndpoint> _logger;
+        private ICloudFoundryLoggerProvider _cloudFoundryLoggerProvider;
         private static List<string> levels = new List<string>()
         {
             LoggerLevels.MapLogLevel(LogLevel.None),
@@ -33,9 +35,10 @@ namespace Steeltoe.Management.Endpoint.Loggers
             LoggerLevels.MapLogLevel(LogLevel.Trace)
         };
 
-        public LoggersEndpoint(ILoggersOptions options, ILogger<LoggersEndpoint> logger = null)
+        public LoggersEndpoint(ILoggersOptions options, ILoggerProvider cloudFoundryLoggerProvider, ILogger<LoggersEndpoint> logger = null)
             : base(options)
         {
+            _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider as CloudFoundryLoggerProvider;
             _logger = logger;
         }
 
@@ -51,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             _logger.LogDebug("Invoke({0})", request);
 
-            return DoInvoke(CloudFoundryLoggerProvider.Instance, request);
+            return DoInvoke(_cloudFoundryLoggerProvider, request);
         }
 
         public virtual Dictionary<string, object> DoInvoke(ICloudFoundryLoggerProvider provider, LoggersChangeRequest request)
@@ -67,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 AddLevels(result);
                 var configuration = GetLoggerConfigurations(provider);
                 Dictionary<string, LoggerLevels> loggers = new Dictionary<string, LoggerLevels>();
-                foreach (var c in configuration)
+                foreach (var c in configuration.OrderBy(entry => entry.Name))
                 {
                     _logger.LogTrace("Adding " + c.ToString());
                     LoggerLevels lv = new LoggerLevels(c.ConfiguredLevel, c.EffectiveLevel);

@@ -16,7 +16,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     public class Link
     {
-        public string Href;
+#pragma warning disable SA1307 // Accessible fields must begin with upper-case letter
+        public string href;
+#pragma warning restore SA1307 // Accessible fields must begin with upper-case letter
 
         public Link()
         {
@@ -24,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public Link(string href)
         {
-            this.Href = href;
+            this.href = href;
         }
     }
 }

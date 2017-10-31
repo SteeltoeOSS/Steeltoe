@@ -17,6 +17,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Test;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Xunit;
 
@@ -44,31 +45,18 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_BindsConfigurationCorrectly()
         {
-            var appsettings = @"
-{
-    'management': {
-        'endpoints': {
-            'enabled': false,
-            'sensitive': false,
-            'path': '/cloudfoundryapplication',
-            'health' : {
-                'enabled': true,
-                'requiredPermissions' : 'NONE'
-            },
-            'cloudfoundry': {
-                'validatecertificates' : true,
-                'enabled': true
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:sensitive"] = "false",
+                ["management:endpoints:path"] = "/cloudfoundryapplication",
+                ["management:endpoints:health:enabled"] = "true",
+                ["management:endpoints:health:requiredPermissions"] = "NONE",
+                ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+                ["management:endpoints:cloudfoundry:enabled"] = "true"
+            };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             var opts = new HealthOptions(config);

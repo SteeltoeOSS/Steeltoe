@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test
@@ -42,31 +42,18 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void Contstructor_BindsConfigurationCorrectly()
         {
-            var appsettings = @"
-{
-    'management': {
-        'endpoints': {
-            'enabled': false,
-            'sensitive': false,
-            'path': '/cloudfoundryapplication',
-            'loggers' : {
-                'enabled': false,
-                'sensitive' : true
-            },
-            'cloudfoundry': {
-                'validatecertificates' : true,
-                'enabled': true
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:sensitive"] = "false",
+                ["management:endpoints:path"] = "/cloudfoundryapplication",
+                ["management:endpoints:loggers:enabled"] = "false",
+                ["management:endpoints:loggers:sensitive"] = "true",
+                ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+                ["management:endpoints:cloudfoundry:enabled"] = "true"
+            };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             var opts = new LoggersOptions(config);

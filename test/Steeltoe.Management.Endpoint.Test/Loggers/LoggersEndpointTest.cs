@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
 
-            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions());
+            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions(), null, null);
             ep.AddLevels(dict);
 
             Assert.Single(dict);
@@ -49,14 +49,14 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void SetLogLevel_NullProvider()
         {
-            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions());
+            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions(), null, null);
             ep.SetLogLevel(null, null, null);
         }
 
         [Fact]
         public void SetLogLevel_ThrowsIfNulls()
         {
-            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions());
+            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions(), null, null);
             Assert.Throws<ArgumentException>(() => ep.SetLogLevel(new TestLogProvider(), null, null));
             Assert.Throws<ArgumentException>(() => ep.SetLogLevel(new TestLogProvider(), "foobar", null));
         }
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void SetLogLevel_CallsProvider()
         {
-            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions());
+            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions(), null, null);
             var provider = new TestLogProvider();
             ep.SetLogLevel(provider, "foobar", "WARN");
 
@@ -75,7 +75,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void GetLoggerConfigurations_NullProvider()
         {
-            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions());
+            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions(), null, null);
             var result = ep.GetLoggerConfigurations(null);
             Assert.NotNull(result);
         }
@@ -83,7 +83,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void GetLoggerConfiguration_CallsProvider()
         {
-            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions());
+            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions(), null, null);
             var provider = new TestLogProvider();
             var result = ep.GetLoggerConfigurations(provider);
             Assert.NotNull(result);
@@ -93,7 +93,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void DoInvoke_NoChangeRequest_ReturnsExpected()
         {
-            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions());
+            LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions(), null, null);
             var provider = new TestLogProvider();
 
             var result = ep.DoInvoke(provider, null);

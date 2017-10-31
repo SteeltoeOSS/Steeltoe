@@ -15,47 +15,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Logging.CloudFoundry;
-using System.IO;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class Startup
     {
-        public Startup(ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration)
         {
-            var appsettings = @"
-{
-  'Logging': {
-    'IncludeScopes': false,
-    'LogLevel': {
-        'Default': 'Warning',
-        'Pivotal': 'Information',
-        'Steeltoe': 'Information'
-        }
-    },
-    'management': {
-        'endpoints': {
-            'enabled': true,
-            'sensitive': false,
-            'path': '/cloudfoundryapplication',
-            'trace' : {
-                'enabled': true,
-                'sensitive': false
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
-            Configuration = configurationBuilder.Build();
-            loggerFactory.AddCloudFoundry(Configuration.GetSection("Logging"));
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; set; }

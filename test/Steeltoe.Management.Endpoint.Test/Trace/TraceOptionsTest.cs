@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
@@ -53,46 +53,31 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void Contstructor_BindsConfigurationCorrectly()
         {
-            var appsettings = @"
-{
-    'management': {
-        'endpoints': {
-            'enabled': false,
-            'sensitive': false,
-            'path': '/cloudfoundryapplication',
-            'loggers' : {
-                'enabled': false,
-                'sensitive' : true
-            },
-            'trace' : {
-                'enabled': true,
-                'sensitive': true,
-                'capacity': 1000,
-                'addTimeTaken' : false,
-                'addRequestHeaders': false,
-                'addResponseHeaders': false,
-                'addPathInfo': true,
-                'addUserPrincipal': true,
-                'addParameters': true,
-                'addQueryString': true,
-                'addAuthType': true,
-                'addRemoteAddress': true,
-                'addSessionId': true
-            },
-            'cloudfoundry': {
-                'validatecertificates' : true,
-                'enabled': true
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:sensitive"] = "false",
+                ["management:endpoints:path"] = "/cloudfoundryapplication",
+                ["management:endpoints:loggers:enabled"] = "false",
+                ["management:endpoints:loggers:sensitive"] = "true",
+                ["management:endpoints:trace:enabled"] = "true",
+                ["management:endpoints:trace:sensitive"] = "true",
+                ["management:endpoints:trace:capacity"] = "1000",
+                ["management:endpoints:trace:addTimeTaken"] = "false",
+                ["management:endpoints:trace:addRequestHeaders"] = "false",
+                ["management:endpoints:trace:addResponseHeaders"] = "false",
+                ["management:endpoints:trace:addPathInfo"] = "true",
+                ["management:endpoints:trace:addUserPrincipal"] = "true",
+                ["management:endpoints:trace:addParameters"] = "true",
+                ["management:endpoints:trace:addQueryString"] = "true",
+                ["management:endpoints:trace:addAuthType"] = "true",
+                ["management:endpoints:trace:addRemoteAddress"] = "true",
+                ["management:endpoints:trace:addSessionId"] = "true",
+                ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+                ["management:endpoints:cloudfoundry:enabled"] = "true"
+            };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             var opts = new TraceOptions(config);

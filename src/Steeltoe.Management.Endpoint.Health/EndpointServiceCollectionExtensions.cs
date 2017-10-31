@@ -23,16 +23,34 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public static class EndpointServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds components of the Health actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add health to</param>
+        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config)
         {
             services.AddHealthActuator(config, new DefaultHealthAggregator(), GetDefaultHealthContributors());
         }
 
+        /// <summary>
+        /// Adds components of the Health actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add health to</param>
+        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
+        /// <param name="contributors">Contributors to application health</param>
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, params IHealthContributor[] contributors)
         {
             services.AddHealthActuator(config, new DefaultHealthAggregator(), contributors);
         }
 
+        /// <summary>
+        /// Adds components of the Health actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add health to</param>
+        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
+        /// <param name="aggregator">Custom health aggregator</param>
+        /// <param name="contributors">Contributors to application health</param>
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, IHealthAggregator aggregator, params IHealthContributor[] contributors)
         {
             if (services == null)

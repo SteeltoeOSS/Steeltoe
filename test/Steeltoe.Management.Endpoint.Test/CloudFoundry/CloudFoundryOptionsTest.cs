@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -43,30 +43,17 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Contstructor_BindsConfigurationCorrectly()
         {
-            var appsettings = @"
-{
-    'management': {
-        'endpoints': {
-            'enabled': false,
-            'sensitive': false,
-            'path': '/cloudfoundryapplication',
-            'info' : {
-                'enabled': true
-            },
-            'cloudfoundry': {
-                'validatecertificates' : false,
-                'enabled': true
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:sensitive"] = "false",
+                ["management:endpoints:path"] = "/cloudfoundryapplication",
+                ["management:endpoints:info:enabled"] = "true",
+                ["management:endpoints:cloudfoundry:validatecertificates"] = "false",
+                ["management:endpoints:cloudfoundry:enabled"] = "true"
+            };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             InfoOptions opts = new InfoOptions(config);

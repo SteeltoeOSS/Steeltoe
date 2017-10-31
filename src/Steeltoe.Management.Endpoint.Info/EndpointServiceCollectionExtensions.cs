@@ -23,11 +23,22 @@ namespace Steeltoe.Management.Endpoint.Info
 {
     public static class EndpointServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds components of the Info actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add info to</param>
+        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:info)</param>
         public static void AddInfoActuator(this IServiceCollection services, IConfiguration config)
         {
             services.AddInfoActuator(config, new GitInfoContributor(), new AppSettingsInfoContributor(config));
         }
 
+        /// <summary>
+        /// Adds components of the info actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add info to</param>
+        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:info)</param>
+        /// <param name="contributors">Contributors to application information</param>
         public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, params IInfoContributor[] contributors)
         {
             if (services == null)

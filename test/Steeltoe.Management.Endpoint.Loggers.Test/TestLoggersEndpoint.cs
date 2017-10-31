@@ -19,8 +19,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
     internal class TestLoggersEndpoint : LoggersEndpoint
     {
-        public TestLoggersEndpoint(ILoggersOptions options, ILogger<LoggersEndpoint> logger = null)
-            : base(options, logger)
+        public TestLoggersEndpoint(ILoggersOptions options, ILoggerProvider loggerProvider = null, ILogger<LoggersEndpoint> logger = null)
+            : base(options, loggerProvider, logger)
         {
         }
 

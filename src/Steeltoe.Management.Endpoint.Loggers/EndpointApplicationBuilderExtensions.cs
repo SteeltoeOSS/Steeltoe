@@ -19,6 +19,10 @@ namespace Steeltoe.Management.Endpoint.Loggers
 {
     public static class EndpointApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Enable the loggers middleware
+        /// </summary>
+        /// <param name="builder">Your application builder</param>
         public static void UseLoggersActuator(this IApplicationBuilder builder)
         {
             if (builder == null)

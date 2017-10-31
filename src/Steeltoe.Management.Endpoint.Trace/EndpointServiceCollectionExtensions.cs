@@ -21,6 +21,11 @@ namespace Steeltoe.Management.Endpoint.Trace
 {
     public static class EndpointServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds components of the Trace actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add trace to</param>
+        /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:trace)</param>
         public static void AddTraceActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)

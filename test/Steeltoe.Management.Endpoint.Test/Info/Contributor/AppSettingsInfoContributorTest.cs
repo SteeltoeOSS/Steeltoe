@@ -16,8 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
@@ -38,28 +36,17 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
         [Fact]
         public void ContributeWithNullBUilderThrows()
         {
-            var appsettings = @"
-{
-    'info': {
-        'application': {
-            'name': 'foobar',
-            'version': '1.0.0',
-            'date': '5/1/2008',
-            'time' : '8:30:52 AM'
-        },
-        'NET' : {
-            'type': 'Core',
-            'version': '1.1.0'
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>
+            {
+                ["info:application:name"] = "foobar",
+                ["info:application:version"] = "1.0.0",
+                ["info:application:date"] = "5/1/2008",
+                ["info:application:time"] = "8:30:52 AM",
+                ["info:NET:type"] = "Core",
+                ["info:NET:version"] = "1.1.0"
+            };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var settings = new AppSettingsInfoContributor(config);
 
@@ -69,32 +56,19 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
         [Fact]
         public void ContributeAddsToBuilder()
         {
-            var appsettings = @"
-{
-    'info': {
-        'application': {
-            'name': 'foobar',
-            'version': '1.0.0',
-            'date': '5/1/2008',
-            'time' : '8:30:52 AM'
-        },
-        'NET': {
-            'type': 'Core',
-            'version': '1.1.0',
-            'ASPNET' : {
-                'type': 'Core',
-                'version': '1.1.0'
-            }
-        }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var appsettings = new Dictionary<string, string>
+            {
+                ["info:application:name"] = "foobar",
+                ["info:application:version"] = "1.0.0",
+                ["info:application:date"] = "5/1/2008",
+                ["info:application:time"] = "8:30:52 AM",
+                ["info:NET:type"] = "Core",
+                ["info:NET:version"] = "1.1.0",
+                ["info:NET:ASPNET:type"] = "Core",
+                ["info:NET:ASPNET:version"] = "1.1.0"
+            };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var settings = new AppSettingsInfoContributor(config);
 

@@ -15,7 +15,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Steeltoe.Extensions.Logging.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,6 +28,19 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
+        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        {
+            ["Logging:IncludeScopes"] = "false",
+            ["Logging:LogLevel:Default"] = "Warning",
+            ["Logging:LogLevel:Pivotal"] = "Information",
+            ["Logging:LogLevel:Steeltoe"] = "Information",
+            ["management:endpoints:enabled"] = "true",
+            ["management:endpoints:sensitive"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:trace:enabled"] = "true",
+            ["management:endpoints:trace:sensitive"] = "false",
+        };
+
         [Fact]
         public void IsTraceRequest_ReturnsExpected()
         {
@@ -66,7 +80,14 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public async void TraceActuator_ReturnsExpectedData()
         {
-            var builder = new WebHostBuilder().UseStartup<Startup>();
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureLogging((webhostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddCloudFoundry(webhostContext.Configuration);
+                });
+
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
