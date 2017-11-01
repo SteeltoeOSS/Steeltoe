@@ -57,7 +57,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         public CloudFoundryLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
         {
             _delegate = new ConsoleLoggerProvider(filter, includeScopes);
-            _filter = filter;
+            _filter = filter ?? _falseFilter;
             _settings = null;
             _includeScopes = includeScopes;
         }
@@ -100,7 +100,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
 
             // get the default first
             LogLevel configuredDefault = GetConfiguredLevel("Default") ?? LogLevel.None;
-            LogLevel effectiveDefault = configuredDefault;
+            LogLevel effectiveDefault = GetLogLevelFromFilter("Default", _filter);
             results.Add("Default", new LoggerConfiguration("Default", configuredDefault, effectiveDefault));
 
             // then get all running loggers
@@ -146,7 +146,14 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             // update the default filter for new instances
             if (category == "Default")
             {
-                _filter = filter;
+                if (filter != null)
+                {
+                    _filter = filter;
+                }
+                else
+                {
+                    _filter = (cat, lvl) => lvl >= GetConfiguredLevel("Default");
+                }
             }
             else
             {
@@ -179,10 +186,9 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
                     }
                     else
                     {
-                        l.Value.Filter = GetFilter(category, _settings);
+                        l.Value.Filter = GetFilter(category);
                     }
                 }
-
             }
         }
 
@@ -190,14 +196,26 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         {
             foreach (var setting in (_settings as ConsoleLoggerSettings).Switches)
             {
-                _runningFilters.TryAdd(setting.Key, (category, level) => level >= setting.Value);
+                if (setting.Key == "Default")
+                {
+                    _filter = (category, level) => level >= setting.Value;
+                }
+                else
+                {
+                    _runningFilters.TryAdd(setting.Key, (category, level) => level >= setting.Value);
+                }
+            }
+
+            if (_filter == null)
+            {
+                _filter = _falseFilter;
             }
         }
 
         private ConsoleLogger CreateLoggerImplementation(string name)
         {
             var includeScopes = _settings?.IncludeScopes ?? _includeScopes;
-            return new ConsoleLogger(name, GetFilter(name, _settings), includeScopes);
+            return new ConsoleLogger(name, GetFilter(name), includeScopes);
         }
 
         private void OnConfigurationReload(object state)
@@ -211,7 +229,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
                 var includeScopes = _settings?.IncludeScopes ?? false;
                 foreach (var logger in _loggers.Values)
                 {
-                    logger.Filter = GetFilter(logger.Name, _settings);
+                    logger.Filter = GetFilter(logger.Name);
                     logger.IncludeScopes = includeScopes;
                 }
             }
@@ -233,9 +251,8 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         /// Get or create the most applicable logging filter
         /// </summary>
         /// <param name="name">Fully qualified logger name</param>
-        /// <param name="settings">Default logger settings</param>
         /// <returns>A filter function for log level</returns>
-        private Func<string, LogLevel, bool> GetFilter(string name, IConsoleLoggerSettings settings)
+        private Func<string, LogLevel, bool> GetFilter(string name)
         {
             var prefixes = GetKeyPrefixes(name);
 
@@ -252,11 +269,11 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             }
 
             // check if there are any applicable settings
-            if (settings != null)
+            if (_settings != null)
             {
                 foreach (var prefix in prefixes)
                 {
-                    if (settings.TryGetSwitch(prefix, out LogLevel level))
+                    if (_settings.TryGetSwitch(prefix, out LogLevel level))
                     {
                         return (n, l) => l >= level;
                     }
@@ -348,11 +365,6 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         /// <returns>Log level from default filter, value from settings or else null</returns>
         private LogLevel? GetConfiguredLevel(string name)
         {
-            if (_filter != null)
-            {
-                return null;
-            }
-
             if (_settings != null)
             {
                 if (_settings.TryGetSwitch(name, out LogLevel level))

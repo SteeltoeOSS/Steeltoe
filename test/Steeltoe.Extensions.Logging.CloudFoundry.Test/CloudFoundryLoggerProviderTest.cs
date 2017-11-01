@@ -194,6 +194,45 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         }
 
         [Fact]
+        public void SetLogLevel_Works_OnDefault()
+        {
+            // arrange
+            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            LoggerFactory fac = new LoggerFactory();
+            fac.AddProvider(provider);
+            var originalLogConfig = provider.GetLoggerConfigurations();
+
+            // act
+            provider.SetLogLevel("Default", LogLevel.Trace);
+            var updatedLogConfig = provider.GetLoggerConfigurations();
+
+            // assert
+            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
+            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
+        }
+
+        [Fact]
+        public void ResetLogLevel_Works_OnDefault()
+        {
+            // arrange
+            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            LoggerFactory fac = new LoggerFactory();
+            fac.AddProvider(provider);
+            var originalLogConfig = provider.GetLoggerConfigurations();
+
+            // act
+            provider.SetLogLevel("Default", LogLevel.Trace);
+            var updatedLogConfig = provider.GetLoggerConfigurations();
+            provider.SetLogLevel("Default", null);
+            var resetConfig = provider.GetLoggerConfigurations();
+
+            // assert
+            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
+            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
+            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), resetConfig);
+        }
+
+        [Fact]
         public void LoggerLogs_At_Configured_Setting()
         {
             // arrange
