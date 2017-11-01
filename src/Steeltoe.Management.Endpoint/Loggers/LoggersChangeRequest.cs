@@ -35,12 +35,12 @@ namespace Steeltoe.Management.Endpoint.Loggers
         }
 
         /// <summary>
-        /// Name(space) of logger level to change
+        /// Gets name(space) of logger level to change
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Minimum level to log, null to reset back to original
+        /// Gets minimum level to log, null to reset back to original
         /// </summary>
         public string Level { get; }
 

@@ -15,19 +15,13 @@ build_script:
   - scripts\appveyor_build.cmd
 artifacts:
 - path: 'src\Steeltoe.Management.Endpoint\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.CloudFoundry\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.Health\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.Info\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.Loggers\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.Trace\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Management.Endpoint\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.CloudFoundry\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.Health\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.Info\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.Loggers\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint.Trace\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Management.EndpointCore\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Management.EndpointCore\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Management.CloudFoundry\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Management.CloudFoundry\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Management.CloudFoundryCore\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Management.CloudFoundryCore\bin\Release\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false
