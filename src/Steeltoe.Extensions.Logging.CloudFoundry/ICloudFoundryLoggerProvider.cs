@@ -21,6 +21,6 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
     {
         ICollection<ILoggerConfiguration> GetLoggerConfigurations();
 
-        void SetLogLevel(string category, LogLevel level);
+        void SetLogLevel(string category, LogLevel? level);
     }
 }

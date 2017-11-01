@@ -127,53 +127,62 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
                 }
             }
 
-            // then circle back and pick up any filters
-            foreach (var filter in _runningFilters)
-            {
-                if (!results.ContainsKey(filter.Key))
-                {
-                    var name = filter.Key;
-                    LogLevel? configured = GetConfiguredLevel(name);
-                    LogLevel effective = GetEffectiveLevel(name);
-                    results[name] = new LoggerConfiguration(name, configured, effective);
-                }
-            }
-
             return results.Values;
         }
 
         /// <summary>
-        /// Sets minimum log level for a given category and its decendants
+        /// Sets minimum log level for a given category and its decendants - resets to configured value if level is null
         /// </summary>
         /// <param name="category">Namespace/qualified class name</param>
-        /// <param name="level">Minimum level to log</param>
-        public void SetLogLevel(string category, LogLevel level)
+        /// <param name="level">Minimum level to log, pass null to reset</param>
+        public void SetLogLevel(string category, LogLevel? level)
         {
-            Func<string, LogLevel, bool> filter = (cat, lvl) => lvl >= level;
+            Func<string, LogLevel, bool> filter = null;
+            if (level != null)
+            {
+                filter = (cat, lvl) => lvl >= level;
+            }
 
             // update the default filter for new instances
             if (category == "Default")
             {
                 _filter = filter;
             }
-
-            // update existing loggers under this category
-            foreach (var l in _loggers.Where(s => s.Key.StartsWith(category)))
-            {
-                l.Value.Filter = filter;
-            }
-
-            // update the filter dictionary
-            if (_runningFilters.Any(entry => entry.Key.StartsWith(category)))
-            {
-                foreach (var runningFilter in _runningFilters.Where(entry => entry.Key.StartsWith(category)))
-                {
-                    _runningFilters.TryUpdate(runningFilter.Key, filter, runningFilter.Value);
-                }
-            }
             else
             {
-                _runningFilters.TryAdd(category, filter);
+                // update the filter dictionary first so that loggers can inherit changes when we reset
+                if (_runningFilters.Any(entry => entry.Key.StartsWith(category)))
+                {
+                    foreach (var runningFilter in _runningFilters.Where(entry => entry.Key.StartsWith(category)))
+                    {
+                        if (filter != null)
+                        {
+                            _runningFilters.TryUpdate(runningFilter.Key, filter, runningFilter.Value);
+                        }
+                        else
+                        {
+                            _runningFilters.TryRemove(runningFilter.Key, out Func<string, LogLevel, bool> oldVal);
+                        }
+                    }
+                }
+                else
+                {
+                    _runningFilters.TryAdd(category, filter);
+                }
+
+                // update existing loggers under this category, or reset them to what they inherit
+                foreach (var l in _loggers.Where(s => s.Key.StartsWith(category)))
+                {
+                    if (filter != null)
+                    {
+                        l.Value.Filter = filter;
+                    }
+                    else
+                    {
+                        l.Value.Filter = GetFilter(category, _settings);
+                    }
+                }
+
             }
         }
 
@@ -264,19 +273,9 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         /// <returns>Minimum logging level</returns>
         private LogLevel GetEffectiveLevel(string name)
         {
-            // check for a filter first
-            if (_loggers.Any(n => n.Key.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                var logger = _loggers[name];
-                if (logger?.Filter != null)
-                {
-                    return GetLogLevelFromFilter(name, logger.Filter);
-                }
-            }
-
             var prefixes = GetKeyPrefixes(name);
 
-            // check the dictionary next (great for namespaces that don't have actual logger instances)
+            // check the dictionary
             foreach (var prefix in prefixes)
             {
                 if (_runningFilters.Any(n => n.Key.Equals(prefix, StringComparison.InvariantCultureIgnoreCase)))
@@ -351,7 +350,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         {
             if (_filter != null)
             {
-                return GetLogLevelFromFilter(name, _filter);
+                return null;
             }
 
             if (_settings != null)
