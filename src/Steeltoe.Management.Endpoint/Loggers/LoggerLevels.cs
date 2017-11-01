@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
         }
 
-        public static LogLevel MapLogLevel(string level)
+        public static LogLevel? MapLogLevel(string level)
         {
             switch (level)
             {
@@ -73,7 +73,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 case "TRACE":
                     return LogLevel.Trace;
                 default:
-                    return LogLevel.None;
+                    return null;
             }
         }
     }

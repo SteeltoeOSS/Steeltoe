@@ -18,6 +18,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
 {
     public class LoggersChangeRequest
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggersChangeRequest"/> class.
+        /// </summary>
+        /// <param name="name">Name of the logger to update</param>
+        /// <param name="level">Minimum level to log - pass null to reset</param>
         public LoggersChangeRequest(string name, string level)
         {
             if (string.IsNullOrEmpty(name))
@@ -25,22 +30,23 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 throw new ArgumentException(nameof(name));
             }
 
-            if (string.IsNullOrEmpty(level))
-            {
-                throw new ArgumentException(nameof(level));
-            }
-
             Name = name;
             Level = level;
         }
 
+        /// <summary>
+        /// Name(space) of logger level to change
+        /// </summary>
         public string Name { get; }
 
+        /// <summary>
+        /// Minimum level to log, null to reset back to original
+        /// </summary>
         public string Level { get; }
 
         public override string ToString()
         {
-            return "[" + Name + "," + Level + "]";
+            return "[" + Name + "," + Level ?? "RESET" + "]";
         }
     }
 }

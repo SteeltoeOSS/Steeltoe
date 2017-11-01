@@ -112,11 +112,6 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 throw new ArgumentException(nameof(name));
             }
 
-            if (string.IsNullOrEmpty(level))
-            {
-                throw new ArgumentException(nameof(level));
-            }
-
             provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
         }
     }

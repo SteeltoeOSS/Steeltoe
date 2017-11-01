@@ -133,7 +133,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                 var validationResult = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
                 var json = await validationResult.Content.ReadAsStringAsync();
                 dynamic parsedObject = JsonConvert.DeserializeObject(json);
-                Assert.Equal("ERROR", parsedObject.loggers.Default.configuredLevel.ToString());
+                Assert.Equal("ERROR", parsedObject.loggers.Default.effectiveLevel.ToString());
             }
         }
 

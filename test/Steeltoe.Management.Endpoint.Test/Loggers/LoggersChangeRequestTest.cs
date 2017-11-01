@@ -21,10 +21,9 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
     public class LoggersChangeRequestTest : BaseTest
     {
         [Fact]
-        public void Constructor_ThrowsOnNulls()
+        public void Constructor_ThrowsOnNull_Name()
         {
             Assert.Throws<ArgumentException>(() => new LoggersChangeRequest(null, "foobar"));
-            Assert.Throws<ArgumentException>(() => new LoggersChangeRequest("foobar", null));
         }
 
         [Fact]
@@ -33,6 +32,14 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var cr = new LoggersChangeRequest("foo", "bar");
             Assert.Equal("foo", cr.Name);
             Assert.Equal("bar", cr.Level);
+        }
+
+        [Fact]
+        public void Constructor_AllowsReset()
+        {
+            var cr = new LoggersChangeRequest("foo", null);
+            Assert.Equal("foo", cr.Name);
+            Assert.Null(cr.Level);
         }
     }
 }

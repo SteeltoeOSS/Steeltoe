@@ -54,11 +54,10 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         }
 
         [Fact]
-        public void SetLogLevel_ThrowsIfNulls()
+        public void SetLogLevel_ThrowsIfNullName()
         {
             LoggersEndpoint ep = new LoggersEndpoint(new LoggersOptions(), null, null);
             Assert.Throws<ArgumentException>(() => ep.SetLogLevel(new TestLogProvider(), null, null));
-            Assert.Throws<ArgumentException>(() => ep.SetLogLevel(new TestLogProvider(), "foobar", null));
         }
 
         [Fact]

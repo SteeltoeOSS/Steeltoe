@@ -66,8 +66,8 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
                         change.TryGetValue("configuredLevel", out string level);
 
-                        logger?.LogDebug("Change Request: {0}, {1}", loggerName, level);
-                        if (!string.IsNullOrEmpty(loggerName) && !string.IsNullOrEmpty(level))
+                        logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
+                        if (!string.IsNullOrEmpty(loggerName))
                         {
                             var changeReq = new LoggersChangeRequest(loggerName, level);
                             base.HandleRequest(changeReq);

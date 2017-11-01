@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             Assert.Equal(LogLevel.Information, LoggerLevels.MapLogLevel("INFO"));
             Assert.Equal(LogLevel.Debug, LoggerLevels.MapLogLevel("DEBUG"));
             Assert.Equal(LogLevel.Trace, LoggerLevels.MapLogLevel("TRACE"));
-            Assert.Equal(LogLevel.None, LoggerLevels.MapLogLevel("FooBar"));
+            Assert.Null(LoggerLevels.MapLogLevel("FooBar"));
         }
 
         [Fact]

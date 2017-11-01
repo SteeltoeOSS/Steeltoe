@@ -14,10 +14,8 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging.CloudFoundry;
-using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
@@ -48,10 +46,10 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             return new List<ILoggerConfiguration>();
         }
 
-        public void SetLogLevel(string category, LogLevel level)
+        public void SetLogLevel(string category, LogLevel? level)
         {
             Category = category;
-            Level = level;
+            Level = level ?? LogLevel.None;
         }
     }
 }
