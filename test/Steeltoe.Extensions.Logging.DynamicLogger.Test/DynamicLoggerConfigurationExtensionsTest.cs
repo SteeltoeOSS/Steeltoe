@@ -18,9 +18,9 @@ using Microsoft.Extensions.Logging.Console;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
+namespace Steeltoe.Extensions.Logging.Test
 {
-    public class CloudFoundryConfigurationExtensionsTest
+    public class DynamicLoggerConfigurationExtensionsTest
     {
         [Fact]
         public void FromConfiguration_Parses_Correctly()

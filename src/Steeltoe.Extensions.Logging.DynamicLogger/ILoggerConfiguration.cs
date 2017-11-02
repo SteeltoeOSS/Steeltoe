@@ -13,14 +13,15 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry
+namespace Steeltoe.Extensions.Logging
 {
-    public interface ICloudFoundryLoggerProvider : ILoggerProvider
+    public interface ILoggerConfiguration
     {
-        ICollection<ILoggerConfiguration> GetLoggerConfigurations();
+        string Name { get; }
 
-        void SetLogLevel(string category, LogLevel? level);
+        LogLevel? ConfiguredLevel { get; }
+
+        LogLevel EffectiveLevel { get; }
     }
 }

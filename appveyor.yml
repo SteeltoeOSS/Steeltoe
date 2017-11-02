@@ -14,8 +14,8 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\Steeltoe.Extensions.Logging.CloudFoundry\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Extensions.Logging.CloudFoundry\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Logging.DynamicLogger\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Logging.DynamicLogger\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false

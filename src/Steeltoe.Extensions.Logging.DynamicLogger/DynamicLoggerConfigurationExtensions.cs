@@ -18,9 +18,9 @@ using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Linq;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry
+namespace Steeltoe.Extensions.Logging
 {
-    public static class CloudFoundryConfigurationExtensions
+    public static class DynamicLoggerConfigurationExtensions
     {
         /// <summary>
         /// Configure console logger settings from configuration

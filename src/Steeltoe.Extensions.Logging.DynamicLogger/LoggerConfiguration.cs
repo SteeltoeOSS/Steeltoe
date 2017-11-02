@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry
+namespace Steeltoe.Extensions.Logging
 {
     public class LoggerConfiguration : ILoggerConfiguration
     {

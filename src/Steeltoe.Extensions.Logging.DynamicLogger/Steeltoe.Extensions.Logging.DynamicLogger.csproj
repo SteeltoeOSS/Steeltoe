@@ -7,8 +7,8 @@
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.Extensions.Logging.CloudFoundry</AssemblyName>
-    <PackageId>Steeltoe.Extensions.Logging.CloudFoundry</PackageId>
+    <AssemblyName>Steeltoe.Extensions.Logging.DynamicLogger</AssemblyName>
+    <PackageId>Steeltoe.Extensions.Logging.DynamicLogger</PackageId>
     <PackageTags>Spring Cloud;Logging;Management</PackageTags>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
@@ -19,7 +19,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Extensions.Logging.CloudFoundry.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Extensions.Logging.DynamicLogger.xml</DocumentationFile>
   </PropertyGroup>
   
   <ItemGroup>

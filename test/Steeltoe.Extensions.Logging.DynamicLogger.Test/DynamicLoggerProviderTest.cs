@@ -20,14 +20,14 @@ using System.Linq;
 using System.Threading;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
+namespace Steeltoe.Extensions.Logging.Test
 {
-    public class CloudFoundryLoggerProviderTest
+    public class DynamicLoggerProviderTest
     {
         [Fact]
         public void Create_CreatesCorrectLogger()
         {
-            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            var provider = new DynamicLoggerProvider(GetLoggerSettings());
             LoggerFactory fac = new LoggerFactory();
             fac.AddProvider(provider);
 
@@ -40,7 +40,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         [Fact]
         public void SetLogLevel_UpdatesLogger()
         {
-            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            var provider = new DynamicLoggerProvider(GetLoggerSettings());
             LoggerFactory fac = new LoggerFactory();
             fac.AddProvider(provider);
 
@@ -65,7 +65,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         public void SetLogLevel_UpdatesNamespaceDescendants()
         {
             // arrange (A* should log at Information)
-            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            var provider = new DynamicLoggerProvider(GetLoggerSettings());
 
             // act I: with original setup
             var childLogger = provider.CreateLogger("A.B.C");
@@ -104,7 +104,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         public void SetLogLevel_Can_Reset_to_Default()
         {
             // arrange (A* should log at Information)
-            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            var provider = new DynamicLoggerProvider(GetLoggerSettings());
 
             // act I: with original setup
             var firstLogger = provider.CreateLogger("A.B.C");
@@ -142,7 +142,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         [Fact]
         public void GetLoggerConfigurations_ReturnsExpected()
         {
-            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            var provider = new DynamicLoggerProvider(GetLoggerSettings());
             LoggerFactory fac = new LoggerFactory();
             fac.AddProvider(provider);
 
@@ -162,7 +162,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         public void GetLoggerConfigurations_ReturnsExpected_After_SetLogLevel()
         {
             // arrange
-            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            var provider = new DynamicLoggerProvider(GetLoggerSettings());
             LoggerFactory fac = new LoggerFactory();
             fac.AddProvider(provider);
 
@@ -197,7 +197,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         public void SetLogLevel_Works_OnDefault()
         {
             // arrange
-            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            var provider = new DynamicLoggerProvider(GetLoggerSettings());
             LoggerFactory fac = new LoggerFactory();
             fac.AddProvider(provider);
             var originalLogConfig = provider.GetLoggerConfigurations();
@@ -215,7 +215,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         public void ResetLogLevel_Works_OnDefault()
         {
             // arrange
-            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            var provider = new DynamicLoggerProvider(GetLoggerSettings());
             LoggerFactory fac = new LoggerFactory();
             fac.AddProvider(provider);
             var originalLogConfig = provider.GetLoggerConfigurations();
@@ -236,7 +236,7 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         public void LoggerLogs_At_Configured_Setting()
         {
             // arrange
-            var provider = new CloudFoundryLoggerProvider(GetLoggerSettings());
+            var provider = new DynamicLoggerProvider(GetLoggerSettings());
             LoggerFactory fac = new LoggerFactory();
             fac.AddProvider(provider);
             ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));

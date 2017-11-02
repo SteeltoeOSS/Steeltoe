@@ -20,9 +20,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry
+namespace Steeltoe.Extensions.Logging
 {
-    public class CloudFoundryLoggerProvider : ICloudFoundryLoggerProvider
+    public class DynamicLoggerProvider : IDynamicLoggerProvider
     {
         private Func<string, LogLevel, bool> _filter;
         private ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
@@ -35,10 +35,10 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         private bool _includeScopes;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloudFoundryLoggerProvider"/> class.
+        /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
         /// </summary>
         /// <param name="settings">Logging Settings</param>
-        public CloudFoundryLoggerProvider(IConsoleLoggerSettings settings)
+        public DynamicLoggerProvider(IConsoleLoggerSettings settings)
         {
             _delegate = new ConsoleLoggerProvider(settings);
             _settings = settings;
@@ -50,11 +50,11 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloudFoundryLoggerProvider"/> class.
+        /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
         /// </summary>
         /// <param name="filter">Default log level filter</param>
         /// <param name="includeScopes">Enable log scoping</param>
-        public CloudFoundryLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
+        public DynamicLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
         {
             _delegate = new ConsoleLoggerProvider(filter, includeScopes);
             _filter = filter ?? _falseFilter;
@@ -63,10 +63,10 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloudFoundryLoggerProvider"/> class.
+        /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
         /// </summary>
         /// <param name="options">Pass-through to ConsoleLoggerProvider constructor</param>
-        public CloudFoundryLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options)
+        public DynamicLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options)
         {
             _delegate = new ConsoleLoggerProvider(options);
             _settings = null;

@@ -3,7 +3,7 @@
   <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
-    <Description>Unit test project for Steeltoe.Extensions.Logging.CloudFoundry</Description>
+    <Description>Unit test project for Steeltoe.Extensions.Logging.DynamicLogger</Description>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Extensions.Logging.CloudFoundry.Test</AssemblyName>
     <PackageId>Steeltoe.Extensions.Logging.CloudFoundry.Test</PackageId>
@@ -16,10 +16,6 @@
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Logging.CloudFoundry\Steeltoe.Extensions.Logging.CloudFoundry.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,5 +41,8 @@
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Logging.CloudFoundry\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
   </ItemGroup>
 </Project>

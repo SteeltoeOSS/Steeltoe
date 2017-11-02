@@ -18,9 +18,9 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
+namespace Steeltoe.Extensions.Logging.Test
 {
-    public class CloudFoundryLoggingBuilderTest
+    public class DynamicLoggingBuilderTest
     {
         private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
         {
@@ -29,19 +29,19 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
         };
 
         [Fact]
-        public void AddCloudFoundry_Works()
+        public void AddDynamicLoggerProvider_Works()
         {
             // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-            var services = new ServiceCollection().AddLogging(builder => builder.AddCloudFoundry(configuration)).BuildServiceProvider();
+            var services = new ServiceCollection().AddLogging(builder => builder.AddDynamicLoggerProvider(configuration)).BuildServiceProvider();
 
             // act
-            var logger = services.GetService(typeof(ILogger<CloudFoundryLoggingBuilderTest>));
+            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>));
 
             // assert
             Assert.NotNull(logger);
-            Assert.True((logger as ILogger<CloudFoundryLoggingBuilderTest>).IsEnabled(LogLevel.Warning));
-            Assert.False((logger as ILogger<CloudFoundryLoggingBuilderTest>).IsEnabled(LogLevel.Debug));
+            Assert.True((logger as ILogger<DynamicLoggingBuilderTest>).IsEnabled(LogLevel.Warning));
+            Assert.False((logger as ILogger<DynamicLoggingBuilderTest>).IsEnabled(LogLevel.Debug));
         }
     }
 }

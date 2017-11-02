@@ -14,7 +14,7 @@
 
 using System.IO;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
+namespace Steeltoe.Extensions.Logging.Test
 {
     public static class TestHelpers
     {

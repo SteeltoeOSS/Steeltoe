@@ -15,7 +15,7 @@
 using System;
 using System.IO;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry.Test
+namespace Steeltoe.Extensions.Logging.Test
 {
     internal class ConsoleOutputBorrower : IDisposable
     {

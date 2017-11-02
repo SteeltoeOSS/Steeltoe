@@ -17,11 +17,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using System;
 
-namespace Steeltoe.Extensions.Logging.CloudFoundry
+namespace Steeltoe.Extensions.Logging
 {
-    public static class CloudFoundryLoggingBuilder
+    public static class DynamicLoggingBuilder
     {
-        public static ILoggingBuilder AddCloudFoundry(this ILoggingBuilder builder, IConfiguration configuration, ILogger logger = null, bool dispose = false)
+        public static ILoggingBuilder AddDynamicLoggerProvider(this ILoggingBuilder builder, IConfiguration configuration)
         {
             if (builder == null)
             {
@@ -29,7 +29,8 @@ namespace Steeltoe.Extensions.Logging.CloudFoundry
             }
 
             var settings = new ConsoleLoggerSettings();
-            builder.AddProvider(new CloudFoundryLoggerProvider(settings.FromConfiguration(configuration)));
+            builder.SetMinimumLevel(LogLevel.Trace);
+            builder.AddProvider(new DynamicLoggerProvider(settings.FromConfiguration(configuration)));
             return builder;
         }
     }
