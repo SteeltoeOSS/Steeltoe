@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Extensions.Logging.CloudFoundry;
+using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -86,7 +86,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
-                    loggingBuilder.AddCloudFoundry(webhostContext.Configuration);
+                    loggingBuilder.AddDynamicLoggerProvider(webhostContext.Configuration);
                 });
 
             using (var server = new TestServer(builder))

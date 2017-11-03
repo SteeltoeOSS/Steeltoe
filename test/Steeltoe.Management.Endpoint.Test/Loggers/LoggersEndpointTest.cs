@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Logging.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;

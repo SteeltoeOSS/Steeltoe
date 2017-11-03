@@ -31,7 +31,7 @@
     </PackageReference>
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.4.1" />
     <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="$(CoreFxVersion)" />
-    <PackageReference Include="Steeltoe.Extensions.Logging.CloudFoundry" Version="$(SteeltoeLoggingVersion)" />
+    <PackageReference Include="Steeltoe.Extensions.Logging.DynamicLogger" Version="$(SteeltoeLoggingVersion)" />
   </ItemGroup>
   <PropertyGroup>
     <NoWarn>SA1100;SA1101;SA1124;SA1202;SA1204;SA1309;SA1310;SA1313;SA1401;SA1600;SA1611;1591;1701;1702;1705</NoWarn>

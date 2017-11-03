@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Logging.CloudFoundry;
+using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
     public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>
     {
         private ILogger<LoggersEndpoint> _logger;
-        private ICloudFoundryLoggerProvider _cloudFoundryLoggerProvider;
+        private IDynamicLoggerProvider _cloudFoundryLoggerProvider;
         private static List<string> levels = new List<string>()
         {
             LoggerLevels.MapLogLevel(LogLevel.None),
@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         public LoggersEndpoint(ILoggersOptions options, ILoggerProvider cloudFoundryLoggerProvider, ILogger<LoggersEndpoint> logger = null)
             : base(options)
         {
-            _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider as CloudFoundryLoggerProvider;
+            _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider as DynamicLoggerProvider;
             _logger = logger;
         }
 
@@ -57,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             return DoInvoke(_cloudFoundryLoggerProvider, request);
         }
 
-        public virtual Dictionary<string, object> DoInvoke(ICloudFoundryLoggerProvider provider, LoggersChangeRequest request)
+        public virtual Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, LoggersChangeRequest request)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
 
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             result.Add("levels", levels);
         }
 
-        public virtual ICollection<ILoggerConfiguration> GetLoggerConfigurations(ICloudFoundryLoggerProvider provider)
+        public virtual ICollection<ILoggerConfiguration> GetLoggerConfigurations(IDynamicLoggerProvider provider)
         {
             if (provider == null)
             {
@@ -99,7 +99,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             return provider.GetLoggerConfigurations();
         }
 
-        public virtual void SetLogLevel(ICloudFoundryLoggerProvider provider, string name, string level)
+        public virtual void SetLogLevel(IDynamicLoggerProvider provider, string name, string level)
         {
             if (provider == null)
             {

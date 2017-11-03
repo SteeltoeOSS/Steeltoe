@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Logging.CloudFoundry;
+using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
-    internal class TestLogProvider : ICloudFoundryLoggerProvider
+    internal class TestLogProvider : IDynamicLoggerProvider
     {
         public string Category { get; set; }
 

@@ -15,7 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Extensions.Logging.CloudFoundry;
+using Steeltoe.Extensions.Logging;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Loggers
@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.AddLogging(lb => lb.AddCloudFoundry(config));
+            services.AddLogging(lb => lb.AddDynamicLoggerProvider(config));
             services.TryAddSingleton<ILoggersOptions>(new LoggersOptions(config));
             services.TryAddSingleton<LoggersEndpoint>();
         }
