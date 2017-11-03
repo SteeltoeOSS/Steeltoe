@@ -43,6 +43,6 @@
     </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Logging.CloudFoundry\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Logging.DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
   </ItemGroup>
 </Project>

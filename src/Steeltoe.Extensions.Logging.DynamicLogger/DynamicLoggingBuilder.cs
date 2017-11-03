@@ -28,9 +28,9 @@ namespace Steeltoe.Extensions.Logging
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var settings = new ConsoleLoggerSettings();
+            var settings = new ConsoleLoggerSettings().FromConfiguration(configuration);
             builder.SetMinimumLevel(LogLevel.Trace);
-            builder.AddProvider(new DynamicLoggerProvider(settings.FromConfiguration(configuration)));
+            builder.AddProvider(new DynamicLoggerProvider(settings));
             return builder;
         }
     }
