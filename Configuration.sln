@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}"
 EndProject
@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2D89EF
 		config\versions.props = config\versions.props
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "srcripts", "srcripts", "{A2BB79F8-B551-4385-9280-9396064C82C2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{A2BB79F8-B551-4385-9280-9396064C82C2}"
 	ProjectSection(SolutionItems) = preProject
 		scripts\appveyor_build.cmd = scripts\appveyor_build.cmd
 		scripts\appveyor_install.cmd = scripts\appveyor_install.cmd
