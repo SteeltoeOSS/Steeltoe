@@ -10,7 +10,7 @@
     <CoreFxVersion>4.3.0</CoreFxVersion>
     <JsonNetVersion>9.0.1</JsonNetVersion>
     <TestSdkVersion>15.3.0</TestSdkVersion>
-    <XunitVersion>2.3.0-rc3-build3818</XunitVersion>
-    <XunitStudioVersion>2.3.0-rc3-build3818</XunitStudioVersion>
+    <XunitVersion>2.3.1</XunitVersion>
+    <XunitStudioVersion>2.3.1</XunitStudioVersion>
   </PropertyGroup>
 </Project>
