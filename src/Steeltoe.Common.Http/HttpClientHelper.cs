@@ -22,7 +22,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
+using System.Reflection;
 using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,7 +34,32 @@ namespace Steeltoe.Common.Http
     {
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private const bool DEFAULT_VALIDATE_CERTIFICATES = true;
+        private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } =  (sender, cert, chain, sslPolicyErrors) => true;
+        internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate = null;
+        internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> GetDisableDelegate()
+        {
+            if (Platform.IsFullFramework)
+            {
+                return null;
+            }
 
+            if (_reflectedDelegate != null)
+            {
+                return _reflectedDelegate;
+            }
+
+            var property = typeof(HttpClientHandler).GetProperty("DangerousAcceptAnyServerCertificateValidator",
+                BindingFlags.Public | BindingFlags.Static);
+            if (property != null)
+            {
+                _reflectedDelegate = property.GetValue(null) as Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool>;
+                if (_reflectedDelegate != null)
+                {
+                    return _reflectedDelegate;
+                }
+            }
+            return DefaultDelegate;
+        }
 
         public static HttpClient GetHttpClient(bool validateCertificates, int timeout)
         {
@@ -47,7 +74,7 @@ namespace Steeltoe.Common.Http
                 if (!validateCertificates)
                 {
                     var handler = new HttpClientHandler();
-                    handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                    handler.ServerCertificateCustomValidationCallback = GetDisableDelegate();
                     handler.SslProtocols = SslProtocols.Tls12;
                     client = new HttpClient(handler);
                 }

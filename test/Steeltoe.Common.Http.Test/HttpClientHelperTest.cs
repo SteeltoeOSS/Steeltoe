@@ -184,6 +184,22 @@ namespace Steeltoe.Common.Http.Test
             Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("http://foo/bar", null, null));
             Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("http://foo/bar", "clientid", null));
         }
+
+        [Fact]
+        public void GetDisableDelegate_ReturnsExpected()
+        {
+            var del1 = HttpClientHelper.GetDisableDelegate();
+
+            if (Platform.IsFullFramework)
+            {
+                Assert.Null(del1);
+            }
+            else
+            {
+                Assert.NotNull(del1);
+
+            }
+        }
     }
 
 }
