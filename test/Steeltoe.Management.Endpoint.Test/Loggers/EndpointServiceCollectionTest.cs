@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void AddLoggersActuator_AddsCorrectServices()
         {
+            // arrange
             ServiceCollection services = new ServiceCollection();
             var appsettings = new Dictionary<string, string>()
             {
@@ -54,13 +56,16 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
-
+            services.AddLogging(builder => builder.AddDynamicLoggerProvider(config));
             services.AddLoggersActuator(config);
-
             var serviceProvider = services.BuildServiceProvider();
+
+            // act
             var options = serviceProvider.GetService<ILoggersOptions>();
-            Assert.NotNull(options);
             var ep = serviceProvider.GetService<LoggersEndpoint>();
+
+            // assert
+            Assert.NotNull(options);
             Assert.NotNull(ep);
         }
     }

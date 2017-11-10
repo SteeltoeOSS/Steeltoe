@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -92,7 +93,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         {
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
-               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings));
+               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+               .ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddDynamicLoggerProvider(context.Configuration));
 
             using (var server = new TestServer(builder))
             {
@@ -121,7 +123,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         {
              var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings));
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddDynamicLoggerProvider(context.Configuration));
 
             using (var server = new TestServer(builder))
             {
