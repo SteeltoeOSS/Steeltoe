@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Extensions.Logging
@@ -30,18 +31,15 @@ namespace Steeltoe.Extensions.Logging
         /// <returns>Configured console logger settings</returns>
         public static ConsoleLoggerSettings FromConfiguration(this ConsoleLoggerSettings settings, IConfiguration configuration)
         {
-            settings.IncludeScopes = bool.Parse(configuration.GetSection("Logging:IncludeScopes").Value ?? "false");
-
-            foreach (var setting in configuration.GetSection("Logging:LogLevel").GetChildren())
+            if (configuration.GetSection("Logging").GetChildren().Any())
             {
-                try
-                {
-                    settings.Switches[setting.Key] = (LogLevel)Enum.Parse(typeof(LogLevel), setting.Value);
-                }
-                catch
-                {
-                }
+                configuration = configuration.GetSection("Logging");
             }
+
+            settings.IncludeScopes = bool.Parse(configuration.GetSection("IncludeScopes").Value ?? "false");
+
+            AddSwitches(configuration.GetSection("LogLevel").GetChildren(), settings.Switches);
+            AddSwitches(configuration.GetSection("Console:LogLevel").GetChildren(), settings.Switches);
 
             // Make sure a default entry exists
             if (!settings.Switches.Any(k => k.Key == "Default"))
@@ -50,6 +48,20 @@ namespace Steeltoe.Extensions.Logging
             }
 
             return settings;
+        }
+
+        private static void AddSwitches(IEnumerable<IConfigurationSection> settings, IDictionary<string, LogLevel> Switches)
+        {
+            foreach (var setting in settings)
+            {
+                try
+                {
+                    Switches[setting.Key] = (LogLevel)Enum.Parse(typeof(LogLevel), setting.Value);
+                }
+                catch
+                {
+                }
+            }
         }
     }
 }

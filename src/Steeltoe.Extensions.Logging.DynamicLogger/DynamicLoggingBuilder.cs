@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using System;
@@ -21,6 +22,18 @@ namespace Steeltoe.Extensions.Logging
 {
     public static class DynamicLoggingBuilder
     {
+        public static ILoggingBuilder AddDynamicLoggerProvider(this ILoggingBuilder builder)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            builder.SetMinimumLevel(LogLevel.Trace);
+            builder.Services.AddSingleton<ILoggerProvider, DynamicLoggerProvider>();
+            return builder;
+        }
+
         public static ILoggingBuilder AddDynamicLoggerProvider(this ILoggingBuilder builder, IConfiguration configuration)
         {
             if (builder == null)

@@ -31,7 +31,8 @@ namespace Steeltoe.Extensions.Logging.Test
                 { "Logging:IncludeScopes", "true" },
                 { "Logging:LogLevel:Default", "Error" },
                 { "Logging:LogLevel:Microsoft", "Warning" },
-                { "Logging:LogLevel:Steeltoe", "Information" },
+                { "Logging:Console:LogLevel:Steeltoe.Extensions", "Trace" },
+                { "Logging:LogLevel:Steeltoe", "Information" }
             };
             var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
             var settings = new ConsoleLoggerSettings();
@@ -44,6 +45,7 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.Equal(LogLevel.Error, settings.Switches["Default"]);
             Assert.Equal(LogLevel.Warning, settings.Switches["Microsoft"]);
             Assert.Equal(LogLevel.Information, settings.Switches["Steeltoe"]);
+            Assert.Equal(LogLevel.Trace, settings.Switches["Steeltoe.Extensions"]);
         }
         [Fact]
         public void FromConfiguration_NoError_When_NotConfigured()

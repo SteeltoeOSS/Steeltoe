@@ -25,23 +25,69 @@ namespace Steeltoe.Extensions.Logging.Test
         private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
+            ["Logging:Console:LogLevel:Default"] = "Information",
+            ["Logging:LogLevel:Steeltoe.Extensions.Logging.Test"] = "Information",
             ["Logging:LogLevel:Default"] = "Warning"
         };
 
         [Fact]
-        public void AddDynamicLoggerProvider_Works()
+        public void AddConsole_Works_WithAddConfiguration()
         {
             // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-            var services = new ServiceCollection().AddLogging(builder => builder.AddDynamicLoggerProvider(configuration)).BuildServiceProvider();
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddConsole();
+                }).BuildServiceProvider();
+
+            // act
+            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
+
+            // assert
+            Assert.NotNull(logger);
+            Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+        }
+
+        [Fact]
+        public void AddDynamicLoggerProvider_Works_WithConfigurationParam()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder => builder.AddDynamicLoggerProvider(configuration))
+                .BuildServiceProvider();
 
             // act
             var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>));
 
             // assert
             Assert.NotNull(logger);
-            Assert.True((logger as ILogger<DynamicLoggingBuilderTest>).IsEnabled(LogLevel.Warning));
-            Assert.False((logger as ILogger<DynamicLoggingBuilderTest>).IsEnabled(LogLevel.Debug));
+            Assert.True((logger as ILogger<DynamicLoggingBuilderTest>).IsEnabled(LogLevel.Warning), "Warning level should be enabled");
+            Assert.False((logger as ILogger<DynamicLoggingBuilderTest>).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+        }
+
+        [Fact]
+        public void AddDynamicLoggerProvider_Works_WithAddConfiguration()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicLoggerProvider();
+                }).BuildServiceProvider();
+
+            // act
+            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
+
+            // assert
+            Assert.NotNull(logger);
+            Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
         }
     }
 }

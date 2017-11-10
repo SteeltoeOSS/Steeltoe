@@ -22,6 +22,7 @@ using System.Linq;
 
 namespace Steeltoe.Extensions.Logging
 {
+    [ProviderAlias("Console")]
     public class DynamicLoggerProvider : IDynamicLoggerProvider
     {
         private Func<string, LogLevel, bool> _filter;
@@ -33,6 +34,7 @@ namespace Steeltoe.Extensions.Logging
         private ConsoleLoggerProvider _delegate;
         private IConsoleLoggerSettings _settings;
         private bool _includeScopes;
+        private LoggerFilterOptions _filterOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
@@ -66,10 +68,13 @@ namespace Steeltoe.Extensions.Logging
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
         /// </summary>
         /// <param name="options">Pass-through to ConsoleLoggerProvider constructor</param>
-        public DynamicLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options)
+        /// <param name="filterOptionsConfigurer">Logger filters</param>
+        public DynamicLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options, IConfigureOptions<LoggerFilterOptions> filterOptionsConfigurer)
         {
+            _filterOptions = new LoggerFilterOptions();
+            filterOptionsConfigurer.Configure(_filterOptions);
+            SetFiltersFromOptions(filterOptionsConfigurer);
             _delegate = new ConsoleLoggerProvider(options);
-            _settings = null;
         }
 
         /// <summary>
@@ -188,6 +193,24 @@ namespace Steeltoe.Extensions.Logging
                     {
                         l.Value.Filter = GetFilter(category);
                     }
+                }
+            }
+        }
+
+        private void SetFiltersFromOptions(IConfigureOptions<LoggerFilterOptions> filterOptions)
+        {
+            _filterOptions = new LoggerFilterOptions();
+            filterOptions.Configure(_filterOptions);
+
+            foreach (var rule in _filterOptions.Rules)
+            {
+                if (rule.CategoryName == "Default" || rule.CategoryName == string.Empty)
+                {
+                    _filter = (category, level) => level >= rule.LogLevel;
+                }
+                else
+                {
+                    _runningFilters.TryAdd(rule.CategoryName, (category, level) => level >= rule.LogLevel);
                 }
             }
         }
