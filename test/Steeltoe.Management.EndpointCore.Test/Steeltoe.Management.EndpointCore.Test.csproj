@@ -1,38 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
-    <Description>Unit test project for Steeltoe.Management.CloudFoundry</Description>
+    <Description>Unit test project for Steeltoe.Management.EndpointCore</Description>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Management.CloudFoundry.Test</AssemblyName>
-    <PackageId>Steeltoe.Management.CloudFoundry.Test</PackageId>
-    <PackageTags>Spring Cloud;Actuator;Management;Monitoring;CloudFoundry</PackageTags>
-    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <AssemblyName>Steeltoe.Management.EndpointCore.Test</AssemblyName>
+    <PackageId>Steeltoe.Management.EndpointCore.Test</PackageId>
+    <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
   
+  
   <ItemGroup>
+    <None Update="garbage.git.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Management.CloudFoundry\Steeltoe.Management.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
-    
+
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
+
   <PropertyGroup>
     <NoWarn>SA1100;SA1101;SA1124;SA1202;SA1204;SA1309;SA1310;SA1313;SA1600;SA1652;SA1611;1591;1701;1702;1705</NoWarn>
   </PropertyGroup>

@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.Management.Endpoint\Steeltoe.Management.Endpoint.csproj" />
-    <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -18,7 +18,7 @@ using System.Net;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
-    internal class SecurityResult
+    public class SecurityResult
     {
         [JsonIgnore]
         public HttpStatusCode Code;

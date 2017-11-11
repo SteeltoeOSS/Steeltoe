@@ -18,8 +18,6 @@ artifacts:
 - path: 'src\Steeltoe.Management.Endpoint\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Management.EndpointCore\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Management.EndpointCore\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Management.CloudFoundry\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Management.CloudFoundry\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Management.CloudFoundryCore\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Management.CloudFoundryCore\bin\Release\*.nupkg'
 deploy:
