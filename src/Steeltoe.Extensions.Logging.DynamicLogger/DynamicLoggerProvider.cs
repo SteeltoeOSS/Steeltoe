@@ -34,7 +34,7 @@ namespace Steeltoe.Extensions.Logging
         private ConsoleLoggerProvider _delegate;
         private IConsoleLoggerSettings _settings;
         private bool _includeScopes;
-        private LoggerFilterOptions _filterOptions;
+        private IOptionsMonitor<LoggerFilterOptions> _filterOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
@@ -69,11 +69,11 @@ namespace Steeltoe.Extensions.Logging
         /// </summary>
         /// <param name="options">Pass-through to ConsoleLoggerProvider constructor</param>
         /// <param name="filterOptionsConfigurer">Logger filters</param>
-        public DynamicLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options, IConfigureOptions<LoggerFilterOptions> filterOptionsConfigurer)
+        public DynamicLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options, IOptionsMonitor<LoggerFilterOptions> filterOptions)
         {
-            _filterOptions = new LoggerFilterOptions();
-            filterOptionsConfigurer.Configure(_filterOptions);
-            SetFiltersFromOptions(filterOptionsConfigurer);
+            //_filterOptions = new LoggerFilterOptions();
+            //filterOptionsConfigurer.Configure(_filterOptions);
+            SetFiltersFromOptions(filterOptions);
             _delegate = new ConsoleLoggerProvider(options);
         }
 
@@ -197,14 +197,15 @@ namespace Steeltoe.Extensions.Logging
             }
         }
 
-        private void SetFiltersFromOptions(IConfigureOptions<LoggerFilterOptions> filterOptions)
+        private void SetFiltersFromOptions(IOptionsMonitor<LoggerFilterOptions> filterOptions)
         {
-            _filterOptions = new LoggerFilterOptions();
-            filterOptions.Configure(_filterOptions);
+            // _filterOptions = new LoggerFilterOptions();
+            //filterOptions.Configure(_filterOptions);
 
-            foreach (var rule in _filterOptions.Rules)
+            _filterOptions = filterOptions;
+            foreach (var rule in _filterOptions.CurrentValue.Rules)
             {
-                if (rule.CategoryName == "Default" || rule.CategoryName == string.Empty)
+                if (rule.CategoryName == "Default" || string.IsNullOrEmpty(rule.CategoryName))
                 {
                     _filter = (category, level) => level >= rule.LogLevel;
                 }
