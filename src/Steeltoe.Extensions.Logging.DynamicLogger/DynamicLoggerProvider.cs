@@ -68,12 +68,11 @@ namespace Steeltoe.Extensions.Logging
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
         /// </summary>
         /// <param name="options">Pass-through to ConsoleLoggerProvider constructor</param>
-        /// <param name="filterOptionsConfigurer">Logger filters</param>
+        /// <param name="filterOptions">Logger filters</param>
         public DynamicLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options, IOptionsMonitor<LoggerFilterOptions> filterOptions)
         {
-            //_filterOptions = new LoggerFilterOptions();
-            //filterOptionsConfigurer.Configure(_filterOptions);
-            SetFiltersFromOptions(filterOptions);
+            _filterOptions = filterOptions;
+            SetFiltersFromOptions();
             _delegate = new ConsoleLoggerProvider(options);
         }
 
@@ -197,12 +196,8 @@ namespace Steeltoe.Extensions.Logging
             }
         }
 
-        private void SetFiltersFromOptions(IOptionsMonitor<LoggerFilterOptions> filterOptions)
+        private void SetFiltersFromOptions()
         {
-            // _filterOptions = new LoggerFilterOptions();
-            //filterOptions.Configure(_filterOptions);
-
-            _filterOptions = filterOptions;
             foreach (var rule in _filterOptions.CurrentValue.Rules)
             {
                 if (rule.CategoryName == "Default" || string.IsNullOrEmpty(rule.CategoryName))

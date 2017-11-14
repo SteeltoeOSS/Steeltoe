@@ -52,25 +52,25 @@ namespace Steeltoe.Extensions.Logging.Test
         }
 
         [Fact]
-        public void AddDynamicLoggerProvider_Works_WithConfigurationParam()
+        public void AddDynamicConsole_Works_WithConfigurationParam()
         {
             // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
             var services = new ServiceCollection()
-                .AddLogging(builder => builder.AddDynamicLoggerProvider(configuration))
+                .AddLogging(builder => builder.AddDynamicConsole(configuration))
                 .BuildServiceProvider();
 
             // act
-            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>));
+            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
             // assert
             Assert.NotNull(logger);
-            Assert.True((logger as ILogger<DynamicLoggingBuilderTest>).IsEnabled(LogLevel.Warning), "Warning level should be enabled");
-            Assert.False((logger as ILogger<DynamicLoggingBuilderTest>).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+            Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
         }
 
         [Fact]
-        public void AddDynamicLoggerProvider_Works_WithAddConfiguration()
+        public void AddDynamicConsole_Works_WithAddConfiguration()
         {
             // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
@@ -78,7 +78,7 @@ namespace Steeltoe.Extensions.Logging.Test
                 .AddLogging(builder =>
                 {
                     builder.AddConfiguration(configuration.GetSection("Logging"));
-                    builder.AddDynamicLoggerProvider();
+                    builder.AddDynamicConsole();
                 }).BuildServiceProvider();
 
             // act

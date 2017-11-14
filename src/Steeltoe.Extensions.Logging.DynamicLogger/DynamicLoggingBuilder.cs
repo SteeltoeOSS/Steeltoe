@@ -22,7 +22,7 @@ namespace Steeltoe.Extensions.Logging
 {
     public static class DynamicLoggingBuilder
     {
-        public static ILoggingBuilder AddDynamicLoggerProvider(this ILoggingBuilder builder)
+        public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder)
         {
             if (builder == null)
             {
@@ -34,7 +34,7 @@ namespace Steeltoe.Extensions.Logging
             return builder;
         }
 
-        public static ILoggingBuilder AddDynamicLoggerProvider(this ILoggingBuilder builder, IConfiguration configuration)
+        public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder, IConfiguration configuration)
         {
             if (builder == null)
             {
