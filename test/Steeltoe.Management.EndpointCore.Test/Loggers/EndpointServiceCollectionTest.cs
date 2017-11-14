@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
-            services.AddLogging(builder => builder.AddDynamicLoggerProvider(config));
+            services.AddLogging(builder => builder.AddDynamicConsole(config));
             services.AddLoggersActuator(config);
             var serviceProvider = services.BuildServiceProvider();
 

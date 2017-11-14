@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -86,7 +87,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
-                    loggingBuilder.AddDynamicLoggerProvider(webhostContext.Configuration);
+                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
                 });
 
             using (var server = new TestServer(builder))
