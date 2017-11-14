@@ -29,7 +29,7 @@ namespace Steeltoe.Extensions.Logging
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.SetMinimumLevel(LogLevel.Trace);
+            builder.AddFilter<DynamicLoggerProvider>(null, LogLevel.Trace);
             builder.Services.AddSingleton<ILoggerProvider, DynamicLoggerProvider>();
             return builder;
         }
@@ -42,7 +42,7 @@ namespace Steeltoe.Extensions.Logging
             }
 
             var settings = new ConsoleLoggerSettings().FromConfiguration(configuration);
-            builder.SetMinimumLevel(LogLevel.Trace);
+            builder.AddFilter<DynamicLoggerProvider>(null, LogLevel.Trace);
             builder.AddProvider(new DynamicLoggerProvider(settings));
             return builder;
         }

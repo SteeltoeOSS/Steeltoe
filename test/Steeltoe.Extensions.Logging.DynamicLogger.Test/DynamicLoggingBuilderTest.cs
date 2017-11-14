@@ -89,5 +89,61 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
             Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
         }
+
+        [Fact]
+        public void DynamicLevelSetting_ParmLessAddDynamic_NotBrokenByAddConfiguration()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole();
+                })
+                .BuildServiceProvider();
+
+            // act
+            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
+
+            // assert
+            Assert.NotNull(logger);
+            Assert.True((logger).IsEnabled(LogLevel.Warning), "Warning level should be enabled");
+            Assert.False((logger).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+            Assert.False((logger).IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
+
+            // change the log level and confirm it worked
+            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
+            provider.SetLogLevel("Steeltoe.Extensions.Logging.Test", LogLevel.Trace);
+            Assert.True((logger).IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
+        }
+
+        [Fact]
+        public void DynamicLevelSetting_WithParmsAddDynamic_NotBrokenByAddConfiguration()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole(configuration);
+                })
+                .BuildServiceProvider();
+
+            // act
+            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
+
+            // assert
+            Assert.NotNull(logger);
+            Assert.True((logger).IsEnabled(LogLevel.Warning), "Warning level should be enabled");
+            Assert.False((logger).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+            Assert.False((logger).IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
+
+            // change the log level and confirm it worked
+            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
+            provider.SetLogLevel("Steeltoe.Extensions.Logging.Test", LogLevel.Trace);
+            Assert.True((logger).IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
+        }
     }
 }
