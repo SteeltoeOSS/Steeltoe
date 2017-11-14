@@ -22,7 +22,7 @@ using System.Linq;
 
 namespace Steeltoe.Extensions.Logging
 {
-    [ProviderAlias("Console")]
+    [ProviderAlias("Dynamic")]
     public class DynamicLoggerProvider : IDynamicLoggerProvider
     {
         private Func<string, LogLevel, bool> _filter;
@@ -198,7 +198,7 @@ namespace Steeltoe.Extensions.Logging
 
         private void SetFiltersFromOptions()
         {
-            foreach (var rule in _filterOptions.CurrentValue.Rules)
+            foreach (var rule in _filterOptions.CurrentValue.Rules.Where(p => string.IsNullOrEmpty(p.ProviderName) || p.ProviderName == "Console"))
             {
                 if (rule.CategoryName == "Default" || string.IsNullOrEmpty(rule.CategoryName))
                 {
@@ -285,6 +285,8 @@ namespace Steeltoe.Extensions.Logging
                         return _runningFilters.First(f => f.Key == prefix).Value;
                     }
                 }
+
+                return _filter;
             }
 
             // check if there are any applicable settings

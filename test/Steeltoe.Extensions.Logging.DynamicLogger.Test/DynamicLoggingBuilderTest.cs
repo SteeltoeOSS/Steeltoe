@@ -26,9 +26,68 @@ namespace Steeltoe.Extensions.Logging.Test
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:Console:LogLevel:Default"] = "Information",
+            ["Logging:Console:LogLevel:A.B.C.D"] = "Critical",
             ["Logging:LogLevel:Steeltoe.Extensions.Logging.Test"] = "Information",
             ["Logging:LogLevel:Default"] = "Warning"
         };
+
+        [Fact]
+        public void OnlyApplicableFilters_AreApplied()
+        {
+            // arrange
+            var _appsettings = new Dictionary<string, string>()
+            {
+                ["Logging:IncludeScopes"] = "false",
+                ["Logging:LogLevel:Default"] = "Information",
+                ["Logging:foo:LogLevel:A.B.C.D.TestClass"] = "None"
+            };
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(_appsettings).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole();
+                })
+                .BuildServiceProvider();
+
+            // act
+            var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
+
+            // assert
+            Assert.NotNull(logger);
+            Assert.True((logger).IsEnabled(LogLevel.Information), "Information level should be enabled");
+            Assert.False((logger).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+        }
+
+        [Fact]
+        public void DynamicLevelSetting_WorksWith_ConsoleFilters()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole();
+                })
+                .BuildServiceProvider();
+
+            // act
+            var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
+
+            // assert
+            Assert.NotNull(logger);
+            Assert.True((logger).IsEnabled(LogLevel.Critical), "Critical level should be enabled");
+            Assert.False((logger).IsEnabled(LogLevel.Error), "Error level should NOT be enabled");
+            Assert.False((logger).IsEnabled(LogLevel.Warning), "Warning level should NOT be enabled");
+            Assert.False((logger).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+            Assert.False((logger).IsEnabled(LogLevel.Trace), "Trace level should NOT be enabled yet");
+
+            // change the log level and confirm it worked
+            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
+            provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
+            Assert.True((logger).IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
+        }
 
         [Fact]
         public void AddConsole_Works_WithAddConfiguration()
