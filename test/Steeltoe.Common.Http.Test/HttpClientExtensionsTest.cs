@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RichardSzalay.MockHttp;
 using System.Net.Http;
 using Xunit;
@@ -25,17 +27,42 @@ namespace Steeltoe.Common.Http.Test
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
-            var authRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, "http://test-server/*").Respond("application/json", "{\"Name\": \"Test\", \"Value\": \"Poster\"}");
+            mockHttpMessageHandler.Expect(HttpMethod.Post, "http://test-server/*")
+                .WithContent("{\"Name\":\"Sample\",\"Value\":\"Request\"}")
+                .Respond("application/json", "{\"name\": \"Test\", \"value\": \"Response\"}");
             var client = new HttpClient(mockHttpMessageHandler);
 
             // act
-            var result = await client.PostAsJsonAsync("http://test-server/", new SerializationTestObject { Name = "Sample", Value = "Test" });
+            var result = await client.PostAsJsonAsync("http://test-server/", new SerializationTestObject { Name = "Sample", Value = "Request" });
             var responseMessage = await result.Content.ReadAsJsonAsync<SerializationTestObject>();
 
             // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal("Test", responseMessage.Name);
-            Assert.Equal("Poster", responseMessage.Value);
+            Assert.Equal("Response", responseMessage.Value);
+        }
+
+        [Fact]
+        public async void PostAsJsonAsync_Uses_GivenSerializerSettings()
+        {
+            // arrange
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+            var authRequest = mockHttpMessageHandler
+                .Expect(HttpMethod.Post, "http://test-server/*")
+                .WithContent("{\"name\":\"Sample\",\"value\":\"Request\"}")
+                .Respond("application/json", "{\"name\": \"Test\", \"value\": \"Response\"}");
+            var client = new HttpClient(mockHttpMessageHandler);
+            var serializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+            var requestObject = new SerializationTestObject { Name = "Sample", Value = "Request" };
+
+            // act
+            var result = await client.PostAsJsonAsync("http://test-server/", requestObject, serializerSettings);
+            var responseMessage = await result.Content.ReadAsJsonAsync<SerializationTestObject>();
+
+            // assert
+            mockHttpMessageHandler.VerifyNoOutstandingExpectation();
+            Assert.Equal("Test", responseMessage.Name);
+            Assert.Equal("Response", responseMessage.Value);
         }
 
         [Fact]
@@ -43,17 +70,43 @@ namespace Steeltoe.Common.Http.Test
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
-            var authRequest = mockHttpMessageHandler.Expect(HttpMethod.Put, "http://test-server/*").Respond("application/json", "{\"Name\": \"Test\", \"Value\": \"PutPut\"}");
+            mockHttpMessageHandler
+                .Expect(HttpMethod.Put, "http://test-server/*")
+                .WithContent("{\"Name\":\"Sample\",\"Value\":\"Request\"}")
+                .Respond("application/json", "{\"Name\": \"Test\", \"Value\": \"Response\"}");
             var client = new HttpClient(mockHttpMessageHandler);
 
             // act
-            var result = await client.PutAsJsonAsync("http://test-server/", new SerializationTestObject { Name = "Sample", Value = "Test" });
+            var result = await client.PutAsJsonAsync("http://test-server/", new SerializationTestObject { Name = "Sample", Value = "Request" });
             var responseMessage = await result.Content.ReadAsJsonAsync<SerializationTestObject>();
 
             // assert
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
             Assert.Equal("Test", responseMessage.Name);
-            Assert.Equal("PutPut", responseMessage.Value);
+            Assert.Equal("Response", responseMessage.Value);
+        }
+
+        [Fact]
+        public async void PutAsJsonAsync_Uses_GivenSerializerSettings()
+        {
+            // arrange
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+            var authRequest = mockHttpMessageHandler
+                .Expect(HttpMethod.Put, "http://test-server/*")
+                .WithContent("{\"name\":\"Sample\",\"value\":\"Request\"}")
+                .Respond("application/json", "{\"name\": \"Test\", \"value\": \"Response\"}");
+            var client = new HttpClient(mockHttpMessageHandler);
+            var serializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+            var requestObject = new SerializationTestObject { Name = "Sample", Value = "Request" };
+
+            // act
+            var result = await client.PutAsJsonAsync("http://test-server/", requestObject, serializerSettings);
+            var responseMessage = await result.Content.ReadAsJsonAsync<SerializationTestObject>();
+
+            // assert
+            mockHttpMessageHandler.VerifyNoOutstandingExpectation();
+            Assert.Equal("Test", responseMessage.Name);
+            Assert.Equal("Response", responseMessage.Value);
         }
     }
 }
