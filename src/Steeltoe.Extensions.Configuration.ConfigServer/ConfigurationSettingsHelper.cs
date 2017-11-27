@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,12 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
 using System;
-
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -41,7 +38,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 throw new ArgumentNullException(nameof(config));
             }
-
 
             var clientConfigsection = config.GetSection(configPrefix);
 
@@ -110,7 +106,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetUri(IConfigurationSection clientConfigsection, IConfiguration resolve, string def)
         {
-
             return ConfigurationValuesHelper.GetString("uri", clientConfigsection, resolve, def);
         }
 
@@ -129,7 +124,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return ConfigurationValuesHelper.GetString("label", clientConfigsection, resolve, null);
         }
 
-
         private static string GetApplicationName(IConfigurationSection primary, IConfiguration config, string defName)
         {
             var secondary = config.GetSection(SPRING_APPLICATION_PREFIX);
@@ -142,14 +136,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 def = "Production";
             }
-            return ConfigurationValuesHelper.GetString("env", section, resolve, def);
 
+            return ConfigurationValuesHelper.GetString("env", section, resolve, def);
         }
 
         private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, IConfiguration resolve, bool def)
         {
             return ConfigurationValuesHelper.GetBoolean("validate_certificates", clientConfigsection, resolve, def);
         }
-
     }
 }

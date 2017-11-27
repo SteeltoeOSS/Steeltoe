@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +11,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-
-using Xunit;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 using System.IO;
-using Microsoft.AspNetCore.Hosting.Internal;
+using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
-    //
     // NOTE: Some of the tests assume a running Spring Cloud Config Server is started
     //       with repository data for application: foo, profile: development
     //
@@ -34,8 +30,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
     //          eg. git clone https://github.com/spring-cloud/spring-cloud-config.git
     //              cd spring-cloud-config\spring-cloud-config-server
     //              mvn spring-boot:run
-    //
-
     public class ConfigServerConfigurationExtensionsIntegrationTest
     {
         public ConfigServerConfigurationExtensionsIntegrationTest()
@@ -45,8 +39,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         [Fact]
         public void SpringCloudConfigServer_ReturnsExpectedDefaultData()
         {
-
-            // Arrange 
+            // Arrange
             var appsettings = @"
 {
     'spring': {
@@ -68,7 +61,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-
             var hostingEnv = new HostingEnvironment();
             configurationBuilder.AddJsonFile(fileName);
 
@@ -81,7 +73,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             Assert.Equal("Spring Cloud Samples", root["info:description"]);
             Assert.Equal("https://github.com/spring-cloud-samples", root["info:url"]);
             Assert.Equal("http://localhost:8761/eureka/", root["eureka:client:serviceUrl:defaultZone"]);
-
         }
 
         [Fact]
@@ -96,7 +87,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                 var client = server.CreateClient();
                 string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
-                Assert.Equal("spam" +
+                Assert.Equal(
+                    "spam" +
                     "from foo development" +
                     "Spring Cloud Samples" +
                     "https://github.com/spring-cloud-samples", result);
@@ -104,4 +96,3 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         }
     }
 }
-

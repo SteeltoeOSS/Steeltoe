@@ -12,26 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
 using System;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
-    public static class CloudFoundryConfigurationBuilderExtensions
+    public class CredentialConverter : TypeConverter
     {
-        public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            return configurationBuilder.AddCloudFoundry(null);
-        }
-
-        public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader settingsReader)
-        {
-            if (configurationBuilder == null)
+            if (value is string)
             {
-                throw new ArgumentNullException(nameof(configurationBuilder));
+                return new Credential((string)value);
             }
 
-            return configurationBuilder.Add(new CloudFoundryConfigurationSource { SettingsReader = settingsReader });
+            return base.ConvertFrom(context, culture, value);
+        }
+
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            if (sourceType == typeof(string))
+            {
+                return true;
+            }
+
+            return base.CanConvertFrom(context, sourceType);
         }
     }
 }

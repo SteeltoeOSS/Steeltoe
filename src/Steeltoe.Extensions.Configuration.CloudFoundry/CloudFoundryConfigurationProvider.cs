@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
@@ -34,20 +31,52 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 throw new ArgumentNullException(nameof(settingsReader));
             }
 
-            this._settingsReader = settingsReader;
+            _settingsReader = settingsReader;
         }
+
+        internal IDictionary<string, string> Properties => Data;
 
         public override void Load()
         {
-            this.Process();
+            Process();
+        }
+
+        internal static MemoryStream GetMemoryStream(string json)
+        {
+            var memStream = new MemoryStream();
+            var textWriter = new StreamWriter(memStream);
+            textWriter.Write(json);
+            textWriter.Flush();
+            memStream.Seek(0, SeekOrigin.Begin);
+            return memStream;
+        }
+
+        internal void AddDiegoVariables()
+        {
+            if (!Data.ContainsKey("vcap:application:instance_id"))
+            {
+                Data["vcap:application:instance_id"] = _settingsReader.InstanceId;
+            }
+
+            if (!Data.ContainsKey("vcap:application:instance_index"))
+            {
+                Data["vcap:application:instance_index"] = _settingsReader.InstanceIndex;
+            }
+
+            if (!Data.ContainsKey("vcap:application:port"))
+            {
+                Data["vcap:application:port"] = _settingsReader.InstancePort;
+            }
+
+            Data["vcap:application:instance_ip"] = _settingsReader.InstanceIp;
+            Data["vcap:application:internal_ip"] = _settingsReader.InstanceInternalIp;
         }
 
         private void Process()
         {
-            string appJson = this._settingsReader.ApplicationJson;
+            string appJson = _settingsReader.ApplicationJson;
             if (!string.IsNullOrEmpty(appJson))
             {
-
                 var memStream = GetMemoryStream(appJson);
                 ConfigurationBuilder builder = new ConfigurationBuilder();
                 builder.Add(new JsonStreamConfigurationSource(memStream));
@@ -67,7 +96,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 }
             }
 
-            string appServicesJson = this._settingsReader.ServicesJson;
+            string appServicesJson = _settingsReader.ServicesJson;
             if (!string.IsNullOrEmpty(appServicesJson))
             {
                 var memStream = GetMemoryStream(appServicesJson);
@@ -80,36 +109,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                     LoadData("vcap:services", servicesData.GetChildren());
                 }
             }
-
-        }
-
-        internal void AddDiegoVariables()
-        {
-            if (!Data.ContainsKey("vcap:application:instance_id"))
-            {
-                Data["vcap:application:instance_id"] = this._settingsReader.InstanceId;
-            }
-
-            if (!Data.ContainsKey("vcap:application:instance_index"))
-            {
-                Data["vcap:application:instance_index"] = this._settingsReader.InstanceIndex;
-            }
-
-            if (!Data.ContainsKey("vcap:application:port"))
-            {
-                Data["vcap:application:port"] = this._settingsReader.InstancePort;
-            }
-
-            Data["vcap:application:instance_ip"] = this._settingsReader.InstanceIp;
-            Data["vcap:application:internal_ip"] = this._settingsReader.InstanceInternalIp;
-
-        }
-        internal IDictionary<string, string> Properties
-        {
-            get
-            {
-                return Data;
-            }
         }
 
         private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections)
@@ -118,6 +117,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             {
                 return;
             }
+
             foreach (IConfigurationSection section in sections)
             {
                 LoadSection(prefix, section);
@@ -128,56 +128,16 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         private void LoadSection(string prefix, IConfigurationSection section)
         {
             if (section == null)
+            {
                 return;
+            }
+
             if (string.IsNullOrEmpty(section.Value))
+            {
                 return;
+            }
+
             Data[prefix + ConfigurationPath.KeyDelimiter + section.Path] = section.Value;
-        }
-
-        internal static MemoryStream GetMemoryStream(string json)
-        {
-            var memStream = new MemoryStream();
-            var textWriter = new StreamWriter(memStream);
-            textWriter.Write(json);
-            textWriter.Flush();
-            memStream.Seek(0, SeekOrigin.Begin);
-            return memStream;
-        }
-
-    }
-
-    class JsonStreamConfigurationProvider : JsonConfigurationProvider
-    {
-        private JsonStreamConfigurationSource _source;
-        internal JsonStreamConfigurationProvider(JsonStreamConfigurationSource source) : base(source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            _source = source;
-        }
-        public override void Load()
-        {
-            base.Load(_source.Stream);
-        }
-    }
-
-    class JsonStreamConfigurationSource : JsonConfigurationSource
-    {
-        internal MemoryStream Stream { get; }
-
-        internal JsonStreamConfigurationSource(MemoryStream stream)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-            Stream = stream;
-        }
-        public override IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            return new JsonStreamConfigurationProvider(this);
         }
     }
 }

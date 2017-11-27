@@ -29,11 +29,23 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreMvcTestVersion)" />
 
     <!-- 4.3.0 of this package has problems on net46+, by default that version gets included, so we have to force using 4.3.1+ in apps -->
-    <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" /> 
+    <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <NoWarn>SA1100;SA1101;SA1124;SA1309;SA1310;SA1600;SA1611;SA1623;SA1652;1591;1701;1702;1705</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
   </ItemGroup>
 
 </Project>

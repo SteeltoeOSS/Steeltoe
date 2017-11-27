@@ -12,6 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.ComponentModel;
 
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.CloudFoundryCore.Test")]
+namespace Steeltoe.Extensions.Configuration.CloudFoundry
+{
+    [TypeConverter(typeof(CredentialConverter))]
+    public class Credential : Dictionary<string, Credential>
+    {
+        private string _value;
+
+        public Credential()
+        {
+        }
+
+        public Credential(string value)
+        {
+            _value = value;
+        }
+
+        public string Value
+        {
+            get
+            {
+                return _value;
+            }
+        }
+    }
+}

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,21 +11,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Http;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Security;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using System.Threading;
+using System.Text;
 using System.Text.RegularExpressions;
-using Steeltoe.Common.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -36,8 +34,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource
     {
         /// <summary>
-        /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server 
-        /// configuration settings (<see cref="ConfigServerClientSettings"/> are found. 
+        /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server
+        /// configuration settings (<see cref="ConfigServerClientSettings"/> are found.
         ///   (e.g. spring:cloud:config:env, spring:cloud:config:uri, spring:cloud:config:enabled, etc.)
         /// </summary>
         public const string PREFIX = "spring:cloud:config";
@@ -45,80 +43,60 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public const string TOKEN_HEADER = "X-Config-Token";
         public const string STATE_HEADER = "X-Config-State";
 
-        protected ConfigServerClientSettings _settings;
-        protected HttpClient _client;
-        protected ILogger _logger;
+        private const string ArrayPattern = @"(\[[0-9]+\])*$";
+        private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
+        private static readonly string[] EMPTY_LABELS = new string[] { string.Empty };
+        private ConfigServerClientSettings _settings;
+        private HttpClient _client;
+        private ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/> with default
+        /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class with default
         /// configuration settings. <see cref="ConfigServerClientSettings"/>
-        /// <param name="logFactory">optional logging factory</param>
         /// </summary>
-        public ConfigServerConfigurationProvider(ILoggerFactory logFactory = null) :
-            this(new ConfigServerClientSettings(), logFactory)
+        /// <param name="logFactory">optional logging factory</param>
+        public ConfigServerConfigurationProvider(ILoggerFactory logFactory = null)
+            : this(new ConfigServerClientSettings(), logFactory)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/>.
+        /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class.
         /// </summary>
         /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
         /// <param name="logFactory">optional logging factory</param>
-        /// </summary>
         public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
-            _settings = settings;
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _client = null;
-
         }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ConfigServerConfigurationProvider"/>.
+        /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class.
         /// </summary>
-        /// <param name="settings">the configuration settings the provider uses when
-        /// accessing the server.</param>
-        /// <param name="httpClient">a HttpClient the provider uses to make requests of
-        /// the server.</param>
+        /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
+        /// <param name="httpClient">a HttpClient the provider uses to make requests of the server.</param>
         /// <param name="logFactory">optional logging factory</param>
-        /// </summary>
         public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            if (httpClient == null)
-            {
-                throw new ArgumentNullException(nameof(httpClient));
-            }
-
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _client = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
-            _settings = settings;
-            _client = httpClient;
         }
-
 
         /// <summary>
         /// The configuration settings the provider uses when accessing the server.
         /// </summary>
-        public virtual ConfigServerClientSettings Settings
-        {
-            get
-            {
-                return _settings as ConfigServerClientSettings;
-            }
-        }
+        public virtual ConfigServerClientSettings Settings => _settings as ConfigServerClientSettings;
+
+        internal IDictionary<string, string> Properties => Data;
+
+        internal ILogger Logger => _logger;
 
         /// <summary>
         /// Loads configuration data from the Spring Cloud Configuration Server as specified by
-        /// the <see cref="Settings"/> 
+        /// the <see cref="Settings"/>
         /// </summary>
         public override void Load()
         {
@@ -152,17 +130,34 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             throw;
                         }
                     }
-
-                } while (true);
-
+                }
+                while (true);
             }
             else
             {
                 _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
                 DoLoad();
             }
-
         }
+
+        public virtual IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
+            ConfigurationBuilder config = new ConfigurationBuilder();
+            foreach (IConfigurationSource s in builder.Sources)
+            {
+                if (s == this)
+                {
+                    break;
+                }
+
+                config.Add(s);
+            }
+
+            IConfiguration existing = config.Build();
+            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, existing);
+            return this;
+        }
+
         internal void DoLoad()
         {
             Exception error = null;
@@ -191,6 +186,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                                 AddPropertySource(sources[index]);
                             }
                         }
+
                         return;
                     }
                 }
@@ -208,12 +204,22 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
         }
 
+        internal string[] GetLabels()
+        {
+            if (string.IsNullOrWhiteSpace(_settings.Label))
+            {
+                return EMPTY_LABELS;
+            }
+
+            return _settings.Label.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         /// <summary>
         /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server
         /// </summary>
         /// <param name="requestUri">the Uri used when accessing the server</param>
         /// <returns>The HttpRequestMessage built from the path</returns>
-        internal protected virtual HttpRequestMessage GetRequestMessage(string requestUri)
+        protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri)
         {
             var request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, _settings.Username, _settings.Password);
 
@@ -229,7 +235,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <summary>
         /// Adds the client settings for the Configuration Server to the data dictionary
         /// </summary>
-        internal protected virtual void AddConfigServerClientSettings()
+        protected internal virtual void AddConfigServerClientSettings()
         {
             Data["spring:cloud:config:enabled"] = _settings.Enabled.ToString();
             Data["spring:cloud:config:failFast"] = _settings.FailFast.ToString();
@@ -247,16 +253,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             Data["spring:cloud:config:retry:initialInterval"] = _settings.RetryInitialInterval.ToString();
             Data["spring:cloud:config:retry:maxInterval"] = _settings.RetryMaxInterval.ToString();
             Data["spring:cloud:config:retry:multiplier"] = _settings.RetryMultiplier.ToString();
-
         }
 
         /// <summary>
-        /// Asynchronously calls the Spring Cloud Configuration Server using the provided Uri and returning a 
+        /// Asynchronously calls the Spring Cloud Configuration Server using the provided Uri and returning a
         /// a task that can be used to obtain the results
         /// </summary>
         /// <param name="requestUri">the Uri used in accessing the Spring Cloud Configuration Server</param>
         /// <returns>The task object representing the asynchronous operation</returns>
-        internal protected virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
+        protected internal virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
         {
             // Get client if not already set
             if (_client == null)
@@ -264,7 +269,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 _client = GetHttpClient(_settings);
             }
 
-            // Get the request message 
+            // Get the request message
             var request = GetRequestMessage(requestUri);
 
             // If certificate validation is disabled, inject a callback to handle properly
@@ -280,19 +285,24 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         if (response.StatusCode == HttpStatusCode.NotFound)
+                        {
                             return null;
+                        }
 
                         // Log status
-                        var message = string.Format("Config Server returned status: {0} invoking path: {1}",
-                            response.StatusCode, requestUri);
+                        var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
 
                         _logger?.LogInformation(message);
 
-                        // Throw if status >= 400 
+                        // Throw if status >= 400
                         if (response.StatusCode >= HttpStatusCode.BadRequest)
+                        {
                             throw new HttpRequestException(message);
+                        }
                         else
+                        {
                             return null;
+                        }
                     }
 
                     Stream stream = await response.Content.ReadAsStreamAsync();
@@ -309,7 +319,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
             }
-
         }
 
         /// <summary>
@@ -317,7 +326,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         /// <param name="stream">the stream representing the response from the Configuration Server</param>
         /// <returns>The ConfigEnvironment object representing the response from the server</returns>
-        internal protected virtual ConfigEnvironment Deserialize(Stream stream)
+        protected internal virtual ConfigEnvironment Deserialize(Stream stream)
         {
             return SerializationHelper.Deserialize<ConfigEnvironment>(stream, _logger);
         }
@@ -327,18 +336,20 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         /// <param name="label">a label to add</param>
         /// <returns>The request URI for the Configuration Server</returns>
-        internal protected virtual string GetConfigServerUri(string label)
+        protected internal virtual string GetConfigServerUri(string label)
         {
-
             var path = _settings.Name + "/" + _settings.Environment;
             if (!string.IsNullOrWhiteSpace(label))
+            {
                 path = path + "/" + label;
+            }
 
             if (!_settings.RawUri.EndsWith("/"))
+            {
                 path = "/" + path;
+            }
 
             return _settings.RawUri + path;
-
         }
 
         /// <summary>
@@ -346,11 +357,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// by this provider
         /// </summary>
         /// <param name="source">a property source to add</param>
-
-        internal protected virtual void AddPropertySource(PropertySource source)
+        protected internal virtual void AddPropertySource(PropertySource source)
         {
             if (source == null || source.Source == null)
+            {
                 return;
+            }
 
             foreach (KeyValuePair<string, object> kvp in source.Source)
             {
@@ -364,11 +376,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 {
                     _logger?.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType(), e);
                 }
-
             }
         }
 
-        internal protected virtual string ConvertKey(string key)
+        protected internal virtual string ConvertKey(string key)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -382,23 +393,21 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 string keyPart = ConvertArrayKey(part);
                 sb.Append(keyPart);
                 sb.Append(ConfigurationPath.KeyDelimiter);
-
             }
-            return sb.ToString(0, sb.Length - 1);
 
+            return sb.ToString(0, sb.Length - 1);
         }
 
-        private const string arrayPattern = @"(\[[0-9]+\])*$";
-        internal protected virtual string ConvertArrayKey(string key)
+        protected internal virtual string ConvertArrayKey(string key)
         {
-            return Regex.Replace(key, arrayPattern, (match) =>
+            return Regex.Replace(key, ArrayPattern, (match) =>
             {
                 string result = match.Value.Replace("[", ":").Replace("]", string.Empty);
                 return result;
             });
         }
 
-        internal protected virtual string ConvertValue(object value)
+        protected internal virtual string ConvertValue(object value)
         {
             return value.ToString();
         }
@@ -408,12 +417,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         /// <param name="user">the username</param>
         /// <param name="password">the password</param>
-        /// <returns></returns>
-        internal protected string GetEncoded(string user, string password)
+        /// <returns>Encoded user + password</returns>
+        protected internal string GetEncoded(string user, string password)
         {
             return HttpClientHelper.GetEncodedUserPassword(user, password);
         }
 
+        protected internal virtual void RenewToken(string token)
+        {
+        }
 
         /// <summary>
         /// Creates an appropriatly configured HttpClient that will be used in communicating with the
@@ -425,55 +437,5 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             return HttpClientHelper.GetHttpClient(settings.ValidateCertificates, settings.Timeout);
         }
-
-        internal string[] GetLabels()
-        {
-            if (string.IsNullOrWhiteSpace(_settings.Label))
-            {
-                return EMPTY_LABELS;
-            }
-
-            return _settings.Label.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        public virtual IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            ConfigurationBuilder config = new ConfigurationBuilder();
-            foreach (IConfigurationSource s in builder.Sources)
-            {
-                if (s == this)
-                {
-                    break;
-                }
-                config.Add(s);
-            }
-            IConfiguration existing = config.Build();
-            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, existing);
-            return this;
-
-        }
-
-        internal protected virtual void RenewToken(string token)
-        {
-        }
-
-        internal IDictionary<string, string> Properties
-        {
-            get
-            {
-                return Data;
-            }
-        }
-
-        internal ILogger Logger
-        {
-            get
-            {
-                return _logger;
-            }
-        }
-
-        private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
-        private static readonly string[] EMPTY_LABELS = new string[] { "" };
     }
 }

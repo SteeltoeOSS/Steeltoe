@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,12 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using System;
 using Xunit;
-
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
@@ -26,15 +23,13 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_WithNoVcapApplicationConfiguration()
         {
-
-
             var builder = new ConfigurationBuilder();
             var config = builder.Build();
 
             var options = new CloudFoundryApplicationOptions();
             var appSection = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
             appSection.Bind(options);
-            
+
             Assert.Null(options.CF_Api);
             Assert.Null(options.ApplicationId);
             Assert.Null(options.Application_Id);
@@ -66,10 +61,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal(-1, options.InstanceIndex);
             Assert.Equal(-1, options.MemoryLimit);
             Assert.Equal(-1, options.Port);
-
-
         }
-
 
         [Fact]
         public void Constructor_WithVcapApplicationConfiguration()
@@ -178,7 +170,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var config = builder.Build();
 
             var options = new CloudFoundryApplicationOptions(config);
-         
 
             Assert.Equal("https://api.system.testcloud.com", options.CF_Api);
             Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);
@@ -207,6 +198,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
         }
+
         [Fact]
         public void ConstructorWithIConfiguration_Binds()
         {
@@ -247,7 +239,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var section = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
             var options = new CloudFoundryApplicationOptions(section);
 
-
             Assert.Equal("https://api.system.testcloud.com", options.CF_Api);
             Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);
             Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.Application_Id);
@@ -275,7 +266,5 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
         }
-
-
     }
 }

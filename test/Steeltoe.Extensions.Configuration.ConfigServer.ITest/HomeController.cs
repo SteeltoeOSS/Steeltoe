@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,29 +11,32 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
-
     public class HomeController : Controller
     {
         private ConfigServerDataAsOptions _options;
+
         public HomeController(IOptions<ConfigServerDataAsOptions> options)
         {
             _options = options.Value;
         }
+
         [HttpGet]
         public string VerifyAsInjectedOptions()
         {
             if (_options != null)
+            {
                 return _options.Bar + _options.Foo + _options.Info?.Description + _options.Info?.Url;
+            }
             else
-                return "";
+            {
+                return string.Empty;
+            }
         }
-
     }
 }

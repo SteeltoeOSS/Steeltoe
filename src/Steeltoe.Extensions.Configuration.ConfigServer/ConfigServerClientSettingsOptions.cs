@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Options;
@@ -28,36 +25,54 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
         }
 
-        public ConfigServerClientSettingsOptions(IConfigurationRoot root) : base(root, CONFIGURATION_PREFIX)
+        public ConfigServerClientSettingsOptions(IConfigurationRoot root)
+            : base(root, CONFIGURATION_PREFIX)
         {
-
         }
 
-        public ConfigServerClientSettingsOptions(IConfiguration config) : base(config)
+        public ConfigServerClientSettingsOptions(IConfiguration config)
+            : base(config)
         {
-
         }
 
         public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED;
+
         public bool FailFast { get; set; } = ConfigServerClientSettings.DEFAULT_FAILFAST;
+
         public string Env { get; set; }
+
         public string Label { get; set; }
+
         public string Name { get; set; }
+
         public string Password { get; set; }
+
         public string Uri { get; set; }
+
         public string Username { get; set; }
+
         public string Token { get; set; }
+
         public int Timeout { get; set; } = ConfigServerClientSettings.DEFAULT_TIMEOUT_MILLISECONDS;
+
         public bool Validate_Certificates { get; set; } = ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION;
+
         public SpringCloudConfigRetry Retry { get; set; }
 
         public bool ValidateCertificates => Validate_Certificates;
+
         public string Environment => Env;
+
         public bool RetryEnabled => Retry != null ? Retry.Enabled : ConfigServerClientSettings.DEFAULT_RETRY_ENABLED;
+
         public int RetryInitialInterval => Retry != null ? Retry.InitialInterval : ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL;
+
         public int RetryMaxInterval => Retry != null ? Retry.MaxInterval : ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL;
+
         public double RetryMultiplier => Retry != null ? Retry.Multiplier : ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER;
+
         public int RetryAttempts => Retry != null ? Retry.MaxAttempts : ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS;
+
         public ConfigServerClientSettings Settings
         {
             get
@@ -85,14 +100,5 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return settings;
             }
         }
-    }
-
-    public class SpringCloudConfigRetry
-    {
-        public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_RETRY_ENABLED;
-        public int InitialInterval { get; set; } = ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL;
-        public int MaxInterval { get; set; } = ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL;
-        public double Multiplier { get; set; } = ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER;
-        public int MaxAttempts { get; set; } = ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS;
     }
 }

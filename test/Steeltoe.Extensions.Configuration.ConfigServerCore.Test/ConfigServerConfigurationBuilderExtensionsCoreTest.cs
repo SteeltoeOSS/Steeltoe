@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using Microsoft.Extensions.Configuration;
-using Xunit;
-using System;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting;
-using System.IO;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Configuration.ConfigServer;
+using System;
+using System.IO;
+using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 {
@@ -37,7 +35,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(environment));
             Assert.Contains(nameof(configurationBuilder), ex.Message);
-
         }
 
         [Fact]
@@ -46,10 +43,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             // Arrange
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             IHostingEnvironment environment = null;
+
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(environment));
             Assert.Contains(nameof(environment), ex.Message);
-
         }
 
         [Fact]
@@ -67,10 +64,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             {
                 configServerProvider = provider as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
-            Assert.NotNull(configServerProvider);
 
+            Assert.NotNull(configServerProvider);
         }
 
         [Fact]
@@ -89,12 +88,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             {
                 configServerProvider = provider as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
 
             Assert.NotNull(configServerProvider);
             Assert.NotNull(configServerProvider.Logger);
-
         }
 
         [Fact]
@@ -146,8 +146,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             configurationBuilder.Build();
 
@@ -168,9 +171,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Equal(5.5, settings.RetryMultiplier);
             Assert.Equal(10000, settings.Timeout);
             Assert.Equal("vaulttoken", settings.Token);
-
         }
-
 
         [Fact]
         public void AddConfigServer_XmlAppSettingsConfiguresClient()
@@ -210,8 +211,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
@@ -223,9 +227,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
-
-
         }
+
         [Fact]
         public void AddConfigServer_IniAppSettingsConfiguresClient()
         {
@@ -258,8 +261,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
@@ -272,8 +278,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
-
-
         }
 
         [Fact]
@@ -304,8 +308,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
@@ -317,8 +324,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
-
-
         }
 
         [Fact]
@@ -369,8 +374,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
@@ -382,8 +390,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
-
         }
-
     }
 }

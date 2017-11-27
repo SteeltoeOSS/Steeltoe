@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +11,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-
-using Xunit;
 using Autofac;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common.Options.Autofac;
+using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Options.Autofac;
-using Microsoft.Extensions.Options;
-using Steeltoe.Extensions.Configuration.ConfigServer;
+using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test
 {
-
-    public class ConfigServerContainerBuilderExtensions
+    public class ConfigServerContainerBuilderExtensionsTest
     {
         [Fact]
         public void RegisterConfigServerClientOptions_ThrowsNulls()
@@ -67,7 +63,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test
             Assert.Equal("name", service.Value.Name);
             Assert.Equal("username", service.Value.Username);
             Assert.Equal("password", service.Value.Password);
-
         }
     }
 }

@@ -12,6 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.CompilerServices;
+namespace Steeltoe.Extensions.Configuration.CloudFoundry
+{
+    public class Limits
+    {
+        public int Disk { get; set; } = -1;
 
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.CloudFoundryCore.Test")]
+        public int Fds { get; set; } = -1;
+
+        public int Mem { get; set; } = -1;
+    }
+}

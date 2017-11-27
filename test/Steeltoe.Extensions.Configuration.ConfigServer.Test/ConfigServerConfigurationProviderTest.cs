@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,24 +11,21 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using Xunit;
-using System.IO;
-using Microsoft.Extensions.Logging;
-
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     public class ConfigServerConfigurationProviderTest
     {
-
         [Fact]
         public void SettingsConstructor__ThrowsIfSettingsNull()
         {
@@ -52,6 +48,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
             Assert.Contains(nameof(httpClient), ex.Message);
         }
+
         [Fact]
         public void SettingsConstructor__ThrowsIfEnvironmentNull()
         {
@@ -84,7 +81,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             TestHelpers.VerifyDefaults(provider.Settings);
-
         }
 
         [Fact]
@@ -146,6 +142,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             string path = provider.GetConfigServerUri(null);
             Assert.Equal("http://localhost:9999/" + settings.Name + "/" + settings.Environment, path);
         }
+
         [Fact]
         public void GetConfigServerUri_WithEndingSlash()
         {
@@ -235,7 +232,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal(2, env.PropertySources[0].Source.Count);
             Assert.Equal("value1", env.PropertySources[0].Source["key1"]);
             Assert.Equal((long)10, env.PropertySources[0].Source["key2"]);
-
         }
 
         [Fact]
@@ -260,7 +256,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("value2", value);
             Assert.True(provider.TryGet("b", out value));
             Assert.Equal("10", value);
-
         }
 
         [Fact]
@@ -270,6 +265,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             string result = provider.ConvertArrayKey("foobar");
             Assert.Equal("foobar", result);
         }
+
         [Fact]
         public void ConvertArray_NotArrayValue2()
         {
@@ -293,6 +289,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             string result = provider.ConvertArrayKey("foobar[1234][5678]");
             Assert.Equal("foobar:1234:5678", result);
         }
+
         [Fact]
         public void ConvertArray_WithArrayArrayNotAtEnd()
         {
@@ -300,6 +297,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             string result = provider.ConvertArrayKey("foobar[1234][5678]barbar");
             Assert.Equal("foobar[1234][5678]barbar", result);
         }
+
         [Fact]
         public void ConvertKey_WithArrayArrayValue()
         {
@@ -333,7 +331,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 500;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -350,19 +348,17 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
-
         }
+
         [Fact]
         public async void RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
         {
             // Arrange
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 204;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-
-
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
@@ -377,7 +373,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Null(result);
-
         }
 
         [Fact]
@@ -405,7 +400,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
@@ -438,12 +432,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 404;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-
-
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
@@ -463,11 +455,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 404;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             settings.Uri = "http://localhost:8888";
@@ -478,16 +469,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
-
         }
-
 
         [Fact]
         public void Load_ConfigServerReturnsBadStatus_FailFastEnabled()
         {
             // Arrange
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 500;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -501,7 +490,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
-
         }
 
         [Fact]
@@ -509,7 +497,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 500;
             TestConfigServerStartup.RequestCount = 0;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
@@ -526,7 +514,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
             Assert.Equal(6, TestConfigServerStartup.RequestCount);
-
         }
 
         [Fact]
@@ -572,6 +559,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.True(provider.TryGet("key2", out value));
             Assert.Equal("10", value);
         }
+
         [Fact]
         public void AddConfigServerClientSettings_ChangesDataDictionary()
         {
@@ -589,7 +577,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             settings.ValidateCertificates = false;
             settings.Token = "vaulttoken";
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
-
 
             // Act and Assert
             provider.AddConfigServerClientSettings();
@@ -619,8 +606,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("vaulttoken", value);
             Assert.True(provider.TryGet("spring:cloud:config:timeout", out value));
             Assert.Equal("6000", value);
-
         }
+
         [Fact]
         public void GetLabels_Null()
         {
@@ -630,7 +617,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
             Assert.Single(result);
-            Assert.Equal("", result[0]);
+            Assert.Equal(string.Empty, result[0]);
         }
 
         [Fact]
@@ -643,8 +630,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             string[] result = provider.GetLabels();
             Assert.NotNull(result);
             Assert.Single(result);
-            Assert.Equal("", result[0]);
+            Assert.Equal(string.Empty, result[0]);
         }
+
         [Fact]
         public void GetLabels_SingleString()
         {
@@ -657,6 +645,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Single(result);
             Assert.Equal("foobar", result[0]);
         }
+
         [Fact]
         public void GetLabels_MultiString()
         {
@@ -727,5 +716,3 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
     }
 }
-
-

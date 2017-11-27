@@ -13,25 +13,29 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using System;
+using System.IO;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
-    public static class CloudFoundryConfigurationBuilderExtensions
+    internal class JsonStreamConfigurationSource : JsonConfigurationSource
     {
-        public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder)
+        internal JsonStreamConfigurationSource(MemoryStream stream)
         {
-            return configurationBuilder.AddCloudFoundry(null);
-        }
-
-        public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader settingsReader)
-        {
-            if (configurationBuilder == null)
+            if (stream == null)
             {
-                throw new ArgumentNullException(nameof(configurationBuilder));
+                throw new ArgumentNullException(nameof(stream));
             }
 
-            return configurationBuilder.Add(new CloudFoundryConfigurationSource { SettingsReader = settingsReader });
+            Stream = stream;
+        }
+
+        internal MemoryStream Stream { get; }
+
+        public override IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
+            return new JsonStreamConfigurationProvider(this);
         }
     }
 }

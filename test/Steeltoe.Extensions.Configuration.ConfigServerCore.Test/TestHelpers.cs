@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using System.IO;
-
-using Xunit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Steeltoe.Extensions.Configuration.ConfigServer;
+using System.IO;
+using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 {
@@ -30,8 +27,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             var tempFile = Path.GetTempFileName();
             File.WriteAllText(tempFile, contents);
             return tempFile;
-
         }
+
         public static Stream StringToStream(string str)
         {
             var memStream = new MemoryStream();
@@ -70,34 +67,5 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Null(settings.Password);
             Assert.Null(settings.Token);
         }
-    }
-
-    public class TestConfigServerStartup
-    {
-
-        public static string Response { get; set; }
-        public static int ReturnStatus { get; set; } = 200;
-
-        public static HttpRequest LastRequest { get; set; }
-
-        public static int RequestCount { get; set; } = 0;
-
-        public TestConfigServerStartup()
-        {
-            LastRequest = null;
-        }
-
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.Run(async context =>
-            {
-                LastRequest = context.Request;
-                RequestCount++;
-                context.Response.StatusCode = ReturnStatus;
-                await context.Response.WriteAsync(Response);
-            });
-        }
-
     }
 }

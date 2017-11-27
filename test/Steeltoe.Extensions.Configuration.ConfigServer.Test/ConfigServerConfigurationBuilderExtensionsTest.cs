@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
-using Xunit;
-using System;
 using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
+using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
@@ -33,7 +31,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, new ConfigServerClientSettings()));
             Assert.Contains(nameof(configurationBuilder), ex.Message);
-
         }
 
         [Fact]
@@ -46,7 +43,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, defaultSettings));
             Assert.Contains(nameof(defaultSettings), ex.Message);
-
         }
 
         [Fact]
@@ -64,10 +60,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 configServerProvider = provider as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
-            Assert.NotNull(configServerProvider);
 
+            Assert.NotNull(configServerProvider);
         }
 
         [Fact]
@@ -86,12 +84,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 configServerProvider = provider as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
 
             Assert.NotNull(configServerProvider);
             Assert.NotNull(configServerProvider.Logger);
-
         }
 
         [Fact]
@@ -143,8 +142,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             configurationBuilder.Build();
 
@@ -165,9 +167,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal(5.5, settings.RetryMultiplier);
             Assert.Equal(10000, settings.Timeout);
             Assert.Equal("vaulttoken", settings.Token);
-
         }
-
 
         [Fact]
         public void AddConfigServer_XmlAppSettingsConfiguresClient()
@@ -207,8 +207,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
@@ -220,9 +223,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
-
-
         }
+
         [Fact]
         public void AddConfigServer_IniAppSettingsConfiguresClient()
         {
@@ -255,8 +257,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
@@ -269,8 +274,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
-
-
         }
 
         [Fact]
@@ -301,8 +304,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
@@ -314,8 +320,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
-
-
         }
 
         [Fact]
@@ -366,8 +370,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
+                {
                     break;
+                }
             }
+
             Assert.NotNull(configServerProvider);
             ConfigServerClientSettings settings = configServerProvider.Settings;
 
@@ -379,8 +386,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("myLabel", settings.Label);
             Assert.Equal("myUsername", settings.Username);
             Assert.Equal("myPassword", settings.Password);
-
         }
-
     }
 }

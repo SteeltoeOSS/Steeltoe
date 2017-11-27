@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using Xunit;
@@ -201,10 +199,11 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("3fnpvbqm0djq5jl9fp6fc697f4", options.ServicesList[0].Credentials["password"].Value);
             Assert.Equal("268371bd-07e5-46f3-aec7-d1633ae20bbb", options.ServicesList[0].Credentials["protocols"]["amqp"]["username"].Value);
             Assert.Equal("3fnpvbqm0djq5jl9fp6fc697f4", options.ServicesList[0].Credentials["protocols"]["amqp"]["password"].Value);
-            Assert.Equal("amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052",
+            Assert.Equal(
+                "amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052",
                 options.ServicesList[0].Credentials["protocols"]["amqp"]["uris"]["0"].Value);
-
         }
+
         [Fact]
         public void Constructor_WithMultipleSameServicesConfiguration()
         {
@@ -262,7 +261,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var servSection = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
             servSection.Bind(options);
 
-
             Assert.NotNull(options.Services);
             Assert.Single(options.Services);
             Assert.NotNull(options.Services["p-mysql"]);
@@ -280,8 +278,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("3306", options.ServicesList[0].Credentials["port"].Value);
             Assert.Equal("cf_0f5dda44_e678_4727_993f_30e6d455cc31", options.ServicesList[0].Credentials["name"].Value);
             Assert.Equal("cf_0f5dda44_e678_4727_993f_30e6d455cc31", options.ServicesList[1].Credentials["name"].Value);
-
         }
+
         [Fact]
         public void Constructor_WithIConfigurationRootBinds()
         {
@@ -315,7 +313,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var config = builder.Build();
 
             var options = new CloudFoundryServicesOptions(config);
-
 
             Assert.NotNull(options.Services);
             Assert.Single(options.Services);
@@ -372,7 +369,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var builder = new ConfigurationBuilder().Add(jsonSource);
             var config = builder.Build();
 
-     
             var servSection = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
             var options = new CloudFoundryServicesOptions(servSection);
 

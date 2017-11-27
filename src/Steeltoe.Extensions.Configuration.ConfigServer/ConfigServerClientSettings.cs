@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     /// <summary>
-    /// Holds the settings used to configure the Spring Cloud Config Server provider 
+    /// Holds the settings used to configure the Spring Cloud Config Server provider
     /// <see cref="ConfigServerConfigurationProvider"/>.
     /// </summary>
     public class ConfigServerClientSettings
@@ -79,10 +77,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public const int DEFAULT_TIMEOUT_MILLISECONDS = 6 * 1000;
 
+        private static readonly char[] COLON_DELIMIT = new char[] { ':' };
+        private string username;
+        private string password;
+
         /// <summary>
-        /// Initialize Config Server client settings with defaults
+        /// Initializes a new instance of the <see cref="ConfigServerClientSettings"/> class.
         /// </summary>
-        public ConfigServerClientSettings() : base()
+        /// <remarks>Initialize Config Server client settings with defaults</remarks>
+        public ConfigServerClientSettings()
+            : base()
         {
             ValidateCertificates = DEFAULT_CERTIFICATE_VALIDATION;
             FailFast = DEFAULT_FAILFAST;
@@ -108,22 +112,22 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual bool Enabled { get; set; }
 
         /// <summary>
-        /// The environment used when accessing configuration data 
+        /// The environment used when accessing configuration data
         /// </summary>
         public virtual string Environment { get; set; }
 
         /// <summary>
-        /// The application name used when accessing configuration data 
+        /// The application name used when accessing configuration data
         /// </summary>
         public virtual string Name { get; set; }
 
         /// <summary>
-        /// The label used when accessing configuration data 
+        /// The label used when accessing configuration data
         /// </summary>
         public virtual string Label { get; set; }
 
         /// <summary>
-        /// The username used when accessing the Config Server 
+        /// The username used when accessing the Config Server
         /// </summary>
         public virtual string Username
         {
@@ -149,22 +153,27 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// Enables/Disables whether provider validates server certificates
         /// </summary>
         public virtual bool ValidateCertificates { get; set; }
+
         /// <summary>
         /// Enables/Disables config server client retry on failures
         /// </summary>
         public virtual bool RetryEnabled { get; set; }
+
         /// <summary>
         /// Initial retry interval in milliseconds
         /// </summary>
         public virtual int RetryInitialInterval { get; set; }
+
         /// <summary>
         /// Max retry interval in milliseconds
         /// </summary>
         public virtual int RetryMaxInterval { get; set; }
+
         /// <summary>
         ///  Multiplier for next retry interval
         /// </summary>
         public virtual double RetryMultiplier { get; set; }
+
         /// <summary>
         /// The max number of retries the client will attempt
         /// </summary>
@@ -188,7 +197,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public virtual int Timeout { get; set; }
 
-
         internal string GetRawUri()
         {
             try
@@ -201,27 +209,33 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
             catch (UriFormatException)
             {
-
-
             }
+
             return Uri;
         }
+
         internal string GetPassword()
         {
             if (!string.IsNullOrEmpty(password))
+            {
                 return password;
+            }
+
             return GetUserPassElement(1);
         }
+
         internal string GetUserName()
         {
             if (!string.IsNullOrEmpty(username))
+            {
                 return username;
+            }
+
             return GetUserPassElement(0);
         }
 
         private string GetUserInfo()
         {
-
             try
             {
                 if (!string.IsNullOrEmpty(Uri))
@@ -235,9 +249,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 // Log
                 throw;
             }
-            return null;
 
+            return null;
         }
+
         private string GetUserPassElement(int index)
         {
             string result = null;
@@ -246,20 +261,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 string[] info = userInfo.Split(COLON_DELIMIT);
                 if (info.Length > index)
+                {
                     result = info[index];
+                }
             }
 
             return result;
-
         }
-
-        private string username;
-        private string password;
-
-        private static readonly char[] COLON_DELIMIT = new char[] { ':' };
-
     }
 }
-
-
-

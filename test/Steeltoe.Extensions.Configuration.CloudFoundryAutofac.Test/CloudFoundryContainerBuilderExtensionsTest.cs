@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +11,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-
-using Xunit;
 using Autofac;
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options.Autofac;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test
 {
-
-    public class CloudFoundryContainerBuilderExtensions
+    public class CloudFoundryContainerBuilderExtensionsTest
     {
         [Fact]
         public void RegisterCloudFoundryOptions_ThrowsNulls()

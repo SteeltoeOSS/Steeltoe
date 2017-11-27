@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
+
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
@@ -27,7 +26,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             TestHelpers.VerifyDefaults(settings);
-
         }
 
         [Fact]
@@ -38,8 +36,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             Assert.Equal("https://localhost:8888/", settings.RawUri);
-
         }
+
         [Fact]
         public void GetRawUri_Bad()
         {
@@ -48,8 +46,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             Assert.Equal("blahblah", settings.RawUri);
-
         }
+
         [Fact]
         public void GetUserName_GoodWithUserPassOnUri()
         {
@@ -58,8 +56,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             Assert.Equal("user", settings.Username);
-
         }
+
         [Fact]
         public void GetPassword_GoodWithUserPassOnUri()
         {
@@ -68,8 +66,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             Assert.Equal("pass", settings.Password);
-
         }
+
         [Fact]
         public void GetUserName_GoodWithUserPassOnUri_SettingsOverrides()
         {
@@ -79,8 +77,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             Assert.Equal("explicitOverrides", settings.Username);
             Assert.Equal("pass", settings.Password);
-
         }
+
         [Fact]
         public void GetPassword_GoodWithUserPassOnUri_SettingsOverrides()
         {
@@ -90,10 +88,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             Assert.Equal("explicitOverrides", settings.Password);
             Assert.Equal("user", settings.Username);
-
         }
-
-
     }
-
 }

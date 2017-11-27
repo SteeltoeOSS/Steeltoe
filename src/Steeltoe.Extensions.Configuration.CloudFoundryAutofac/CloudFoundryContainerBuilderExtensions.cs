@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Options.Autofac;
 using System;
-
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
@@ -27,7 +24,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
     /// </summary>
     public static class CloudFoundryContainerBuilderExtensions
     {
-
         public static void RegisterCloudFoundryOptions(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
@@ -45,7 +41,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
             var serviceSection = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
             container.RegisterOption<CloudFoundryServicesOptions>(serviceSection);
-
         }
     }
 }

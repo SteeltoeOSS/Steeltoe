@@ -13,27 +13,34 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using Xunit;
+using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 {
-    public class TestServerStartup
+    public class TestConfigServerStartup
     {
-        public List<string> ExpectedAddresses { get; set; } = new List<string>();
-
-        public void ConfigureServices(IServiceCollection services)
+        public TestConfigServerStartup()
         {
-            services.AddMvc();
+            LastRequest = null;
         }
+
+        public static string Response { get; set; }
+
+        public static int ReturnStatus { get; set; } = 200;
+
+        public static HttpRequest LastRequest { get; set; }
+
+        public static int RequestCount { get; set; } = 0;
 
         public void Configure(IApplicationBuilder app)
         {
-            var addresses = ExpectedAddresses;
-            Assert.Equal(addresses, app.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses);
-            app.UseMvc();
+            app.Run(async context =>
+            {
+                LastRequest = context.Request;
+                RequestCount++;
+                context.Response.StatusCode = ReturnStatus;
+                await context.Response.WriteAsync(Response);
+            });
         }
     }
 }

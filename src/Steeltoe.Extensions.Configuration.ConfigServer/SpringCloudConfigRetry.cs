@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
-    public class TestServerStartup42 : TestServerStartup
+    public class SpringCloudConfigRetry
     {
-        public TestServerStartup42()
-        {
-            this.ExpectedAddresses.Add("http://*:42");
-        }
+        public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_RETRY_ENABLED;
+
+        public int InitialInterval { get; set; } = ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL;
+
+        public int MaxInterval { get; set; } = ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL;
+
+        public double Multiplier { get; set; } = ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER;
+
+        public int MaxAttempts { get; set; } = ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS;
     }
 }
