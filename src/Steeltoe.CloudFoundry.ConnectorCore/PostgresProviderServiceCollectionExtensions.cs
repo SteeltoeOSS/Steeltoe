@@ -26,7 +26,16 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         private static string[] postgresAssemblies = new string[] { "Npgsql" };
         private static string[] postgresTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
 
-        public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        /// <summary>
+        /// Add Postgres to a ServiceCollection
+        /// </summary>
+        /// <param name="services">Service collection to add to</param>
+        /// <param name="config">App configuration</param>
+        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
+        /// <param name="contextLifetime">Lifetime of the service to inject</param>
+        /// <param name="logFactory"></param>
+        /// <returns>IServiceCollection for chaining</returns>
+        public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -40,11 +49,21 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             PostgresServiceInfo info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
 
-            DoAdd(services, info, config, contextLifetime);
+            DoAdd(services, info, config, registerInterface, contextLifetime);
             return services;
         }
 
-        public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        /// <summary>
+        /// Add Postgres to a ServiceCollection
+        /// </summary>
+        /// <param name="services">Service collection to add to</param>
+        /// <param name="config">App configuration</param>
+        /// <param name="serviceName"></param>
+        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
+        /// <param name="contextLifetime">Lifetime of the service to inject</param>
+        /// <param name="logFactory"></param>
+        /// <returns>IServiceCollection for chaining</returns>
+        public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, string serviceName, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -63,11 +82,11 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             PostgresServiceInfo info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
-            DoAdd(services, info, config, contextLifetime);
+            DoAdd(services, info, config, registerInterface, contextLifetime);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, bool registerInterface, ServiceLifetime contextLifetime)
         {
             Type postgresConnection = ConnectorHelpers.FindType(postgresAssemblies, postgresTypeNames);
             if (postgresConnection == null)
@@ -77,7 +96,12 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             PostgresProviderConnectorOptions postgresConfig = new PostgresProviderConnectorOptions(config);
             PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
-            services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
+            if (registerInterface)
+            {
+                services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
+            }
+
+            services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
         }
     }
 }
