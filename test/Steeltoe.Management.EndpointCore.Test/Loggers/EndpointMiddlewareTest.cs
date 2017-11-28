@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
@@ -94,7 +95,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
-               .ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddDynamicLoggerProvider(context.Configuration));
+               .ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddDynamicConsole(context.Configuration));
 
             using (var server = new TestServer(builder))
             {
@@ -124,7 +125,11 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
              var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
-                .ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddDynamicLoggerProvider(context.Configuration));
+                .ConfigureLogging((context, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
+                    loggingBuilder.AddDynamicConsole();
+                });
 
             using (var server = new TestServer(builder))
             {
@@ -137,6 +142,36 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                 var json = await validationResult.Content.ReadAsStringAsync();
                 dynamic parsedObject = JsonConvert.DeserializeObject(json);
                 Assert.Equal("ERROR", parsedObject.loggers.Default.effectiveLevel.ToString());
+            }
+        }
+
+        [Fact]
+        public async void LoggersActuator_UpdateNameSpace_UpdatesChildren()
+        {
+            var builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+               .ConfigureLogging((context, loggingBuilder) =>
+               {
+                   loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
+                   loggingBuilder.AddDynamicConsole();
+               });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
+                var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Steeltoe", content);
+                Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
+
+                var validationResult = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
+                var json = await validationResult.Content.ReadAsStringAsync();
+                dynamic parsedObject = JsonConvert.DeserializeObject(json);
+                Assert.Equal("TRACE", parsedObject.loggers.Steeltoe.effectiveLevel.ToString());
+                Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management"].effectiveLevel.ToString());
+                Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint"].effectiveLevel.ToString());
+                Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint.Loggers"].effectiveLevel.ToString());
+                Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint.Loggers.LoggersEndpointMiddleware"].effectiveLevel.ToString());
             }
         }
 
