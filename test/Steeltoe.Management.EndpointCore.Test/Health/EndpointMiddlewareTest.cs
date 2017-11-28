@@ -44,7 +44,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var opts = new HealthOptions();
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var middle = new HealthEndpointMiddleware(null, ep);
+            var middle = new HealthEndpointMiddleware(null);
+            middle.Endpoint = ep;
 
             var context = CreateRequest("GET", "/health");
             Assert.True(middle.IsHealthRequest(context));
@@ -62,7 +63,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var opts = new HealthOptions();
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var middle = new HealthEndpointMiddleware(null, ep);
+            var middle = new HealthEndpointMiddleware(null);
+            middle.Endpoint = ep;
+
             var context = CreateRequest("GET", "/health");
             await middle.HandleHealthRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);

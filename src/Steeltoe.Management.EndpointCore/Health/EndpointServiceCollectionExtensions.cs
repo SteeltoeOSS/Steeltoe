@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// <param name="services">Service collection to add health to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
         /// <param name="contributors">Contributors to application health</param>
-        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, params IHealthContributor[] contributors)
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, params Type[] contributors)
         {
             services.AddHealthActuator(config, new DefaultHealthAggregator(), contributors);
         }
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
         /// <param name="aggregator">Custom health aggregator</param>
         /// <param name="contributors">Contributors to application health</param>
-        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, IHealthAggregator aggregator, params IHealthContributor[] contributors)
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
         {
             if (services == null)
             {
@@ -71,25 +71,26 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddSingleton<IHealthOptions>(new HealthOptions(config));
             AddHealthContributors(services, contributors);
             services.TryAddSingleton<IHealthAggregator>(aggregator);
-            services.TryAddSingleton<HealthEndpoint>();
+            services.TryAddScoped<HealthEndpoint>();
         }
 
-        public static void AddHealthContributors(IServiceCollection services, params IHealthContributor[] contributors)
+        public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
         {
             List<ServiceDescriptor> descriptors = new List<ServiceDescriptor>();
-            foreach (var instance in contributors)
+            foreach (var c in contributors)
             {
-                descriptors.Add(ServiceDescriptor.Singleton<IHealthContributor>(instance));
+
+                descriptors.Add(new ServiceDescriptor(typeof(IHealthContributor), c, ServiceLifetime.Scoped));
             }
 
             services.TryAddEnumerable(descriptors);
         }
 
-        internal static IHealthContributor[] GetDefaultHealthContributors()
+        internal static Type[] GetDefaultHealthContributors()
         {
-            return new IHealthContributor[]
+            return new Type[]
             {
-                new DiskSpaceContributor()
+                typeof(DiskSpaceContributor)
             };
         }
     }

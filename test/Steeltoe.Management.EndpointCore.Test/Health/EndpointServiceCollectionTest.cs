@@ -78,7 +78,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void AddHealthContributors_AddsServices()
         {
             ServiceCollection services = new ServiceCollection();
-            EndpointServiceCollectionExtensions.AddHealthContributors(services, new TestContributor());
+            EndpointServiceCollectionExtensions.AddHealthContributors(services, typeof(TestContributor));
             var serviceProvider = services.BuildServiceProvider();
             var contribs = serviceProvider.GetServices<IHealthContributor>();
             Assert.NotNull(contribs);

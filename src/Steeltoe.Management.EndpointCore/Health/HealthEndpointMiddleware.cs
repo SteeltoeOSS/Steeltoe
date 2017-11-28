@@ -23,14 +23,16 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         private RequestDelegate _next;
 
-        public HealthEndpointMiddleware(RequestDelegate next, HealthEndpoint endpoint, ILogger<HealthEndpointMiddleware> logger = null)
-            : base(endpoint, logger)
+        public HealthEndpointMiddleware(RequestDelegate next, ILogger<HealthEndpointMiddleware> logger = null)
+            : base(logger)
         {
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, HealthEndpoint endpoint)
         {
+            base.endpoint = endpoint;
+
             if (IsHealthRequest(context))
             {
                 await HandleHealthRequestAsync(context);

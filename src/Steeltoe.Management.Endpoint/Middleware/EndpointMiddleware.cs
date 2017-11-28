@@ -35,6 +35,19 @@ namespace Steeltoe.Management.Endpoint.Middleware
             this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
+        internal IEndpoint<TResult> Endpoint
+        {
+            get
+            {
+                return endpoint;
+            }
+
+            set
+            {
+                endpoint = value;
+            }
+        }
+
         public virtual string HandleRequest()
         {
             var result = endpoint.Invoke();
