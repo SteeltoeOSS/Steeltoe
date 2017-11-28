@@ -94,7 +94,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             // Act and Assert
             RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config);
 
-            var service = services.BuildServiceProvider().GetService<ConnectionFactory>();
+            var service = services.BuildServiceProvider().GetService<IConnectionFactory>();
             Assert.NotNull(service);
         }
 
@@ -206,7 +206,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             // Act and Assert
             RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config);
 
-            var service = services.BuildServiceProvider().GetService<ConnectionFactory>();
+            var service = services.BuildServiceProvider().GetService<IConnectionFactory>() as ConnectionFactory;
             Assert.NotNull(service);
             Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", service.VirtualHost);
             Assert.Equal(3306, service.Port);

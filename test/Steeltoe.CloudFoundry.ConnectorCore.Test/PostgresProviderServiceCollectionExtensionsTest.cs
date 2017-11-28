@@ -18,6 +18,7 @@ using Npgsql;
 using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Data;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
@@ -83,7 +84,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Act and Assert
             PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
 
-           var service = services.BuildServiceProvider().GetService<NpgsqlConnection>();
+           var service = services.BuildServiceProvider().GetService<IDbConnection>();
            Assert.NotNull(service);
         }
 
@@ -132,7 +133,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Act and Assert
             PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
 
-            var service = services.BuildServiceProvider().GetService<NpgsqlConnection>();
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
             var connString = service.ConnectionString;
             Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);

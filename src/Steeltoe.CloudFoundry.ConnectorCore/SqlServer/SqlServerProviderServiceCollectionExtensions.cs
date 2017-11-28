@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
@@ -77,7 +78,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
             SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);
             SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
-            services.Add(new ServiceDescriptor(sqlServerConnection, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
         }
     }
 }

@@ -20,6 +20,7 @@ using System;
 using System.Data.SqlClient;
 using Xunit;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
 {
@@ -84,7 +85,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             // Act and Assert
             SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
 
-           var service = services.BuildServiceProvider().GetService<SqlConnection>();
+           var service = services.BuildServiceProvider().GetService<IDbConnection>();
            Assert.NotNull(service);
         }
 
@@ -133,7 +134,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             // Act and Assert
             SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
 
-            var service = services.BuildServiceProvider().GetService<SqlConnection>();
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
             var connString = service.ConnectionString;
             Assert.Contains("de5aa3a747c134b3d8780f8cc80be519e", connString);

@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
@@ -76,7 +77,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             PostgresProviderConnectorOptions postgresConfig = new PostgresProviderConnectorOptions(config);
             PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
-            services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
         }
     }
 }

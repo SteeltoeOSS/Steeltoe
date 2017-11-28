@@ -17,13 +17,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql
 {
     public static class MySqlProviderServiceCollectionExtensions
     {
         private static string[] mySqlAssemblies = new string[] { "MySql.Data", "MySqlConnector" };
-        private static string[] mySqlTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection", "MySql.Data.MySqlClient.MySqlConnection" };
+        private static string[] mySqlTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
 
         public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
@@ -76,7 +77,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
             MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
-            services.Add(new ServiceDescriptor(mySqlConnection, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
         }
     }
 }

@@ -21,6 +21,7 @@ using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
@@ -85,7 +86,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             // Act and Assert
             MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
 
-           var service = services.BuildServiceProvider().GetService<MySqlConnection>();
+           var service = services.BuildServiceProvider().GetService<IDbConnection>();
            Assert.NotNull(service);
         }
 
@@ -133,7 +134,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             // Act and Assert
             MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
 
-            var service = services.BuildServiceProvider().GetService<MySqlConnection>();
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
             var connString = service.ConnectionString;
             Assert.Contains("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString);
