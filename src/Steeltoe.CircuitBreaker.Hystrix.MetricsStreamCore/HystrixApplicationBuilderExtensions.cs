@@ -29,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var service = builder.ApplicationServices.GetRequiredService<HystrixMetricsStreamPublisher>();
+            var service = builder.ApplicationServices.GetRequiredService<RabbitMetricsStreamPublisher>();
             return builder;
         }
     }
