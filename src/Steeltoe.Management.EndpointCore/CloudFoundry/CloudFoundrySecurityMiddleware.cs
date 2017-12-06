@@ -16,12 +16,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
 #if NET46
 using System.Net.Security;
 #else
@@ -33,6 +35,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     public class CloudFoundrySecurityMiddleware
     {
+        private const int DEFAULT_GETPERMISSIONS_TIMEOUT = 5000;   // Milliseconds
         private const string APPLICATION_ID_MISSING_MESSAGE = "Application id is not available";
         private const string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
         private const string AUTHORIZATION_HEADER_INVALID = "Authorization header is missing or invalid";
@@ -45,7 +48,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private RequestDelegate _next;
         private ILogger<CloudFoundrySecurityMiddleware> _logger;
         private ICloudFoundryOptions _options;
-        private int defaultTimeout = 3000;
 
         public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityMiddleware> logger)
         {
@@ -112,7 +114,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return null;
         }
 
-        private async Task<SecurityResult> GetPermissions(HttpContext context)
+        internal async Task<SecurityResult> GetPermissions(HttpContext context)
         {
             string token = GetAccessToken(context.Request);
             if (string.IsNullOrEmpty(token))
@@ -124,17 +126,16 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
             AuthenticationHeaderValue auth = new AuthenticationHeaderValue("bearer", token);
             request.Headers.Authorization = auth;
-#if NET46
+
             // If certificate validation is disabled, inject a callback to handle properly
             RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            ConfigureCertificateValidatation(out prevProtocols, out prevValidator);
-#endif
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(_options.ValidateCertificates, out prevProtocols, out prevValidator);
             try
             {
                 _logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
 
-                using (var client = GetHttpClient())
+                using (var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT))
                 {
                     using (HttpResponseMessage response = await client.SendAsync(request))
                     {
@@ -167,13 +168,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                         checkPermissionsUri);
                 return new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
             }
-
-#if NET46
             finally
             {
-                RestoreCertificateValidation(prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, prevProtocols, prevValidator);
             }
-#endif
 
         }
 
@@ -185,7 +183,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             await context.Response.WriteAsync(Serialize(error));
         }
 
-        private string GetAccessToken(HttpRequest request)
+        internal string GetAccessToken(HttpRequest request)
         {
             StringValues headerVal;
             if (request.Headers.TryGetValue(AUTHORIZATION_HEADER, out headerVal))
@@ -200,10 +198,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return null;
         }
 
-        private bool IsCloudFoundryRequest(HttpContext context)
+        protected internal bool IsCloudFoundryRequest(HttpContext context)
         {
-            PathString path = new PathString(_options.Path);
-            return context.Request.Path.StartsWithSegments(path);
+            PathString path = new PathString(_options.Path == "/" ? "" : _options.Path);
+            bool startsWith = context.Request.Path.StartsWithSegments(path);
+            return startsWith;
         }
 
         private string Serialize(SecurityResult error)
@@ -256,53 +255,53 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return permissions;
         }
 
-        protected HttpClient GetHttpClient()
-        {
-            HttpClient client = null;
-#if NET46
-            client = new HttpClient();
-#else
-            if (_options != null && !_options.ValidateCertificates)
-            {
-                _logger.LogDebug("Disabling certificate validation");
-                var handler = new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
-                    SslProtocols = SslProtocols.Tls12
-                };
-                client = new HttpClient(handler);
-            }
-            else
-            {
-                client = new HttpClient();
-            }
-#endif
-            client.Timeout = TimeSpan.FromMilliseconds(defaultTimeout);
-            return client;
-        }
-#if NET46
-        protected virtual void ConfigureCertificateValidatation(out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator) 
-        {
-            prevValidator = null;
-            protocolType = (SecurityProtocolType) 0;
-            if (!_options.ValidateCertificates)
-            {
-                _logger.LogDebug("Disabling certificate validation");
-                protocolType = ServicePointManager.SecurityProtocol;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            }
-        }
-        protected virtual void RestoreCertificateValidation(SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator) 
-        {
-            if (!_options.ValidateCertificates)
-            {
-                ServicePointManager.SecurityProtocol = protocolType;
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-            }
-        }
-#endif
+//        protected HttpClient GetHttpClient()
+//        {
+//            HttpClient client = null;
+//#if NET46
+//            client = new HttpClient();
+//#else
+//            if (_options != null && !_options.ValidateCertificates)
+//            {
+//                _logger.LogDebug("Disabling certificate validation");
+//                var handler = new HttpClientHandler
+//                {
+//                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+//                    SslProtocols = SslProtocols.Tls12
+//                };
+//                client = new HttpClient(handler);
+//            }
+//            else
+//            {
+//                client = new HttpClient();
+//            }
+//#endif
+//            client.Timeout = TimeSpan.FromMilliseconds(defaultTimeout);
+//            return client;
+//        }
+//#if NET46
+//        protected virtual void ConfigureCertificateValidatation(out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator) 
+//        {
+//            prevValidator = null;
+//            protocolType = (SecurityProtocolType) 0;
+//            if (!_options.ValidateCertificates)
+//            {
+//                _logger.LogDebug("Disabling certificate validation");
+//                protocolType = ServicePointManager.SecurityProtocol;
+//                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+//                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+//                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+//            }
+//        }
+//        protected virtual void RestoreCertificateValidation(SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator) 
+//        {
+//            if (!_options.ValidateCertificates)
+//            {
+//                ServicePointManager.SecurityProtocol = protocolType;
+//                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+//            }
+//        }
+//#endif
 
         private void LogError(HttpContext context, SecurityResult error)
         {
