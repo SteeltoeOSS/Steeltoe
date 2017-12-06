@@ -24,11 +24,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
-#if NET46
-using System.Net.Security;
-#else
-using System.Security.Authentication;
-#endif
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -254,55 +249,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger.LogDebug("GetPermisions returning: {0}", permissions);
             return permissions;
         }
-
-//        protected HttpClient GetHttpClient()
-//        {
-//            HttpClient client = null;
-//#if NET46
-//            client = new HttpClient();
-//#else
-//            if (_options != null && !_options.ValidateCertificates)
-//            {
-//                _logger.LogDebug("Disabling certificate validation");
-//                var handler = new HttpClientHandler
-//                {
-//                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
-//                    SslProtocols = SslProtocols.Tls12
-//                };
-//                client = new HttpClient(handler);
-//            }
-//            else
-//            {
-//                client = new HttpClient();
-//            }
-//#endif
-//            client.Timeout = TimeSpan.FromMilliseconds(defaultTimeout);
-//            return client;
-//        }
-//#if NET46
-//        protected virtual void ConfigureCertificateValidatation(out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator) 
-//        {
-//            prevValidator = null;
-//            protocolType = (SecurityProtocolType) 0;
-//            if (!_options.ValidateCertificates)
-//            {
-//                _logger.LogDebug("Disabling certificate validation");
-//                protocolType = ServicePointManager.SecurityProtocol;
-//                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-//                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-//                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-//            }
-//        }
-//        protected virtual void RestoreCertificateValidation(SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator) 
-//        {
-//            if (!_options.ValidateCertificates)
-//            {
-//                ServicePointManager.SecurityProtocol = protocolType;
-//                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-//            }
-//        }
-//#endif
-
         private void LogError(HttpContext context, SecurityResult error)
         {
             _logger.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
