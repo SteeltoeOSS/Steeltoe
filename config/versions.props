@@ -7,6 +7,7 @@
     <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
     <AutofacVersion>4.6.1</AutofacVersion>
     <HttpVersion>4.3.3</HttpVersion>
+    <MockHttpVersion>3.2.1</MockHttpVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <JsonNetVersion>10.0.3</JsonNetVersion>
     <TestSdkVersion>15.5.0</TestSdkVersion>

@@ -77,6 +77,7 @@ namespace Steeltoe.Common.Http
         /// <param name="httpClient"></param>
         /// <param name="url"></param>
         /// <param name="data"></param>
+        /// <param name="settings"></param>
         /// <returns>Task to be awaited</returns>
         public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, string url, T data, JsonSerializerSettings settings)
         {
