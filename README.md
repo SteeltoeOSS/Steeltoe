@@ -8,7 +8,7 @@ Windows Dev (Less Stable): [![AppVeyor Dev](https://ci.appveyor.com/api/projects
 
 Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Common.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/Common)
 
-Linux/OS X Dev (Less Stable):  [![Travis Dev(https://travis-ci.org/SteeltoeOSS/Common.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Common)
+Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Common.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Common)
 
 ## Nuget Feeds
 
