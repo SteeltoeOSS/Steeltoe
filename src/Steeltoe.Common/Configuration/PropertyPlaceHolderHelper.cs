@@ -24,7 +24,7 @@ namespace Steeltoe.Common.Configuration
 {
     /// <summary>
     /// Utility class for working with configuration values that have placeholders in them.
-    /// A placeholder takes the form of <code ${some:config:reference?default_if_not_present}></code>
+    /// A placeholder takes the form of <code> ${some:config:reference?default_if_not_present}></code>
     /// 
     /// Note: This was "inspired" by the Spring class: PropertyPlaceholderHelper
     /// 
@@ -36,7 +36,7 @@ namespace Steeltoe.Common.Configuration
         private const string SEPARATOR = "?";
 
         /// <summary>
-        /// Replaces all placeholders of the form <code ${some:config:reference?default_if_not_present}/>
+        /// Replaces all placeholders of the form <code> ${some:config:reference?default_if_not_present}</code>
         /// with the corresponding value from the supplied <see cref="IConfiguration"/>.
         /// </summary>
         /// <param name="property">the string containing one or more placeholders</param>

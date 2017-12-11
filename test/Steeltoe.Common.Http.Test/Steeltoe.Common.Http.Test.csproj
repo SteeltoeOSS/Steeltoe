@@ -4,6 +4,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,9 @@
     </None>
   </ItemGroup>
 
+  <PropertyGroup>
+    <NoWarn>SA1100;SA1101;SA1202;SA1204;SA1309;SA1310;SA1313;SA1402;SA1600;SA1652;1591;1701;1702;1705</NoWarn>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.Common.Http\Steeltoe.Common.Http.csproj" />
@@ -23,10 +27,14 @@
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
-    
-
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
 
 </Project>
 
