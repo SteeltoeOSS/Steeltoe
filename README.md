@@ -16,11 +16,11 @@ Linux/OS X Dev (Less Stable): [![Travis Dev](https://travis-ci.org/SteeltoeOSS/C
 
 ## .NET Runtime & Framework Support
 
-Like the ASP.NET Core configuration providers, these providers are intended to support both .NET 4.5.2+ and .NET Core (CoreCLR/CoreFX) run-times.  The providers are built and unit tested on Windows, Linux and OSX.
+Like the ASP.NET Core configuration providers, these providers are intended to support both .NET Full framework and .NET Core (CoreCLR/CoreFX) run-times.  The providers are built and unit tested on Windows, Linux and OSX.
 
 While the primary usage of the providers is intended to be with ASP.NET Core applications, they should also work fine with UWP, Console and ASP.NET 4.x apps. An ASP.NET 4.x sample app is available illustrating how this can be done.
 
-Currently all of the code and samples have been tested on .NET Core 1.1, .NET 4.5.2/4.6.x, and on ASP.NET Core 1.1.0.
+Currently all of the code and samples have been tested on .NET Core 2.0, .NET 4.6.1, and on ASP.NET Core 2.0.0.
 
 ## Usage
 
@@ -34,14 +34,14 @@ All new configuration provider development is done on the dev branch. More stabl
 
 [Master feed (Stable)](https://www.myget.org/gallery/steeltoemaster) - https://www.myget.org/gallery/steeltoemaster
 
-[Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/. 
+[Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/.
 
 ## Building Pre-requisites
 
 To build and run the unit tests:
 
-1. .NET Core SDK 1.0.4 or greater
-1. .NET Core Runtime 1.1
+1. .NET Core SDK 2.0.3 or greater
+1. .NET Core Runtime 2.0.3
 
 ## Building Packages & Running Tests - Windows
 
@@ -49,31 +49,8 @@ To build the packages on windows:
 
 1. git clone ...
 1. cd clone directory
-1. Install .NET Core SDK
-1. dotnet restore src
-1. cd src\<project> (e.g. cd src\Steeltoe.Extensions.Configuration.CloudFoundry)
-1. dotnet pack --configuration Release or Debug
-
-The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src\Steeltoe.Extensions.Configuration.CloudFoundry\bin
-
-To run the unit tests:
-
-1. git clone ...
-1. cd clone directory
-1. Install .NET Core SDK 
-1. dotnet restore test
-1. cd test\<test project> (e.g. cd test\Steeltoe.Extensions.Configuration.CloudFoundry.Test)
-1. dotnet xunit -verbose 
-
-## Building Packages & Running Tests - Linux/OSX
-
-To build the packages on Linux/OSX:
-
-1. git clone ...
-1. cd clone directory
-1. Install .NET Core SDK
-1. dotnet restore src
-1. cd src/<project> (e.g.. cd src/Steeltoe.Extensions.Configuration.CloudFoundry)
+1. cd src/`<project>` (e.g. cd src/Steeltoe.Extensions.Configuration.CloudFoundry)
+1. dotnet restore
 1. dotnet pack --configuration Release or Debug
 
 The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Extensions.Configuration.CloudFoundry/bin
@@ -82,14 +59,33 @@ To run the unit tests:
 
 1. git clone ...
 1. cd clone directory
-1. Install .NET Core SDK 
-1. dotnet restore test
-1. cd test\<test project> (e.g. cd test/Steeltoe.Extensions.Configuration.CloudFoundry.Test)
-1. dotnet xunit -verbose -framework netcoreapp1.1
+1. cd test/`<test project>` (e.g. cd test/Steeltoe.Extensions.Configuration.CloudFoundry.Test)
+1. dotnet restore
+1. dotnet xunit -verbose
+
+## Building Packages & Running Tests - Linux/OSX
+
+To build the packages on Linux/OSX:
+
+1. git clone ...
+1. cd clone directory
+1. cd src/`<project>` (e.g.. cd src/Steeltoe.Extensions.Configuration.CloudFoundry)
+1. dotnet restore
+1. dotnet pack --configuration Release or Debug
+
+The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Extensions.Configuration.CloudFoundry/bin
+
+To run the unit tests:
+
+1. git clone ...
+1. cd clone directory
+1. cd test/`<test project>` (e.g. cd test/Steeltoe.Extensions.Configuration.CloudFoundry.Test)
+1. dotnet restore
+1. dotnet xunit -verbose -framework netcoreapp2.0
 
 ## Sample Applications
 
-See the [Samples](https://github.com/SteeltoeOSS/Samples) repo for examples of how to use these packages.
+See the [Samples](https://github.com/SteeltoeOSS/Samples) repository for examples of how to use these packages.
 
 ## Known limitations
 
