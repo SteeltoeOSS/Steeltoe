@@ -2,6 +2,7 @@
   <Import Project="..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>    
   </PropertyGroup>
   <ItemGroup>
     <None Update="xunit.runner.json">
