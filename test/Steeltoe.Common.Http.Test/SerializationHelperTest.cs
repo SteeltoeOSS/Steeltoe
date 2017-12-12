@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.IO;
@@ -47,13 +45,14 @@ namespace Steeltoe.Common.Http.Test
 
             var result = SerializationHelper.Deserialize<Test>(memStream);
             Assert.NotNull(result);
-            Assert.Equal(100, result.f1);
-            Assert.Equal(200, result.f2);
+            Assert.Equal(100, result.F1);
+            Assert.Equal(200, result.F2);
         }
-        class Test
+
+        private class Test
         {
-            public int f1=0;
-            public long f2=0;
+            public int F1 = 0;
+            public long F2 = 0;
         }
     }
 }

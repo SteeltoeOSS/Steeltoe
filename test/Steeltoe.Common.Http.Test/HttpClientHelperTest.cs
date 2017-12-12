@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.Net;
@@ -79,6 +77,7 @@ namespace Steeltoe.Common.Http.Test
                 Assert.Null(ServicePointManager.ServerCertificateValidationCallback);
             }
         }
+
         [Fact]
         public void RestoreCertificateValidation_ValidateFalse()
         {
@@ -153,6 +152,7 @@ namespace Steeltoe.Common.Http.Test
             Assert.Throws<ArgumentNullException>(() => HttpClientHelper.GetRequestMessage(null, null, null, null));
             Assert.Throws<ArgumentNullException>(() => HttpClientHelper.GetRequestMessage(HttpMethod.Get, null, null, null));
         }
+
         [Fact]
         public void GetRequestMessage_CreatesCorrectMessage()
         {
@@ -161,7 +161,6 @@ namespace Steeltoe.Common.Http.Test
             Assert.Equal(HttpMethod.Put, message.Method);
             Assert.Equal("http://localhost/foobar", message.RequestUri.ToString());
             Assert.Null(message.Headers.Authorization);
-
         }
 
         [Fact]
@@ -197,9 +196,7 @@ namespace Steeltoe.Common.Http.Test
             else
             {
                 Assert.NotNull(del1);
-
             }
         }
     }
-
 }

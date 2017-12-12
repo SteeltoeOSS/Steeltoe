@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,12 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -43,10 +40,12 @@ namespace Steeltoe.Common.Http.Test
             IDiscoveryClient client = new TestDiscoveryClient();
             DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
             Uri uri = new Uri("http://foo:8080/test");
+
             // Act and Assert
             var result = handler.LookupService(uri);
             Assert.Equal(uri, result);
         }
+
         [Fact]
         public void LookupService_DoesntFindService_ReturnsOriginalURI()
         {
@@ -67,113 +66,10 @@ namespace Steeltoe.Common.Http.Test
             IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("http://foundit:5555")));
             DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
             Uri uri = new Uri("http://foo/test/bar/foo?test=1&test2=2");
+
             // Act and Assert
             var result = handler.LookupService(uri);
             Assert.Equal(new Uri("http://foundit:5555/test/bar/foo?test=1&test2=2"), result);
         }
-
-    }
-
-    class TestDiscoveryClient : IDiscoveryClient
-    {
-
-        private IServiceInstance _instance;
-        public TestDiscoveryClient(IServiceInstance instance = null)
-        {
-            _instance = instance;
-        }
-        public string Description
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IList<string> Services
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IList<IServiceInstance> GetInstances(string serviceId)
-        {
-            if (_instance != null)
-            {
-                return new List<IServiceInstance>() { _instance };
-            }
-            return new List<IServiceInstance>();
-
-        }
-
-        public IServiceInstance GetLocalServiceInstance()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task ShutdownAsync()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    class TestServiceInstance : IServiceInstance
-    {
-
-        private Uri _uri;
-        public TestServiceInstance(Uri uri)
-        {
-            _uri = uri;
-        }
-        public string Host
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool IsSecure
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IDictionary<string, string> Metadata
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public int Port
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string ServiceId
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public Uri Uri
-        {
-            get
-            {
-                return _uri;
-            }
-        }
     }
 }
-

@@ -17,14 +17,16 @@
   </PropertyGroup>
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Common.Autofac.xml</DocumentationFile>
+    <NoWarn>SA1101;SA1309;SA1310;SA1401;SA1600;1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>SA1100;SA1101;SA1124;SA1202;SA1204;SA1309;SA1310;SA1313;SA1600;SA1611;1591;1701;1702;1705</NoWarn>
-  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json">

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,9 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -23,30 +20,28 @@ namespace Steeltoe.Common.Discovery
     public interface IDiscoveryClient
     {
         /// <summary>
-        /// A human readable description of the implementation
+        /// Gets a human readable description of the implementation
         /// </summary>
         string Description { get; }
 
         /// <summary>
-        /// All known service Ids
+        /// Gets all known service Ids
         /// </summary>
         IList<string> Services { get; }
 
         /// <summary>
         ///  ServiceInstance with information used to register the local service
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The IServiceInstance</returns>
         IServiceInstance GetLocalServiceInstance();
 
         /// <summary>
         ///  Get all ServiceInstances associated with a particular serviceId
         /// </summary>
         /// <param name="serviceId">the serviceId to lookup</param>
-        /// <returns></returns>
-        IList<IServiceInstance> GetInstances(String serviceId);
-
+        /// <returns>List of service instances</returns>
+        IList<IServiceInstance> GetInstances(string serviceId);
 
         Task ShutdownAsync();
-
     }
 }

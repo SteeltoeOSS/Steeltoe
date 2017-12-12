@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
-
 
 namespace Steeltoe.Common.Options.Autofac
 {
@@ -38,10 +35,12 @@ namespace Steeltoe.Common.Options.Autofac
             container.RegisterGeneric(typeof(OptionsFactory<>)).As(typeof(IOptionsFactory<>)).InstancePerDependency();
         }
 
-        public static void RegisterOption<TOption>(this ContainerBuilder container, IConfiguration config) where TOption : class
+        public static void RegisterOption<TOption>(this ContainerBuilder container, IConfiguration config)
+            where TOption : class
             => container.RegisterOption<TOption>(Microsoft.Extensions.Options.Options.DefaultName, config);
 
-        public static void RegisterOption<TOption>(this ContainerBuilder container, string name, IConfiguration config) where TOption : class
+        public static void RegisterOption<TOption>(this ContainerBuilder container, string name, IConfiguration config)
+            where TOption : class
         {
             if (container == null)
             {
@@ -57,10 +56,12 @@ namespace Steeltoe.Common.Options.Autofac
             container.RegisterInstance(new NamedConfigureFromConfigurationOptions<TOption>(name, config)).As<IConfigureOptions<TOption>>().SingleInstance();
         }
 
-        public static void RegisterPostConfigure<TOptions>(this ContainerBuilder container, Action<TOptions> configureOptions) where TOptions : class
+        public static void RegisterPostConfigure<TOptions>(this ContainerBuilder container, Action<TOptions> configureOptions)
+            where TOptions : class
             => container.RegisterPostConfigure(Microsoft.Extensions.Options.Options.DefaultName, configureOptions);
 
-        public static void RegisterPostConfigure<TOptions>(this ContainerBuilder container, string name, Action<TOptions> configureOptions) where TOptions : class
+        public static void RegisterPostConfigure<TOptions>(this ContainerBuilder container, string name, Action<TOptions> configureOptions)
+            where TOptions : class
         {
             if (container == null)
             {
@@ -71,6 +72,7 @@ namespace Steeltoe.Common.Options.Autofac
             {
                 throw new ArgumentNullException(nameof(configureOptions));
             }
+
             container.RegisterInstance(new PostConfigureOptions<TOptions>(name, configureOptions)).As<IPostConfigureOptions<TOptions>>().SingleInstance();
         }
     }

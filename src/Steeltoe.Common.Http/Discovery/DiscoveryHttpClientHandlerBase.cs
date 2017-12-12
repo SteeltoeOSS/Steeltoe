@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,9 +22,9 @@ namespace Steeltoe.Common.Discovery
 {
     public class DiscoveryHttpClientHandlerBase : HttpClientHandler
     {
+        protected static Random _random = new Random();
         protected IDiscoveryClient _client;
         protected ILogger _logger;
-        protected static Random _random = new Random();
 
         public DiscoveryHttpClientHandlerBase(IDiscoveryClient client, ILogger logger = null)
         {
@@ -37,25 +35,6 @@ namespace Steeltoe.Common.Discovery
 
             _client = client;
             _logger = logger;
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var current = request.RequestUri;
-            try
-            {
-                request.RequestUri = LookupService(current);
-                return await base.SendAsync(request, cancellationToken);
-            } catch(Exception e)
-            {
-                _logger?.LogDebug(e, "Exception during SendAsync()");
-                throw;
-            }
-            finally
-            {
-                request.RequestUri = current;
-            }
-
         }
 
         public virtual Uri LookupService(Uri current)
@@ -72,11 +51,28 @@ namespace Steeltoe.Common.Discovery
                 int indx = _random.Next(instances.Count);
                 current = new Uri(instances[indx].Uri, current.PathAndQuery);
             }
+
             _logger?.LogDebug("LookupService() returning {0} ", current.ToString());
             return current;
-
         }
 
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var current = request.RequestUri;
+            try
+            {
+                request.RequestUri = LookupService(current);
+                return await base.SendAsync(request, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _logger?.LogDebug(e, "Exception during SendAsync()");
+                throw;
+            }
+            finally
+            {
+                request.RequestUri = current;
+            }
+        }
     }
 }
-

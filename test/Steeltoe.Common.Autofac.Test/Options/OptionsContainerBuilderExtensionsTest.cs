@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
@@ -39,7 +37,6 @@ namespace Steeltoe.Common.Options.Autofac.Test
             Assert.Throws<ArgumentNullException>(() => container.RegisterOption<MyOption>(null));
             ContainerBuilder container2 = new ContainerBuilder();
             Assert.Throws<ArgumentNullException>(() => container2.RegisterOption<MyOption>(null));
-
         }
 
         [Fact]
@@ -60,10 +57,9 @@ namespace Steeltoe.Common.Options.Autofac.Test
             var service = built.Resolve<IOptions<MyOption>>();
             Assert.NotNull(service);
             Assert.NotNull(service.Value);
-            Assert.Equal("foobar", service.Value.f1);
+            Assert.Equal("foobar", service.Value.F1);
         }
 
- 
         [Fact]
         public void RegisterPostConfigure_Registers_RunsPostAction()
         {
@@ -79,7 +75,7 @@ namespace Steeltoe.Common.Options.Autofac.Test
             container.RegisterOption<MyOption>(config);
             container.RegisterPostConfigure<MyOption>((opt) =>
             {
-                opt.f1 = "changed";
+                opt.F1 = "changed";
             });
 
             var built = container.Build();
@@ -87,12 +83,12 @@ namespace Steeltoe.Common.Options.Autofac.Test
             var service = built.Resolve<IOptions<MyOption>>();
             Assert.NotNull(service);
             Assert.NotNull(service.Value);
-            Assert.Equal("changed", service.Value.f1);
+            Assert.Equal("changed", service.Value.F1);
         }
 
-        class MyOption
+        private class MyOption
         {
-            public string f1 { get; set; }
+            public string F1 { get; set; }
         }
     }
 }

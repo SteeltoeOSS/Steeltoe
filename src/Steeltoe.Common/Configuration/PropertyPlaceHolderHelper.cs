@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -25,9 +23,7 @@ namespace Steeltoe.Common.Configuration
     /// <summary>
     /// Utility class for working with configuration values that have placeholders in them.
     /// A placeholder takes the form of <code> ${some:config:reference?default_if_not_present}></code>
-    /// 
     /// Note: This was "inspired" by the Spring class: PropertyPlaceholderHelper
-    /// 
     /// </summary>
     public static class PropertyPlaceholderHelper
     {
@@ -50,14 +46,15 @@ namespace Steeltoe.Common.Configuration
 
         private static string ParseStringValue(string property, IConfiguration config, ISet<string> visitedPlaceHolders, ILogger logger = null)
         {
-
             if (config == null)
             {
                 return property;
             }
 
             if (string.IsNullOrEmpty(property))
+            {
                 return property;
+            }
 
             StringBuilder result = new StringBuilder(property);
 
@@ -67,19 +64,20 @@ namespace Steeltoe.Common.Configuration
                 int endIndex = FindEndIndex(result, startIndex);
                 if (endIndex != -1)
                 {
-
                     string placeholder = result.Substring(startIndex + PREFIX.Length, endIndex);
                     string originalPlaceholder = placeholder;
 
                     if (!visitedPlaceHolders.Add(originalPlaceholder))
                     {
-                        throw new ArgumentException(String.Format("Circular placeholder reference '{0}' in property definitions",
-                            originalPlaceholder));
+                        throw new ArgumentException($"Circular placeholder reference '{originalPlaceholder}' in property definitions");
                     }
+
                     // Recursive invocation, parsing placeholders contained in the placeholder key.
                     placeholder = ParseStringValue(placeholder, config, visitedPlaceHolders);
+
                     // Handle array references foo:bar[1]:baz format -> foo:bar:1:baz
-                    string lookup = placeholder.Replace('[', ':').Replace("]", "");
+                    string lookup = placeholder.Replace('[', ':').Replace("]", string.Empty);
+
                     // Now obtain the value for the fully resolved key...
                     string propVal = config[lookup];
                     if (propVal == null)
@@ -96,6 +94,7 @@ namespace Steeltoe.Common.Configuration
                             }
                         }
                     }
+
                     if (propVal != null)
                     {
                         // Recursive invocation, parsing placeholders contained in these
@@ -110,6 +109,7 @@ namespace Steeltoe.Common.Configuration
                         // Proceed with unprocessed value.
                         startIndex = result.IndexOf(PREFIX, endIndex + PREFIX.Length);
                     }
+
                     visitedPlaceHolders.Remove(originalPlaceholder);
                 }
                 else
@@ -121,14 +121,12 @@ namespace Steeltoe.Common.Configuration
             return result.ToString();
         }
 
-
         private static int FindEndIndex(StringBuilder property, int startIndex)
         {
             int index = startIndex + PREFIX.Length;
             int withinNestedPlaceholder = 0;
             while (index < property.Length)
             {
-
                 if (SubstringMatch(property, index, SUFFIX))
                 {
                     if (withinNestedPlaceholder > 0)
@@ -151,9 +149,10 @@ namespace Steeltoe.Common.Configuration
                     index++;
                 }
             }
-            return -1;
 
+            return -1;
         }
+
         private static bool SubstringMatch(StringBuilder str, int index, string substring)
         {
             for (int j = 0; j < substring.Length; j++)
@@ -164,6 +163,7 @@ namespace Steeltoe.Common.Configuration
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -172,12 +172,17 @@ namespace Steeltoe.Common.Configuration
             builder.Remove(start, end - start);
             builder.Insert(start, str);
         }
+
         private static int IndexOf(this StringBuilder builder, string str, int start)
         {
             if (start >= builder.Length)
+            {
                 return -1;
+            }
+
             return builder.ToString().IndexOf(str, start);
         }
+
         private static string Substring(this StringBuilder builder, int start, int end)
         {
             return builder.ToString().Substring(start, end - start);

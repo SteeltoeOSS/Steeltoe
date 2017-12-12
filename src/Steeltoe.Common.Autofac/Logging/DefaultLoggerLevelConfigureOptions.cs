@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,17 +11,23 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
 
 namespace Steeltoe.Common.Logging.Autofac
 {
+    /// <summary>
+    /// Default logger level configuration when using the Autofac container
+    /// </summary>
     public class DefaultLoggerLevelConfigureOptions : ConfigureOptions<LoggerFilterOptions>
     {
-        public DefaultLoggerLevelConfigureOptions(LogLevel level) :
-            base(options => options.MinLevel = level)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultLoggerLevelConfigureOptions"/> class.
+        /// </summary>
+        /// <param name="level">default log level to configure</param>
+        public DefaultLoggerLevelConfigureOptions(LogLevel level)
+            : base(options => options.MinLevel = level)
         {
         }
     }

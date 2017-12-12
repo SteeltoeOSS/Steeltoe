@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.Collections.Generic;
@@ -22,27 +20,32 @@ namespace Steeltoe.Common.Discovery
     public interface IServiceInstance
     {
         /// <summary>
-        ///  The service id as register by the DiscoveryClient
+        ///  Gets the service id as register by the DiscoveryClient
         /// </summary>
         string ServiceId { get; }
+
         /// <summary>
-        /// The hostname of the registered ServiceInstance
+        /// Gets the hostname of the registered ServiceInstance
         /// </summary>
         string Host { get; }
+
         /// <summary>
-        /// The port of the registered ServiceInstance
+        /// Gets the port of the registered ServiceInstance
         /// </summary>
         int Port { get; }
+
         /// <summary>
-        /// If the port of the registered ServiceInstance is https or not
+        /// Gets a value indicating whether if the port of the registered ServiceInstance is https or not
         /// </summary>
         bool IsSecure { get; }
+
         /// <summary>
-        /// the service uri address
+        /// Gets the service uri address
         /// </summary>
         Uri Uri { get; }
+
         /// <summary>
-        ///  The key value pair metadata associated with the service instance
+        ///  Gets the key value pair metadata associated with the service instance
         /// </summary>
         IDictionary<string, string> Metadata { get; }
     }

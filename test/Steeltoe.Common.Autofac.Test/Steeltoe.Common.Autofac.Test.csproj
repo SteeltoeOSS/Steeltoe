@@ -13,7 +13,7 @@
     </None>
   </ItemGroup>
   <PropertyGroup>
-    <NoWarn>SA1100;SA1101;SA1202;SA1204;SA1309;SA1310;SA1313;SA1402;SA1600;SA1652;1591;1701;1702;1705</NoWarn>
+    <NoWarn>SA1101;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,9 +25,11 @@
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
-    
-
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
+  
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json">
       <Link>stylecop.json</Link>

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,25 +11,34 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using System;
 
-
 namespace Steeltoe.Common.Discovery
 {
+    public enum DiscoveryClientType
+    {
+        EUREKA, UNKNOWN
+    }
+
     public class DiscoveryOptions
     {
-        public DiscoveryOptions(IConfiguration config) : this()
+        protected string _type;
+        protected IDiscoveryClientOptions _clientOptions;
+        protected IDiscoveryRegistrationOptions _registrationOptions;
+
+        public DiscoveryOptions(IConfiguration config)
+            : this()
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
-            Configure(config);
 
+            Configure(config);
         }
+
         public DiscoveryOptions()
         {
             ClientType = DiscoveryClientType.UNKNOWN;
@@ -44,7 +52,6 @@ namespace Steeltoe.Common.Discovery
             }
         }
 
-        protected string _type;
         public DiscoveryClientType ClientType
         {
             get
@@ -53,47 +60,45 @@ namespace Steeltoe.Common.Discovery
                 {
                     return DiscoveryClientType.UNKNOWN;
                 }
+
                 return (DiscoveryClientType)System.Enum.Parse(typeof(DiscoveryClientType), _type);
             }
+
             set
             {
                 _type = System.Enum.GetName(typeof(DiscoveryClientType), value);
             }
         }
 
-        protected IDiscoveryClientOptions _clientOptions;
         public IDiscoveryClientOptions ClientOptions
         {
             get
             {
                 return _clientOptions;
             }
+
             set
             {
                 _clientOptions = value;
             }
-
         }
-        protected IDiscoveryRegistrationOptions _registrationOptions;
+
         public IDiscoveryRegistrationOptions RegistrationOptions
         {
             get
             {
                 return _registrationOptions;
             }
+
             set
             {
                 _registrationOptions = value;
             }
         }
+
         public virtual void Configure(IConfiguration config)
         {
             ClientType = DiscoveryClientType.UNKNOWN;
         }
-
     }
-
-    public enum DiscoveryClientType { EUREKA, UNKNOWN }
-
-
 }

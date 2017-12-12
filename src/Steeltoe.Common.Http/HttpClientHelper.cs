@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -32,34 +30,12 @@ namespace Steeltoe.Common.Http
 {
     public static class HttpClientHelper
     {
+        internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate = null;
+
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private const bool DEFAULT_VALIDATE_CERTIFICATES = true;
-        private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } =  (sender, cert, chain, sslPolicyErrors) => true;
-        internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate = null;
-        internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> GetDisableDelegate()
-        {
-            if (Platform.IsFullFramework)
-            {
-                return null;
-            }
 
-            if (_reflectedDelegate != null)
-            {
-                return _reflectedDelegate;
-            }
-
-            var property = typeof(HttpClientHandler).GetProperty("DangerousAcceptAnyServerCertificateValidator",
-                BindingFlags.Public | BindingFlags.Static);
-            if (property != null)
-            {
-                _reflectedDelegate = property.GetValue(null) as Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool>;
-                if (_reflectedDelegate != null)
-                {
-                    return _reflectedDelegate;
-                }
-            }
-            return DefaultDelegate;
-        }
+        private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (sender, cert, chain, sslPolicyErrors) => true;
 
         public static HttpClient GetHttpClient(bool validateCertificates, int timeout)
         {
@@ -70,7 +46,6 @@ namespace Steeltoe.Common.Http
             }
             else
             {
-
                 if (!validateCertificates)
                 {
                     var handler = new HttpClientHandler();
@@ -83,10 +58,15 @@ namespace Steeltoe.Common.Http
                     client = new HttpClient();
                 }
             }
+
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             return client;
         }
-        public static void ConfigureCertificateValidatation(bool validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator)
+
+        public static void ConfigureCertificateValidatation(
+            bool validateCertificates,
+            out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator)
         {
             prevValidator = null;
             protocolType = (SecurityProtocolType)0;
@@ -102,9 +82,12 @@ namespace Steeltoe.Common.Http
                 }
             }
         }
-        public static void RestoreCertificateValidation(bool validateCertificates, SecurityProtocolType protocolType, RemoteCertificateValidationCallback prevValidator)
-        {
 
+        public static void RestoreCertificateValidation(
+            bool validateCertificates,
+            SecurityProtocolType protocolType,
+            RemoteCertificateValidationCallback prevValidator)
+        {
             if (Platform.IsFullFramework)
             {
                 if (!validateCertificates)
@@ -112,26 +95,31 @@ namespace Steeltoe.Common.Http
                     ServicePointManager.SecurityProtocol = protocolType;
                     ServicePointManager.ServerCertificateValidationCallback = prevValidator;
                 }
-
             }
-
         }
+
         public static string GetEncodedUserPassword(string user, string password)
         {
             if (user == null)
+            {
                 user = string.Empty;
+            }
+
             if (password == null)
+            {
                 password = string.Empty;
+            }
+
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
         }
 
-        public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, Func<string> GetAccessToken)
+        public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, Func<string> getAccessToken)
         {
             var request = GetRequestMessage(method, requestUri, null, null);
 
-            if (GetAccessToken != null)
+            if (getAccessToken != null)
             {
-                var accessToken = GetAccessToken();
+                var accessToken = getAccessToken();
 
                 if (accessToken != null)
                 {
@@ -139,6 +127,7 @@ namespace Steeltoe.Common.Http
                     request.Headers.Authorization = auth;
                 }
             }
+
             return request;
         }
 
@@ -157,16 +146,22 @@ namespace Steeltoe.Common.Http
             var request = new HttpRequestMessage(method, requestUri);
             if (!string.IsNullOrEmpty(password))
             {
-                AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Basic",
+                AuthenticationHeaderValue auth = new AuthenticationHeaderValue(
+                    "Basic",
                     GetEncodedUserPassword(userName, password));
                 request.Headers.Authorization = auth;
             }
 
             return request;
         }
+
         public static async Task<string> GetAccessToken(
-            string accessTokenUri, string clientId, string clientSecret, 
-            int timeout = DEFAULT_GETACCESSTOKEN_TIMEOUT, bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES, ILogger logger = null)
+            string accessTokenUri,
+            string clientId,
+            string clientSecret,
+            int timeout = DEFAULT_GETACCESSTOKEN_TIMEOUT,
+            bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES,
+            ILogger logger = null)
         {
 
             if (string.IsNullOrEmpty(accessTokenUri))
@@ -183,6 +178,7 @@ namespace Steeltoe.Common.Http
             {
                 throw new ArgumentException(nameof(accessTokenUri));
             }
+
             var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
             HttpClient client = GetHttpClient(validateCertificates, timeout);
 
@@ -207,8 +203,10 @@ namespace Steeltoe.Common.Http
                     {
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
-                            logger?.LogInformation("GetAccessToken returned status: {0} while obtaining access token from: {1}",
-                                response.StatusCode, accessTokenUri);
+                            logger?.LogInformation(
+                                "GetAccessToken returned status: {0} while obtaining access token from: {1}",
+                                response.StatusCode, 
+                                accessTokenUri);
                             return null;
                         }
 
@@ -226,7 +224,36 @@ namespace Steeltoe.Common.Http
             {
                 HttpClientHelper.RestoreCertificateValidation(validateCertificates, prevProtocols, prevValidator);
             }
+
             return null;
+        }
+
+        internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> GetDisableDelegate()
+        {
+            if (Platform.IsFullFramework)
+            {
+                return null;
+            }
+
+            if (_reflectedDelegate != null)
+            {
+                return _reflectedDelegate;
+            }
+
+            var property = typeof(HttpClientHandler).GetProperty(
+                "DangerousAcceptAnyServerCertificateValidator",
+                BindingFlags.Public | BindingFlags.Static);
+
+            if (property != null)
+            {
+                _reflectedDelegate = property.GetValue(null) as Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool>;
+                if (_reflectedDelegate != null)
+                {
+                    return _reflectedDelegate;
+                }
+            }
+
+            return DefaultDelegate;
         }
     }
 }

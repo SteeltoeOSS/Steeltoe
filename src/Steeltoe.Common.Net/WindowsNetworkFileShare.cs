@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.Net;
@@ -23,7 +21,59 @@ namespace Steeltoe.Common.Net
 {
     public class WindowsNetworkFileShare
     {
-        readonly string _networkName;
+        private const int NO_ERROR = 0;
+        private const int ERROR_ACCESS_DENIED = 5;
+        private const int ERROR_ALREADY_ASSIGNED = 85;
+        private const int ERROR_PATH_NOT_FOUND = 53;
+        private const int ERROR_BAD_DEVICE = 1200;
+        private const int ERROR_BAD_NET_NAME = 67;
+        private const int ERROR_BAD_PROVIDER = 1204;
+        private const int ERROR_CANCELLED = 1223;
+        private const int ERROR_EXTENDED_ERROR = 1208;
+        private const int ERROR_INVALID_ADDRESS = 487;
+        private const int ERROR_INVALID_PARAMETER = 87;
+        private const int ERROR_INVALID_PASSWORD = 86;
+        private const int ERROR_INVALID_PASSWORDNAME = 1216;
+        private const int ERROR_MORE_DATA = 234;
+        private const int ERROR_NO_MORE_ITEMS = 259;
+        private const int ERROR_NO_NET_OR_BAD_PATH = 1203;
+        private const int ERROR_NO_NETWORK = 1222;
+        private const int ERROR_BAD_PROFILE = 1206;
+        private const int ERROR_CANNOT_OPEN_PROFILE = 1205;
+        private const int ERROR_DEVICE_IN_USE = 2404;
+        private const int ERROR_NOT_CONNECTED = 2250;
+        private const int ERROR_OPEN_FILES = 2401;
+        private const int ERROR_LOGON_FAILURE = 1326;
+
+        // Created with excel formula:
+        // ="new ErrorClass("&A1&", """&PROPER(SUBSTITUTE(MID(A1,7,LEN(A1)-6), "_", " "))&"""), "
+        private static ErrorClass[] error_list = new ErrorClass[]
+        {
+            new ErrorClass(ERROR_ACCESS_DENIED, "Error: Access Denied"),
+            new ErrorClass(ERROR_ALREADY_ASSIGNED, "Error: Already Assigned"),
+            new ErrorClass(ERROR_BAD_DEVICE, "Error: Bad Device"),
+            new ErrorClass(ERROR_BAD_NET_NAME, "Error: Bad Net Name"),
+            new ErrorClass(ERROR_BAD_PROVIDER, "Error: Bad Provider"),
+            new ErrorClass(ERROR_CANCELLED, "Error: Cancelled"),
+            new ErrorClass(ERROR_EXTENDED_ERROR, "Error: Extended Error"),
+            new ErrorClass(ERROR_INVALID_ADDRESS, "Error: Invalid Address"),
+            new ErrorClass(ERROR_INVALID_PARAMETER, "Error: Invalid Parameter"),
+            new ErrorClass(ERROR_INVALID_PASSWORD, "Error: Invalid Password"),
+            new ErrorClass(ERROR_MORE_DATA, "Error: More Data"),
+            new ErrorClass(ERROR_NO_MORE_ITEMS, "Error: No More Items"),
+            new ErrorClass(ERROR_NO_NET_OR_BAD_PATH, "Error: No Net Or Bad Path"),
+            new ErrorClass(ERROR_NO_NETWORK, "Error: No Network"),
+            new ErrorClass(ERROR_BAD_PROFILE, "Error: Bad Profile"),
+            new ErrorClass(ERROR_CANNOT_OPEN_PROFILE, "Error: Cannot Open Profile"),
+            new ErrorClass(ERROR_DEVICE_IN_USE, "Error: Device In Use"),
+            new ErrorClass(ERROR_EXTENDED_ERROR, "Error: Extended Error"),
+            new ErrorClass(ERROR_NOT_CONNECTED, "Error: Not Connected"),
+            new ErrorClass(ERROR_OPEN_FILES, "Error: Open Files"),
+            new ErrorClass(ERROR_LOGON_FAILURE, "The user name or password is incorrect"),
+            new ErrorClass(ERROR_PATH_NOT_FOUND, "The network path not found")
+        };
+
+        private readonly string _networkName;
 
         public WindowsNetworkFileShare(string networkName, NetworkCredential credentials)
         {
@@ -41,7 +91,6 @@ namespace Steeltoe.Common.Net
                 ? credentials.UserName
                 : string.Format(@"{0}\{1}", credentials.Domain, credentials.UserName);
 
-
             var result = WNetUseConnection(IntPtr.Zero, netResource, credentials.Password, userName, 0, null, null, null);
 
             if (result != 0)
@@ -55,53 +104,6 @@ namespace Steeltoe.Common.Net
             Dispose(false);
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            WNetCancelConnection2(_networkName, 0, true);
-        }
-
-        [DllImport("mpr.dll")]
-        private static extern int WNetAddConnection2(NetResource netResource,
-            string password, string username, int flags);
-
-        [DllImport("mpr.dll")]
-        private static extern int WNetCancelConnection2(string name, int flags,
-            bool force);
-
-        [DllImport("mpr.dll")]
-        private static extern int WNetUseConnection(
-             IntPtr hwndOwner,
-            NetResource netResource,
-            string password, string username, int flags,
-            string lpAccessName,
-            string lpBufferSize,
-            string lpResult
-        );
-
-        [DllImport("mpr.dll", CharSet = CharSet.Auto)]
-        public static extern int WNetGetLastError(out int Error,
-            out StringBuilder ErrorBuf, int ErrorBufSize, out StringBuilder NameBuf, int NameBufSize);
-
-
-        [StructLayout(LayoutKind.Sequential)]
-        public class NetResource
-        {
-            public ResourceScope Scope;
-            public ResourceType ResourceType;
-            public ResourceDisplaytype DisplayType;
-            public int Usage;
-            public string LocalName;
-            public string RemoteName;
-            public string Comment;
-            public string Provider;
-        }
-
         public enum ResourceScope : int
         {
             Connected = 1,
@@ -109,7 +111,7 @@ namespace Steeltoe.Common.Net
             Remembered,
             Recent,
             Context
-        };
+        }
 
         public enum ResourceType : int
         {
@@ -134,80 +136,63 @@ namespace Steeltoe.Common.Net
             Tree = 0x0a,
             Ndscontainer = 0x0b
         }
-        #region Errors
-        const int NO_ERROR = 0;
 
-        const int ERROR_ACCESS_DENIED = 5;
-        const int ERROR_ALREADY_ASSIGNED = 85;
-        const int ERROR_PATH_NOT_FOUND = 53;
-        const int ERROR_BAD_DEVICE = 1200;
-        const int ERROR_BAD_NET_NAME = 67;
-        const int ERROR_BAD_PROVIDER = 1204;
-        const int ERROR_CANCELLED = 1223;
-        const int ERROR_EXTENDED_ERROR = 1208;
-        const int ERROR_INVALID_ADDRESS = 487;
-        const int ERROR_INVALID_PARAMETER = 87;
-        const int ERROR_INVALID_PASSWORD = 86;
-        const int ERROR_INVALID_PASSWORDNAME = 1216;
-        const int ERROR_MORE_DATA = 234;
-        const int ERROR_NO_MORE_ITEMS = 259;
-        const int ERROR_NO_NET_OR_BAD_PATH = 1203;
-        const int ERROR_NO_NETWORK = 1222;
+        [DllImport("mpr.dll", CharSet = CharSet.Auto)]
+        public static extern int WNetGetLastError(
+            out int error,
+            out StringBuilder errorBuf,
+            int errorBufSize,
+            out StringBuilder nameBuf,
+            int nameBufSize);
 
-        const int ERROR_BAD_PROFILE = 1206;
-        const int ERROR_CANNOT_OPEN_PROFILE = 1205;
-        const int ERROR_DEVICE_IN_USE = 2404;
-        const int ERROR_NOT_CONNECTED = 2250;
-        const int ERROR_OPEN_FILES = 2401;
-        const int ERROR_LOGON_FAILURE = 1326;
-
-        private struct ErrorClass
+        public void Dispose()
         {
-            public int num;
-            public string message;
-            public ErrorClass(int num, string message)
-            {
-                this.num = num;
-                this.message = message;
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            WNetCancelConnection2(_networkName, 0, true);
+        }
 
-        // Created with excel formula:
-        // ="new ErrorClass("&A1&", """&PROPER(SUBSTITUTE(MID(A1,7,LEN(A1)-6), "_", " "))&"""), "
-        private static ErrorClass[] ERROR_LIST = new ErrorClass[] {
-            new ErrorClass(ERROR_ACCESS_DENIED, "Error: Access Denied"),
-            new ErrorClass(ERROR_ALREADY_ASSIGNED, "Error: Already Assigned"),
-            new ErrorClass(ERROR_BAD_DEVICE, "Error: Bad Device"),
-            new ErrorClass(ERROR_BAD_NET_NAME, "Error: Bad Net Name"),
-            new ErrorClass(ERROR_BAD_PROVIDER, "Error: Bad Provider"),
-            new ErrorClass(ERROR_CANCELLED, "Error: Cancelled"),
-            new ErrorClass(ERROR_EXTENDED_ERROR, "Error: Extended Error"),
-            new ErrorClass(ERROR_INVALID_ADDRESS, "Error: Invalid Address"),
-            new ErrorClass(ERROR_INVALID_PARAMETER, "Error: Invalid Parameter"),
-            new ErrorClass(ERROR_INVALID_PASSWORD, "Error: Invalid Password"),
-            new ErrorClass(ERROR_MORE_DATA, "Error: More Data"),
-            new ErrorClass(ERROR_NO_MORE_ITEMS, "Error: No More Items"),
-            new ErrorClass(ERROR_NO_NET_OR_BAD_PATH, "Error: No Net Or Bad Path"),
-            new ErrorClass(ERROR_NO_NETWORK, "Error: No Network"),
-            new ErrorClass(ERROR_BAD_PROFILE, "Error: Bad Profile"),
-            new ErrorClass(ERROR_CANNOT_OPEN_PROFILE, "Error: Cannot Open Profile"),
-            new ErrorClass(ERROR_DEVICE_IN_USE, "Error: Device In Use"),
-            new ErrorClass(ERROR_EXTENDED_ERROR, "Error: Extended Error"),
-            new ErrorClass(ERROR_NOT_CONNECTED, "Error: Not Connected"),
-            new ErrorClass(ERROR_OPEN_FILES, "Error: Open Files"),
-            new ErrorClass(ERROR_LOGON_FAILURE,"The user name or password is incorrect"),
-            new ErrorClass(ERROR_PATH_NOT_FOUND,"The network path not found")
-        };
+        [DllImport("mpr.dll")]
+        private static extern int WNetAddConnection2(
+            NetResource netResource,
+            string password,
+            string username,
+            int flags);
+
+        [DllImport("mpr.dll")]
+        private static extern int WNetCancelConnection2(
+            string name,
+            int flags,
+            bool force);
+
+        [DllImport("mpr.dll")]
+        private static extern int WNetUseConnection(
+            IntPtr hwndOwner,
+            NetResource netResource,
+            string password,
+            string username,
+            int flags,
+            string lpAccessName,
+            string lpBufferSize,
+            string lpResult);
 
         private static string GetErrorForNumber(int errNum)
         {
-            foreach (ErrorClass er in ERROR_LIST)
+            foreach (ErrorClass er in error_list)
             {
-                if (er.num == errNum) return er.message;
+                if (er.num == errNum)
+                {
+                    return er.message;
+                }
             }
+
             return "Error: Unknown, " + errNum;
         }
+
         private static string GetLastError(int result)
         {
             StringBuilder sbErrorBuf = new StringBuilder(500);
@@ -216,7 +201,30 @@ namespace Steeltoe.Common.Net
             int res = WNetGetLastError(out resultref, out sbErrorBuf, sbErrorBuf.Capacity, out sbNameBuf, sbNameBuf.Capacity);
             return sbErrorBuf.ToString();
         }
-        #endregion
 
+        private struct ErrorClass
+        {
+            public int num;
+            public string message;
+
+            public ErrorClass(int num, string message)
+            {
+                this.num = num;
+                this.message = message;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public class NetResource
+        {
+            public ResourceScope Scope;
+            public ResourceType ResourceType;
+            public ResourceDisplaytype DisplayType;
+            public int Usage;
+            public string LocalName;
+            public string RemoteName;
+            public string Comment;
+            public string Provider;
+        }
     }
 }

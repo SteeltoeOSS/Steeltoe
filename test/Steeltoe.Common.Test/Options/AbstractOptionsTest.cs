@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Options;
@@ -32,7 +30,6 @@ namespace Steeltoe.Common.Test.Options
 
             Assert.Throws<ArgumentNullException>(() => new TestOptions(root, "foobar"));
             Assert.Throws<ArgumentNullException>(() => new TestOptions(config));
-
         }
 
         [Fact]
@@ -41,7 +38,7 @@ namespace Steeltoe.Common.Test.Options
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(new Dictionary<string, string>()
             {
-                {"foo", "bar" }
+                { "foo", "bar" }
             });
 
             IConfigurationRoot root = builder.Build();
@@ -50,31 +47,17 @@ namespace Steeltoe.Common.Test.Options
             var opt1 = new TestOptions(root);
             Assert.Equal("bar", opt1.Foo);
 
-
             var opt2 = new TestOptions(config);
             Assert.Equal("bar", opt2.Foo);
 
             var builder2 = new ConfigurationBuilder();
             builder2.AddInMemoryCollection(new Dictionary<string, string>()
             {
-                {"prefix:foo", "bar" }
+                { "prefix:foo", "bar" }
             });
             IConfigurationRoot root2 = builder2.Build();
             var opt3 = new TestOptions(root2, "prefix");
             Assert.Equal("bar", opt3.Foo);
-        }
-    }
-
-    class TestOptions : AbstractOptions
-    {
-        public string Foo { get; set; }
-        public TestOptions(IConfigurationRoot root , string prefix) : base(root, prefix)
-        {
-
-        }
-        public TestOptions(IConfiguration config) : base (config)
-        {
-
         }
     }
 }

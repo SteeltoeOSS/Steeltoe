@@ -12,9 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Common.Discovery
+using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Options;
+
+namespace Steeltoe.Common.Test.Options
 {
-    public interface IDiscoveryClientOptions
+    internal class TestOptions : AbstractOptions
     {
+        public TestOptions(IConfigurationRoot root, string prefix)
+        : base(root, prefix)
+        {
+        }
+
+        public TestOptions(IConfiguration config)
+            : base(config)
+        {
+        }
+
+        public string Foo { get; set; }
     }
 }

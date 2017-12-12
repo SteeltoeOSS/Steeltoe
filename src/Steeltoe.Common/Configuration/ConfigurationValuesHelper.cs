@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +11,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using System;
-
 
 namespace Steeltoe.Common.Configuration
 {
     public static class ConfigurationValuesHelper
     {
-
         public static string GetSetting(string key, IConfiguration primary, IConfiguration secondary, IConfiguration resolve, string def)
         {
             // First check for key in primary
@@ -49,10 +45,14 @@ namespace Steeltoe.Common.Configuration
             {
                 int result;
                 if (int.TryParse(val, out result))
+                {
                     return result;
+                }
             }
+
             return def;
         }
+
         public static double GetDouble(string key, IConfiguration config, IConfiguration resolve, double def)
         {
             var val = GetString(key, config, resolve, null);
@@ -60,8 +60,11 @@ namespace Steeltoe.Common.Configuration
             {
                 double result;
                 if (double.TryParse(val, out result))
+                {
                     return result;
+                }
             }
+
             return def;
         }
 
@@ -71,12 +74,15 @@ namespace Steeltoe.Common.Configuration
             if (!string.IsNullOrEmpty(val))
             {
                 bool result;
-                if (Boolean.TryParse(val, out result))
+                if (bool.TryParse(val, out result))
+                {
                     return result;
+                }
             }
-            return def;
 
+            return def;
         }
+
         public static string GetString(string key, IConfiguration config, IConfiguration resolve, string def)
         {
             if (string.IsNullOrEmpty(key))
@@ -94,6 +100,7 @@ namespace Steeltoe.Common.Configuration
             {
                 return PropertyPlaceholderHelper.ResolvePlaceholders(val, resolve);
             }
+
             return def;
         }
     }

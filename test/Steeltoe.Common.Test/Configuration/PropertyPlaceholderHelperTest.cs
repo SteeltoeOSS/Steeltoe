@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -23,17 +21,15 @@ namespace Steeltoe.Common.Configuration.Test
 {
     public class PropertyPlaceholderHelperTest
     {
-
         [Fact]
         public void ResolvePlaceholders_ResolvesSinglePlaceholder()
         {
-
             // Arrange
             string text = "foo=${foo}";
             ConfigurationBuilder builder = new ConfigurationBuilder();
             var dic1 = new Dictionary<string, string>()
                 {
-                    {"foo", "bar"}
+                    { "foo", "bar" }
                 };
             builder.AddInMemoryCollection(dic1);
             var config = builder.Build();
@@ -42,38 +38,35 @@ namespace Steeltoe.Common.Configuration.Test
             string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
             Assert.Equal("foo=bar", result);
         }
+
         [Fact]
         public void ResolvePlaceholders_ResolvesMultiplePlaceholders()
         {
-
             // Arrange
             string text = "foo=${foo},bar=${bar}";
             ConfigurationBuilder builder = new ConfigurationBuilder();
             var dic1 = new Dictionary<string, string>()
                 {
-                    {"foo", "bar"},
-                    {"bar", "baz" }
-
+                    { "foo", "bar" },
+                    { "bar", "baz" }
                 };
             builder.AddInMemoryCollection(dic1);
-            var config = builder.Build();
 
             // Act and Assert
-            string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+            string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
             Assert.Equal("foo=bar,bar=baz", result);
         }
+
         [Fact]
         public void ResolvePlaceholders_ResolvesMultipleRecursivePlaceholders()
         {
-
             // Arrange
             string text = "foo=${bar}";
             ConfigurationBuilder builder = new ConfigurationBuilder();
             var dic1 = new Dictionary<string, string>()
                 {
-                    {"bar", "${baz}"},
-                    {"baz", "bar"}
-
+                    { "bar", "${baz}" },
+                    { "baz", "bar" }
                 };
             builder.AddInMemoryCollection(dic1);
             var config = builder.Build();
@@ -86,15 +79,13 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void ResolvePlaceholders_ResolvesMultipleRecursiveInPlaceholders()
         {
-
             // Arrange
             string text1 = "foo=${b${inner}}";
             ConfigurationBuilder builder1 = new ConfigurationBuilder();
             var dic1 = new Dictionary<string, string>()
                 {
-                    {"bar", "bar"},
-                    {"inner", "ar"}
-
+                    { "bar", "bar" },
+                    { "inner", "ar" }
                 };
             builder1.AddInMemoryCollection(dic1);
             var config1 = builder1.Build();
@@ -103,33 +94,30 @@ namespace Steeltoe.Common.Configuration.Test
             ConfigurationBuilder builder2 = new ConfigurationBuilder();
             var dic2 = new Dictionary<string, string>()
                 {
-                    {"top", "${child}+${child}"},
-                    {"child", "${${differentiator}.grandchild}" },
-                    {"differentiator", "first" },
-                    {"first.grandchild", "actualValue" }
+                    { "top", "${child}+${child}" },
+                    { "child", "${${differentiator}.grandchild}" },
+                    { "differentiator", "first" },
+                    { "first.grandchild", "actualValue" }
                 };
             builder2.AddInMemoryCollection(dic2);
             var config2 = builder2.Build();
-
 
             // Act and Assert
             string result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
             Assert.Equal("foo=bar", result1);
             string result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
             Assert.Equal("actualValue+actualValue", result2);
-
         }
+
         [Fact]
         public void ResolvePlaceholders_UnresolvedPlaceholderIsIgnored()
         {
-
             // Arrange
             string text = "foo=${foo},bar=${bar}";
             ConfigurationBuilder builder = new ConfigurationBuilder();
             var dic1 = new Dictionary<string, string>()
                 {
-                    {"foo", "bar"}
-
+                    { "foo", "bar" }
                 };
             builder.AddInMemoryCollection(dic1);
             var config = builder.Build();
@@ -142,7 +130,6 @@ namespace Steeltoe.Common.Configuration.Test
         [Fact]
         public void ResolvePlaceholders_ResolvesArrayRefPlaceholder()
         {
-
             // Arrange
             var json1 = @"
 {
@@ -187,13 +174,11 @@ namespace Steeltoe.Common.Configuration.Test
             Assert.Equal("foo=my-app2.10.244.0.34.xip.io", result);
         }
 
-        static string CreateTempFile(string contents)
+        private static string CreateTempFile(string contents)
         {
             var tempFile = Path.GetTempFileName();
             File.WriteAllText(tempFile, contents);
             return tempFile;
-
         }
-
     }
 }

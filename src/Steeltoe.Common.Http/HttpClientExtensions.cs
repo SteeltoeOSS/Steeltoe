@@ -42,9 +42,9 @@ namespace Steeltoe.Common.Http
         /// </summary>
         /// <typeparam name="T">Type of object to serialize</typeparam>
         /// <param name="httpClient">HttpClient doing the sending</param>
-        /// <param name="settings">Your Serializer Settings</param>
         /// <param name="url">Url to POST to</param>
         /// <param name="data">Object to send</param>
+        /// <param name="settings">Your Serializer Settings</param>
         /// <returns>Task to be awaited</returns>
         public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, string url, T data, JsonSerializerSettings settings)
         {
@@ -57,10 +57,10 @@ namespace Steeltoe.Common.Http
         /// <summary>
         /// Convert an object to JSON and PUT it
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="httpClient"></param>
-        /// <param name="url"></param>
-        /// <param name="data"></param>
+        /// <typeparam name="T">the type of the data</typeparam>
+        /// <param name="httpClient">provided HttpClient</param>
+        /// <param name="url">the http endpoint to Put to</param>
+        /// <param name="data">the data to put</param>
         /// <returns>Task to be awaited</returns>
         public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, string url, T data)
         {
@@ -73,11 +73,11 @@ namespace Steeltoe.Common.Http
         /// <summary>
         /// Convert an object to JSON and PUT it
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="httpClient"></param>
-        /// <param name="url"></param>
-        /// <param name="data"></param>
-        /// <param name="settings"></param>
+        /// <typeparam name="T">the type of the data</typeparam>
+        /// <param name="httpClient">provided HttpClient</param>
+        /// <param name="url">the http endpoint to Put to</param>
+        /// <param name="data">the data to put</param>
+        /// <param name="settings">the serialization setttings to use</param>
         /// <returns>Task to be awaited</returns>
         public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, string url, T data, JsonSerializerSettings settings)
         {

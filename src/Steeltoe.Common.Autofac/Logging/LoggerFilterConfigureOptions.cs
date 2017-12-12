@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,23 +11,21 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 
-
 namespace Steeltoe.Common.Logging.Autofac
 {
     public class LoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration configuration;
 
         public LoggerFilterConfigureOptions(IConfiguration configuration)
         {
-            _configuration = configuration;
+            this.configuration = configuration;
         }
 
         public void Configure(LoggerFilterOptions options)
@@ -36,14 +33,31 @@ namespace Steeltoe.Common.Logging.Autofac
             LoadDefaultConfigValues(options);
         }
 
+        private static bool TryGetSwitch(string value, out LogLevel level)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                level = LogLevel.None;
+                return false;
+            }
+            else if (Enum.TryParse(value, true, out level))
+            {
+                return true;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Configuration value '{value}' is not supported.");
+            }
+        }
+
         private void LoadDefaultConfigValues(LoggerFilterOptions options)
         {
-            if (_configuration == null)
+            if (configuration == null)
             {
                 return;
             }
 
-            foreach (var configurationSection in _configuration.GetChildren())
+            foreach (var configurationSection in configuration.GetChildren())
             {
                 if (configurationSection.Key == "LogLevel")
                 {
@@ -75,26 +89,10 @@ namespace Steeltoe.Common.Logging.Autofac
                     {
                         category = null;
                     }
+
                     var newRule = new LoggerFilterRule(logger, category, level, null);
                     options.Rules.Add(newRule);
                 }
-            }
-        }
-
-        private static bool TryGetSwitch(string value, out LogLevel level)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                level = LogLevel.None;
-                return false;
-            }
-            else if (Enum.TryParse(value, true, out level))
-            {
-                return true;
-            }
-            else
-            {
-                throw new InvalidOperationException($"Configuration value '{value}' is not supported.");
             }
         }
     }
