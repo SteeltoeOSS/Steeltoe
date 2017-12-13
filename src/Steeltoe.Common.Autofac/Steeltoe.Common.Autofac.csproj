@@ -17,7 +17,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Common.Autofac.xml</DocumentationFile>
-    <NoWarn>SA1101;SA1309;SA1310;SA1401;SA1600;1591</NoWarn>
+    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

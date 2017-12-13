@@ -184,9 +184,9 @@ namespace Steeltoe.Common.Net
         {
             foreach (ErrorClass er in error_list)
             {
-                if (er.num == errNum)
+                if (er.Num == errNum)
                 {
-                    return er.message;
+                    return er.Message;
                 }
             }
 
@@ -204,13 +204,13 @@ namespace Steeltoe.Common.Net
 
         private struct ErrorClass
         {
-            public int num;
-            public string message;
+            public int Num;
+            public string Message;
 
             public ErrorClass(int num, string message)
             {
-                this.num = num;
-                this.message = message;
+                this.Num = num;
+                this.Message = message;
             }
         }
 
