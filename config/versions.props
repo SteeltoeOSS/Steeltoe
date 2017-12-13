@@ -10,8 +10,8 @@
     <HttpVersion>4.3.3</HttpVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
-    <JsonNetVersion>10.0.1</JsonNetVersion>
-    <TestSdkVersion>15.3.0</TestSdkVersion>
+    <JsonNetVersion>10.0.3</JsonNetVersion>
+    <TestSdkVersion>15.5.0</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
   </PropertyGroup>
