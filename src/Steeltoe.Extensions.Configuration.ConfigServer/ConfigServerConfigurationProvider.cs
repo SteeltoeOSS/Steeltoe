@@ -86,7 +86,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         }
 
         /// <summary>
-        /// The configuration settings the provider uses when accessing the server.
+        /// Gets the configuration settings the provider uses when accessing the server.
         /// </summary>
         public virtual ConfigServerClientSettings Settings => _settings as ConfigServerClientSettings;
 

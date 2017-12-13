@@ -34,7 +34,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         public override void Load()
         {
-            base.Load(_source.Stream);
+            Load(_source.Stream);
         }
     }
 }

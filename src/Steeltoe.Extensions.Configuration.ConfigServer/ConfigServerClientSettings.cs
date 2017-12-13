@@ -102,32 +102,32 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         }
 
         /// <summary>
-        /// The Config Server address
+        /// Gets or sets the Config Server address
         /// </summary>
         public virtual string Uri { get; set; }
 
         /// <summary>
-        /// Enables/Disables the Config Server provider
+        /// Gets or sets a value indicating whether enables/Disables the Config Server provider
         /// </summary>
         public virtual bool Enabled { get; set; }
 
         /// <summary>
-        /// The environment used when accessing configuration data
+        /// Gets or sets the environment used when accessing configuration data
         /// </summary>
         public virtual string Environment { get; set; }
 
         /// <summary>
-        /// The application name used when accessing configuration data
+        /// Gets or sets the application name used when accessing configuration data
         /// </summary>
         public virtual string Name { get; set; }
 
         /// <summary>
-        /// The label used when accessing configuration data
+        /// Gets or sets the label used when accessing configuration data
         /// </summary>
         public virtual string Label { get; set; }
 
         /// <summary>
-        /// The username used when accessing the Config Server
+        /// Gets or sets the username used when accessing the Config Server
         /// </summary>
         public virtual string Username
         {
@@ -136,7 +136,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         }
 
         /// <summary>
-        /// The password used when accessing the Config Server
+        /// Gets or sets the password used when accessing the Config Server
         /// </summary>
         public virtual string Password
         {
@@ -145,42 +145,42 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         }
 
         /// <summary>
-        /// Enables/Disables failfast behavior
+        /// Gets or sets a value indicating whether enables/Disables failfast behavior
         /// </summary>
         public virtual bool FailFast { get; set; }
 
         /// <summary>
-        /// Enables/Disables whether provider validates server certificates
+        /// Gets or sets a value indicating whether enables/Disables whether provider validates server certificates
         /// </summary>
         public virtual bool ValidateCertificates { get; set; }
 
         /// <summary>
-        /// Enables/Disables config server client retry on failures
+        /// Gets or sets a value indicating whether enables/Disables config server client retry on failures
         /// </summary>
         public virtual bool RetryEnabled { get; set; }
 
         /// <summary>
-        /// Initial retry interval in milliseconds
+        /// Gets or sets initial retry interval in milliseconds
         /// </summary>
         public virtual int RetryInitialInterval { get; set; }
 
         /// <summary>
-        /// Max retry interval in milliseconds
+        /// Gets or sets max retry interval in milliseconds
         /// </summary>
         public virtual int RetryMaxInterval { get; set; }
 
         /// <summary>
-        ///  Multiplier for next retry interval
+        ///  Gets or sets multiplier for next retry interval
         /// </summary>
         public virtual double RetryMultiplier { get; set; }
 
         /// <summary>
-        /// The max number of retries the client will attempt
+        /// Gets or sets the max number of retries the client will attempt
         /// </summary>
         public virtual int RetryAttempts { get; set; }
 
         /// <summary>
-        /// Returns the HttpRequestUrl, unescaped
+        /// Gets returns the HttpRequestUrl, unescaped
         /// </summary>
         public virtual string RawUri
         {
@@ -188,12 +188,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         }
 
         /// <summary>
-        /// Returns the token use for Vault
+        /// Gets or sets returns the token use for Vault
         /// </summary>
         public virtual string Token { get; set; }
 
         /// <summary>
-        /// Returns the request timeout in milliseconds
+        /// Gets or sets returns the request timeout in milliseconds
         /// </summary>
         public virtual int Timeout { get; set; }
 
