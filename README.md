@@ -24,7 +24,7 @@ Depending on their level of support, the connectors and samples have been tested
 
 For more information on how to use these components see the online [Steeltoe documentation](http://steeltoe.io/).
 
-##  Nuget Feeds
+## Nuget Feeds
 
 All new connector development is done on the dev branch. More stable versions of the connectors can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
 

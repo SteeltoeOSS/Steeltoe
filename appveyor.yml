@@ -15,11 +15,13 @@ build_script:
   - scripts\appveyor_build.cmd
 artifacts:
 - path: 'src\Steeltoe.CloudFoundry.Connector\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.EFCore\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.ConnectorCore\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.CloudFoundry.Connector.EFCore\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.ConnectorCore\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.ConnectorCore\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.EF6Core\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.EF6Core\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.EFCore\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.Connector.EFCore\bin\Release\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false
