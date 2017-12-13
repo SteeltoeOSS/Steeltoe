@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -179,7 +179,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/", info.ManagementUri);
         }
 
-        public static Service CreateRabbitService()
+        private static Service CreateRabbitService()
         {
             var environment = @"
 {

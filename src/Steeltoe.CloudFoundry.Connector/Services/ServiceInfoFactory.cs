@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,12 +55,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
         }
 
-        protected Tags ServiceInfoTags { get; set; }
-
-        protected List<string> UriKeys { get; set; } = new List<string> { "uri", "url" };
-
-        protected string[] UriSchemes { get; set; }
-
         public virtual string DefaultUriScheme
         {
             get
@@ -83,6 +77,12 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         }
 
         public abstract IServiceInfo Create(Service binding);
+
+        protected Tags ServiceInfoTags { get; set; }
+
+        protected List<string> UriKeys { get; set; } = new List<string> { "uri", "url" };
+
+        protected string[] UriSchemes { get; set; }
 
         protected internal virtual bool TagsMatch(Service binding)
         {

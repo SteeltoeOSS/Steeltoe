@@ -7,7 +7,7 @@ dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 
-cd test\Steeltoe.CloudFoundry.Connector.EF6.Test
+cd test\Steeltoe.CloudFoundry.Connector.EF6Core.Test
 dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose 
 if not "%errorlevel%"=="0" goto failure

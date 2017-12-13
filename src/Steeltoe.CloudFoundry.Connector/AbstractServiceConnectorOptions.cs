@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,17 +25,6 @@ namespace Steeltoe.CloudFoundry.Connector
         private char _keyValueTerm;
         private char _keyValueSep;
 
-        protected AbstractServiceConnectorOptions()
-            : this(Default_Terminator, Default_Separator)
-        {
-        }
-
-        protected AbstractServiceConnectorOptions(char keyValueTerm, char keyValueSep)
-        {
-            this._keyValueSep = keyValueSep;
-            this._keyValueTerm = keyValueTerm;
-        }
-
         public AbstractServiceConnectorOptions(IConfiguration config, char terminator = Default_Terminator, char separator = Default_Separator)
             : this(terminator, separator)
         {
@@ -45,6 +34,17 @@ namespace Steeltoe.CloudFoundry.Connector
             }
 
             config.Bind(this);
+        }
+
+        protected AbstractServiceConnectorOptions()
+            : this(Default_Terminator, Default_Separator)
+        {
+        }
+
+        protected AbstractServiceConnectorOptions(char keyValueTerm, char keyValueSep)
+        {
+            this._keyValueSep = keyValueSep;
+            this._keyValueTerm = keyValueTerm;
         }
 
         protected internal void AddKeyValue(StringBuilder sb, string key, int value)

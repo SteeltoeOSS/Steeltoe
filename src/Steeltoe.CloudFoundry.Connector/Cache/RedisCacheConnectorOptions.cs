@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         private static char[] comma = new char[] { ',' };
 
         private static string default_EndPoints = Default_Host + ":" + Default_Port;
-        private bool CloudFoundryConfigFound = false;
+        private bool cloudFoundryConfigFound = false;
 
         public RedisCacheConnectorOptions()
             : base(',', Default_Separator)
@@ -46,7 +46,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             var section = config.GetSection(RedisClientSectionPrefix);
             section.Bind(this);
 
-            CloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+            cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         // Configure either a single Host/Port or optionaly provide
@@ -97,7 +97,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         // public int? DefaultDatabase { get; set; }
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString) && !CloudFoundryConfigFound)
+            if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
             {
                 return ConnectionString;
             }

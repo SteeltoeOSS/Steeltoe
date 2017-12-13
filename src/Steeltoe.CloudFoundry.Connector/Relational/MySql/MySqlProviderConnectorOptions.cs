@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         public const string Default_Server = "localhost";
         public const int Default_Port = 3306;
         private const string MYSQL_CLIENT_SECTION_PREFIX = "mysql:client";
-        private bool CloudFoundryConfigFound = false;
+        private bool cloudFoundryConfigFound = false;
 
         public MySqlProviderConnectorOptions()
         {
@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             var section = config.GetSection(MYSQL_CLIENT_SECTION_PREFIX);
             section.Bind(this);
 
-            CloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+            cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         public string ConnectionString { get; set; }
@@ -59,7 +59,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString) && !CloudFoundryConfigFound)
+            if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
             {
                 return ConnectionString;
             }

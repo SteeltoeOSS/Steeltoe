@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -105,6 +105,27 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             return DoUseNpgsql<TContext>(optionsBuilder, connection, npgsqlOptionsAction);
         }
 
+        public static MethodInfo FindUseNpgsqlMethod(Type type, Type[] parameterTypes)
+        {
+            var typeInfo = type.GetTypeInfo();
+            var declaredMethods = typeInfo.DeclaredMethods;
+
+            foreach (MethodInfo ci in declaredMethods)
+            {
+                var parameters = ci.GetParameters();
+
+                if (parameters.Length == 3 && ci.Name.Equals("UseNpgsql") &&
+                    parameters[0].ParameterType.Equals(parameterTypes[0]) &&
+                    parameters[1].ParameterType.Equals(parameterTypes[1]) &&
+                    ci.IsPublic && ci.IsStatic)
+                {
+                    return ci;
+                }
+            }
+
+            return null;
+        }
+
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
             PostgresServiceInfo info = null;
@@ -150,27 +171,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             where TContext : DbContext
         {
             return (DbContextOptionsBuilder<TContext>)DoUseNpgsql((DbContextOptionsBuilder)builder, connection, npgsqlOptionsAction);
-        }
-
-        public static MethodInfo FindUseNpgsqlMethod(Type type, Type[] parameterTypes)
-        {
-            var typeInfo = type.GetTypeInfo();
-            var declaredMethods = typeInfo.DeclaredMethods;
-
-            foreach (MethodInfo ci in declaredMethods)
-            {
-                var parameters = ci.GetParameters();
-
-                if (parameters.Length == 3 && ci.Name.Equals("UseNpgsql") &&
-                    parameters[0].ParameterType.Equals(parameterTypes[0]) &&
-                    parameters[1].ParameterType.Equals(parameterTypes[1]) &&
-                    ci.IsPublic && ci.IsStatic)
-                {
-                    return ci;
-                }
-            }
-
-            return null;
         }
     }
 }

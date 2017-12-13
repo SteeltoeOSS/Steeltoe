@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class RabbitServiceInfoFactory : ServiceInfoFactory
     {
-        private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };
         public static readonly Tags RABBIT_SERVICE_TAGS = new Tags("rabbit");
+
+        private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };
 
         public RabbitServiceInfoFactory()
             : base(RABBIT_SERVICE_TAGS, _scheme)

@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 {
     public class MySqlDbContextConnectorFactory : MySqlProviderConnectorFactory
     {
-        internal MySqlDbContextConnectorFactory()
-        {
-        }
-
         public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConnectorOptions config, Type dbContextType)
             : base(info, config, dbContextType)
         {
@@ -32,9 +28,13 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
             }
         }
 
+        internal MySqlDbContextConnectorFactory()
+        {
+        }
+
         public override object Create(IServiceProvider arg)
         {
-            var connectionString = base.CreateConnectionString();
+            var connectionString = CreateConnectionString();
             object result = null;
             if (connectionString != null)
             {

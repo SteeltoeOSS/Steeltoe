@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,10 +25,6 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
         private RabbitProviderConfigurer _configurer = new RabbitProviderConfigurer();
         private MethodInfo _setUri;
 
-        internal RabbitProviderConnectorFactory()
-        {
-        }
-
         public RabbitProviderConnectorFactory(RabbitServiceInfo sinfo, RabbitProviderConnectorOptions config, Type connectFactory)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -41,7 +37,27 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
             }
         }
 
+        internal RabbitProviderConnectorFactory()
+        {
+        }
+
         protected Type ConnectorType { get; set; }
+
+        public static MethodInfo FindSetUriMethod(Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            var declaredMethods = typeInfo.DeclaredMethods;
+
+            foreach (MethodInfo ci in declaredMethods)
+            {
+                if (ci.Name.Equals("SetUri"))
+                {
+                    return ci;
+                }
+            }
+
+            return null;
+        }
 
         public virtual object Create(IServiceProvider provider)
         {
@@ -77,22 +93,6 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 
             ConnectorHelpers.Invoke(_setUri, inst, new object[] { uri });
             return inst;
-        }
-
-        public static MethodInfo FindSetUriMethod(Type type)
-        {
-            var typeInfo = type.GetTypeInfo();
-            var declaredMethods = typeInfo.DeclaredMethods;
-
-            foreach (MethodInfo ci in declaredMethods)
-            {
-                if (ci.Name.Equals("SetUri"))
-                {
-                    return ci;
-                }
-            }
-
-            return null;
         }
     }
 }

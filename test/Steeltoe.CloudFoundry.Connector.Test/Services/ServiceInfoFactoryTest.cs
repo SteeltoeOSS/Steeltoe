@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -324,24 +324,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var ex = Assert.Throws<FormatException>(() => sif.GetIntFromCredentials(credentials, "key"));
-        }
-    }
-
-    internal class TestServiceInfoFactory : ServiceInfoFactory
-    {
-        public TestServiceInfoFactory(Tags tags, string scheme)
-            : base(tags, scheme)
-        {
-        }
-
-        public TestServiceInfoFactory(Tags tags, string[] schemes)
-            : base(tags, schemes)
-        {
-        }
-
-        public override IServiceInfo Create(Service binding)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class Tags
     {
-        internal Tags()
-        {
-        }
-
         public Tags(string tag)
             : this(new string[] { tag })
         {
@@ -37,6 +33,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             {
                 Values = tags;
             }
+        }
+
+        internal Tags()
+        {
         }
 
         public string[] Values { get; internal protected set; }

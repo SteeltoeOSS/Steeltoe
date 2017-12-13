@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.Entity;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.CloudFoundry.Connector.Test.MySql;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
-using System.Data.Entity;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
@@ -40,10 +37,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -55,10 +52,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -71,7 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             string serviceName = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -83,9 +80,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config);
+            MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, config);
 
-            var service = services.BuildServiceProvider().GetService<GoodDbContext>();
+            var service = services.BuildServiceProvider().GetService<GoodMySqlDbContext>();
             Assert.NotNull(service);
         }
 
@@ -97,7 +94,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
@@ -117,7 +114,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             var config = builder.Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config));
+            var ex = Assert.Throws<ConnectorException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, config));
             Assert.Contains("Multiple", ex.Message);
         }
 
@@ -137,23 +134,15 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
             var config = builder.Build();
 
             // Act and Assert
-            MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodDbContext>(services, config);
-            MySqlDbContextServiceCollectionExtensions.AddDbContext<Good2DbContext>(services, config);
+            MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, config);
+            MySqlDbContextServiceCollectionExtensions.AddDbContext<Good2MySqlDbContext>(services, config);
 
             var built = services.BuildServiceProvider();
-            var service = built.GetService<GoodDbContext>();
+            var service = built.GetService<GoodMySqlDbContext>();
             Assert.NotNull(service);
 
-            var service2 = built.GetService<Good2DbContext>();
+            var service2 = built.GetService<Good2MySqlDbContext>();
             Assert.NotNull(service2);
-        }
-    }
-
-    [DbConfigurationType(typeof(MySqlEFConfiguration))]
-    internal class Good2DbContext : DbContext
-    {
-        public Good2DbContext(string str)
-        {
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,10 +24,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         private PostgresProviderConfigurer _configurer = new PostgresProviderConfigurer();
         private Type _type;
 
-        internal PostgresProviderConnectorFactory()
-        {
-        }
-
         public PostgresProviderConnectorFactory(PostgresServiceInfo sinfo, PostgresProviderConnectorOptions config, Type type)
         {
             if (config == null)
@@ -38,6 +34,10 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             _info = sinfo;
             _config = config;
             _type = type;
+        }
+
+        internal PostgresProviderConnectorFactory()
+        {
         }
 
         public virtual object Create(IServiceProvider provider)

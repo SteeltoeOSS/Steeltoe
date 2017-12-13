@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         public const string Default_Host = "localhost";
         public const int Default_Port = 5432;
         private const string POSTGRES_CLIENT_SECTION_PREFIX = "postgres:client";
-        private bool CloudFoundryConfigFound = false;
+        private bool cloudFoundryConfigFound = false;
 
         public PostgresProviderConnectorOptions()
         {
@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             var section = config.GetSection(POSTGRES_CLIENT_SECTION_PREFIX);
             section.Bind(this);
 
-            CloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+            cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         public string ConnectionString { get; set; }
@@ -57,7 +57,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString) && !CloudFoundryConfigFound)
+            if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
             {
                 return ConnectionString;
             }

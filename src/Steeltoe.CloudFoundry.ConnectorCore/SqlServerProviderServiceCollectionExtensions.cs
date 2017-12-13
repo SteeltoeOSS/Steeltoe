@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         /// <param name="config">App configuration</param>
         /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory"></param>
+        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
@@ -59,10 +59,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
-        /// <param name="serviceName"></param>
+        /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory"></param>
+        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, string serviceName, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {

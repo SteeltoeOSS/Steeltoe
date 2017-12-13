@@ -14,14 +14,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.MySqlClient;
-using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.CloudFoundry.Connector.Test.MySql;
-using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System.Data;
+using Steeltoe.CloudFoundry.Connector.Test;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {

@@ -13,25 +13,27 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <NoWarn>SA1100;SA1101;SA1202;SA1204;SA1309;SA1310;SA1313;SA1402;SA1600;SA1652;1591;1701;1702;1705</NoWarn>
+    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj" />
-    <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.Connector\Steeltoe.CloudFoundry.Connector.csproj" />
-    <ProjectReference Include="..\Steeltoe.CloudFoundry.Connector.Test\Steeltoe.CloudFoundry.Connector.Test.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.Connector.EF6Core\Steeltoe.CloudFoundry.Connector.EF6Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="MySql.Data.Entity" Version="$(MySqlVersion)" />
-    <PackageReference Include="Npgsql" Version="3.2.5" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
 
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreDepTestVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreTestVersion)" />
+
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json">
@@ -39,8 +41,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
+
 
 </Project>

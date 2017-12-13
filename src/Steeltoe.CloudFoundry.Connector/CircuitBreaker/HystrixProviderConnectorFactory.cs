@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,10 +27,6 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 
         private MethodInfo _setUri;
 
-        internal HystrixProviderConnectorFactory()
-        {
-        }
-
         public HystrixProviderConnectorFactory(HystrixRabbitServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
         {
             if (config == null)
@@ -51,6 +47,26 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             {
                 throw new ConnectorException("Unable to find ConnectionFactory.SetUri(), incompatible RabbitMQ assembly");
             }
+        }
+
+        internal HystrixProviderConnectorFactory()
+        {
+        }
+
+        public static MethodInfo FindSetUriMethod(Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            var declaredMethods = typeInfo.DeclaredMethods;
+
+            foreach (MethodInfo ci in declaredMethods)
+            {
+                if (ci.Name.Equals("SetUri"))
+                {
+                    return ci;
+                }
+            }
+
+            return null;
         }
 
         public virtual object Create(IServiceProvider provider)
@@ -87,22 +103,6 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 
             ConnectorHelpers.Invoke(_setUri, inst, new object[] { uri });
             return new HystrixConnectionFactory(inst);
-        }
-
-        public static MethodInfo FindSetUriMethod(Type type)
-        {
-            var typeInfo = type.GetTypeInfo();
-            var declaredMethods = typeInfo.DeclaredMethods;
-
-            foreach (MethodInfo ci in declaredMethods)
-            {
-                if (ci.Name.Equals("SetUri"))
-                {
-                    return ci;
-                }
-            }
-
-            return null;
         }
     }
 }

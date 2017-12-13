@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,19 +38,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             var si = new TestServiceInfo("id", info);
             Assert.Equal("id", si.Id);
             Assert.Equal(info, si.ApplicationInfo);
-        }
-    }
-
-    internal class TestServiceInfo : ServiceInfo
-    {
-        public TestServiceInfo(string id, ApplicationInstanceInfo info)
-            : base(id, info)
-        {
-        }
-
-        public TestServiceInfo(string id)
-            : base(id, null)
-        {
         }
     }
 }

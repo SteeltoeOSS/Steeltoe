@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -101,12 +101,12 @@ namespace Steeltoe.CloudFoundry.Connector
 
         public List<IServiceInfo> GetServiceInfos(Type type)
         {
-            return _serviceInfos.Where((_info) => _info.GetType() == type).ToList();
+            return _serviceInfos.Where((info) => info.GetType() == type).ToList();
         }
 
         public IServiceInfo GetServiceInfo(string name)
         {
-            return _serviceInfos.Where((_info) => _info.Id.Equals(name)).FirstOrDefault();
+            return _serviceInfos.Where((info) => info.Id.Equals(name)).FirstOrDefault();
         }
 
         internal void BuildServiceInfoFactories()

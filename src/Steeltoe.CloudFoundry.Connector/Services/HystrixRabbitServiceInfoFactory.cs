@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class HystrixRabbitServiceInfoFactory : ServiceInfoFactory
     {
-        private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };
         public static readonly Tags HYSTRIX_RABBIT_SERVICE_TAGS = new Tags("hystrix-amqp");
+
+        private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };
 
         public HystrixRabbitServiceInfoFactory()
             : base(HYSTRIX_RABBIT_SERVICE_TAGS, _scheme)
@@ -30,7 +31,21 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public override bool Accept(Service binding)
         {
-            return base.TagsMatch(binding) && UriCredentialsMatchesScheme(binding.Credentials);
+            return TagsMatch(binding) && UriCredentialsMatchesScheme(binding.Credentials);
+        }
+
+        public override IServiceInfo Create(Service binding)
+        {
+            var amqpCredentials = binding.Credentials["amqp"];
+            string uri = GetUriFromCredentials(amqpCredentials);
+            bool sslEnabled = GetBoolFromCredentials(amqpCredentials, "ssl");
+            if (amqpCredentials.ContainsKey("uris"))
+            {
+                List<string> uris = GetListFromCredentials(amqpCredentials, "uris");
+                return new HystrixRabbitServiceInfo(binding.Name, uri, uris, sslEnabled);
+            }
+
+            return new HystrixRabbitServiceInfo(binding.Name, uri, sslEnabled);
         }
 
         private bool UriCredentialsMatchesScheme(Dictionary<string, Credential> credentials)
@@ -52,20 +67,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
 
             return false;
-        }
-
-        public override IServiceInfo Create(Service binding)
-        {
-            var amqpCredentials = binding.Credentials["amqp"];
-            string uri = GetUriFromCredentials(amqpCredentials);
-            bool sslEnabled = GetBoolFromCredentials(amqpCredentials, "ssl");
-            if (amqpCredentials.ContainsKey("uris"))
-            {
-                List<string> uris = GetListFromCredentials(amqpCredentials, "uris");
-                return new HystrixRabbitServiceInfo(binding.Name, uri, uris, sslEnabled);
-            }
-
-            return new HystrixRabbitServiceInfo(binding.Name, uri, sslEnabled);
         }
     }
 }

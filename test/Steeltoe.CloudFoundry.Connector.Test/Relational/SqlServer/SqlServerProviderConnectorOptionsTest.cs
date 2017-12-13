@@ -85,6 +85,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             {
                 ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
             };
+
             // add environment variables as Cloud Foundry would
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP);

@@ -14,7 +14,6 @@
 
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
-using System.Data.Entity;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
@@ -40,24 +39,13 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             // Arrange
             SqlServerProviderConnectorOptions config = new SqlServerProviderConnectorOptions();
             SqlServerServiceInfo si = null;
-            Type dbContextType = typeof(BadDbContext);
+            Type dbContextType = typeof(BadSqlServerDbContext);
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => new SqlServerDbContextConnectorFactory(si, config, dbContextType).Create(null));
-            Assert.Contains("BadDbContext", ex.Message);
+            Assert.Contains("BadSqlServerDbContext", ex.Message);
         }
 
-        // [Fact]
-        // public void FindConstructor_FindsCorrectConstructor()
-        // {
-        //     // Arrange
-        //     SqlServerDbContextConnectorFactory factory = new SqlServerDbContextConnectorFactory();
-        //     var info = factory.FindConstructor(typeof(GoodDbContext));
-        //     Assert.NotNull(info);
-        //     Assert.Equal(1, info.GetParameters().Length);
-        //     Assert.Equal(typeof(string), info.GetParameters()[0].ParameterType);
-
-        // }
         [Fact]
         public void Create_ReturnsDbContext()
         {
@@ -70,22 +58,11 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
                 Database = "database"
             };
             SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
-            var factory = new SqlServerDbContextConnectorFactory(si, config, typeof(GoodDbContext));
+            var factory = new SqlServerDbContextConnectorFactory(si, config, typeof(GoodSqlServerDbContext));
             var context = factory.Create(null);
             Assert.NotNull(context);
-            GoodDbContext gcontext = context as GoodDbContext;
+            GoodSqlServerDbContext gcontext = context as GoodSqlServerDbContext;
             Assert.NotNull(gcontext);
-        }
-    }
-
-    public class BadDbContext : DbContext
-    {
-    }
-
-    public class GoodDbContext : DbContext
-    {
-        public GoodDbContext(string str)
-        {
         }
     }
 }

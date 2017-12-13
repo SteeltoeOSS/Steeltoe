@@ -19,10 +19,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
 {
     public class SqlServerDbContextConnectorFactory : SqlServerProviderConnectorFactory
     {
-        internal SqlServerDbContextConnectorFactory()
-        {
-        }
-
         public SqlServerDbContextConnectorFactory(SqlServerServiceInfo info, SqlServerProviderConnectorOptions config, Type dbContextType)
             : base(info, config, dbContextType)
         {
@@ -32,9 +28,13 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
             }
         }
 
+        internal SqlServerDbContextConnectorFactory()
+        {
+        }
+
         public override object Create(IServiceProvider arg)
         {
-            var connectionString = base.CreateConnectionString();
+            var connectionString = CreateConnectionString();
             object result = null;
             if (connectionString != null)
             {
