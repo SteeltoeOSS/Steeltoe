@@ -31,11 +31,10 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddRabbitConnection(this IServiceCollection services, IConfiguration config, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddRabbitConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -49,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 
             RabbitServiceInfo info = config.GetSingletonServiceInfo<RabbitServiceInfo>();
 
-            DoAdd(services, info, config, registerInterface, contextLifetime);
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
@@ -59,11 +58,10 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddRabbitConnection(this IServiceCollection services, IConfiguration config, string serviceName, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddRabbitConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -82,11 +80,11 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 
             RabbitServiceInfo info = config.GetRequiredServiceInfo<RabbitServiceInfo>(serviceName);
 
-            DoAdd(services, info, config, registerInterface, contextLifetime);
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, RabbitServiceInfo info, IConfiguration config, bool registerInterface, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, RabbitServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type rabbitMQInterfaceType = ConnectorHelpers.FindType(rabbitMQAssemblies, rabbitMQInterfaceTypeNames);
             Type rabbitMQImplementationType = ConnectorHelpers.FindType(rabbitMQAssemblies, rabbitMQImplementationTypeNames);
@@ -97,11 +95,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 
             RabbitProviderConnectorOptions rabbitMQConfig = new RabbitProviderConnectorOptions(config);
             RabbitProviderConnectorFactory factory = new RabbitProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
-            if (registerInterface)
-            {
-                services.Add(new ServiceDescriptor(rabbitMQInterfaceType, factory.Create, contextLifetime));
-            }
-
+            services.Add(new ServiceDescriptor(rabbitMQInterfaceType, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(rabbitMQImplementationType, factory.Create, contextLifetime));
         }
     }

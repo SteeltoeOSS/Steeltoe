@@ -32,11 +32,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -49,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             }
 
             SqlServerServiceInfo info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
-            DoAdd(services, info, config, registerInterface, contextLifetime);
+            DoAdd(services, info, config, contextLifetime);
 
             return services;
         }
@@ -60,11 +59,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, string serviceName, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -82,12 +80,12 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             }
 
             SqlServerServiceInfo info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
-            DoAdd(services, info, config, registerInterface, contextLifetime);
+            DoAdd(services, info, config, contextLifetime);
 
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, bool registerInterface, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type sqlServerConnection = ConnectorHelpers.FindType(sqlServerAssemblies, sqlServerTypeNames);
             if (sqlServerConnection == null)
@@ -97,11 +95,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
             SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);
             SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
-            if (registerInterface)
-            {
-                services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
-            }
-
+            services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(sqlServerConnection, factory.Create, contextLifetime));
         }
     }

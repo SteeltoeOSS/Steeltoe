@@ -49,7 +49,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             PostgresServiceInfo info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
 
-            DoAdd(services, info, config, registerInterface, contextLifetime);
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
@@ -59,11 +59,10 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, string serviceName, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -82,11 +81,11 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             PostgresServiceInfo info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
-            DoAdd(services, info, config, registerInterface, contextLifetime);
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, bool registerInterface, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type postgresConnection = ConnectorHelpers.FindType(postgresAssemblies, postgresTypeNames);
             if (postgresConnection == null)
@@ -96,11 +95,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             PostgresProviderConnectorOptions postgresConfig = new PostgresProviderConnectorOptions(config);
             PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
-            if (registerInterface)
-            {
-                services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
-            }
-
+            services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
         }
     }

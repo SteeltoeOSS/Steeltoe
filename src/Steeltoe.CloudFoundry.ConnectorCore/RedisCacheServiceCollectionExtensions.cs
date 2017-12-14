@@ -31,10 +31,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, bool registerInterface = true, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -55,10 +54,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">Name of service to add</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName, bool registerInterface = true, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -85,10 +83,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <param name="applicationConfiguration">App configuration</param>
         /// <param name="connectorConfiguration">Connector configuration</param>
         /// <param name="serviceName">Name of service to add</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
             {
@@ -111,7 +108,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 info = configToConfigure.GetSingletonServiceInfo<RedisServiceInfo>();
             }
 
-            DoAddIDistributedCache(services, info, configToConfigure, registerInterface, contextLifetime);
+            DoAddIDistributedCache(services, info, configToConfigure, contextLifetime);
             return services;
         }
 
@@ -124,9 +121,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, bool registerInterface = true)
+        public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
@@ -147,9 +143,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">Name of service to add</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, string serviceName, bool registerInterface = true)
+        public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, string serviceName)
         {
             if (services == null)
             {
@@ -176,10 +171,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <param name="applicationConfiguration">App configuration</param>
         /// <param name="connectorConfiguration">Connector configuration</param>
         /// <param name="serviceName">Name of service to add</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+        public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
             {
@@ -193,13 +187,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             var configToConfigure = connectorConfiguration ?? applicationConfiguration;
             RedisServiceInfo info = serviceName == null ? configToConfigure.GetSingletonServiceInfo<RedisServiceInfo>() : configToConfigure.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
-            DoAddConnectionMultiplexer(services, info, configToConfigure, registerInterface, contextLifetime);
+            DoAddConnectionMultiplexer(services, info, configToConfigure, contextLifetime);
             return services;
         }
 
         #endregion
 
-        private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration config, bool registerInterface, ServiceLifetime contextLifetime)
+        private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             string[] redisAssemblies = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis" };
             string[] redisInterfaceTypeNames = new string[] { "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
@@ -217,15 +211,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisConnection, redisOptions, null);
-            if (registerInterface)
-            {
-                services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
-            }
-
+            services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(redisConnection, factory.Create, contextLifetime));
         }
 
-        private static void DoAddConnectionMultiplexer(IServiceCollection services, RedisServiceInfo info, IConfiguration config, bool registerInterface, ServiceLifetime contextLifetime)
+        private static void DoAddConnectionMultiplexer(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             string[] redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName" };
             string[] redisInterfaceTypeNames = new string[] { "StackExchange.Redis.IConnectionMultiplexer" };
@@ -244,11 +234,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer ?? null);
-            if (registerInterface)
-            {
-                services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
-            }
-
+            services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(redisImplementation, factory.Create, contextLifetime));
         }
     }

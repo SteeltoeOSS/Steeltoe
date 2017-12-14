@@ -31,11 +31,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -49,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
 
-            DoAdd(services, info, config, registerInterface, contextLifetime);
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
@@ -59,11 +58,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
-        /// <param name="registerInterface">Optionally disable registering the interface type with DI</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -82,11 +80,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
-            DoAdd(services, info, config, registerInterface, contextLifetime);
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, bool registerInterface, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type mySqlConnection = ConnectorHelpers.FindType(mySqlAssemblies, mySqlTypeNames);
             if (mySqlConnection == null)
@@ -96,12 +94,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
             MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
-
-            if (registerInterface)
-            {
-                services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
-            }
-
+            services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(mySqlConnection, factory.Create, contextLifetime));
         }
     }
