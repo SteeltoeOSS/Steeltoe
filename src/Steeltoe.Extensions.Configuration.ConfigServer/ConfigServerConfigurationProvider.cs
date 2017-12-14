@@ -43,12 +43,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public const string TOKEN_HEADER = "X-Config-Token";
         public const string STATE_HEADER = "X-Config-State";
 
+        protected ConfigServerClientSettings _settings;
+        protected HttpClient _client;
+        protected ILogger _logger;
+
         private const string ArrayPattern = @"(\[[0-9]+\])*$";
         private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
         private static readonly string[] EMPTY_LABELS = new string[] { string.Empty };
-        private ConfigServerClientSettings _settings;
-        private HttpClient _client;
-        private ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class with default
