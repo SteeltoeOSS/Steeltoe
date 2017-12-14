@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.Threading;
@@ -22,6 +20,7 @@ namespace Steeltoe.Discovery.Eureka.Task
     internal class TimedTask
     {
         public string Name { get; private set; }
+
         public Action Task { get; private set; }
 
         private int _taskRunning;
@@ -45,6 +44,7 @@ namespace Steeltoe.Discovery.Eureka.Task
                 {
                     // Log
                 }
+
                 Interlocked.Exchange(ref _taskRunning, 0);
             }
             else

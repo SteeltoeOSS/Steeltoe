@@ -1,8 +1,7 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use ths file except in compliance with the License.
+// you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 // http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -112,6 +110,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 Enabled = enabled;
                 Port = port;
             }
+
             [JsonProperty("@enabled")]
             public bool Enabled { get; private set; }
 
@@ -129,12 +128,12 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 ClassName = className;
                 Name = name;
             }
+
             [JsonProperty("@class")]
             public string ClassName { get; private set; }
 
             [JsonProperty("name")]
             public string Name { get; private set; }
-
         }
 
         internal static JsonInstanceInfo Deserialize(Stream stream)
@@ -142,7 +141,5 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var result = JsonSerialization.Deserialize<JsonInstanceInfo>(stream);
             return result;
         }
-
     }
-
 }

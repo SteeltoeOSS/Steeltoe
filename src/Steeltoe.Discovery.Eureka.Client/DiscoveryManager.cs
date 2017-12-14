@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -20,13 +18,14 @@ using System;
 
 namespace Steeltoe.Discovery.Eureka
 {
-
-
     public class DiscoveryManager
     {
-   
-        protected DiscoveryManager() { }
+        protected DiscoveryManager()
+        {
+        }
+
         protected static DiscoveryManager _instance = new DiscoveryManager();
+
         public static DiscoveryManager Instance
         {
             get
@@ -34,9 +33,13 @@ namespace Steeltoe.Discovery.Eureka
                 return _instance;
             }
         }
+
         public virtual DiscoveryClient Client { get; protected internal set; }
+
         public virtual IEurekaClientConfig ClientConfig { get; protected internal set; }
+
         public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
+
         public virtual ILookupService LookupService
         {
             get
@@ -55,36 +58,20 @@ namespace Steeltoe.Discovery.Eureka
         public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
         {
             Initialize(clientConfig, instanceConfig, null, logFactory);
-
         }
 
         public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
         {
-            if (clientConfig == null)
-            {
-                throw new ArgumentNullException(nameof(clientConfig));
-            }
             _logger = logFactory?.CreateLogger<DiscoveryManager>();
-            ClientConfig = clientConfig;
+            ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
             Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
         }
 
         public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
         {
-
-            if (clientConfig == null)
-            {
-                throw new ArgumentNullException(nameof(clientConfig));
-            }
-
-            if (instanceConfig == null)
-            {
-                throw new ArgumentNullException(nameof(instanceConfig));
-            }
-
             _logger = logFactory?.CreateLogger<DiscoveryManager>();
-            ClientConfig = clientConfig;
-            InstanceConfig = instanceConfig;
+            ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
+            InstanceConfig = instanceConfig ?? throw new ArgumentNullException(nameof(instanceConfig));
 
             if (ApplicationInfoManager.Instance.InstanceInfo == null)
             {
@@ -93,7 +80,5 @@ namespace Steeltoe.Discovery.Eureka
 
             Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
         }
-
-
     }
 }

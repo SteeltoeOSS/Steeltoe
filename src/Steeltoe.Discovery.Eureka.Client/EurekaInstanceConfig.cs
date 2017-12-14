@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
@@ -31,7 +29,7 @@ namespace Steeltoe.Discovery.Eureka
         public const string Default_Appname = "unknown";
         public const string Default_StatusPageUrlPath = "/Status";
         public const string Default_HomePageUrlPath = "/";
-        public const string Default_HealthCheckUrlPath = "/healthcheck"; 
+        public const string Default_HealthCheckUrlPath = "/healthcheck";
 
         protected string _thisHostAddress;
         protected string _thisHostName;
@@ -99,7 +97,7 @@ namespace Steeltoe.Discovery.Eureka
         // eureka:instance:healthCheckUrlPath
         public virtual string HealthCheckUrlPath { get; set; }
 
-        //  eureka:instance:healthCheckUrl
+        // eureka:instance:healthCheckUrl
         public virtual string HealthCheckUrl { get; set; }
 
         // eureka:instance:secureHealthCheckUrl
@@ -115,6 +113,7 @@ namespace Steeltoe.Discovery.Eureka
             {
                 return _thisHostName;
             }
+
             set
             {
                 _thisHostName = value;
@@ -122,13 +121,21 @@ namespace Steeltoe.Discovery.Eureka
         }
 
         public virtual string IpAddress { get; set; }
+
         public virtual string AppGroupName { get; set; }
+
         public virtual bool IsInstanceEnabledOnInit { get; set; }
+
         public virtual int NonSecurePort { get; set; }
+
         public virtual bool IsNonSecurePortEnabled { get; set; }
+
         public virtual string VirtualHostName { get; set; }
+
         public virtual string SecureVirtualHostName { get; set; }
+
         public virtual IDataCenterInfo DataCenterInfo { get; set; }
+
         public virtual string[] DefaultAddressResolutionOrder { get; set; }
 
         public virtual string GetHostName(bool refresh)
@@ -136,25 +143,9 @@ namespace Steeltoe.Discovery.Eureka
             if (refresh || string.IsNullOrEmpty(_thisHostName))
             {
                 _thisHostName = ResolveHostName();
-                //thisHostName = Dns.GetHostName();
             }
 
             return _thisHostName;
-
-        }
-
-        protected virtual string ResolveHostName()
-        {
-            string result = Dns.GetHostName();
-            try
-            {
-                result = Dns.GetHostEntryAsync(result).Result.HostName;
-            }
-            catch (Exception)
-            {
-                // Ignore
-            }
-            return result;
         }
 
         internal virtual string GetHostAddress(bool refresh)
@@ -176,9 +167,23 @@ namespace Steeltoe.Discovery.Eureka
                     }
                 }
             }
-            return _thisHostAddress;
 
+            return _thisHostAddress;
         }
 
+        protected virtual string ResolveHostName()
+        {
+            string result = Dns.GetHostName();
+            try
+            {
+                result = Dns.GetHostEntryAsync(result).Result.HostName;
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+
+            return result;
+        }
     }
 }

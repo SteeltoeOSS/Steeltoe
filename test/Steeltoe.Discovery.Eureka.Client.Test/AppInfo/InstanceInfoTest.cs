@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
-using System;
 using System.Collections.Generic;
 
 using Xunit;
@@ -42,6 +39,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
             Assert.Equal(InstanceStatus.UP, info.Status);
         }
+
         [Fact]
         public void FromJsonInstance_Correct()
         {
@@ -61,7 +59,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 VipAddress = "VipAddress",
                 SecureVipAddress = "SecureVipAddress",
                 CountryId = 1,
-                DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo("", "MyOwn"),
+                DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo(string.Empty, "MyOwn"),
                 HostName = "HostName",
                 Status = InstanceStatus.DOWN,
                 OverriddenStatus = InstanceStatus.OUT_OF_SERVICE,
@@ -171,9 +169,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromInstanceConfig_NonSecurePortFalse_SecurePortTrue_Correct()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
-            config.SecurePortEnabled = true;
-            config.IsNonSecurePortEnabled = false;
+            EurekaInstanceConfig config = new EurekaInstanceConfig
+            {
+                SecurePortEnabled = true,
+                IsNonSecurePortEnabled = false
+            };
             InstanceInfo info = InstanceInfo.FromInstanceConfig(config);
             Assert.NotNull(info);
 
@@ -280,6 +280,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
 
             Assert.True(info1.Equals(info2));
         }
+
         [Fact]
         public void Equals_NotEqual()
         {
@@ -294,6 +295,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             };
             Assert.False(info1.Equals(info2));
         }
+
         [Fact]
         public void Equals_NotEqual_DiffTypes()
         {

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,24 +11,21 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Task;
 using Steeltoe.Discovery.Eureka.Transport;
+using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using T=System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-
 
 namespace Steeltoe.Discovery.Eureka
 {
     public class DiscoveryClient : IEurekaClient
     {
-
         protected Timer _heartBeatTimer;
         protected Timer _cacheRefreshTimer;
         protected volatile Applications _localRegionApps;
@@ -41,36 +37,15 @@ namespace Steeltoe.Discovery.Eureka
         protected ApplicationInfoManager _appInfoManager;
 
         public long LastGoodHeartbeatTimestamp { get; internal set; }
+
         public long LastGoodFullRegistryFetchTimestamp { get; internal set; }
+
         public long LastGoodDeltaRegistryFetchTimestamp { get; internal set; }
+
         public long LastGoodRegistryFetchTimestamp { get; internal set; }
+
         public long LastGoodRegisterTimestamp { get; internal set; }
-        internal Timer HeartBeatTimer
-        {
-            get
-            {
-                return _heartBeatTimer;
-            }
-        }
-        internal Timer CacheRefreshTimer
-        {
-            get
-            {
-                return _cacheRefreshTimer;
-            }
-        }
-        internal long RegistryFetchCounter
-        {
-            get
-            {
-                return _registryFetchCounter;
-            }
-            set
-            {
-                // Used for unit test
-                _registryFetchCounter = value;
-            }
-        }
+
         public IEurekaHttpClient HttpClient
         {
             get
@@ -78,19 +53,20 @@ namespace Steeltoe.Discovery.Eureka
                 return _httpClient;
             }
         }
+
         public Applications Applications
         {
             get
             {
                 return _localRegionApps;
             }
+
             internal set
             {
                 _localRegionApps = value;
             }
         }
 
-    
         private IEurekaClientConfig _config;
 
         public virtual IEurekaClientConfig ClientConfig
@@ -103,23 +79,11 @@ namespace Steeltoe.Discovery.Eureka
 
         public IHealthCheckHandler HealthCheckHandler { get; set; }
 
-        // Constructor used by Dependency Injection
-        protected DiscoveryClient(ApplicationInfoManager appInfoManager, ILoggerFactory logFactory = null)
-        {
-            _appInfoManager = appInfoManager;
-            _logger = logFactory?.CreateLogger<DiscoveryClient>();
-        }
-
         public DiscoveryClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
         {
-            if (clientConfig == null)
-            {
-                throw new ArgumentNullException(nameof(clientConfig));
-            }
-
             _appInfoManager = ApplicationInfoManager.Instance;
             _logger = logFactory?.CreateLogger<DiscoveryClient>();
-            _config = clientConfig;
+            _config = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
 
             _httpClient = httpClient;
 
@@ -131,40 +95,11 @@ namespace Steeltoe.Discovery.Eureka
             Initialize();
         }
 
-        protected void Initialize()
+        // Constructor used by Dependency Injection
+        protected DiscoveryClient(ApplicationInfoManager appInfoManager, ILoggerFactory logFactory = null)
         {
-
-            _localRegionApps = new Applications();
-            _localRegionApps.ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances;
-
-
-            if (!ClientConfig.ShouldRegisterWithEureka && !ClientConfig.ShouldFetchRegistry)
-            {
-                return;
-            }
-
-            if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
-            {
-                var result = RegisterAsync();
-                result.Wait();
-
-                var intervalInMilli = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-                _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, this.HeartBeatTaskAsync);
-                if (ClientConfig.ShouldOnDemandUpdateStatusChange)
-                {
-                    _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;
-                }
-
-            }
-
-            if (ClientConfig.ShouldFetchRegistry)
-            {
-                var result = FetchRegistryAsync(true);
-                result.Wait();
-
-                var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
-                _cacheRefreshTimer = StartTimer("Query", intervalInMilli, this.CacheRefreshTaskAsync);
-            }
+            _appInfoManager = appInfoManager;
+            _logger = logFactory?.CreateLogger<DiscoveryClient>();
         }
 
         public Application GetApplication(string appName)
@@ -176,7 +111,9 @@ namespace Steeltoe.Discovery.Eureka
 
             var apps = Applications;
             if (apps != null)
+            {
                 return apps.GetRegisteredApplication(appName);
+            }
 
             return null;
         }
@@ -205,6 +142,7 @@ namespace Steeltoe.Discovery.Eureka
                     results.Add(instance);
                 }
             }
+
             return results;
         }
 
@@ -222,6 +160,7 @@ namespace Steeltoe.Discovery.Eureka
             {
                 return results;
             }
+
             if (secure)
             {
                 return apps.GetInstancesBySecureVirtualHostName(vipAddress);
@@ -234,7 +173,6 @@ namespace Steeltoe.Discovery.Eureka
 
         public IList<InstanceInfo> GetInstancesByVipAddressAndAppName(string vipAddress, string appName, bool secure)
         {
-
             IList<InstanceInfo> result = new List<InstanceInfo>();
             if (vipAddress == null && appName == null)
             {
@@ -251,6 +189,7 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     result = application.Instances;
                 }
+
                 return result;
             }
 
@@ -275,6 +214,7 @@ namespace Steeltoe.Discovery.Eureka
                     }
                 }
             }
+
             return result;
         }
 
@@ -287,17 +227,21 @@ namespace Steeltoe.Discovery.Eureka
 
             var results = GetInstancesByVipAddress(vipAddress, secure);
             if (results.Count == 0)
+            {
                 return null;
+            }
+
             var index = _random.Next() % results.Count;
             return results[index];
-
         }
+
         public virtual async T.Task ShutdownAsync()
         {
-     
             int shutdown = Interlocked.Exchange(ref _shutdown, 1);
             if (shutdown > 0)
+            {
                 return;
+            }
 
             if (_cacheRefreshTimer != null)
             {
@@ -329,14 +273,78 @@ namespace Steeltoe.Discovery.Eureka
                     }
                 }
             }
-
         }
+
         public InstanceStatus GetInstanceRemoteStatus()
         {
             return InstanceStatus.UNKNOWN;
         }
 
-        internal protected async T.Task<bool> FetchRegistryAsync(bool fullUpdate)
+        internal Timer HeartBeatTimer
+        {
+            get
+            {
+                return _heartBeatTimer;
+            }
+        }
+
+        internal Timer CacheRefreshTimer
+        {
+            get
+            {
+                return _cacheRefreshTimer;
+            }
+        }
+
+        internal async void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
+        {
+            // Log StatusChangedArgs
+            InstanceInfo info = _appInfoManager.InstanceInfo;
+            if (info != null)
+            {
+                RefreshInstanceInfo();
+                if (info.IsDirty)
+                {
+                    try
+                    {
+                        var result = await RegisterAsync();
+                        if (result)
+                        {
+                            info.IsDirty = false;
+
+                            // Log
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _logger?.LogError("Instance_StatusChangedEvent Exception: {0}", e);
+                    }
+                }
+            }
+        }
+
+        internal long RegistryFetchCounter
+        {
+            get
+            {
+                return _registryFetchCounter;
+            }
+
+            set
+            {
+                // Used for unit test
+                _registryFetchCounter = value;
+            }
+        }
+
+        protected internal Timer StartTimer(string name, int interval, Action task)
+        {
+            var timedTask = new TimedTask(name, task);
+            var timer = new Timer(timedTask.Run, null, interval, interval);
+            return timer;
+        }
+
+        protected internal async T.Task<bool> FetchRegistryAsync(bool fullUpdate)
         {
             Applications fetched = null;
             try
@@ -367,10 +375,10 @@ namespace Steeltoe.Discovery.Eureka
                 LastGoodRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
 
                 // Notify about cache refresh before updating the instance remote status
-                //onCacheRefreshed();
+                // onCacheRefreshed();
 
                 //// Update remote status based on refreshed data held in the cache
-                //updateInstanceRemoteStatus();
+                // updateInstanceRemoteStatus();
                 _logger?.LogDebug("FetchRegistry succeeded");
                 return true;
             }
@@ -378,17 +386,20 @@ namespace Steeltoe.Discovery.Eureka
             _logger?.LogDebug("FetchRegistry failed");
             return false;
         }
-        internal protected async T.Task<bool> UnregisterAsync()
+
+        protected internal async T.Task<bool> UnregisterAsync()
         {
             InstanceInfo inst = _appInfoManager.InstanceInfo;
             if (inst == null)
+            {
                 return false;
+            }
+
             try
             {
                 EurekaHttpResponse resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId);
                 _logger?.LogDebug("Unregister {0}/{1} returned: {2}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 return resp.StatusCode == HttpStatusCode.OK;
-
             }
             catch (Exception e)
             {
@@ -397,13 +408,16 @@ namespace Steeltoe.Discovery.Eureka
 
             _logger?.LogDebug("Unregister failed");
             return false;
-
         }
-        internal protected async T.Task<bool> RegisterAsync()
+
+        protected internal async T.Task<bool> RegisterAsync()
         {
             InstanceInfo inst = _appInfoManager.InstanceInfo;
             if (inst == null)
+            {
                 return false;
+            }
+
             try
             {
                 EurekaHttpResponse resp = await HttpClient.RegisterAsync(inst);
@@ -413,8 +427,8 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     LastGoodRegisterTimestamp = System.DateTime.UtcNow.Ticks;
                 }
-                return result;
 
+                return result;
             }
             catch (Exception e)
             {
@@ -423,14 +437,15 @@ namespace Steeltoe.Discovery.Eureka
 
             _logger?.LogDebug("Register failed");
             return false;
-
         }
 
-        internal protected async T.Task<bool> RenewAsync()
+        protected internal async T.Task<bool> RenewAsync()
         {
             InstanceInfo inst = _appInfoManager.InstanceInfo;
             if (inst == null)
+            {
                 return false;
+            }
 
             try
             {
@@ -446,9 +461,8 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     LastGoodHeartbeatTimestamp = System.DateTime.UtcNow.Ticks;
                 }
+
                 return result;
-
-
             }
             catch (Exception e)
             {
@@ -459,7 +473,7 @@ namespace Steeltoe.Discovery.Eureka
             return false;
         }
 
-        internal protected async T.Task<Applications> FetchFullRegistryAsync()
+        protected internal async T.Task<Applications> FetchFullRegistryAsync()
         {
             long startingCounter = _registryFetchCounter;
             EurekaHttpResponse<Applications> resp = null;
@@ -474,14 +488,16 @@ namespace Steeltoe.Discovery.Eureka
                 resp = await HttpClient.GetVipAsync(ClientConfig.RegistryRefreshSingleVipAddress);
             }
 
-            _logger?.LogDebug("FetchFullRegistry returned: {0}, {1}", resp.StatusCode, ((resp.Response != null) ? resp.Response.ToString() : "null"));
+            _logger?.LogDebug(
+                "FetchFullRegistry returned: {0}, {1}",
+                resp.StatusCode,
+                (resp.Response != null) ? resp.Response.ToString() : "null");
             if (resp.StatusCode == HttpStatusCode.OK)
             {
                 fetched = resp.Response;
             }
 
-            if (fetched != null && Interlocked.CompareExchange(ref _registryFetchCounter,
-                ((startingCounter + 1) % long.MaxValue), startingCounter) == startingCounter)
+            if (fetched != null && Interlocked.CompareExchange(ref _registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
             {
                 // Log
                 LastGoodFullRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
@@ -496,7 +512,7 @@ namespace Steeltoe.Discovery.Eureka
             return null;
         }
 
-        internal protected async T.Task<Applications> FetchRegistryDeltaAsync()
+        protected internal async T.Task<Applications> FetchRegistryDeltaAsync()
         {
             long startingCounter = _registryFetchCounter;
             Applications delta = null;
@@ -514,7 +530,7 @@ namespace Steeltoe.Discovery.Eureka
                 return await FetchFullRegistryAsync();
             }
 
-            if (Interlocked.CompareExchange(ref _registryFetchCounter, ((startingCounter + 1) % long.MaxValue), startingCounter) == startingCounter)
+            if (Interlocked.CompareExchange(ref _registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
             {
                 _localRegionApps.UpdateFromDelta(delta);
                 string hashCode = _localRegionApps.ComputeHashCode();
@@ -534,7 +550,8 @@ namespace Steeltoe.Discovery.Eureka
             _logger?.LogDebug("FetchRegistryDelta failed");
             return null;
         }
-        internal protected void RefreshInstanceInfo()
+
+        protected internal void RefreshInstanceInfo()
         {
             InstanceInfo info = _appInfoManager.InstanceInfo;
             if (info == null)
@@ -553,8 +570,11 @@ namespace Steeltoe.Discovery.Eureka
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError("RefreshInstanceInfo HealthCheck handler exception: {0}, App: {1}, Instance: {2} marked DOWN",
-                        e, info.AppName, info.InstanceId);
+                    _logger?.LogError(
+                        "RefreshInstanceInfo HealthCheck handler exception: {0}, App: {1}, Instance: {2} marked DOWN",
+                        e,
+                        info.AppName,
+                        info.InstanceId);
                     status = InstanceStatus.DOWN;
                 }
             }
@@ -565,38 +585,39 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        internal async void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
+        protected void Initialize()
         {
-
-            // Log StatusChangedArgs
-            InstanceInfo info = _appInfoManager.InstanceInfo;
-            if (info != null)
+            _localRegionApps = new Applications
             {
-                RefreshInstanceInfo();
-                if (info.IsDirty)
+                ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances
+            };
+
+            if (!ClientConfig.ShouldRegisterWithEureka && !ClientConfig.ShouldFetchRegistry)
+            {
+                return;
+            }
+
+            if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
+            {
+                var result = RegisterAsync();
+                result.Wait();
+
+                var intervalInMilli = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
+                _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, this.HeartBeatTaskAsync);
+                if (ClientConfig.ShouldOnDemandUpdateStatusChange)
                 {
-                    try
-                    {
-                        var result = await RegisterAsync();
-                        if (result)
-                        {
-                            info.IsDirty = false;
-                            //Log
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        _logger?.LogError("Instance_StatusChangedEvent Exception: {0}", e);
-                    }
+                    _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;
                 }
             }
-        }
 
-        internal protected Timer StartTimer(string name, int interval, Action task)
-        {
-            var timedTask = new TimedTask(name, task);
-            var timer = new Timer(timedTask.Run, null, interval, interval);
-            return timer;
+            if (ClientConfig.ShouldFetchRegistry)
+            {
+                var result = FetchRegistryAsync(true);
+                result.Wait();
+
+                var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
+                _cacheRefreshTimer = StartTimer("Query", intervalInMilli, CacheRefreshTaskAsync);
+            }
         }
 
         private async void HeartBeatTaskAsync()
@@ -611,7 +632,6 @@ namespace Steeltoe.Discovery.Eureka
             {
                 _logger?.LogError("HeartBeat failed");
             }
-
         }
 
         private async void CacheRefreshTaskAsync()
@@ -626,7 +646,6 @@ namespace Steeltoe.Discovery.Eureka
             {
                 _logger?.LogError("CacheRefresh failed");
             }
-
         }
     }
 }

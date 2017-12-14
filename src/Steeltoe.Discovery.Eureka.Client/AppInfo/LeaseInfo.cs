@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using System;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
+using System;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo
 {
@@ -26,12 +24,45 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         public const int Default_DurationInSecs = 90;
 
         public int RenewalIntervalInSecs { get; internal set; }
+
         public int DurationInSecs { get; internal set; }
+
         public long RegistrationTimestamp { get; internal set; }
+
         public long LastRenewalTimestamp { get; internal set; }
+
         public long LastRenewalTimestampLegacy { get; internal set; }
+
         public long EvictionTimestamp { get; internal set; }
+
         public long ServiceUpTimestamp { get; internal set; }
+
+        internal static LeaseInfo FromJson(JsonLeaseInfo jinfo)
+        {
+            LeaseInfo info = new LeaseInfo();
+            if (jinfo != null)
+            {
+                info.RenewalIntervalInSecs = jinfo.RenewalIntervalInSecs;
+                info.DurationInSecs = jinfo.DurationInSecs;
+                info.RegistrationTimestamp = DateTimeConversions.FromJavaMillis(jinfo.RegistrationTimestamp).Ticks;
+                info.LastRenewalTimestamp = DateTimeConversions.FromJavaMillis(jinfo.LastRenewalTimestamp).Ticks;
+                info.LastRenewalTimestampLegacy = DateTimeConversions.FromJavaMillis(jinfo.LastRenewalTimestampLegacy).Ticks;
+                info.EvictionTimestamp = DateTimeConversions.FromJavaMillis(jinfo.EvictionTimestamp).Ticks;
+                info.ServiceUpTimestamp = DateTimeConversions.FromJavaMillis(jinfo.ServiceUpTimestamp).Ticks;
+            }
+
+            return info;
+        }
+
+        internal static LeaseInfo FromConfig(IEurekaInstanceConfig config)
+        {
+            LeaseInfo info = new LeaseInfo()
+            {
+                RenewalIntervalInSecs = config.LeaseRenewalIntervalInSeconds,
+                DurationInSecs = config.LeaseExpirationDurationInSeconds
+            };
+            return info;
+        }
 
         internal LeaseInfo()
         {
@@ -53,33 +84,5 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             };
             return jinfo;
         }
-
-
-        internal static LeaseInfo FromJson(JsonLeaseInfo jinfo)
-        {
-            LeaseInfo info = new LeaseInfo();
-            if (jinfo != null)
-            {
-                info.RenewalIntervalInSecs = jinfo.RenewalIntervalInSecs;
-                info.DurationInSecs = jinfo.DurationInSecs;
-                info.RegistrationTimestamp = DateTimeConversions.FromJavaMillis(jinfo.RegistrationTimestamp).Ticks;
-                info.LastRenewalTimestamp = DateTimeConversions.FromJavaMillis(jinfo.LastRenewalTimestamp).Ticks;
-                info.LastRenewalTimestampLegacy = DateTimeConversions.FromJavaMillis(jinfo.LastRenewalTimestampLegacy).Ticks;
-                info.EvictionTimestamp = DateTimeConversions.FromJavaMillis(jinfo.EvictionTimestamp).Ticks;
-                info.ServiceUpTimestamp = DateTimeConversions.FromJavaMillis(jinfo.ServiceUpTimestamp).Ticks;
-            }
-            return info;
-        }
-        internal static LeaseInfo FromConfig(IEurekaInstanceConfig config)
-        {
-            LeaseInfo info = new LeaseInfo()
-            {
-                RenewalIntervalInSecs = config.LeaseRenewalIntervalInSeconds,
-                DurationInSecs = config.LeaseExpirationDurationInSeconds
-            };
-            return info;
-        }
-
     }
 }
-

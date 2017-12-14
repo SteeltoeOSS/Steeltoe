@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
@@ -26,7 +24,6 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class DiscoveryClientTest : AbstractBaseTest
     {
-
         [Fact]
         public void Constructor_Throws_IfInstanceConfigNull()
         {
@@ -116,7 +113,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void FetchFullRegistryAsync_ReturnsNull_IfFetchCounterMismatch()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -137,6 +134,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var apps = result.GetAwaiter().GetResult();
             Assert.Null(apps);
         }
+
         [Fact]
         public async void FetchRegistryDeltaAsync_InvokesServer_ReturnsValidResponse()
         {
@@ -220,11 +218,10 @@ namespace Steeltoe.Discovery.Eureka.Test
         public void FetchRegistryDeltaAsync_ReturnsNull_IfFetchCounterMismatch()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -247,7 +244,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         public async void RegisterAsync_ReturnsFalse_WhenNotOKStatusReturned()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 404;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -281,11 +278,12 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
             Assert.Equal("/apps/FOO", TestConfigServerStartup.LastRequest.Path.Value);
         }
+
         [Fact]
         public async void RegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 204;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -297,7 +295,6 @@ namespace Steeltoe.Discovery.Eureka.Test
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri.ToString()
-
             };
 
             InstanceInfo inst = new InstanceInfo()
@@ -321,11 +318,12 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
             Assert.Equal("/apps/FOO", TestConfigServerStartup.LastRequest.Path.Value);
         }
+
         [Fact]
         public async void RenewAsync_Registers_When404StatusReturned()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 404;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -361,11 +359,12 @@ namespace Steeltoe.Discovery.Eureka.Test
             // Still false as register returns 404 still
             Assert.False(result);
         }
+
         [Fact]
         public async void RenewAsync_ReturnsTrue_WhenOKStatusReturned()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -399,7 +398,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         public async void UnRegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -432,7 +431,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("DELETE", TestConfigServerStartup.LastRequest.Method);
             Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
             Assert.Equal("/apps/FOO/localhost:foo", TestConfigServerStartup.LastRequest.Path.Value);
-
         }
 
         [Fact]
@@ -464,7 +462,6 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesByVipAddress_ReturnsExpected()
         {
-
             Application app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
@@ -482,8 +479,10 @@ namespace Steeltoe.Discovery.Eureka.Test
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
-            client.Applications = apps;
+            DiscoveryClient client = new DiscoveryClient(config)
+            {
+                Applications = apps
+            };
 
             var result = client.GetInstancesByVipAddress("vapp1", false);
             Assert.NotNull(result);
@@ -499,13 +498,11 @@ namespace Steeltoe.Discovery.Eureka.Test
             result = client.GetInstancesByVipAddress("vapp1", false);
             Assert.NotNull(result);
             Assert.Equal(0, result.Count);
-
         }
 
         [Fact]
         public void GetNextServerFromEureka_ReturnsExpected()
         {
-
             Application app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
@@ -523,8 +520,10 @@ namespace Steeltoe.Discovery.Eureka.Test
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
-            client.Applications = apps;
+            DiscoveryClient client = new DiscoveryClient(config)
+            {
+                Applications = apps
+            };
 
             var result = client.GetNextServerFromEureka("vapp1", false);
             Assert.NotNull(result);
@@ -536,7 +535,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             apps.ReturnUpInstancesOnly = true;
             result = client.GetNextServerFromEureka("vapp1", false);
             Assert.Null(result);
-
         }
 
         [Fact]
@@ -564,12 +562,11 @@ namespace Steeltoe.Discovery.Eureka.Test
             var result = client.GetInstanceById("myId");
             Assert.NotNull(result);
             Assert.Equal(0, result.Count);
-
         }
+
         [Fact]
         public void GetInstanceById_ReturnsExpected()
         {
-
             Application app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
@@ -587,8 +584,10 @@ namespace Steeltoe.Discovery.Eureka.Test
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
-            client.Applications = apps;
+            DiscoveryClient client = new DiscoveryClient(config)
+            {
+                Applications = apps
+            };
 
             var result = client.GetInstanceById("id1");
             Assert.NotNull(result);
@@ -600,7 +599,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             result = client.GetInstanceById("boohoo");
             Assert.NotNull(result);
             Assert.Equal(0, result.Count);
-
         }
 
         [Fact]
@@ -619,7 +617,6 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetApplication_ReturnsExpected()
         {
-
             Application app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
@@ -637,8 +634,10 @@ namespace Steeltoe.Discovery.Eureka.Test
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
-            client.Applications = apps;
+            DiscoveryClient client = new DiscoveryClient(config)
+            {
+                Applications = apps
+            };
 
             var result = client.GetApplication("app1");
             Assert.NotNull(result);
@@ -646,7 +645,6 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             result = client.GetApplication("boohoo");
             Assert.Null(result);
-
         }
 
         [Fact]
@@ -698,7 +696,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             System.Threading.Thread.Sleep(1000);
             Assert.True(_timerFuncCount > 0);
             result.Dispose();
-
         }
 
         [Fact]
@@ -717,6 +714,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.True(_timerFuncCount > 1);
             result.Dispose();
         }
+
         [Fact]
         public void StartTimer_StartsTimer_StopsAfterDispose()
         {
@@ -738,32 +736,16 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         private volatile int _timerFuncCount;
+
         private void TimerFunc()
         {
             ++_timerFuncCount;
         }
+
         private void TimerFuncThrows()
         {
             ++_timerFuncCount;
             throw new ArgumentException();
-        }
-    }
-
-
-    class MyHealthCheckHandler : IHealthCheckHandler
-    {
-        private InstanceStatus _status;
-
-        public bool Called { get; set; }
-        public MyHealthCheckHandler(InstanceStatus status)
-        {
-            _status = status;
-            Called = false;
-        }
-        public InstanceStatus GetStatus(InstanceStatus currentStatus)
-        {
-            Called = true;
-            return _status;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,9 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using System;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Discovery.Eureka
@@ -39,14 +36,15 @@ namespace Steeltoe.Discovery.Eureka
                     options.SecureVirtualHostName = springAppName;
                 }
             }
- 
+
             if (defaultId.Equals(options.InstanceId))
             {
                 string springInstanceId = config.GetValue<string>(SPRING_APPLICATION_INSTANCEID_KEY);
                 if (!string.IsNullOrEmpty(springInstanceId))
                 {
                     options.InstanceId = springInstanceId;
-                } else
+                }
+                else
                 {
                     options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
                 }
@@ -60,7 +58,6 @@ namespace Steeltoe.Discovery.Eureka
                     options.RegistrationMethod = springRegMethod;
                 }
             }
-
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +11,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.TestHost;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Test;
+using Steeltoe.Discovery.Eureka.Util;
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using Xunit;
-using Steeltoe.Discovery.Eureka.AppInfo;
-using Microsoft.AspNetCore.TestHost;
-using System.Net;
-using System.Collections.Generic;
-using Steeltoe.Discovery.Eureka.Util;
-using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.Hosting;
-using Steeltoe.Discovery.Eureka.Test;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test
 {
@@ -37,7 +35,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Contains("config", ex.Message);
         }
 
-
         [Fact]
         public void Constructor_Throws_IfHeadersNull()
         {
@@ -45,6 +42,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient(new EurekaClientConfig(), headers));
             Assert.Contains("headers", ex.Message);
         }
+
         [Fact]
         public void Constructor_Throws_IfServiceUrlBad()
         {
@@ -80,11 +78,10 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         public async void RegisterAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 204;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -107,11 +104,10 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         public async void RegisterAsync_SendsValidPOSTData()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 204;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -144,8 +140,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal(sentJsonObj.Actiontype, recvJson.Instance.Actiontype);
             Assert.Equal(sentJsonObj.AppName, recvJson.Instance.AppName);
             Assert.Equal(sentJsonObj.HostName, recvJson.Instance.HostName);
-
         }
+
         [Fact]
         public async void SendHeartbeat_Throws_IfAppNameNull()
         {
@@ -154,6 +150,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.SendHeartBeatAsync(null, "bar", new InstanceInfo(), InstanceStatus.DOWN));
             Assert.Contains("appName", ex.Message);
         }
+
         [Fact]
         public async void SendHeartbeat_Throws_IfIdNull()
         {
@@ -171,11 +168,12 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.SendHeartBeatAsync("foo", "bar", null, InstanceStatus.DOWN));
             Assert.Contains("info", ex.Message);
         }
+
         [Fact]
         public async void SendHeartBeatAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -251,7 +249,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
-
             var cconfig = new EurekaClientConfig()
             {
                 EurekaServerServiceUrls = uri
@@ -311,6 +308,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.GetApplicationAsync(null));
             Assert.Contains("appName", ex.Message);
         }
+
         [Fact]
         public async void GetApplicationAsync_InvokesServer_ReturnsExpectedApplications()
         {
@@ -351,7 +349,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-
 
             var cconfig = new EurekaClientConfig()
             {
@@ -398,6 +395,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => client.GetInstanceAsync("appName", null));
             Assert.Contains("id", ex.Message);
         }
+
         [Fact]
         public async void GetInstanceAsync_Throws_IfIDNull()
         {
@@ -467,7 +465,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
             Assert.Equal("192.168.0.147", resp.Response.IpAddr);
             Assert.Equal(InstanceStatus.UP, resp.Response.Status);
-
         }
 
         [Fact]
@@ -492,7 +489,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         public async void CancelAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -544,9 +541,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void StatusUpdateAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
-
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -601,9 +597,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void DeleteStatusOverrideAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
-
             IHostingEnvironment envir = new HostingEnvironment();
-            TestConfigServerStartup.Response = "";
+            TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
@@ -630,28 +625,30 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void MakeServiceUrl_Throws_IfServiceUrlBad()
         {
-
             var ex = Assert.Throws<UriFormatException>(() => EurekaHttpClient.MakeServiceUrl("foobar\\foobar"));
             Assert.Contains("URI", ex.Message);
         }
+
         [Fact]
         public void MakeServiceUrl_AppendsSlash_IfMissing()
         {
             var result = EurekaHttpClient.MakeServiceUrl("http://boo:123");
             Assert.Equal("http://boo:123/", result);
         }
+
         [Fact]
         public void MakeServiceUrl_DoesntAppendSlash_IfPresent()
         {
             var result = EurekaHttpClient.MakeServiceUrl("http://boo:123/");
             Assert.Equal("http://boo:123/", result);
         }
+
         [Fact]
         public void GetRequestMessage_ReturnsCorrectMesssage_WithAdditionalHeaders()
         {
             Dictionary<string, string> headers = new Dictionary<string, string>()
             {
-                {"foo", "bar" }
+                { "foo", "bar" }
             };
             var config = new EurekaClientConfig()
             {
@@ -663,6 +660,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
             Assert.True(result.Headers.Contains("foo"));
         }
+
         [Fact]
         public void GetRequestUri_ReturnsCorrect_WithQueryArguments()
         {
@@ -673,8 +671,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var client = new EurekaHttpClient(config, new HttpClient());
             Dictionary<string, string> queryArgs = new Dictionary<string, string>()
             {
-                {"foo", "bar" },
-                {"bar", "foo" }
+                { "foo", "bar" },
+                { "bar", "foo" }
             };
             Uri result = client.GetRequestUri("http://boo:123/eureka", queryArgs);
             Assert.NotNull(result);

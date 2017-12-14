@@ -12,19 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Discovery.Eureka.AppInfo;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Hosting;
+using System;
+using System.Threading;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Client.Test
 {
-    public interface ILookupService
+    public class TestApplicationLifetime : IApplicationLifetime
     {
-        Applications Applications { get; }
+        public CancellationToken ApplicationStarted => throw new NotImplementedException();
 
-        Application GetApplication(string appName);
+        public CancellationToken ApplicationStopping => new CancellationTokenSource().Token;
 
-        IList<InstanceInfo> GetInstanceById(string id);
+        public CancellationToken ApplicationStopped => throw new NotImplementedException();
 
-        InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure);
+        public void StopApplication()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

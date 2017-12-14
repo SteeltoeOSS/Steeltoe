@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -162,7 +160,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.True(registered[1].Name.Equals("app1") || registered[1].Name.Equals("app2"));
         }
 
-
         [Fact]
         public void RemoveInstanceFromVip_UpdatesApp_RemovesFromVirtualHostInstanceMaps()
         {
@@ -195,13 +192,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             apps.RemoveInstanceFromVip(new InstanceInfo() { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             apps.RemoveInstanceFromVip(new InstanceInfo() { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-
             Assert.NotNull(apps.VirtualHostInstanceMap);
             Assert.Single(apps.VirtualHostInstanceMap);
             Assert.False(apps.VirtualHostInstanceMap.ContainsKey("vapp1".ToUpperInvariant()));
             Assert.True(apps.VirtualHostInstanceMap.ContainsKey("vapp2".ToUpperInvariant()));
-            ConcurrentDictionary<string, InstanceInfo> tryValue = null;
-            Assert.False(apps.VirtualHostInstanceMap.TryGetValue("vapp1".ToUpperInvariant(), out tryValue));
+            Assert.False(apps.VirtualHostInstanceMap.TryGetValue("vapp1".ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo> tryValue));
             Assert.Equal(2, apps.VirtualHostInstanceMap["vapp2".ToUpperInvariant()].Count);
 
             Assert.NotNull(apps.SecureVirtualHostInstanceMap);
@@ -211,7 +206,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             tryValue = null;
             Assert.False(apps.SecureVirtualHostInstanceMap.TryGetValue("svapp1".ToUpperInvariant(), out tryValue));
             Assert.Equal(2, apps.SecureVirtualHostInstanceMap["svapp2".ToUpperInvariant()].Count);
-
         }
 
         [Fact]
@@ -233,8 +227,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
 
             registered = apps.GetRegisteredApplication("foobar");
             Assert.Null(registered);
-
         }
+
         [Fact]
         public void GetRegisteredApplication_ThrowsIfAppNull()
         {
@@ -258,6 +252,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             var ex = Assert.Throws<ArgumentException>(() => apps.GetInstancesByVirtualHostName(null));
             Assert.Contains("virtualHostName", ex.Message);
         }
+
         [Fact]
         public void GetInstancesBySecureVirtualHostName_ReturnsExpected()
         {
@@ -323,6 +318,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.NotNull(result);
             Assert.Equal(0, result.Count);
         }
+
         [Fact]
         public void UpdateFromDelta_EmptyDelta_NoChange()
         {
@@ -616,7 +612,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             delta.Add(app3);
             apps.UpdateFromDelta(delta);
 
-
             string hashcode = apps.ComputeHashCode();
             Assert.Equal("DOWN_2_OUT_OF_SERVICE_1_STARTING_1_UP_1_", hashcode);
         }
@@ -640,7 +635,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 VipAddress = "VipAddress",
                 SecureVipAddress = "SecureVipAddress",
                 CountryId = 1,
-                DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo("", "MyOwn"),
+                DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo(string.Empty, "MyOwn"),
                 HostName = "HostName",
                 Status = InstanceStatus.DOWN,
                 OverriddenStatus = InstanceStatus.OUT_OF_SERVICE,
@@ -666,13 +661,12 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 Name = "myApp",
                 Instances = new List<JsonInstanceInfo> { jinfo }
             };
-      
+
             JsonApplications japps = new JsonApplications()
             {
                 AppsHashCode = "AppsHashCode",
                 VersionDelta = 1L,
                 Applications = new List<JsonApplication>() { japp }
-
             };
 
             Applications apps = Applications.FromJsonApplications(japps);

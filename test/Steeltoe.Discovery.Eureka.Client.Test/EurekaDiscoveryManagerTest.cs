@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test
 {
-
     public class EurekaDiscoveryManagerTest : AbstractBaseTest
     {
         [Fact]
@@ -35,8 +32,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(instOptions, mgr.InstanceConfig);
             Assert.Equal(clientOptions, mgr.ClientConfig);
             Assert.Equal(client, mgr.Client);
-
-
         }
     }
 }

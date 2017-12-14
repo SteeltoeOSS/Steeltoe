@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using System;
 using Steeltoe.Discovery.Eureka.Transport;
+using System;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo
 {
@@ -31,20 +29,25 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         internal static IDataCenterInfo FromJson(JsonInstanceInfo.JsonDataCenterInfo jcenter)
         {
             if (DataCenterName.MyOwn.ToString().Equals(jcenter.Name))
+            {
                 return new DataCenterInfo(DataCenterName.MyOwn);
+            }
             else if (DataCenterName.Amazon.ToString().Equals(jcenter.Name))
             {
                 return new DataCenterInfo(DataCenterName.Amazon);
             }
-            else throw new ArgumentOutOfRangeException("Datacenter name");
+            else
+            {
+                throw new ArgumentOutOfRangeException("Datacenter name");
+            }
         }
 
         internal JsonInstanceInfo.JsonDataCenterInfo ToJson()
         {
-            //TODO: Other datacenters @class settings?
-            return new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+            // TODO: Other datacenters @class settings?
+            return new JsonInstanceInfo.JsonDataCenterInfo(
+                "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
                 this.Name.ToString());
-  
         }
     }
 }

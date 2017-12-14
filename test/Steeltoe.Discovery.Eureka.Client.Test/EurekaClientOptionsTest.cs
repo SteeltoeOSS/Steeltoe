@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using System.IO;
@@ -22,7 +20,6 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class EurekaClientOptionsTest : AbstractBaseTest
     {
-
         [Fact]
         public void Constructor_Intializes_Defaults()
         {
@@ -45,6 +42,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.True(opts.ShouldOnDemandUpdateStatusChange);
             Assert.Equal(EurekaClientOptions.Default_ServerServiceUrl, opts.EurekaServerServiceUrls);
         }
+
         [Fact]
         public void Constructor_ConfiguresEurekaDiscovery_Correctly()
         {
@@ -107,7 +105,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             string fileName = Path.GetFileName(path);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
-
 
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();

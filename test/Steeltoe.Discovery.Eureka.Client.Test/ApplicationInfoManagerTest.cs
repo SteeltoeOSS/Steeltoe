@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
@@ -23,11 +21,13 @@ namespace Steeltoe.Discovery.Eureka.Test
     public class ApplicationInfoManagerTest : AbstractBaseTest
     {
         private StatusChangedArgs eventArg = null;
-        public ApplicationInfoManagerTest() : base()
-        {
 
+        public ApplicationInfoManagerTest()
+            : base()
+        {
             eventArg = null;
         }
+
         [Fact]
         public void ApplicationInfoManager_IsSingleton()
         {
@@ -66,7 +66,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.NotNull(ApplicationInfoManager.Instance.InstanceConfig);
             Assert.Equal(config, ApplicationInfoManager.Instance.InstanceConfig);
             Assert.NotNull(ApplicationInfoManager.Instance.InstanceInfo);
-
         }
 
         [Fact]
@@ -95,7 +94,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, eventArg.InstanceId);
             ApplicationInfoManager.Instance.StatusChangedEvent -= Instance_StatusChangedEvent;
         }
-
 
         [Fact]
         public void StatusChanged_RemovesEventHandler()
@@ -136,7 +134,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.True(info.IsDirty);
             Assert.Equal(config.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
             Assert.Equal(config.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
-
         }
 
         private void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
@@ -145,4 +142,3 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
     }
 }
-

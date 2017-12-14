@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,23 +11,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using Xunit;
-using System.IO;
 using Steeltoe.Common.Discovery;
-using Microsoft.AspNetCore.Hosting;
-using System.Threading;
 using Steeltoe.Discovery.Eureka;
+using System;
+using System.IO;
+using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test
 {
-    public class DiscoveryServiceCollectionExtensionsTest 
+    public class DiscoveryServiceCollectionExtensionsTest
     {
-
         [Fact]
         public void AddDiscoveryClient_ThrowsIfServiceCollectionNull()
         {
@@ -57,7 +53,6 @@ namespace Steeltoe.Discovery.Client.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config));
             Assert.Contains(nameof(config), ex.Message);
-
         }
 
         [Fact]
@@ -70,8 +65,8 @@ namespace Steeltoe.Discovery.Client.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, discoveryOptions));
             Assert.Contains(nameof(discoveryOptions), ex.Message);
-
         }
+
         [Fact]
         public void AddDiscoverClient_ThrowsIfDiscoveryOptionsClientType_Unknown()
         {
@@ -82,7 +77,6 @@ namespace Steeltoe.Discovery.Client.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, discoveryOptions));
             Assert.Contains("UNKNOWN", ex.Message);
-
         }
 
         [Fact]
@@ -95,7 +89,6 @@ namespace Steeltoe.Discovery.Client.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, setupOptions));
             Assert.Contains(nameof(setupOptions), ex.Message);
-
         }
 
         [Fact]
@@ -134,7 +127,6 @@ namespace Steeltoe.Discovery.Client.Test
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
-
         }
 
         [Fact]
@@ -160,8 +152,6 @@ namespace Steeltoe.Discovery.Client.Test
 
             var services = new ServiceCollection();
             Assert.Throws<ArgumentException>(() => services.AddDiscoveryClient(config));
-
-
         }
 
         [Fact]
@@ -176,7 +166,6 @@ namespace Steeltoe.Discovery.Client.Test
                     ShouldFetchRegistry = false,
                     ShouldRegisterWithEureka = false
                 }
-
             };
 
             var services = new ServiceCollection();
@@ -185,7 +174,6 @@ namespace Steeltoe.Discovery.Client.Test
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
-
         }
 
         [Fact]
@@ -197,15 +185,13 @@ namespace Steeltoe.Discovery.Client.Test
                 ClientType = DiscoveryClientType.EUREKA,
                 ClientOptions = null,
                 RegistrationOptions = null
-
             };
 
             var services = new ServiceCollection();
             services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
             Assert.Throws<ArgumentException>(() => services.AddDiscoveryClient(options));
-
-
         }
+
         [Fact]
         public void AddDiscoveryClient_WithSetupAction_AddsDiscoveryClient()
         {
@@ -221,26 +207,10 @@ namespace Steeltoe.Discovery.Client.Test
                    ShouldRegisterWithEureka = false
                };
                options.RegistrationOptions = new EurekaInstanceOptions();
-
            });
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
-
-        }
-    }
-
-    class TestApplicationLifetime : IApplicationLifetime
-    {
-        public CancellationToken ApplicationStarted => throw new NotImplementedException();
-
-        public CancellationToken ApplicationStopping => new CancellationTokenSource().Token;
-
-        public CancellationToken ApplicationStopped => throw new NotImplementedException();
-
-        public void StopApplication()
-        {
-            throw new NotImplementedException();
         }
     }
 }

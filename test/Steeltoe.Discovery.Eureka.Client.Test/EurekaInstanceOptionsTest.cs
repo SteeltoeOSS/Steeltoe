@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,12 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using Steeltoe.Discovery.Eureka.AppInfo;
-using Xunit;
-using System.IO;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using System.IO;
+using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test
 {
@@ -54,6 +52,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Null(opts.DefaultAddressResolutionOrder);
             Assert.Null(opts.RegistrationMethod);
         }
+
         [Fact]
         public void Constructor_ConfiguresEurekaDiscovery_Correctly()
         {
@@ -117,7 +116,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
@@ -154,7 +152,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(2, map.Count);
             Assert.Equal("bar", map["foo"]);
             Assert.Equal("foo", map["bar"]);
-
         }
     }
 }

@@ -13,18 +13,23 @@
 // limitations under the License.
 
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System.Collections.Generic;
+using System;
 
 namespace Steeltoe.Discovery.Eureka
 {
-    public interface ILookupService
+    public class StatusChangedArgs : EventArgs
     {
-        Applications Applications { get; }
+        public InstanceStatus Previous { get; private set; }
 
-        Application GetApplication(string appName);
+        public InstanceStatus Current { get; private set; }
 
-        IList<InstanceInfo> GetInstanceById(string id);
+        public string InstanceId { get; private set; }
 
-        InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure);
+        public StatusChangedArgs(InstanceStatus prev, InstanceStatus current, string instanceId)
+        {
+            Previous = prev;
+            Current = current;
+            InstanceId = instanceId;
+        }
     }
 }

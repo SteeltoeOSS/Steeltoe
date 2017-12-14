@@ -12,19 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Discovery.Eureka.AppInfo;
-using System.Collections.Generic;
+using Microsoft.Extensions.Options;
+using System;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka.Test
 {
-    public interface ILookupService
+    public class TestOptionMonitorWrapper<T> : IOptionsMonitor<T>
     {
-        Applications Applications { get; }
+        private T _opt;
 
-        Application GetApplication(string appName);
+        public TestOptionMonitorWrapper(T opt)
+        {
+            _opt = opt;
+        }
 
-        IList<InstanceInfo> GetInstanceById(string id);
+        public T CurrentValue => _opt;
 
-        InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure);
+        public T Get(string name)
+        {
+            return _opt;
+        }
+
+        public IDisposable OnChange(Action<T, string> listener)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

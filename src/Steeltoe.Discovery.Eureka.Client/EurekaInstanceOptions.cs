@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Common.Discovery;
 
@@ -33,7 +31,6 @@ namespace Steeltoe.Discovery.Eureka
             this.VirtualHostName = AppName;
             this.SecureVirtualHostName = AppName;
             this.InstanceId = GetHostName(false) + ":" + AppName + ":" + NonSecurePort;
-
         }
 
         // eureka:instance:appGroup
@@ -43,11 +40,13 @@ namespace Steeltoe.Discovery.Eureka
             {
                 return this.AppGroupName;
             }
+
             set
             {
                 this.AppGroupName = value;
             }
         }
+
         // eureka:instance:instanceEnabledOnInit
         public virtual bool InstanceEnabledOnInit
         {
@@ -55,11 +54,13 @@ namespace Steeltoe.Discovery.Eureka
             {
                 return this.IsInstanceEnabledOnInit;
             }
+
             set
             {
                 this.IsInstanceEnabledOnInit = value;
             }
         }
+
         // eureka:instance:port
         public virtual int Port
         {
@@ -67,11 +68,13 @@ namespace Steeltoe.Discovery.Eureka
             {
                 return this.NonSecurePort;
             }
+
             set
             {
                 this.NonSecurePort = value;
             }
         }
+
         // eureka:instance:nonSecurePortEnabled
         public virtual bool NonSecurePortEnabled
         {
@@ -79,11 +82,13 @@ namespace Steeltoe.Discovery.Eureka
             {
                 return this.IsNonSecurePortEnabled;
             }
+
             set
             {
                 this.IsNonSecurePortEnabled = value;
             }
         }
+
         // eureka:instance:vipAddress
         public virtual string VipAddress
         {
@@ -91,11 +96,13 @@ namespace Steeltoe.Discovery.Eureka
             {
                 return this.VirtualHostName;
             }
+
             set
             {
                 this.VirtualHostName = value;
             }
         }
+
         // eureka:instance:secureVipAddress
         public virtual string SecureVipAddress
         {
@@ -103,15 +110,18 @@ namespace Steeltoe.Discovery.Eureka
             {
                 return this.SecureVirtualHostName;
             }
+
             set
             {
                 this.SecureVirtualHostName = value;
             }
         }
+
         // spring:cloud:discovery:registrationMethod changed to  eureka:instance:registrationMethod
         public virtual string RegistrationMethod { get; set; }
 
         private string _ipAddress;
+
         public override string IpAddress
         {
             get
@@ -120,6 +130,7 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     return _ipAddress;
                 }
+
                 return _thisHostAddress;
             }
 
@@ -128,33 +139,38 @@ namespace Steeltoe.Discovery.Eureka
                 _ipAddress = value;
             }
         }
+
         private string _hostName;
+
         public override string HostName
         {
             get
             {
                 return GetHostName(false);
             }
+
             set
             {
                 if (!value.Equals(_thisHostName))
+                {
                     _hostName = value;
+                }
             }
         }
+
         public override string GetHostName(bool refresh)
         {
-
             if (_hostName != null)
+            {
                 return _hostName;
-
-
+            }
 
             if (refresh || string.IsNullOrEmpty(_thisHostName))
             {
                 _thisHostName = ResolveHostName();
             }
+
             return _thisHostName;
         }
-
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
@@ -27,16 +21,22 @@ namespace Steeltoe.Discovery.Eureka.Transport
     {
         [JsonProperty("renewalIntervalInSecs")]
         public int RenewalIntervalInSecs { get; set; }
+
         [JsonProperty("durationInSecs")]
         public int DurationInSecs { get; set; }
+
         [JsonProperty("registrationTimestamp")]
         public long RegistrationTimestamp { get; set; }
+
         [JsonProperty("lastRenewalTimestamp")]
         public long LastRenewalTimestamp { get; set; }
+
         [JsonProperty("renewalTimestamp")]
         public long LastRenewalTimestampLegacy { get; set; }
+
         [JsonProperty("evictionTimestamp")]
         public long EvictionTimestamp { get; set; }
+
         [JsonProperty("serviceUpTimestamp")]
         public long ServiceUpTimestamp { get; set; }
 

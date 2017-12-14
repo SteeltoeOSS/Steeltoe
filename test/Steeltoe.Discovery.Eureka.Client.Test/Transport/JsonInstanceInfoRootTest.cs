@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
@@ -66,7 +64,6 @@ namespace Steeltoe.Discovery.Eureka.Client.Test.Transport
             Assert.Equal(ActionType.ADDED, result.Instance.Actiontype);
             Assert.Equal("http://DESKTOP-GNQ5SUT:80/healthcheck", result.Instance.HealthCheckUrl);
             Assert.Equal("FOOBAR", result.Instance.AppName);
-
         }
     }
 }

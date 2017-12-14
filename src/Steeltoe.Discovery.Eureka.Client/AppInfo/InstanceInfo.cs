@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
@@ -24,65 +22,23 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class InstanceInfo
     {
-        private string _instanceId;
-        public string InstanceId
-        {
-            get
-            {
-                return _instanceId;
-            }
-            internal set
-            {
-                _instanceId = value;
-            }
-        }
+        public string InstanceId { get; internal set; }
 
-        private string _appName;
-        public string AppName
-        {
-            get
-            {
-                return _appName;
-            }
-            internal set
-            {
-                _appName = value;
-            }
-        }
+        public string AppName { get; internal set; }
 
-        private string _appGroupName;
-        public string AppGroupName
-        {
-            get
-            {
-                return _appGroupName;
-            }
-            internal set
-            {
-                _appGroupName = value;
-            }
-        }
+        public string AppGroupName { get; internal set; }
 
-        private string _ipAddr;
-        public string IpAddr
-        {
-            get
-            {
-                return _ipAddr;
-            }
-            internal set
-            {
-                _ipAddr = value;
-            }
-        }
+        public string IpAddr { get; internal set; }
 
         private string _sid;
+
         public string Sid
         {
             get
             {
                 return _sid;
             }
+
             internal set
             {
                 _sid = value;
@@ -90,156 +46,37 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             }
         }
 
-        private int _port;
-        public int Port
-        {
-            get
-            {
-                return _port;
-            }
-            internal set
-            {
-                _port = value;
-            }
-        }
+        public int Port { get; internal set; }
 
-        private int _securePort;
-        public int SecurePort
-        {
-            get
-            {
-                return _securePort;
-            }
-            internal set
-            {
-                _securePort = value;
-            }
-        }
+        public int SecurePort { get; internal set; }
 
-        private string _homePageUrl;
-        public string HomePageUrl
-        {
-            get
-            {
-                return _homePageUrl;
-            }
-            internal set
-            {
-                _homePageUrl = value;
-            }
-        }
+        public string HomePageUrl { get; internal set; }
 
-        private string _statusPageUrl;
-        public string StatusPageUrl
-        {
-            get
-            {
-                return _statusPageUrl;
-            }
-            internal set
-            {
-                _statusPageUrl = value;
-            }
-        }
+        public string StatusPageUrl { get; internal set; }
 
-        private string _healthCheckUrl;
-        public string HealthCheckUrl
-        {
-            get
-            {
-                return _healthCheckUrl;
-            }
-            internal set
-            {
-                _healthCheckUrl = value;
-            }
-        }
+        public string HealthCheckUrl { get; internal set; }
 
-        private string _secureHealthCheckUrl;
-        public string SecureHealthCheckUrl
-        {
-            get
-            {
-                return _secureHealthCheckUrl;
-            }
-            internal set
-            {
-                _secureHealthCheckUrl = value;
-            }
-        }
+        public string SecureHealthCheckUrl { get; internal set; }
 
-        private string _vipAddress;
-        public string VipAddress
-        {
-            get
-            {
-                return _vipAddress;
-            }
-            internal set
-            {
-                _vipAddress = value;
-            }
-        }
+        public string VipAddress { get; internal set; }
 
-        private string _secureVipAddress;
-        public string SecureVipAddress
-        {
-            get
-            {
-                return _secureVipAddress;
-            }
-            internal set
-            {
-                _secureVipAddress = value;
-            }
-        }
+        public string SecureVipAddress { get; internal set; }
 
-        private int _countryId;
-        public int CountryId
-        {
-            get
-            {
-                return _countryId;
-            }
-            internal set
-            {
-                _countryId = value;
-            }
-        }
+        public int CountryId { get; internal set; }
 
-        private IDataCenterInfo _dataCenterInfo;
-        public IDataCenterInfo DataCenterInfo
-        {
-            get
-            {
-                return _dataCenterInfo;
-            }
-            internal set
-            {
-                _dataCenterInfo = value;
-            }
-        }
+        public IDataCenterInfo DataCenterInfo { get; internal set; }
 
-        private string _hostName;
-        public string HostName
-        {
-            get
-            {
-                return _hostName;
-            }
-            internal set
-            {
-                _hostName = value;
-            }
-        }
+        public string HostName { get; internal set; }
 
         private InstanceStatus _status;
+
         public InstanceStatus Status
         {
             get
             {
                 return _status;
             }
+
             internal set
             {
                 if (value != _status)
@@ -247,57 +84,24 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                     _status = value;
                     IsDirty = true;
                 }
-
             }
         }
 
-        private InstanceStatus _overRiddenStatus;
-        public InstanceStatus OverriddenStatus
-        {
-            get
-            {
-                return _overRiddenStatus;
-            }
-            internal set
-            {
-                _overRiddenStatus = value;
-            }
-        }
+        public InstanceStatus OverriddenStatus { get; internal set; }
 
-        private LeaseInfo _leaseInfo;
-        public LeaseInfo LeaseInfo
-        {
-            get
-            {
-                return _leaseInfo;
-            }
-            internal set
-            {
-                _leaseInfo = value;
-            }
-        }
+        public LeaseInfo LeaseInfo { get; internal set; }
 
-        private bool _isCoordinatingDiscoveryServer;
-        public bool IsCoordinatingDiscoveryServer
-        {
-            get
-            {
-                return _isCoordinatingDiscoveryServer;
-            }
-            internal set
-            {
-                _isCoordinatingDiscoveryServer = value;
-            }
-
-        }
+        public bool IsCoordinatingDiscoveryServer { get; internal set; }
 
         private Dictionary<string, string> _metaData;
+
         public Dictionary<string, string> Metadata
         {
             get
             {
                 return _metaData;
             }
+
             internal set
             {
                 _metaData = value;
@@ -305,97 +109,34 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             }
         }
 
-        private long _lastUpdatedTimestamp;
-        public long LastUpdatedTimestamp
-        {
-            get
-            {
-                return _lastUpdatedTimestamp;
-            }
-            internal set
-            {
-                _lastUpdatedTimestamp = value;
-            }
-        }
+        public long LastUpdatedTimestamp { get; internal set; }
 
-        private long _lastDirtyTimestamp;
-        public long LastDirtyTimestamp
-        {
-            get
-            {
-                return _lastDirtyTimestamp;
-            }
-            internal set
-            {
-                _lastDirtyTimestamp = value;
-            }
-        }
+        public long LastDirtyTimestamp { get; internal set; }
 
-        private ActionType _actionType;
-        public ActionType Actiontype
-        {
-            get
-            {
-                return _actionType;
-            }
-            internal set
-            {
-                _actionType = value;
-            }
-        }
+        public ActionType Actiontype { get; internal set; }
 
-        private string _asgName;
-        public string AsgName
-        {
-            get
-            {
-                return _asgName;
-            }
-            internal set
-            {
-                _asgName = value;
-            }
-        }
+        public string AsgName { get; internal set; }
 
-        private bool _isUnsecurePortEnabled;
-        public bool IsUnsecurePortEnabled
-        {
-            get
-            {
-                return _isUnsecurePortEnabled;
-            }
-            internal set
-            {
-                _isUnsecurePortEnabled = value;
-            }
-        }
+        public bool IsUnsecurePortEnabled { get; internal set; }
 
-        private bool _isSecurePortEnabled;
-        public bool IsSecurePortEnabled
-        {
-            get
-            {
-                return _isSecurePortEnabled;
-            }
-            internal set
-            {
-                _isSecurePortEnabled = value;
-            }
-        }
+        public bool IsSecurePortEnabled { get; internal set; }
 
         private bool _isDirty;
+
         public bool IsDirty
         {
             get
             {
                 return _isDirty;
             }
+
             internal set
             {
                 if (value)
                 {
                     LastDirtyTimestamp = DateTime.UtcNow.Ticks;
                 }
+
                 _isDirty = value;
             }
         }
@@ -403,24 +144,35 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         public override bool Equals(object obj)
         {
             if (this == obj)
+            {
                 return true;
+            }
+
             if (obj == null)
+            {
                 return false;
+            }
 
             InstanceInfo other = obj as InstanceInfo;
             if (other == null)
+            {
                 return false;
+            }
+
             if (other.InstanceId.Equals(this.InstanceId))
+            {
                 return true;
+            }
 
             return false;
-
         }
+
         public override int GetHashCode()
         {
-            var result = 31 * 1 + ((InstanceId == null) ? 0 : InstanceId.GetHashCode());
+            var result = (31 * 1) + ((InstanceId == null) ? 0 : InstanceId.GetHashCode());
             return result;
         }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder("Instance[");
@@ -447,140 +199,34 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             sb.Append("ActionType=" + Actiontype.ToString());
             sb.Append("]");
             return sb.ToString();
-
-
         }
+
         internal InstanceInfo()
         {
-            _overRiddenStatus = InstanceStatus.UNKNOWN;
-            _isSecurePortEnabled = false;
-            _isCoordinatingDiscoveryServer = false;
-            _isUnsecurePortEnabled = true;
-            _countryId = 1;
-            _port = 7001;
-            _securePort = 7002;
+            OverriddenStatus = InstanceStatus.UNKNOWN;
+            IsSecurePortEnabled = false;
+            IsCoordinatingDiscoveryServer = false;
+            IsUnsecurePortEnabled = true;
+            CountryId = 1;
+            Port = 7001;
+            SecurePort = 7002;
+            LastUpdatedTimestamp = LastDirtyTimestamp = DateTime.UtcNow.Ticks;
             _sid = "na";
             _metaData = new Dictionary<string, string>();
             _isDirty = false;
-            _lastUpdatedTimestamp = _lastDirtyTimestamp = DateTime.UtcNow.Ticks;
             _status = InstanceStatus.UP;
-
         }
-        internal JsonInstanceInfo ToJsonInstance()
-        {
-            JsonInstanceInfo jinfo = new JsonInstanceInfo();
-            jinfo.InstanceId = this.InstanceId;
-            jinfo.Sid = (this.Sid == null) ? "na" : this.Sid;
-            jinfo.AppName = this.AppName;
-            jinfo.AppGroupName = this.AppGroupName;
-            jinfo.IpAddr = this.IpAddr;
-            jinfo.Port = new JsonInstanceInfo.JsonPortWrapper(this.IsUnsecurePortEnabled, this.Port);
-            jinfo.SecurePort = new JsonInstanceInfo.JsonPortWrapper(this.IsSecurePortEnabled, this.SecurePort);
-            jinfo.HomePageUrl = this.HomePageUrl;
-            jinfo.StatusPageUrl = this.StatusPageUrl;
-            jinfo.HealthCheckUrl = this.HealthCheckUrl;
-            jinfo.SecureHealthCheckUrl = this.SecureHealthCheckUrl;
-            jinfo.VipAddress = this.VipAddress;
-            jinfo.SecureVipAddress = this.SecureVipAddress;
-            jinfo.CountryId = this.CountryId;
-            jinfo.DataCenterInfo = (this.DataCenterInfo == null) ? null : ((AppInfo.DataCenterInfo)DataCenterInfo).ToJson();
-            jinfo.HostName = this.HostName;
-            jinfo.Status = this.Status;
-            jinfo.OverriddenStatus = this.OverriddenStatus;
-            jinfo.LeaseInfo = (this.LeaseInfo == null) ? null : this.LeaseInfo.ToJson();
-            jinfo.IsCoordinatingDiscoveryServer = this.IsCoordinatingDiscoveryServer;
-            jinfo.LastUpdatedTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.LastUpdatedTimestamp, DateTimeKind.Utc));
-            jinfo.LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.LastDirtyTimestamp, DateTimeKind.Utc));
-            jinfo.Actiontype = this.Actiontype;
-            jinfo.AsgName = this.AsgName;
-            jinfo.Metadata = (this.Metadata.Count == 0) ? new Dictionary<string, string>() { { "@class", "java.util.Collections$EmptyMap" } } : this.Metadata;
-
-            return jinfo;
-        }
-        internal static InstanceInfo FromJsonInstance(JsonInstanceInfo json)
-        {
-            InstanceInfo info = new InstanceInfo();
-            if (json != null)
-            {
-                info._sid = (json.Sid == null) ? "na" : json.Sid;
-                info._appName = json.AppName;
-                info._appGroupName = json.AppGroupName;
-                info._ipAddr = json.IpAddr;
-                info._port = (json.Port == null) ? 0 : json.Port.Port;
-                info._isUnsecurePortEnabled = (json.Port == null) ? false : json.Port.Enabled;
-                info._securePort = (json.SecurePort == null) ? 0 : json.SecurePort.Port;
-                info._isSecurePortEnabled = (json.SecurePort == null) ? false : json.SecurePort.Enabled;
-                info._homePageUrl = json.HomePageUrl;
-                info._statusPageUrl = json.StatusPageUrl;
-                info._healthCheckUrl = json.HealthCheckUrl;
-                info._secureHealthCheckUrl = json.SecureHealthCheckUrl;
-                info._vipAddress = json.VipAddress;
-                info._secureVipAddress = json.SecureVipAddress;
-                info._countryId = json.CountryId;
-                info._dataCenterInfo = (json.DataCenterInfo == null) ? null : AppInfo.DataCenterInfo.FromJson(json.DataCenterInfo);
-                info._hostName = json.HostName;
-                info._status = json.Status;
-                info._overRiddenStatus = json.OverriddenStatus;
-                info._leaseInfo = LeaseInfo.FromJson(json.LeaseInfo);
-                info._isCoordinatingDiscoveryServer = json.IsCoordinatingDiscoveryServer;
-                info._lastUpdatedTimestamp = DateTimeConversions.FromJavaMillis(json.LastUpdatedTimestamp).Ticks;
-                info._lastDirtyTimestamp = DateTimeConversions.FromJavaMillis(json.LastDirtyTimestamp).Ticks;
-                info._actionType = json.Actiontype;
-                info._asgName = json.AsgName;
-                info._metaData = GetMetaDataFromJson(json.Metadata);
-                info._instanceId = GetInstanceIdFromJson(json, info._metaData);
-
-            }
-            return info;
-        }
-
-        private static Dictionary<string, string> GetMetaDataFromJson(Dictionary<string, string> json)
-        {
-            if (json == null)
-            {
-                return new Dictionary<string, string>();
-            }
-            string value = null;
-            if (json.TryGetValue("@class", out value))
-            {
-                if (value.Equals("java.util.Collections$EmptyMap"))
-                {
-                    return new Dictionary<string, string>();
-                }
-            }
-            return new Dictionary<string, string>(json);
-        }
-        private static string GetInstanceIdFromJson(JsonInstanceInfo jinfo, Dictionary<string,string> metaData)
-        {
-            if (string.IsNullOrEmpty(jinfo.InstanceId))
-            {
-  
-                if (metaData == null)
-                {
-                    return null;
-                }
-                string mid = null;
-                if (metaData.TryGetValue("instanceId", out mid))
-                {
-                    return jinfo.HostName + ":" + mid;
-                }
-                return null;
-
-            } else
-            {
-                return jinfo.InstanceId;
-            }
-        }
-
 
         internal static InstanceInfo FromInstanceConfig(IEurekaInstanceConfig instanceConfig)
         {
-            InstanceInfo info = new InstanceInfo();
-            info._leaseInfo = LeaseInfo.FromConfig(instanceConfig);
-            info._instanceId = instanceConfig.InstanceId;
+            InstanceInfo info = new InstanceInfo
+            {
+                LeaseInfo = LeaseInfo.FromConfig(instanceConfig),
+                InstanceId = instanceConfig.InstanceId
+            };
             if (string.IsNullOrEmpty(info.InstanceId))
             {
-                info._instanceId = instanceConfig.GetHostName(false);
+                info.InstanceId = instanceConfig.GetHostName(false);
             }
 
             string defaultAddress = instanceConfig.GetHostName(false);
@@ -589,35 +235,35 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 defaultAddress = instanceConfig.IpAddress;
             }
 
-            info._appName = instanceConfig.AppName.ToUpperInvariant();
-            info._appGroupName = (instanceConfig.AppGroupName != null) ? instanceConfig.AppGroupName.ToUpperInvariant() : null;
-            info._dataCenterInfo = instanceConfig.DataCenterInfo;
-            info._ipAddr = instanceConfig.IpAddress;
-            info._hostName = defaultAddress;
-            info._port = (instanceConfig.NonSecurePort == -1) ? EurekaInstanceConfig.Default_NonSecurePort : instanceConfig.NonSecurePort;
-            info._isUnsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
-            info._securePort = (instanceConfig.SecurePort == -1) ? EurekaInstanceConfig.Default_SecurePort : instanceConfig.SecurePort;
-            info._isSecurePortEnabled = instanceConfig.SecurePortEnabled;
-            info._vipAddress = instanceConfig.VirtualHostName;
-            info._secureVipAddress = instanceConfig.SecureVirtualHostName;
-            info._homePageUrl = MakeUrl(info, instanceConfig.HomePageUrlPath, instanceConfig.HomePageUrl);
-            info._statusPageUrl = MakeUrl(info, instanceConfig.StatusPageUrlPath, instanceConfig.StatusPageUrl);
-            info._asgName = instanceConfig.ASGName;
-            info._healthCheckUrl = MakeUrl(info, instanceConfig.HealthCheckUrlPath, instanceConfig.HealthCheckUrl, instanceConfig.SecureHealthCheckUrl);
+            info.AppName = instanceConfig.AppName.ToUpperInvariant();
+            info.AppGroupName = instanceConfig.AppGroupName?.ToUpperInvariant();
+            info.DataCenterInfo = instanceConfig.DataCenterInfo;
+            info.IpAddr = instanceConfig.IpAddress;
+            info.HostName = defaultAddress;
+            info.Port = (instanceConfig.NonSecurePort == -1) ? EurekaInstanceConfig.Default_NonSecurePort : instanceConfig.NonSecurePort;
+            info.IsUnsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
+            info.SecurePort = (instanceConfig.SecurePort == -1) ? EurekaInstanceConfig.Default_SecurePort : instanceConfig.SecurePort;
+            info.IsSecurePortEnabled = instanceConfig.SecurePortEnabled;
+            info.VipAddress = instanceConfig.VirtualHostName;
+            info.SecureVipAddress = instanceConfig.SecureVirtualHostName;
+            info.HomePageUrl = MakeUrl(info, instanceConfig.HomePageUrlPath, instanceConfig.HomePageUrl);
+            info.StatusPageUrl = MakeUrl(info, instanceConfig.StatusPageUrlPath, instanceConfig.StatusPageUrl);
+            info.AsgName = instanceConfig.ASGName;
+            info.HealthCheckUrl = MakeUrl(info, instanceConfig.HealthCheckUrlPath, instanceConfig.HealthCheckUrl, instanceConfig.SecureHealthCheckUrl);
 
             if (!instanceConfig.IsInstanceEnabledOnInit)
             {
                 info._status = InstanceStatus.STARTING;
             }
 
-            if (!string.IsNullOrEmpty(info._instanceId))
+            if (!string.IsNullOrEmpty(info.InstanceId))
             {
                 InstanceInfo me = ApplicationInfoManager.Instance.InstanceInfo;
                 if (me != null)
                 {
-                    if (info._instanceId.Equals(me.InstanceId))
+                    if (info.InstanceId.Equals(me.InstanceId))
                     {
-                        info._isCoordinatingDiscoveryServer = true;
+                        info.IsCoordinatingDiscoveryServer = true;
                     }
                 }
             }
@@ -627,9 +273,118 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 info._metaData = new Dictionary<string, string>(instanceConfig.MetadataMap);
             }
 
+            return info;
+        }
+
+        internal static InstanceInfo FromJsonInstance(JsonInstanceInfo json)
+        {
+            InstanceInfo info = new InstanceInfo();
+            if (json != null)
+            {
+                info._sid = json.Sid ?? "na";
+                info.AppName = json.AppName;
+                info.AppGroupName = json.AppGroupName;
+                info.IpAddr = json.IpAddr;
+                info.Port = (json.Port == null) ? 0 : json.Port.Port;
+                info.IsUnsecurePortEnabled = (json.Port == null) ? false : json.Port.Enabled;
+                info.SecurePort = (json.SecurePort == null) ? 0 : json.SecurePort.Port;
+                info.IsSecurePortEnabled = (json.SecurePort == null) ? false : json.SecurePort.Enabled;
+                info.HomePageUrl = json.HomePageUrl;
+                info.StatusPageUrl = json.StatusPageUrl;
+                info.HealthCheckUrl = json.HealthCheckUrl;
+                info.SecureHealthCheckUrl = json.SecureHealthCheckUrl;
+                info.VipAddress = json.VipAddress;
+                info.SecureVipAddress = json.SecureVipAddress;
+                info.CountryId = json.CountryId;
+                info.DataCenterInfo = (json.DataCenterInfo == null) ? null : AppInfo.DataCenterInfo.FromJson(json.DataCenterInfo);
+                info.HostName = json.HostName;
+                info.Status = json.Status;
+                info.OverriddenStatus = json.OverriddenStatus;
+                info.LeaseInfo = LeaseInfo.FromJson(json.LeaseInfo);
+                info.IsCoordinatingDiscoveryServer = json.IsCoordinatingDiscoveryServer;
+                info.LastUpdatedTimestamp = DateTimeConversions.FromJavaMillis(json.LastUpdatedTimestamp).Ticks;
+                info.LastDirtyTimestamp = DateTimeConversions.FromJavaMillis(json.LastDirtyTimestamp).Ticks;
+                info.Actiontype = json.Actiontype;
+                info.AsgName = json.AsgName;
+                info._metaData = GetMetaDataFromJson(json.Metadata);
+                info.InstanceId = GetInstanceIdFromJson(json, info._metaData);
+            }
 
             return info;
+        }
 
+        internal JsonInstanceInfo ToJsonInstance()
+        {
+            JsonInstanceInfo jinfo = new JsonInstanceInfo
+            {
+                InstanceId = InstanceId,
+                Sid = Sid ?? "na",
+                AppName = AppName,
+                AppGroupName = AppGroupName,
+                IpAddr = IpAddr,
+                Port = new JsonInstanceInfo.JsonPortWrapper(IsUnsecurePortEnabled, Port),
+                SecurePort = new JsonInstanceInfo.JsonPortWrapper(IsSecurePortEnabled, SecurePort),
+                HomePageUrl = HomePageUrl,
+                StatusPageUrl = StatusPageUrl,
+                HealthCheckUrl = HealthCheckUrl,
+                SecureHealthCheckUrl = SecureHealthCheckUrl,
+                VipAddress = VipAddress,
+                SecureVipAddress = SecureVipAddress,
+                CountryId = CountryId,
+                DataCenterInfo = (DataCenterInfo == null) ? null : ((DataCenterInfo)DataCenterInfo).ToJson(),
+                HostName = HostName,
+                Status = Status,
+                OverriddenStatus = OverriddenStatus,
+                LeaseInfo = LeaseInfo?.ToJson(),
+                IsCoordinatingDiscoveryServer = IsCoordinatingDiscoveryServer,
+                LastUpdatedTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastUpdatedTimestamp, DateTimeKind.Utc)),
+                LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
+                Actiontype = Actiontype,
+                AsgName = AsgName,
+                Metadata = (Metadata.Count == 0) ? new Dictionary<string, string>() { { "@class", "java.util.Collections$EmptyMap" } } : Metadata
+            };
+
+            return jinfo;
+        }
+
+        private static Dictionary<string, string> GetMetaDataFromJson(Dictionary<string, string> json)
+        {
+            if (json == null)
+            {
+                return new Dictionary<string, string>();
+            }
+
+            if (json.TryGetValue("@class", out string value))
+            {
+                if (value.Equals("java.util.Collections$EmptyMap"))
+                {
+                    return new Dictionary<string, string>();
+                }
+            }
+
+            return new Dictionary<string, string>(json);
+        }
+
+        private static string GetInstanceIdFromJson(JsonInstanceInfo jinfo, Dictionary<string, string> metaData)
+        {
+            if (string.IsNullOrEmpty(jinfo.InstanceId))
+            {
+                if (metaData == null)
+                {
+                    return null;
+                }
+
+                if (metaData.TryGetValue("instanceId", out string mid))
+                {
+                    return jinfo.HostName + ":" + mid;
+                }
+
+                return null;
+            }
+            else
+            {
+                return jinfo.InstanceId;
+            }
         }
 
         private static string MakeUrl(InstanceInfo info, string relativeUrl, string explicitUrl, string secureExplicitUrl = null)

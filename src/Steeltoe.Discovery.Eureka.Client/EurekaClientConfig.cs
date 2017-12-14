@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 namespace Steeltoe.Discovery.Eureka
 {
@@ -38,39 +35,52 @@ namespace Steeltoe.Discovery.Eureka
             ShouldOnDemandUpdateStatusChange = true;
             EurekaServerServiceUrls = Default_ServerServiceUrl;
             ValidateCertificates = true;
-
         }
 
-        /// Configuration property: eureka:client:registryFetchIntervalSeconds
+        // Configuration property: eureka:client:registryFetchIntervalSeconds
         public int RegistryFetchIntervalSeconds { get; set; }
-        /// Configuration property: eureka:client:instanceInfoReplicationIntervalSeconds
+
+        // Configuration property: eureka:client:instanceInfoReplicationIntervalSeconds
         public int InstanceInfoReplicationIntervalSeconds { get; set; }
-        ///  Configuration property: eureka:client:shouldRegisterWithEureka
+
+        // Configuration property: eureka:client:shouldRegisterWithEureka
         public bool ShouldRegisterWithEureka { get; set; }
-        ///  Configuration property: eureka:client:allowRedirects
+
+        // Configuration property: eureka:client:allowRedirects
         public bool AllowRedirects { get; set; }
-        ///  Configuration property: eureka:client:shouldDisableDelta
+
+        // Configuration property: eureka:client:shouldDisableDelta
         public bool ShouldDisableDelta { get; set; }
-        ///  Configuration property: eureka:client:shouldFilterOnlyUpInstances
+
+        // Configuration property: eureka:client:shouldFilterOnlyUpInstances
         public bool ShouldFilterOnlyUpInstances { get; set; }
-        ///  Configuration property: eureka:client:shouldFetchRegistry
+
+        // Configuration property: eureka:client:shouldFetchRegistry
         public bool ShouldFetchRegistry { get; set; }
-        ///  Configuration property: eureka:client:registryRefreshSingleVipAddress
+
+        // Configuration property: eureka:client:registryRefreshSingleVipAddress
         public string RegistryRefreshSingleVipAddress { get; set; }
-        ///  Configuration property: eureka:client:shouldOnDemandUpdateStatusChange
+
+        // Configuration property: eureka:client:shouldOnDemandUpdateStatusChange
         public bool ShouldOnDemandUpdateStatusChange { get; set; }
-        ///  Configuration property: eureka:client:enabled
+
+        // Configuration property: eureka:client:enabled
         public bool Enabled { get; set; } = true;
 
         public string EurekaServerServiceUrls { get; set; }
+
         public int EurekaServerConnectTimeoutSeconds { get; set; }
+
         public string ProxyHost { get; set; }
+
         public int ProxyPort { get; set; }
+
         public string ProxyUserName { get; set; }
+
         public string ProxyPassword { get; set; }
+
         public bool ShouldGZipContent { get; set; }
+
         public bool ValidateCertificates { get; set; }
-
     }
-
 }

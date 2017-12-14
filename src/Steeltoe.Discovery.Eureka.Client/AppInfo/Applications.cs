@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.Discovery.Eureka.Transport;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo
 {
@@ -49,8 +47,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 throw new ArgumentException(nameof(appName));
             }
 
-            Application result = null;
-            _applicationMap.TryGetValue(appName.ToUpperInvariant(), out result);
+            _applicationMap.TryGetValue(appName.ToUpperInvariant(), out Application result);
             return result;
         }
 
@@ -60,6 +57,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             {
                 throw new ArgumentException(nameof(secureVirtualHostName));
             }
+
             return DoGetByVirtualHostName(secureVirtualHostName, _secureVirtHostInstanceMap);
         }
 
@@ -69,8 +67,10 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             {
                 throw new ArgumentException(nameof(virtualHostName));
             }
+
             return DoGetByVirtualHostName(virtualHostName, _virtHostInstanceMap);
         }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder("Applications[");
@@ -78,6 +78,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             {
                 sb.Append(kvp.Value.ToString());
             }
+
             sb.Append("]");
 
             return sb.ToString();
@@ -85,8 +86,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal Applications()
         {
-
         }
+
         internal Applications(IList<Application> apps)
         {
             if (apps == null)
@@ -98,7 +99,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             {
                 Add(app);
             }
-
         }
 
         internal void Add(Application app)
@@ -107,19 +107,19 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             {
                 throw new ArgumentNullException(nameof(app));
             }
+
             _applicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (key, existing) => { return app; });
             AddInstances(app);
-
         }
+
         internal void AddInstances(Application app)
         {
-
             foreach (var inst in app.Instances)
             {
                 AddInstanceToVip(inst);
             }
-
         }
+
         internal void AddInstanceToVip(InstanceInfo inst)
         {
             if (!string.IsNullOrEmpty(inst.VipAddress))
@@ -138,13 +138,16 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             lock (_addRemoveInstanceLock)
             {
                 string addressUppper = address.ToUpperInvariant();
-                ConcurrentDictionary<string, InstanceInfo> instances = null;
-                dict.TryGetValue(addressUppper, out instances);
+                dict.TryGetValue(addressUppper, out ConcurrentDictionary<string, InstanceInfo> instances);
                 if (instances == null)
+                {
                     instances = dict[addressUppper] = new ConcurrentDictionary<string, InstanceInfo>();
+                }
+
                 instances[info.InstanceId] = info;
             }
         }
+
         internal void RemoveInstanceFromVip(InstanceInfo inst)
         {
             if (!string.IsNullOrEmpty(inst.VipAddress))
@@ -163,8 +166,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             lock (_addRemoveInstanceLock)
             {
                 string addressUppper = address.ToUpperInvariant();
-                ConcurrentDictionary<string, InstanceInfo> instances = null;
-                dict.TryGetValue(addressUppper, out instances);
+                dict.TryGetValue(addressUppper, out ConcurrentDictionary<string, InstanceInfo> instances);
                 InstanceInfo removed = null;
                 if (instances != null)
                 {
@@ -174,7 +176,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                         dict.TryRemove(addressUppper, out instances);
                     }
                 }
-
             }
         }
 
@@ -190,20 +191,21 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                         Add(app);
                         existingApp = GetRegisteredApplication(instance.AppName);
                     }
+
                     switch (instance.Actiontype)
                     {
                         case ActionType.ADDED:
-                            //logger.debug("Added instance {} to the existing apps in region {}", instance.getId(), instanceRegion);
+                            // logger.debug("Added instance {} to the existing apps in region {}", instance.getId(), instanceRegion);
                             existingApp.Add(instance);
                             AddInstanceToVip(instance);
                             break;
                         case ActionType.MODIFIED:
-                            //logger.debug("Modified instance {} to the existing apps ", instance.getId());
+                            // logger.debug("Modified instance {} to the existing apps ", instance.getId());
                             existingApp.Add(instance);
                             AddInstanceToVip(instance);
                             break;
                         case ActionType.DELETED:
-                            //logger.debug("Deleted instance {} to the existing apps ", instance.getId());
+                            // logger.debug("Deleted instance {} to the existing apps ", instance.getId());
                             existingApp.Remove(instance);
                             RemoveInstanceFromVip(instance);
                             break;
@@ -213,20 +215,19 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                     }
                 }
             }
-            //logger.debug(The total number of instances fetched by the delta processor : {}", deltaCount);
+
+            // logger.debug(The total number of instances fetched by the delta processor : {}", deltaCount);
             Version = delta.Version;
         }
 
         internal string ComputeHashCode()
         {
-
             Dictionary<string, int> statusMap = new Dictionary<string, int>();
             foreach (var app in GetRegisteredApplications())
             {
                 foreach (var inst in app.Instances)
                 {
-                    int count = 0;
-                    if (!statusMap.TryGetValue(inst.Status.ToString(), out count))
+                    if (!statusMap.TryGetValue(inst.Status.ToString(), out int count))
                     {
                         statusMap.Add(inst.Status.ToString(), 1);
                     }
@@ -237,14 +238,13 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 }
             }
 
-            string hashCode = "";
+            string hashCode = string.Empty;
 
             IOrderedEnumerable<KeyValuePair<string, int>> query = statusMap.OrderBy(kvp => kvp.Key);
             foreach (var entry in query)
             {
                 hashCode = hashCode + entry.Key.ToString() + "_" + entry.Value.ToString() + "_";
             }
-
 
             return hashCode;
         }
@@ -256,6 +256,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return _applicationMap;
             }
         }
+
         internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap
         {
             get
@@ -263,6 +264,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return _virtHostInstanceMap;
             }
         }
+
         internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap
         {
             get
@@ -288,14 +290,14 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                     }
                 }
             }
+
             return apps;
         }
 
         private IList<InstanceInfo> DoGetByVirtualHostName(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
         {
-            ConcurrentDictionary<string, InstanceInfo> instances = null;
             List<InstanceInfo> result = new List<InstanceInfo>();
-            if (dict.TryGetValue(name.ToUpperInvariant(), out instances))
+            if (dict.TryGetValue(name.ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo> instances))
             {
                 foreach (var kvp in instances)
                 {
@@ -306,7 +308,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                         {
                             result.Add(inst);
                         }
-
                     }
                     else
                     {
@@ -314,6 +315,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                     }
                 }
             }
+
             return result;
         }
     }

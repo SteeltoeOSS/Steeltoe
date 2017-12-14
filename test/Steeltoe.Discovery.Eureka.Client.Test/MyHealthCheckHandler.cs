@@ -13,18 +13,25 @@
 // limitations under the License.
 
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System.Collections.Generic;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka.Test
 {
-    public interface ILookupService
+    public class MyHealthCheckHandler : IHealthCheckHandler
     {
-        Applications Applications { get; }
+        private InstanceStatus _status;
 
-        Application GetApplication(string appName);
+        public bool Called { get; set; }
 
-        IList<InstanceInfo> GetInstanceById(string id);
+        public MyHealthCheckHandler(InstanceStatus status)
+        {
+            _status = status;
+            Called = false;
+        }
 
-        InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure);
+        public InstanceStatus GetStatus(InstanceStatus currentStatus)
+        {
+            Called = true;
+            return _status;
+        }
     }
 }

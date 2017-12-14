@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +11,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Steeltoe.Common.Http;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Util;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Net.Http;
-
-using Steeltoe.Discovery.Eureka.AppInfo;
-using Newtonsoft.Json;
-using System.Text;
-using Steeltoe.Discovery.Eureka.Util;
 using System.IO;
-using Microsoft.Extensions.Logging;
-using System.Net.Security;
 using System.Net;
-using Steeltoe.Common.Http;
+using System.Net.Http;
+using System.Net.Security;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
@@ -35,7 +32,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
     {
         protected string _serviceUrl;
         protected IDictionary<string, string> _headers;
-
 
         protected IEurekaClientConfig _config;
 
@@ -50,40 +46,22 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected HttpClient _client;
         protected ILogger _logger;
 
-        protected EurekaHttpClient()
-        {
-        }
+        public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null)
+            : this(config, new Dictionary<string, string>(), logFactory) => _client = client;
 
-        public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null) :
-            this(config, new Dictionary<string, string>(), logFactory)
-        {
-            _client = client;
-        }
-
-        public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null) :
-            this(config, new Dictionary<string, string>(), logFactory)
+        public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null)
+            : this(config, new Dictionary<string, string>(), logFactory)
         {
         }
 
         public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-            _config = config;
+            _config = config ?? throw new ArgumentNullException(nameof(config));
             Initialize(headers, logFactory);
         }
 
-        protected void Initialize(IDictionary<string, string> headers, ILoggerFactory logFactory)
+        protected EurekaHttpClient()
         {
-            if (headers == null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            }
-            _logger = logFactory?.CreateLogger<EurekaHttpClient>();
-            _serviceUrl = MakeServiceUrl(Config.EurekaServerServiceUrls);
-            _headers = headers;
         }
 
         public virtual async Task<EurekaHttpResponse> RegisterAsync(InstanceInfo info)
@@ -98,9 +76,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var request = GetRequestMessage(HttpMethod.Post, requestUri);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(
+                Config.ValidateCertificates,
+                out prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
             try
             {
                 request.Content = GetRequestContent(new JsonInstanceInfoRoot(info.ToJsonInstance()));
@@ -108,28 +88,30 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
                     _logger?.LogDebug("RegisterAsync {0}, status: {1}", requestUri.ToString(), response.StatusCode);
-                    EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode);
-                    resp.Headers = response.Headers;
+                    EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode)
+                    {
+                        Headers = response.Headers
+                    };
                     return resp;
                 }
-
             }
             catch (Exception e)
             {
                 _logger?.LogError("RegisterAsync Exception:", e);
                 throw;
             }
-
             finally
             {
                 DisposeHttpClient(client);
                 HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
-
             }
-
         }
 
-        public virtual async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatAsync(string appName, string id, InstanceInfo info, InstanceStatus overriddenStatus)
+        public virtual async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatAsync(
+            string appName,
+            string id,
+            InstanceInfo info,
+            InstanceStatus overriddenStatus)
         {
             if (info == null)
             {
@@ -149,8 +131,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var queryArgs = new Dictionary<string, string>()
             {
                 { "status", info.Status.ToString() },
-                {  "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
-
+                { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
             };
 
             if (overriddenStatus != InstanceStatus.UNKNOWN)
@@ -163,9 +144,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(
+                Config.ValidateCertificates,
+                out prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -173,21 +156,23 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     Stream stream = await response.Content.ReadAsStreamAsync();
                     JsonInstanceInfo jinfo = JsonInstanceInfo.Deserialize(stream);
 
-
-
                     InstanceInfo infoResp = null;
                     if (jinfo != null)
                     {
                         infoResp = InstanceInfo.FromJsonInstance(jinfo);
                     }
 
-                    _logger?.LogDebug("SendHeartbeatAsync {0}, status: {1}, instanceInfo: {2}",
-                        requestUri.ToString(), response.StatusCode, ((infoResp != null) ? infoResp.ToString() : "null"));
-                    EurekaHttpResponse<InstanceInfo> resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp);
-                    resp.Headers = response.Headers;
+                    _logger?.LogDebug(
+                        "SendHeartbeatAsync {0}, status: {1}, instanceInfo: {2}",
+                        requestUri.ToString(),
+                        response.StatusCode,
+                        (infoResp != null) ? infoResp.ToString() : "null");
+                    EurekaHttpResponse<InstanceInfo> resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp)
+                    {
+                        Headers = response.Headers
+                    };
                     return resp;
                 }
-
             }
             catch (Exception e)
             {
@@ -205,6 +190,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         {
             return await DoGetApplicationsAsync("apps/", regions);
         }
+
         public virtual async Task<EurekaHttpResponse<Applications>> GetDeltaAsync(ISet<string> regions = null)
         {
             return await DoGetApplicationsAsync("apps/delta", regions);
@@ -240,10 +226,13 @@ namespace Steeltoe.Discovery.Eureka.Transport
             HttpClient client = GetHttpClient(Config);
             var requestUri = GetRequestUri(_serviceUrl + "apps/" + appName);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
+
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(
+                Config.ValidateCertificates,
+                out prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
@@ -256,13 +245,18 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     {
                         appResp = Application.FromJsonApplication(jroot.Application);
                     }
-                    _logger?.LogDebug("GetApplicationAsync {0}, status: {1}, application: {2}",
-                        requestUri.ToString(), response.StatusCode, ((appResp != null) ? appResp.ToString() : "null"));
-                    EurekaHttpResponse<Application> resp = new EurekaHttpResponse<Application>(response.StatusCode, appResp);
-                    resp.Headers = response.Headers;
+
+                    _logger?.LogDebug(
+                        "GetApplicationAsync {0}, status: {1}, application: {2}",
+                        requestUri.ToString(),
+                        response.StatusCode,
+                        (appResp != null) ? appResp.ToString() : "null");
+                    EurekaHttpResponse<Application> resp = new EurekaHttpResponse<Application>(response.StatusCode, appResp)
+                    {
+                        Headers = response.Headers
+                    };
                     return resp;
                 }
-
             }
             catch (Exception e)
             {
@@ -274,7 +268,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 DisposeHttpClient(client);
                 HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
             }
-
         }
 
         public virtual async Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string id)
@@ -283,6 +276,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             {
                 throw new ArgumentException(nameof(id));
             }
+
             return await DoGetInstanceAsync("instances/" + id);
         }
 
@@ -300,6 +294,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             return await DoGetInstanceAsync("apps/" + appName + "/" + id);
         }
+
         public virtual async Task<EurekaHttpResponse> CancelAsync(string appName, string id)
         {
             if (string.IsNullOrEmpty(appName))
@@ -317,20 +312,23 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(
+                Config.ValidateCertificates,
+                out prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
 
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
                     _logger?.LogDebug("CancelAsync {0}, status: {1}", requestUri.ToString(), response.StatusCode);
-                    EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode);
-                    resp.Headers = response.Headers;
+                    EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode)
+                    {
+                        Headers = response.Headers
+                    };
                     return resp;
                 }
-
             }
             catch (Exception e)
             {
@@ -361,10 +359,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 throw new ArgumentNullException(nameof(info));
             }
 
-
             var queryArgs = new Dictionary<string, string>()
             {
-                {  "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
+                { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
             };
 
             HttpClient client = GetHttpClient(Config);
@@ -372,19 +369,22 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var request = GetRequestMessage(HttpMethod.Delete, requestUri);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(
+                Config.ValidateCertificates,
+                out prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
                     _logger?.LogDebug("DeleteStatusOverrideAsync {0}, status: {1}", requestUri.ToString(), response.StatusCode);
-                    EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode);
-                    resp.Headers = response.Headers;
+                    EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode)
+                    {
+                        Headers = response.Headers
+                    };
                     return resp;
                 }
-
             }
             catch (Exception e)
             {
@@ -396,9 +396,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 DisposeHttpClient(client);
                 HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
             }
-
         }
-
 
         public virtual async Task<EurekaHttpResponse> StatusUpdateAsync(string appName, string id, InstanceStatus newStatus, InstanceInfo info)
         {
@@ -417,12 +415,10 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 throw new ArgumentNullException(nameof(info));
             }
 
-
             var queryArgs = new Dictionary<string, string>()
             {
                 { "value", newStatus.ToString() },
-                {  "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
-
+                { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
             };
 
             HttpClient client = GetHttpClient(Config);
@@ -430,20 +426,23 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var request = GetRequestMessage(HttpMethod.Put, requestUri);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(
+                Config.ValidateCertificates,
+                out prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
 
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
                     _logger?.LogDebug("StatusUpdateAsync {0}, status: {1}", requestUri.ToString(), response.StatusCode);
-                    EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode);
-                    resp.Headers = response.Headers;
+                    EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode)
+                    {
+                        Headers = response.Headers
+                    };
                     return resp;
                 }
-
             }
             catch (Exception e)
             {
@@ -453,23 +452,75 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-
                 HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
-
             }
         }
+
+        public virtual void Shutdown()
+        {
+        }
+
+        protected internal static string MakeServiceUrl(string serviceUrl)
+        {
+            var url = new Uri(serviceUrl).ToString();
+            if (url[url.Length - 1] != '/')
+            {
+                url = url + '/';
+            }
+
+            return url;
+        }
+
+        protected internal virtual HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
+        {
+            var request = new HttpRequestMessage(method, requestUri);
+            foreach (var header in _headers)
+            {
+                request.Headers.Add(header.Key, header.Value);
+            }
+
+            request.Headers.Add("Accept", "application/json");
+            return request;
+        }
+
+        protected internal virtual Uri GetRequestUri(string baseUri, IDictionary<string, string> queryValues = null)
+        {
+            string uri = baseUri;
+            if (queryValues != null)
+            {
+                StringBuilder sb = new StringBuilder();
+                string sep = "?";
+                foreach (var kvp in queryValues)
+                {
+                    sb.Append(sep + kvp.Key + "=" + kvp.Value);
+                    sep = "&";
+                }
+
+                uri = uri + sb.ToString();
+            }
+
+            return new Uri(uri);
+        }
+
+        protected void Initialize(IDictionary<string, string> headers, ILoggerFactory logFactory)
+        {
+            _logger = logFactory?.CreateLogger<EurekaHttpClient>();
+            _serviceUrl = MakeServiceUrl(Config.EurekaServerServiceUrls);
+            _headers = headers ?? throw new ArgumentNullException(nameof(headers));
+        }
+
         protected virtual async Task<EurekaHttpResponse<InstanceInfo>> DoGetInstanceAsync(string path)
         {
-
-
             var requestUri = GetRequestUri(_serviceUrl + path);
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
             HttpClient client = GetHttpClient(Config);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(
+                Config.ValidateCertificates,
+                out prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
 
             try
             {
@@ -483,28 +534,29 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     {
                         infoResp = InstanceInfo.FromJsonInstance(jroot.Instance);
                     }
-                    _logger?.LogDebug("DoGetInstanceAsync {0}, status: {1}, instanceInfo: {2}",
-                       requestUri.ToString(), response.StatusCode, ((infoResp != null) ? infoResp.ToString() : "null"));
-                    EurekaHttpResponse<InstanceInfo> resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp);
-                    resp.Headers = response.Headers;
+
+                    _logger?.LogDebug(
+                        "DoGetInstanceAsync {0}, status: {1}, instanceInfo: {2}",
+                       requestUri.ToString(),
+                       response.StatusCode,
+                       (infoResp != null) ? infoResp.ToString() : "null");
+                    EurekaHttpResponse<InstanceInfo> resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp)
+                    {
+                        Headers = response.Headers
+                    };
                     return resp;
                 }
-
             }
             catch (Exception e)
             {
                 _logger?.LogError("DoGetInstanceAsync Exception: {0}", e);
                 throw;
             }
-
             finally
             {
                 DisposeHttpClient(client);
-
                 HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
-
             }
-
         }
 
         protected virtual async Task<EurekaHttpResponse<Applications>> DoGetApplicationsAsync(string path, ISet<string> regions)
@@ -522,18 +574,19 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var request = GetRequestMessage(HttpMethod.Get, requestUri);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType) 0;
-            HttpClientHelper.ConfigureCertificateValidatation(Config.ValidateCertificates, out prevProtocols, out prevValidator);
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(
+                Config.ValidateCertificates,
+                out prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
 
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
-
                     Stream stream = await response.Content.ReadAsStreamAsync();
                     JsonApplicationsRoot jroot = JsonApplicationsRoot.Deserialize(stream);
-                
+
                     Applications appsResp = null;
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
@@ -542,13 +595,18 @@ namespace Steeltoe.Discovery.Eureka.Transport
                             appsResp = Applications.FromJsonApplications(jroot.Applications);
                         }
                     }
-                    _logger?.LogDebug("DoGetApplicationsAsync {0}, status: {1}, applications: {2}",
-                        requestUri.ToString(), response.StatusCode, ((appsResp != null) ? appsResp.ToString() : "null"));
-                    EurekaHttpResponse<Applications> resp = new EurekaHttpResponse<Applications>(response.StatusCode, appsResp);
-                    resp.Headers = response.Headers;
+
+                    _logger?.LogDebug(
+                        "DoGetApplicationsAsync {0}, status: {1}, applications: {2}",
+                        requestUri.ToString(),
+                        response.StatusCode,
+                        (appsResp != null) ? appsResp.ToString() : "null");
+                    EurekaHttpResponse<Applications> resp = new EurekaHttpResponse<Applications>(response.StatusCode, appsResp)
+                    {
+                        Headers = response.Headers
+                    };
                     return resp;
                 }
-
             }
             catch (Exception e)
             {
@@ -558,17 +616,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             finally
             {
                 DisposeHttpClient(client);
-
                 HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
-
             }
-        }
-
-
-
-        public virtual void Shutdown()
-        {
-
         }
 
         protected virtual HttpClient GetHttpClient(IEurekaClientConfig config)
@@ -577,18 +626,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
             {
                 return _client;
             }
-            return HttpClientHelper.GetHttpClient(config.ValidateCertificates, config.EurekaServerConnectTimeoutSeconds * 1000);
-        }
 
-        protected internal virtual HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
-        {
-            var request = new HttpRequestMessage(method, requestUri);
-            foreach (var header in _headers)
-            {
-                request.Headers.Add(header.Key, header.Value);
-            }
-            request.Headers.Add("Accept", "application/json");
-            return request;
+            return HttpClientHelper.GetHttpClient(config.ValidateCertificates, config.EurekaServerConnectTimeoutSeconds * 1000);
         }
 
         protected virtual HttpContent GetRequestContent(object toSerialize)
@@ -598,7 +637,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 string json = JsonConvert.SerializeObject(toSerialize);
                 _logger?.LogDebug("GetRequestContent generated JSON: {0}", json);
                 return new StringContent(json, Encoding.UTF8, "application/json");
-
             }
             catch (Exception e)
             {
@@ -608,40 +646,17 @@ namespace Steeltoe.Discovery.Eureka.Transport
             return new StringContent(string.Empty, Encoding.UTF8, "application/json");
         }
 
-        protected internal virtual Uri GetRequestUri(string baseUri, IDictionary<string, string> queryValues = null)
-        {
-
-            string uri = baseUri;
-            if (queryValues != null)
-            {
-                StringBuilder sb = new StringBuilder();
-                string sep = "?";
-                foreach (var kvp in queryValues)
-                {
-                    sb.Append(sep + kvp.Key + "=" + kvp.Value);
-                    sep = "&";
-                }
-                uri = uri + sb.ToString();
-            }
-            return new Uri(uri);
-        }
-        protected virtual void DisposeHttpClient(HttpClient client) 
+        protected virtual void DisposeHttpClient(HttpClient client)
         {
             if (client == null)
+            {
                 return;
+            }
 
-            if (_client != client) 
+            if (_client != client)
             {
                 client.Dispose();
             }
-        }
-
-        protected internal static string MakeServiceUrl(string serviceUrl)
-        {
-            var url = new Uri(serviceUrl).ToString();
-            if (url[url.Length - 1] != '/')
-                url = url + '/';
-            return url;
         }
 
         private static string CommaDelimit(ICollection<string> toJoin)
@@ -659,6 +674,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 sb.Append(value);
                 sep = ",";
             }
+
             return sb.ToString();
         }
     }

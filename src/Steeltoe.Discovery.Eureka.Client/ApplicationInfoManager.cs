@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -22,12 +20,25 @@ namespace Steeltoe.Discovery.Eureka
 {
     public class ApplicationInfoManager
     {
-        protected ApplicationInfoManager() { }
+        protected ApplicationInfoManager()
+        {
+        }
+
         protected static ApplicationInfoManager _instance = new ApplicationInfoManager();
         protected ILogger _logger;
+
         private object _statusChangedLock = new object();
 
+        public static ApplicationInfoManager Instance
+        {
+            get
+            {
+                return _instance;
+            }
+        }
+
         public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
+
         public virtual InstanceInfo InstanceInfo { get; protected internal set; }
 
         public virtual event StatusChangedHandler StatusChangedEvent;
@@ -37,13 +48,20 @@ namespace Steeltoe.Discovery.Eureka
             get
             {
                 if (InstanceInfo == null)
+                {
                     return InstanceStatus.UNKNOWN;
+                }
+
                 return InstanceInfo.Status;
             }
+
             set
             {
                 if (InstanceInfo == null)
+                {
                     return;
+                }
+
                 lock (_statusChangedLock)
                 {
                     InstanceStatus prev = InstanceInfo.Status;
@@ -61,29 +79,15 @@ namespace Steeltoe.Discovery.Eureka
                                 _logger?.LogError("StatusChangedEvent Exception:", e);
                             }
                         }
-
                     }
                 }
             }
         }
 
-
-        public static ApplicationInfoManager Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
         public virtual void Initialize(IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
         {
-            if (instanceConfig == null)
-            {
-                throw new ArgumentNullException(nameof(instanceConfig));
-            }
             _logger = logFactory?.CreateLogger<ApplicationInfoManager>();
-            InstanceConfig = instanceConfig;
+            InstanceConfig = instanceConfig ?? throw new ArgumentNullException(nameof(instanceConfig));
             InstanceInfo = InstanceInfo.FromInstanceConfig(instanceConfig);
         }
 
@@ -106,24 +110,10 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     DurationInSecs = InstanceConfig.LeaseExpirationDurationInSeconds,
                     RenewalIntervalInSecs = InstanceConfig.LeaseRenewalIntervalInSeconds
-
                 };
                 InstanceInfo.LeaseInfo = newLease;
                 InstanceInfo.IsDirty = true;
             }
-        }
-    }
-    public class StatusChangedArgs : EventArgs
-    {
-        public InstanceStatus Previous { get; private set; }
-        public InstanceStatus Current { get; private set; }
-
-        public string InstanceId { get; private set; }
-        public StatusChangedArgs(InstanceStatus prev, InstanceStatus current, string instanceId)
-        {
-            Previous = prev;
-            Current = current;
-            InstanceId = instanceId;
         }
     }
 

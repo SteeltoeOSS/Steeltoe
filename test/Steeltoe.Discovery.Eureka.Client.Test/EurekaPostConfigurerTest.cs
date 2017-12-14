@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Extensions.Configuration;
 using System;
@@ -29,9 +27,9 @@ namespace Steeltoe.Discovery.Eureka.Test
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(new Dictionary<string, string>()
             {
-                {"spring:application:name", "bar" },
-                {"spring:application:instance_id", "instance" },
-                {"spring:cloud:discovery:registrationMethod", "registrationMethod" },
+                { "spring:application:name", "bar" },
+                { "spring:application:instance_id", "instance" },
+                { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
             });
 
             IConfigurationRoot root = builder.Build();
@@ -44,16 +42,15 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("registrationMethod", instOpts.RegistrationMethod);
         }
 
-
         [Fact]
         public void UpdateConfiguration_UpdatesCorrectly()
         {
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(new Dictionary<string, string>()
             {
-                {"spring:application:name", "bar" },
-                {"spring:application:instance_id", "instance" },
-                {"spring:cloud:discovery:registrationMethod", "registrationMethod" },
+                { "spring:application:name", "bar" },
+                { "spring:application:instance_id", "instance" },
+                { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
             });
 
             IConfigurationRoot root = builder.Build();
@@ -72,15 +69,14 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("dontChange", instOpts.RegistrationMethod);
         }
 
-
         [Fact]
         public void UpdateConfiguration_UpdatesCorrectly2()
         {
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(new Dictionary<string, string>()
             {
-                {"spring:application:name", "bar" },
-                {"spring:cloud:discovery:registrationMethod", "registrationMethod" },
+                { "spring:application:name", "bar" },
+                { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
             });
 
             IConfigurationRoot root = builder.Build();

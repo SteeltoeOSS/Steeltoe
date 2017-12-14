@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
-using System.IO;
-using Xunit;
 
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System;
 using Steeltoe.Discovery.Eureka.Test;
+using System;
+using System.IO;
+using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test
 {
