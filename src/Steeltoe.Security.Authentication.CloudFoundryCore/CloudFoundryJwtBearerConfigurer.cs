@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -25,7 +23,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
     {
         internal static void Configure(SsoServiceInfo si, JwtBearerOptions jwtOptions, CloudFoundryJwtBearerOptions options)
         {
-     
             if (jwtOptions == null || options == null)
             {
                 return;
@@ -33,21 +30,21 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             if (si != null)
             {
-                options.JwtKeyUrl =  si.AuthDomain + CloudFoundryDefaults.JwtTokenKey;
+                options.JwtKeyUrl = si.AuthDomain + CloudFoundryDefaults.JwtTokenKey;
             }
 
             jwtOptions.ClaimsIssuer = options.ClaimsIssuer;
             jwtOptions.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
             jwtOptions.TokenValidationParameters = GetTokenValidationParameters(jwtOptions.TokenValidationParameters, options.JwtKeyUrl, jwtOptions.BackchannelHttpHandler, options.ValidateCertificates);
             jwtOptions.SaveToken = options.SaveToken;
-
         }
-
 
         internal static TokenValidationParameters GetTokenValidationParameters(TokenValidationParameters parameters, string keyUrl, HttpMessageHandler handler, bool validateCertificates)
         {
             if (parameters == null)
+            {
                 parameters = new TokenValidationParameters();
+            }
 
             parameters.ValidateAudience = false;
             parameters.ValidateIssuer = true;

@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Newtonsoft.Json.Linq;
 using System;
@@ -30,9 +31,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
         {
             string redirect_url = "https://" + options.AppHost;
             if (options.AppPort != 0)
+            {
                 redirect_url = redirect_url + ":" + options.AppPort + options.CallbackPath;
+            }
             else
+            {
                 redirect_url = redirect_url + options.CallbackPath;
+            }
 
             var hostName = options.AuthDomain;
             var pairs = new[]
@@ -55,10 +60,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 
             using (var client = new HttpClient())
             {
-
                 var byteArray = Encoding.ASCII.GetBytes(options.ClientID + ":" + options.ClientSecret);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
 
                 var response = await client.PostAsync(targetUrl, content);
                 if (response.IsSuccessStatusCode)
@@ -76,7 +79,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
                     foreach (var claim in securityToken.Claims)
                     {
                         Debug.WriteLine(claim.Type + " : " + claim.Value);
-                        //    claimsId.AddClaim(claim);
+
+                        // claimsId.AddClaim(claim);
                     }
 
                     claimsId.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
@@ -96,4 +100,3 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
         }
     }
 }
-

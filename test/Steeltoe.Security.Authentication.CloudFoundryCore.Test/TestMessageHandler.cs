@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication.OAuth.Claims;
-using System.Linq;
-using Xunit;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
-    public class CloudFoundryClaimActionExtensionsTest
+    public class TestMessageHandler : HttpMessageHandler
     {
-        [Fact]
-        public void MapScopes_AddsClaimAction()
+        public HttpRequestMessage LastRequest { get; set; }
+
+        public HttpResponseMessage Response { get; set; } = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            ClaimActionCollection col = new ClaimActionCollection();
-            col.MapScopes();
-            Assert.Single(col);
-            Assert.IsType<CloudFoundryScopeClaimAction>(col.FirstOrDefault());
+            LastRequest = request;
+            return Task.FromResult<HttpResponseMessage>(Response);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -31,18 +32,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public CloudFoundryTokenKeyResolver(CloudFoundryOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException("options null");
-            }
-            Options = options;
+            Options = options ?? throw new ArgumentNullException("options null");
             Resolved = new Dictionary<string, SecurityKey>();
         }
 
         public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
         {
-            SecurityKey resolved = null;
-            if (Resolved.TryGetValue(kid, out resolved))
+            if (Resolved.TryGetValue(kid, out SecurityKey resolved))
             {
                 return new List<SecurityKey> { resolved };
             }
@@ -56,37 +52,27 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                     Resolved[key.Kid] = key;
                 }
             }
+
             if (Resolved.TryGetValue(kid, out resolved))
             {
                 return new List<SecurityKey> { resolved };
             }
+
             return null;
         }
 
         public JsonWebKey FixupKey(JsonWebKey key)
         {
-           
             byte[] existing = Base64UrlEncoder.DecodeBytes(key.N);
             TrimKey(key, existing);
             return key;
         }
-
-
-        private void TrimKey(JsonWebKey key, byte[] existing)
-        {
-            byte[] signRemoved = new byte[existing.Length -1];
-            Buffer.BlockCopy(existing, 1, signRemoved, 0, existing.Length - 1);
-            string withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
-            key.N = withSignRemoved;
-        }
-
 
         public virtual async Task<JsonWebKeySet> FetchKeySet()
         {
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, Options.JwtKeyEndpoint);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-     
             RemoteCertificateValidationCallback prevValidator = null;
 
             using (var handler = new HttpClientHandler())
@@ -101,9 +87,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 {
                     response = await client.SendAsync(requestMessage);
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
-                    throw new Exception("Error getting  keys to validate token:" + ex.Message );
+                    throw new Exception("Error getting  keys to validate token:" + ex.Message);
                 }
                 finally
                 {
@@ -117,16 +103,20 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 }
             }
 
-           
             return null;
         }
 
         public virtual JsonWebKeySet GetJsonWebKeySet(string json)
         {
-           return new JsonWebKeySetEx(json);
-          
+            return new JsonWebKeySetEx(json);
         }
 
-      
+        private void TrimKey(JsonWebKey key, byte[] existing)
+        {
+            byte[] signRemoved = new byte[existing.Length - 1];
+            Buffer.BlockCopy(existing, 1, signRemoved, 0, existing.Length - 1);
+            string withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
+            key.N = withSignRemoved;
+        }
     }
 }

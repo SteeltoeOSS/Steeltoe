@@ -1,4 +1,3 @@
-//
 // Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +11,23 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-
     public class CloudFoundryOAuthOptions : OAuthOptions
     {
-
         public string TokenInfoUrl { get; set; }
+
         public bool Validate_Certificates { get; set; } = true;
+
         public bool ValidateCertificates => Validate_Certificates;
+
         public bool UseTokenLifetime { get; set; } = true;
 
         public CloudFoundryOAuthOptions()
@@ -44,7 +43,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             TokenInfoUrl = authURL + CloudFoundryDefaults.CheckTokenUri;
             SaveTokens = true;
 
-
             ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "user_id");
             ClaimActions.MapJsonKey(ClaimTypes.Name, "user_name");
             ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_name");
@@ -54,6 +52,5 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         }
-
     }
 }

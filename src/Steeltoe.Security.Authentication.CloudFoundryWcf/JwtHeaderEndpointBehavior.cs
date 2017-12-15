@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.Configuration;
@@ -20,18 +21,19 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
     public class JwtHeaderEndpointBehavior : BehaviorExtensionElement, IEndpointBehavior
     {
-        const string SSOPropertyName = "ssoName";
+        private const string SSOPropertyName = "ssoName";
 
         [ConfigurationProperty(SSOPropertyName)]
-        public string SsoName 
+        public string SsoName
         {
             get
             {
-                return (string)base[SSOPropertyName];
+                return (string)this[SSOPropertyName];
             }
+
             set
             {
-                base[SSOPropertyName] = value;
+                this[SSOPropertyName] = value;
             }
         }
 
@@ -40,37 +42,28 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             get { return typeof(JwtHeaderEndpointBehavior); }
         }
 
+        public void ApplyClientBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime)
+        {
+            clientRuntime.ClientMessageInspectors.Add(new JwtHeaderMessageInspector());
+        }
+
+        public void AddBindingParameters(ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters)
+        {
+        }
+
+        public void ApplyDispatchBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.EndpointDispatcher endpointDispatcher)
+        {
+        }
+
+        public void Validate(ServiceEndpoint endpoint)
+        {
+        }
+
         protected override object CreateBehavior()
         {
             // Create the  endpoint behavior that will insert the message
             // inspector into the client runtime
             return new JwtHeaderEndpointBehavior();
         }
-
-        public void ApplyClientBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime)
-        {
-            clientRuntime.ClientMessageInspectors.Add(new JwtHeaderMessageInspector());
-
-        }
-
-        public void AddBindingParameters(ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters)
-        {
-
-        }
-
-
-        public void ApplyDispatchBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.EndpointDispatcher endpointDispatcher)
-        {
-            
-        }
-
-        public void Validate(ServiceEndpoint endpoint)
-        {
-            
-        }
     }
-
-
-    
-
 }

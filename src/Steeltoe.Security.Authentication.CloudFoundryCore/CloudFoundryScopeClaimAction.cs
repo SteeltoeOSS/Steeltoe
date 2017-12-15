@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Newtonsoft.Json.Linq;
@@ -22,7 +20,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryScopeClaimAction : ClaimAction
     {
-        public CloudFoundryScopeClaimAction(string claimType, string valueType) 
+        public CloudFoundryScopeClaimAction(string claimType, string valueType)
             : base(claimType, valueType)
         {
         }

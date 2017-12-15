@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -31,8 +29,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var tempFile = Path.GetTempFileName();
             File.WriteAllText(tempFile, contents);
             return tempFile;
-
         }
+
         public static Stream StringToStream(string str)
         {
             var memStream = new MemoryStream();
@@ -62,56 +60,4 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             return @"{'user_id':'13bb6841-e4d6-4a9a-876c-9ef13aa61cc7','user_name':'testssouser','email':'testssouser@testcloud.com','client_id':'44f854fd-49fe-4102-b0d1-a526dbff93d9','exp':1472803463,'scope':['openid'],'jti':'cc956120c52a431fbbb8945ac42872fd','aud':['44f854fd-49fe-4102-b0d1-a526dbff93d9','openid'],'sub':'13bb6841-e4d6-4a9a-876c-9ef13aa61cc7','iss':'https://testsso.uaa.system.testcloud.com/oauth/token','iat':1472760263,'cid':'44f854fd-49fe-4102-b0d1-a526dbff93d9','grant_type':'authorization_code','azp':'44f854fd-49fe-4102-b0d1-a526dbff93d9','auth_time':1472760254,'zid':'ef304ed0-3a5a-442e-9ad8-e4ca3ad5120e','rev_sig':'51135842','origin':'uaa','revocable':false}";
         }
     }
-
-    class TestMessageHandler : HttpMessageHandler
-    {
-        public HttpRequestMessage LastRequest { get; set; }
-        public HttpResponseMessage Response { get; set; } = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            LastRequest = request;
-            return Task.FromResult<HttpResponseMessage>(Response);
-        }
-    }
-    class TestClock : ISystemClock
-    {
-        public TestClock()
-        {
-            UtcNow = new DateTimeOffset(2013, 6, 11, 12, 34, 56, 789, TimeSpan.Zero);
-        }
-
-        public DateTimeOffset UtcNow { get; set; }
-
-        public void Add(TimeSpan timeSpan)
-        {
-            UtcNow = UtcNow + timeSpan;
-        }
-    }
-    class MonitorWrapper<T> : IOptionsMonitor<T>
-    {
-        private T _options;
-
-        public MonitorWrapper(T options)
-        {
-            _options = options;
-        }
-        public T CurrentValue
-        {
-            get
-            {
-                return _options;
-            }
-        }
-
-        public T Get(string name)
-        {
-            return _options;
-        }
-
-        public IDisposable OnChange(Action<T, string> listener)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
 }

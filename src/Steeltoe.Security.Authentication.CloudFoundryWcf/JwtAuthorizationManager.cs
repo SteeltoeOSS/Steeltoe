@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,73 +11,76 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 using System.Security.Claims;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using System.Web.Hosting;
 using System.Web;
+using System.Web.Hosting;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
     public class JwtAuthorizationManager : ServiceAuthorizationManager
     {
-     
         public CloudFoundryOptions Options { get; internal protected set; }
 
-
-        public JwtAuthorizationManager() : base()
-        { 
-
+        public JwtAuthorizationManager()
+            : base()
+        {
         }
-
 
         protected override bool CheckAccessCore(OperationContext operationContext)
         {
             HttpRequestMessageProperty httpRequestMessage;
-            object httpRequestMessageObject;
 
-            if (operationContext.RequestContext.RequestMessage.Properties.TryGetValue(HttpRequestMessageProperty.Name, out httpRequestMessageObject))
+            if (operationContext.RequestContext.RequestMessage.Properties.TryGetValue(HttpRequestMessageProperty.Name, out object httpRequestMessageObject))
             {
                 httpRequestMessage = httpRequestMessageObject as HttpRequestMessageProperty;
                 if (string.IsNullOrEmpty(httpRequestMessage.Headers["Authorization"]))
-                    CloudFoundryTokenValidator.throwJwtException("No Authorization header",null);
-
+                {
+                    CloudFoundryTokenValidator.ThrowJwtException("No Authorization header", null);
+                }
 
                 // Get Bearer token
                 if (!httpRequestMessage.Headers["Authorization"].StartsWith("Bearer "))
-                    CloudFoundryTokenValidator.throwJwtException("No Token", null);
-
+                {
+                    CloudFoundryTokenValidator.ThrowJwtException("No Token", null);
+                }
 
                 string jwt = httpRequestMessage.Headers["Authorization"].Split(' ')[1];
                 if (string.IsNullOrEmpty(jwt))
-                    CloudFoundryTokenValidator.throwJwtException("Wrong Token Format", null);
-
+                {
+                    CloudFoundryTokenValidator.ThrowJwtException("Wrong Token Format", null);
+                }
 
                 // Get SSO Config
-                Options = (Options != null) ? Options : new CloudFoundryOptions();
-				if (Options.OAuthServiceUrl == null || Options.OAuthServiceUrl.Length == 0)
-					CloudFoundryTokenValidator.throwJwtException("SSO Configuration is missing", null);
+                Options = Options ?? new CloudFoundryOptions();
+                if (Options.OAuthServiceUrl == null || Options.OAuthServiceUrl.Length == 0)
+                {
+                    CloudFoundryTokenValidator.ThrowJwtException("SSO Configuration is missing", null);
+                }
 
-
-				// Validate Token
-				ClaimsPrincipal claimsPrincipal = Options.TokenValidator.ValidateToken(jwt);
+                // Validate Token
+                ClaimsPrincipal claimsPrincipal = Options.TokenValidator.ValidateToken(jwt);
                 if (claimsPrincipal == null)
+                {
                     return false;
+                }
 
                 // Set the Principal created from token
                 SetPrincipal(operationContext, claimsPrincipal);
-                
+
                 return true;
             }
 
             return false;
         }
 
-
-     
+        protected ClaimsPrincipal GetPrincipal(OperationContext operationContext)
+        {
+            var properties = operationContext.ServiceSecurityContext.AuthorizationContext.Properties;
+            return properties["Principal"] as ClaimsPrincipal;
+        }
 
         private void SetPrincipal(OperationContext operationContext, ClaimsPrincipal principal)
         {
@@ -94,20 +99,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             {
                 HttpContext cur = HttpContext.Current;
                 if (cur != null)
+                {
                     cur.User = principal;
+                }
             }
-            //Thread.CurrentPrincipal = principal;
-          
-            
+
+            // Thread.CurrentPrincipal = principal;
         }
-
-        protected ClaimsPrincipal GetPrincipal(OperationContext operationContext)
-        {
-            var properties = operationContext.ServiceSecurityContext.AuthorizationContext.Properties;
-            return properties["Principal"] as ClaimsPrincipal;
-        }
-
-  
-
     }
 }

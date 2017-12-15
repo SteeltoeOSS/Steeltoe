@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,22 +11,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
+using System;
 using System.Security;
 using System.Security.Permissions;
-using System;
 using System.Threading;
-
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
-   
     [Serializable]
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public class ScopePermissionAttribute : CodeAccessSecurityAttribute
     {
-
         public string ConfigurationName { get; set; }
 
         public string Scope { get; set; }
@@ -34,7 +32,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         {
         }
 
-       
         public override IPermission CreatePermission()
         {
             string scope = null;
@@ -45,7 +42,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
             scope = scope ?? Scope;
 
-            return new ScopePermission(Thread.CurrentPrincipal.Identity.Name, scope);   
+            return new ScopePermission(Thread.CurrentPrincipal.Identity.Name, scope);
         }
     }
 }

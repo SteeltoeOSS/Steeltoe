@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -25,19 +26,37 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
     public class CloudFoundryTokenValidator
     {
-      
         public CloudFoundryOptions Options { get; internal protected set; }
 
         private JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
 
         public CloudFoundryTokenValidator(CloudFoundryOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException("options null");
-            }
-            Options = options;
+            Options = options ?? throw new ArgumentNullException("options null");
+        }
 
+        public static void ThrowJwtException(string exeptionMessage, string message)
+        {
+            Console.Out.WriteLine("error: " + exeptionMessage + " " + message);
+            if (WebOperationContext.Current != null)
+            {
+                var headers = WebOperationContext.Current.OutgoingResponse.Headers;
+
+                // https://tools.ietf.org/html/rfc6750  - "WWW-Authenticate", "Bearer error=\"insufficient_scope\"");
+                if (string.IsNullOrEmpty(message))
+                {
+                    message = "invalid_token";
+                }
+
+                if (string.IsNullOrEmpty(exeptionMessage))
+                {
+                    exeptionMessage = message;
+                }
+
+                headers.Add(HttpResponseHeader.WwwAuthenticate, string.Format("Bearer realm=\"default\",error=\"{0}\",error_description=\"{1}\"", message, Regex.Replace(exeptionMessage, @"\s+", " ")));
+            }
+
+            throw new WebFaultException<string>(exeptionMessage ?? message, HttpStatusCode.Unauthorized);
         }
 
         public virtual string ValidateIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
@@ -46,6 +65,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             {
                 return issuer;
             }
+
             return null;
         }
 
@@ -62,42 +82,21 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 {
                     bool found = Options.AdditionalAudiences.Any(x => x.Equals(audience));
                     if (found)
+                    {
                         return true;
+                    }
                 }
             }
+
             return false;
         }
 
-        /// <summary>
-        /// This method validate scopes provided in configuration, 
-        /// to perform scope based Authorization
-        /// </summary>
-        /// <param name="validJwt"></param>
-        /// <returns></returns>
-        protected virtual bool ValidateScopes(JwtSecurityToken validJwt)
-        {
-            
-            if (Options.RequiredScopes == null || Options.RequiredScopes.Count<string>() == 0)
-                return true; // nocheck
-
-            if (!validJwt.Claims.Any(x => x.Type.Equals("scope") || x.Type.Equals("authorities")))
-                return false;// no scopes at all
-
-            bool found = false;
-            foreach (Claim claim in validJwt.Claims)
-            {
-                if (claim.Type.Equals("scope") || claim.Type.Equals("authorities")
-                        && Options.RequiredScopes.Any(x => x.Equals(claim.Value)))
-                    return true;
-            }
-            return found;
-        }
-
-
-        public virtual ClaimsPrincipal ValidateToken(string token) 
+        public virtual ClaimsPrincipal ValidateToken(string token)
         {
             if (string.IsNullOrEmpty(token))
+            {
                 return null;
+            }
 
             SecurityToken validatedToken = null;
             ClaimsPrincipal principal = null;
@@ -111,41 +110,54 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             catch (Exception ex)
             {
                 Console.WriteLine("ValidateToken fails:" + ex.Message);
-                throwJwtException(ex.Message, "invalid_token");
+                ThrowJwtException(ex.Message, "invalid_token");
             }
-            
-            if (validJwt == null || principal == null )
-                throwJwtException(null, "invalid_token");
+
+            if (validJwt == null || principal == null)
+            {
+                ThrowJwtException(null, "invalid_token");
+            }
 
             CloudFoundryJwt.OnTokenValidatedAddClaims((ClaimsIdentity)principal.Identity, validJwt);
-                  
+
             bool validScopes = ValidateScopes(validJwt);
-            if ( !validScopes)
-                throwJwtException(null, "insufficient_scope");
-    
+            if (!validScopes)
+            {
+                ThrowJwtException(null, "insufficient_scope");
+            }
+
             return principal;
         }
 
-       
-        public static void throwJwtException (string exeptionMessage, string message)
+        /// <summary>
+        /// This method validate scopes provided in configuration,
+        /// to perform scope based Authorization
+        /// </summary>
+        /// <param name="validJwt">JSON Web token</param>
+        /// <returns>true if scopes validated</returns>
+        protected virtual bool ValidateScopes(JwtSecurityToken validJwt)
         {
-            Console.Out.WriteLine("error: " + exeptionMessage + " " + message );
-            if (WebOperationContext.Current != null)
+            if (Options.RequiredScopes == null || Options.RequiredScopes.Count<string>() == 0)
             {
-                var headers = WebOperationContext.Current.OutgoingResponse.Headers;
-
-                //https://tools.ietf.org/html/rfc6750  - "WWW-Authenticate", "Bearer error=\"insufficient_scope\"");
-                if (string.IsNullOrEmpty(message))
-                    message = "invalid_token";
-
-                if (string.IsNullOrEmpty(exeptionMessage))
-                    exeptionMessage = message;
-
-                headers.Add(HttpResponseHeader.WwwAuthenticate, string.Format("Bearer realm=\"default\",error=\"{0}\",error_description=\"{1}\"", message, Regex.Replace(exeptionMessage, @"\s+", " ")));
+                return true; // nocheck
             }
 
-            throw new WebFaultException<string>(exeptionMessage == null ? message : exeptionMessage, HttpStatusCode.Unauthorized);
-         }
+            if (!validJwt.Claims.Any(x => x.Type.Equals("scope") || x.Type.Equals("authorities")))
+            {
+                return false; // no scopes at all
+            }
 
+            bool found = false;
+            foreach (Claim claim in validJwt.Claims)
+            {
+                if (claim.Type.Equals("scope") || (claim.Type.Equals("authorities")
+                        && Options.RequiredScopes.Any(x => x.Equals(claim.Value))))
+                {
+                    return true;
+                }
+            }
+
+            return found;
+        }
     }
 }

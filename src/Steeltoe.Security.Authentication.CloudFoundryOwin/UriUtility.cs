@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,17 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Owin.Infrastructure;
 using System;
-
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     internal static class UriUtility
     {
-        internal static String CalculateFullRedirectUri(OpenIDConnectOptions options)
+        internal static string CalculateFullRedirectUri(OpenIDConnectOptions options)
         {
             var uri = options.AuthDomain + "/" + Constants.EndPointOAuthAuthorize;
 
@@ -39,8 +39,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             {
                 uri = uri + ":" + options.AppPort.ToString();
             }
+
             return uri + options.CallbackPath;
         }
-
     }
 }

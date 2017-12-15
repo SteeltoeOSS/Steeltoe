@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Newtonsoft.Json.Linq;
 using System;
@@ -29,18 +30,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public CloudFoundryClientTokenResolver(CloudFoundryOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException("options null");
-            }
-            Options = options;
-          
+            Options = options ?? throw new ArgumentNullException("options null");
         }
-     
+
         public virtual async Task<string> GetAccessToken()
         {
             HttpRequestMessage requestMessage = GetTokenRequestMessage();
-         
+
             RemoteCertificateValidationCallback prevValidator = ServicePointManager.ServerCertificateValidationCallback;
             ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
 
@@ -74,8 +70,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             }
         }
 
-
-        internal protected virtual HttpRequestMessage GetTokenRequestMessage()
+        protected internal virtual HttpRequestMessage GetTokenRequestMessage()
         {
             var tokenRequestParameters = GetTokenRequestParameters();
 
@@ -88,8 +83,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             return requestMessage;
         }
 
-
-        internal protected virtual Dictionary<string, string> GetTokenRequestParameters()
+        protected internal virtual Dictionary<string, string> GetTokenRequestParameters()
         {
             return new Dictionary<string, string>()
             {
@@ -97,17 +91,25 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 { "client_secret", Options.ClientSecret },
                 { "response_type", "token" },
                 { "grant_type", "client_credentials" },
-                { "scope",  Options.RequiredScopes == null ? "openid" : 
-                                        string.Join(" ",Options.RequiredScopes) },
+                {
+                    "scope",  Options.RequiredScopes == null ? "openid" :
+                                        string.Join(" ", Options.RequiredScopes)
+                },
             };
         }
 
-        internal protected string GetEncoded(string user, string password)
+        protected internal string GetEncoded(string user, string password)
         {
             if (user == null)
+            {
                 user = string.Empty;
+            }
+
             if (password == null)
+            {
                 password = string.Empty;
+            }
+
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
         }
 

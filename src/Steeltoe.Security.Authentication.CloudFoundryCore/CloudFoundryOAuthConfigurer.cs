@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,12 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.Common;
-using System.Net.Http;
-
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
@@ -29,6 +24,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 return;
             }
+
             if (si != null)
             {
                 options.ClientId = si.ClientId;
@@ -37,15 +33,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 options.TokenEndpoint = si.AuthDomain + CloudFoundryDefaults.AccessTokenUri;
                 options.UserInformationEndpoint = si.AuthDomain + CloudFoundryDefaults.UserInfoUri;
                 options.TokenInfoUrl = si.AuthDomain + CloudFoundryDefaults.CheckTokenUri;
-                
             }
 
             options.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
-           
         }
-
-
-
-
     }
 }

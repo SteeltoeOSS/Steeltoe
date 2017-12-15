@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.ServiceModel.Channels;
@@ -17,10 +18,9 @@ using System.ServiceModel.Dispatcher;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
-
     public class JwtHeaderMessageInspector : IClientMessageInspector
     {
-        private  string _token;
+        private string _token;
 
         public JwtHeaderMessageInspector()
         {
@@ -28,14 +28,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public object BeforeSendRequest(ref System.ServiceModel.Channels.Message request, System.ServiceModel.IClientChannel channel)
         {
-        
             if (_token == null)
+            {
                 _token = GetAccessToken();
-           
+            }
 
             HttpRequestMessageProperty httpRequestMessage;
-            object httpRequestMessageObject;
-            if (request.Properties.TryGetValue(HttpRequestMessageProperty.Name, out httpRequestMessageObject))
+            if (request.Properties.TryGetValue(HttpRequestMessageProperty.Name, out object httpRequestMessageObject))
             {
                 httpRequestMessage = httpRequestMessageObject as HttpRequestMessageProperty;
             }
@@ -46,11 +45,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             }
 
             if (httpRequestMessage != null)
+            {
                 httpRequestMessage.Headers.Add("Authorization", string.Format("Bearer {0}", _token));
-         
+            }
+
             return null;
         }
-
 
         public void AfterReceiveReply(ref System.ServiceModel.Channels.Message reply, object correlationState)
         {
@@ -59,34 +59,27 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             {
                 httpResponse = reply.Properties[HttpResponseMessageProperty.Name] as HttpResponseMessageProperty;
             }
-            //could get here refreshed token
-            
+
+            // could get here refreshed token
         }
 
-
-        private  string  GetAccessToken()
+        private string GetAccessToken()
         {
+            CloudFoundryOptions options = new CloudFoundryOptions();
 
-
-			CloudFoundryOptions options = new CloudFoundryOptions();
-			
-			CloudFoundryClientTokenResolver tokenResolver = new CloudFoundryClientTokenResolver(options);
+            CloudFoundryClientTokenResolver tokenResolver = new CloudFoundryClientTokenResolver(options);
 
             try
             {
                string accessToken = tokenResolver.GetAccessToken().GetAwaiter().GetResult();
 
                return accessToken;
-
             }
             catch (Exception ex)
             {
-               
                 Console.Out.WriteLine(ex.Message + ex.StackTrace);
                 throw new Exception("Cannont obtain the Access Token" + ex.Message);
             }
-
         }
-
     }
 }

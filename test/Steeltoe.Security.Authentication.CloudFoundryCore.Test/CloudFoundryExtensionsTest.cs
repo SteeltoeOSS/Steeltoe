@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
-using System;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Xunit;
+using System;
 using System.Net;
+using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
@@ -28,7 +25,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public async void AddCloudFoundryOAuthAuthentication_AddsIntoPipeline()
         {
-   
             var builder = new WebHostBuilder().UseStartup<TestServerStartup>().UseEnvironment("development");
             using (var server = new TestServer(builder))
             {
@@ -36,14 +32,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 var result = await client.GetAsync("http://localhost/");
                 Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
                 var location = result.Headers.Location.ToString();
-                Assert.StartsWith( "http://default_oauthserviceurl/oauth/authorize", location);
+                Assert.StartsWith("http://default_oauthserviceurl/oauth/authorize", location);
             }
         }
 
         [Fact]
         public async void AddCloudFoundryJwtBearerAuthentication_AddsIntoPipeline()
         {
-
             var builder = new WebHostBuilder().UseStartup<TestServerJwtStartup>().UseEnvironment("development");
             using (var server = new TestServer(builder))
             {
@@ -51,14 +46,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 var result = await client.GetAsync("http://localhost/");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
-
         }
 
         [Fact]
         public async void AddCloudFoundryOAuthAuthentication_AddsIntoPipeline_UsesSSOInfo()
         {
-
-
             var app = @"
 {
       'cf_api': 'https://api.system.testcloud.com',
@@ -105,7 +97,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", app);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", services);
 
-  
             var builder = new WebHostBuilder().UseStartup<TestServerStartup>().UseEnvironment("development");
             using (var server = new TestServer(builder))
             {
@@ -118,11 +109,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-
         }
-
-
     }
-
 }
-

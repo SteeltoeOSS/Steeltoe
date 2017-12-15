@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication.OAuth.Claims;
-using System.Linq;
-using Xunit;
+using Microsoft.AspNetCore.Authentication;
+using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
-    public class CloudFoundryClaimActionExtensionsTest
+    public class TestClock : ISystemClock
     {
-        [Fact]
-        public void MapScopes_AddsClaimAction()
+        public TestClock()
         {
-            ClaimActionCollection col = new ClaimActionCollection();
-            col.MapScopes();
-            Assert.Single(col);
-            Assert.IsType<CloudFoundryScopeClaimAction>(col.FirstOrDefault());
+            UtcNow = new DateTimeOffset(2013, 6, 11, 12, 34, 56, 789, TimeSpan.Zero);
+        }
+
+        public DateTimeOffset UtcNow { get; set; }
+
+        public void Add(TimeSpan timeSpan)
+        {
+            UtcNow = UtcNow + timeSpan;
         }
     }
 }

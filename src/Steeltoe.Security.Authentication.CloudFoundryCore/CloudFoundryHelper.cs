@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using System;
 using Newtonsoft.Json.Linq;
+using Steeltoe.Common;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-
     public static class CloudFoundryHelper
     {
         public static DateTime GetIssueTime(JObject payload)
@@ -31,6 +28,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 throw new ArgumentNullException(nameof(payload));
             }
+
             var time = payload.Value<long>("iat");
             return ToAbsoluteUTC(time);
         }
@@ -41,17 +39,21 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 throw new ArgumentNullException(nameof(payload));
             }
+
             var time = payload.Value<long>("exp");
             return ToAbsoluteUTC(time);
         }
 
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
         private static DateTime ToAbsoluteUTC(long secondsPastEpoch)
         {
             return baseTime.AddSeconds(secondsPastEpoch);
         }
 
+#pragma warning disable SA1202 // Elements must be ordered by access
         public static List<string> GetScopes(JObject user)
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             if (user == null)
             {
@@ -71,6 +73,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 result.Add(asValue.Value<string>());
                 return result;
             }
+
             var asArray = scopes as JArray;
             if (asArray != null)
             {
@@ -79,12 +82,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                     result.Add(s);
                 }
             }
+
             return result;
         }
 
         public static HttpMessageHandler GetBackChannelHandler(bool validateCertificates)
         {
-
             if (Platform.IsFullFramework)
             {
                 return null;
@@ -93,14 +96,15 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 if (!validateCertificates)
                 {
-                    var handler = new HttpClientHandler();
-                    handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                    var handler = new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                    };
                     return handler;
                 }
+
                 return null;
             }
         }
-
     }
 }
-

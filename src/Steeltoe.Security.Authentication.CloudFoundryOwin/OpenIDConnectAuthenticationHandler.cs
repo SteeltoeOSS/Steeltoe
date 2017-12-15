@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security;
@@ -22,21 +20,45 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
-    class OpenIDConnectAuthenticationHandler : AuthenticationHandler<OpenIDConnectOptions>
+    public class OpenIDConnectAuthenticationHandler : AuthenticationHandler<OpenIDConnectOptions>
     {
+        /*
+         * Invoked for every request. As this is passive middleware, we only want to branch off
+         * the authentication flow if the request being invoked is the callback path we gave as a redirect
+         * uri to the auth flow when invoking the IDP
+         */
+        public override async Task<bool> InvokeAsync()
+        {
+            if (Options.CallbackPath.HasValue && Options.CallbackPath == Request.Path)
+            {
+                var ticket = await AuthenticateAsync();
+                if (ticket != null)
+                {
+                    Context.Authentication.SignIn(ticket.Properties, ticket.Identity);
+                    Response.Redirect(ticket.Properties.RedirectUri);
+
+                    // Short-circuit, stopping rest of owin pipeline.
+                    return true;
+                }
+            }
+
+            // Nothing to see here, please disperse.
+            return false;
+        }
+
         protected override async Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-
             var code = Request.Query["code"];
             Debug.WriteLine("Received an authorization code from IDP: " + code);
             Debug.WriteLine("== exchanging for token ==");
-            // ASP.Net Identity requires the NameIdentitifer field to be set or it won't  
+
+            // ASP.Net Identity requires the NameIdentitifer field to be set or it won't
             // accept the external login (AuthenticationManagerExtensions.GetExternalLoginInfo)
             var identity = await TokenExchanger.ExchangeCodeForToken(code, Options);
 
             var properties = Options.StateDataFormat.Unprotect(Request.Query["state"]);
 
-            //return Task.FromResult(new AuthenticationTicket(identity, properties));
+            // return Task.FromResult(new AuthenticationTicket(identity, properties));
             var ticket = new AuthenticationTicket(identity, properties);
             return ticket;
         }
@@ -69,33 +91,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             return Task.FromResult<object>(null);
         }
 
-
         protected override Task InitializeCoreAsync()
         {
             return base.InitializeCoreAsync();
-        }
-
-        /*
-         * Invoked for every request. As this is passive middleware, we only want to branch off
-         * the authentication flow if the request being invoked is the callback path we gave as a redirect
-         * uri to the auth flow when invoking the IDP
-         */
-        public override async Task<bool> InvokeAsync()
-        {
-            if (Options.CallbackPath.HasValue && Options.CallbackPath == Request.Path)
-            {
-                var ticket = await AuthenticateAsync();
-                if (ticket != null)
-                {
-                    Context.Authentication.SignIn(ticket.Properties, ticket.Identity);
-                    Response.Redirect(ticket.Properties.RedirectUri);
-
-                    // Short-circuit, stopping rest of owin pipeline.
-                    return true;
-                }
-            }
-            // Nothing to see here, please disperse.
-            return false;
         }
     }
 }

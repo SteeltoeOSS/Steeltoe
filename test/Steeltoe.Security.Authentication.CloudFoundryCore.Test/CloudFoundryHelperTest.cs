@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Newtonsoft.Json.Linq;
 using Steeltoe.Common;
@@ -30,10 +28,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             if (Platform.IsFullFramework)
             {
                 Assert.Null(result1);
-            } else
+            }
+            else
             {
                 Assert.NotNull(result1);
             }
+
             var result2 = CloudFoundryHelper.GetBackChannelHandler(true);
             Assert.Null(result2);
         }
@@ -41,7 +41,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void GetExpTime_FindsTime()
         {
-            var info =TestHelpers.GetValidTokenInfoRequestResponse();
+            var info = TestHelpers.GetValidTokenInfoRequestResponse();
             var payload = JObject.Parse(info);
             var dateTime = CloudFoundryHelper.GetExpTime(payload);
             Assert.Equal(new DateTime(2016, 9, 2, 8, 04, 23, DateTimeKind.Utc), dateTime);
@@ -55,6 +55,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var dateTime = CloudFoundryHelper.GetIssueTime(payload);
             Assert.Equal(new DateTime(2016, 9, 1, 20, 04, 23, DateTimeKind.Utc), dateTime);
         }
+
         [Fact]
         public void GetScopes_FindsScopes()
         {

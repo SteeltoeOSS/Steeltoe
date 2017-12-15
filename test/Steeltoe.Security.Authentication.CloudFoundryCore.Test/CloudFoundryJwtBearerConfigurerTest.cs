@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Steeltoe.CloudFoundry.Connector.Services;
@@ -23,7 +21,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryJwtBearerConfigurerTest
     {
-
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
@@ -36,7 +33,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Null(jwtOpts.BackchannelHttpHandler);
             Assert.NotNull(jwtOpts.TokenValidationParameters);
             Assert.Equal(opts.SaveToken, jwtOpts.SaveToken);
-
         }
 
         [Fact]
@@ -53,8 +49,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Null(jwtOpts.BackchannelHttpHandler);
             Assert.NotNull(jwtOpts.TokenValidationParameters);
             Assert.Equal(opts.SaveToken, jwtOpts.SaveToken);
-
         }
+
         [Fact]
         public void GetTokenValidationParameters_ReturnsExpected()
         {
@@ -65,8 +61,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(CloudFoundryTokenValidator.ValidateIssuer, parameters.IssuerValidator);
             Assert.True(parameters.ValidateLifetime);
             Assert.NotNull(parameters.IssuerSigningKeyResolver);
-   
         }
-
     }
 }

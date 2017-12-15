@@ -1,4 +1,6 @@
-﻿// Licensed under the Apache License, Version 2.0 (the "License");
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -9,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,15 +18,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 
-
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
     public class CloudFoundryJwt
     {
-
-        public static void OnTokenValidatedAddClaims(ClaimsIdentity identity,JwtSecurityToken jwt)
+        public static void OnTokenValidatedAddClaims(ClaimsIdentity identity, JwtSecurityToken jwt)
         {
-           
             var identifier = GetId(identity);
             if (!string.IsNullOrEmpty(identifier))
             {
@@ -58,12 +56,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             else
             {
                 identity.AddClaim(new Claim(ClaimTypes.Name, GetClientId(identity), ClaimValueTypes.String, jwt.Issuer));
-            
             }
-           
         }
-
-      
 
         private static string GetGivenName(IIdentity identity)
         {
@@ -79,10 +73,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         {
             return GetClaim(identity, "email");
         }
+
         private static string GetName(IIdentity identity)
         {
             return GetClaim(identity, "user_name");
         }
+
         private static string GetId(IIdentity identity)
         {
             return GetClaim(identity, "user_id");
@@ -93,8 +89,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             return GetClaim(identity, "client_id");
         }
 
-      
-
         private static string GetClaim(IIdentity identity, string claim)
         {
             var claims = identity as ClaimsIdentity;
@@ -102,11 +96,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             {
                 return null;
             }
+
             var idClaim = claims.FindFirst(claim);
             if (idClaim == null)
             {
                 return null;
             }
+
             return idClaim.Value;
         }
 
@@ -117,11 +113,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             {
                 return null;
             }
+
             var idClaims = claims.FindAll(claim);
             if (idClaims == null)
             {
                 return null;
             }
+
             return idClaims.ToArray<Claim>();
         }
 

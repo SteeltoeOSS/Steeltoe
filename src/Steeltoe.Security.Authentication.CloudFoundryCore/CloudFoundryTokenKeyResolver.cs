@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.IdentityModel.Tokens;
 using Steeltoe.Common;
@@ -30,7 +28,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryTokenKeyResolver
     {
-
         internal static ConcurrentDictionary<string, SecurityKey> Resolved { get; set; } = new ConcurrentDictionary<string, SecurityKey>();
 
         private string _jwtKeyUrl;
@@ -39,7 +36,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)
         {
-            if (string.IsNullOrEmpty(jwtKeyUrl ))
+            if (string.IsNullOrEmpty(jwtKeyUrl))
             {
                 throw new ArgumentException(nameof(jwtKeyUrl));
             }
@@ -51,8 +48,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
         {
-            SecurityKey resolved = null;
-            if (Resolved.TryGetValue(kid, out resolved))
+            if (Resolved.TryGetValue(kid, out SecurityKey resolved))
             {
                 return new List<SecurityKey> { resolved };
             }
@@ -66,32 +62,24 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                     Resolved[key.Kid] = key;
                 }
             }
+
             if (Resolved.TryGetValue(kid, out resolved))
             {
                 return new List<SecurityKey> { resolved };
             }
+
             return null;
         }
 
         public JsonWebKey FixupKey(JsonWebKey key)
         {
-
             if (Platform.IsFullFramework)
             {
-
                 byte[] existing = Base64UrlEncoder.DecodeBytes(key.N);
                 TrimKey(key, existing);
             }
+
             return key;
-        }
-
-
-        private void TrimKey(JsonWebKey key, byte[] existing)
-        {
-            byte[] signRemoved = new byte[existing.Length -1];
-            Buffer.BlockCopy(existing, 1, signRemoved, 0, existing.Length - 1);
-            string withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
-            key.N = withSignRemoved;
         }
 
         public virtual async Task<JsonWebKeySet> FetchKeySet()
@@ -101,9 +89,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             HttpClient client = GetHttpClient();
 
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(_validateCertificates, out prevProtocols, out prevValidator);
+            HttpClientHelper.ConfigureCertificateValidatation(
+                _validateCertificates,
+                out SecurityProtocolType prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
 
             HttpResponseMessage response = null;
             try
@@ -120,6 +109,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 var result = await response.Content.ReadAsStringAsync();
                 return GetJsonWebKeySet(result);
             }
+
             return null;
         }
 
@@ -134,7 +124,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 return new HttpClient(_httpHandler);
             }
+
             return new HttpClient();
+        }
+
+        private void TrimKey(JsonWebKey key, byte[] existing)
+        {
+            byte[] signRemoved = new byte[existing.Length - 1];
+            Buffer.BlockCopy(existing, 1, signRemoved, 0, existing.Length - 1);
+            string withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
+            key.N = withSignRemoved;
         }
     }
 }

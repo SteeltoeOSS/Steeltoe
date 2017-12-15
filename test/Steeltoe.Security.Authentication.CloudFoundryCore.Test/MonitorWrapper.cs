@@ -12,21 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication.OAuth.Claims;
-using System.Linq;
-using Xunit;
+using Microsoft.Extensions.Options;
+using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
-    public class CloudFoundryClaimActionExtensionsTest
+    public class MonitorWrapper<T> : IOptionsMonitor<T>
     {
-        [Fact]
-        public void MapScopes_AddsClaimAction()
+        private T _options;
+
+        public MonitorWrapper(T options)
         {
-            ClaimActionCollection col = new ClaimActionCollection();
-            col.MapScopes();
-            Assert.Single(col);
-            Assert.IsType<CloudFoundryScopeClaimAction>(col.FirstOrDefault());
+            _options = options;
+        }
+
+        public T CurrentValue
+        {
+            get
+            {
+                return _options;
+            }
+        }
+
+        public T Get(string name)
+        {
+            return _options;
+        }
+
+        public IDisposable OnChange(Action<T, string> listener)
+        {
+            throw new NotImplementedException();
         }
     }
 }

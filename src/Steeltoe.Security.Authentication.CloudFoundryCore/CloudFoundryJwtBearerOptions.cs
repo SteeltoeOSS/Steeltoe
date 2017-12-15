@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,26 +11,25 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryJwtBearerOptions : JwtBearerOptions
     {
         public string JwtKeyUrl { get; set; }
+
         public bool Validate_Certificates { get; set; } = true;
+
         public bool ValidateCertificates => Validate_Certificates;
 
         public CloudFoundryJwtBearerOptions()
         {
             string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
-            ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme; 
+            ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
             JwtKeyUrl = authURL + CloudFoundryDefaults.JwtTokenKey;
             SaveToken = true;
-
         }
     }
 }
