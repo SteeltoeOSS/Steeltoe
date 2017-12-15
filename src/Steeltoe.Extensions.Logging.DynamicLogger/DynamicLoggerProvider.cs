@@ -25,10 +25,11 @@ namespace Steeltoe.Extensions.Logging
     [ProviderAlias("Dynamic")]
     public class DynamicLoggerProvider : IDynamicLoggerProvider
     {
-        private Func<string, LogLevel, bool> _filter;
-        private ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
         private static readonly Func<string, LogLevel, bool> _trueFilter = (cat, level) => true;
         private static readonly Func<string, LogLevel, bool> _falseFilter = (cat, level) => false;
+
+        private Func<string, LogLevel, bool> _filter;
+        private ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
 
         private ConcurrentDictionary<string, ConsoleLogger> _loggers = new ConcurrentDictionary<string, ConsoleLogger>();
         private ConsoleLoggerProvider _delegate;

@@ -47,6 +47,7 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.Equal(LogLevel.Information, settings.Switches["Steeltoe"]);
             Assert.Equal(LogLevel.Trace, settings.Switches["Steeltoe.Extensions"]);
         }
+
         [Fact]
         public void FromConfiguration_NoError_When_NotConfigured()
         {

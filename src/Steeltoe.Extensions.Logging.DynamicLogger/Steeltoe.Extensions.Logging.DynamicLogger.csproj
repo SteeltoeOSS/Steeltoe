@@ -26,7 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <NoWarn>SA1100;SA1101;SA1124;SA1202;SA1204;SA1309;SA1310;SA1313;SA1600;SA1611;1591;1701;1702;1705</NoWarn>
+    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json">

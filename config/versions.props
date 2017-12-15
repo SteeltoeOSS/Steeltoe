@@ -6,8 +6,9 @@
     <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
     <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
-    <JsonNetVersion>10.0.1</JsonNetVersion>
-    <TestSdkVersion>15.3.0</TestSdkVersion>
+    <StyleCopVersion>1.0.2</StyleCopVersion>
+    <JsonNetVersion>10.0.3</JsonNetVersion>
+    <TestSdkVersion>15.5.0</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
   </PropertyGroup>

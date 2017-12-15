@@ -35,13 +35,13 @@ namespace Steeltoe.Extensions.Logging.Test
         public void OnlyApplicableFilters_AreApplied()
         {
             // arrange
-            var _appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>()
             {
                 ["Logging:IncludeScopes"] = "false",
                 ["Logging:LogLevel:Default"] = "Information",
                 ["Logging:foo:LogLevel:A.B.C.D.TestClass"] = "None"
             };
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(_appsettings).Build();
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
             var services = new ServiceCollection()
                 .AddLogging(builder =>
                 {
@@ -55,8 +55,8 @@ namespace Steeltoe.Extensions.Logging.Test
 
             // assert
             Assert.NotNull(logger);
-            Assert.True((logger).IsEnabled(LogLevel.Information), "Information level should be enabled");
-            Assert.False((logger).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+            Assert.True(logger.IsEnabled(LogLevel.Information), "Information level should be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
         }
 
         [Fact]
@@ -77,16 +77,16 @@ namespace Steeltoe.Extensions.Logging.Test
 
             // assert
             Assert.NotNull(logger);
-            Assert.True((logger).IsEnabled(LogLevel.Critical), "Critical level should be enabled");
-            Assert.False((logger).IsEnabled(LogLevel.Error), "Error level should NOT be enabled");
-            Assert.False((logger).IsEnabled(LogLevel.Warning), "Warning level should NOT be enabled");
-            Assert.False((logger).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
-            Assert.False((logger).IsEnabled(LogLevel.Trace), "Trace level should NOT be enabled yet");
+            Assert.True(logger.IsEnabled(LogLevel.Critical), "Critical level should be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Error), "Error level should NOT be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Warning), "Warning level should NOT be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should NOT be enabled yet");
 
             // change the log level and confirm it worked
             var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
             provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
-            Assert.True((logger).IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
+            Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
         }
 
         [Fact]
@@ -167,14 +167,14 @@ namespace Steeltoe.Extensions.Logging.Test
 
             // assert
             Assert.NotNull(logger);
-            Assert.True((logger).IsEnabled(LogLevel.Warning), "Warning level should be enabled");
-            Assert.False((logger).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
-            Assert.False((logger).IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
+            Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
 
             // change the log level and confirm it worked
             var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
             provider.SetLogLevel("Steeltoe.Extensions.Logging.Test", LogLevel.Trace);
-            Assert.True((logger).IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
+            Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
         }
 
         [Fact]
@@ -195,14 +195,14 @@ namespace Steeltoe.Extensions.Logging.Test
 
             // assert
             Assert.NotNull(logger);
-            Assert.True((logger).IsEnabled(LogLevel.Warning), "Warning level should be enabled");
-            Assert.False((logger).IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
-            Assert.False((logger).IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
+            Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+            Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
 
             // change the log level and confirm it worked
             var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
             provider.SetLogLevel("Steeltoe.Extensions.Logging.Test", LogLevel.Trace);
-            Assert.True((logger).IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
+            Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
         }
     }
 }

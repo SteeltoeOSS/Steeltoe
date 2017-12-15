@@ -86,7 +86,7 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.Equal(LogLevel.Trace, tierTwoNamespace.EffectiveLevel);
             Assert.True(childLogger.IsEnabled(LogLevel.Trace));
 
-            // act III: set A to something else, make sure it inherits down 
+            // act III: set A to something else, make sure it inherits down
             provider.SetLogLevel("A", LogLevel.Error);
             configurations = provider.GetLoggerConfigurations();
             tierOneNamespace = configurations.First(n => n.Name == "A");

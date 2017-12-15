@@ -50,13 +50,13 @@ namespace Steeltoe.Extensions.Logging
             return settings;
         }
 
-        private static void AddSwitches(IEnumerable<IConfigurationSection> settings, IDictionary<string, LogLevel> Switches)
+        private static void AddSwitches(IEnumerable<IConfigurationSection> settings, IDictionary<string, LogLevel> switches)
         {
             foreach (var setting in settings)
             {
                 try
                 {
-                    Switches[setting.Key] = (LogLevel)Enum.Parse(typeof(LogLevel), setting.Value);
+                    switches[setting.Key] = (LogLevel)Enum.Parse(typeof(LogLevel), setting.Value);
                 }
                 catch
                 {
