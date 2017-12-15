@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         public virtual void Contribute(IInfoBuilder builder)
         {
             _config = ReadGitProperties(_propFile);
-            base.Contribute(builder, GITSETTINGS_PREFIX, true);
+            Contribute(builder, GITSETTINGS_PREFIX, true);
         }
 
         public virtual IConfiguration ReadGitProperties(string propFile)

@@ -52,10 +52,6 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        protected virtual bool DefaultEnabled { get; } = true;
-
-        protected virtual bool DefaultSensitive { get; } = false;
-
         public virtual bool IsEnabled
         {
             get
@@ -149,5 +145,9 @@ namespace Steeltoe.Management.Endpoint
         {
             return permissions >= RequiredPermissions;
         }
+
+        protected virtual bool DefaultEnabled { get; } = true;
+
+        protected virtual bool DefaultSensitive { get; } = false;
     }
 }

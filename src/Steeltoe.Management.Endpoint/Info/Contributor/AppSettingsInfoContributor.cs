@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
 
         public void Contribute(IInfoBuilder builder)
         {
-            base.Contribute(builder, APPSETTINGS_PREFIX, false);
+            Contribute(builder, APPSETTINGS_PREFIX, false);
         }
     }
 }

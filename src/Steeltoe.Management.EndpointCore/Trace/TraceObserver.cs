@@ -28,14 +28,15 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         internal const string BEGIN_REQUEST = "Microsoft.AspNetCore.Hosting.BeginRequest";
         internal const string END_REQUEST = "Microsoft.AspNetCore.Hosting.EndRequest";
+        internal ConcurrentDictionary<string, PendingTrace> _pending = new ConcurrentDictionary<string, PendingTrace>();
+        internal ConcurrentQueue<Trace> _queue = new ConcurrentQueue<Trace>();
+        internal long TicksPerMilli = Stopwatch.Frequency / 1000;
+
+        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private ILogger<TraceObserver> _logger;
         private ITraceOptions _options;
         private DiagnosticListener _listener;
-        internal ConcurrentDictionary<string, PendingTrace> _pending = new ConcurrentDictionary<string, PendingTrace>();
-        internal ConcurrentQueue<Trace> _queue = new ConcurrentQueue<Trace>();
-        internal long TicksPerMilli = Stopwatch.Frequency / 1000;
-        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public TraceObserver(DiagnosticListener listener, ITraceOptions options, ILogger<TraceObserver> logger = null)
         {
@@ -72,10 +73,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             if (value.Key.Equals(BEGIN_REQUEST))
             {
-                HttpContext context = null;
-                long timeStamp = 0;
-
-                GetProperties(value.Value, out context, out timeStamp);
+                GetProperties(value.Value, out HttpContext context, out long timeStamp);
 
                 if (context != null && timeStamp != 0)
                 {
@@ -87,23 +85,18 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
             else if (value.Key.Equals(END_REQUEST))
             {
-                HttpContext context = null;
-                long timeStamp = 0;
-
-                GetProperties(value.Value, out context, out timeStamp);
+                GetProperties(value.Value, out HttpContext context, out long timeStamp);
 
                 if (context != null && timeStamp != 0)
                 {
-                    PendingTrace pendingTrace;
-                    if (_pending.TryRemove(context.TraceIdentifier, out pendingTrace))
+                    if (_pending.TryRemove(context.TraceIdentifier, out PendingTrace pendingTrace))
                     {
                         Trace trace = MakeTrace(context, pendingTrace.StartTime, timeStamp);
                         _queue.Enqueue(trace);
 
                         if (_queue.Count > _options.Capacity)
                         {
-                            Trace discard;
-                            if (!_queue.TryDequeue(out discard))
+                            if (!_queue.TryDequeue(out Trace discard))
                             {
                                 _logger?.LogDebug("EndRequest - Dequeue failed");
                             }

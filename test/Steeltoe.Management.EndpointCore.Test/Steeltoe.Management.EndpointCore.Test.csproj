@@ -5,6 +5,7 @@
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.Management.EndpointCore</Description>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
     <AssemblyName>Steeltoe.Management.EndpointCore.Test</AssemblyName>
     <PackageId>Steeltoe.Management.EndpointCore.Test</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
@@ -48,15 +49,17 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
 
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
 
   <PropertyGroup>
-    <NoWarn>SA1100;SA1101;SA1124;SA1202;SA1204;SA1309;SA1310;SA1313;SA1600;SA1652;SA1611;1591;1701;1702;1705</NoWarn>
+    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json">

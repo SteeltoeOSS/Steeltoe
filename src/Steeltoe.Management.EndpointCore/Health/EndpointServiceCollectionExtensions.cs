@@ -79,7 +79,6 @@ namespace Steeltoe.Management.Endpoint.Health
             List<ServiceDescriptor> descriptors = new List<ServiceDescriptor>();
             foreach (var c in contributors)
             {
-
                 descriptors.Add(new ServiceDescriptor(typeof(IHealthContributor), c, ServiceLifetime.Scoped));
             }
 

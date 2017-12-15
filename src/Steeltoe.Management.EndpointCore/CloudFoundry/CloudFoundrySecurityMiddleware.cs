@@ -94,15 +94,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             await _next(context);
         }
 
-        private IEndpointOptions FindTargetEndpoint(PathString path)
+        internal string GetAccessToken(HttpRequest request)
         {
-            var configEndpoints = this._options.Global.EndpointOptions;
-            foreach (var ep in configEndpoints)
+            if (request.Headers.TryGetValue(AUTHORIZATION_HEADER, out StringValues headerVal))
             {
-                PathString epPath = new PathString(ep.Path);
-                if (path.StartsWithSegments(epPath))
+                string header = headerVal.ToString();
+                if (header.StartsWith(BEARER, StringComparison.OrdinalIgnoreCase))
                 {
-                    return ep;
+                    return header.Substring(BEARER.Length + 1);
                 }
             }
 
@@ -123,9 +122,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             request.Headers.Authorization = auth;
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(_options.ValidateCertificates, out prevProtocols, out prevValidator);
+            HttpClientHelper.ConfigureCertificateValidatation(
+                _options.ValidateCertificates,
+                out SecurityProtocolType prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
             try
             {
                 _logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
@@ -167,7 +167,28 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             {
                 HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, prevProtocols, prevValidator);
             }
+        }
 
+        protected internal bool IsCloudFoundryRequest(HttpContext context)
+        {
+            PathString path = new PathString(_options.Path == "/" ? string.Empty : _options.Path);
+            bool startsWith = context.Request.Path.StartsWithSegments(path);
+            return startsWith;
+        }
+
+        private IEndpointOptions FindTargetEndpoint(PathString path)
+        {
+            var configEndpoints = this._options.Global.EndpointOptions;
+            foreach (var ep in configEndpoints)
+            {
+                PathString epPath = new PathString(ep.Path);
+                if (path.StartsWithSegments(epPath))
+                {
+                    return ep;
+                }
+            }
+
+            return null;
         }
 
         private async Task ReturnError(HttpContext context, SecurityResult error)
@@ -176,28 +197,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
             context.Response.StatusCode = (int)error.Code;
             await context.Response.WriteAsync(Serialize(error));
-        }
-
-        internal string GetAccessToken(HttpRequest request)
-        {
-            StringValues headerVal;
-            if (request.Headers.TryGetValue(AUTHORIZATION_HEADER, out headerVal))
-            {
-                string header = headerVal.ToString();
-                if (header.StartsWith(BEARER, StringComparison.OrdinalIgnoreCase))
-                {
-                    return header.Substring(BEARER.Length + 1);
-                }
-            }
-
-            return null;
-        }
-
-        protected internal bool IsCloudFoundryRequest(HttpContext context)
-        {
-            PathString path = new PathString(_options.Path == "/" ? "" : _options.Path);
-            bool startsWith = context.Request.Path.StartsWithSegments(path);
-            return startsWith;
         }
 
         private string Serialize(SecurityResult error)
@@ -227,8 +226,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
                 var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
-                object perm;
-                if (result.TryGetValue(READ_SENSITIVE_DATA, out perm))
+                if (result.TryGetValue(READ_SENSITIVE_DATA, out object perm))
                 {
                     bool boolResult = (bool)perm;
                     if (boolResult)
@@ -249,6 +247,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger.LogDebug("GetPermisions returning: {0}", permissions);
             return permissions;
         }
+
         private void LogError(HttpContext context, SecurityResult error)
         {
             _logger.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);

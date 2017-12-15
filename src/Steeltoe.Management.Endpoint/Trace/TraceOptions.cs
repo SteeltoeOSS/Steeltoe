@@ -42,8 +42,6 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
         }
 
-        protected override bool DefaultSensitive => true;
-
         public int Capacity { get; set; } = -1;
 
         public bool AddRequestHeaders { get; set; } = true;
@@ -65,5 +63,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         public bool AddSessionId { get; set; } = false;
 
         public bool AddTimeTaken { get; set; } = true;
+
+        protected override bool DefaultSensitive => true;
     }
 }
