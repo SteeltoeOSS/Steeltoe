@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Info
 
         protected internal async Task HandleInfoRequestAsync(HttpContext context)
         {
-            var serialInfo = base.HandleRequest();
+            var serialInfo = HandleRequest();
             logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);

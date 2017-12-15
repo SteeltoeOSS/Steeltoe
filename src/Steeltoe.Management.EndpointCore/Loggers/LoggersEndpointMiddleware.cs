@@ -70,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                         if (!string.IsNullOrEmpty(loggerName))
                         {
                             var changeReq = new LoggersChangeRequest(loggerName, level);
-                            base.HandleRequest(changeReq);
+                            HandleRequest(changeReq);
                             response.StatusCode = (int)HttpStatusCode.OK;
                             return;
                         }
@@ -82,7 +82,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
 
             // GET request
-            var serialInfo = base.HandleRequest(null);
+            var serialInfo = this.HandleRequest(null);
             logger?.LogDebug("Returning: {0}", serialInfo);
             response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);

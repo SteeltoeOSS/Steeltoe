@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         protected internal async Task HandleCloudFoundryRequestAsync(HttpContext context)
         {
-            var serialInfo = base.HandleRequest(GetRequestUri(context.Request));
+            var serialInfo = HandleRequest(GetRequestUri(context.Request));
             logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
             await context.Response.WriteAsync(serialInfo);

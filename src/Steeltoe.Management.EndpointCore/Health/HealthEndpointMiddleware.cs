@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public async Task Invoke(HttpContext context, HealthEndpoint endpoint)
         {
-            base.endpoint = endpoint;
+            this.endpoint = endpoint;
 
             if (IsHealthRequest(context))
             {
@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
         protected internal async Task HandleHealthRequestAsync(HttpContext context)
         {
-            var serialInfo = base.HandleRequest();
+            var serialInfo = HandleRequest();
             logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
