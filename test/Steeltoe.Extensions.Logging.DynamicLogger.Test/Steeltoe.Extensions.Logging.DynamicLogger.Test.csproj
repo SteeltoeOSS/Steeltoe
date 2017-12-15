@@ -3,7 +3,7 @@
   <Import Project="..\..\versions.props" />
 
   <PropertyGroup>
-    <Description>Unit test project for Steeltoe.Extensions.Logging.CloudFoundry</Description>
+    <Description>Unit test project for Steeltoe.Extensions.Logging.DynamicLogger</Description>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Extensions.Logging.CloudFoundry.Test</AssemblyName>
     <PackageId>Steeltoe.Extensions.Logging.CloudFoundry.Test</PackageId>
@@ -19,22 +19,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Logging.CloudFoundry\Steeltoe.Extensions.Logging.CloudFoundry.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreMvcTestVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="$(AspNetCoreTestVersion)" />
 
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+    
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
+  <PropertyGroup>
+    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Logging.DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
+  </ItemGroup>
 </Project>

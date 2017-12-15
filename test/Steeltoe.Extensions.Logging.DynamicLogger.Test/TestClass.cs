@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
-
-using System.Collections.Generic;
-
-namespace Steeltoe.Extensions.Logging.CloudFoundry
-{ 
-    public interface ICloudFoundryLoggerProvider : ILoggerProvider
+namespace A.B.C.D
+{
+    public class TestClass
     {
-        ICollection<ILoggerConfiguration> GetLoggerConfigurations();
-        void SetLogLevel(string category, LogLevel level);
+        public TestClass()
+        {
+        }
     }
 }

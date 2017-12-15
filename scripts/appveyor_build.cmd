@@ -1,7 +1,7 @@
 :: @ECHO OFF
 
 :: Build packages
-cd src\Steeltoe.Extensions.Logging.CloudFoundry
+cd src\Steeltoe.Extensions.Logging.DynamicLogger
 dotnet restore --configfile ..\..\nuget.config
 IF NOT "%APPVEYOR_REPO_TAG_NAME%"=="" (
     IF NOT "%STEELTOE_VERSION_SUFFIX%"=="" (

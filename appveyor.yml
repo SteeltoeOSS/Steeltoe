@@ -1,4 +1,4 @@
-version: '1.1.0-{branch}-{build}'
+version: '2.0.0-{branch}-{build}'
 init:
   - git config --global core.autocrlf true
 image: Visual Studio 2017  
@@ -14,8 +14,8 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\Steeltoe.Extensions.Logging.CloudFoundry\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Extensions.Logging.CloudFoundry\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Logging.DynamicLogger\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Logging.DynamicLogger\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false
