@@ -1,4 +1,4 @@
-version: '1.1.0-{branch}-{build}'
+version: '2.0.0-{branch}-{build}'
 init:
   - git config --global core.autocrlf true
 image: Visual Studio 2017    
@@ -14,10 +14,14 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\Steeltoe.Security.Authentication.CloudFoundry\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Security.DataProtection.Redis\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Security.Authentication.CloudFoundry\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Security.DataProtection.Redis\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Security.Authentication.CloudFoundryCore\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Security.Authentication.CloudFoundryOwin\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Security.Authentication.CloudFoundryWcf\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Security.DataProtection.RedisCore\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Security.Authentication.CloudFoundryCore\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Security.Authentication.CloudFoundryOwin\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Security.Authentication.CloudFoundryWcf\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Security.DataProtection.RedisCore\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false
