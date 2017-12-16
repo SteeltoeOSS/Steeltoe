@@ -2,13 +2,13 @@
   <Import Project="..\..\versions.props" />
   
   <PropertyGroup>
-    <Description>Steeltoe Management Endpoints</Description>
+    <Description>Steeltoe Management Endpoints - Base Package</Description>
     <Authors>Pivotal;dtillman</Authors>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.Management.Endpoint</AssemblyName>
-    <PackageId>Steeltoe.Management.Endpoint</PackageId>
+    <AssemblyName>Steeltoe.Management.EndpointBase</AssemblyName>
+    <PackageId>Steeltoe.Management.EndpointBase</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
@@ -18,7 +18,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
   <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Management.Endpoint.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Management.EndpointBase.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

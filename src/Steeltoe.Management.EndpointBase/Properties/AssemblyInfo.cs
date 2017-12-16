@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Steeltoe.Management.Endpoint")]
+[assembly: AssemblyProduct("Steeltoe.Management.EndpointBase")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.EndpointBase.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.EndpointCore.Test")]

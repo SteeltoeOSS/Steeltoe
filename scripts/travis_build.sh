@@ -2,7 +2,7 @@
 
 echo Code is built in Unit Tests
 
-cd src/Steeltoe.Management.Endpoint
+cd src/Steeltoe.Management.EndpointBase
 dotnet restore --configfile ../../nuget.config
 cd ../..
 cd src/Steeltoe.Management.EndpointCore

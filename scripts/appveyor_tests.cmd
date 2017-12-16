@@ -1,7 +1,7 @@
 @ECHO OFF
 
 :: Run unit tests 
-cd test\Steeltoe.Management.Endpoint.Test
+cd test\Steeltoe.Management.EndpointBase.Test
 dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure

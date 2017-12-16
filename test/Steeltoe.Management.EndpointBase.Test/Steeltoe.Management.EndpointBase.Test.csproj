@@ -7,8 +7,8 @@
     <Description>Unit test project for Steeltoe.Management.Endpoint</Description>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
-    <AssemblyName>Steeltoe.Management.Endpoint.Test</AssemblyName>
-    <PackageId>Steeltoe.Management.Endpoint.Test</PackageId>
+    <AssemblyName>Steeltoe.Management.EndpointBase.Test</AssemblyName>
+    <PackageId>Steeltoe.Management.EndpointBase.Test</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Management.Endpoint\Steeltoe.Management.Endpoint.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointBase\Steeltoe.Management.EndpointBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>

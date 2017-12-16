@@ -14,8 +14,8 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\Steeltoe.Management.Endpoint\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Management.Endpoint\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Management.EndpointBase\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Management.EndpointBase\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Management.EndpointCore\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Management.EndpointCore\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Management.CloudFoundryCore\bin\Debug\*.nupkg'
