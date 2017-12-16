@@ -13,4 +13,5 @@ This project contains base types used in creating Steeltoe Connectors for CloudF
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/
 
 ## Usage
+
 You typically will not use the types in this package directly in an application.  Normally, you would use these types when you are building a new Connector for CloudFoundry.

@@ -1,7 +1,7 @@
 @ECHO OFF
 
 :: Run unit tests 
-cd test\Steeltoe.CloudFoundry.Connector.Test
+cd test\Steeltoe.CloudFoundry.ConnectorBase.Test
 dotnet restore --configfile ..\..\nuget.config
 dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure

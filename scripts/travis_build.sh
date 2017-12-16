@@ -3,7 +3,7 @@
 echo Code is built in Unit Tests
 
 
-cd src/Steeltoe.CloudFoundry.Connector
+cd src/Steeltoe.CloudFoundry.ConnectorBase
 dotnet restore --configfile ../../nuget.config
 cd ../..
 
