@@ -14,16 +14,16 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\Steeltoe.Extensions.Configuration.ConfigServer\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Configuration.ConfigServerBase\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Extensions.Configuration.ConfigServerCore\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Extensions.Configuration.ConfigServerAutofac\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Extensions.Configuration.CloudFoundry\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Configuration.CloudFoundryBase\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Extensions.Configuration.CloudFoundryCore\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Extensions.Configuration.CloudFoundryAutofac\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Extensions.Configuration.ConfigServer\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Configuration.ConfigServerBase\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Extensions.Configuration.ConfigServerCore\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Extensions.Configuration.ConfigServerAutofac\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Extensions.Configuration.CloudFoundry\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Extensions.Configuration.CloudFoundryBase\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Extensions.Configuration.CloudFoundryCore\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Extensions.Configuration.CloudFoundryAutofac\bin\Debug\*.nupkg'
 deploy:

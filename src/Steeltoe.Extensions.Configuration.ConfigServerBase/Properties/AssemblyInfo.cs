@@ -14,7 +14,7 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.ConfigServer.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.ConfigServerBase.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.ConfigServerCore.Test")]
-[assembly: InternalsVisibleTo("Pivotal.Extensions.Configuration.ConfigServer.Test")]
+[assembly: InternalsVisibleTo("Pivotal.Extensions.Configuration.ConfigServerBase.Test")]
 [assembly: InternalsVisibleTo("Pivotal.Extensions.Configuration.ConfigServerCore.Test")]

@@ -49,17 +49,17 @@ To build the packages on windows:
 
 1. git clone ...
 1. cd clone directory
-1. cd src/`<project>` (e.g. cd src/Steeltoe.Extensions.Configuration.CloudFoundry)
+1. cd src/`<project>` (e.g. cd src/Steeltoe.Extensions.Configuration.CloudFoundryBase)
 1. dotnet restore
 1. dotnet pack --configuration Release or Debug
 
-The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Extensions.Configuration.CloudFoundry/bin
+The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Extensions.Configuration.CloudFoundryBase/bin
 
 To run the unit tests:
 
 1. git clone ...
 1. cd clone directory
-1. cd test/`<test project>` (e.g. cd test/Steeltoe.Extensions.Configuration.CloudFoundry.Test)
+1. cd test/`<test project>` (e.g. cd test/Steeltoe.Extensions.Configuration.CloudFoundryBase.Test)
 1. dotnet restore
 1. dotnet xunit -verbose
 
@@ -69,17 +69,17 @@ To build the packages on Linux/OSX:
 
 1. git clone ...
 1. cd clone directory
-1. cd src/`<project>` (e.g.. cd src/Steeltoe.Extensions.Configuration.CloudFoundry)
+1. cd src/`<project>` (e.g.. cd src/Steeltoe.Extensions.Configuration.CloudFoundryBase)
 1. dotnet restore
 1. dotnet pack --configuration Release or Debug
 
-The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Extensions.Configuration.CloudFoundry/bin
+The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Extensions.Configuration.CloudFoundryBase/bin
 
 To run the unit tests:
 
 1. git clone ...
 1. cd clone directory
-1. cd test/`<test project>` (e.g. cd test/Steeltoe.Extensions.Configuration.CloudFoundry.Test)
+1. cd test/`<test project>` (e.g. cd test/Steeltoe.Extensions.Configuration.CloudFoundryBase.Test)
 1. dotnet restore
 1. dotnet xunit -verbose -framework netcoreapp2.0
 
@@ -95,7 +95,7 @@ Unlike the Java version of the configuration server client, the Steeltoe client 
 
 ## Client decryption
 
-Steeltoe client only supports clear text communication with the configuration server. Client decryption is on our roadmap, but not currently supported. For now, you cannot send encrypted data to the client.
+Steeltoe client only supports clear text communication with the configuration server. Client decryption is on our road map, but not currently supported. For now, you cannot send encrypted data to the client.
 
 ## Server initiated reload
 

@@ -10,7 +10,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Configuration.CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Configuration.CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />

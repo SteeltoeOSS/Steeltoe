@@ -3,7 +3,7 @@
 echo Code is built in Unit Tests
 
 
-cd src/Steeltoe.Extensions.Configuration.CloudFoundry
+cd src/Steeltoe.Extensions.Configuration.CloudFoundryBase
 dotnet restore --configfile ../../nuget.config
 cd ../..
 
@@ -15,7 +15,7 @@ cd src/Steeltoe.Extensions.Configuration.CloudFoundryAutofac
 dotnet restore --configfile ../../nuget.config
 cd ../..
 
-cd src/Steeltoe.Extensions.Configuration.ConfigServer
+cd src/Steeltoe.Extensions.Configuration.ConfigServerBase
 dotnet restore --configfile ../../nuget.config
 cd ../..
 

@@ -25,10 +25,10 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\Steeltoe.Extensions.Configuration.CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj" />
+    <ProjectReference Include="..\Steeltoe.Extensions.Configuration.CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundry" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
   
   <PropertyGroup>
