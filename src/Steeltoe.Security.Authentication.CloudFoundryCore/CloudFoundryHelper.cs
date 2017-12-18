@@ -22,6 +22,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public static class CloudFoundryHelper
     {
+        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
         public static DateTime GetIssueTime(JObject payload)
         {
             if (payload == null)

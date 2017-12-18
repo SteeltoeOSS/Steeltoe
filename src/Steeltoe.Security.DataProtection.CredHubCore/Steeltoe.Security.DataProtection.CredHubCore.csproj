@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\versions.props" />
+  <PropertyGroup>
+    <Description>ASP.NET Core Extensions for CredHub Client</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <AssemblyName>Steeltoe.Security.DataProtection.CredHubCore</AssemblyName>
+    <PackageId>Steeltoe.Security.DataProtection.CredHubCore</PackageId>
+    <PackageTags>CloudFoundry;ASPNET Core;Security;DataProtection;CredHub</PackageTags>
+    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Security.DataProtection.CredHubCore.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <NoWarn>SA1100;SA1101;SA1124;SA1309;SA1310;SA1600;SA1611;SA1623;1591;1701;1702;1705</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Steeltoe.Security.DataProtection.CredHub\Steeltoe.Security.DataProtection.CredHub.csproj" />
+  </ItemGroup>
+</Project>

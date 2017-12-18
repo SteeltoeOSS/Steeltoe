@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="..\..\versions.props" />
-
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
@@ -12,8 +10,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.Security.Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj" />
   </ItemGroup>
@@ -21,6 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.analyzers" Version="$(XunitAnalyzersVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
 

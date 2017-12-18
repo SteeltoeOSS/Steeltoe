@@ -11,9 +11,12 @@
     <AssemblyName>Steeltoe.Security.Authentication.CloudFoundryWcf</AssemblyName>
     <PackageId>Steeltoe.Security.Authentication.CloudFoundryWcf</PackageId>
     <PackageTags>CloudFoundry;ASPNET;Security;Jwt;OAuth2;Bearer;SSO</PackageTags>
-    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Security.Authentication.CloudFoundryWcf.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +33,9 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <PropertyGroup>
     <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>

@@ -11,9 +11,12 @@
     <AssemblyName>Steeltoe.Security.Authentication.CloudFoundryOwin</AssemblyName>
     <PackageId>Steeltoe.Security.Authentication.CloudFoundryOwin</PackageId>
     <PackageTags>CloudFoundry;ASPNET;Security;OAuth2;SSO</PackageTags>
-    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Security.Authentication.CloudFoundryOwin.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

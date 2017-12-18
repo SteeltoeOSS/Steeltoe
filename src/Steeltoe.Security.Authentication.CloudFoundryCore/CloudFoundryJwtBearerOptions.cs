@@ -18,12 +18,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryJwtBearerOptions : JwtBearerOptions
     {
-        public string JwtKeyUrl { get; set; }
-
-        public bool Validate_Certificates { get; set; } = true;
-
-        public bool ValidateCertificates => Validate_Certificates;
-
         public CloudFoundryJwtBearerOptions()
         {
             string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
@@ -31,5 +25,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             JwtKeyUrl = authURL + CloudFoundryDefaults.JwtTokenKey;
             SaveToken = true;
         }
+
+        public string JwtKeyUrl { get; set; }
+
+        public bool Validate_Certificates { get; set; } = true;
+
+        public bool ValidateCertificates => Validate_Certificates;
     }
 }
