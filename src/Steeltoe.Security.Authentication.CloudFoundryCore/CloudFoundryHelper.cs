@@ -46,8 +46,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             return ToAbsoluteUTC(time);
         }
 
-        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         private static DateTime ToAbsoluteUTC(long secondsPastEpoch)
         {
             return baseTime.AddSeconds(secondsPastEpoch);
