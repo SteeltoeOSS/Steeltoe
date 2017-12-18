@@ -2,8 +2,8 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <SteeltoeCommonVersion>2.0.0-master-00041</SteeltoeCommonVersion>
+    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
     <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
     <AspNetCoreDepTestVersion>2.0.0</AspNetCoreDepTestVersion>    
