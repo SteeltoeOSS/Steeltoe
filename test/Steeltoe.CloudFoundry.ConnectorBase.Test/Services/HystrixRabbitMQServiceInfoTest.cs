@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Test.Services
 {
-    public class HystrixRabbitServiceInfoTest
+    public class HystrixRabbitMQServiceInfoTest
     {
         [Fact]
         public void Constructor_CreatesExpected()
@@ -30,8 +30,8 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             // List<string> managementUris = new List<string>() { "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/" };
             bool isSSLEnabled = false;
 
-            HystrixRabbitServiceInfo r1 = new HystrixRabbitServiceInfo("myId", uri, isSSLEnabled);
-            HystrixRabbitServiceInfo r2 = new HystrixRabbitServiceInfo("myId", uri, uris, isSSLEnabled);
+            HystrixRabbitMQServiceInfo r1 = new HystrixRabbitMQServiceInfo("myId", uri, isSSLEnabled);
+            HystrixRabbitMQServiceInfo r2 = new HystrixRabbitMQServiceInfo("myId", uri, uris, isSSLEnabled);
 
             Assert.Equal("myId", r1.Id);
             Assert.Equal("amqp", r1.Scheme);

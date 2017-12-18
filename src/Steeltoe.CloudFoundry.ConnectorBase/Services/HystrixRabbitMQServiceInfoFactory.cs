@@ -18,13 +18,13 @@ using System.Collections.Generic;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
-    public class HystrixRabbitServiceInfoFactory : ServiceInfoFactory
+    public class HystrixRabbitMQServiceInfoFactory : ServiceInfoFactory
     {
         public static readonly Tags HYSTRIX_RABBIT_SERVICE_TAGS = new Tags("hystrix-amqp");
 
-        private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };
+        private static string[] _scheme = new string[] { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
 
-        public HystrixRabbitServiceInfoFactory()
+        public HystrixRabbitMQServiceInfoFactory()
             : base(HYSTRIX_RABBIT_SERVICE_TAGS, _scheme)
         {
         }
@@ -42,10 +42,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             if (amqpCredentials.ContainsKey("uris"))
             {
                 List<string> uris = GetListFromCredentials(amqpCredentials, "uris");
-                return new HystrixRabbitServiceInfo(binding.Name, uri, uris, sslEnabled);
+                return new HystrixRabbitMQServiceInfo(binding.Name, uri, uris, sslEnabled);
             }
 
-            return new HystrixRabbitServiceInfo(binding.Name, uri, sslEnabled);
+            return new HystrixRabbitMQServiceInfo(binding.Name, uri, sslEnabled);
         }
 
         private bool UriCredentialsMatchesScheme(Dictionary<string, Credential> credentials)

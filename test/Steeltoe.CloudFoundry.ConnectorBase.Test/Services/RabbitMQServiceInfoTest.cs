@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
-    public class RabbitServiceInfoTest
+    public class RabbitMQServiceInfoTest
     {
         [Fact]
         public void Constructor_CreatesExpected()
@@ -27,11 +27,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             string managementUri = "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/";
             List<string> managementUris = new List<string>() { "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/" };
 
-            RabbitServiceInfo r1 = new RabbitServiceInfo("myId", uri);
-            RabbitServiceInfo r2 = new RabbitServiceInfo("myId", uri, managementUri);
-            RabbitServiceInfo r3 = new RabbitServiceInfo("myId", uri, managementUri, uris, managementUris);
-            RabbitServiceInfo r4 = new RabbitServiceInfo("myId", "192.168.0.81", 5672, "03c7a684-6ff1-4bd0-ad45-d10374ffb2af", "l5oq2q0unl35s6urfsuib0jvpo", "fb03d693-91fe-4dc5-8203-ff7a6390df66");
-            RabbitServiceInfo r5 = new RabbitServiceInfo("myId", "192.168.0.81", 5672, "03c7a684-6ff1-4bd0-ad45-d10374ffb2af", "l5oq2q0unl35s6urfsuib0jvpo", "fb03d693-91fe-4dc5-8203-ff7a6390df66", "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/");
+            RabbitMQServiceInfo r1 = new RabbitMQServiceInfo("myId", uri);
+            RabbitMQServiceInfo r2 = new RabbitMQServiceInfo("myId", uri, managementUri);
+            RabbitMQServiceInfo r3 = new RabbitMQServiceInfo("myId", uri, managementUri, uris, managementUris);
+            RabbitMQServiceInfo r4 = new RabbitMQServiceInfo("myId", "192.168.0.81", 5672, "03c7a684-6ff1-4bd0-ad45-d10374ffb2af", "l5oq2q0unl35s6urfsuib0jvpo", "fb03d693-91fe-4dc5-8203-ff7a6390df66");
+            RabbitMQServiceInfo r5 = new RabbitMQServiceInfo("myId", "192.168.0.81", 5672, "03c7a684-6ff1-4bd0-ad45-d10374ffb2af", "l5oq2q0unl35s6urfsuib0jvpo", "fb03d693-91fe-4dc5-8203-ff7a6390df66", "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/");
 
             Assert.Equal("myId", r1.Id);
             Assert.Equal("amqp", r1.Scheme);

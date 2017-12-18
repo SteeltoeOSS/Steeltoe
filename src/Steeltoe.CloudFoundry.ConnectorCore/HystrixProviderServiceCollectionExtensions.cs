@@ -37,7 +37,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
                 throw new ArgumentNullException(nameof(config));
             }
 
-            HystrixRabbitServiceInfo info = config.GetSingletonServiceInfo<HystrixRabbitServiceInfo>();
+            HystrixRabbitMQServiceInfo info = config.GetSingletonServiceInfo<HystrixRabbitMQServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime);
             return services;
@@ -60,13 +60,13 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
                 throw new ArgumentNullException(nameof(config));
             }
 
-            HystrixRabbitServiceInfo info = config.GetRequiredServiceInfo<HystrixRabbitServiceInfo>(serviceName);
+            HystrixRabbitMQServiceInfo info = config.GetRequiredServiceInfo<HystrixRabbitMQServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, HystrixRabbitServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, HystrixRabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
             Type rabbitFactory = ConnectorHelpers.FindType(rabbitAssemblies, rabbitTypeNames);
             if (rabbitFactory == null)

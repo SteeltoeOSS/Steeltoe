@@ -20,14 +20,14 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 {
     public class HystrixProviderConnectorFactory
     {
-        private HystrixRabbitServiceInfo _info;
+        private HystrixRabbitMQServiceInfo _info;
         private HystrixProviderConnectorOptions _config;
         private HystrixProviderConfigurer _configurer = new HystrixProviderConfigurer();
         private Type _type;
 
         private MethodInfo _setUri;
 
-        public HystrixProviderConnectorFactory(HystrixRabbitServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
+        public HystrixProviderConnectorFactory(HystrixRabbitMQServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
         {
             if (config == null)
             {

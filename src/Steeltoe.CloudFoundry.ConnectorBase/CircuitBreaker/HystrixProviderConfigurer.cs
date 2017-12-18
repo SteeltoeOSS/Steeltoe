@@ -18,13 +18,13 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 {
     public class HystrixProviderConfigurer
     {
-        internal string Configure(HystrixRabbitServiceInfo si, HystrixProviderConnectorOptions configuration)
+        internal string Configure(HystrixRabbitMQServiceInfo si, HystrixProviderConnectorOptions configuration)
         {
             UpdateConfiguration(si, configuration);
             return configuration.ToString();
         }
 
-        internal void UpdateConfiguration(HystrixRabbitServiceInfo si, HystrixProviderConnectorOptions configuration)
+        internal void UpdateConfiguration(HystrixRabbitMQServiceInfo si, HystrixProviderConnectorOptions configuration)
         {
             if (si == null)
             {

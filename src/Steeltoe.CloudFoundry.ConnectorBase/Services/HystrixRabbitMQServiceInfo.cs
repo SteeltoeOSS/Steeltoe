@@ -16,26 +16,26 @@ using System.Collections.Generic;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
-    public class HystrixRabbitServiceInfo : ServiceInfo
+    public class HystrixRabbitMQServiceInfo : ServiceInfo
     {
-        private RabbitServiceInfo rabbitInfo;
+        private RabbitMQServiceInfo rabbitInfo;
         private bool sslEnabled = false;
 
-        public HystrixRabbitServiceInfo(string id, string uri, bool sslEnabled)
+        public HystrixRabbitMQServiceInfo(string id, string uri, bool sslEnabled)
             : base(id)
         {
             this.sslEnabled = sslEnabled;
-            rabbitInfo = new RabbitServiceInfo(id, uri);
+            rabbitInfo = new RabbitMQServiceInfo(id, uri);
         }
 
-        public HystrixRabbitServiceInfo(string id, string uri, List<string> uris, bool sslEnabled)
+        public HystrixRabbitMQServiceInfo(string id, string uri, List<string> uris, bool sslEnabled)
             : base(id)
         {
-            rabbitInfo = new RabbitServiceInfo(id, uri, null, uris, null);
+            rabbitInfo = new RabbitMQServiceInfo(id, uri, null, uris, null);
             this.sslEnabled = sslEnabled;
         }
 
-        public RabbitServiceInfo RabbitInfo
+        public RabbitMQServiceInfo RabbitInfo
         {
             get
             {

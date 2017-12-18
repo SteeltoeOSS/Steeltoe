@@ -16,16 +16,16 @@ using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.Rabbit
+namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
-    public class RabbitProviderConnectorFactory
+    public class RabbitMQProviderConnectorFactory
     {
-        private RabbitServiceInfo _info;
-        private RabbitProviderConnectorOptions _config;
-        private RabbitProviderConfigurer _configurer = new RabbitProviderConfigurer();
+        private RabbitMQServiceInfo _info;
+        private RabbitMQProviderConnectorOptions _config;
+        private RabbitMQProviderConfigurer _configurer = new RabbitMQProviderConfigurer();
         private MethodInfo _setUri;
 
-        public RabbitProviderConnectorFactory(RabbitServiceInfo sinfo, RabbitProviderConnectorOptions config, Type connectFactory)
+        public RabbitMQProviderConnectorFactory(RabbitMQServiceInfo sinfo, RabbitMQProviderConnectorOptions config, Type connectFactory)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             ConnectorType = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
@@ -37,7 +37,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
             }
         }
 
-        internal RabbitProviderConnectorFactory()
+        internal RabbitMQProviderConnectorFactory()
         {
         }
 

@@ -20,7 +20,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
     public class HystrixProviderConfigurerTest
     {
         [Fact]
-        public void UpdateConfiguration_WithNullHystrixRabbitServiceInfo_ReturnsInitialConfiguration()
+        public void UpdateConfiguration_WithNullHystrixRabbitMQServiceInfo_ReturnsInitialConfiguration()
         {
             HystrixProviderConfigurer configurer = new HystrixProviderConfigurer();
             HystrixProviderConnectorOptions config = new HystrixProviderConnectorOptions()
@@ -42,7 +42,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
         }
 
         [Fact]
-        public void UpdateConfiguration_WithHystrixRabbitServiceInfo_UpdatesConfigurationFromServiceInfo()
+        public void UpdateConfiguration_WithHystrixRabbitMQServiceInfo_UpdatesConfigurationFromServiceInfo()
         {
             HystrixProviderConfigurer configurer = new HystrixProviderConfigurer();
             HystrixProviderConnectorOptions config = new HystrixProviderConnectorOptions()
@@ -53,7 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
                 Password = "password",
                 VirtualHost = "vhost"
             };
-            HystrixRabbitServiceInfo si = new HystrixRabbitServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
+            HystrixRabbitMQServiceInfo si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
 
             configurer.UpdateConfiguration(si, config);
 
@@ -66,7 +66,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
         }
 
         [Fact]
-        public void UpdateConfiguration_WithHystrixRabbitSSLServiceInfo_UpdatesConfigurationFromServiceInfo()
+        public void UpdateConfiguration_WithHystrixRabbitMQSSLServiceInfo_UpdatesConfigurationFromServiceInfo()
         {
             HystrixProviderConfigurer configurer = new HystrixProviderConfigurer();
             HystrixProviderConnectorOptions config = new HystrixProviderConnectorOptions()
@@ -77,7 +77,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
                 Password = "password",
                 VirtualHost = "vhost"
             };
-            HystrixRabbitServiceInfo si = new HystrixRabbitServiceInfo("MyId", "amqps://si_username:si_password@example.com:5671/si_vhost", false);
+            HystrixRabbitMQServiceInfo si = new HystrixRabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com:5671/si_vhost", false);
 
             configurer.UpdateConfiguration(si, config);
 
@@ -126,7 +126,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             };
 
             HystrixProviderConfigurer configurer = new HystrixProviderConfigurer();
-            HystrixRabbitServiceInfo si = new HystrixRabbitServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
+            HystrixRabbitMQServiceInfo si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
 
             var opts = configurer.Configure(si, config);
             var uri = new UriInfo(opts);
@@ -151,7 +151,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
             };
 
             HystrixProviderConfigurer configurer = new HystrixProviderConfigurer();
-            HystrixRabbitServiceInfo si = new HystrixRabbitServiceInfo("MyId", "amqps://si_username:si_password@example.com/si_vhost", false);
+            HystrixRabbitMQServiceInfo si = new HystrixRabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com/si_vhost", false);
 
             var opts = configurer.Configure(si, config);
             var uri = new UriInfo(opts);

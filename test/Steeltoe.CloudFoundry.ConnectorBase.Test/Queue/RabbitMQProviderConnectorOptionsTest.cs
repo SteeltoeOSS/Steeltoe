@@ -17,9 +17,9 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
+namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
 {
-    public class RabbitProviderConnectorOptionsTest
+    public class RabbitMQProviderConnectorOptionsTest
     {
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
@@ -28,7 +28,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             IConfiguration config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new RabbitProviderConnectorOptions(config));
+            var ex = Assert.Throws<ArgumentNullException>(() => new RabbitMQProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
 
@@ -48,14 +48,14 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var sconfig = new RabbitProviderConnectorOptions(config);
+            var sconfig = new RabbitMQProviderConnectorOptions(config);
             Assert.Equal("localhost", sconfig.Server);
             Assert.Equal(1234, sconfig.Port);
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("username", sconfig.Username);
             Assert.Null(sconfig.Uri);
             Assert.True(sconfig.SslEnabled);
-            Assert.Equal(RabbitProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
+            Assert.Equal(RabbitMQProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var sconfig = new RabbitProviderConnectorOptions(config);
+            var sconfig = new RabbitMQProviderConnectorOptions(config);
             string result = sconfig.ToString();
             Assert.Equal("amqps://username:password@localhost:5671/foobar", result);
         }

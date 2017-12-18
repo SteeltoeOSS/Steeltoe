@@ -16,23 +16,22 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 
-namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
+namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
 {
-    public class RabbitServiceCollectionExtensionsTest
+    public class RabbitMQServiceCollectionExtensionsTest
     {
-        public RabbitServiceCollectionExtensionsTest()
+        public RabbitMQServiceCollectionExtensionsTest()
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
         }
 
         [Fact]
-        public void AddRabbitConnection_ThrowsIfServiceCollectionNull()
+        public void AddRabbitMQConnection_ThrowsIfServiceCollectionNull()
         {
             // Arrange
             IServiceCollection services = null;
@@ -41,17 +40,17 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             // Act and Assert
             var ex =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config));
+                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
             var ex2 =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config, "foobar"));
+                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
         [Fact]
-        public void AddRabbitConnection_ThrowsIfConfigurationNull()
+        public void AddRabbitMQConnection_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -60,17 +59,17 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             // Act and Assert
             var ex =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config));
+                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
             var ex2 =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config, "foobar"));
+                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
         [Fact]
-        public void AddRabbitConnection_ThrowsIfServiceNameNull()
+        public void AddRabbitMQConnection_ThrowsIfServiceNameNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -80,26 +79,26 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             // Act and Assert
             var ex =
                 Assert.Throws<ArgumentNullException>(
-                    () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config, serviceName));
+                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
         [Fact]
-        public void AddRabbitConnection_NoVCAPs_AddsConfiguredConnection()
+        public void AddRabbitMQConnection_NoVCAPs_AddsConfiguredConnection()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config);
+            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
 
             var service = services.BuildServiceProvider().GetService<IConnectionFactory>();
             Assert.NotNull(service);
         }
 
         [Fact]
-        public void AddRabbitConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
+        public void AddRabbitMQConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -108,12 +107,12 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             // Act and Assert
             var ex =
                 Assert.Throws<ConnectorException>(
-                    () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config, "foobar"));
+                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
         [Fact]
-        public void AddRabbitConnection_MultipleRabbitServices_ThrowsConnectorException()
+        public void AddRabbitMQConnection_MultipleRabbitMQServices_ThrowsConnectorException()
         {
             // Arrange
             var env2 = @"
@@ -127,7 +126,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
           'label': 'p-rabbitmq',
           'provider': null,
           'plan': 'standard',
-          'name': 'myRabbitService1',
+          'name': 'myRabbitMQService1',
           'tags': [
             'rabbitmq',
             'amqp'
@@ -141,7 +140,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
           'label': 'p-Rabbit',
           'provider': null,
           'plan': 'standard',
-          'name': 'myRabbitService2',
+          'name': 'myRabbitMQService2',
           'tags': [
             'rabbitmq',
             'amqp'
@@ -164,12 +163,12 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             // Act and Assert
             var ex =
                 Assert.Throws<ConnectorException>(
-                    () => RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config));
+                    () => RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config));
             Assert.Contains("Multiple", ex.Message);
         }
 
         [Fact]
-        public void AddRabbitConnection_WithVCAPs_AddsRabbitConnection()
+        public void AddRabbitMQConnection_WithVCAPs_AddsRabbitMQConnection()
         {
             // Arrange
             var env2 = @"
@@ -183,7 +182,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
           'label': 'p-rabbitmq',
           'provider': null,
           'plan': 'standard',
-          'name': 'myRabbitService',
+          'name': 'myRabbitMQService',
           'tags': [
             'rabbitmq',
             'amqp'
@@ -204,7 +203,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
             var config = builder.Build();
 
             // Act and Assert
-            RabbitProviderServiceCollectionExtensions.AddRabbitConnection(services, config);
+            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
 
             var service = services.BuildServiceProvider().GetService<IConnectionFactory>() as ConnectionFactory;
             Assert.NotNull(service);

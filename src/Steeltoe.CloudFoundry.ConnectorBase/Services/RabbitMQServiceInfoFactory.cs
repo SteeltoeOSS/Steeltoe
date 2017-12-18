@@ -17,13 +17,13 @@ using System.Collections.Generic;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
-    public class RabbitServiceInfoFactory : ServiceInfoFactory
+    public class RabbitMQServiceInfoFactory : ServiceInfoFactory
     {
         public static readonly Tags RABBIT_SERVICE_TAGS = new Tags("rabbit");
 
-        private static string[] _scheme = new string[] { RabbitServiceInfo.AMQP_SCHEME, RabbitServiceInfo.AMQPS_SCHEME };
+        private static string[] _scheme = new string[] { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
 
-        public RabbitServiceInfoFactory()
+        public RabbitMQServiceInfoFactory()
             : base(RABBIT_SERVICE_TAGS, _scheme)
         {
         }
@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             bool result = base.Accept(binding);
             if (result)
             {
-                result = !HystrixRabbitServiceInfoFactory.HYSTRIX_RABBIT_SERVICE_TAGS.ContainsOne(binding.Tags);
+                result = !HystrixRabbitMQServiceInfoFactory.HYSTRIX_RABBIT_SERVICE_TAGS.ContainsOne(binding.Tags);
             }
 
             return result;
@@ -48,10 +48,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             {
                 List<string> uris = GetListFromCredentials(binding.Credentials, "uris");
                 List<string> managementUris = GetListFromCredentials(binding.Credentials, "http_api_uris");
-                return new RabbitServiceInfo(binding.Name, uri, managementUri, uris, managementUris);
+                return new RabbitMQServiceInfo(binding.Name, uri, managementUri, uris, managementUris);
             }
 
-            return new RabbitServiceInfo(binding.Name, uri, managementUri);
+            return new RabbitMQServiceInfo(binding.Name, uri, managementUri);
         }
     }
 }

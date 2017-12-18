@@ -14,17 +14,17 @@
 
 using Steeltoe.CloudFoundry.Connector.Services;
 
-namespace Steeltoe.CloudFoundry.Connector.Rabbit
+namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
-    public class RabbitProviderConfigurer
+    public class RabbitMQProviderConfigurer
     {
-        internal string Configure(RabbitServiceInfo si, RabbitProviderConnectorOptions configuration)
+        internal string Configure(RabbitMQServiceInfo si, RabbitMQProviderConnectorOptions configuration)
         {
             UpdateConfiguration(si, configuration);
             return configuration.ToString();
         }
 
-        internal void UpdateConfiguration(RabbitServiceInfo si, RabbitProviderConnectorOptions configuration)
+        internal void UpdateConfiguration(RabbitMQServiceInfo si, RabbitMQProviderConnectorOptions configuration)
         {
             if (si == null)
             {
@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
 
             if (!string.IsNullOrEmpty(si.Uri))
             {
-                if (si.Scheme.Equals(RabbitProviderConnectorOptions.Default_SSLScheme, System.StringComparison.OrdinalIgnoreCase))
+                if (si.Scheme.Equals(RabbitMQProviderConnectorOptions.Default_SSLScheme, System.StringComparison.OrdinalIgnoreCase))
                 {
                     configuration.SslEnabled = true;
                     configuration.SslPort = si.Port;

@@ -26,7 +26,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
         {
             // Arrange
             HystrixProviderConnectorOptions config = null;
-            HystrixRabbitServiceInfo si = null;
+            HystrixRabbitMQServiceInfo si = null;
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
         }
 
         [Fact]
-        public void Create_ReturnsRabbitConnection()
+        public void Create_ReturnsRabbitMQConnection()
         {
             HystrixProviderConnectorOptions config = new HystrixProviderConnectorOptions()
             {
@@ -44,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
                 Username = "username",
                 VirtualHost = "vhost"
             };
-            HystrixRabbitServiceInfo si = new HystrixRabbitServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
+            HystrixRabbitMQServiceInfo si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
             var factory = new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory));
             var connection = factory.Create(null);
             Assert.NotNull(connection);

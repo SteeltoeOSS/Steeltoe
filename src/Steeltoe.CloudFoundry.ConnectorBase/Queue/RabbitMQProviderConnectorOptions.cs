@@ -16,9 +16,9 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.Rabbit
+namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
-    public class RabbitProviderConnectorOptions : AbstractServiceConnectorOptions
+    public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
     {
         public const string Default_Scheme = "amqp";
         public const string Default_SSLScheme = "amqps";
@@ -27,11 +27,11 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit
         public const int Default_SSLPort = 5671;
         private const string RABBIT_CLIENT_SECTION_PREFIX = "rabbit:client";
 
-        public RabbitProviderConnectorOptions()
+        public RabbitMQProviderConnectorOptions()
         {
         }
 
-        public RabbitProviderConnectorOptions(IConfiguration config)
+        public RabbitMQProviderConnectorOptions(IConfiguration config)
             : base()
         {
             if (config == null)

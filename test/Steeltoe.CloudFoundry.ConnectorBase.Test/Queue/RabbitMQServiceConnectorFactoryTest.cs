@@ -17,26 +17,26 @@ using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
+namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
 {
-    public class RabbitServiceConnectorFactoryTest
+    public class RabbitMQServiceConnectorFactoryTest
     {
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
             // Arrange
-            RabbitProviderConnectorOptions config = null;
-            RabbitServiceInfo si = null;
+            RabbitMQProviderConnectorOptions config = null;
+            RabbitMQServiceInfo si = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new RabbitProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
+            var ex = Assert.Throws<ArgumentNullException>(() => new RabbitMQProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
             Assert.Contains(nameof(config), ex.Message);
         }
 
         [Fact]
-        public void Create_ReturnsRabbitConnection()
+        public void Create_ReturnsRabbitMQConnection()
         {
-            RabbitProviderConnectorOptions config = new RabbitProviderConnectorOptions()
+            RabbitMQProviderConnectorOptions config = new RabbitMQProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 5672,
@@ -44,8 +44,8 @@ namespace Steeltoe.CloudFoundry.Connector.Rabbit.Test
                 Username = "username",
                 VirtualHost = "vhost"
             };
-            RabbitServiceInfo si = new RabbitServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
-            var factory = new RabbitProviderConnectorFactory(si, config, typeof(ConnectionFactory));
+            RabbitMQServiceInfo si = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
+            var factory = new RabbitMQProviderConnectorFactory(si, config, typeof(ConnectionFactory));
             var connection = factory.Create(null);
             Assert.NotNull(connection);
         }
