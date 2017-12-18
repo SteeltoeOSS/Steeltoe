@@ -36,12 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public ServiceInfoFactory(Tags tags, string[] schemes)
         {
-            if (tags == null)
-            {
-                throw new ArgumentNullException(nameof(tags));
-            }
-
-            ServiceInfoTags = tags;
+            ServiceInfoTags = tags ?? throw new ArgumentNullException(nameof(tags));
             UriSchemes = schemes;
             if (schemes != null)
             {
@@ -139,8 +134,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
             foreach (string uriScheme in UriSchemes)
             {
-                if (credentials.ContainsKey(uriScheme + "Uri") || credentials.ContainsKey(uriScheme + "uri") ||
-                        credentials.ContainsKey(uriScheme + "Url") || credentials.ContainsKey(uriScheme + "url"))
+                if (credentials.ContainsKey(uriScheme + "Uri") || credentials.ContainsKey(uriScheme + "uri") || credentials.ContainsKey(uriScheme + "Url") || credentials.ContainsKey(uriScheme + "url"))
                 {
                     return true;
                 }

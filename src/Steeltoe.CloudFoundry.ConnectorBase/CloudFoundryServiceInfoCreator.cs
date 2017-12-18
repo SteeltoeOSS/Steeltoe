@@ -68,6 +68,11 @@ namespace Steeltoe.CloudFoundry.Connector
             return _me;
         }
 
+        /// <summary>
+        /// Get all Service Infos of type
+        /// </summary>
+        /// <typeparam name="SI">Service Info Type to retrieve</typeparam>
+        /// <returns>List of matching Service Infos</returns>
         public List<SI> GetServiceInfos<SI>()
             where SI : class
         {
@@ -83,6 +88,12 @@ namespace Steeltoe.CloudFoundry.Connector
             return results;
         }
 
+        /// <summary>
+        /// Get a named service
+        /// </summary>
+        /// <typeparam name="SI">Service Info type</typeparam>
+        /// <param name="name">Service name</param>
+        /// <returns>Service info or null</returns>
         public SI GetServiceInfo<SI>(string name)
             where SI : class
         {
@@ -99,11 +110,21 @@ namespace Steeltoe.CloudFoundry.Connector
             return null;
         }
 
+        /// <summary>
+        /// Get all Service Infos of type
+        /// </summary>
+        /// <param name="type">Service Info Type to retrieve</param>
+        /// <returns>List of matching Service Infos</returns>
         public List<IServiceInfo> GetServiceInfos(Type type)
         {
             return _serviceInfos.Where((info) => info.GetType() == type).ToList();
         }
 
+        /// <summary>
+        /// Get a named Service Info
+        /// </summary>
+        /// <param name="name">Name of service info</param>
+        /// <returns>Service info</returns>
         public IServiceInfo GetServiceInfo(string name)
         {
             return _serviceInfos.Where((info) => info.Id.Equals(name)).FirstOrDefault();

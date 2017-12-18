@@ -39,10 +39,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         {
             var appsettings = new Dictionary<string, string>()
                 {
-                    ["SqlServer:credentials:uid"] = "username",
-                    ["SqlServer:credentials:uri"] = "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e",
-                    ["SqlServer:credentials:db"] = "de5aa3a747c134b3d8780f8cc80be519e",
-                    ["SqlServer:credentials:pw"] = "password"
+                    ["sqlserver:credentials:uid"] = "username",
+                    ["sqlserver:credentials:uri"] = "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e",
+                    ["sqlserver:credentials:db"] = "de5aa3a747c134b3d8780f8cc80be519e",
+                    ["sqlserver:credentials:pw"] = "password"
                 };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();

@@ -41,6 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             {
                 ["mysql:client:server"] = "localhost",
                 ["mysql:client:port"] = "1234",
+                ["mysql:client:PersistSecurityInfo"] = "true",
                 ["mysql:client:password"] = "password",
                 ["mysql:client:username"] = "username"
             };
@@ -52,6 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             var sconfig = new MySqlProviderConnectorOptions(config);
             Assert.Equal("localhost", sconfig.Server);
             Assert.Equal(1234, sconfig.Port);
+            Assert.True(sconfig.PersistSecurityInfo);
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("username", sconfig.Username);
             Assert.Null(sconfig.ConnectionString);

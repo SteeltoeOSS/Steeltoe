@@ -66,7 +66,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             Type redisConnection = ConnectorHelpers.FindType(redisAssemblies, redisTypeNames);
             Type redisOptions = ConnectorHelpers.FindType(redisAssemblies, redisOptionNames);
-            MethodInfo initializer = ConnectorHelpers.FindMethod(redisConnection, "Connect", null);
+            MethodInfo initializer = ConnectorHelpers.FindMethod(redisConnection, "Connect");
 
             var info = serviceName == null ? config.GetSingletonServiceInfo<RedisServiceInfo>() : config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
             return new RedisServiceConnectorFactory(info, connectorOptions, redisConnection, redisOptions, initializer ?? null);

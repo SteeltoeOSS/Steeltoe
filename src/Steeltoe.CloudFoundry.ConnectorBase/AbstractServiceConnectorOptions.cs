@@ -47,14 +47,14 @@ namespace Steeltoe.CloudFoundry.Connector
             this._keyValueTerm = keyValueTerm;
         }
 
-        protected internal void AddKeyValue(StringBuilder sb, string key, int value)
+        protected internal void AddKeyValue(StringBuilder sb, string key, int? value)
         {
-            AddKeyValue(sb, key, value.ToString());
+            AddKeyValue(sb, key, value?.ToString());
         }
 
-        protected internal void AddKeyValue(StringBuilder sb, string key, bool value)
+        protected internal void AddKeyValue(StringBuilder sb, string key, bool? value)
         {
-            AddKeyValue(sb, key, value.ToString().ToLowerInvariant());
+            AddKeyValue(sb, key, value?.ToString().ToLowerInvariant());
         }
 
         protected internal void AddKeyValue(StringBuilder sb, string key, string value)

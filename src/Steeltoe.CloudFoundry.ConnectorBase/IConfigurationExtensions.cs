@@ -22,6 +22,12 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public static class IConfigurationExtensions
     {
+        /// <summary>
+        /// Get configuration info for all services of a given service type
+        /// </summary>
+        /// <typeparam name="SI">Service info type you're looking for</typeparam>
+        /// <param name="config">Configuration to search</param>
+        /// <returns>List of service infos</returns>
         public static List<SI> GetServiceInfos<SI>(this IConfiguration config)
             where SI : class
         {
@@ -29,18 +35,37 @@ namespace Steeltoe.CloudFoundry.Connector
             return factory.GetServiceInfos<SI>();
         }
 
+        /// <summary>
+        /// Get configuration info for all services of a given service type
+        /// </summary>
+        /// <param name="config">Configuration to search</param>
+        /// <param name="infoType">Type to search for</param>
+        /// <returns>A list of relevant <see cref="IServiceInfo"/></returns>
         public static List<IServiceInfo> GetServiceInfos(this IConfiguration config, Type infoType)
         {
             CloudFoundryServiceInfoCreator factory = CloudFoundryServiceInfoCreator.Instance(config);
             return factory.GetServiceInfos(infoType);
         }
 
+        /// <summary>
+        /// Get service info when you know the Id
+        /// </summary>
+        /// <param name="config">Configuration to search</param>
+        /// <param name="id">Id of service</param>
+        /// <returns>Requested implementation of <see cref="IServiceInfo"/></returns>
         public static IServiceInfo GetServiceInfo(this IConfiguration config, string id)
         {
             CloudFoundryServiceInfoCreator factory = CloudFoundryServiceInfoCreator.Instance(config);
             return factory.GetServiceInfo(id);
         }
 
+        /// <summary>
+        /// Get service info of a given type when you know the Id
+        /// </summary>
+        /// <typeparam name="SI">Service info type you're looking for</typeparam>
+        /// <param name="config">Configuration to search</param>
+        /// <param name="id">Id of service</param>
+        /// <returns>Requested implementation of <see cref="IServiceInfo"/></returns>
         public static SI GetServiceInfo<SI>(this IConfiguration config, string id)
             where SI : class
         {
@@ -48,6 +73,13 @@ namespace Steeltoe.CloudFoundry.Connector
             return factory.GetServiceInfo<SI>(id);
         }
 
+        /// <summary>
+        /// Get Service Info from IConfiguration
+        /// </summary>
+        /// <typeparam name="SI">Type of Service Info to return</typeparam>
+        /// <param name="config">Configuration to retrieve service info from</param>
+        /// <exception cref="ConnectorException">Thrown when multple matching services are found</exception>
+        /// <returns>Information requried to connect to provisioned service</returns>
         public static SI GetSingletonServiceInfo<SI>(this IConfiguration config)
             where SI : class
         {
@@ -65,6 +97,14 @@ namespace Steeltoe.CloudFoundry.Connector
             return null;
         }
 
+        /// <summary>
+        /// Get info for a named service
+        /// </summary>
+        /// <typeparam name="SI">Type of Service Info to return</typeparam>
+        /// <param name="config">Configuration to retrieve service info from</param>
+        /// <param name="serviceName">Name of the service</param>
+        /// <exception cref="ConnectorException">Thrown when service info isn't found</exception>
+        /// <returns>Information requried to connect to provisioned service</returns>
         public static SI GetRequiredServiceInfo<SI>(this IConfiguration config, string serviceName)
             where SI : class
         {

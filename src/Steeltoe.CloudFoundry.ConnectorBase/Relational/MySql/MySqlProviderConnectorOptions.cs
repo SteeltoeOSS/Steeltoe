@@ -18,6 +18,9 @@ using System.Text;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql
 {
+    /// <summary>
+    /// https://dev.mysql.com/doc/connector-net/en/connector-net-connection-options.html
+    /// </summary>
     public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
     {
         public const string Default_Server = "localhost";
@@ -57,6 +60,58 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
         public string SslMode { get; set; }
 
+        public bool? AllowBatch { get; set; }
+
+        public bool? AllowUserVariables { get; set; }
+
+        public bool? AutoEnlist { get; set; }
+
+        public bool? CheckParameters { get; set; }
+
+        public int? ConnectionTimeout { get; set; }
+
+        public int? DefaultCommandTimeout { get; set; }
+
+        public int? DefaultTableCacheAge { get; set; }
+
+        public bool? EnableSessionExpireCallback { get; set; }
+
+        public bool? FunctionsReturnString { get; set; }
+
+        public bool? IgnorePrepare { get; set; }
+
+        public bool? IncludeSecurityAsserts { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether various pieces of information are output to any configured TraceListeners
+        /// </summary>
+        /// <remarks>Currently not supported for .NET Core implementations.</remarks>
+        public bool? Logging { get; set; }
+
+        public bool? OldGuids { get; set; }
+
+        public bool? OldSyntax { get; set; }
+
+        public bool? PersistSecurityInfo { get; set; }
+
+        public bool? SqlServerMode { get; set; }
+
+        public bool? TableCache { get; set; }
+
+        public bool? TreatBlobsAsUTF8 { get; set; }
+
+        public bool? TreatTinyAsBoolean { get; set; }
+
+        public bool? UseAffectedRows { get; set; }
+
+        public bool? UseProcedureBodies { get; set; }
+
+        public bool? UseCompression { get; set; }
+
+        public bool? UseUsageAdvisor { get; set; }
+
+        public bool? UsePerformanceMonitor { get; set; }
+
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
@@ -71,6 +126,30 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             AddKeyValue(sb, nameof(Password), Password);
             AddKeyValue(sb, nameof(Database), Database);
             AddKeyValue(sb, nameof(SslMode), SslMode);
+            AddKeyValue(sb, nameof(AllowBatch), AllowBatch);
+            AddKeyValue(sb, nameof(AllowUserVariables), AllowUserVariables);
+            AddKeyValue(sb, nameof(AutoEnlist), AutoEnlist);
+            AddKeyValue(sb, nameof(CheckParameters), CheckParameters);
+            AddKeyValue(sb, nameof(ConnectionTimeout), ConnectionTimeout);
+            AddKeyValue(sb, nameof(DefaultCommandTimeout), DefaultCommandTimeout);
+            AddKeyValue(sb, nameof(DefaultTableCacheAge), DefaultTableCacheAge);
+            AddKeyValue(sb, nameof(EnableSessionExpireCallback), EnableSessionExpireCallback);
+            AddKeyValue(sb, nameof(FunctionsReturnString), FunctionsReturnString);
+            AddKeyValue(sb, nameof(IgnorePrepare), IgnorePrepare);
+            AddKeyValue(sb, nameof(IncludeSecurityAsserts), IncludeSecurityAsserts);
+            AddKeyValue(sb, nameof(Logging), Logging);
+            AddKeyValue(sb, nameof(OldGuids), OldGuids);
+            AddKeyValue(sb, nameof(OldSyntax), OldSyntax);
+            AddKeyValue(sb, nameof(PersistSecurityInfo), PersistSecurityInfo);
+            AddKeyValue(sb, nameof(SqlServerMode), SqlServerMode);
+            AddKeyValue(sb, nameof(TableCache), TableCache);
+            AddKeyValue(sb, nameof(TreatBlobsAsUTF8), TreatBlobsAsUTF8);
+            AddKeyValue(sb, nameof(TreatTinyAsBoolean), TreatTinyAsBoolean);
+            AddKeyValue(sb, nameof(UseAffectedRows), UseAffectedRows);
+            AddKeyValue(sb, nameof(UseProcedureBodies), UseProcedureBodies);
+            AddKeyValue(sb, nameof(UseCompression), UseCompression);
+            AddKeyValue(sb, nameof(UseUsageAdvisor), UseUsageAdvisor);
+            AddKeyValue(sb, nameof(UsePerformanceMonitor), UsePerformanceMonitor);
             return sb.ToString();
         }
     }

@@ -19,6 +19,11 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public static class ConnectorHelpers
     {
+        /// <summary>
+        /// Find an assembly
+        /// </summary>
+        /// <param name="name">Name of the assembly to find</param>
+        /// <returns>A representation of the assembly</returns>
         public static Assembly FindAssembly(string name)
         {
             try
@@ -34,6 +39,13 @@ namespace Steeltoe.CloudFoundry.Connector
             return null;
         }
 
+        /// <summary>
+        /// Search a list of assemblies for the first matching type
+        /// </summary>
+        /// <param name="assemblyNames">List of assembly names to search</param>
+        /// <param name="typeNames">List of suitable types</param>
+        /// <returns>An appropriate type</returns>
+        /// <remarks>Great for finding an implementation type that could have one or more names in one or more assemblies</remarks>
         public static Type FindType(string[] assemblyNames, string[] typeNames)
         {
             foreach (var assemblyName in assemblyNames)
@@ -55,6 +67,12 @@ namespace Steeltoe.CloudFoundry.Connector
             return null;
         }
 
+        /// <summary>
+        /// Find a type from within an assembly
+        /// </summary>
+        /// <param name="assembly">The assembly to search</param>
+        /// <param name="typeName">The name of the type to retrieve</param>
+        /// <returns>The type</returns>
         public static Type FindType(Assembly assembly, string typeName)
         {
             try
@@ -68,7 +86,14 @@ namespace Steeltoe.CloudFoundry.Connector
             return null;
         }
 
-        public static MethodInfo FindMethod(Type type, string methodName, Type[] parameters)
+        /// <summary>
+        /// Find a method within a type
+        /// </summary>
+        /// <param name="type">The type to search</param>
+        /// <param name="methodName">The name of the method</param>
+        /// <param name="parameters">(Optional) The parameters in the signature</param>
+        /// <returns>The method you're searching for</returns>
+        public static MethodInfo FindMethod(Type type, string methodName, Type[] parameters = null)
         {
             try
             {
@@ -86,6 +111,13 @@ namespace Steeltoe.CloudFoundry.Connector
             return null;
         }
 
+        /// <summary>
+        /// Invoke a function
+        /// </summary>
+        /// <param name="member">The method to execute</param>
+        /// <param name="instance">Instance of an object, if required by the method</param>
+        /// <param name="args">Arguments to pass to the method</param>
+        /// <returns>Results of method call</returns>
         public static object Invoke(MethodBase member, object instance, object[] args)
         {
             try
@@ -99,7 +131,13 @@ namespace Steeltoe.CloudFoundry.Connector
             return null;
         }
 
-        public static object CreateInstance(Type t, object[] args)
+        /// <summary>
+        /// Create an instance of a type
+        /// </summary>
+        /// <param name="t">Type to instantiate</param>
+        /// <param name="args">Constructor parameters</param>
+        /// <returns>New instance of desired type</returns>
+        public static object CreateInstance(Type t, object[] args = null)
         {
             try
             {
