@@ -2,7 +2,7 @@
 
 echo Code is built in Unit Tests
 
-cd src/Steeltoe.CircuitBreaker.Hystrix.Core
+cd src/Steeltoe.CircuitBreaker.HystrixBase
 dotnet restore --configfile ../../nuget.config
 cd ../..
 

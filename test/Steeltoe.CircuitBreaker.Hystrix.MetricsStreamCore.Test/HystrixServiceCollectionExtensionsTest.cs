@@ -67,7 +67,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
             var factory = provider.GetService<HystrixConnectionFactory>();
             Assert.NotNull(factory);
 
-            publisher.sampleSubscription.Dispose();
+            publisher.SampleSubscription.Dispose();
 
         }
     }

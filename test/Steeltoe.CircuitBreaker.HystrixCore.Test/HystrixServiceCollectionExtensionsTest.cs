@@ -130,7 +130,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             var expectedCommandKey = HystrixCommandKeyDefault.AsKey(typeof(DummyCommand).Name);
             Assert.Equal(expectedCommandKey, command.CommandKey);
             Assert.NotNull(command.Options);
-            Assert.NotNull(command.Options.dynamic);
+            Assert.NotNull(command.Options._dynamic);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -143,7 +143,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(groupKey, command.CommandGroup);
             Assert.Equal(expectedCommandKey, command.CommandKey);
             Assert.NotNull(command.Options);
-            Assert.NotNull(command.Options.dynamic);
+            Assert.NotNull(command.Options._dynamic);
 
             services = new ServiceCollection();
             HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, "GroupKey", config);
@@ -154,7 +154,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             expectedCommandKey = HystrixCommandKeyDefault.AsKey(typeof(DummyCommand).Name);
             Assert.Equal(expectedCommandKey, command.CommandKey);
             Assert.NotNull(command.Options);
-            Assert.NotNull(command.Options.dynamic);
+            Assert.NotNull(command.Options._dynamic);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -167,7 +167,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal("GroupKey", command.CommandGroup.Name);
             Assert.Equal(expectedCommandKey, command.CommandKey);
             Assert.NotNull(command.Options);
-            Assert.NotNull(command.Options.dynamic);
+            Assert.NotNull(command.Options._dynamic);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -178,7 +178,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(groupKey, command.CommandGroup);
             Assert.Equal(commandKey, command.CommandKey);
             Assert.NotNull(command.Options);
-            Assert.NotNull(command.Options.dynamic);
+            Assert.NotNull(command.Options._dynamic);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -191,7 +191,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(groupKey, command.CommandGroup);
             Assert.Equal(commandKey, command.CommandKey);
             Assert.NotNull(command.Options);
-            Assert.NotNull(command.Options.dynamic);
+            Assert.NotNull(command.Options._dynamic);
 
 
             services = new ServiceCollection();
@@ -202,7 +202,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal("GroupKey", command.CommandGroup.Name);
             Assert.Equal("CommandKey", command.CommandKey.Name);
             Assert.NotNull(command.Options);
-            Assert.NotNull(command.Options.dynamic);
+            Assert.NotNull(command.Options._dynamic);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -215,7 +215,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal("GroupKey", command.CommandGroup.Name);
             Assert.Equal("CommandKey", command.CommandKey.Name);
             Assert.NotNull(command.Options);
-            Assert.NotNull(command.Options.dynamic);
+            Assert.NotNull(command.Options._dynamic);
 
 
         }

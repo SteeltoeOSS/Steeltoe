@@ -5,6 +5,7 @@
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore</Description>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test</PackageId>
     <PackageTags>ASPNET Core;CircuitBreaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>

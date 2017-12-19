@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +19,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
-
 {
     public class HystrixRequestContextMiddleware
     {
@@ -36,24 +34,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var hystrix = HystrixRequestContext.InitializeContext();
 
             await _next.Invoke(context);
-
-            hystrix.Dispose();
-        }
-    }
-    public class HystrixRequestContextMiddlewareOwin
-    {
-        private readonly Func<IDictionary<string, object>, Task> _next;
-
-        public HystrixRequestContextMiddlewareOwin(Func<IDictionary<string, object>, Task> next)
-        {
-            _next = next;
-        }
-
-        public async Task Invoke(IDictionary<string, object> environment)
-        {
-            var hystrix = HystrixRequestContext.InitializeContext();
-
-            await _next(environment);
 
             hystrix.Dispose();
         }

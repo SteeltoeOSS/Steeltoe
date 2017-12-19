@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,29 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using System.Threading.Tasks;
+using Steeltoe.CircuitBreaker.Hystrix.Serial;
+using System;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
-using Steeltoe.CircuitBreaker.Hystrix.Serial;
+using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
 {
     [Route("hystrix/hystrix.stream")]
     public class HystrixMetricsStreamController : HystrixStreamBaseController
     {
-
-
-        public HystrixMetricsStreamController(HystrixDashboardStream stream) :
-            this(stream.Observe())
+        public HystrixMetricsStreamController(HystrixDashboardStream stream)
+            : this(stream.Observe())
         {
-
         }
 
         private HystrixMetricsStreamController(IObservable<HystrixDashboardStream.DashboardData> observable)
-            : base(observable.Map((data) => {
+            : base(observable.Map((data) =>
+            {
                  return SerialHystrixDashboardData.ToMultipleJsonStrings(data).ToObservable();
              }).SelectMany(n => n))
         {
@@ -46,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
         {
             HandleRequest();
             await Request.HttpContext.RequestAborted;
-            sampleSubscription.Dispose();
+            SampleSubscription.Dispose();
         }
     }
 }

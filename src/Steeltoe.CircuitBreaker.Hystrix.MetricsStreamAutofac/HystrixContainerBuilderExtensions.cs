@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +27,6 @@ using Steeltoe.Common.Options.Autofac;
 using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
-
 {
     public static class HystrixContainerBuilderExtensions
     {
@@ -58,7 +56,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             container.RegisterOption<HystrixMetricsStreamOptions>(config.GetSection(HYSTRIX_STREAM_PREFIX));
             container.RegisterType<RabbitMetricsStreamPublisher>().SingleInstance();
-
         }
 
         public static void RegisterHystrixRequestEventStream(this ContainerBuilder container, IConfiguration config)
@@ -67,6 +64,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 throw new ArgumentNullException(nameof(container));
             }
+
             container.RegisterInstance(HystrixRequestEventsStream.GetInstance()).SingleInstance();
         }
 
@@ -76,6 +74,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 throw new ArgumentNullException(nameof(container));
             }
+
             container.RegisterInstance(HystrixUtilizationStream.GetInstance()).SingleInstance();
         }
 
@@ -85,6 +84,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 throw new ArgumentNullException(nameof(container));
             }
+
             container.RegisterInstance(HystrixConfigurationStream.GetInstance()).SingleInstance();
         }
 

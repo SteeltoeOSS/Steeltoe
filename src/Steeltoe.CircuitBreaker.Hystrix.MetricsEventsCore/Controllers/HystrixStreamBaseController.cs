@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,23 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using System.Reactive.Linq;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
 {
     public class HystrixStreamBaseController : Controller
     {
-        internal IObservable<string> sampleStream;
+        private IObservable<string> sampleStream;
 
-        internal IDisposable sampleSubscription = null;
+        private IDisposable sampleSubscription = null;
+
+        protected internal IObservable<string> SampleStream { get => sampleStream; set => sampleStream = value; }
+
+        protected internal IDisposable SampleSubscription { get => sampleSubscription; set => sampleSubscription = value; }
 
         public HystrixStreamBaseController(IObservable<string> observable)
         {
-            this.sampleStream = observable;
+            this.SampleStream = observable;
         }
 
         protected void HandleRequest()
@@ -40,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
             Response.Headers.Add("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
             Response.Headers.Add("Pragma", "no-cache");
 
-            sampleSubscription = sampleStream
+            SampleSubscription = SampleStream
                 .ObserveOn(NewThreadScheduler.Default)
                 .Subscribe(
                     async (sampleDataAsString) =>
@@ -54,28 +57,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
                             }
                             catch (Exception)
                             {
-                                if (sampleSubscription != null)
+                                if (SampleSubscription != null)
                                 {
-                                    sampleSubscription.Dispose();
-                                    sampleSubscription = null;
+                                    SampleSubscription.Dispose();
+                                    SampleSubscription = null;
                                 }
                             }
                         }
                     },
                     (error) =>
                     {
-                        if (sampleSubscription != null)
+                        if (SampleSubscription != null)
                         {
-                            sampleSubscription.Dispose();
-                            sampleSubscription = null;
+                            SampleSubscription.Dispose();
+                            SampleSubscription = null;
                         }
                     },
                     () =>
                     {
-                        if (sampleSubscription != null)
+                        if (SampleSubscription != null)
                         {
-                            sampleSubscription.Dispose();
-                            sampleSubscription = null;
+                            SampleSubscription.Dispose();
+                            SampleSubscription = null;
                         }
                     });
             Response.Body.FlushAsync();

@@ -34,9 +34,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
                 Value = new HystrixMetricsStreamOptions()
             };
             var publisher = new RabbitMetricsStreamPublisher(options, stream, factory);
-            Assert.NotNull(publisher.sampleSubscription);
-            Assert.NotNull(publisher.factory);
-            publisher.sampleSubscription.Dispose();
+            Assert.NotNull(publisher.SampleSubscription);
+            Assert.NotNull(publisher.Factory);
+            publisher.SampleSubscription.Dispose();
         }
 
     }

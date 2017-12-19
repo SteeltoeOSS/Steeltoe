@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +24,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
     [Route("hystrix/request.stream")]
     public class HystrixRequestEventStreamController : HystrixStreamBaseController
     {
-        public HystrixRequestEventStreamController(HystrixRequestEventsStream stream) :
-            this(stream.Observe())
+        public HystrixRequestEventStreamController(HystrixRequestEventsStream stream)
+            : this(stream.Observe())
         {
-
         }
 
         private HystrixRequestEventStreamController(IObservable<HystrixRequestEvents> observable)
-            : base(observable.Map( (requestEvents) => {
+            : base(observable.Map((requestEvents) =>
+            {
                  return SerialHystrixRequestEvents.ToJsonString(requestEvents);
              }))
         {
@@ -43,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
         {
             HandleRequest();
             await Request.HttpContext.RequestAborted;
-            sampleSubscription.Dispose();
+            SampleSubscription.Dispose();
         }
     }
 }

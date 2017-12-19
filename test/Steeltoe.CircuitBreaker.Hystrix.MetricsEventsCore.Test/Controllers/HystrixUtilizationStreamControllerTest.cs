@@ -34,7 +34,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
         {
             var stream = HystrixUtilizationStream.GetInstance();
             var controller = new HystrixUtilizationStreamController(stream);
-            Assert.NotNull(controller.sampleStream);
+            Assert.NotNull(controller.SampleStream);
         }
 
         [Fact]

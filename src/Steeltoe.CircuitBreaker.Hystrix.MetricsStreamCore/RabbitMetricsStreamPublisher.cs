@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,35 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using RabbitMQ.Client;
-using System.Reactive.Observable.Aliases;
-using System.Reactive.Linq;
-using System.Reactive.Concurrency;
-using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using System.Text;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using System.Net.Security;
-using Steeltoe.Common.Discovery;
-using Steeltoe.CloudFoundry.Connector.Hystrix;
 using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+using Steeltoe.CloudFoundry.Connector.Hystrix;
+using Steeltoe.Common.Discovery;
+using System;
+using System.Collections.Generic;
+using System.Net.Security;
+using System.Text;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 {
-
     public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
     {
-        internal ConnectionFactory factory;
-        internal IConnection connection;
-        internal IModel channel;
+        private ConnectionFactory factory;
+        private IConnection connection;
+        private IModel channel;
+
+        protected internal ConnectionFactory Factory { get => factory; set => factory = value; }
+
+        protected internal IConnection Connection { get => connection; set => connection = value; }
+
+        protected internal IModel Channel { get => channel; set => channel = value; }
 
         public RabbitMetricsStreamPublisher(IOptions<HystrixMetricsStreamOptions> options, HystrixDashboardStream stream, HystrixConnectionFactory factory, ILogger<RabbitMetricsStreamPublisher> logger = null, IDiscoveryClient discoveryClient = null)
             : base(options, stream, logger, discoveryClient)
         {
-
-            this.factory = factory.ConnectionFactory as ConnectionFactory;
-            SslOption sslOption = this.factory.Ssl;
+            this.Factory = factory.ConnectionFactory as ConnectionFactory;
+            SslOption sslOption = this.Factory.Ssl;
             if (sslOption != null && sslOption.Enabled && !this.options.Validate_Certificates)
             {
                 logger?.LogInformation("Hystrix Metrics disabling certificate validation");
@@ -54,18 +54,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
         protected override bool EnsureConnection()
         {
-            if (connection != null)
+            if (Connection != null)
             {
                 return true;
             }
 
             try
             {
-                connection = this.factory.CreateConnection();
-                channel = connection.CreateModel();
+                Connection = this.Factory.CreateConnection();
+                Channel = Connection.CreateModel();
                 logger?.LogInformation("Hystrix Metrics connected!");
                 return true;
-
             }
             catch (Exception e)
             {
@@ -76,7 +75,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
         protected override void OnNext(List<string> jsonList)
         {
-            if (channel != null)
+            if (Channel != null)
             {
                 foreach (var sampleDataAsString in jsonList)
                 {
@@ -85,9 +84,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                         logger?.LogDebug("Hystrix Metrics: {0}", sampleDataAsString.ToString());
 
                         var body = Encoding.UTF8.GetBytes(sampleDataAsString);
-                        var props = channel.CreateBasicProperties();
+                        var props = Channel.CreateBasicProperties();
                         props.ContentType = "application/json";
-                        channel.BasicPublish(SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE, "", props, body);
+                        Channel.BasicPublish(SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE, string.Empty, props, body);
                     }
                 }
             }
@@ -95,17 +94,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
         protected override void Dispose()
         {
-            if (channel != null)
+            if (Channel != null)
             {
-                channel.Dispose();
-                channel = null;
+                Channel.Dispose();
+                Channel = null;
             }
-            if (connection != null)
+
+            if (Connection != null)
             {
-                connection.Dispose();
-                connection = null;
+                Connection.Dispose();
+                Connection = null;
             }
-           
         }
     }
 }

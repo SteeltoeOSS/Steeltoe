@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,18 +21,15 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
-
 {
     public static class HystrixServiceCollectionExtensions
     {
         public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
         {
-
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
-
 
             services.AddSingleton<HystrixDashboardStream>(HystrixDashboardStream.GetInstance());
         }
@@ -80,6 +76,5 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             services.AddHystrixRequestEventStream(config);
             services.AddHystrixUtilizationStream(config);
         }
-
     }
 }
