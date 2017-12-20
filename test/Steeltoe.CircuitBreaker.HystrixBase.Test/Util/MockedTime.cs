@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using System;
-using Xunit;
-
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 {
-    public class HystrixApplicationBuilderExtensionsTest : HystrixTestBase
+    internal class MockedTime : ITime
     {
-        [Fact]
-        public void UseHystrixMetricsStream_ThrowsIfBuilderNull()
-        {
-            IApplicationBuilder builder = null;
+        private AtomicInteger time = new AtomicInteger(0);
 
-            var ex = Assert.Throws<ArgumentNullException>(() => builder.UseHystrixMetricsStream());
-            Assert.Contains(nameof(builder), ex.Message);
+        public long CurrentTimeInMillis
+        {
+            get { return time.Value; }
+        }
+
+        public void Increment(int millis)
+        {
+            time.AddAndGet(millis);
         }
     }
 }

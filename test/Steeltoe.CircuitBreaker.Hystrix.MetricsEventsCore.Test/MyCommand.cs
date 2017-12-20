@@ -12,21 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using System;
-using Xunit;
-
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
 {
-    public class HystrixApplicationBuilderExtensionsTest : HystrixTestBase
+    internal class MyCommand : HystrixCommand<int>
     {
-        [Fact]
-        public void UseHystrixMetricsStream_ThrowsIfBuilderNull()
+        public MyCommand()
+            : base(
+                HystrixCommandGroupKeyDefault.AsKey("MyCommandGroup"),
+                () => { return 1; },
+                () => { return 2; })
         {
-            IApplicationBuilder builder = null;
-
-            var ex = Assert.Throws<ArgumentNullException>(() => builder.UseHystrixMetricsStream());
-            Assert.Contains(nameof(builder), ex.Message);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,9 +46,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 var client = server.CreateClient();
 
                 client.BaseAddress = new Uri("http://localhost/");
-                var result = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, "hystrix/config.stream"),
+                var result = await client.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Get, "hystrix/config.stream"),
                         HttpCompletionOption.ResponseHeadersRead);
-
 
                 Assert.NotNull(result);
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -64,10 +63,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 result.Dispose();
             }
         }
+
         [Fact]
         public void Endpoint_ReturnsData()
         {
-
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
@@ -94,12 +93,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 Assert.Equal("HystrixConfig", dict["type"]);
                 Assert.NotNull(dict["commands"]);
                 Assert.NotNull(dict["threadpools"]);
-                JObject cmds = (JObject )dict["commands"];
+                JObject cmds = (JObject)dict["commands"];
                 Assert.NotNull(cmds["MyCommand"]);
- 
-
             }
-
         }
     }
 }

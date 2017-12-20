@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 using Microsoft.Extensions.Options;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
-    public class HystrixMetricsStreamPublisherTest: HystrixTestBase
+    public class HystrixMetricsStreamPublisherTest : HystrixTestBase
     {
         [Fact]
         public void Constructor_SetsupStream()
@@ -37,10 +34,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
             publisher.SampleSubscription.Dispose();
         }
 
-    }
-
-    class OptionsWrapper<T> : IOptions<T> where T: class, new()
-    {
-        public T Value { get; set; }
+        internal class OptionsWrapper<T> : IOptions<T>
+            where T : class, new()
+        {
+            public T Value { get; set; }
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,25 +26,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 {
     public abstract class CommandStreamTest : HystrixTestBase
     {
-        public CommandStreamTest() : base()
+        public CommandStreamTest()
+            : base()
         {
-
         }
-        static readonly AtomicInteger uniqueId = new AtomicInteger(0);
 
-        public class Command : HystrixCommand<int> {
+        private static readonly AtomicInteger UniqueId = new AtomicInteger(0);
 
-            readonly String arg;
+        public class Command : HystrixCommand<int>
+        {
+            private readonly int executionLatency;
+            private readonly string arg;
+            private readonly HystrixEventType executionResult2;
+            private readonly HystrixEventType fallbackExecutionResult;
+            private readonly int fallbackExecutionLatency;
 
-           readonly HystrixEventType executionResult2;
-            public readonly int executionLatency;
-            readonly HystrixEventType fallbackExecutionResult;
-            readonly int fallbackExecutionLatency;
-
-            private Command(HystrixCommandOptions setter, HystrixEventType executionResult, int executionLatency, String arg,
-                            HystrixEventType fallbackExecutionResult, int fallbackExecutionLatency) :
-
-                base(setter)
+            private Command(
+                HystrixCommandOptions setter,
+                HystrixEventType executionResult,
+                int executionLatency,
+                string arg,
+                HystrixEventType fallbackExecutionResult,
+                int fallbackExecutionLatency)
+                : base(setter)
             {
                 this.executionResult2 = executionResult;
                 this.executionLatency = executionLatency;
@@ -65,34 +68,56 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.THREAD);
             }
 
-            public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
-                                          HystrixEventType desiredFallbackEventType)
+            public static Command From(
+                IHystrixCommandGroupKey groupKey,
+                IHystrixCommandKey key,
+                HystrixEventType desiredEventType,
+                int latency,
+                HystrixEventType desiredFallbackEventType)
             {
                 return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.THREAD, desiredFallbackEventType);
             }
 
-            public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
-                                          HystrixEventType desiredFallbackEventType, int fallbackLatency)
+            public static Command From(
+                IHystrixCommandGroupKey groupKey,
+                IHystrixCommandKey key,
+                HystrixEventType desiredEventType,
+                int latency,
+                HystrixEventType desiredFallbackEventType,
+                int fallbackLatency)
             {
                 return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.THREAD, desiredFallbackEventType, fallbackLatency);
             }
 
-            public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
-                                          ExecutionIsolationStrategy isolationStrategy)
+            public static Command From(
+                IHystrixCommandGroupKey groupKey,
+                IHystrixCommandKey key,
+                HystrixEventType desiredEventType,
+                int latency,
+                ExecutionIsolationStrategy isolationStrategy)
             {
                 return From(groupKey, key, desiredEventType, latency, isolationStrategy, HystrixEventType.FALLBACK_SUCCESS, 0);
             }
 
-            public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
-                                          ExecutionIsolationStrategy isolationStrategy,
-                                          HystrixEventType desiredFallbackEventType)
+            public static Command From(
+                IHystrixCommandGroupKey groupKey,
+                IHystrixCommandKey key,
+                HystrixEventType desiredEventType,
+                int latency,
+                ExecutionIsolationStrategy isolationStrategy,
+                HystrixEventType desiredFallbackEventType)
             {
                 return From(groupKey, key, desiredEventType, latency, isolationStrategy, desiredFallbackEventType, 0);
             }
 
-            public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
-                                          ExecutionIsolationStrategy isolationStrategy,
-                                          HystrixEventType desiredFallbackEventType, int fallbackLatency)
+            public static Command From(
+                IHystrixCommandGroupKey groupKey,
+                IHystrixCommandKey key,
+                HystrixEventType desiredEventType,
+                int latency,
+                ExecutionIsolationStrategy isolationStrategy,
+                HystrixEventType desiredFallbackEventType,
+                int fallbackLatency)
             {
                 HystrixThreadPoolOptions topts = new HystrixThreadPoolOptions()
                 {
@@ -119,27 +144,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                     ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name),
                     ThreadPoolOptions = topts
                 };
-        
-     
 
-                String uniqueArg;
+                string uniqueArg;
 
                 switch (desiredEventType)
                 {
                     case HystrixEventType.SUCCESS:
-                        uniqueArg = uniqueId.IncrementAndGet() + "";
+                        uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
                         return new Command(setter, HystrixEventType.SUCCESS, latency, uniqueArg, desiredFallbackEventType, 0);
                     case HystrixEventType.FAILURE:
-                        uniqueArg = uniqueId.IncrementAndGet() + "";
+                        uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
                         return new Command(setter, HystrixEventType.FAILURE, latency, uniqueArg, desiredFallbackEventType, fallbackLatency);
                     case HystrixEventType.TIMEOUT:
-                        uniqueArg = uniqueId.IncrementAndGet() + "";
+                        uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
                         return new Command(setter, HystrixEventType.SUCCESS, 1000, uniqueArg, desiredFallbackEventType, fallbackLatency);
                     case HystrixEventType.BAD_REQUEST:
-                        uniqueArg = uniqueId.IncrementAndGet() + "";
+                        uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
                         return new Command(setter, HystrixEventType.BAD_REQUEST, latency, uniqueArg, desiredFallbackEventType, 0);
                     case HystrixEventType.RESPONSE_FROM_CACHE:
-                        String arg = uniqueId.Value + "";
+                        string arg = UniqueId.Value + string.Empty;
                         return new Command(setter, HystrixEventType.SUCCESS, 0, arg, desiredFallbackEventType, 0);
                     default:
                         throw new Exception("not supported yet");
@@ -150,21 +173,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             {
                 Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
                 Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-                List<Command> cmds = new List<Command>();
-                cmds.Add(cmd1);
-                cmds.Add(cmd2);
+                List<Command> cmds = new List<Command>
+                {
+                    cmd1,
+                    cmd2
+                };
                 return cmds;
             }
 
-            public Stopwatch sw = new Stopwatch();
+            // public Stopwatch sw = new Stopwatch();
             protected override int Run()
             {
-                try {
-                    sw.Start();
+                try
+                {
+                    // sw.Start();
                     Time.WaitUntil(() => { return this._token.IsCancellationRequested; }, executionLatency);
-                    sw.Stop();
+
+                    // sw.Stop();
                     this._token.ThrowIfCancellationRequested();
-          
+
                     switch (executionResult2)
                     {
                         case HystrixEventType.SUCCESS:
@@ -176,8 +203,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                         default:
                             throw new Exception("unhandled HystrixEventType : " + _executionResult);
                     }
-                } catch (Exception ) {
-              
+                }
+                catch (Exception)
+                {
                     throw;
                 }
             }
@@ -186,13 +214,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             {
                 try
                 {
-                    Time.Wait( fallbackExecutionLatency);
-        
+                    Time.Wait(fallbackExecutionLatency);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     throw;
                 }
+
                 switch (fallbackExecutionResult)
                 {
                     case HystrixEventType.FALLBACK_SUCCESS: return -1;
@@ -202,16 +230,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 }
             }
 
-
-            protected override String CacheKey
+            protected override string CacheKey
             {
                 get { return arg; }
             }
         }
 
-        public class Collapser : HystrixCollapser<List<int>, int, int> {
+        public class Collapser : HystrixCollapser<List<int>, int, int>
+        {
             private readonly int arg;
-            ITestOutputHelper output;
+            private ITestOutputHelper output;
+
             public static Collapser From(ITestOutputHelper output, int arg)
             {
                 return new Collapser(output, HystrixCollapserKeyDefault.AsKey("Collapser"), arg);
@@ -224,8 +253,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             private Collapser(ITestOutputHelper output, IHystrixCollapserKey key, int arg)
                 : base(Options(key, 100))
-            { 
-      
+            {
                 this.arg = arg;
                 this.output = output;
             }
@@ -251,9 +279,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 {
                     args.Add(collapsedReq.Argument);
                 }
+
                 return new BatchCommand(output, args);
             }
-
 
             protected override void MapResponseToRequests(List<int> batchResponse, ICollection<ICollapsedRequest<int, int>> collapsedRequests)
             {
@@ -264,16 +292,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 }
             }
 
-
-            protected override String CacheKey
+            protected override string CacheKey
             {
                 get { return arg.ToString(); }
             }
         }
 
-        class BatchCommand : HystrixCommand<List<int>> {
+        internal class BatchCommand : HystrixCommand<List<int>>
+        {
             private List<int> args;
-            ITestOutputHelper output;
+            private ITestOutputHelper output;
+
             public BatchCommand(ITestOutputHelper output, List<int> args)
              : base(HystrixCommandGroupKeyDefault.AsKey("BATCH"))
             {
@@ -281,15 +310,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 this.output = output;
             }
 
-
             protected override List<int> Run()
             {
-                output.WriteLine(DateTime.Now.Ticks / 10000 + " " + Thread.CurrentThread.ManagedThreadId + " : Executing batch of : " + args.Count);
+                output.WriteLine((DateTime.Now.Ticks / 10000) + " " + Thread.CurrentThread.ManagedThreadId + " : Executing batch of : " + args.Count);
                 return args;
             }
         }
 
-        protected static String BucketToString(long[] eventCounts)
+        protected static string BucketToString(long[] eventCounts)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("[");
@@ -300,6 +328,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                     sb.Append(eventType).Append("->").Append(eventCounts[(int)eventType]).Append(", ");
                 }
             }
+
             sb.Append("]");
             return sb.ToString();
         }
@@ -313,8 +342,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                     return true;
                 }
             }
+
             return false;
         }
     }
-
 }

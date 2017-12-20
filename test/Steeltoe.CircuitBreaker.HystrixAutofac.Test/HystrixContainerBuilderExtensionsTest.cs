@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +33,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
 
             var ex = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<DummyCommand>(null, groupKey, null));
             Assert.Contains(nameof(container), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<IDummyCommand,DummyCommand>(null, groupKey, null));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<IDummyCommand, DummyCommand>(null, groupKey, null));
             Assert.Contains(nameof(container), ex2.Message);
             var ex3 = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<DummyCommand>(null, stringKey, null));
             Assert.Contains(nameof(container), ex3.Message);
@@ -69,9 +68,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
             Assert.Contains(nameof(groupKey), ex5.Message);
             var ex6 = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<IDummyCommand, DummyCommand>(services, null, commandKey, null));
             Assert.Contains(nameof(groupKey), ex6.Message);
-            var ex7 = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<DummyCommand>(services,(string) null, stringKey, null));
+            var ex7 = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<DummyCommand>(services, null, stringKey, null));
             Assert.Contains(nameof(groupKey), ex7.Message);
-            var ex8 = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<IDummyCommand, DummyCommand>(services, (string) null, stringKey, null));
+            var ex8 = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<IDummyCommand, DummyCommand>(services, null, stringKey, null));
             Assert.Contains(nameof(groupKey), ex8.Message);
         }
 
@@ -134,7 +133,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
 
             services = new ContainerBuilder();
             config = new ConfigurationBuilder().Build();
-            HystrixContainerBuilderExtensions.RegisterHystrixCommand<IDummyCommand,DummyCommand>(services, groupKey, config);
+            HystrixContainerBuilderExtensions.RegisterHystrixCommand<IDummyCommand, DummyCommand>(services, groupKey, config);
             provider = services.Build();
             var icommand = provider.Resolve<IDummyCommand>();
             Assert.NotNull(icommand);
@@ -215,30 +214,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
             Assert.Equal("CommandKey", command.CommandKey.Name);
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options._dynamic);
-
-
-        }
-
-    }
-
-    interface IDummyCommand
-    {
-
-    }
-    class DummyCommand: HystrixCommand, IDummyCommand
-    {
-        IHystrixCommandOptions _opts;
-        public DummyCommand(IHystrixCommandOptions opts) : base(opts)
-        {
-            _opts = opts;
-        }
-
-        public HystrixCommandOptions Options
-        {
-            get
-            {
-                return _opts as HystrixCommandOptions;
-            }
         }
     }
 }

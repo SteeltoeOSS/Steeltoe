@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,9 +26,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 {
     public class HystrixThreadEventStreamTest : CommandStreamTest
     {
-        class LatchedObserver<T> : ObserverBase<T>
+        private class LatchedObserver<T> : ObserverBase<T>
         {
-            CountdownEvent latch;
+            private CountdownEvent latch;
+
             public LatchedObserver(CountdownEvent latch)
             {
                 this.latch = latch;
@@ -50,15 +50,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             }
         }
 
-        IHystrixCommandKey commandKey;
-        IHystrixThreadPoolKey threadPoolKey;
+        private IHystrixCommandKey commandKey;
+        private IHystrixThreadPoolKey threadPoolKey;
 
-        HystrixThreadEventStream writeToStream;
-        HystrixCommandCompletionStream readCommandStream;
-        HystrixThreadPoolCompletionStream readThreadPoolStream;
-        ITestOutputHelper output;
+        private HystrixThreadEventStream writeToStream;
+        private HystrixCommandCompletionStream readCommandStream;
+        private HystrixThreadPoolCompletionStream readThreadPoolStream;
+        private ITestOutputHelper output;
 
-        public HystrixThreadEventStreamTest(ITestOutputHelper output) : base()
+        public HystrixThreadEventStreamTest(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
             commandKey = HystrixCommandKeyDefault.AsKey("CMD-ThreadStream");
@@ -68,8 +69,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             readCommandStream = HystrixCommandCompletionStream.GetInstance(commandKey);
             readThreadPoolStream = HystrixThreadPoolCompletionStream.GetInstance(threadPoolKey);
         }
-
-
 
         [Fact]
         public void NoEvents()
@@ -83,8 +82,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             IObserver<HystrixCommandCompletion> threadPoolSubscriber = new LatchedObserver<HystrixCommandCompletion>(threadPoolLatch);
             readThreadPoolStream.Observe().Take(1).Subscribe(threadPoolSubscriber);
 
-            //no writes
-
+            // no writes
             Assert.False(commandLatch.Wait(TimeSpan.FromMilliseconds(1000)));
             Assert.False(threadPoolLatch.Wait(TimeSpan.FromMilliseconds(1000)));
         }
@@ -126,6 +124,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             Assert.True(commandLatch.Wait(1000));
             Assert.False(threadPoolLatch.Wait(1000));
         }
+
         [Fact]
         public void TestThreadIsolatedFailure()
         {

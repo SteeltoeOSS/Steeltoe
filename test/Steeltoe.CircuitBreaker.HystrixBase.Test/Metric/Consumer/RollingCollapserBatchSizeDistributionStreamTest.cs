@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,12 +26,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest, IDisposable
     {
-        RollingCollapserBatchSizeDistributionStream stream;
+        private RollingCollapserBatchSizeDistributionStream stream;
 
-        ITestOutputHelper output;
-        public RollingCollapserBatchSizeDistributionStreamTest(ITestOutputHelper output) : base()
+        private ITestOutputHelper output;
+
+        public RollingCollapserBatchSizeDistributionStreamTest(ITestOutputHelper output)
+            : base()
         {
-
             this.output = output;
             RollingCollapserBatchSizeDistributionStream.Reset();
             HystrixCollapserEventStream.Reset();
@@ -42,7 +42,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         {
             base.Dispose();
             stream.Unsubscribe();
- 
         }
 
         [Fact]
@@ -56,7 +55,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Skip(10).Take(10).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + DateTime.Now.Ticks / 10000 + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " +Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                     Assert.Equal(0, distribution.GetTotalCount());
                 },
                 (e) =>
@@ -68,17 +67,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     latch.SignalEx();
                 });
 
-
-            //no writes
-
+            // no writes
             try
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
@@ -93,7 +91,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + DateTime.Now.Ticks / 10000 + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 },
                 (e) =>
                 {
@@ -104,14 +102,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     latch.SignalEx();
                 });
 
-
             Collapser.From(output, key, 1).Observe();
             Collapser.From(output, key, 2).Observe();
             Collapser.From(output, key, 3).Observe();
 
-            try {
-                Time.Wait( 250);
-            } catch (Exception ) {
+            try
+            {
+                Time.Wait(250);
+            }
+            catch (Exception)
+            {
                 Assert.False(true, "Interrupted ex");
             }
 
@@ -119,9 +119,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Time.Wait( 250);
+                Time.Wait(250);
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.False(true, "Interrupted ex");
             }
@@ -134,9 +134,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Time.Wait( 250);
+                Time.Wait(250);
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.False(true, "Interrupted ex");
             }
@@ -145,19 +145,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Collapser.From(output, key, 11).Observe();
             Collapser.From(output, key, 12).Observe();
 
-            try {
+            try
+            {
                 Assert.True(latch.Wait(10000));
-            } catch (Exception ) {
+            }
+            catch (Exception)
+            {
                 Assert.True(false, "Interrupted ex");
             }
-            //should have 4 batches: 3, 1, 5, 3
+
+            // should have 4 batches: 3, 1, 5, 3
             Assert.Equal(4, stream.Latest.GetTotalCount());
             Assert.Equal(3, stream.LatestMean);
             Assert.Equal(1, stream.GetLatestPercentile(0));
             Assert.Equal(5, stream.GetLatestPercentile(100));
         }
 
-        //by doing a take(30), all metrics should fall out of window and we should observe an empty histogram
+        // by doing a take(30), all metrics should fall out of window and we should observe an empty histogram
         [Fact]
         public void TestBatchesAgeOut()
         {
@@ -169,7 +173,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(30).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + DateTime.Now.Ticks / 10000 + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 },
                 (e) =>
                 {
@@ -180,17 +184,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     latch.SignalEx();
                 });
 
-
-
             Collapser.From(output, key, 1).Observe();
             Collapser.From(output, key, 2).Observe();
             Collapser.From(output, key, 3).Observe();
 
             try
             {
-                Time.Wait( 200);
+                Time.Wait(200);
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.False(true, "Interrupted ex");
             }
@@ -199,9 +201,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Time.Wait( 200);
+                Time.Wait(200);
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.False(true, "Interrupted ex");
             }
@@ -212,12 +214,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Collapser.From(output, key, 8).Observe();
             Collapser.From(output, key, 9).Observe();
 
-
             try
             {
-                Time.Wait( 200);
+                Time.Wait(200);
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.False(true, "Interrupted ex");
             }
@@ -229,14 +230,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             Assert.Equal(0, stream.Latest.GetTotalCount());
             Assert.Equal(0, stream.LatestMean);
-
         }
-    
     }
 }

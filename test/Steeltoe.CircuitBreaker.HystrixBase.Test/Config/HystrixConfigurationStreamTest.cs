@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,20 +28,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
 {
     public class HystrixConfigurationStreamTest : CommandStreamTest
     {
-        ITestOutputHelper output;
-        public HystrixConfigurationStreamTest(ITestOutputHelper output) : base()
+        private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("Config");
+        private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("Command");
+
+        private ITestOutputHelper output;
+        private HystrixConfigurationStream stream;
+
+        public HystrixConfigurationStreamTest(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
             stream = HystrixConfigurationStream.GetNonSingletonInstanceOnlyUsedInUnitTests(10);
         }
-
-
-
-        HystrixConfigurationStream stream;
-        private readonly static IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Config");
-        private readonly static IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey("Command");
-
-
 
         [Fact]
         public void TestStreamHasData()
@@ -50,19 +47,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
             AtomicBoolean commandShowsUp = new AtomicBoolean(false);
             AtomicBoolean threadPoolShowsUp = new AtomicBoolean(false);
             CountdownEvent latch = new CountdownEvent(1);
-            int NUM = 10;
+            int num = 10;
 
             for (int i = 0; i < 2; i++)
             {
-                HystrixCommand<int> cmd = Command.From(groupKey, commandKey, HystrixEventType.SUCCESS, 50);
+                HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
                 cmd.Observe();
             }
 
-            stream.Observe().Take(NUM).Subscribe(
+            stream.Observe().Take(num).Subscribe(
                 (configuration) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Received data with : " + configuration.CommandConfig.Count + " commands");
-                    if (configuration.CommandConfig.ContainsKey(commandKey))
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Received data with : " + configuration.CommandConfig.Count + " commands");
+                    if (configuration.CommandConfig.ContainsKey(CommandKey))
                     {
                         commandShowsUp.Value = true;
                     }
@@ -73,16 +70,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                 },
                 (e) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
                     latch.SignalEx();
-
                 },
                 () =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
                     latch.SignalEx();
                 });
-
 
             Assert.True(latch.Wait(10000));
             Assert.True(commandShowsUp.Value);
@@ -103,26 +98,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                     .OnDispose(() =>
                     {
                         latch1.SignalEx();
-
                     })
                     .Subscribe(
                     (configuration) =>
                     {
-                        output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
                         payloads1.IncrementAndGet();
                     },
                     (e) =>
                     {
-                        output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
                         latch1.SignalEx();
-
                     },
                     () =>
                     {
-                        output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
                         latch1.SignalEx();
                     });
-
 
             IDisposable s2 = stream
                 .Observe()
@@ -130,31 +122,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                 .OnDispose(() =>
                 {
                     latch2.SignalEx();
-
                 })
                 .Subscribe(
                 (configuration) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads2.IncrementAndGet();
                 },
                 (e) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
                     latch2.SignalEx();
-
                 },
                 () =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
                     latch2.SignalEx();
                 });
 
-
-            //execute 1 command, then unsubscribe from first stream. then execute the rest
+            // execute 1 command, then unsubscribe from first stream. then execute the rest
             for (int i = 0; i < 50; i++)
             {
-                HystrixCommand<int> cmd = Command.From(groupKey, commandKey, HystrixEventType.SUCCESS, 50);
+                HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
                 cmd.Execute();
                 if (i == 1)
                 {
@@ -165,8 +154,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
             Assert.True(latch1.Wait(10000));
             Assert.True(latch2.Wait(10000));
             output.WriteLine("s1 got : " + payloads1.Value + ", s2 got : " + payloads2.Value);
-            Assert.True(payloads1.Value > 0); // "s1 got data", 
-            Assert.True(payloads2.Value > 0); //"s2 got data",
+            Assert.True(payloads1.Value > 0); // "s1 got data",
+            Assert.True(payloads2.Value > 0); // "s2 got data",
             Assert.True(payloads2.Value > payloads1.Value); // "s1 got less data than s2",
         }
 
@@ -183,26 +172,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                 .OnDispose(() =>
                 {
                     latch1.SignalEx();
-
                 })
                 .Subscribe(
                 (configuration) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads1.IncrementAndGet();
                 },
                 (e) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
                     latch1.SignalEx();
-
                 },
                 () =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
                     latch1.SignalEx();
                 });
-
 
             IDisposable s2 = stream
                 .Observe()
@@ -210,31 +196,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                 .OnDispose(() =>
                 {
                     latch2.SignalEx();
-
                 })
                 .Subscribe(
                 (configuration) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads2.IncrementAndGet();
                 },
                 (e) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
                     latch2.SignalEx();
-
                 },
                 () =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
                     latch2.SignalEx();
                 });
 
-
-            //execute 2 commands, then unsubscribe from both streams, then execute the rest
+            // execute 2 commands, then unsubscribe from both streams, then execute the rest
             for (int i = 0; i < 10; i++)
             {
-                HystrixCommand<int> cmd = Command.From(groupKey, commandKey, HystrixEventType.SUCCESS, 50);
+                HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
                 cmd.Execute();
                 if (i == 2)
                 {
@@ -242,15 +225,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                     s2.Dispose();
                 }
             }
-            Assert.False(stream.IsSourceCurrentlySubscribed);  //both subscriptions have been cancelled - source should be too
+
+            Assert.False(stream.IsSourceCurrentlySubscribed);  // both subscriptions have been cancelled - source should be too
 
             Assert.True(latch1.Wait(10000));
             Assert.True(latch2.Wait(10000));
             output.WriteLine("s1 got : " + payloads1.Value + ", s2 got : " + payloads2.Value);
-            Assert.True(payloads1.Value > 0); // "s1 got data", 
-            Assert.True(payloads2.Value > 0); //"s2 got data",
-
-
+            Assert.True(payloads1.Value > 0); // "s1 got data",
+            Assert.True(payloads2.Value > 0); // "s2 got data",
         }
 
         [Fact]
@@ -278,40 +260,35 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                  {
                      return config;
                  }
-
              });
 
             IObservable<bool> checkZippedEqual = Observable.Zip(fast, slow, (HystrixConfiguration payload, HystrixConfiguration payload2) =>
-        {
-            return payload == payload2;
-
-        });
+            {
+                return payload == payload2;
+            });
 
             IDisposable s1 = checkZippedEqual
                     .Take(10000)
                     .Subscribe(
                     (b) =>
                     {
-                        output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " :  OnNext : " + b);
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " :  OnNext : " + b);
                     },
                     (e) =>
                     {
-                        output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
                         foundError.Value = true;
                         latch.SignalEx();
-
                     },
                     () =>
                     {
-                        output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
                         latch.SignalEx();
                     });
 
-
-
             for (int i = 0; i < 50; i++)
             {
-                HystrixCommand<int> cmd = Command.From(groupKey, commandKey, HystrixEventType.SUCCESS, 50);
+                HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
                 cmd.Execute();
             }
 

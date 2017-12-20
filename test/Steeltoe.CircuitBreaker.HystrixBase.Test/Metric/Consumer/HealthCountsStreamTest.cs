@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,14 +29,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class HealthCountsStreamTest : CommandStreamTest, IDisposable
     {
-        HealthCountsStream stream;
-        ITestOutputHelper output;
+        private static IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("HealthCounts");
+        private HealthCountsStream stream;
+        private ITestOutputHelper output;
 
-        static IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("HealthCounts");
-        class LatchedObserver : ObserverBase<HealthCounts>
+        private class LatchedObserver : ObserverBase<HealthCounts>
         {
-            CountdownEvent latch;
-            ITestOutputHelper output;
+            private CountdownEvent latch;
+            private ITestOutputHelper output;
+
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
                 this.latch = latch;
@@ -46,7 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnCompletedCore()
             {
-                output.WriteLine("OnCompleted @ " + DateTime.Now.Ticks / 10000);
+                output.WriteLine("OnCompleted @ " + (DateTime.Now.Ticks / 10000));
                 latch.SignalEx();
             }
 
@@ -57,16 +57,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(HealthCounts healthCounts)
             {
-                output.WriteLine("OnNext @ " + DateTime.Now.Ticks / 10000 + " : " + healthCounts);
-
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + healthCounts);
             }
         }
 
-        public HealthCountsStreamTest(ITestOutputHelper output) : base()
+        public HealthCountsStreamTest(ITestOutputHelper output)
+            : base()
         {
-
             this.output = output;
-    
         }
 
         public override void Dispose()
@@ -86,16 +84,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            //no writes
-
+            // no writes
             try
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0L, stream.Latest.ErrorCount);
             Assert.Equal(0L, stream.Latest.TotalRequests);
@@ -110,17 +108,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
 
             cmd.Observe();
             try
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0L, stream.Latest.ErrorCount);
             Assert.Equal(1L, stream.Latest.TotalRequests);
@@ -135,21 +134,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
 
             cmd.Observe();
             try
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(1L, stream.Latest.ErrorCount);
             Assert.Equal(1L, stream.Latest.TotalRequests);
-
         }
 
         [Fact]
@@ -168,7 +167,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
@@ -176,7 +175,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(1L, stream.Latest.ErrorCount);
             Assert.Equal(1L, stream.Latest.TotalRequests);
-
         }
 
         [Fact]
@@ -195,7 +193,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
@@ -203,7 +201,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0L, stream.Latest.ErrorCount);
             Assert.Equal(0L, stream.Latest.TotalRequests);
-
         }
 
         [Fact]
@@ -215,10 +212,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-
-            CommandStreamTest.Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
-            CommandStreamTest.Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-            CommandStreamTest.Command cmd3 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+            Command cmd3 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
 
             cmd1.Observe();
             cmd2.Observe();
@@ -227,14 +223,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0L, stream.Latest.ErrorCount);
-            Assert.Equal(1L, stream.Latest.TotalRequests); //responses from cache should not show up here
-
+            Assert.Equal(1L, stream.Latest.TotalRequests); // responses from cache should not show up here
         }
 
         [Fact]
@@ -246,15 +242,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            //3 failures in a row will trip circuit.  let bucket roll once then submit 2 requests.
-            //should see 3 FAILUREs and 2 SHORT_CIRCUITs and then 5 FALLBACK_SUCCESSes
+            // 3 failures in a row will trip circuit.  let bucket roll once then submit 2 requests.
+            // should see 3 FAILUREs and 2 SHORT_CIRCUITs and then 5 FALLBACK_SUCCESSes
+            Command failure1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command failure2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command failure3 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
 
-            CommandStreamTest.Command failure1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
-            CommandStreamTest.Command failure2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
-            CommandStreamTest.Command failure3 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
-
-            CommandStreamTest.Command shortCircuit1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
-            CommandStreamTest.Command shortCircuit2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            Command shortCircuit1 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            Command shortCircuit2 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
 
             failure1.Observe();
             failure2.Observe();
@@ -262,7 +257,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Time.Wait( 500);
+                Time.Wait(500);
             }
             catch (Exception ie)
             {
@@ -276,7 +271,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
@@ -284,7 +279,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(shortCircuit1.IsResponseShortCircuited);
             Assert.True(shortCircuit2.IsResponseShortCircuited);
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            //should only see failures here, not SHORT-CIRCUITS
+
+            // should only see failures here, not SHORT-CIRCUITS
             Assert.Equal(3L, stream.Latest.ErrorCount);
             Assert.Equal(3L, stream.Latest.TotalRequests);
         }
@@ -298,19 +294,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            //10 commands will saturate semaphore when called from different threads.
-            //submit 2 more requests and they should be SEMAPHORE_REJECTED
-            //should see 10 SUCCESSes, 2 SEMAPHORE_REJECTED and 2 FALLBACK_SUCCESSes
-
+            // 10 commands will saturate semaphore when called from different threads.
+            // submit 2 more requests and they should be SEMAPHORE_REJECTED
+            // should see 10 SUCCESSes, 2 SEMAPHORE_REJECTED and 2 FALLBACK_SUCCESSes
             List<Command> saturators = new List<Command>();
 
             for (int i = 0; i < 10; i++)
             {
-                saturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 400, ExecutionIsolationStrategy.SEMAPHORE));
+                saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 400, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
-            CommandStreamTest.Command rejected1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
-            CommandStreamTest.Command rejected2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            Command rejected1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            Command rejected2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
 
             foreach (Command c in saturators)
             {
@@ -329,22 +324,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             rejected1.Observe();
             rejected2.Observe();
 
-
             try
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(rejected1.IsResponseSemaphoreRejected);
             Assert.True(rejected2.IsResponseSemaphoreRejected);
-            //should only see failures here, not SHORT-CIRCUITS
+
+            // should only see failures here, not SHORT-CIRCUITS
             Assert.Equal(2L, stream.Latest.ErrorCount);
             Assert.Equal(12L, stream.Latest.TotalRequests);
-
         }
 
         [Fact]
@@ -356,10 +351,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            //10 commands will saturate threadpools when called concurrently.
-            //submit 2 more requests and they should be THREADPOOL_REJECTED
-            //should see 10 SUCCESSes, 2 THREADPOOL_REJECTED and 2 FALLBACK_SUCCESSes
-
+            // 10 commands will saturate threadpools when called concurrently.
+            // submit 2 more requests and they should be THREADPOOL_REJECTED
+            // should see 10 SUCCESSes, 2 THREADPOOL_REJECTED and 2 FALLBACK_SUCCESSes
             List<CommandStreamTest.Command> saturators = new List<CommandStreamTest.Command>();
 
             for (int i = 0; i < 10; i++)
@@ -377,7 +371,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Time.Wait( 100);
+                Time.Wait(100);
             }
             catch (Exception ie)
             {
@@ -391,16 +385,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.False(true, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(rejected1.IsResponseThreadPoolRejected);
             Assert.True(rejected2.IsResponseThreadPoolRejected);
             Assert.Equal(2L, stream.Latest.ErrorCount);
             Assert.Equal(12L, stream.Latest.TotalRequests);
-
         }
 
         [Fact]
@@ -420,15 +414,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             Assert.Equal(1L, stream.Latest.ErrorCount);
             Assert.Equal(1L, stream.Latest.TotalRequests);
-
         }
 
         [Fact]
@@ -448,15 +442,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             Assert.Equal(1L, stream.Latest.ErrorCount);
             Assert.Equal(1L, stream.Latest.TotalRequests);
-
         }
 
         [Fact]
@@ -468,11 +462,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-
-
-            //fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
-            //let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
-
+            // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
+            // let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
             List<CommandStreamTest.Command> fallbackSaturators = new List<CommandStreamTest.Command>();
             for (int i = 0; i < 5; i++)
             {
@@ -489,7 +480,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Time.Wait( 70);
+                Time.Wait(70);
             }
             catch (Exception ex)
             {
@@ -503,15 +494,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             Assert.Equal(7L, stream.Latest.ErrorCount);
             Assert.Equal(7L, stream.Latest.TotalRequests);
-
         }
 
         [Fact]
@@ -520,10 +511,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-M");
             stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-            //by doing a take(30), we ensure that all rolling counts go back to 0
+            // by doing a take(30), we ensure that all rolling counts go back to 0
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(30).Subscribe(new LatchedObserver(output, latch));
-
 
             CommandStreamTest.Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
             CommandStreamTest.Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 10);
@@ -535,15 +525,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             Assert.Equal(0L, stream.Latest.ErrorCount);
             Assert.Equal(0L, stream.Latest.TotalRequests);
-
         }
 
         [Fact]
@@ -567,7 +557,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             IObservable<bool> zipped = Observable.Zip(o1, o2, (healthCounts, healthCounts2) =>
                     {
-                        return healthCounts == healthCounts2;  //we want object equality
+                        return healthCounts == healthCounts2;  // we want object equality
                     });
             IObservable<bool> reduced = zipped.Aggregate(true, (a, b) =>
                     {
@@ -576,22 +566,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             reduced.Subscribe(
                 (b) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks/10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnNext : " + b);
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnNext : " + b);
                     allEqual.Value = b;
                 },
                 (e) =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnError : " + e);
                     output.WriteLine(e.ToString());
                     latch.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnCompleted");
                     latch.SignalEx();
                 });
-
-
 
             for (int i = 0; i < 10; i++)
             {
@@ -601,7 +589,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Assert.True(latch.Wait(10000));
             Assert.True(allEqual.Value);
-            //we should be getting the same object from both streams.  this ensures that multiple subscribers don't induce extra work
+
+            // we should be getting the same object from both streams.  this ensures that multiple subscribers don't induce extra work
         }
 
         [Fact]
@@ -623,19 +612,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     {
                         latch1.SignalEx();
                     })
-                    .Subscribe((healthCounts) =>
+                    .Subscribe(
+                    (healthCounts) =>
                     {
-                        output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnNext : " + healthCounts);
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnNext : " + healthCounts);
                         healthCounts1.IncrementAndGet();
                     },
                     (e) =>
                     {
-                        output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnError : " + e);
                         latch1.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnCompleted");
                         latch1.SignalEx();
                     });
             IDisposable s2 = stream
@@ -649,21 +639,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     .Subscribe(
                         (healthCounts) =>
                         {
-                            output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnNext : " + healthCounts + " : " + healthCounts2.Value);
+                            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnNext : " + healthCounts + " : " + healthCounts2.Value);
                             healthCounts2.IncrementAndGet();
                         },
                         (e) =>
                         {
-                            output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnError : " + e);
+                            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnError : " + e);
                             latch2.SignalEx();
                         },
                         () =>
                         {
-                            output.WriteLine(DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnCompleted");
+                            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnCompleted");
                             latch2.SignalEx();
                         });
 
-            //execute 5 commands, then unsubscribe from first stream. then execute the rest
+            // execute 5 commands, then unsubscribe from first stream. then execute the rest
             for (int i = 0; i < 10; i++)
             {
                 HystrixCommand<int> cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
@@ -673,15 +663,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     s1.Dispose();
                 }
             }
-            Assert.True(stream.IsSourceCurrentlySubscribed);  //only 1/2 subscriptions has been cancelled
+
+            Assert.True(stream.IsSourceCurrentlySubscribed);  // only 1/2 subscriptions has been cancelled
 
             Assert.True(latch1.Wait(10000));
             Assert.True(latch2.Wait(10000));
             output.WriteLine("s1 got : " + healthCounts1.Value + ", s2 got : " + healthCounts2.Value);
             Assert.True(healthCounts1.Value > 0);
             Assert.True(healthCounts2.Value > 0);
-            Assert.True((healthCounts2.Value > healthCounts1.Value));
+            Assert.True(healthCounts2.Value > healthCounts1.Value);
         }
     }
-
 }

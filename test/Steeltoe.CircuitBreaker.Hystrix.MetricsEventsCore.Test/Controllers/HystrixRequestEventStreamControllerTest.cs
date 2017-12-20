@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -47,9 +45,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 var client = server.CreateClient();
 
                 client.BaseAddress = new Uri("http://localhost/");
-                var result = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, "hystrix/request.stream"),
+                var result = await client.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Get, "hystrix/request.stream"),
                         HttpCompletionOption.ResponseHeadersRead);
-
 
                 Assert.NotNull(result);
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -64,10 +62,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 result.Dispose();
             }
         }
+
         [Fact]
         public void Endpoint_ReturnsData()
         {
-
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
@@ -96,12 +94,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 Assert.Equal("MyCommand", dict["name"]);
                 Assert.NotNull(dict["events"]);
                 Assert.NotNull(dict["latencies"]);
-
-
             }
-
         }
     }
 }
-
-

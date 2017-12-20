@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,17 +22,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixRequestCacheTest : HystrixTestBase
     {
-        ITestOutputHelper output;
+        private ITestOutputHelper output;
 
-        public HystrixRequestCacheTest(ITestOutputHelper output) : base()
+        public HystrixRequestCacheTest(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
         }
+
         [Fact]
-    public  void TestCache()
+        public void TestCache()
         {
-            //HystrixConcurrencyStrategy strategy = HystrixConcurrencyStrategyDefault.GetInstance();
-            //HystrixRequestContext context = HystrixRequestContext.nitializeContext();
             try
             {
                 Task<string> t1 = Task.FromResult("a1");
@@ -57,7 +56,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
             catch (Exception e)
             {
-                Assert.False(true,"Exception: " + e.Message);
+                Assert.False(true, "Exception: " + e.Message);
                 output.WriteLine(e.ToString());
             }
             finally
@@ -78,14 +77,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 context.Dispose();
             }
         }
-        // @Test(expected = IllegalStateException.class)
+
         [Fact]
         public void TestCacheWithoutContext()
         {
             this.context.Dispose();
 
-            Assert.Throws<InvalidOperationException>(() => { HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1")).Get<Task<string>>("any");  } );
+            Assert.Throws<InvalidOperationException>(() => { HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1")).Get<Task<string>>("any");  });
         }
+
         [Fact]
     public void TestClearCache()
         {
@@ -104,7 +104,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.False(true, "Exception: " + e.Message);
                 output.WriteLine(e.ToString());
             }
-
         }
 
         [Fact]
@@ -115,10 +114,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             HystrixRequestCache cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));
             Task<string> t1 = Task.FromResult("a1");
-            //this should fail, as there's no HystrixRequestContext instance to place the cache into
+
+            // this should fail, as there's no HystrixRequestContext instance to place the cache into
             Assert.Throws<InvalidOperationException>(() => { cache1.PutIfAbsent("valueA", t1); });
-
         }
-
     }
 }

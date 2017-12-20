@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,24 +14,22 @@
 
 using System;
 
-
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class TestCircuitBreaker : IHystrixCircuitBreaker
     {
-
-        public readonly HystrixCommandMetrics metrics;
+        public readonly HystrixCommandMetrics Metrics;
         private bool forceShortCircuit = false;
 
         public TestCircuitBreaker()
         {
-            this.metrics = HystrixCircuitBreakerTest.GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
+            this.Metrics = HystrixCircuitBreakerTest.GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
             forceShortCircuit = false;
         }
 
         public TestCircuitBreaker(IHystrixCommandKey commandKey)
         {
-            this.metrics = HystrixCircuitBreakerTest.GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
+            this.Metrics = HystrixCircuitBreakerTest.GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
             forceShortCircuit = false;
         }
 
@@ -42,34 +39,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             return this;
         }
 
-
         public bool IsOpen
         {
             get
             {
-                //output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.Healthcounts);
+                // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.Healthcounts);
                 if (forceShortCircuit)
                 {
                     return true;
                 }
                 else
                 {
-                    return metrics.Healthcounts.ErrorCount >= 3;
+                    return Metrics.Healthcounts.ErrorCount >= 3;
                 }
             }
         }
-
 
         public void MarkSuccess()
         {
             // we don't need to do anything since we're going to permanently trip the circuit
         }
 
-
         public bool AllowRequest
         {
             get { return !IsOpen; }
         }
-
     }
 }

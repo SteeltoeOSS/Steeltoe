@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,10 +21,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
     public class HystrixRollingNumberTest
     {
         private ITestOutputHelper output;
+
         public HystrixRollingNumberTest(ITestOutputHelper output)
         {
             this.output = output;
         }
+
         [Fact]
         public void TestCreatesBuckets()
         {
@@ -33,6 +34,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             try
             {
                 HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+
                 // confirm the initial settings
                 Assert.Equal(200, counter._timeInMilliseconds);
                 Assert.Equal(10, counter._numberOfBuckets);
@@ -54,7 +56,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 // add 1 more and we should still only have 10 buckets since that's the max
                 counter.Increment(HystrixRollingNumberEvent.SUCCESS);
                 Assert.Equal(10, counter._buckets.Size);
-
             }
             catch (Exception e)
             {
@@ -62,6 +63,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 Assert.True(false, "Exception: " + e.Message);
             }
         }
+
         [Fact]
         public void TestResetBuckets()
         {
@@ -87,7 +89,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
                 // we should now have a single bucket with no values in it instead of 2 or more buckets
                 Assert.Equal(1, counter._buckets.Size);
-
             }
             catch (Exception e)
             {
@@ -118,7 +119,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
                 // we should have 4 (1 + 2 empty + 1 new one) buckets
                 Assert.Equal(4, counter._buckets.Size);
-
             }
             catch (Exception e)
             {
@@ -151,7 +151,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 Assert.Equal(4, counter._buckets.Last.GetAdder(HystrixRollingNumberEvent.SUCCESS).Sum());
                 Assert.Equal(2, counter._buckets.Last.GetAdder(HystrixRollingNumberEvent.FAILURE).Sum());
                 Assert.Equal(1, counter._buckets.Last.GetAdder(HystrixRollingNumberEvent.TIMEOUT).Sum());
-
             }
             catch (Exception e)
             {
@@ -192,7 +191,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
                 // the total counts
                 Assert.Equal(2, counter.GetRollingSum(HystrixRollingNumberEvent.TIMEOUT));
-
             }
             catch (Exception e)
             {
@@ -233,7 +231,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
                 // the total counts
                 Assert.Equal(2, counter.GetRollingSum(HystrixRollingNumberEvent.SHORT_CIRCUITED));
-
             }
             catch (Exception e)
             {
@@ -264,46 +261,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         public void TestExceptionThrow()
         {
             TestCounterType(HystrixRollingNumberEvent.EXCEPTION_THROWN);
-        }
-
-        private void TestCounterType(HystrixRollingNumberEvent type)
-        {
-            MockedTime time = new MockedTime();
-            try
-            {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
-
-                // Increment
-                counter.Increment(type);
-
-                // we should have 1 bucket
-                Assert.Equal(1, counter._buckets.Size);
-
-                // the count should be 1
-                Assert.Equal(1, counter._buckets.Last.GetAdder(type).Sum());
-                Assert.Equal(1, counter.GetRollingSum(type));
-
-                // sleep to get to a new bucket
-                time.Increment(counter._bucketSizeInMillseconds * 3);
-
-                // Increment again in latest bucket
-                counter.Increment(type);
-
-                // we should have 4 buckets
-                Assert.Equal(4, counter._buckets.Size);
-
-                // the counts of the last bucket
-                Assert.Equal(1, counter._buckets.Last.GetAdder(type).Sum());
-
-                // the total counts
-                Assert.Equal(2, counter.GetRollingSum(type));
-
-            }
-            catch (Exception e)
-            {
-                output.WriteLine(e.ToString());
-                Assert.True(false, "Exception: " + e.Message);
-            }
         }
 
         [Fact]
@@ -362,7 +319,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 Assert.Equal(1, counter.GetRollingSum(HystrixRollingNumberEvent.SUCCESS));
                 Assert.Equal(0, counter.GetRollingSum(HystrixRollingNumberEvent.FAILURE));
                 Assert.Equal(0, counter.GetRollingSum(HystrixRollingNumberEvent.TIMEOUT));
-
             }
             catch (Exception e)
             {
@@ -413,7 +369,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 // the total counts should now include only the last bucket after a reset since the window passed
                 Assert.Equal(1, counter.GetRollingSum(HystrixRollingNumberEvent.SUCCESS));
                 Assert.Equal(0, counter.GetRollingSum(HystrixRollingNumberEvent.FAILURE));
-
             }
             catch (Exception e)
             {
@@ -458,7 +413,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 Assert.Equal(0, values[1]);
                 Assert.Equal(0, values[2]);
                 Assert.Equal(20, values[3]); // latest bucket
-
             }
             catch (Exception e)
             {
@@ -507,7 +461,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 Assert.Equal(0, values[1]);
                 Assert.Equal(0, values[2]);
                 Assert.Equal(50, values[3]); // latest bucket
-
             }
             catch (Exception e)
             {
@@ -544,7 +497,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 counter.UpdateRollingMax(type, 15);
 
                 Assert.Equal(40, counter.GetRollingMaxValue(type));
-
             }
             catch (Exception e)
             {
@@ -586,6 +538,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             MockedTime time = new MockedTime();
             HystrixRollingNumberEvent type = HystrixRollingNumberEvent.THREAD_MAX_ACTIVE;
             HystrixRollingNumber counter = new HystrixRollingNumber(time, 20, 2);
+
             // iterate over 20 buckets on a queue sized for 2
             for (int i = 0; i < 20; i++)
             {
@@ -595,7 +548,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 {
                     time.Increment(counter._bucketSizeInMillseconds);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     // ignore
                 }
@@ -627,7 +580,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 {
                     time.Increment(counter._bucketSizeInMillseconds);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     // ignore
                 }
@@ -635,7 +588,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 Assert.Equal(2, counter.GetValues(type).Length);
 
                 counter.GetValueOfLatestBucket(type);
-
             }
 
             // cumulative count should be 20 (for the number of loops above) regardless of buckets rolling
@@ -660,7 +612,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 {
                     time.Increment(counter._bucketSizeInMillseconds);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     // ignore
                 }
@@ -701,7 +653,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 {
                     time.Increment(counter._bucketSizeInMillseconds);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     // ignore
                 }
@@ -742,7 +694,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 {
                     time.Increment(counter._bucketSizeInMillseconds);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     // ignore
                 }
@@ -758,21 +710,43 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             Assert.Equal(5, counter.GetCumulativeSum(type));
         }
 
-    }
-    class MockedTime : ITime
-    {
-
-        private AtomicInteger time = new AtomicInteger(0);
-
-
-        public long CurrentTimeInMillis
+        private void TestCounterType(HystrixRollingNumberEvent type)
         {
-            get { return time.Value; }
-        }
+            MockedTime time = new MockedTime();
+            try
+            {
+                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
 
-        public void Increment(int millis)
-        {
-            time.AddAndGet(millis);
+                // Increment
+                counter.Increment(type);
+
+                // we should have 1 bucket
+                Assert.Equal(1, counter._buckets.Size);
+
+                // the count should be 1
+                Assert.Equal(1, counter._buckets.Last.GetAdder(type).Sum());
+                Assert.Equal(1, counter.GetRollingSum(type));
+
+                // sleep to get to a new bucket
+                time.Increment(counter._bucketSizeInMillseconds * 3);
+
+                // Increment again in latest bucket
+                counter.Increment(type);
+
+                // we should have 4 buckets
+                Assert.Equal(4, counter._buckets.Size);
+
+                // the counts of the last bucket
+                Assert.Equal(1, counter._buckets.Last.GetAdder(type).Sum());
+
+                // the total counts
+                Assert.Equal(2, counter.GetRollingSum(type));
+            }
+            catch (Exception e)
+            {
+                output.WriteLine(e.ToString());
+                Assert.True(false, "Exception: " + e.Message);
+            }
         }
     }
 }

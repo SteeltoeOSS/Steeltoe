@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,13 +29,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class CumulativeThreadPoolEventCounterStreamTest : CommandStreamTest, IDisposable
     {
+        private CumulativeThreadPoolEventCounterStream stream;
+        private ITestOutputHelper output;
 
-        CumulativeThreadPoolEventCounterStream stream;
-        ITestOutputHelper output;
-        class LatchedObserver : ObserverBase<long[]>
+        private class LatchedObserver : ObserverBase<long[]>
         {
-            CountdownEvent latch;
-            ITestOutputHelper output;
+            private CountdownEvent latch;
+            private ITestOutputHelper output;
+
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
                 this.latch = latch;
@@ -45,7 +45,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnCompletedCore()
             {
-                output.WriteLine("OnCompletedCore @ " + DateTime.Now.Ticks / 10000 + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnCompletedCore @ " + (DateTime.Now.Ticks / 10000) + " " + Thread.CurrentThread.ManagedThreadId);
                 latch.SignalEx();
             }
 
@@ -56,13 +56,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(long[] eventCounts)
             {
-                output.WriteLine("OnNext @ " + DateTime.Now.Ticks / 10000 + " : " + eventCounts[0] + " : " + eventCounts[1] + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + eventCounts[0] + " : " + eventCounts[1] + " " + Thread.CurrentThread.ManagedThreadId);
             }
         }
 
-        public CumulativeThreadPoolEventCounterStreamTest(ITestOutputHelper output) : base()
+        public CumulativeThreadPoolEventCounterStreamTest(ITestOutputHelper output)
+            : base()
         {
-
             this.output = output;
         }
 
@@ -73,7 +73,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Unsubscribe();
             CumulativeThreadPoolEventCounterStream.Reset();
         }
-
 
         [Fact]
         public void TestEmptyStreamProducesZeros()
@@ -87,16 +86,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            //no writes
-
+            // no writes
             try
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
@@ -114,8 +113,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
 
             cmd.Observe();
 
@@ -123,20 +121,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
-
         }
 
         [Fact]
         public void TestSingleFailure()
         {
-
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-C");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-C");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-C");
@@ -146,23 +143,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
             cmd.Observe();
 
             try
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-
         }
 
         [Fact]
@@ -177,8 +173,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.TIMEOUT);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.TIMEOUT);
 
             cmd.Observe();
 
@@ -186,10 +181,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
@@ -207,8 +203,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
 
             cmd.Observe();
 
@@ -216,14 +211,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
+
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
-
         }
 
         [Fact]
@@ -238,9 +233,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            CommandStreamTest.Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
-            CommandStreamTest.Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-            CommandStreamTest.Command cmd3 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+            Command cmd3 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
 
             cmd1.Observe();
             cmd2.Observe();
@@ -249,14 +244,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
-            //RESPONSE_FROM_CACHE should not show up at all in thread pool counters - just the success
+            // RESPONSE_FROM_CACHE should not show up at all in thread pool counters - just the success
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
@@ -274,12 +269,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            //3 failures in a row will trip circuit.  let bucket roll once then submit 2 requests.
-            //should see 3 FAILUREs and 2 SHORT_CIRCUITs and each should see a FALLBACK_SUCCESS
-
-            CommandStreamTest.Command failure1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
-            CommandStreamTest.Command failure2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
-            CommandStreamTest.Command failure3 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            // 3 failures in a row will trip circuit.  let bucket roll once then submit 2 requests.
+            // should see 3 FAILUREs and 2 SHORT_CIRCUITs and each should see a FALLBACK_SUCCESS
+            Command failure1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command failure2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command failure3 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
 
             CommandStreamTest.Command shortCircuit1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
             CommandStreamTest.Command shortCircuit2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
@@ -288,8 +282,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             failure2.Observe();
             failure3.Observe();
 
-            Time.Wait( 150);
-  
+            Time.Wait(150);
 
             shortCircuit1.Observe();
             shortCircuit2.Observe();
@@ -298,7 +291,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
@@ -307,7 +300,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(shortCircuit1.IsResponseShortCircuited);
             Assert.True(shortCircuit2.IsResponseShortCircuited);
 
-            //only the FAILUREs should show up in thread pool counters
+            // only the FAILUREs should show up in thread pool counters
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(3, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
@@ -325,32 +318,33 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            //10 commands will saturate semaphore when called from different threads.
-            //submit 2 more requests and they should be SEMAPHORE_REJECTED
-            //should see 10 SUCCESSes, 2 SEMAPHORE_REJECTED and 2 FALLBACK_SUCCESSes
-
+            // 10 commands will saturate semaphore when called from different threads.
+            // submit 2 more requests and they should be SEMAPHORE_REJECTED
+            // should see 10 SUCCESSes, 2 SEMAPHORE_REJECTED and 2 FALLBACK_SUCCESSes
             List<Command> saturators = new List<Command>();
 
             for (int i = 0; i < 10; i++)
             {
-                saturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 300, ExecutionIsolationStrategy.SEMAPHORE));
+                saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 300, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
-            CommandStreamTest.Command rejected1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
-            CommandStreamTest.Command rejected2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            Command rejected1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            Command rejected2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
 
-            foreach(Command c in saturators)
+            foreach (Command c in saturators)
             {
-                Task t = new Task(() =>
+                Task t = new Task(
+                () =>
                 {
                     c.Observe();
-                }, CancellationToken.None, TaskCreationOptions.LongRunning);
+                },  CancellationToken.None,
+                    TaskCreationOptions.LongRunning);
                 t.Start();
 
                 Task.Run(() => c.Observe());
             }
 
-            Time.Wait( 10);
+            Time.Wait(10);
 
             Task.Run(() => rejected1.Observe());
             Task.Run(() => rejected2.Observe());
@@ -359,7 +353,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
@@ -371,7 +365,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
-
         }
 
         [Fact]
@@ -386,26 +379,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            //10 commands will saturate threadpools when called concurrently.
-            //submit 2 more requests and they should be THREADPOOL_REJECTED
-            //should see 10 SUCCESSes, 2 THREADPOOL_REJECTED and 2 FALLBACK_SUCCESSes
-
+            // 10 commands will saturate threadpools when called concurrently.
+            // submit 2 more requests and they should be THREADPOOL_REJECTED
+            // should see 10 SUCCESSes, 2 THREADPOOL_REJECTED and 2 FALLBACK_SUCCESSes
             List<Command> saturators = new List<Command>();
 
             for (int i = 0; i < 10; i++)
             {
-                saturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 700));
+                saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 700));
             }
 
-
-            CommandStreamTest.Command rejected1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
-            CommandStreamTest.Command rejected2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            Command rejected1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            Command rejected2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
 
             foreach (Command c in saturators)
             {
                 c.Observe();
             }
-
 
             rejected1.Observe();
             rejected2.Observe();
@@ -414,7 +404,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
@@ -426,13 +416,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(10, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(2, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
-
         }
 
         [Fact]
         public void TestFallbackFailure()
         {
-
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-J");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-J");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-J");
@@ -442,8 +430,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
 
             cmd.Observe();
 
@@ -451,7 +438,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
@@ -461,14 +448,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
-
-
         }
 
         [Fact]
         public void TestFallbackMissing()
         {
-
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-K");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-K");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-K");
@@ -478,8 +462,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
 
             cmd.Observe();
 
@@ -487,7 +470,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
@@ -497,8 +480,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
-
-
         }
 
         [Fact]
@@ -513,28 +494,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-
-            //fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
-            //let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
-
+            // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
+            // let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
             List<CommandStreamTest.Command> fallbackSaturators = new List<CommandStreamTest.Command>();
             for (int i = 0; i < 5; i++)
             {
                 fallbackSaturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 400));
             }
 
-            CommandStreamTest.Command rejection1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
-            CommandStreamTest.Command rejection2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
+            Command rejection1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
+            Command rejection2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
 
-            foreach (CommandStreamTest.Command saturator in fallbackSaturators)
+            foreach (Command saturator in fallbackSaturators)
             {
                 saturator.Observe();
             }
 
-
             try
             {
-                Time.Wait( 70);
+                Time.Wait(70);
             }
             catch (Exception ie)
             {
@@ -548,22 +526,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
-            //all 7 commands executed on-thread, so should be executed according to thread-pool metrics
+            // all 7 commands executed on-thread, so should be executed according to thread-pool metrics
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(7, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
-
-
         }
 
-        //in a rolling window, take(30) would age out all counters.  in the cumulative count, we expect them to remain non-zero forever
+        // in a rolling window, take(30) would age out all counters.  in the cumulative count, we expect them to remain non-zero forever
         [Fact]
         public void TestMultipleEventsOverTimeGetStoredAndDoNotAgeOut()
         {
@@ -576,10 +552,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(30).Subscribe(new LatchedObserver(output, latch));
 
-
-
-            CommandStreamTest.Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
-            CommandStreamTest.Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 10);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 10);
 
             cmd1.Observe();
             cmd2.Observe();
@@ -587,20 +561,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.True(false, "Interrupted ex");
             }
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
-
-            //all commands should have aged out
+            // all commands should have aged out
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(2, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
-
         }
     }
-
 }

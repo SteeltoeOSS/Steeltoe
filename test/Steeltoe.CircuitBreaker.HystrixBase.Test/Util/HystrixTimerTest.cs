@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 {
     public class HystrixTimerTest : IDisposable
     {
-        ITestOutputHelper output;
+        private ITestOutputHelper output;
 
         public HystrixTimerTest(ITestOutputHelper output)
         {
@@ -37,6 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         {
             HystrixPlugins.Reset();
         }
+
         [Fact]
         public void TestSingleCommandSingleInterval()
         {
@@ -49,7 +49,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
             try
             {
-                Time.Wait( 500);
+                Time.Wait(500);
             }
             catch (Exception e)
             {
@@ -57,10 +57,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             }
 
             // we should have 7 or more 50ms ticks within 500ms
-            output.WriteLine("l1 ticks: " + l1.tickCount.Value);
-            output.WriteLine("l2 ticks: " + l2.tickCount.Value);
-            Assert.True(l1.tickCount.Value > 7);
-            Assert.True(l2.tickCount.Value > 7);
+            output.WriteLine("l1 ticks: " + l1.TickCount.Value);
+            output.WriteLine("l2 ticks: " + l2.TickCount.Value);
+            Assert.True(l1.TickCount.Value > 7);
+            Assert.True(l2.TickCount.Value > 7);
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
             try
             {
-                Time.Wait( 500);
+                Time.Wait(500);
             }
             catch (Exception e)
             {
@@ -86,20 +86,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             }
 
             // we should have 3 or more 100ms ticks within 500ms
-            output.WriteLine("l1 ticks: " + l1.tickCount.Value);
-            Assert.True(l1.tickCount.Value >= 3);
+            output.WriteLine("l1 ticks: " + l1.TickCount.Value);
+            Assert.True(l1.TickCount.Value >= 3);
+
             // but it can't be more than 6
-            Assert.True(l1.tickCount.Value < 6);
+            Assert.True(l1.TickCount.Value < 6);
 
             // we should have 30 or more 10ms ticks within 500ms
-            output.WriteLine("l2 ticks: " + l2.tickCount.Value);
-            Assert.True(l2.tickCount.Value > 30);
-            Assert.True(l2.tickCount.Value < 550);
+            output.WriteLine("l2 ticks: " + l2.TickCount.Value);
+            Assert.True(l2.TickCount.Value > 30);
+            Assert.True(l2.TickCount.Value < 550);
 
             // we should have 15-20 25ms ticks within 500ms
-            output.WriteLine("l3 ticks: " + l3.tickCount.Value);
-            Assert.True(l3.tickCount.Value > 14);
-            Assert.True(l3.tickCount.Value < 25);
+            output.WriteLine("l3 ticks: " + l3.TickCount.Value);
+            Assert.True(l3.TickCount.Value > 14);
+            Assert.True(l3.TickCount.Value < 25);
         }
 
         [Fact]
@@ -114,7 +115,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
             try
             {
-                Time.Wait( 500);
+                Time.Wait(500);
             }
             catch (Exception e)
             {
@@ -122,22 +123,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             }
 
             // we should have 7 or more 50ms ticks within 500ms
-            output.WriteLine("l1 ticks: " + l1.tickCount.Value);
-            output.WriteLine("l2 ticks: " + l2.tickCount.Value);
-            Assert.True(l1.tickCount.Value > 7);
-            Assert.True(l2.tickCount.Value > 7);
+            output.WriteLine("l1 ticks: " + l1.TickCount.Value);
+            output.WriteLine("l2 ticks: " + l2.TickCount.Value);
+            Assert.True(l1.TickCount.Value > 7);
+            Assert.True(l2.TickCount.Value > 7);
 
             // remove l2
             l2ref.Dispose();
 
             // reset counts
-            l1.tickCount.Value = 0;
-            l2.tickCount.Value = 0;
+            l1.TickCount.Value = 0;
+            l2.TickCount.Value = 0;
 
             // wait for time to pass again
             try
             {
-                Time.Wait( 500);
+                Time.Wait(500);
             }
             catch (Exception e)
             {
@@ -145,13 +146,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             }
 
             // we should have 7 or more 50ms ticks within 500ms
-            output.WriteLine("l1 ticks: " + l1.tickCount.Value);
-            output.WriteLine("l2 ticks: " + l2.tickCount.Value);
+            output.WriteLine("l1 ticks: " + l1.TickCount.Value);
+            output.WriteLine("l2 ticks: " + l2.TickCount.Value);
+
             // l1 should continue ticking
-            Assert.True(l1.tickCount.Value > 7);
+            Assert.True(l1.TickCount.Value > 7);
+
             // we should have no ticks on l2 because we removed it
-            output.WriteLine("tickCount.Value: " + l2.tickCount.Value + " on l2: " + l2);
-            Assert.Equal(0, l2.tickCount.Value);
+            output.WriteLine("tickCount.Value: " + l2.TickCount.Value + " on l2: " + l2);
+            Assert.Equal(0, l2.TickCount.Value);
         }
 
         [Fact]
@@ -170,7 +173,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             // perform reset which should shut it down
             HystrixTimer.Reset();
 
-            Time.Wait( 50);
+            Time.Wait(50);
 
             Assert.True(ex.IsCompleted);
             Assert.Null(tref._timerTask);
@@ -185,69 +188,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
             // reset again to shutdown what we just started
             HystrixTimer.Reset();
+
             // try resetting again to make sure it's idempotent (ie. doesn't blow up on an NPE)
             HystrixTimer.Reset();
         }
 
-        //[Fact]
-        //public void TestThreadPoolSizeDefault()
-        //{
-
-        //    HystrixTimer hystrixTimer = HystrixTimer.GetInstance();
-        //    hystrixTimer.startThreadIfNeeded();
-        //    assertEquals(Runtime.getRuntime().availableProcessors(), hystrixTimer.executor.Value.getThreadPool().getCorePoolSize());
-        //}
-
-        //    [Fact]
-        //    public void TestThreadPoolSizeConfiguredWithBuilder()
-        //    {
-
-        //        HystrixTimerThreadPoolProperties.Setter builder = HystrixTimerThreadPoolProperties.Setter().withCoreSize(1);
-        //        final HystrixTimerThreadPoolProperties props = new HystrixTimerThreadPoolProperties(builder)
-        //        {
-        //        };
-
-        //        HystrixPropertiesStrategy strategy = new HystrixPropertiesStrategy() {
-        //        @Override
-        //        public HystrixTimerThreadPoolProperties getTimerThreadPoolProperties()
-        //        {
-        //            return props;
-        //        }
-        //    };
-
-        //    HystrixPlugins.GetInstance().registerPropertiesStrategy(strategy);
-
-        //    HystrixTimer hystrixTimer = HystrixTimer.GetInstance();
-        //    hystrixTimer.startThreadIfNeeded();
-
-        //    assertEquals(1, hystrixTimer.executor.Value.getThreadPool().getCorePoolSize());
-
-        //}
-
-    }
-    class TestListener : ITimerListener
-    {
-
-        private int interval;
-        public AtomicInteger tickCount = new AtomicInteger();
-
-        public TestListener(int interval, String value)
+        private class TestListener : ITimerListener
         {
-            this.interval = interval;
+            public AtomicInteger TickCount = new AtomicInteger();
+            private int interval;
+
+            public TestListener(int interval, string value)
+            {
+                this.interval = interval;
+            }
+
+            public void Tick()
+            {
+                TickCount.IncrementAndGet();
+            }
+
+            public int IntervalTimeInMilliseconds
+            {
+                get { return interval; }
+            }
         }
-
-
-        public void Tick()
-        {
-            tickCount.IncrementAndGet();
-        }
-
-
-        public int IntervalTimeInMilliseconds
-        {
-            get { return interval; }
-        }
-
     }
 }
-

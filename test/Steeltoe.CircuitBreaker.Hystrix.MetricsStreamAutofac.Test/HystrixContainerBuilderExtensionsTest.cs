@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +19,12 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CloudFoundry.Connector.Hystrix;
 using Steeltoe.Common.Options.Autofac;
 using System;
-
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
     public class HystrixContainerBuilderExtensionsTest : HystrixTestBase
     {
-
         [Fact]
         public void RegisterHystrixStreams_ThrowsIfBuilderNull()
         {
@@ -69,7 +66,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
             Assert.NotNull(factory);
 
             publisher.SampleSubscription.Dispose();
-
         }
 
         [Fact]

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,14 +23,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             return new HystrixThreadPoolOptions()
             {
                 CoreSize = 10,   // core size of thread pool
-                MaximumSize = 15,  //maximum size of thread pool
+                MaximumSize = 15,  // maximum size of thread pool
                 KeepAliveTimeMinutes = 1,   // minutes to keep a thread alive (though in practice this doesn't get used as by default we set a fixed size)
                 MaxQueueSize = 100,  // size of queue (but we never allow it to grow this big ... this can't be dynamically changed so we use 'queueSizeRejectionThreshold' to artificially limit and reject)
                 QueueSizeRejectionThreshold = 10,  // number of items in queue at which point we reject (this can be dyamically changed)
                 MetricsRollingStatisticalWindowInMilliseconds = 10000,   // milliseconds for rolling number
-                MetricsRollingStatisticalWindowBuckets = 10   // number of buckets in rolling number (10 1-second buckets)
+                MetricsRollingStatisticalWindowBuckets = 10 // number of buckets in rolling number (10 1-second buckets)
             };
         }
+
         [Fact]
         public void TestSetNeitherCoreNorMaximumSize()
         {
@@ -40,6 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(HystrixThreadPoolOptions.Default_CoreSize, properties.CoreSize);
             Assert.Equal(HystrixThreadPoolOptions.Default_MaximumSize, properties.MaximumSize);
         }
+
         [Fact]
         public void TestSetCoreSizeOnly()
         {
@@ -48,13 +49,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(14, properties.CoreSize);
             Assert.Equal(HystrixThreadPoolOptions.Default_MaximumSize, properties.MaximumSize);
         }
+
         [Fact]
         public void TestSetMaximumSizeOnlyLowerThanDefaultCoreSize()
         {
             HystrixThreadPoolOptions properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { MaximumSize = 3 });
             Assert.Equal(HystrixThreadPoolOptions.Default_CoreSize, properties.CoreSize);
             Assert.Equal(3, properties.MaximumSize);
-
         }
 
         [Fact]
@@ -63,24 +64,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixThreadPoolOptions properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { MaximumSize = 21 });
             Assert.Equal(HystrixThreadPoolOptions.Default_CoreSize, properties.CoreSize);
             Assert.Equal(21, properties.MaximumSize);
-
         }
+
         [Fact]
         public void TestSetCoreSizeLessThanMaximumSize()
         {
             HystrixThreadPoolOptions properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { CoreSize = 2, MaximumSize = 8 });
             Assert.Equal(2, properties.CoreSize);
             Assert.Equal(8, properties.MaximumSize);
-
-
         }
+
         [Fact]
         public void TestSetCoreSizeEqualToMaximumSize()
         {
             HystrixThreadPoolOptions properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { CoreSize = 7, MaximumSize = 7 });
             Assert.Equal(7, properties.CoreSize);
             Assert.Equal(7, properties.MaximumSize);
-
         }
 
         [Fact]
@@ -89,7 +88,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixThreadPoolOptions properties = new HystrixThreadPoolOptions(HystrixThreadPoolKeyDefault.AsKey("TEST"), new HystrixThreadPoolOptions() { CoreSize = 12, MaximumSize = 8 });
             Assert.Equal(12, properties.CoreSize);
             Assert.Equal(8, properties.MaximumSize);
-
         }
     }
 }

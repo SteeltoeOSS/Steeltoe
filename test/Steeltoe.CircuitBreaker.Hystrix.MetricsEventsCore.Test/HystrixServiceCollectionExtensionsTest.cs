@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,14 +15,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
 {
     public class HystrixServiceCollectionExtensionsTest
     {
-
         [Fact]
         public void AddHystrixStreams_ThrowsIfServiceContainerNull()
         {
@@ -42,7 +39,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
             var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixRequestEventStream(config));
             Assert.Contains(nameof(services), ex4.Message);
 
-            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams( config));
+            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(config));
             Assert.Contains(nameof(services), ex5.Message);
         }
     }

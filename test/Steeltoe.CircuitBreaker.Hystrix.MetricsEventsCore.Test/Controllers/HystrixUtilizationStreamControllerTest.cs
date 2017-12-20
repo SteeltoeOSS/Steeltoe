@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
@@ -25,6 +23,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using Xunit;
+
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
 {
     public class HystrixUtilizationStreamControllerTest : HystrixTestBase
@@ -46,9 +45,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 var client = server.CreateClient();
 
                 client.BaseAddress = new Uri("http://localhost/");
-                var result = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, "hystrix/utilization.stream"),
+                var result = await client.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Get, "hystrix/utilization.stream"),
                         HttpCompletionOption.ResponseHeadersRead);
-
 
                 Assert.NotNull(result);
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -63,15 +62,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 result.Dispose();
             }
         }
+
         [Fact]
         public void Endpoint_ReturnsData()
         {
-
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-
 
                 client.BaseAddress = new Uri("http://localhost/");
                 var result = client.GetStreamAsync("hystrix/utilization.stream").Result;
@@ -94,11 +92,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 Assert.Equal("HystrixUtilization", dict["type"]);
                 Assert.NotNull(dict["commands"]);
                 Assert.NotNull(dict["threadpools"]);
-
             }
-
         }
     }
 }
-    
- 

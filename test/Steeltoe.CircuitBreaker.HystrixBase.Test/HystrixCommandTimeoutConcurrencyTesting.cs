@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,9 +26,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
     {
         private const int NUM_CONCURRENT_COMMANDS = 30;
-        ITestOutputHelper output;
+        private ITestOutputHelper output;
 
-        public HystrixCommandTimeoutConcurrencyTesting(ITestOutputHelper output) : base()
+        public HystrixCommandTimeoutConcurrencyTesting(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
         }
@@ -37,67 +37,91 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public async void TestTimeoutRace()
         {
-            int NUM_TRIALS = 10;
+            int num_trials = 10;
 
-            for (int i = 0; i < NUM_TRIALS; i++) {
+            for (int i = 0; i < num_trials; i++)
+            {
                 List<IObservable<string>> observables = new List<IObservable<string>>();
                 HystrixRequestContext context = null;
 
-                try {
+                try
+                {
                     context = HystrixRequestContext.InitializeContext();
-                    for (int j = 0; j < NUM_CONCURRENT_COMMANDS; j++) {
+                    for (int j = 0; j < NUM_CONCURRENT_COMMANDS; j++)
+                    {
                         observables.Add(new TestCommand().Observe());
                     }
 
                     IObservable<string> overall = Observable.Merge(observables);
 
-                    IList<String> results = await overall.ToList().FirstAsync(); //wait for all commands to complete
+                    IList<string> results = await overall.ToList().FirstAsync(); // wait for all commands to complete
 
-                    foreach (String s in results) {
-                        if (s == null) {
+                    foreach (string s in results)
+                    {
+                        if (s == null)
+                        {
                             output.WriteLine("Received NULL!");
                             throw new Exception("Received NULL");
                         }
                     }
 
-                    foreach (IHystrixInvokableInfo hi in HystrixRequestLog.CurrentRequestLog.AllExecutedCommands) {
-                        if (!hi.IsResponseTimedOut) {
+                    foreach (IHystrixInvokableInfo hi in HystrixRequestLog.CurrentRequestLog.AllExecutedCommands)
+                    {
+                        if (!hi.IsResponseTimedOut)
+                        {
                             output.WriteLine("Timeout not found in executed command");
                             throw new Exception("Timeout not found in executed command");
                         }
-                        if (hi.IsResponseTimedOut && hi.ExecutionEvents.Count == 1) {
+
+                        if (hi.IsResponseTimedOut && hi.ExecutionEvents.Count == 1)
+                        {
                             output.WriteLine("Missing fallback status!");
                             throw new Exception("Missing fallback status on timeout.");
                         }
                     }
-
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     output.WriteLine("Error: " + e.Message);
                     output.WriteLine(e.ToString());
-                    throw ;
-                } finally {
+                    throw;
+                }
+                finally
+                {
                     output.WriteLine(HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                    if (context != null) {
+                    if (context != null)
+                    {
                         context.Dispose();
                     }
                 }
 
                 output.WriteLine("*************** TRIAL " + i + " ******************");
                 output.WriteLine(" ");
-                Time.Wait( 50);
+                Time.Wait(50);
             }
 
-            base.Reset();
+            Reset();
         }
 
-        class TestCommand : HystrixCommand<string>
+        private class TestCommand : HystrixCommand<string>
         {
-
             public TestCommand()
             : base(GetOptions())
             {
                 this.IsFallbackUserDefined = true;
             }
+
+            protected override string Run()
+            {
+                Time.Wait(500);
+                return "hello";
+            }
+
+            protected override string RunFallback()
+            {
+                return "failed";
+            }
+
             private static IHystrixCommandOptions GetOptions()
             {
                 HystrixCommandOptions opts = new HystrixCommandOptions()
@@ -111,6 +135,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 };
                 return opts;
             }
+
             private static IHystrixThreadPoolOptions GetThreadPoolOptions()
             {
                 HystrixThreadPoolOptions opts = new HystrixThreadPoolOptions()
@@ -121,21 +146,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 };
                 return opts;
             }
-            protected override string Run()
-            {
-                //System.out.println(System.currentTimeMillis() + " : " + Thread.currentThread().getName() + " sleeping");
-                Time.Wait( 500);
-                //System.out.println(System.currentTimeMillis() + " : " + Thread.currentThread().getName() + " awake and returning");
-                return "hello";
-            }
-
-            //@Override
-            protected override String RunFallback()
-            {
-                return "failed";
-            }
-
         }
     }
 }
-

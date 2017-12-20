@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
@@ -31,13 +27,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 {
     public class SerializeTest : HystrixTestBase
     {
+        private class MyCommand : HystrixCommand<int>
+        {
+            public MyCommand()
+                : base(
+                    HystrixCommandGroupKeyDefault.AsKey("MyCommandGroup"),
+                    () => { return 1; },
+                    () => { return 2; })
+            {
+            }
+        }
+
         [Fact]
         public void ToJsonList_ReturnsExpected()
         {
             var stream = HystrixDashboardStream.GetInstance();
             CountdownEvent latch = new CountdownEvent(1);
 
-  
             List<string> result = null;
             var subscription = stream.Observe()
                 .SubscribeOn(NewThreadScheduler.Default)
@@ -45,11 +51,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
                 .Subscribe(
                    (data) =>
                    {
-                        result = Serialize.ToJsonList(data, null);
-                       if (result.Count > 0)
-                       {
+                      result = Serialize.ToJsonList(data, null);
+                      if (result.Count > 0)
+                      {
                            latch.SignalEx();
-                       }
+                      }
                    },
                    (e) =>
                    {
@@ -60,7 +66,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
                        latch.SignalEx();
                    });
 
-
             MyCommand cmd = new MyCommand();
             cmd.Execute();
 
@@ -68,7 +73,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 
             Assert.NotNull(result);
             Assert.True(result.Count > 0);
-    
+
             var jsonObject = result[0];
 
             var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonObject);
@@ -82,24 +87,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
             var type = cmdData["type"].Value<string>();
             Assert.True("HystrixCommand".Equals(type) || "HystrixThreadPool".Equals(type));
             Assert.NotNull(cmdData["name"]);
-            var name = cmdData["name"].Value<string>(); ;
+            var name = cmdData["name"].Value<string>();
             Assert.True("MyCommand".Equals(name) || "MyCommandGroup".Equals(name));
 
-
             subscription.Dispose();
-            
-
-        }
-
-    }
-    class MyCommand : HystrixCommand<int>
-    {
-        public MyCommand() :
-            base(HystrixCommandGroupKeyDefault.AsKey("MyCommandGroup"),
-                () => { return 1; },
-                () => { return 2; })
-        {
-
         }
     }
 }

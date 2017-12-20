@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +16,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
@@ -31,21 +29,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             new TestCommand("A", false, true).Execute();
             string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
             Assert.Equal("TestCommand[SUCCESS][ms]", log);
         }
+
         [Fact]
         public void TestSuccessFromCache()
         {
             // 1 success
             new TestCommand("A", false, true).Execute();
+
             // 4 success from cache
             new TestCommand("A", false, true).Execute();
             new TestCommand("A", false, true).Execute();
             new TestCommand("A", false, true).Execute();
             new TestCommand("A", false, true).Execute();
-            String log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
             Assert.Equal("TestCommand[SUCCESS][ms], TestCommand[SUCCESS, RESPONSE_FROM_CACHE][ms]x4", log);
@@ -56,12 +58,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             // 1 failure
             new TestCommand("A", true, false).Execute();
+
             // 4 failures from cache
             new TestCommand("A", true, false).Execute();
             new TestCommand("A", true, false).Execute();
             new TestCommand("A", true, false).Execute();
             new TestCommand("A", true, false).Execute();
-            String log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
             Assert.Equal("TestCommand[FAILURE, FALLBACK_SUCCESS][ms], TestCommand[FAILURE, FALLBACK_SUCCESS, RESPONSE_FROM_CACHE][ms]x4", log);
@@ -75,22 +79,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 new TestCommand("A", true, true).Execute();
             }
-            catch (Exception )
+            catch (Exception)
             {
             }
+
             // 1 failure from cache
             try
             {
                 new TestCommand("A", true, true).Execute();
             }
-            catch (Exception )
+            catch (Exception)
             {
             }
-            String log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+
+            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
             Assert.Equal("TestCommand[FAILURE, FALLBACK_FAILURE][ms], TestCommand[FAILURE, FALLBACK_FAILURE, RESPONSE_FROM_CACHE][ms]", log);
         }
+
         [Fact]
         public void TestTimeout()
         {
@@ -104,19 +112,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     result = new TestCommand("A", false, false, true).Observe();
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
             }
+
             try
             {
-                result.Single();
+                result.SingleAsync().Wait();
             }
-            catch (Exception )
+            catch (Exception)
             {
-              
             }
+
            // System.out.println(Thread.currentThread().getName() + " : " + System.currentTimeMillis() + " -> done with awaiting all observables");
             string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
             Assert.Equal("TestCommand[TIMEOUT, FALLBACK_MISSING][ms]", log);
@@ -131,6 +141,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Reset();
             }
         }
+
         [Fact]
         public void TestMultipleCommands()
         {
@@ -151,22 +162,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 new TestCommand("A", true, true).Execute();
             }
-            catch (Exception )
+            catch (Exception)
             {
             }
+
             // 1 failure from cache
             try
             {
                 new TestCommand("A", true, true).Execute();
             }
-            catch (Exception )
+            catch (Exception)
             {
             }
-            String log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+
+            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
             Assert.Equal("GetData[SUCCESS][ms], PutData[SUCCESS][ms], GetValues[SUCCESS][ms], GetValues[SUCCESS, RESPONSE_FROM_CACHE][ms], TestCommand[FAILURE, FALLBACK_FAILURE][ms], TestCommand[FAILURE, FALLBACK_FAILURE, RESPONSE_FROM_CACHE][ms]", log);
         }
+
         [Fact]
         public void TestMaxLimit()
         {
@@ -174,6 +189,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 new TestCommand("A", false, true).Execute();
             }
+
             // then execute again some more
             for (int i = 0; i < 10; i++)
             {
@@ -183,7 +199,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(HystrixRequestLog.MAX_STORAGE, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
         }
 
-        class TestCommand : HystrixCommand<String>
+        private class TestCommand : HystrixCommand<string>
         {
             private readonly string value;
             private readonly bool fail;
@@ -192,8 +208,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             private readonly bool useFallback;
             private readonly bool useCache;
 
-            public TestCommand(string commandName, string value, bool fail, bool failOnFallback) :
-                base(new HystrixCommandOptions()
+            public TestCommand(string commandName, string value, bool fail, bool failOnFallback)
+                : base(new HystrixCommandOptions()
                 {
                     GroupKey = HystrixCommandGroupKeyDefault.AsKey("RequestLogTestCommand"),
                     CommandKey = HystrixCommandKeyDefault.AsKey(commandName)
@@ -207,8 +223,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.useCache = true;
             }
 
-            public TestCommand(string value, bool fail, bool failOnFallback) :
-                base(HystrixCommandGroupKeyDefault.AsKey("RequestLogTestCommand"))
+            public TestCommand(string value, bool fail, bool failOnFallback)
+                : base(HystrixCommandGroupKeyDefault.AsKey("RequestLogTestCommand"))
             {
                 this.value = value;
                 this.fail = fail;
@@ -218,8 +234,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.useCache = true;
             }
 
-            public TestCommand(string value, bool fail, bool failOnFallback, bool timeout) :
-                base(new HystrixCommandOptions()
+            public TestCommand(string value, bool fail, bool failOnFallback, bool timeout)
+                : base(new HystrixCommandOptions()
                 {
                     GroupKey = HystrixCommandGroupKeyDefault.AsKey("RequestLogTestCommand"),
                     ExecutionTimeoutInMilliseconds = 500
@@ -232,10 +248,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.useFallback = false;
                 this.useCache = false;
             }
-           
+
         protected override string Run()
             {
-                //output.WriteLine(Task.CurrentId + " : " + DateTime.Now.ToString());
+                // output.WriteLine(Task.CurrentId + " : " + DateTime.Now.ToString());
                 if (fail)
                 {
                     throw new Exception("forced failure");
@@ -246,20 +262,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     {
                         Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 10000);
                         _token.ThrowIfCancellationRequested();
-                        //output.WriteLine("Woke up from sleep!");
-                        //token.ThrowIfCancellationRequested();
+
+                        // output.WriteLine("Woke up from sleep!");
+                        // token.ThrowIfCancellationRequested();
                     }
                     catch (Exception)
                     {
-                        //output.WriteLine(Task.CurrentId + " Interrupted by timeout");
+                        // output.WriteLine(Task.CurrentId + " Interrupted by timeout");
                         throw;
                     }
                 }
+
                 return value;
             }
 
-      
-        protected override String RunFallback()
+        protected override string RunFallback()
             {
                 if (useFallback)
                 {
@@ -278,7 +295,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             }
 
-           
         protected override string CacheKey
             {
                 get

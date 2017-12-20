@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Collapser;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
@@ -22,13 +20,12 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using System;
 
-
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixTestBase : IDisposable
     {
-
         protected HystrixRequestContext context;
+
         public HystrixTestBase()
         {
             Before();
@@ -41,8 +38,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommandMetrics.Reset();
             HystrixThreadPoolMetrics.Reset();
             HystrixCollapserMetrics.Reset();
+
             // clear collapsers
             RequestCollapserFactory.Reset();
+
             // clear circuit breakers
             HystrixCircuitBreakerFactory.Reset();
             HystrixPlugins.Reset();
@@ -62,6 +61,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.context.Dispose();
                 this.context = null;
             }
+
             HystrixThreadPoolFactory.Shutdown();
         }
     }

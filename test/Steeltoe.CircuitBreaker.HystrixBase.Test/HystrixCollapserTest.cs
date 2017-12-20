@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,8 +30,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixCollapserTest : HystrixTestBase, IDisposable
     {
-        ITestOutputHelper output;
-        public HystrixCollapserTest(ITestOutputHelper output) : base()
+        private ITestOutputHelper output;
+
+        public HystrixCollapserTest(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
         }
@@ -50,15 +51,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
             Task<string> response1 = collapser1.ExecuteAsync();
             HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2);
-            Task<String> response2 = collapser2.ExecuteAsync();
+            Task<string> response2 = collapser2.ExecuteAsync();
 
             timer.IncrementTime(10); // let time pass that equals the default delay/period
 
             Assert.Equal("1", response1.Result);
             if (response2.Wait(1000))
+            {
                 Assert.Equal("2", response2.Result);
+            }
             else
+            {
                 Assert.False(true, "Timed out");
+            }
 
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
@@ -68,6 +73,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.First();
             Assert.Equal(2, command.NumberCollapsed);
         }
+
         [Fact]
         public void TestMultipleBatches()
         {
@@ -99,18 +105,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestMaxRequestsInBatch()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapser(output, timer, 1, 2, 10);
-            HystrixCollapser<List<String>, String, String> collapser2 = new TestRequestCollapser(output, timer, 2, 2, 10);
-            HystrixCollapser<List<String>, String, String> collapser3 = new TestRequestCollapser(output, timer, 3, 2, 10);
-            output.WriteLine("*** " + DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " Constructed the collapsers");
-            Task<String> response1 = collapser1.ExecuteAsync();
-            Task<String> response2 = collapser2.ExecuteAsync();
-            Task<String> response3 = collapser3.ExecuteAsync();
-            output.WriteLine("*** " + DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " queued the collapsers");
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1, 2, 10);
+            HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2, 2, 10);
+            HystrixCollapser<List<string>, string, string> collapser3 = new TestRequestCollapser(output, timer, 3, 2, 10);
+            output.WriteLine("*** " + (DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Constructed the collapsers");
+            Task<string> response1 = collapser1.ExecuteAsync();
+            Task<string> response2 = collapser2.ExecuteAsync();
+            Task<string> response3 = collapser3.ExecuteAsync();
+            output.WriteLine("*** " + (DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " queued the collapsers");
 
             timer.IncrementTime(10); // let time pass that equals the default delay/period
-            output.WriteLine("*** " + DateTime.Now.Ticks / 10000 + " : " + Thread.CurrentThread.ManagedThreadId + " incremented the virtual timer");
-
+            output.WriteLine("*** " + (DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " incremented the virtual timer");
 
             Assert.Equal("1", GetResult(response1, 1000));
             Assert.Equal("2", GetResult(response2, 1000));
@@ -129,19 +134,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestRequestsOverTime()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapser(output, timer, 1);
-            Task<String> response1 = collapser1.ExecuteAsync();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+            Task<string> response1 = collapser1.ExecuteAsync();
             timer.IncrementTime(5);
-            Task<String> response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync();
+            Task<string> response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync();
             timer.IncrementTime(8);
+
             // should execute here
-            Task<String> response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
+            Task<string> response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
             timer.IncrementTime(6);
-            Task<String> response4 = new TestRequestCollapser(output, timer, 4).ExecuteAsync();
+            Task<string> response4 = new TestRequestCollapser(output, timer, 4).ExecuteAsync();
             timer.IncrementTime(8);
+
             // should execute here
-            Task<String> response5 = new TestRequestCollapser(output, timer, 5).ExecuteAsync();
+            Task<string> response5 = new TestRequestCollapser(output, timer, 5).ExecuteAsync();
             timer.IncrementTime(10);
+
             // should execute here
 
             // wait for all tasks to complete
@@ -162,10 +170,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestDuplicateArgumentsWithRequestCachingOn()
         {
-            int NUM = 10;
+            int num = 10;
 
             List<IObservable<int>> observables = new List<IObservable<int>>();
-            for (int i = 0; i < NUM; i++)
+            for (int i = 0; i < num; i++)
             {
                 MyCollapser c = new MyCollapser(output, "5", true);
                 var observable = c.ToObservable();
@@ -180,9 +188,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 o.Subscribe(sub);
             }
 
-            Time.Wait( 100);
+            Time.Wait(100);
 
-            //all subscribers should receive the same value
+            // all subscribers should receive the same value
             foreach (TestSubscriber<int> sub in subscribers)
             {
                 sub.AwaitTerminalEvent(1000);
@@ -191,13 +199,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 sub.AssertValues(5);
             }
         }
+
         [Fact]
         public void TestDuplicateArgumentsWithRequestCachingOff()
         {
-            int NUM = 10;
+            int num = 10;
 
             List<IObservable<int>> observables = new List<IObservable<int>>();
-            for (int i = 0; i < NUM; i++)
+            for (int i = 0; i < num; i++)
             {
                 MyCollapser c = new MyCollapser(output, "5", false);
                 observables.Add(c.ToObservable());
@@ -210,6 +219,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 subscribers.Add(sub);
                 o.Subscribe(sub);
             }
+
             // Wait to make sure batch ran
             Time.Wait(100);
 
@@ -239,10 +249,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             Assert.Equal(1, numValues.Value);
-            Assert.Equal(NUM - 1, numErrors.Value);
+            Assert.Equal(num - 1, numErrors.Value);
         }
-        //public static IObservable<TSource> OnSubscribe<TSource>(IObservable<TSource> source)
-        //{
+
+        // public static IObservable<TSource> OnSubscribe<TSource>(IObservable<TSource> source)
+        // {
         //    return Observable.Create<TSource>(o =>
         //    {
         //        var d = source.Subscribe(o);
@@ -258,15 +269,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         //        return d;
         //    });
 
-        //}
+        // }
         [Fact]
         public void TestUnsubscribeFromSomeDuplicateArgsDoesNotRemoveFromBatch()
         {
-            int NUM = 10;
+            int num = 10;
 
             List<IObservable<int>> observables = new List<IObservable<int>>();
             List<MyCollapser> collapsers = new List<MyCollapser>();
-            for (int i = 0; i < NUM; i++)
+            for (int i = 0; i < num; i++)
             {
                 MyCollapser c = new MyCollapser(output, "5", true);
                 collapsers.Add(c);
@@ -286,16 +297,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 subscriptions.Add(s);
             }
 
-
-            //unsubscribe from all but 1
-            for (int i = 0; i < NUM - 1; i++)
+            // unsubscribe from all but 1
+            for (int i = 0; i < num - 1; i++)
             {
                 subscribers[i].Unsubscribe();
             }
 
-            Time.Wait( 100);
+            Time.Wait(100);
 
-            //all subscribers with an active subscription should receive the same value
+            // all subscribers with an active subscription should receive the same value
             foreach (TestSubscriber<int> sub in subscribers)
             {
                 if (!sub.IsUnsubscribed)
@@ -311,20 +321,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             }
         }
+
         [Fact]
         public void TestUnsubscribeOnOneDoesntKillBatch()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapser(output, timer, 1);
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
             CancellationTokenSource cts1 = new CancellationTokenSource();
             CancellationTokenSource cts2 = new CancellationTokenSource();
-            Task<String> response1 = collapser1.ExecuteAsync(cts1.Token);
-            Task<String> response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync(cts2.Token);
+            Task<string> response1 = collapser1.ExecuteAsync(cts1.Token);
+            Task<string> response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync(cts2.Token);
 
             // kill the first
             cts1.Cancel();
-            // response1.cancel(true);
 
+            // response1.cancel(true);
             timer.IncrementTime(10); // let time pass that equals the default delay/period
 
             // the first is cancelled so should return null
@@ -333,10 +344,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 GetResult(response1, 1000);
                 Assert.True(false, "expect CancellationException after cancelling");
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // expected
             }
+
             // we should still get a response on the second
             Assert.Equal("2", GetResult(response2, 1000));
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
@@ -344,15 +356,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             ICollection<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands;
             Assert.Equal(1, cmdIterator.First().NumberCollapsed);
         }
+
         [Fact]
         public void TestShardedRequests()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestShardedRequestCollapser(output, timer, "1a");
-            Task<String> response1 = collapser1.ExecuteAsync();
-            Task<String> response2 = new TestShardedRequestCollapser(output, timer, "2b").ExecuteAsync();
-            Task<String> response3 = new TestShardedRequestCollapser(output, timer, "3b").ExecuteAsync();
-            Task<String> response4 = new TestShardedRequestCollapser(output, timer, "4a").ExecuteAsync();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestShardedRequestCollapser(output, timer, "1a");
+            Task<string> response1 = collapser1.ExecuteAsync();
+            Task<string> response2 = new TestShardedRequestCollapser(output, timer, "2b").ExecuteAsync();
+            Task<string> response3 = new TestShardedRequestCollapser(output, timer, "3b").ExecuteAsync();
+            Task<string> response4 = new TestShardedRequestCollapser(output, timer, "4a").ExecuteAsync();
             timer.IncrementTime(10); // let time pass that equals the default delay/period
 
             Assert.Equal("1a", GetResult(response1, 1000));
@@ -367,19 +380,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(2, cmdIterator.First().NumberCollapsed);
             Assert.Equal(2, cmdIterator.Last().NumberCollapsed);
         }
+
         [Fact]
         public void TestRequestScope()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapser(output, timer, "1");
-            Task<String> response1 = collapser1.ExecuteAsync();
-            Task<String> response2 = new TestRequestCollapser(output, timer, "2").ExecuteAsync();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, "1");
+            Task<string> response1 = collapser1.ExecuteAsync();
+            Task<string> response2 = new TestRequestCollapser(output, timer, "2").ExecuteAsync();
 
             // simulate a new request
             RequestCollapserFactory.ResetRequest();
 
-            Task<String> response3 = new TestRequestCollapser(output, timer, "3").ExecuteAsync();
-            Task<String> response4 = new TestRequestCollapser(output, timer, "4").ExecuteAsync();
+            Task<string> response3 = new TestRequestCollapser(output, timer, "3").ExecuteAsync();
+            Task<string> response4 = new TestRequestCollapser(output, timer, "4").ExecuteAsync();
 
             timer.IncrementTime(10); // let time pass that equals the default delay/period
 
@@ -400,15 +414,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestGlobalScope()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestGloballyScopedRequestCollapser(output, timer, "1");
-            Task<String> response1 = collapser1.ExecuteAsync();
-            Task<String> response2 = new TestGloballyScopedRequestCollapser(output, timer, "2").ExecuteAsync();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestGloballyScopedRequestCollapser(output, timer, "1");
+            Task<string> response1 = collapser1.ExecuteAsync();
+            Task<string> response2 = new TestGloballyScopedRequestCollapser(output, timer, "2").ExecuteAsync();
 
             // simulate a new request
             RequestCollapserFactory.ResetRequest();
 
-            Task<String> response3 = new TestGloballyScopedRequestCollapser(output, timer, "3").ExecuteAsync();
-            Task<String> response4 = new TestGloballyScopedRequestCollapser(output, timer, "4").ExecuteAsync();
+            Task<string> response3 = new TestGloballyScopedRequestCollapser(output, timer, "3").ExecuteAsync();
+            Task<string> response4 = new TestGloballyScopedRequestCollapser(output, timer, "4").ExecuteAsync();
 
             timer.IncrementTime(10); // let time pass that equals the default delay/period
             Assert.Equal("1", GetResult(response1, 1000));
@@ -421,15 +435,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             ICollection<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands;
             Assert.Equal(4, cmdIterator.First().NumberCollapsed);
-
         }
+
         [Fact]
         public void TestErrorHandlingViaFutureException()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapserWithFaultyCreateCommand(output, timer, "1");
-            Task<String> response1 = collapser1.ExecuteAsync();
-            Task<String> response2 = new TestRequestCollapserWithFaultyCreateCommand(output, timer, "2").ExecuteAsync();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapserWithFaultyCreateCommand(output, timer, "1");
+            Task<string> response1 = collapser1.ExecuteAsync();
+            Task<string> response2 = new TestRequestCollapserWithFaultyCreateCommand(output, timer, "2").ExecuteAsync();
             timer.IncrementTime(10); // let time pass that equals the default delay/period
 
             try
@@ -437,57 +451,59 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 GetResult(response1, 1000);
                 Assert.True(false, "we should have received an exception");
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // what we expect
-                //output.WriteLine(e.ToString());
+                // output.WriteLine(e.ToString());
             }
+
             try
             {
                 GetResult(response2, 1000);
                 Assert.True(false, "we should have received an exception");
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // what we expect
-                //output.WriteLine(e.ToString());
+                // output.WriteLine(e.ToString());
             }
 
             Assert.Equal(0, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
         }
+
         [Fact]
         public void TestErrorHandlingWhenMapToResponseFails()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapserWithFaultyMapToResponse(output, timer, "1");
-            Task<String> response1 = collapser1.ExecuteAsync();
-            Task<String> response2 = new TestRequestCollapserWithFaultyMapToResponse(output, timer, "2").ExecuteAsync();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapserWithFaultyMapToResponse(output, timer, "1");
+            Task<string> response1 = collapser1.ExecuteAsync();
+            Task<string> response2 = new TestRequestCollapserWithFaultyMapToResponse(output, timer, "2").ExecuteAsync();
             timer.IncrementTime(10); // let time pass that equals the default delay/period
             try
             {
                 GetResult(response1, 1000);
                 Assert.True(false, "we should have received an exception");
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // what we expect
-                //output.WriteLine(e.ToString());
+                // output.WriteLine(e.ToString());
             }
+
             try
             {
                 GetResult(response2, 1000);
                 Assert.True(false, "we should have received an exception");
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // what we expect
-                //output.WriteLine(e.ToString());
+                // output.WriteLine(e.ToString());
             }
 
             // the batch failed so no executions
             // but it still executed the command once
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
-
 
             ICollection<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands;
             Assert.Equal(2, cmdIterator.First().NumberCollapsed);
@@ -496,22 +512,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestVariableLifecycle1()
         {
-
             // do actual work
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapser(output, timer, 1);
-            Task<String> response1 = collapser1.ExecuteAsync();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+            Task<string> response1 = collapser1.ExecuteAsync();
             timer.IncrementTime(5);
-            Task<String> response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync();
+            Task<string> response2 = new TestRequestCollapser(output, timer, 2).ExecuteAsync();
             timer.IncrementTime(8);
+
             // should execute here
-            Task<String> response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
+            Task<string> response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
             timer.IncrementTime(6);
-            Task<String> response4 = new TestRequestCollapser(output, timer, 4).ExecuteAsync();
+            Task<string> response4 = new TestRequestCollapser(output, timer, 4).ExecuteAsync();
             timer.IncrementTime(8);
+
             // should execute here
-            Task<String> response5 = new TestRequestCollapser(output, timer, 5).ExecuteAsync();
+            Task<string> response5 = new TestRequestCollapser(output, timer, 5).ExecuteAsync();
             timer.IncrementTime(10);
+
             // should execute here
 
             // wait for all tasks to complete
@@ -521,45 +539,44 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal("4", GetResult(response4, 1000));
             Assert.Equal("5", GetResult(response5, 1000));
 
-
-
             // each task should have been executed 3 times
-            foreach (ATask t in timer.tasks.Values)
+            foreach (ATask t in timer.Tasks.Values)
             {
-                Assert.Equal(3, t.task.count.Value);
+                Assert.Equal(3, t.Task.Count.Value);
             }
 
-            output.WriteLine("timer.tasks.size() A: " + timer.tasks.Count);
-            output.WriteLine("tasks in test: " + timer.tasks);
-
+            output.WriteLine("timer.tasks.size() A: " + timer.Tasks.Count);
+            output.WriteLine("tasks in test: " + timer.Tasks);
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(2, cmdIterator[0].NumberCollapsed);
             Assert.Equal(2, cmdIterator[1].NumberCollapsed);
             Assert.Equal(1, cmdIterator[2].NumberCollapsed);
 
-            output.WriteLine("timer.tasks.size() B: " + timer.tasks.Count);
+            output.WriteLine("timer.tasks.size() B: " + timer.Tasks.Count);
             var rv = RequestCollapserFactory.GetRequestVariable<List<string>, string, string>(new TestRequestCollapser(output, timer, 1).CollapserKey.Name);
 
             context.Dispose();
 
             Assert.NotNull(rv);
+
             // they should have all been removed as part of ThreadContext.remove()
-            Assert.Empty(timer.tasks);
+            Assert.Empty(timer.Tasks);
         }
+
         [Fact]
         public void TestRequestVariableLifecycle2()
         {
-
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            ConcurrentDictionary<Task<String>, Task<String>> responses = new ConcurrentDictionary<Task<String>, Task<String>>();
+            ConcurrentDictionary<Task<string>, Task<string>> responses = new ConcurrentDictionary<Task<string>, Task<string>>();
             List<Task> threads = new List<Task>();
 
             // kick off work (simulating a single request with multiple threads)
             for (int t = 0; t < 5; t++)
             {
                 int outerLoop = t;
-                Task th = new Task(() =>
+                Task th = new Task(
+                () =>
                 {
                     for (int i = 0; i < 100; i++)
                     {
@@ -567,54 +584,55 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         Task<string> tsk = new TestRequestCollapser(output, timer, uniqueInt).ExecuteAsync();
                         responses.TryAdd(tsk, tsk);
                     }
-
-                }, CancellationToken.None, TaskCreationOptions.LongRunning);
+                }, CancellationToken.None,
+                    TaskCreationOptions.LongRunning);
                 th.Start();
                 threads.Add(th);
-
             }
+
             Task.WaitAll(threads.ToArray());
-
-
 
             // we expect 5 threads * 100 responses each
             Assert.Equal(500, responses.Count);
 
-            foreach (Task<String> f in responses.Values)
+            foreach (Task<string> f in responses.Values)
             {
                 // they should not be done yet because the counter hasn't incremented
                 Assert.False(f.IsCompleted);
             }
 
             timer.IncrementTime(5);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapser(output, timer, 2);
-            Task<String> response2 = collapser1.ExecuteAsync();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 2);
+            Task<string> response2 = collapser1.ExecuteAsync();
             timer.IncrementTime(8);
+
             // should execute here
-            Task<String> response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
+            Task<string> response3 = new TestRequestCollapser(output, timer, 3).ExecuteAsync();
             timer.IncrementTime(6);
-            Task<String> response4 = new TestRequestCollapser(output, timer, 4).ExecuteAsync();
+            Task<string> response4 = new TestRequestCollapser(output, timer, 4).ExecuteAsync();
             timer.IncrementTime(8);
+
             // should execute here
-            Task<String> response5 = new TestRequestCollapser(output, timer, 5).ExecuteAsync();
+            Task<string> response5 = new TestRequestCollapser(output, timer, 5).ExecuteAsync();
             timer.IncrementTime(10);
+
             // should execute here
 
             // wait for all tasks to complete
-            foreach (Task<String> f in responses.Values)
+            foreach (Task<string> f in responses.Values)
             {
                 GetResult(f, 1000);
-
             }
+
             Assert.Equal("2", GetResult(response2, 1000));
             Assert.Equal("3", GetResult(response3, 1000));
             Assert.Equal("4", GetResult(response4, 1000));
             Assert.Equal("5", GetResult(response5, 1000));
 
             // each task should have been executed 3 times
-            foreach (ATask t in timer.tasks.Values)
+            foreach (ATask t in timer.Tasks.Values)
             {
-                Assert.Equal(3, t.task.count.Value);
+                Assert.Equal(3, t.Task.Count.Value);
             }
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
@@ -626,10 +644,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             context.Dispose();
 
             Assert.NotNull(rv);
-            // they should have all been removed as part of ThreadContext.remove()
-            Assert.Empty(timer.tasks);
 
+            // they should have all been removed as part of ThreadContext.remove()
+            Assert.Empty(timer.Tasks);
         }
+
         [Fact]
         public void TestRequestCache1()
         {
@@ -637,8 +656,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             SuccessfulCacheableCollapsedCommand command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "A", true);
             SuccessfulCacheableCollapsedCommand command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "A", true);
 
-            Task<String> f1 = command1.ExecuteAsync();
-            Task<String> f2 = command2.ExecuteAsync();
+            Task<string> f1 = command1.ExecuteAsync();
+            Task<string> f2 = command2.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -653,7 +672,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 throw new Exception(e.ToString());
             }
 
-            Task<String> f3 = command1.ExecuteAsync();
+            Task<string> f3 = command1.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -676,13 +695,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
             Assert.Contains(HystrixEventType.COLLAPSED, command.ExecutionEvents);
 
-
             Assert.Equal(1, command.NumberCollapsed);
         }
 
-        /**
-         * Test Request scoped caching doesn't prevent different ones from executing
-         */
         [Fact]
         public void TestRequestCache2()
         {
@@ -690,8 +705,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             SuccessfulCacheableCollapsedCommand command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "A", true);
             SuccessfulCacheableCollapsedCommand command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", true);
 
-            Task<String> f1 = command1.ExecuteAsync();
-            Task<String> f2 = command2.ExecuteAsync();
+            Task<string> f1 = command1.ExecuteAsync();
+            Task<string> f2 = command2.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -706,8 +721,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 throw new Exception(e.ToString());
             }
 
-            Task<String> f3 = command1.ExecuteAsync();
-            Task<String> f4 = command2.ExecuteAsync();
+            Task<string> f3 = command1.ExecuteAsync();
+            Task<string> f4 = command2.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -730,13 +745,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(2, command.ExecutionEvents.Count);
             Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
             Assert.Contains(HystrixEventType.COLLAPSED, command.ExecutionEvents);
-
-
         }
 
-        /**
- * Test Request scoped caching with a mixture of commands
- */
         [Fact]
         public void TestRequestCache3()
         {
@@ -745,9 +755,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             SuccessfulCacheableCollapsedCommand command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", true);
             SuccessfulCacheableCollapsedCommand command3 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", true);
 
-            Task<String> f1 = command1.ExecuteAsync();
-            Task<String> f2 = command2.ExecuteAsync();
-            Task<String> f3 = command3.ExecuteAsync();
+            Task<string> f1 = command1.ExecuteAsync();
+            Task<string> f2 = command2.ExecuteAsync();
+            Task<string> f3 = command3.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -758,14 +768,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.Equal("B", GetResult(f2, 1000));
                 Assert.Equal("B", GetResult(f3, 1000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 throw;
             }
 
-            Task<String> f4 = command1.ExecuteAsync();
-            Task<String> f5 = command2.ExecuteAsync();
-            Task<String> f6 = command3.ExecuteAsync();
+            Task<string> f4 = command1.ExecuteAsync();
+            Task<string> f5 = command2.ExecuteAsync();
+            Task<string> f6 = command3.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -776,7 +786,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.Equal("B", GetResult(f5, 1000));
                 Assert.Equal("B", GetResult(f6, 1000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 throw;
             }
@@ -789,12 +799,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
             Assert.Contains(HystrixEventType.COLLAPSED, command.ExecutionEvents);
 
-
             Assert.Equal(2, command.NumberCollapsed);
         }
-        /**
- * Test Request scoped caching with a mixture of commands
- */
+
         [Fact]
         public void TestNoRequestCache3()
         {
@@ -803,9 +810,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             SuccessfulCacheableCollapsedCommand command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", false);
             SuccessfulCacheableCollapsedCommand command3 = new SuccessfulCacheableCollapsedCommand(output, timer, "B", false);
 
-            Task<String> f1 = command1.ExecuteAsync();
-            Task<String> f2 = command2.ExecuteAsync();
-            Task<String> f3 = command3.ExecuteAsync();
+            Task<string> f1 = command1.ExecuteAsync();
+            Task<string> f2 = command2.ExecuteAsync();
+            Task<string> f3 = command3.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -816,14 +823,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.Equal("B", GetResult(f2, 1000));
                 Assert.Equal("B", GetResult(f3, 1000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 throw;
             }
 
-            Task<String> f4 = command1.ExecuteAsync();
-            Task<String> f5 = command2.ExecuteAsync();
-            Task<String> f6 = command3.ExecuteAsync();
+            Task<string> f4 = command1.ExecuteAsync();
+            Task<string> f5 = command2.ExecuteAsync();
+            Task<string> f6 = command3.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -834,7 +841,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.Equal("B", GetResult(f5, 1000));
                 Assert.Equal("B", GetResult(f6, 1000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 throw;
             }
@@ -855,23 +862,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Contains(HystrixEventType.COLLAPSED, commandB.ExecutionEvents);
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
-            Assert.Equal(2, cmdIterator[0].NumberCollapsed);  //1 for A, 1 for B.  Batch contains only unique arguments (no duplicates)
-            Assert.Equal(2, cmdIterator[1].NumberCollapsed);  //1 for A, 1 for B.  Batch contains only unique arguments (no duplicates)
+            Assert.Equal(2, cmdIterator[0].NumberCollapsed);  // 1 for A, 1 for B.  Batch contains only unique arguments (no duplicates)
+            Assert.Equal(2, cmdIterator[1].NumberCollapsed);  // 1 for A, 1 for B.  Batch contains only unique arguments (no duplicates)
         }
-        /**
- * Test command that uses a null request argument
- */
+
         [Fact]
         public void TestRequestCacheWithNullRequestArgument()
         {
-            ConcurrentQueue<HystrixCommand<List<String>>> commands = new ConcurrentQueue<HystrixCommand<List<String>>>();
+            ConcurrentQueue<HystrixCommand<List<string>>> commands = new ConcurrentQueue<HystrixCommand<List<string>>>();
 
             TestCollapserTimer timer = new TestCollapserTimer(output);
             SuccessfulCacheableCollapsedCommand command1 = new SuccessfulCacheableCollapsedCommand(output, timer, null, true, commands);
             SuccessfulCacheableCollapsedCommand command2 = new SuccessfulCacheableCollapsedCommand(output, timer, null, true, commands);
 
-            Task<String> f1 = command1.ExecuteAsync();
-            Task<String> f2 = command2.ExecuteAsync();
+            Task<string> f1 = command1.ExecuteAsync();
+            Task<string> f2 = command2.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -881,12 +886,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // it should have executed 1 command
             Assert.Single(commands);
-            HystrixCommand<List<String>> peek = null;
+            HystrixCommand<List<string>> peek = null;
             commands.TryPeek(out peek);
             Assert.Contains(HystrixEventType.SUCCESS, peek.ExecutionEvents);
             Assert.Contains(HystrixEventType.COLLAPSED, peek.ExecutionEvents);
 
-            Task<String> f3 = command1.ExecuteAsync();
+            Task<string> f3 = command1.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -900,17 +905,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(1, cmdIterator[0].NumberCollapsed);
         }
+
         [Fact]
         public void TestRequestCacheWithCommandError()
         {
-            ConcurrentQueue<HystrixCommand<List<String>>> commands = new ConcurrentQueue<HystrixCommand<List<String>>>();
+            ConcurrentQueue<HystrixCommand<List<string>>> commands = new ConcurrentQueue<HystrixCommand<List<string>>>();
 
             TestCollapserTimer timer = new TestCollapserTimer(output);
             SuccessfulCacheableCollapsedCommand command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "FAILURE", true, commands);
             SuccessfulCacheableCollapsedCommand command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "FAILURE", true, commands);
 
-            Task<String> f1 = command1.ExecuteAsync();
-            Task<String> f2 = command2.ExecuteAsync();
+            Task<string> f1 = command1.ExecuteAsync();
+            Task<string> f2 = command2.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -921,20 +927,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.Equal("A", GetResult(f2, 1000));
                 Assert.True(false, "exception should have been thrown");
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // expected
             }
 
             // it should have executed 1 command
             Assert.Single(commands);
-            HystrixCommand<List<String>> peek = null;
+            HystrixCommand<List<string>> peek = null;
             commands.TryPeek(out peek);
 
             Assert.Contains(HystrixEventType.FAILURE, peek.ExecutionEvents);
             Assert.Contains(HystrixEventType.COLLAPSED, peek.ExecutionEvents);
 
-            Task<String> f3 = command1.ExecuteAsync();
+            Task<string> f3 = command1.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -944,7 +950,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.Equal("A", GetResult(f3, 1000));
                 Assert.True(false, "exception should have been thrown");
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // expected
             }
@@ -955,23 +961,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(1, cmdIterator[0].NumberCollapsed);
-
         }
 
-        /**
-         * Test that a command that times out will still be cached and when retrieved will re-throw the exception.
-         */
         [Fact]
         public void TestRequestCacheWithCommandTimeout()
         {
-            ConcurrentQueue<HystrixCommand<List<String>>> commands = new ConcurrentQueue<HystrixCommand<List<String>>>();
+            ConcurrentQueue<HystrixCommand<List<string>>> commands = new ConcurrentQueue<HystrixCommand<List<string>>>();
 
             TestCollapserTimer timer = new TestCollapserTimer(output);
             SuccessfulCacheableCollapsedCommand command1 = new SuccessfulCacheableCollapsedCommand(output, timer, "TIMEOUT", true, commands);
             SuccessfulCacheableCollapsedCommand command2 = new SuccessfulCacheableCollapsedCommand(output, timer, "TIMEOUT", true, commands);
 
-            Task<String> f1 = command1.ExecuteAsync();
-            Task<String> f2 = command2.ExecuteAsync();
+            Task<string> f1 = command1.ExecuteAsync();
+            Task<string> f2 = command2.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -982,20 +984,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.Equal("A", GetResult(f2, 1000));
                 Assert.True(false, "exception should have been thrown");
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // expected
             }
 
             // it should have executed 1 command
             Assert.Single(commands);
-            HystrixCommand<List<String>> peek = null;
+            HystrixCommand<List<string>> peek = null;
             commands.TryPeek(out peek);
             Assert.Contains(HystrixEventType.TIMEOUT, peek.ExecutionEvents);
             Assert.Contains(HystrixEventType.COLLAPSED, peek.ExecutionEvents);
 
-
-            Task<String> f3 = command1.ExecuteAsync();
+            Task<string> f3 = command1.ExecuteAsync();
 
             // increment past batch time so it executes
             timer.IncrementTime(15);
@@ -1005,7 +1006,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.Equal("A", GetResult(f3, 1000));
                 Assert.True(false, "exception should have been thrown");
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // expected
             }
@@ -1016,18 +1017,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(1, cmdIterator[0].NumberCollapsed);
-
         }
-        /**
- * Test how the collapser behaves when the circuit is short-circuited
- */
+
         [Fact]
         public async void TestRequestWithCommandShortCircuited()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapserWithShortCircuitedCommand(output, timer, "1");
-            IObservable<String> response1 = collapser1.Observe();
-            IObservable<String> response2 = new TestRequestCollapserWithShortCircuitedCommand(output, timer, "2").Observe();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapserWithShortCircuitedCommand(output, timer, "1");
+            IObservable<string> response1 = collapser1.Observe();
+            IObservable<string> response2 = new TestRequestCollapserWithShortCircuitedCommand(output, timer, "2").Observe();
             timer.IncrementTime(10); // let time pass that equals the default delay/period
 
             try
@@ -1038,8 +1036,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
+
                 // what we expect
             }
+
             try
             {
                 await response2.FirstAsync();
@@ -1048,6 +1048,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
+
                 // what we expect
             }
 
@@ -1056,14 +1057,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(2, cmdIterator[0].NumberCollapsed);
-
-
         }
-        /**
- * Test a Void response type - null being set as response.
- *
- * @throws Exception
- */
+
         [Fact]
         public void TestVoidResponseTypeFireAndForgetCollapsing1()
         {
@@ -1075,21 +1070,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // normally someone wouldn't wait on these, but we need to make sure they do in fact return
             // and not block indefinitely in case someone does call get()
-            Assert.Null( GetResult(response1, 1000));
-            Assert.Null( GetResult(response2, 1000));
+            Assert.Null(GetResult(response1, 1000));
+            Assert.Null(GetResult(response2, 1000));
 
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(2, cmdIterator[0].NumberCollapsed);
-
         }
 
-        /**
-         * Test a Void response type - response never being set in mapResponseToRequest
-         *
-         * @throws Exception
-         */
         [Fact]
         public void TestVoidResponseTypeFireAndForgetCollapsing2()
         {
@@ -1102,7 +1091,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // we will fetch one of these just so we wait for completion ... but expect an error
             try
             {
-                Assert.Null( GetResult(response1, 1000));
+                Assert.Null(GetResult(response1, 1000));
                 Assert.False(true, "expected an error as mapResponseToRequests did not set responses");
             }
             catch (Exception e)
@@ -1116,11 +1105,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(2, cmdIterator[0].NumberCollapsed);
         }
-        /**
- * Test a Void response type with execute - response being set in mapResponseToRequest to null
- *
- * @throws Exception
- */
+
         [Fact]
         public void TestVoidResponseTypeFireAndForgetCollapsing3()
         {
@@ -1138,24 +1123,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestEarlyUnsubscribeExecutedViaToObservable()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapser(output, timer, 1);
-            IObservable<String> response1 = collapser1.ToObservable();
-            HystrixCollapser<List<String>, String, String> collapser2 = new TestRequestCollapser(output, timer, 2);
-            IObservable<String> response2 = collapser2.ToObservable();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+            IObservable<string> response1 = collapser1.ToObservable();
+            HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2);
+            IObservable<string> response2 = collapser2.ToObservable();
 
             CountdownEvent latch1 = new CountdownEvent(1);
             CountdownEvent latch2 = new CountdownEvent(1);
 
-            AtomicReference<String> value1 = new AtomicReference<String>(null);
-            AtomicReference<String> value2 = new AtomicReference<String>(null);
+            AtomicReference<string> value1 = new AtomicReference<string>(null);
+            AtomicReference<string> value2 = new AtomicReference<string>(null);
 
             IDisposable s1 = response1
                     .OnDispose(() =>
-
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                 latch1.SignalEx();
-
             })
                     .Subscribe(
                 (s) =>
@@ -1176,11 +1159,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable s2 = response2
                     .OnDispose(() =>
-
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                         latch2.SignalEx();
-
                     })
                     .Subscribe(
                 (s) =>
@@ -1199,8 +1180,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch2.SignalEx();
                 });
 
-
-
             s1.Dispose();
 
             timer.IncrementTime(10); // let time pass that equals the default delay/period
@@ -1218,31 +1197,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(1, cmdIterator[0].NumberCollapsed);
-
         }
+
         [Fact]
         public void TestEarlyUnsubscribeExecutedViaObserve()
         {
-
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapser(output, timer, 1);
-            IObservable<String> response1 = collapser1.Observe();
-            HystrixCollapser<List<String>, String, String> collapser2 = new TestRequestCollapser(output, timer, 2);
-            IObservable<String> response2 = collapser2.Observe();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+            IObservable<string> response1 = collapser1.Observe();
+            HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2);
+            IObservable<string> response2 = collapser2.Observe();
 
             CountdownEvent latch1 = new CountdownEvent(1);
             CountdownEvent latch2 = new CountdownEvent(1);
 
-            AtomicReference<String> value1 = new AtomicReference<String>(null);
-            AtomicReference<String> value2 = new AtomicReference<String>(null);
+            AtomicReference<string> value1 = new AtomicReference<string>(null);
+            AtomicReference<string> value2 = new AtomicReference<string>(null);
 
             IDisposable s1 = response1
                     .OnDispose(() =>
-
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                         latch1.SignalEx();
-
                     })
                     .Subscribe(
                 (s) =>
@@ -1263,11 +1239,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable s2 = response2
                     .OnDispose(() =>
-
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                         latch2.SignalEx();
-
                     })
                     .Subscribe(
                 (s) =>
@@ -1303,28 +1277,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             Assert.Equal(1, cmdIterator[0].NumberCollapsed);
         }
+
         [Fact]
         public void TestEarlyUnsubscribeFromAllCancelsBatch()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new TestRequestCollapser(output, timer, 1);
-            IObservable<String> response1 = collapser1.Observe();
-            HystrixCollapser<List<String>, String, String> collapser2 = new TestRequestCollapser(output, timer, 2);
-            IObservable<String> response2 = collapser2.Observe();
+            HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1);
+            IObservable<string> response1 = collapser1.Observe();
+            HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2);
+            IObservable<string> response2 = collapser2.Observe();
 
             CountdownEvent latch1 = new CountdownEvent(1);
             CountdownEvent latch2 = new CountdownEvent(1);
 
-            AtomicReference<String> value1 = new AtomicReference<String>(null);
-            AtomicReference<String> value2 = new AtomicReference<String>(null);
+            AtomicReference<string> value1 = new AtomicReference<string>(null);
+            AtomicReference<string> value2 = new AtomicReference<string>(null);
 
             IDisposable s1 = response1
                     .OnDispose(() =>
-
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                         latch1.SignalEx();
-
                     })
                     .Subscribe(
                 (s) =>
@@ -1345,11 +1318,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable s2 = response2
                     .OnDispose(() =>
-
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                         latch2.SignalEx();
-
                     })
                     .Subscribe(
                 (s) =>
@@ -1382,28 +1353,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
         }
+
         [Fact]
         public void TestRequestThenCacheHitAndCacheHitUnsubscribed()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response1 = collapser1.Observe();
-            HystrixCollapser<List<String>, String, String> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response2 = collapser2.Observe();
+            HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response1 = collapser1.Observe();
+            HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response2 = collapser2.Observe();
 
             CountdownEvent latch1 = new CountdownEvent(1);
             CountdownEvent latch2 = new CountdownEvent(1);
 
-            AtomicReference<String> value1 = new AtomicReference<String>(null);
-            AtomicReference<String> value2 = new AtomicReference<String>(null);
+            AtomicReference<string> value1 = new AtomicReference<string>(null);
+            AtomicReference<string> value2 = new AtomicReference<string>(null);
 
             IDisposable s1 = response1
                     .OnDispose(() =>
-
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                         latch1.SignalEx();
-
                     })
                     .Subscribe(
                 (s) =>
@@ -1424,11 +1394,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable s2 = response2
                     .OnDispose(() =>
-
                     {
                         output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                         latch2.SignalEx();
-
                     })
                     .Subscribe(
                 (s) =>
@@ -1446,7 +1414,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 OnCompleted!");
                     latch2.SignalEx();
                 });
-
 
             s2.Dispose();
 
@@ -1461,34 +1428,31 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
-
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             AssertCommandExecutionEvents(cmdIterator[0], HystrixEventType.SUCCESS, HystrixEventType.COLLAPSED);
-            Assert.Equal(1, cmdIterator[0].NumberCollapsed); //should only be 1 collapsed - other came from cache, then was cancelled
-
+            Assert.Equal(1, cmdIterator[0].NumberCollapsed); // should only be 1 collapsed - other came from cache, then was cancelled
         }
+
         [Fact]
         public void TestRequestThenCacheHitAndOriginalUnsubscribed()
         {
             // TODO:
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response1 = collapser1.Observe();
-            HystrixCollapser<List<String>, String, String> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response2 = collapser2.Observe();
+            HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response1 = collapser1.Observe();
+            HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response2 = collapser2.Observe();
 
             CountdownEvent latch1 = new CountdownEvent(1);
             CountdownEvent latch2 = new CountdownEvent(1);
 
-            AtomicReference<String> value1 = new AtomicReference<String>(null);
-            AtomicReference<String> value2 = new AtomicReference<String>(null);
+            AtomicReference<string> value1 = new AtomicReference<string>(null);
+            AtomicReference<string> value2 = new AtomicReference<string>(null);
             IDisposable s1 = response1
                 .OnDispose(() =>
-
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                     latch1.SignalEx();
-
                 })
                 .Subscribe(
                 (s) =>
@@ -1509,11 +1473,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable s2 = response2
                 .OnDispose(() =>
-
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                     latch2.SignalEx();
-
                 })
                 .Subscribe(
                 (s) =>
@@ -1532,7 +1494,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch2.SignalEx();
                 });
 
-
             s1.Dispose();
 
             timer.IncrementTime(10); // let time pass that equals the default delay/period
@@ -1540,44 +1501,40 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(latch1.Wait(1000));
             Assert.True(latch2.Wait(1000));
 
-
             Assert.Null(value1.Value);
             Assert.Equal("foo", value2.Value);
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
-
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             AssertCommandExecutionEvents(cmdIterator[0], HystrixEventType.SUCCESS, HystrixEventType.COLLAPSED);
-            Assert.Equal(1, cmdIterator[0].NumberCollapsed); //should only be 1 collapsed - other came from cache, then was cancelled
-
+            Assert.Equal(1, cmdIterator[0].NumberCollapsed); // should only be 1 collapsed - other came from cache, then was cancelled
         }
+
         [Fact]
-    public void TestRequestThenTwoCacheHitsOriginalAndOneCacheHitUnsubscribed()  
+    public void TestRequestThenTwoCacheHitsOriginalAndOneCacheHitUnsubscribed()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response1 = collapser1.Observe();
-            HystrixCollapser<List<String>, String, String> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response2 = collapser2.Observe();
-            HystrixCollapser<List<String>, String, String> collapser3 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response3 = collapser3.Observe();
+            HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response1 = collapser1.Observe();
+            HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response2 = collapser2.Observe();
+            HystrixCollapser<List<string>, string, string> collapser3 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response3 = collapser3.Observe();
 
             CountdownEvent latch1 = new CountdownEvent(1);
             CountdownEvent latch2 = new CountdownEvent(1);
             CountdownEvent latch3 = new CountdownEvent(1);
 
-            AtomicReference<String> value1 = new AtomicReference<String>(null);
-            AtomicReference<String> value2 = new AtomicReference<String>(null);
-            AtomicReference<String> value3 = new AtomicReference<String>(null);
+            AtomicReference<string> value1 = new AtomicReference<string>(null);
+            AtomicReference<string> value2 = new AtomicReference<string>(null);
+            AtomicReference<string> value3 = new AtomicReference<string>(null);
             IDisposable s1 = response1
                 .OnDispose(() =>
-
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                     latch1.SignalEx();
-
                 })
                 .Subscribe(
                 (s) =>
@@ -1598,11 +1555,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable s2 = response2
                 .OnDispose(() =>
-
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                     latch2.SignalEx();
-
                 })
                 .Subscribe(
                 (s) =>
@@ -1623,11 +1578,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable s3 = response3
                 .OnDispose(() =>
-
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s3 Unsubscribed!");
                     latch3.SignalEx();
-
                 })
                 .Subscribe(
                 (s) =>
@@ -1646,7 +1599,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     latch3.SignalEx();
                 });
 
-
             s1.Dispose();
             s3.Dispose();
 
@@ -1663,39 +1615,36 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
-
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             AssertCommandExecutionEvents(cmdIterator[0], HystrixEventType.SUCCESS, HystrixEventType.COLLAPSED);
-            Assert.Equal(1, cmdIterator[0].NumberCollapsed); //should only be 1 collapsed - other came from cache, then was cancelled
-
+            Assert.Equal(1, cmdIterator[0].NumberCollapsed); // should only be 1 collapsed - other came from cache, then was cancelled
     }
+
         [Fact]
 
         public void TestRequestThenTwoCacheHitsAllUnsubscribed()
         {
             TestCollapserTimer timer = new TestCollapserTimer(output);
-            HystrixCollapser<List<String>, String, String> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response1 = collapser1.Observe();
-            HystrixCollapser<List<String>, String, String> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response2 = collapser2.Observe();
-            HystrixCollapser<List<String>, String, String> collapser3 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
-            IObservable<String> response3 = collapser3.Observe();
+            HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response1 = collapser1.Observe();
+            HystrixCollapser<List<string>, string, string> collapser2 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response2 = collapser2.Observe();
+            HystrixCollapser<List<string>, string, string> collapser3 = new SuccessfulCacheableCollapsedCommand(output, timer, "foo", true);
+            IObservable<string> response3 = collapser3.Observe();
 
             CountdownEvent latch1 = new CountdownEvent(1);
             CountdownEvent latch2 = new CountdownEvent(1);
             CountdownEvent latch3 = new CountdownEvent(1);
 
-            AtomicReference<String> value1 = new AtomicReference<String>(null);
-            AtomicReference<String> value2 = new AtomicReference<String>(null);
-            AtomicReference<String> value3 = new AtomicReference<String>(null);
+            AtomicReference<string> value1 = new AtomicReference<string>(null);
+            AtomicReference<string> value2 = new AtomicReference<string>(null);
+            AtomicReference<string> value3 = new AtomicReference<string>(null);
 
             IDisposable s1 = response1
                 .OnDispose(() =>
-
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s1 Unsubscribed!");
                     latch1.SignalEx();
-
                 })
                 .Subscribe(
                 (s) =>
@@ -1716,11 +1665,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable s2 = response2
                 .OnDispose(() =>
-
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s2 Unsubscribed!");
                     latch2.SignalEx();
-
                 })
                 .Subscribe(
                 (s) =>
@@ -1741,11 +1688,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable s3 = response3
                 .OnDispose(() =>
-
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : s3 Unsubscribed!");
                     latch3.SignalEx();
-
                 })
                 .Subscribe(
                 (s) =>
@@ -1782,13 +1727,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(0, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
         }
 
-        private static T GetResult<T>(Task<T> task, int timeout)
-        {
-            if (task.Wait(timeout))
-                return task.Result;
-            else
-                return default(T);
-        }
         protected void AssertCommandExecutionEvents(IHystrixInvokableInfo command, params HystrixEventType[] expectedEventTypes)
         {
             bool emitExpected = false;
@@ -1805,9 +1743,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     if (!emitExpected)
                     {
-                        //first EMIT encountered, add it to condensedEmitExpectedEventTypes
+                        // first EMIT encountered, add it to condensedEmitExpectedEventTypes
                         condensedEmitExpectedEventTypes.Add(HystrixEventType.EMIT);
                     }
+
                     emitExpected = true;
                     expectedEmitCount++;
                 }
@@ -1815,9 +1754,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     if (!fallbackEmitExpected)
                     {
-                        //first FALLBACK_EMIT encountered, add it to condensedEmitExpectedEventTypes
+                        // first FALLBACK_EMIT encountered, add it to condensedEmitExpectedEventTypes
                         condensedEmitExpectedEventTypes.Add(HystrixEventType.FALLBACK_EMIT);
                     }
+
                     fallbackEmitExpected = true;
                     expectedFallbackEmitCount++;
                 }
@@ -1826,60 +1766,68 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     condensedEmitExpectedEventTypes.Add(expectedEventType);
                 }
             }
+
             List<HystrixEventType> actualEventTypes = command.ExecutionEvents;
             Assert.Equal(expectedEmitCount, command.NumberEmissions);
             Assert.Equal(expectedFallbackEmitCount, command.NumberFallbackEmissions);
             Assert.Equal(condensedEmitExpectedEventTypes, actualEventTypes);
         }
 
-        class TestRequestCollapser : HystrixCollapser<List<string>, string, string>
+        private static T GetResult<T>(Task<T> task, int timeout)
         {
+            if (task.Wait(timeout))
+            {
+                return task.Result;
+            }
+            else
+            {
+                return default(T);
+            }
+        }
 
+        private class TestRequestCollapser : HystrixCollapser<List<string>, string, string>
+        {
             protected readonly string value;
             protected ConcurrentQueue<HystrixCommand<List<string>>> commandsExecuted;
             protected ITestOutputHelper output;
-            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, int value) :
-                this(output, timer, value.ToString())
+
+            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, int value)
+                : this(output, timer, value.ToString())
             {
             }
 
-            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value) :
-                this(output, timer, value, 10000, 10)
+            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value)
+                : this(output, timer, value, 10000, 10)
             {
             }
 
-            public TestRequestCollapser(ITestOutputHelper output, RequestCollapserScope scope, TestCollapserTimer timer, string value) :
-                this(output, scope, timer, value, 10000, 10)
+            public TestRequestCollapser(ITestOutputHelper output, RequestCollapserScope scope, TestCollapserTimer timer, string value)
+                : this(output, scope, timer, value, 10000, 10)
             {
             }
 
-            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value, ConcurrentQueue<HystrixCommand<List<string>>> executionLog) :
-
-                this(output, timer, value, 10000, 10, executionLog)
+            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value, ConcurrentQueue<HystrixCommand<List<string>>> executionLog)
+                : this(output, timer, value, 10000, 10, executionLog)
             {
             }
 
-            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, int value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds) :
-
-                this(output, timer, value.ToString(), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds)
+            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, int value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds)
+                : this(output, timer, value.ToString(), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds)
             {
             }
 
-            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds) :
-
-                this(output, timer, value, defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds, null)
+            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds)
+                : this(output, timer, value, defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds, null)
             {
             }
 
-            public TestRequestCollapser(ITestOutputHelper output, RequestCollapserScope scope, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds) :
-
-                this(output, scope, timer, value, defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds, null)
+            public TestRequestCollapser(ITestOutputHelper output, RequestCollapserScope scope, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds)
+                : this(output, scope, timer, value, defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds, null)
             {
             }
 
-            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds, ConcurrentQueue<HystrixCommand<List<string>>> executionLog) :
-
-                this(output, RequestCollapserScope.REQUEST, timer, value, defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds, executionLog)
+            public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds, ConcurrentQueue<HystrixCommand<List<string>>> executionLog)
+                : this(output, RequestCollapserScope.REQUEST, timer, value, defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds, executionLog)
             {
             }
 
@@ -1889,11 +1837,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 return HystrixCollapserMetrics.GetInstance(key, new HystrixCollapserOptions(key));
             }
 
-            public TestRequestCollapser(ITestOutputHelper output, RequestCollapserScope scope, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds, ConcurrentQueue<HystrixCommand<List<string>>> executionLog) :
-
-                // use a CollapserKey based on the CollapserTimer object reference so it's unique for each timer as we don't want caching
-                // of properties to occur and we're using the default HystrixProperty which typically does caching
-                base(CollapserKeyFromString(timer), scope, timer, GetOptions(CollapserKeyFromString(timer), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds), CreateMetrics())
+            public TestRequestCollapser(ITestOutputHelper output, RequestCollapserScope scope, TestCollapserTimer timer, string value, int defaultMaxRequestsInBatch, int defaultTimerDelayInMilliseconds, ConcurrentQueue<HystrixCommand<List<string>>> executionLog)
+                : base(CollapserKeyFromString(timer), scope, timer, GetOptions(CollapserKeyFromString(timer), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds), CreateMetrics())
             {
                 this.value = value;
                 this.commandsExecuted = executionLog;
@@ -1909,12 +1854,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 };
                 return opts;
             }
+
             public override string RequestArgument
             {
                 get { return value; }
             }
 
-            protected override HystrixCommand<List<String>> CreateCommand(ICollection<ICollapsedRequest<string, string>> requests)
+            protected override HystrixCommand<List<string>> CreateCommand(ICollection<ICollapsedRequest<string, string>> requests)
             {
                 /* return a mocked command */
                 HystrixCommand<List<string>> command = new TestCollapserCommand(output, requests);
@@ -1922,10 +1868,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     commandsExecuted.Enqueue(command);
                 }
+
                 return command;
             }
 
-            protected override void MapResponseToRequests(List<String> batchResponse, ICollection<ICollapsedRequest<string, string>> requests)
+            protected override void MapResponseToRequests(List<string> batchResponse, ICollection<ICollapsedRequest<string, string>> requests)
             {
                 // for simplicity I'll assume it's a 1:1 mapping between lists ... in real implementations they often need to index to maps
                 // to allow random access as the response size does not match the request size
@@ -1933,27 +1880,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     throw new Exception("lists don't match in size => " + batchResponse.Count + " : " + requests.Count);
                 }
+
                 int i = 0;
                 foreach (ICollapsedRequest<string, string> request in requests)
                 {
                     request.Response = batchResponse[i++];
                 }
-
             }
-
         }
 
-        /**
-         * Shard on the artificially provided 'type' variable.
-         */
-        class TestShardedRequestCollapser : TestRequestCollapser
+        private class TestShardedRequestCollapser : TestRequestCollapser
         {
-
-            public TestShardedRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value) :
-                base(output, timer, value)
+            public TestShardedRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value)
+                : base(output, timer, value)
             {
             }
-
 
             protected override ICollection<ICollection<ICollapsedRequest<string, string>>> ShardRequests(ICollection<ICollapsedRequest<string, string>> requests)
             {
@@ -1977,30 +1918,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 shards.Add(typeB);
                 return shards;
             }
-
         }
 
-        /**
-         * Test the global scope
-         */
-        class TestGloballyScopedRequestCollapser : TestRequestCollapser
+        private class TestGloballyScopedRequestCollapser : TestRequestCollapser
         {
-
-            public TestGloballyScopedRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value) :
-                base(output, RequestCollapserScope.GLOBAL, timer, value)
+            public TestGloballyScopedRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, string value)
+                : base(output, RequestCollapserScope.GLOBAL, timer, value)
             {
             }
-
         }
 
-        /**
-         * Throw an exception when creating a command.
-         */
-        class TestRequestCollapserWithFaultyCreateCommand : TestRequestCollapser
+        private class TestRequestCollapserWithFaultyCreateCommand : TestRequestCollapser
         {
-
-            public TestRequestCollapserWithFaultyCreateCommand(ITestOutputHelper output, TestCollapserTimer timer, string value) :
-                base(output, timer, value)
+            public TestRequestCollapserWithFaultyCreateCommand(ITestOutputHelper output, TestCollapserTimer timer, string value)
+                : base(output, timer, value)
             {
             }
 
@@ -2008,17 +1939,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 throw new Exception("some failure");
             }
-
         }
 
-        /**
-         * Throw an exception when creating a command.
-         */
-        class TestRequestCollapserWithShortCircuitedCommand : TestRequestCollapser
+        private class TestRequestCollapserWithShortCircuitedCommand : TestRequestCollapser
         {
-
-            public TestRequestCollapserWithShortCircuitedCommand(ITestOutputHelper output, TestCollapserTimer timer, string value) :
-                base(output, timer, value)
+            public TestRequestCollapserWithShortCircuitedCommand(ITestOutputHelper output, TestCollapserTimer timer, string value)
+                : base(output, timer, value)
             {
             }
 
@@ -2027,15 +1953,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // args don't matter as it's short-circuited
                 return new ShortCircuitedCommand(output);
             }
-
         }
 
-        /**
-         * Throw an exception when mapToResponse is invoked
-         */
-        class TestRequestCollapserWithFaultyMapToResponse : TestRequestCollapser
+        private class TestRequestCollapserWithFaultyMapToResponse : TestRequestCollapser
         {
-
             public TestRequestCollapserWithFaultyMapToResponse(ITestOutputHelper output, TestCollapserTimer timer, string value)
              : base(output, timer, value)
             {
@@ -2046,14 +1967,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // pretend we blow up with an NPE
                 throw new Exception("batchResponse was null and we blew up");
             }
-
         }
 
-        class TestCollapserCommand : TestHystrixCommand<List<string>>
+        private class TestCollapserCommand : TestHystrixCommand<List<string>>
         {
-
             private readonly ICollection<ICollapsedRequest<string, string>> requests;
-            ITestOutputHelper output;
+            private ITestOutputHelper output;
 
             public TestCollapserCommand(ITestOutputHelper output, ICollection<ICollapsedRequest<string, string>> requests)
                 : base(TestPropsBuilder().SetCommandOptionDefaults(GetCommandOptions()))
@@ -2062,18 +1981,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.output = output;
             }
 
-            private static IHystrixCommandOptions GetCommandOptions()
-            {
-                var opts = HystrixCommandOptionsTest.GetUnitTestOptions();
-                opts.ExecutionTimeoutInMilliseconds = 500;
-                return opts;
-            }
             protected override List<string> Run()
             {
                 output.WriteLine(">>> TestCollapserCommand run() ... batch size: " + requests.Count);
+
                 // simulate a batch request
-                List<String> response = new List<String>();
-                foreach (ICollapsedRequest<String, String> request in requests)
+                List<string> response = new List<string>();
+                foreach (ICollapsedRequest<string, string> request in requests)
                 {
                     if (request.Argument == null)
                     {
@@ -2085,36 +1999,40 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         {
                             throw new Exception("Simulated Error");
                         }
+
                         if (request.Argument.Equals("TIMEOUT"))
                         {
                             try
                             {
-                                Time.Wait( 800);
-
+                                Time.Wait(800);
                             }
                             catch (Exception e)
                             {
                                 output.WriteLine(e.ToString());
                             }
                         }
+
                         response.Add(request.Argument);
                     }
                 }
+
                 return response;
             }
 
+            private static IHystrixCommandOptions GetCommandOptions()
+            {
+                var opts = HystrixCommandOptionsTest.GetUnitTestOptions();
+                opts.ExecutionTimeoutInMilliseconds = 500;
+                return opts;
+            }
         }
 
-        /**
-         * A Command implementation that supports caching.
-         */
-        class SuccessfulCacheableCollapsedCommand : TestRequestCollapser
+        private class SuccessfulCacheableCollapsedCommand : TestRequestCollapser
         {
-
             private readonly bool cacheEnabled;
 
-            public SuccessfulCacheableCollapsedCommand(ITestOutputHelper output, TestCollapserTimer timer, string value, bool cacheEnabled) :
-                base(output, timer, value)
+            public SuccessfulCacheableCollapsedCommand(ITestOutputHelper output, TestCollapserTimer timer, string value, bool cacheEnabled)
+                : base(output, timer, value)
             {
                 this.cacheEnabled = cacheEnabled;
             }
@@ -2125,26 +2043,40 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.cacheEnabled = cacheEnabled;
             }
 
-
             protected override string CacheKey
             {
                 get
                 {
                     if (cacheEnabled)
-                        return "aCacheKey_" + base.value;
+                    {
+                        return "aCacheKey_" + value;
+                    }
                     else
+                    {
                         return null;
+                    }
                 }
             }
         }
 
-        class ShortCircuitedCommand : HystrixCommand<List<string>>
+        private class ShortCircuitedCommand : HystrixCommand<List<string>>
         {
-            ITestOutputHelper output;
+            private ITestOutputHelper output;
+
             public ShortCircuitedCommand(ITestOutputHelper output)
                 : base(GetCommandOptions())
             {
                 this.output = output;
+            }
+
+            protected override List<string> Run()
+            {
+                output.WriteLine("*** execution (this shouldn't happen)");
+
+                // this won't ever get called as we're forcing short-circuiting
+                List<string> values = new List<string>();
+                values.Add("hello");
+                return values;
             }
 
             private static IHystrixCommandOptions GetCommandOptions()
@@ -2156,27 +2088,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
                 return opts;
             }
-
-            protected override List<string> Run()
-            {
-                output.WriteLine("*** execution (this shouldn't happen)");
-                // this won't ever get called as we're forcing short-circuiting
-                List<string> values = new List<string>();
-                values.Add("hello");
-                return values;
-            }
-
         }
 
-        class FireAndForgetCommand : HystrixCommand<object>
+        private class FireAndForgetCommand : HystrixCommand<object>
         {
-            ITestOutputHelper output;
-
+            private ITestOutputHelper output;
 
             public FireAndForgetCommand(ITestOutputHelper output, List<int> values)
                 : base(GetCommandOptions())
             {
                 this.output = output;
+            }
+
+            protected override object Run()
+            {
+                output.WriteLine("*** FireAndForgetCommand execution: " + Thread.CurrentThread.ManagedThreadId);
+                return null;
             }
 
             private static IHystrixCommandOptions GetCommandOptions()
@@ -2186,19 +2113,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
                 return opts;
             }
-            protected override object Run()
-            {
-                output.WriteLine("*** FireAndForgetCommand execution: " + Thread.CurrentThread.ManagedThreadId);
-                return null;
-            }
-
         }
 
-        class TestCollapserTimer : ICollapserTimer
+        private class TestCollapserTimer : ICollapserTimer
         {
+            public readonly ConcurrentDictionary<ATask, ATask> Tasks = new ConcurrentDictionary<ATask, ATask>();
             private object _lock = new object();
-            public readonly ConcurrentDictionary<ATask, ATask> tasks = new ConcurrentDictionary<ATask, ATask>();
-            ITestOutputHelper output;
+            private ITestOutputHelper output;
+
             public TestCollapserTimer(ITestOutputHelper output)
             {
                 this.output = output;
@@ -2208,58 +2130,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 TestTimerListener listener = new TestTimerListener(collapseTask);
                 var t = new ATask(output, listener);
-                tasks.TryAdd(t, t);
+                Tasks.TryAdd(t, t);
 
                 TestTimerReference refr = new TestTimerReference(this, listener, TimeSpan.FromMilliseconds(0));
                 return refr;
-
-                /**
-                 * This is a hack that overrides 'clear' of a WeakReference to match the required API
-                 * but then removes the strong-reference we have inside 'tasks'.
-                 * <p>
-                 * We do this so our unit tests know if the WeakReference is cleared correctly, and if so then the ATack is removed from 'tasks'
-                 */
-                //    return new SoftReference<TimerListener>(collapseTask) {
-                //                @Override
-                //                public void clear()
-                //    {
-                //        // super.clear();
-                //        for (ATask t : tasks) {
-                //        if (t.task.actualListener.equals(collapseTask))
-                //        {
-                //            tasks.remove(t);
-                //        }
-                //    }
-                //}
-
-                //            };
             }
 
-            /**
-             * Increment time by X. Note that incrementing by multiples of delay or period time will NOT execute multiple times.
-             * <p>
-             * You must call incrementTime multiple times each increment being larger than 'period' on subsequent calls to cause multiple executions.
-             * <p>
-             * This is because executing multiple times in a tight-loop would not achieve the correct behavior, such as batching, since it will all execute "now" not after intervals of time.
-             *
-             * @param timeInMilliseconds amount of time to increment
-             */
             public void IncrementTime(int timeInMilliseconds)
             {
                 lock (_lock)
                 {
-                    foreach (ATask t in tasks.Values)
+                    foreach (ATask t in Tasks.Values)
                     {
                         t.IncrementTime(timeInMilliseconds);
                     }
                 }
             }
         }
-        class TestTimerReference : TimerReference
+
+        private class TestTimerReference : TimerReference
         {
-            TestCollapserTimer ctimer;
-            public TestTimerReference(TestCollapserTimer ctimer, ITimerListener listener, TimeSpan period) :
-                base(listener, period)
+            private TestCollapserTimer ctimer;
+
+            public TestTimerReference(TestCollapserTimer ctimer, ITimerListener listener, TimeSpan period)
+                : base(listener, period)
             {
                 this.ctimer = ctimer;
             }
@@ -2267,33 +2161,33 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public override void Dispose()
             {
                 // Called when context is disposed
-                foreach (var v in ctimer.tasks.Values)
+                foreach (var v in ctimer.Tasks.Values)
                 {
-                    if (v.task == this._listener)
+                    if (v.Task == this._listener)
                     {
                         ATask removed = v;
-                        ctimer.tasks.TryRemove(v, out removed);
+                        ctimer.Tasks.TryRemove(v, out removed);
                     }
                 }
+
                 base.Dispose();
             }
-
         }
 
-        class ATask
+        private class ATask
         {
-            public readonly TestTimerListener task;
-            readonly int delay = 10;
+            public readonly TestTimerListener Task;
 
             // our relative time that we'll use
-            public volatile int time = 0;
-            public volatile int executionCount = 0;
-
+            public volatile int Time = 0;
+            public volatile int ExecutionCount = 0;
+            private readonly int delay = 10;
             private object _lock = new object();
-            ITestOutputHelper output;
+            private ITestOutputHelper output;
+
             public ATask(ITestOutputHelper output, TestTimerListener task)
             {
-                this.task = task;
+                Task = task;
                 this.output = output;
             }
 
@@ -2301,13 +2195,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 lock (_lock)
                 {
-                    time += timeInMilliseconds;
-                    if (task != null)
+                    Time += timeInMilliseconds;
+                    if (Task != null)
                     {
-                        if (executionCount == 0)
+                        if (ExecutionCount == 0)
                         {
-                            output.WriteLine("ExecutionCount 0 => Time: " + time + " Delay: " + delay);
-                            if (time >= delay)
+                            output.WriteLine("ExecutionCount 0 => Time: " + Time + " Delay: " + delay);
+                            if (Time >= delay)
                             {
                                 // first execution, we're past the delay time
                                 ExecuteTask();
@@ -2315,8 +2209,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         }
                         else
                         {
-                            output.WriteLine("ExecutionCount 1+ => Time: " + time + " Delay: " + delay);
-                            if (time >= delay)
+                            output.WriteLine("ExecutionCount 1+ => Time: " + Time + " Delay: " + delay);
+                            if (Time >= delay)
                             {
                                 // subsequent executions, we're past the interval time
                                 ExecuteTask();
@@ -2331,103 +2225,47 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 lock (_lock)
                 {
                     output.WriteLine("Executing task ...");
-                    task.Tick();
-                    this.time = 0; // we reset time after each execution
-                    this.executionCount++;
-                    output.WriteLine("executionCount: " + executionCount);
+                    Task.Tick();
+                    this.Time = 0; // we reset time after each execution
+                    this.ExecutionCount++;
+                    output.WriteLine("executionCount: " + ExecutionCount);
                 }
             }
         }
 
-        class TestTimerListener : ITimerListener
+        private class TestTimerListener : ITimerListener
         {
-
-            public readonly ITimerListener actualListener;
-            public readonly AtomicInteger count = new AtomicInteger();
+            public readonly ITimerListener ActualListener;
+            public readonly AtomicInteger Count = new AtomicInteger();
 
             public TestTimerListener(ITimerListener actual)
             {
-                this.actualListener = actual;
+                this.ActualListener = actual;
             }
-
 
             public void Tick()
             {
-                count.IncrementAndGet();
-                actualListener.Tick();
+                Count.IncrementAndGet();
+                ActualListener.Tick();
             }
-
 
             public int IntervalTimeInMilliseconds
             {
                 get { return 10; }
             }
-
         }
 
         private static IHystrixCollapserKey CollapserKeyFromString(object o)
         {
             return new HystrixCollapserKeyDefault(o.ToString() + o.GetHashCode());
-
         }
 
-        class TestCollapserWithVoidResponseType : HystrixCollapser<object, object, int>
+        private class TestCollapserWithVoidResponseType : HystrixCollapser<object, object, int>
         {
-
             private readonly int value;
-            ITestOutputHelper output;
+            private ITestOutputHelper output;
 
-            public TestCollapserWithVoidResponseType(ITestOutputHelper output, ICollapserTimer timer, int value) :
-                base(CollapserKeyFromString(timer), RequestCollapserScope.REQUEST, timer, GetCollapserOptions(CollapserKeyFromString(timer)))
-            {
-                this.value = value;
-                this.output = output;
-            }
-
-            private static IHystrixCollapserOptions GetCollapserOptions(IHystrixCollapserKey key)
-            {
-                var opts = new HystrixCollapserOptions(key)
-                {
-                    MaxRequestsInBatch = 1000,
-                    TimerDelayInMilliseconds = 50
-                };
-                return opts;
-            }
-            public override int RequestArgument
-            {
-                get { return value; }
-            }
-
-
-            protected override HystrixCommand<object> CreateCommand(ICollection<ICollapsedRequest<object, int>> requests)
-            {
-
-                List<int> args = new List<int>();
-                foreach (CollapsedRequest<object, int> request in requests)
-                {
-                    args.Add(request.Argument);
-                }
-                return new FireAndForgetCommand(output, args);
-            }
-
-
-            protected override void MapResponseToRequests(object batchResponse, ICollection<ICollapsedRequest<object, int>> requests)
-            {
-                foreach (ICollapsedRequest<object, int> r in requests)
-                {
-                    r.Response = null;
-                }
-            }
-
-        }
-
-        class TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests : HystrixCollapser<object, object, int>
-        {
-
-            private readonly int value;
-            ITestOutputHelper output;
-
-            public TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests(ITestOutputHelper output, ICollapserTimer timer, int value)
+            public TestCollapserWithVoidResponseType(ITestOutputHelper output, ICollapserTimer timer, int value)
                 : base(CollapserKeyFromString(timer), RequestCollapserScope.REQUEST, timer, GetCollapserOptions(CollapserKeyFromString(timer)))
             {
                 this.value = value;
@@ -2443,51 +2281,109 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 };
                 return opts;
             }
+
             public override int RequestArgument
             {
                 get { return value; }
             }
 
-
             protected override HystrixCommand<object> CreateCommand(ICollection<ICollapsedRequest<object, int>> requests)
             {
-
                 List<int> args = new List<int>();
                 foreach (CollapsedRequest<object, int> request in requests)
                 {
                     args.Add(request.Argument);
                 }
+
                 return new FireAndForgetCommand(output, args);
             }
 
+            protected override void MapResponseToRequests(object batchResponse, ICollection<ICollapsedRequest<object, int>> requests)
+            {
+                foreach (ICollapsedRequest<object, int> r in requests)
+                {
+                    r.Response = null;
+                }
+            }
+        }
+
+        private class TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests : HystrixCollapser<object, object, int>
+        {
+            private readonly int value;
+            private ITestOutputHelper output;
+
+            public TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests(ITestOutputHelper output, ICollapserTimer timer, int value)
+                : base(CollapserKeyFromString(timer), RequestCollapserScope.REQUEST, timer, GetCollapserOptions(CollapserKeyFromString(timer)))
+            {
+                this.value = value;
+                this.output = output;
+            }
+
+            public override int RequestArgument
+            {
+                get { return value; }
+            }
+
+            protected override HystrixCommand<object> CreateCommand(ICollection<ICollapsedRequest<object, int>> requests)
+            {
+                List<int> args = new List<int>();
+                foreach (CollapsedRequest<object, int> request in requests)
+                {
+                    args.Add(request.Argument);
+                }
+
+                return new FireAndForgetCommand(output, args);
+            }
 
             protected override void MapResponseToRequests(object batchResponse, ICollection<ICollapsedRequest<object, int>> requests)
             {
             }
-        }
-        class Pair<A, B>
-        {
-            public readonly A a;
-            public readonly B b;
 
-            public Pair(A a, B b)
+            private static IHystrixCollapserOptions GetCollapserOptions(IHystrixCollapserKey key)
             {
-                this.a = a;
-                this.b = b;
+                var opts = new HystrixCollapserOptions(key)
+                {
+                    MaxRequestsInBatch = 1000,
+                    TimerDelayInMilliseconds = 50
+                };
+                return opts;
             }
         }
 
-        class MyCommand : HystrixCommand<List<Pair<String, int>>>
+        private class Pair<A, B>
         {
+            public readonly A AA;
+            public readonly B BB;
 
-            private readonly List<String> args;
-            ITestOutputHelper output;
-            public MyCommand(ITestOutputHelper output, List<String> args)
-            :
-                base(GetCommandOptions())
+            public Pair(A a, B b)
+            {
+                this.AA = a;
+                this.BB = b;
+            }
+        }
+
+        private class MyCommand : HystrixCommand<List<Pair<string, int>>>
+        {
+            private readonly List<string> args;
+            private ITestOutputHelper output;
+
+            public MyCommand(ITestOutputHelper output, List<string> args)
+                : base(GetCommandOptions())
             {
                 this.args = args;
                 this.output = output;
+            }
+
+            protected override List<Pair<string, int>> Run()
+            {
+                output.WriteLine("Executing batch command on : " + Thread.CurrentThread.ManagedThreadId + " with args : " + args);
+                List<Pair<string, int>> results = new List<Pair<string, int>>();
+                foreach (string arg in args)
+                {
+                    results.Add(new Pair<string, int>(arg, int.Parse(arg)));
+                }
+
+                return results;
             }
 
             private static IHystrixCommandOptions GetCommandOptions()
@@ -2498,26 +2394,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 };
                 return opts;
             }
-
-            protected override List<Pair<String, int>> Run()
-            {
-                output.WriteLine("Executing batch command on : " + Thread.CurrentThread.ManagedThreadId + " with args : " + args);
-                List<Pair<String, int>> results = new List<Pair<String, int>>();
-                foreach (String arg in args)
-                {
-                    results.Add(new Pair<String, int>(arg, int.Parse(arg)));
-                }
-                return results;
-            }
         }
 
-        class MyCollapser : HystrixCollapser<List<Pair<String, int>>, int, String>
+        private class MyCollapser : HystrixCollapser<List<Pair<string, int>>, int, string>
         {
+            private readonly string arg;
+            private ITestOutputHelper output;
 
-            private readonly String arg;
-            ITestOutputHelper output;
-            public MyCollapser(ITestOutputHelper output, String arg, bool reqCacheEnabled)
-                : base(HystrixCollapserKeyDefault.AsKey("UNITTEST"),
+            public MyCollapser(ITestOutputHelper output, string arg, bool reqCacheEnabled)
+                : base(
+                    HystrixCollapserKeyDefault.AsKey("UNITTEST"),
                     RequestCollapserScope.REQUEST,
                     new RealCollapserTimer(),
                     GetCollapserOptions(reqCacheEnabled),
@@ -2526,7 +2412,43 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.arg = arg;
                 this.output = output;
             }
-            static IHystrixCollapserOptions GetCollapserOptions(bool reqCacheEnabled)
+
+            public override string RequestArgument
+            {
+                get { return arg; }
+            }
+
+            protected override HystrixCommand<List<Pair<string, int>>> CreateCommand(ICollection<ICollapsedRequest<int, string>> collapsedRequests)
+            {
+                List<string> args = new List<string>(collapsedRequests.Count);
+                foreach (CollapsedRequest<int, string> req in collapsedRequests)
+                {
+                    args.Add(req.Argument);
+                }
+
+                return new MyCommand(output, args);
+            }
+
+            protected override void MapResponseToRequests(List<Pair<string, int>> batchResponse, ICollection<ICollapsedRequest<int, string>> collapsedRequests)
+            {
+                foreach (Pair<string, int> pair in batchResponse)
+                {
+                    foreach (ICollapsedRequest<int, string> collapsedReq in collapsedRequests)
+                    {
+                        if (collapsedReq.Argument.Equals(pair.AA))
+                        {
+                            collapsedReq.Response = pair.BB;
+                        }
+                    }
+                }
+            }
+
+            protected override string CacheKey
+            {
+                get { return arg; }
+            }
+
+            private static IHystrixCollapserOptions GetCollapserOptions(bool reqCacheEnabled)
             {
                 var opts = new HystrixCollapserOptions(HystrixCollapserKeyDefault.AsKey("UNITTEST"))
                 {
@@ -2534,49 +2456,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 };
                 return opts;
             }
-            public override String RequestArgument
-            {
-                get { return arg; }
-            }
-
-            protected override HystrixCommand<List<Pair<String, int>>> CreateCommand(ICollection<ICollapsedRequest<int, String>> collapsedRequests)
-            {
-                List<String> args = new List<String>(collapsedRequests.Count);
-                foreach (CollapsedRequest<int, String> req in collapsedRequests)
-                {
-                    args.Add(req.Argument);
-                }
-                return new MyCommand(output, args);
-            }
-
-            protected override void MapResponseToRequests(List<Pair<String, int>> batchResponse, ICollection<ICollapsedRequest<int, String>> collapsedRequests)
-            {
-                foreach (Pair<String, int> pair in batchResponse)
-                {
-                    foreach (ICollapsedRequest<int, String> collapsedReq in collapsedRequests)
-                    {
-                        if (collapsedReq.Argument.Equals(pair.a))
-                        {
-                            collapsedReq.Response = pair.b;
-                        }
-                    }
-                }
-            }
-
-            protected override String CacheKey
-            {
-                get { return arg; }
-            }
         }
-        class TestSubscriber<T> : ObserverBase<T>, IDisposable
-        {
-            CountdownEvent latch = new CountdownEvent(1);
-            ITestOutputHelper output;
-            bool isDisposed = false;
 
-            List<T> values;
-            List<Exception> errors;
-            int completions = 0;
+        private class TestSubscriber<T> : ObserverBase<T>, IDisposable
+        {
+            private CountdownEvent latch = new CountdownEvent(1);
+            private ITestOutputHelper output;
+            private bool isDisposed = false;
+
+            private List<T> values;
+            private List<Exception> errors;
+            private int completions = 0;
+
             public TestSubscriber(ITestOutputHelper output)
             {
                 this.output = output;
@@ -2584,25 +2475,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.errors = new List<Exception>();
             }
 
-            protected override void OnCompletedCore()
-            {
-                output.WriteLine("OnCompleted @ " + DateTime.Now.Ticks / 10000);
-                completions++;
-                latch.SignalEx();
-            }
-
-            protected override void OnErrorCore(Exception error)
-            {
-                output.WriteLine("OnError @ " + DateTime.Now.Ticks / 10000 + " : " + error.Message.ToString());
-                errors.Add(error);
-                latch.SignalEx();
-            }
-
-            protected override void OnNextCore(T value)
-            {
-                output.WriteLine("OnNext @ " + DateTime.Now.Ticks / 10000 + " : " + value.ToString());
-                values.Add(value);
-            }
             public void Unsubscribe()
             {
                 if (Subscription != null)
@@ -2610,8 +2482,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     Subscription.Dispose();
                 }
 
-                this.isDisposed = true;
+                isDisposed = true;
             }
+
             public List<T> OnNextEvents
             {
                 get { return values; }
@@ -2627,12 +2500,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     {
                         results.Add(Notification.CreateOnCompleted<T>());
                     }
+
                     return results;
                 }
             }
-            public List<Exception> OnErrorEvents { get { return errors; } }
 
-            public bool IsUnsubscribed { get { return isDisposed; } set { isDisposed = value; } }
+            public List<Exception> OnErrorEvents
+            {
+                get { return errors; }
+            }
+
+            public bool IsUnsubscribed
+            {
+                get { return isDisposed; } set { isDisposed = value; }
+            }
 
             public IDisposable Subscription { get; set; }
 
@@ -2647,6 +2528,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     Assert.False(true, e.Message);
                 }
             }
+
             public void AssertNoErrors()
             {
                 if (errors.Count > 0)
@@ -2654,14 +2536,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     Assert.False(true, "Unexpecteed onError events");
                 }
             }
+
             public void AssertValues(params T[] check)
             {
                 foreach (var v in check)
                 {
                     if (!values.Contains(v))
+                    {
                         Assert.False(true, "Value not found: " + v);
+                    }
                 }
-
             }
 
             internal void AssertError(Type et)
@@ -2670,6 +2554,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     Assert.False(true, "No errors or multiple errors");
                 }
+
                 Exception e = errors[0];
                 var eTypeInfo = e.GetType().GetTypeInfo();
                 var etTypeInfo = et.GetTypeInfo();
@@ -2677,8 +2562,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     return;
                 }
-                Assert.False(true, "Exceptions differ, Expected: " + et.ToString() + " Found: " + e.GetType());
 
+                Assert.False(true, "Exceptions differ, Expected: " + et.ToString() + " Found: " + e.GetType());
             }
 
             internal void AssertNoValues()
@@ -2703,8 +2588,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     Assert.False(true, "Completed multiple times: " + s);
                 }
             }
+
+            protected override void OnCompletedCore()
+            {
+                output.WriteLine("OnCompleted @ " + (DateTime.Now.Ticks / 10000));
+                completions++;
+                latch.SignalEx();
+            }
+
+            protected override void OnErrorCore(Exception error)
+            {
+                output.WriteLine("OnError @ " + (DateTime.Now.Ticks / 10000) + " : " + error.Message.ToString());
+                errors.Add(error);
+                latch.SignalEx();
+            }
+
+            protected override void OnNextCore(T value)
+            {
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + value.ToString());
+                values.Add(value);
+            }
         }
     }
 }
-
-

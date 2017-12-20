@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,13 +22,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixSubclassCommandTest : HystrixTestBase
     {
-        private readonly static IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("GROUP");
+        private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("GROUP");
 
-        ITestOutputHelper output;
-        public HystrixSubclassCommandTest(ITestOutputHelper output) : base()
+        private ITestOutputHelper output;
+
+        public HystrixSubclassCommandTest(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
         }
+
         [Fact]
         public void TestFallback()
         {
@@ -42,6 +44,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<int> subOverriddenFallbackCmd = new SubCommandOverrideFallback("cache", false);
             Assert.Equal(3, subOverriddenFallbackCmd.Execute());
         }
+
         [Fact]
         public void TestRequestCacheSuperClass()
         {
@@ -91,7 +94,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             IHystrixInvokableInfo info3 = infos[2];
             Assert.Equal("SubCommandNoOverride", info3.CommandKey.Name);
             Assert.Single(info3.ExecutionEvents);
-
         }
 
         [Fact]
@@ -118,19 +120,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal("SubCommandNoOverride", info.CommandKey.Name);
         }
 
-        class SuperCommand : HystrixCommand<int>
+        private class SuperCommand : HystrixCommand<int>
         {
-            private readonly String uniqueArg;
+            private readonly string uniqueArg;
             private readonly bool shouldSucceed;
 
-            public SuperCommand(String uniqueArg, bool shouldSucceed)
-            : base(groupKey)
+            public SuperCommand(string uniqueArg, bool shouldSucceed)
+            : base(GroupKey)
             {
                 this.uniqueArg = uniqueArg;
                 this.shouldSucceed = shouldSucceed;
                 this.IsFallbackUserDefined = true;
             }
-
 
             protected override int Run()
             {
@@ -149,23 +150,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 return 2;
             }
 
-            protected override String CacheKey
+            protected override string CacheKey
             {
                 get { return uniqueArg; }
             }
         }
 
-        class SubCommandNoOverride : SuperCommand
+        private class SubCommandNoOverride : SuperCommand
         {
-            public SubCommandNoOverride(String uniqueArg, bool shouldSucceed)
+            public SubCommandNoOverride(string uniqueArg, bool shouldSucceed)
                 : base(uniqueArg, shouldSucceed)
             {
             }
         }
 
-        class SubCommandOverrideFallback : SuperCommand
+        private class SubCommandOverrideFallback : SuperCommand
         {
-            public SubCommandOverrideFallback(String uniqueArg, bool shouldSucceed)
+            public SubCommandOverrideFallback(string uniqueArg, bool shouldSucceed)
                 : base(uniqueArg, shouldSucceed)
             {
                 this.IsFallbackUserDefined = true;

@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,9 +27,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         private static IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
         private static IHystrixThreadPoolKey tpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
-        ITestOutputHelper output;
+        private ITestOutputHelper output;
 
-        public HystrixThreadPoolMetricsTest(ITestOutputHelper output) : base()
+        public HystrixThreadPoolMetricsTest(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
             HystrixThreadPoolMetrics.Reset();
@@ -39,65 +39,67 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void ShouldYieldNoExecutedTasksOnStartup()
         {
-            //given
+            // given
             ICollection<HystrixThreadPoolMetrics> instances = HystrixThreadPoolMetrics.GetInstances();
 
-            //then
+            // then
             Assert.Equal(0, instances.Count);
-
         }
+
         [Fact]
         public void ShouldReturnOneExecutedTask()
         {
-            //given
+            // given
             var stream = RollingThreadPoolEventCounterStream.GetInstance(tpKey, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
             var cmd = new NoOpHystrixCommand(output);
             cmd.Execute();
-            Time.Wait( 125);
+            Time.Wait(125);
 
             ICollection<HystrixThreadPoolMetrics> instances = HystrixThreadPoolMetrics.GetInstances();
 
-            //then
+            // then
             Assert.Equal(1, instances.Count);
             HystrixThreadPoolMetrics metrics = instances.First();
             Assert.Equal(1, metrics.RollingCountThreadsExecuted);
-    
-
         }
-        class NoOpHystrixCommand : HystrixCommand<bool> {
-            ITestOutputHelper output;
-            public NoOpHystrixCommand(ITestOutputHelper output) :
-                    base(GetCommandOptions())
+
+        private class NoOpHystrixCommand : HystrixCommand<bool>
+        {
+            private ITestOutputHelper output;
+
+            public NoOpHystrixCommand(ITestOutputHelper output)
+                : base(GetCommandOptions())
             {
                 this.output = output;
             }
-        private static IHystrixCommandOptions GetCommandOptions()
-        {
-            HystrixCommandOptions opts = new HystrixCommandOptions()
-            {
-                GroupKey = groupKey,
-                ThreadPoolKey = tpKey,
-                ThreadPoolOptions = GetThreadPoolOptions()
 
-            };
-            return opts;
-        }
-        private static IHystrixThreadPoolOptions GetThreadPoolOptions()
-        {
-            HystrixThreadPoolOptions opts = new HystrixThreadPoolOptions(tpKey)
+            protected override bool Run()
             {
-                MetricsRollingStatisticalWindowInMilliseconds = 100
-            };
-            return opts;
+                output.WriteLine("Run in thread : " + Thread.CurrentThread.ManagedThreadId);
+                return false;
+            }
+
+            private static IHystrixThreadPoolOptions GetThreadPoolOptions()
+            {
+                HystrixThreadPoolOptions opts = new HystrixThreadPoolOptions(tpKey)
+                {
+                    MetricsRollingStatisticalWindowInMilliseconds = 100
+                };
+                return opts;
+            }
+
+            private static IHystrixCommandOptions GetCommandOptions()
+            {
+                HystrixCommandOptions opts = new HystrixCommandOptions()
+                {
+                    GroupKey = groupKey,
+                    ThreadPoolKey = tpKey,
+                    ThreadPoolOptions = GetThreadPoolOptions()
+                };
+                return opts;
+            }
         }
-        
-        protected override bool Run() 
-        {
-            output.WriteLine("Run in thread : " + Thread.CurrentThread.ManagedThreadId);
-            return false;
-        }
-}
-}
+    }
 }

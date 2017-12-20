@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
@@ -57,27 +54,32 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestBooleanBuilderOverride1()
         {
-            HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"),
+            HystrixCommandOptions properties = new HystrixCommandOptions(
+                HystrixCommandKeyDefault.AsKey("TEST"),
                     new HystrixCommandOptions() { CircuitBreakerForceClosed = true });
 
             // the builder override should take precedence over the default
-            Assert.True( properties.CircuitBreakerForceClosed);
+            Assert.True(properties.CircuitBreakerForceClosed);
         }
+
         [Fact]
         public void TestBooleanBuilderOverride2()
         {
-            HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"),
+            HystrixCommandOptions properties = new HystrixCommandOptions(
+                HystrixCommandKeyDefault.AsKey("TEST"),
                           new HystrixCommandOptions() { CircuitBreakerForceClosed = false });
 
             // the builder override should take precedence over the default
-            Assert.False( properties.CircuitBreakerForceClosed);
+            Assert.False(properties.CircuitBreakerForceClosed);
         }
+
         [Fact]
         public void TestBooleanCodeDefault()
         {
             HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions());
             Assert.Equal(HystrixCommandOptions.Default_CircuitBreakerForceClosed, properties.CircuitBreakerForceClosed);
         }
+
         [Fact]
         public void TestBooleanGlobalDynamicOverrideOfCodeDefault()
         {
@@ -103,9 +105,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), null, dynamics);
 
             // the global dynamic property should take precedence over the default
-            Assert.True( properties.CircuitBreakerForceClosed);
-
+            Assert.True(properties.CircuitBreakerForceClosed);
         }
+
         [Fact]
         public void TestBooleanInstanceBuilderOverrideOfGlobalDynamicOverride1()
         {
@@ -130,8 +132,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions() { CircuitBreakerForceClosed = true }, dynamics);
 
             // the builder injected should take precedence over the global dynamic property
-            Assert.True( properties.CircuitBreakerForceClosed);
-
+            Assert.True(properties.CircuitBreakerForceClosed);
         }
 
         [Fact]
@@ -158,11 +159,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions() { CircuitBreakerForceClosed = false }, dynamics);
 
             // the builder injected should take precedence over the global dynamic property
-            Assert.False( properties.CircuitBreakerForceClosed);
-
+            Assert.False(properties.CircuitBreakerForceClosed);
         }
+
         [Fact]
-    public void TestBooleanInstanceDynamicOverrideOfEverything()  
+    public void TestBooleanInstanceDynamicOverrideOfEverything()
         {
             var configSettings = @"
             {
@@ -191,29 +192,31 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions() { CircuitBreakerForceClosed = false }, dynamics);
 
             // the instance specific dynamic property should take precedence over everything
-            Assert.True( properties.CircuitBreakerForceClosed);
-
+            Assert.True(properties.CircuitBreakerForceClosed);
         }
+
         [Fact]
         public void TestIntegerBuilderOverride()
         {
-            HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"),
+            HystrixCommandOptions properties = new HystrixCommandOptions(
+                HystrixCommandKeyDefault.AsKey("TEST"),
         new HystrixCommandOptions() { MetricsRollingStatisticalWindowInMilliseconds = 5000 });
 
             // the builder override should take precedence over the default
             Assert.Equal(5000, properties.MetricsRollingStatisticalWindowInMilliseconds);
-
-
         }
 
         [Fact]
         public void TestIntegerCodeDefault()
         {
-            HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions());
+            HystrixCommandOptions properties = new HystrixCommandOptions(
+                HystrixCommandKeyDefault.AsKey("TEST"),
+                new HystrixCommandOptions());
             Assert.Equal(HystrixCommandOptions.Default_MetricsRollingStatisticalWindow, properties.MetricsRollingStatisticalWindowInMilliseconds);
         }
+
         [Fact]
-    public void TestIntegerGlobalDynamicOverrideOfCodeDefault()  
+    public void TestIntegerGlobalDynamicOverrideOfCodeDefault()
         {
             var configSettings = @"
             {
@@ -239,8 +242,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommandOptions properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), null, dynamics);
             //// the global dynamic property should take precedence over the default
             Assert.Equal(1234, properties.MetricsRollingStatisticalWindowInMilliseconds);
-
         }
+
         [Fact]
         public void TestIntegerInstanceBuilderOverrideOfGlobalDynamicOverride()
         {
@@ -269,8 +272,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // the builder injected should take precedence over the global dynamic property
             Assert.Equal(5000, properties.MetricsRollingStatisticalWindowInMilliseconds);
-
         }
+
         [Fact]
         public void TestIntegerInstanceDynamicOverrideOfEverything()
         {
@@ -306,8 +309,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // the instance specific dynamic property should take precedence over everything
             Assert.Equal(3456, properties.MetricsRollingStatisticalWindowInMilliseconds);
-
         }
+
     internal static MemoryStream GetMemoryStream(string json)
         {
             var memStream = new MemoryStream();
@@ -317,23 +320,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             memStream.Seek(0, SeekOrigin.Begin);
             return memStream;
         }
-        class JsonStreamConfigurationProvider : JsonConfigurationProvider
+
+        private class JsonStreamConfigurationProvider : JsonConfigurationProvider
         {
-            MemoryStream _stream;
-            internal JsonStreamConfigurationProvider(JsonConfigurationSource source, MemoryStream stream) : base(source)
+            private MemoryStream _stream;
+
+            internal JsonStreamConfigurationProvider(JsonConfigurationSource source, MemoryStream stream)
+                : base(source)
             {
-                if (stream == null)
-                {
-                    throw new ArgumentNullException(nameof(stream));
-                }
-                _stream = stream;
+                _stream = stream ?? throw new ArgumentNullException(nameof(stream));
             }
+
             public override void Load()
             {
-                base.Load(_stream);
+                Load(_stream);
             }
         }
-        class JsonStreamConfigurationSource : JsonConfigurationSource
+
+        private class JsonStreamConfigurationSource : JsonConfigurationSource
         {
             private MemoryStream _stream;
 
@@ -343,8 +347,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     throw new ArgumentNullException(nameof(stream));
                 }
+
                 _stream = stream;
             }
+
             public override IConfigurationProvider Build(IConfigurationBuilder builder)
             {
                 return new JsonStreamConfigurationProvider(this, _stream);

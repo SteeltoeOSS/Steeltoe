@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,13 +28,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingThreadPoolMaxConcurrencyStreamTest : CommandStreamTest, IDisposable
     {
-        RollingThreadPoolMaxConcurrencyStream stream;
-        ITestOutputHelper output;
+        private RollingThreadPoolMaxConcurrencyStream stream;
+        private ITestOutputHelper output;
 
-        class LatchedObserver : ObserverBase<int>
+        private class LatchedObserver : ObserverBase<int>
         {
-            CountdownEvent latch;
-            ITestOutputHelper output;
+            private CountdownEvent latch;
+            private ITestOutputHelper output;
+
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
                 this.latch = latch;
@@ -53,9 +53,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
 
             protected override void OnNextCore(int maxConcurrency)
-
             {
-                output.WriteLine("OnNext @ " + DateTime.Now.Ticks / 10000 + " : Max of " + maxConcurrency);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : Max of " + maxConcurrency);
             }
         }
 
@@ -64,21 +63,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             return new LatchedObserver(output, latch);
         }
 
-        public RollingThreadPoolMaxConcurrencyStreamTest(ITestOutputHelper output) : base()
+        public RollingThreadPoolMaxConcurrencyStreamTest(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
 
             HystrixThreadPoolStartStream.Reset();
             RollingThreadPoolMaxConcurrencyStream.Reset();
         }
-        public override void Dispose() 
+
+        public override void Dispose()
         {
             base.Dispose();
 
             stream.Unsubscribe();
-
         }
-
 
         [Fact]
         public void TestEmptyStreamProducesZeros()
@@ -92,17 +91,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-            //no writes
-
-
+            // no writes
             try
             {
                 Assert.True(latch.Wait(10000));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 Assert.False(true, "Interrupted ex");
             }
+
             Assert.Equal(0, stream.LatestRollingMax);
         }
 
@@ -118,13 +116,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-
-
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 50);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 40);
 
             cmd1.Observe();
-            Time.Wait( 1);
+            Time.Wait(1);
             cmd2.Observe();
 
             Assert.True(latch.Wait(10000));
@@ -143,20 +139,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10, ExecutionIsolationStrategy.SEMAPHORE);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 14, ExecutionIsolationStrategy.SEMAPHORE);
 
             cmd1.Observe();
-            Time.Wait( 1);
+            Time.Wait(1);
             cmd2.Observe();
 
             Assert.True(latch.Wait(10000));
-            //since commands run in semaphore isolation, they are not tracked by threadpool metrics
+
+            // since commands run in semaphore isolation, they are not tracked by threadpool metrics
             Assert.Equal(0, stream.LatestRollingMax);
-
         }
-
 
         /***
          * 3 Commands,
@@ -175,34 +169,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-
-
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 560);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 50);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 75);
 
             cmd1.Observe();
-            Time.Wait( 150); //bucket roll
+            Time.Wait(150); // bucket roll
             cmd2.Observe();
-            Time.Wait( 1);
+            Time.Wait(1);
             cmd3.Observe();
 
             Assert.True(latch.Wait(10000));
             Assert.Equal(3, stream.LatestRollingMax);
-
-
         }
 
-        /**
-         * BUCKETS
-         *     A    |    B    |    C    |    D    |    E    |
-         * 1:  [-------------------------------]
-         * 2:          [-------------------------------]
-         * 3:                      [--]
-         * 4:                              [--]
-         *
-         * Max concurrency should be 3
-         */
+         // BUCKETS
+         //      A    |    B    |    C    |    D    |    E    |
+         //  1:  [-------------------------------]
+         //  2:          [-------------------------------]
+         //  3:                      [--]
+         //  4:                              [--]
+         //  Max concurrency should be 3
         [Fact]
         public void TestMultipleCommandsCarryOverMultipleBuckets()
         {
@@ -221,32 +208,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
 
             cmd1.Observe();
-            Time.Wait( 100); //bucket roll
+            Time.Wait(100); // bucket roll
             cmd2.Observe();
-            Time.Wait( 100);
+            Time.Wait(100);
             cmd3.Observe();
-            Time.Wait( 100);
+            Time.Wait(100);
             cmd4.Observe();
             Assert.True(latch.Wait(10000));
             Assert.Equal(3, stream.LatestRollingMax);
-
         }
 
-        /**
-         * BUCKETS
-         *     A    |    B    |    C    |    D    |    E    |
-         * 1:  [-------------------------------]              ThreadPool x
-         * 2:          [-------------------------------]                 y
-         * 3:                      [--]                                  x
-         * 4:                              [--]                          x
-         *
-         * Same input data as above test, just that command 2 runs in a separate threadpool, so concurrency should not get tracked
-         * Max concurrency should be 2 for x
-         */
+         // BUCKETS
+         //      A    |    B    |    C    |    D    |    E    |
+         //  1:  [-------------------------------]              ThreadPool x
+         //  2:          [-------------------------------]                 y
+         //  3:                      [--]                                  x
+         //  4:                              [--]                          x
+         //  Same input data as above test, just that command 2 runs in a separate threadpool, so concurrency should not get tracked
+         //  Max concurrency should be 2 for x
         [Fact]
         public void TestMultipleCommandsCarryOverMultipleBucketsForMultipleThreadPools()
         {
-
             IHystrixCommandGroupKey groupKeyX = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-X");
             IHystrixCommandGroupKey groupKeyY = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-Y");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-X");
@@ -264,27 +246,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command cmd4 = Command.From(groupKeyX, keyY, HystrixEventType.SUCCESS, 10);
 
             cmd1.Observe();
-            Time.Wait( 100); //bucket roll
+            Time.Wait(100); // bucket roll
             cmd2.Observe();
-            Time.Wait( 100);
+            Time.Wait(100);
             cmd3.Observe();
-            Time.Wait( 100);
+            Time.Wait(100);
             cmd4.Observe();
             Assert.True(latch.Wait(10000));
             Assert.Equal(2, stream.LatestRollingMax);
-
         }
 
-        /**
-         * BUCKETS
-         *     A    |    B    |    C    |    D    |    E    |
-         * 1:  [-------------------------------]
-         * 2:          [-------------------------------]
-         * 3:                      [--]
-         * 4:                              [--]
-         *
-         * Max concurrency should be 3, but by waiting for 30 bucket rolls, final max concurrency should be 0
-         */
+         // BUCKETS
+         //  1:  [-------------------------------]
+         //  2:          [-------------------------------]
+         //  3:                      [--]
+         //  4:                              [--]
+         //  Max concurrency should be 3, but by waiting for 30 bucket rolls, final max concurrency should be 0
         [Fact]
         public void TestMultipleCommandsCarryOverMultipleBucketsAndThenAgeOut()
         {
@@ -297,24 +274,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(30).Subscribe(GetSubscriber(output, latch));
 
-
-
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
 
             cmd1.Observe();
-            Time.Wait( 100); //bucket roll
+            Time.Wait(100); // bucket roll
             cmd2.Observe();
-            Time.Wait( 100);
+            Time.Wait(100);
             cmd3.Observe();
-            Time.Wait( 100);
+            Time.Wait(100);
             cmd4.Observe();
             Assert.True(latch.Wait(10000));
             Assert.Equal(0, stream.LatestRollingMax);
-
-
         }
 
         [Fact]
@@ -329,15 +302,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-
-
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 40);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
 
             cmd1.Observe();
-            Time.Wait( 5);
+            Time.Wait(5);
             cmd2.Observe();
             cmd3.Observe();
             cmd4.Observe();
@@ -362,10 +333,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-
-            //after 3 failures, next command should short-circuit.
-            //to prove short-circuited commands don't contribute to concurrency, execute 3 FAILURES in the first bucket sequentially
-            //then when circuit is open, execute 20 concurrent commands.  they should all get short-circuited, and max concurrency should be 1
+            // after 3 failures, next command should short-circuit.
+            // to prove short-circuited commands don't contribute to concurrency, execute 3 FAILURES in the first bucket sequentially
+            // then when circuit is open, execute 20 concurrent commands.  they should all get short-circuited, and max concurrency should be 1
             Command failure1 = Command.From(groupKey, key, HystrixEventType.FAILURE);
             Command failure2 = Command.From(groupKey, key, HystrixEventType.FAILURE);
             Command failure3 = Command.From(groupKey, key, HystrixEventType.FAILURE);
@@ -381,18 +351,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             failure2.Execute();
             failure3.Execute();
 
-            Time.Wait( 150);
+            Time.Wait(150);
 
             foreach (Command cmd in shortCircuited)
             {
                 cmd.Observe();
             }
+
             Assert.True(latch.Wait(10000));
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             foreach (Command cmd in shortCircuited)
             {
                 Assert.True(cmd.IsResponseShortCircuited);
             }
+
             Assert.Equal(1, stream.LatestRollingMax);
         }
 
@@ -408,12 +380,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-
-
-            //10 commands executed concurrently on different caller threads should saturate semaphore
-            //once these are in-flight, execute 10 more concurrently on new caller threads.
-            //since these are semaphore-rejected, the max concurrency should be 10
-
+            // 10 commands executed concurrently on different caller threads should saturate semaphore
+            // once these are in-flight, execute 10 more concurrently on new caller threads.
+            // since these are semaphore-rejected, the max concurrency should be 10
             List<Command> saturators = new List<Command>();
             for (int i = 0; i < 10; i++)
             {
@@ -428,21 +397,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             foreach (Command saturatingCmd in saturators)
             {
-                Task t = new Task(() =>
+               Task t = new Task(
+               () =>
                 {
                     saturatingCmd.Observe();
-                }, CancellationToken.None, TaskCreationOptions.LongRunning);
+                }, CancellationToken.None,
+                TaskCreationOptions.LongRunning);
                 t.Start();
-
             }
 
-
-            Time.Wait( 30);
+            Time.Wait(30);
 
             foreach (Command rejectedCmd in rejected)
             {
                 Task.Run(() => rejectedCmd.Observe());
-
             }
 
             Assert.True(latch.Wait(10000));
@@ -452,7 +420,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(rejectedCmd.IsResponseSemaphoreRejected || rejectedCmd.IsResponseShortCircuited);
             }
-            //should be 0 since all are executed in a semaphore
+
+            // should be 0 since all are executed in a semaphore
             Assert.Equal(0, stream.LatestRollingMax);
         }
 
@@ -468,12 +437,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-
-
-            //10 commands executed concurrently should saturate the Hystrix threadpool
-            //once these are in-flight, execute 10 more concurrently
-            //since these are threadpool-rejected, the max concurrency should be 10
-
+            // 10 commands executed concurrently should saturate the Hystrix threadpool
+            // once these are in-flight, execute 10 more concurrently
+            // since these are threadpool-rejected, the max concurrency should be 10
             List<Command> saturators = new List<Command>();
             for (int i = 0; i < 10; i++)
             {
@@ -491,7 +457,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 saturatingCmd.Observe();
             }
 
-            Time.Wait( 30);
+            Time.Wait(30);
 
             foreach (Command rejectedCmd in rejected)
             {
@@ -505,9 +471,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 Assert.True(rejectedCmd.IsResponseThreadPoolRejected);
             }
 
-            //this should not count rejected commands
+            // this should not count rejected commands
             Assert.Equal(10, stream.LatestRollingMax);
         }
     }
-
 }

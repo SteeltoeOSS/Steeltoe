@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,19 +24,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixThreadPoolTest : HystrixTestBase, IDisposable
     {
-        ITestOutputHelper output;
+        private ITestOutputHelper output;
 
-        public HystrixThreadPoolTest(ITestOutputHelper output) : base()
+        public HystrixThreadPoolTest(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
         }
+
         [Fact]
         public void TestShutdown()
         {
             // other unit tests will probably have run before this so get the count
             int count = HystrixThreadPoolFactory.ThreadPools.Count;
 
-            IHystrixThreadPool pool = HystrixThreadPoolFactory.GetInstance(HystrixThreadPoolKeyDefault.AsKey("threadPoolFactoryTest"),
+            IHystrixThreadPool pool = HystrixThreadPoolFactory.GetInstance(
+                HystrixThreadPoolKeyDefault.AsKey("threadPoolFactoryTest"),
                 HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder());
 
             Assert.Equal(count + 1, HystrixThreadPoolFactory.ThreadPools.Count);
@@ -49,7 +51,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Empty(HystrixThreadPoolFactory.ThreadPools);
             Assert.True(pool.GetScheduler().IsShutdown);
         }
-        class HystrixMetricsPublisherThreadPoolContainer : IHystrixMetricsPublisherThreadPool
+
+        private class HystrixMetricsPublisherThreadPoolContainer : IHystrixMetricsPublisherThreadPool
         {
             private readonly HystrixThreadPoolMetrics hystrixThreadPoolMetrics;
 
@@ -57,7 +60,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 this.hystrixThreadPoolMetrics = hystrixThreadPoolMetrics;
             }
-
 
             public void Initialize()
             {
@@ -68,9 +70,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 get { return hystrixThreadPoolMetrics; }
             }
         }
-        class MyHystrixMetricsPublisher : HystrixMetricsPublisher
-        {
 
+        private class MyHystrixMetricsPublisher : HystrixMetricsPublisher
+        {
             public override IHystrixMetricsPublisherThreadPool GetMetricsPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
             {
                 return new HystrixMetricsPublisherThreadPoolContainer(metrics);
@@ -88,18 +90,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             IHystrixThreadPool poolTwo = new HystrixThreadPoolDefault(
                     threadPoolKey, HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder());
 
-            Assert.Equal(poolOne.GetScheduler(), poolTwo.GetScheduler()); //Now that we get the threadPool from the metrics object, this will always be equal
+            Assert.Equal(poolOne.GetScheduler(), poolTwo.GetScheduler()); // Now that we get the threadPool from the metrics object, this will always be equal
             HystrixMetricsPublisherThreadPoolContainer hystrixMetricsPublisherThreadPool =
                     (HystrixMetricsPublisherThreadPoolContainer)HystrixMetricsPublisherFactory
                             .CreateOrRetrievePublisherForThreadPool(threadPoolKey, null, null);
             IHystrixTaskScheduler threadPoolExecutor = hystrixMetricsPublisherThreadPool.HystrixThreadPoolMetrics.TaskScheduler;
 
-            //assert that both HystrixThreadPools share the same ThreadPoolExecutor as the one in HystrixMetricsPublisherThreadPool
+            // assert that both HystrixThreadPools share the same ThreadPoolExecutor as the one in HystrixMetricsPublisherThreadPool
             Assert.True(threadPoolExecutor.Equals(poolOne.GetScheduler()) && threadPoolExecutor.Equals(poolTwo.GetScheduler()));
             Assert.False(threadPoolExecutor.IsShutdown);
 
-            //Now the HystrixThreadPool ALWAYS has the same reference to the ThreadPoolExecutor so that it no longer matters which
-            //wins to be inserted into the HystrixThreadPool.Factory.threadPools cache.
+            // Now the HystrixThreadPool ALWAYS has the same reference to the ThreadPoolExecutor so that it no longer matters which
+            // wins to be inserted into the HystrixThreadPool.Factory.threadPools cache.
             poolOne.Dispose();
             poolTwo.Dispose();
         }

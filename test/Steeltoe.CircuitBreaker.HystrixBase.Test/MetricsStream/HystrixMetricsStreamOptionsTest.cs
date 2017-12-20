@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +20,6 @@ using System.IO;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
-
 {
     public class HystrixMetricsStreamOptionsTest : HystrixTestBase
     {
@@ -32,8 +30,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
             Assert.True(opts.Validate_Certificates);
             Assert.Equal(500, opts.SendRate);
             Assert.Equal(500, opts.GatherRate);
-
         }
-
     }
 }

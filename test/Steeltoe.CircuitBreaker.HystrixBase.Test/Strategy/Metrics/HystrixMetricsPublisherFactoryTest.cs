@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,15 +24,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 {
     public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
     {
-        ITestOutputHelper output;
+        private ITestOutputHelper output;
 
-        public HystrixMetricsPublisherFactoryTest(ITestOutputHelper output) : base()
+        public HystrixMetricsPublisherFactoryTest(ITestOutputHelper output)
+            : base()
         {
             this.output = output;
         }
-        /**
-           * Assert that we only call a publisher once for a given Command or ThreadPool key.
-           */
+
         [Fact]
         public void TestSingleInitializePerKey()
         {
@@ -43,12 +41,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             List<Task> threads = new List<Task>();
             for (int i = 0; i < 20; i++)
             {
-                threads.Add(new Task(() =>
+                threads.Add(new Task(
+                () =>
                 {
                     factory.GetPublisherForCommand(TestCommandKey.TEST_A, null, null, null, null);
                     factory.GetPublisherForCommand(TestCommandKey.TEST_B, null, null, null, null);
                     factory.GetPublisherForThreadPool(TestThreadPoolKey.TEST_A, null, null);
-                }, CancellationToken.None, TaskCreationOptions.LongRunning));
+                }, CancellationToken.None,
+                    TaskCreationOptions.LongRunning));
             }
 
             // start them
@@ -64,8 +64,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             Assert.Single(factory.ThreadPoolPublishers);
 
             // we should see 2 commands and 1 threadPool publisher created
-            Assert.Equal(2, publisher.commandCounter.Value);
-            Assert.Equal(1, publisher.threadCounter.Value);
+            Assert.Equal(2, publisher.CommandCounter.Value);
+            Assert.Equal(1, publisher.ThreadCounter.Value);
         }
 
         [Fact]
@@ -95,76 +95,82 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             Assert.True(secondCommand == cmd);
         }
 
-        class MyHystrixMetricsPublisherCommand : IHystrixMetricsPublisherCommand
+        private class MyHystrixMetricsPublisherCommand : IHystrixMetricsPublisherCommand
         {
-            AtomicInteger commandCounter;
+            private AtomicInteger commandCounter;
 
             public MyHystrixMetricsPublisherCommand(AtomicInteger commandCounter)
             {
                 this.commandCounter = commandCounter;
             }
+
             public void Initialize()
             {
                 commandCounter.IncrementAndGet();
             }
         }
-        class MyHystrixMetricsPublisherThreadPool : IHystrixMetricsPublisherThreadPool
+
+        private class MyHystrixMetricsPublisherThreadPool : IHystrixMetricsPublisherThreadPool
         {
-            AtomicInteger threadCounter;
+            private AtomicInteger threadCounter;
 
             public MyHystrixMetricsPublisherThreadPool(AtomicInteger threadCounter)
             {
                 this.threadCounter = threadCounter;
             }
+
             public void Initialize()
             {
                 threadCounter.IncrementAndGet();
             }
         }
-        class TestHystrixMetricsPublisher : HystrixMetricsPublisher
-        {
 
-            public AtomicInteger commandCounter = new AtomicInteger();
-            public AtomicInteger threadCounter = new AtomicInteger();
+        private class TestHystrixMetricsPublisher : HystrixMetricsPublisher
+        {
+            public AtomicInteger CommandCounter = new AtomicInteger();
+            public AtomicInteger ThreadCounter = new AtomicInteger();
 
             public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, IHystrixCircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
             {
-                return new MyHystrixMetricsPublisherCommand(commandCounter);
+                return new MyHystrixMetricsPublisherCommand(CommandCounter);
             }
 
             public override IHystrixMetricsPublisherThreadPool GetMetricsPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
-
             {
-                return new MyHystrixMetricsPublisherThreadPool(threadCounter);
+                return new MyHystrixMetricsPublisherThreadPool(ThreadCounter);
             }
-
         }
-        class TestCommandKey : HystrixCommandKeyDefault
+
+        private class TestCommandKey : HystrixCommandKeyDefault
         {
             public static TestCommandKey TEST_A = new TestCommandKey("TEST_A");
             public static TestCommandKey TEST_B = new TestCommandKey("TEST_B");
-            public TestCommandKey(string name) : base(name)
+
+            public TestCommandKey(string name)
+                : base(name)
             {
             }
-
         }
-        class TestThreadPoolKey : HystrixThreadPoolKeyDefault
+
+        private class TestThreadPoolKey : HystrixThreadPoolKeyDefault
         {
             public static TestThreadPoolKey TEST_A = new TestThreadPoolKey("TEST_A");
             public static TestThreadPoolKey TEST_B = new TestThreadPoolKey("TEST_B");
 
-            public TestThreadPoolKey(string name) : base(name)
+            public TestThreadPoolKey(string name)
+                : base(name)
             {
             }
         }
-        class CustomPublisher : HystrixMetricsPublisher
+
+        private class CustomPublisher : HystrixMetricsPublisher
         {
             private IHystrixMetricsPublisherCommand commandToReturn;
+
             public CustomPublisher(IHystrixMetricsPublisherCommand commandToReturn)
             {
                 this.commandToReturn = commandToReturn;
             }
-
 
             public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics, IHystrixCircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
             {
@@ -172,5 +178,4 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             }
         }
     }
-
 }

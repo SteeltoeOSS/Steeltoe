@@ -1,5 +1,4 @@
-﻿//
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,21 +21,43 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         private readonly TestCommandBuilder builder;
 
-        public TestHystrixCommand(TestCommandBuilder builder) :
-            base(builder.owner, builder.dependencyKey, builder.threadPoolKey, builder.circuitBreaker, builder.threadPool,
-                    builder.commandPropertiesDefaults, builder.threadPoolPropertiesDefaults, builder.metrics,
-                    builder.fallbackSemaphore, builder.executionSemaphore, new TestOptionsFactory(), builder.executionHook, null, null)
+        public TestHystrixCommand(TestCommandBuilder builder)
+            : base(
+                  builder.Owner,
+                  builder.DependencyKey,
+                  builder.ThreadPoolKey,
+                  builder.CircuitBreaker,
+                  builder.ThreadPool,
+                  builder.CommandPropertiesDefaults,
+                  builder.ThreadPoolPropertiesDefaults,
+                  builder.Metrics,
+                  builder.FallbackSemaphore,
+                  builder.ExecutionSemaphore,
+                  new TestOptionsFactory(),
+                  builder.ExecutionHook,
+                  null,
+                  null)
         {
-     
             this.builder = builder;
         }
 
-        public TestHystrixCommand(TestCommandBuilder builder, HystrixCommandExecutionHook executionHook) :
-            base(builder.owner, builder.dependencyKey, builder.threadPoolKey, builder.circuitBreaker, builder.threadPool,
-                    builder.commandPropertiesDefaults, builder.threadPoolPropertiesDefaults, builder.metrics,
-                    builder.fallbackSemaphore, builder.executionSemaphore, new TestOptionsFactory(), executionHook, null, null)
+        public TestHystrixCommand(TestCommandBuilder builder, HystrixCommandExecutionHook executionHook)
+            : base(
+                  builder.Owner,
+                  builder.DependencyKey,
+                  builder.ThreadPoolKey,
+                  builder.CircuitBreaker,
+                  builder.ThreadPool,
+                  builder.CommandPropertiesDefaults,
+                  builder.ThreadPoolPropertiesDefaults,
+                  builder.Metrics,
+                  builder.FallbackSemaphore,
+                  builder.ExecutionSemaphore,
+                  new TestOptionsFactory(),
+                  executionHook,
+                  null,
+                  null)
         {
-
             this.builder = builder;
         }
 
