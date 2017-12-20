@@ -1,27 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C687B093-C2A5-4600-99A7-853C581FBBC0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.Core", "src\Steeltoe.CircuitBreaker.Hystrix.Core\Steeltoe.CircuitBreaker.Hystrix.Core.csproj", "{72098E45-C212-440F-B10B-A424177F53AC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.Core.Test", "test\Steeltoe.CircuitBreaker.Hystrix.Core.Test\Steeltoe.CircuitBreaker.Hystrix.Core.Test.csproj", "{6A2F3E57-BEE2-41CB-92B2-6F64E6963B14}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix", "src\Steeltoe.CircuitBreaker.Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj", "{AF1F71F5-920F-4CF7-8F1A-3A545154711A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.Test", "test\Steeltoe.CircuitBreaker.Hystrix.Test\Steeltoe.CircuitBreaker.Hystrix.Test.csproj", "{A48B7B81-D205-4277-B3B2-7539EF2A27FA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEvents", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.csproj", "{619EDE16-DB83-479A-808C-3C7D60EFC70F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStream", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsStream\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.csproj", "{E37B90B2-6AF9-4371-92F9-4BFB834AB9B8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test.csproj", "{73F2D9A2-92EC-41A7-889F-D9DFB2F65C6D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test.csproj", "{5E0D8C96-05D2-4AE1-8B9C-AD831472EA73}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4F262F8F-A478-4C8C-AA23-48B1103E5B8B}"
 	ProjectSection(SolutionItems) = preProject
@@ -31,56 +15,125 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{545DB4B8-9BA8-41B4-9C59-3DEFC0B1017A}"
+	ProjectSection(SolutionItems) = preProject
+		config\nuget-dev.config = config\nuget-dev.config
+		config\nuget-master.config = config\nuget-master.config
+		config\nuget-update.config = config\nuget-update.config
+		config\nuget.config = config\nuget.config
+		config\versions-dev.props = config\versions-dev.props
+		config\versions-master.props = config\versions-master.props
+		config\versions-update.props = config\versions-update.props
+		config\versions.props = config\versions.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{6889FABE-C550-4B2D-A668-9D64C73D6923}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\appveyor_build.cmd = scripts\appveyor_build.cmd
+		scripts\appveyor_install.cmd = scripts\appveyor_install.cmd
+		scripts\appveyor_tests.cmd = scripts\appveyor_tests.cmd
+		scripts\travis_build.sh = scripts\travis_build.sh
+		scripts\travis_install.sh = scripts\travis_install.sh
+		scripts\travis_test.sh = scripts\travis_test.sh
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixCore", "src\Steeltoe.CircuitBreaker.HystrixCore\Steeltoe.CircuitBreaker.HystrixCore.csproj", "{1662B8D3-9E41-4A94-9759-52975E62CA34}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.csproj", "{488AF4E6-5843-49F4-9141-1247D0601055}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.csproj", "{87A66E60-712C-42A2-AC6A-CBE3CF77A83C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.csproj", "{84885CB3-FAA5-45D3-AF10-5AC89059D2FE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test.csproj", "{096BAA83-F1C2-43D9-8358-4A1A46BFB3B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixCore.Test", "test\Steeltoe.CircuitBreaker.HystrixCore.Test\Steeltoe.CircuitBreaker.HystrixCore.Test.csproj", "{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac", "src\Steeltoe.CircuitBreaker.HystrixAutofac\Steeltoe.CircuitBreaker.HystrixAutofac.csproj", "{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac.Test", "test\Steeltoe.CircuitBreaker.HystrixAutofac.Test\Steeltoe.CircuitBreaker.HystrixAutofac.Test.csproj", "{FB2330AF-37FA-4794-B16C-7AC1046DE307}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.csproj", "{4BC245DD-2067-4938-8C09-AB938FFF8BCD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test.csproj", "{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixBase", "src\Steeltoe.CircuitBreaker.HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj", "{BE323306-CFF2-4FCA-8EA6-C994861A2E8E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixBase.Test", "test\Steeltoe.CircuitBreaker.HystrixBase.Test\Steeltoe.CircuitBreaker.HystrixBase.Test.csproj", "{703E56B4-6467-4E94-9A41-44F7FBD8A701}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{72098E45-C212-440F-B10B-A424177F53AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72098E45-C212-440F-B10B-A424177F53AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72098E45-C212-440F-B10B-A424177F53AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72098E45-C212-440F-B10B-A424177F53AC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A2F3E57-BEE2-41CB-92B2-6F64E6963B14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A2F3E57-BEE2-41CB-92B2-6F64E6963B14}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A2F3E57-BEE2-41CB-92B2-6F64E6963B14}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A2F3E57-BEE2-41CB-92B2-6F64E6963B14}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AF1F71F5-920F-4CF7-8F1A-3A545154711A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF1F71F5-920F-4CF7-8F1A-3A545154711A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF1F71F5-920F-4CF7-8F1A-3A545154711A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF1F71F5-920F-4CF7-8F1A-3A545154711A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A48B7B81-D205-4277-B3B2-7539EF2A27FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A48B7B81-D205-4277-B3B2-7539EF2A27FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A48B7B81-D205-4277-B3B2-7539EF2A27FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A48B7B81-D205-4277-B3B2-7539EF2A27FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{619EDE16-DB83-479A-808C-3C7D60EFC70F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{619EDE16-DB83-479A-808C-3C7D60EFC70F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{619EDE16-DB83-479A-808C-3C7D60EFC70F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{619EDE16-DB83-479A-808C-3C7D60EFC70F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E37B90B2-6AF9-4371-92F9-4BFB834AB9B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E37B90B2-6AF9-4371-92F9-4BFB834AB9B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E37B90B2-6AF9-4371-92F9-4BFB834AB9B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E37B90B2-6AF9-4371-92F9-4BFB834AB9B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{73F2D9A2-92EC-41A7-889F-D9DFB2F65C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73F2D9A2-92EC-41A7-889F-D9DFB2F65C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73F2D9A2-92EC-41A7-889F-D9DFB2F65C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73F2D9A2-92EC-41A7-889F-D9DFB2F65C6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E0D8C96-05D2-4AE1-8B9C-AD831472EA73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E0D8C96-05D2-4AE1-8B9C-AD831472EA73}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E0D8C96-05D2-4AE1-8B9C-AD831472EA73}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E0D8C96-05D2-4AE1-8B9C-AD831472EA73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1662B8D3-9E41-4A94-9759-52975E62CA34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1662B8D3-9E41-4A94-9759-52975E62CA34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1662B8D3-9E41-4A94-9759-52975E62CA34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1662B8D3-9E41-4A94-9759-52975E62CA34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{488AF4E6-5843-49F4-9141-1247D0601055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{488AF4E6-5843-49F4-9141-1247D0601055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{488AF4E6-5843-49F4-9141-1247D0601055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{488AF4E6-5843-49F4-9141-1247D0601055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87A66E60-712C-42A2-AC6A-CBE3CF77A83C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87A66E60-712C-42A2-AC6A-CBE3CF77A83C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87A66E60-712C-42A2-AC6A-CBE3CF77A83C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87A66E60-712C-42A2-AC6A-CBE3CF77A83C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84885CB3-FAA5-45D3-AF10-5AC89059D2FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84885CB3-FAA5-45D3-AF10-5AC89059D2FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84885CB3-FAA5-45D3-AF10-5AC89059D2FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84885CB3-FAA5-45D3-AF10-5AC89059D2FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{096BAA83-F1C2-43D9-8358-4A1A46BFB3B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{096BAA83-F1C2-43D9-8358-4A1A46BFB3B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{096BAA83-F1C2-43D9-8358-4A1A46BFB3B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{096BAA83-F1C2-43D9-8358-4A1A46BFB3B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE323306-CFF2-4FCA-8EA6-C994861A2E8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE323306-CFF2-4FCA-8EA6-C994861A2E8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE323306-CFF2-4FCA-8EA6-C994861A2E8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE323306-CFF2-4FCA-8EA6-C994861A2E8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{703E56B4-6467-4E94-9A41-44F7FBD8A701}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{703E56B4-6467-4E94-9A41-44F7FBD8A701}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{703E56B4-6467-4E94-9A41-44F7FBD8A701}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{703E56B4-6467-4E94-9A41-44F7FBD8A701}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{72098E45-C212-440F-B10B-A424177F53AC} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
-		{6A2F3E57-BEE2-41CB-92B2-6F64E6963B14} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
-		{AF1F71F5-920F-4CF7-8F1A-3A545154711A} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
-		{A48B7B81-D205-4277-B3B2-7539EF2A27FA} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
-		{619EDE16-DB83-479A-808C-3C7D60EFC70F} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
-		{E37B90B2-6AF9-4371-92F9-4BFB834AB9B8} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
-		{73F2D9A2-92EC-41A7-889F-D9DFB2F65C6D} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
-		{5E0D8C96-05D2-4AE1-8B9C-AD831472EA73} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+		{1662B8D3-9E41-4A94-9759-52975E62CA34} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
+		{488AF4E6-5843-49F4-9141-1247D0601055} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
+		{87A66E60-712C-42A2-AC6A-CBE3CF77A83C} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
+		{84885CB3-FAA5-45D3-AF10-5AC89059D2FE} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+		{096BAA83-F1C2-43D9-8358-4A1A46BFB3B9} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+		{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+		{1C8BCB94-AB79-4396-9BEA-81DA97B712E2} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
+		{FB2330AF-37FA-4794-B16C-7AC1046DE307} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+		{4BC245DD-2067-4938-8C09-AB938FFF8BCD} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
+		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+		{BE323306-CFF2-4FCA-8EA6-C994861A2E8E} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
+		{703E56B4-6467-4E94-9A41-44F7FBD8A701} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58720A8A-389C-477F-BD36-2DB217BAF674}
 	EndGlobalSection
 EndGlobal

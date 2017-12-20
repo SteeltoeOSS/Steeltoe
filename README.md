@@ -1,4 +1,5 @@
 # .NET Circuit Breaker Frameworks
+
 Cloud-native architectures are typically composed of multiple layers of distributed services. End-user requests may comprise multiple calls to these services, and if a lower-level service fails, the failure can cascade up to the end user and spread to other dependent services. Heavy traffic to a failing service can also make it difficult to repair. Using Circuit Breaker patterns, you can prevent failures from cascading and provide fallback behavior until a failing service is restored to normal operation.
 
 When applied to a service, a circuit breaker framework watches for failing calls to the service. If failures reach a certain threshold, it “opens” the circuit and automatically redirects calls to the specified fallback mechanism. This gives the failing service time to recover.
@@ -19,17 +20,20 @@ Linux/OS X Master: [![Travis Master](https://travis-ci.org/SteeltoeOSS/CircuitBr
 
 Linux/OSX Dev: [![Travis Dev](https://travis-ci.org/SteeltoeOSS/CircuitBreaker.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/CircuitBreaker)
 
-# .NET Runtime & Framework Support
+## .NET Runtime & Framework Support
+
 The packages are intended to support both .NET 4.6+ and .NET Core (CoreCLR/CoreFX) runtimes.  They are built and unit tested on Windows, Linux and OSX.
 
 While the primary usage of the providers is intended to be with ASP.NET Core applications, they should also work fine with UWP, Console and ASP.NET 4.x apps.
  
-Currently all of the code and samples have been tested on .NET Core 1.1, .NET 4.6.x, and on ASP.NET Core 1.1.0.
-# Usage
+Currently all of the code and samples have been tested on .NET Core 2.0, .NET 4.6.x, and on ASP.NET Core 2.0.0.
+
+## Usage
 
 For more information on how to use these components see the online [Steeltoe documentation](http://steeltoe.io/).
 
-# Nuget Feeds
+## Nuget Feeds
+
 All new development is done on the dev branch. More stable versions of the packages can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
@@ -38,53 +42,53 @@ All new development is done on the dev branch. More stable versions of the packa
 
 [Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/. 
 
-# Building Pre-requisites
+## Building Pre-requisites
+
 To build and run the unit tests:
 
-1. .NET Core SDK 1.0.4 or greater
-2. .NET Core Runtime 1.1
+1. .NET Core SDK 2.0.3 or greater
+1. .NET Core Runtime 2.0.3
 
-# Building Packages & Running Tests - Windows
+## Building Packages & Running Tests - Windows
+
 To build the packages on windows:
 
 1. git clone ...
-2. cd clone directory
-3. Install .NET Core SDK
-4. dotnet restore src
-5. cd src\project (e.g. cd src\Steeltoe.CircuitBreaker.Hystrix.Core)
-6. dotnet pack --configuration Release or Debug 
+1. cd clone directory
+1. cd src/project (e.g. cd src/Steeltoe.CircuitBreaker.HystrixBase)
+1. dotnet restore
+1. dotnet pack --configuration Release or Debug 
 
-The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.CircuitBreaker.Hystrix.Core/bin
+The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.CircuitBreaker.HystrixBase/bin
 
 To run the unit tests:
 
 1. git clone ...
-2. cd clone directory
-3. Install .NET Core SDK 
-4. dotnet restore test
-5. cd test\test project (e.g. cd test\Steeltoe.CircuitBreaker.Hystrix.Core.Test)
-6. dotnet xunit -verbose
+1. cd clone directory
+1. cd test/test project (e.g. cd test/Steeltoe.CircuitBreaker.HystrixBase.Test)
+1. dotnet restore
+1. dotnet xunit -verbose
 
-# Building Packages & Running Tests - Linux/OSX
+## Building Packages & Running Tests - Linux/OSX
+
 To build the packages on Linux/OSX:
 
 1. git clone ...
-2. cd clone directory
-3. Install .NET Core SDK
-4. dotnet restore src
-5. cd src/project (e.g.. cd src/Steeltoe.CircuitBreaker.Hystrix.Core)
-6. dotnet pack --configuration Release or Debug
+1. cd clone directory
+1. cd src/project (e.g.. cd src/Steeltoe.CircuitBreaker.HystrixBase)
+1. dotnet restore
+1. dotnet pack --configuration Release or Debug
 
-The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.CircuitBreaker.Hystrix.Core/bin
+The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.CircuitBreaker.HystrixBase/bin
 
 To run the unit tests:
 
 1. git clone ...
-2. cd clone directory
-3. Install .NET Core SDK 
-4. dotnet restore test
-5. cd test\test project (e.g. cd test/Steeltoe.CircuitBreaker.Hystrix.Core.Test)
-6. dotnet xunit -verbose -framework netcoreapp1.1
+1. cd clone directory
+1. cd test/test project (e.g. cd test/Steeltoe.CircuitBreaker.HystrixBase.Test)
+1. dotnet restore 
+1. dotnet xunit -verbose -framework netcoreapp2.0
 
-# Sample Applications
+## Sample Applications
+
 See the [Samples](https://github.com/SteeltoeOSS/Samples) repo for examples of how to use these packages.
