@@ -5,7 +5,7 @@
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
-    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
     <AssemblyName>Steeltoe.Security.DataProtection.CredHubCore</AssemblyName>
     <PackageId>Steeltoe.Security.DataProtection.CredHubCore</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Security;DataProtection;CredHub</PackageTags>
@@ -33,7 +33,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Steeltoe.Security.DataProtection.CredHub\Steeltoe.Security.DataProtection.CredHub.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Security.DataProtection.CredHub" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

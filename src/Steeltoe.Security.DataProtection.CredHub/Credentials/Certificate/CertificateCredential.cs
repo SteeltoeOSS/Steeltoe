@@ -25,6 +25,12 @@ namespace Steeltoe.Security.DataProtection.CredHub
         public string CertificateAuthority { get; set; }
 
         /// <summary>
+        /// Name of CA credential in credhub that has signed this certificate
+        /// </summary>
+        [JsonProperty("ca_name")]
+        public string CertificateAuthorityName { get; set; }
+
+        /// <summary>
         /// String representation of the certificate
         /// </summary>
         public string Certificate { get; set; }

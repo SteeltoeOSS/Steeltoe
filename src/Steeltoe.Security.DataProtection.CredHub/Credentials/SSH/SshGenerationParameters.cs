@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
+
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     internal class SshGenerationParameters : KeyParameters
     {
+        [JsonProperty("ssh_comment")]
         public string SshComment { get; set; }
     }
 }

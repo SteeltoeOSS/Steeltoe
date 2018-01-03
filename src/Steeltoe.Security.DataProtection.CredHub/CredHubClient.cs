@@ -16,13 +16,17 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
+using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,8 +57,14 @@ namespace Steeltoe.Security.DataProtection.CredHub
             _logger = logger;
             _baseCredHubUrl = credHubOptions.CredHubUrl;
 
-            var cfInstanceCert = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT");
+            var cfInstanceCert = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT") ?? string.Empty;
             var cfInstanceKey = Environment.GetEnvironmentVariable("CF_INSTANCE_KEY");
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && cfInstanceCert.StartsWith("/"))
+            {
+                cfInstanceCert = ".." + cfInstanceCert;
+                cfInstanceKey = ".." + cfInstanceKey;
+            }
+
             if (string.IsNullOrEmpty(cfInstanceCert) || string.IsNullOrEmpty(cfInstanceKey))
             {
                 _logger?.LogWarning("Cloud Foundry application credentials not found in the environment");
@@ -69,11 +79,12 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 _httpClientHandler = new HttpClientHandler();
                 _httpClientHandler.ClientCertificates.Add(CertificateHelpers.GetX509FromBytes(File.ReadAllBytes(cfInstanceCert), File.ReadAllBytes(cfInstanceKey)));
                 _httpClient = httpClient ?? client.InitializeHttpClient(credHubOptions.ValidateCertificates);
+
                 return await client.InitializeAsync();
             }
             else
             {
-                throw new Exception("Application credentials not found (Failed to load Instance Cert and/or Key)");
+                throw new Exception($"Application credentials not found (Failed to load Instance Cert [{cfInstanceCert}] and/or Key [{cfInstanceKey}])");
             }
         }
 
@@ -96,6 +107,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private HttpClient InitializeHttpClient(bool validateCertificates)
         {
+            HttpClientHelper.ConfigureCertificateValidatation(validateCertificates, out SecurityProtocolType sslProtocols, out RemoteCertificateValidationCallback certCallback);
             if (validateCertificates)
             {
                 return new HttpClient(_httpClientHandler);
@@ -104,7 +116,17 @@ namespace Steeltoe.Security.DataProtection.CredHub
             {
                 if (_httpClientHandler.ServerCertificateCustomValidationCallback == null)
                 {
-                    _httpClientHandler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true;
+                    // TODO: this may need further attention
+                    if (Platform.IsFullFramework)
+                    {
+                        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                        ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                    }
+                    else
+                    {
+                        _httpClientHandler.SslProtocols = SslProtocols.Tls11 | SslProtocols.Tls12;
+                        _httpClientHandler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true;
+                    }
                 }
 
                 return new HttpClient(_httpClientHandler);
@@ -116,16 +138,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             var info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}");
             if (!info.IsSuccessStatusCode)
             {
-                throw new CredHubException($"Unable to connect to CredHub server at {_baseCredHubUrl}");
-            }
-
-            try
-            {
-                var paths = await FindAllPathsAsync();
-            }
-            catch
-            {
-                throw new AuthenticationException($"Unable to authenticate with CredHub server at {_baseCredHubUrl}");
+                throw new CredHubException($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode}");
             }
 
             return this;

@@ -14,6 +14,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Security.DataProtection.CredHub;
 using System;
 using System.Threading.Tasks;
@@ -26,32 +27,61 @@ namespace Steeltoe.Security.DataProtection.CredHubCore
         /// Reach out to a CredHub server to interpolate credentials found in VCAP_SERVICES
         /// </summary>
         /// <param name="webHostBuilder">Your app's host builder</param>
+        /// <param name="loggerFactory">To enable logging in the credhub client, pass in a loggerfactory</param>
         /// <returns>Your application's host builder with credentials interpolated</returns>
-        public static IWebHostBuilder UseCredHubInterpolation(this IWebHostBuilder webHostBuilder)
+        public static IWebHostBuilder UseCredHubInterpolation(this IWebHostBuilder webHostBuilder, ILoggerFactory loggerFactory = null)
         {
+            ILogger startupLogger = null;
+            ILogger credhubLogger = null;
+            if (loggerFactory != null)
+            {
+                startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
+                credhubLogger = loggerFactory.CreateLogger<CredHubClient>();
+            }
+
             var vcapServices = Environment.GetEnvironmentVariable("VCAP_SERVICES");
 
             // don't bother interpolating if there aren't any credhub references
-            if (vcapServices.Contains("credhub-ref"))
+            if (vcapServices != null && vcapServices.Contains("credhub-ref"))
             {
                 webHostBuilder.ConfigureAppConfiguration((context, config) =>
                 {
                     var builtConfig = config.Build();
-                    CredHubClient credHubClient;
+                    CredHubClient credHubClient = null;
 
                     var credHubOptions = builtConfig.GetSection("CredHubClient").Get<CredHubOptions>();
-                    if (!string.IsNullOrEmpty(credHubOptions?.CredHubUser) && !string.IsNullOrEmpty(credHubOptions?.CredHubPassword))
+                    try
                     {
-                        credHubClient = Task.Run(() => CredHubClient.CreateUAAClientAsync(credHubOptions)).Result;
+                        if (!string.IsNullOrEmpty(credHubOptions?.CredHubUser) && !string.IsNullOrEmpty(credHubOptions?.CredHubPassword))
+                        {
+                            startupLogger?.LogTrace("Using UAA auth for CredHub client");
+                            credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).Result;
+                        }
+                        else
+                        {
+                            startupLogger?.LogTrace("Using mTLS auth for CredHub client");
+                            credHubClient = CredHubClient.CreateMTLSClientAsync(credHubOptions ?? new CredHubOptions(), credhubLogger).Result;
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        credHubClient = Task.Run(() => CredHubClient.CreateMTLSClientAsync(credHubOptions ?? new CredHubOptions())).Result;
+                        startupLogger?.LogCritical(e, "Failed to initialize CredHub client");
                     }
 
-                    var interpolated = credHubClient.InterpolateServiceDataAsync(vcapServices).Result;
-                    builtConfig.GetSection("vcap:services").Bind(interpolated);
+                    try
+                    {
+                        var interpolated = credHubClient.InterpolateServiceDataAsync(vcapServices).Result;
+                        builtConfig.GetSection("vcap:services").Bind(interpolated);
+                    }
+                    catch (Exception e)
+                    {
+                        startupLogger?.LogCritical(e, "Failed to interpolate service data with CredHub");
+                    }
                 });
+            }
+            else
+            {
+                startupLogger?.LogInformation("No CredHub references found in VCAP_SERVICES");
             }
 
             return webHostBuilder;

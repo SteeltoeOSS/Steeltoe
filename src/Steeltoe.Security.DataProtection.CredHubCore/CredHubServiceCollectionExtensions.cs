@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Security.DataProtection.CredHub;
-using System.Threading.Tasks;
+using System;
 
 namespace Steeltoe.Security.DataProtection.CredHubCore
 {
@@ -28,24 +30,41 @@ namespace Steeltoe.Security.DataProtection.CredHubCore
         /// <remarks>Uses UAA user/password authentication if configured, otherwise mTLS</remarks>
         /// <param name="services">Service collection</param>
         /// <param name="config">App configuration</param>
-        /// <param name="logFactory">Logger factory</param>
+        /// <param name="loggerFactory">Logger factory</param>
         /// <returns>Service collection with CredHubClient added in</returns>
-        public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration config, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
+            ILogger startupLogger = null;
+            ILogger credhubLogger = null;
+            if (loggerFactory != null)
+            {
+                startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
+                credhubLogger = loggerFactory.CreateLogger<CredHubClient>();
+            }
+
             var credHubOptions = config.GetSection("CredHubClient").Get<CredHubOptions>();
             CredHubClient credHubClient;
-
-            // if a username and password were supplied, use that auth method, otherwise expect Diego to provide credentials on PCF
-            if (!string.IsNullOrEmpty(credHubOptions?.CredHubUser) && !string.IsNullOrEmpty(credHubOptions?.CredHubPassword))
+            try
             {
-                credHubClient = Task.Run(() => CredHubClient.CreateUAAClientAsync(credHubOptions)).Result;
+                // if a username and password were supplied, use that auth method, otherwise expect Diego to provide credentials on PCF
+                if (!string.IsNullOrEmpty(credHubOptions?.CredHubUser) && !string.IsNullOrEmpty(credHubOptions?.CredHubPassword))
+                {
+                    startupLogger?.LogTrace("Using UAA auth for CredHub client");
+                    credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions).Result;
+                }
+                else
+                {
+                    startupLogger?.LogTrace("Using mTLS auth for CredHub client");
+                    credHubClient = CredHubClient.CreateMTLSClientAsync(credHubOptions ?? new CredHubOptions()).Result;
+                }
+
+                services.AddSingleton<ICredHubClient>(credHubClient);
             }
-            else
+            catch (Exception e)
             {
-                credHubClient = Task.Run(() => CredHubClient.CreateMTLSClientAsync(credHubOptions ?? new CredHubOptions())).Result;
+                startupLogger?.LogCritical(e, "Failed to initialize CredHub client for ServiceCollection");
             }
 
-            services.AddSingleton<ICredHubClient>(credHubClient);
             return services;
         }
     }
