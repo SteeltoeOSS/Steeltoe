@@ -61,13 +61,14 @@ namespace Steeltoe.Security.DataProtection.CredHub
             var cfInstanceKey = Environment.GetEnvironmentVariable("CF_INSTANCE_KEY");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && cfInstanceCert.StartsWith("/"))
             {
+                _logger?.LogTrace("Detected Windows OS and root-relative paths for application credentials: converting to app-relative paths");
                 cfInstanceCert = ".." + cfInstanceCert;
                 cfInstanceKey = ".." + cfInstanceKey;
             }
 
             if (string.IsNullOrEmpty(cfInstanceCert) || string.IsNullOrEmpty(cfInstanceKey))
             {
-                _logger?.LogWarning("Cloud Foundry application credentials not found in the environment");
+                _logger?.LogCritical("Cloud Foundry application credentials not found in the environment");
                 throw new ArgumentException("Application Credentials not found (Missing ENV variable for Instance Cert and/or Key)");
             }
 
@@ -77,7 +78,13 @@ namespace Steeltoe.Security.DataProtection.CredHub
             {
                 var client = new CredHubClient();
                 _httpClientHandler = new HttpClientHandler();
-                _httpClientHandler.ClientCertificates.Add(CertificateHelpers.GetX509FromBytes(File.ReadAllBytes(cfInstanceCert), File.ReadAllBytes(cfInstanceKey)));
+                var appCredentials = CertificateHelpers.GetX509FromBytes(File.ReadAllBytes(cfInstanceCert), File.ReadAllBytes(cfInstanceKey));
+                if (!appCredentials.HasPrivateKey)
+                {
+                    throw new Exception("Private key is missing, mTLS won't work");
+                }
+
+                _httpClientHandler.ClientCertificates.Add(appCredentials);
                 _httpClient = httpClient ?? client.InitializeHttpClient(credHubOptions.ValidateCertificates);
 
                 return await client.InitializeAsync();
@@ -114,19 +121,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
             else
             {
-                if (_httpClientHandler.ServerCertificateCustomValidationCallback == null)
+                // TODO: this may need further attention
+                if (Platform.IsFullFramework)
                 {
-                    // TODO: this may need further attention
-                    if (Platform.IsFullFramework)
-                    {
-                        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                        ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                    }
-                    else
-                    {
-                        _httpClientHandler.SslProtocols = SslProtocols.Tls11 | SslProtocols.Tls12;
-                        _httpClientHandler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true;
-                    }
+                    _logger?.LogTrace("Full .NET Framework detected, using ServicePointManager to disable Certificate Validation");
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                    ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                }
+                else
+                {
+                    _logger?.LogTrace("Full .NET Framework NOT detected, using HttpClientHandler to disable Certificate Validation");
+                    _httpClientHandler.SslProtocols = SslProtocols.Tls12;
+                    _httpClientHandler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true;
                 }
 
                 return new HttpClient(_httpClientHandler);
@@ -138,7 +144,9 @@ namespace Steeltoe.Security.DataProtection.CredHub
             var info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}");
             if (!info.IsSuccessStatusCode)
             {
-                throw new CredHubException($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode}");
+                // we don't NEED to throw an error here as this was more of a connectivity test than anything else
+                // throw new CredHubException($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode}");
+                _logger?.LogError($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode} -- CredHub interactions may not work!");
             }
 
             return this;
@@ -191,15 +199,15 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
 #pragma warning disable SA1202 // Elements must be ordered by access
         public async Task<CredHubCredential<T>> WriteAsync<T>(CredentialSetRequest credentialRequest)
-                {
-                    _logger?.LogTrace($"About to PUT {_baseCredHubUrl}/v1/data");
-                    var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, _serializerSettings);
+        {
+            _logger?.LogTrace($"About to PUT {_baseCredHubUrl}/v1/data");
+            var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, _serializerSettings);
 
-                    var dataAsString = await response.Content.ReadAsStringAsync();
-                    var s = JsonConvert.DeserializeObject<CredHubCredential<T>>(dataAsString, _serializerSettings);
+            var dataAsString = await response.Content.ReadAsStringAsync();
+            var s = JsonConvert.DeserializeObject<CredHubCredential<T>>(dataAsString, _serializerSettings);
 
-                    return await HandleErrorParseResponse<CredHubCredential<T>>(response, "Write Credential");
-                }
+            return await HandleErrorParseResponse<CredHubCredential<T>>(response, "Write Credential");
+        }
 #pragma warning restore SA1202 // Elements must be ordered by access
 
         public async Task<CredHubCredential<T>> GenerateAsync<T>(CredHubGenerateRequest request)

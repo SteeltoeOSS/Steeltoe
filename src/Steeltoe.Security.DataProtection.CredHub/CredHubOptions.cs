@@ -22,7 +22,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// <summary>
         /// Routable address of CredHub server
         /// </summary>
-        public string CredHubUrl { get; set; } = "https://credhub.service.cf.internal:8844";
+        public string CredHubUrl { get; set; } = "https://credhub.service.cf.internal:8844/api";
 
         /// <summary>
         /// UAA user with necessary permissions to perform desired CredHub interactions
