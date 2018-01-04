@@ -78,7 +78,9 @@ namespace Steeltoe.Security.DataProtection.CredHub
             {
                 var client = new CredHubClient();
                 _httpClientHandler = new HttpClientHandler();
-                var appCredentials = CertificateHelpers.GetX509FromBytes(File.ReadAllBytes(cfInstanceCert), File.ReadAllBytes(cfInstanceKey));
+                var certBytes = File.ReadAllBytes(cfInstanceCert);
+                var keyBytes = File.ReadAllBytes(cfInstanceKey);
+                var appCredentials = CertificateHelpers.GetX509FromBytes(certBytes, keyBytes);
                 if (!appCredentials.HasPrivateKey)
                 {
                     throw new Exception("Private key is missing, mTLS won't work");
@@ -141,12 +143,19 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<CredHubClient> InitializeAsync()
         {
-            var info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}");
-            if (!info.IsSuccessStatusCode)
+            try
             {
-                // we don't NEED to throw an error here as this was more of a connectivity test than anything else
-                // throw new CredHubException($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode}");
-                _logger?.LogError($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode} -- CredHub interactions may not work!");
+                var info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}");
+                if (!info.IsSuccessStatusCode)
+                {
+                    // we don't NEED to throw an error here as this was more of a connectivity test than anything else
+                    // throw new CredHubException($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode}");
+                    _logger?.LogError($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode} -- CredHub interactions may not work!");
+                }
+            }
+            catch (Exception e)
+            {
+                _logger?.LogCritical($"Encountered an exception calling /info on the CredHub server: {e}");
             }
 
             return this;
@@ -206,7 +215,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             var dataAsString = await response.Content.ReadAsStringAsync();
             var s = JsonConvert.DeserializeObject<CredHubCredential<T>>(dataAsString, _serializerSettings);
 
-            return await HandleErrorParseResponse<CredHubCredential<T>>(response, "Write Credential");
+            return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}");
         }
 #pragma warning restore SA1202 // Elements must be ordered by access
 
@@ -214,7 +223,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
         {
             _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
             var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", request, _serializerSettings);
-            return await HandleErrorParseResponse<CredHubCredential<T>>(response, "Generate Credential");
+            return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}");
         }
 
         public async Task<CredHubCredential<T>> RegenerateAsync<T>(string name)
@@ -226,7 +235,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
             _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
             var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/regenerate", new Dictionary<string, string> { { "name", name } });
-            return await HandleErrorParseResponse<CredHubCredential<T>>(response, "Regenerate Credential");
+            return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Regenerate  {typeof(T).Name}");
         }
 
         public async Task<RegeneratedCertificates> BulkRegenerateAsync(string certificateAuthority)
@@ -250,7 +259,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data{id}");
             var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data/{id}");
-            return await HandleErrorParseResponse<CredHubCredential<T>>(response, "Get credential by Id");
+            return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Get {typeof(T).Name} by Id");
         }
 
         public async Task<CredHubCredential<T>> GetByNameAsync<T>(string name)
@@ -262,7 +271,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name={name}&current=true");
             var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&current=true");
-            return (await HandleErrorParseResponse<CredHubResponse<T>>(response, "Get credential by Name")).Data.First();
+            return (await HandleErrorParseResponse<CredHubResponse<T>>(response, $"Get {typeof(T).Name} by Name")).Data.First();
         }
 
         public async Task<List<CredHubCredential<T>>> GetByNameWithHistoryAsync<T>(string name, int entries = 10)
