@@ -39,6 +39,11 @@ namespace Steeltoe.Common.Http
 
         public static HttpClient GetHttpClient(bool validateCertificates, int timeout)
         {
+            return GetHttpClient(validateCertificates, null, timeout);
+        }
+
+        public static HttpClient GetHttpClient(bool validateCertificates, HttpClientHandler handler, int timeout)
+        {
             HttpClient client = null;
             if (Platform.IsFullFramework)
             {
@@ -48,7 +53,11 @@ namespace Steeltoe.Common.Http
             {
                 if (!validateCertificates)
                 {
-                    var handler = new HttpClientHandler();
+                    if (handler == null)
+                    {
+                        handler = new HttpClientHandler();
+                    }
+
                     handler.ServerCertificateCustomValidationCallback = GetDisableDelegate();
                     handler.SslProtocols = SslProtocols.Tls12;
                     client = new HttpClient(handler);
