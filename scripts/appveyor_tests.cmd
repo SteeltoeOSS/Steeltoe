@@ -3,25 +3,25 @@
 :: Run unit tests 
 cd test\Steeltoe.Security.Authentication.CloudFoundryCore.Test
 dotnet restore --configfile ..\..\nuget.config
-dotnet test --verbosity n
+dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 
 cd test\Steeltoe.Security.DataProtection.RedisCore.Test
 dotnet restore --configfile ..\..\nuget.config
-dotnet test --verbosity n
+dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 
-cd test\Steeltoe.Security.DataProtection.CredHub.Test
+cd test\Steeltoe.Security.DataProtection.CredHubBase.Test
 dotnet restore --configfile ..\..\nuget.config
-dotnet test --verbosity n
+dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 
 cd test\Steeltoe.Security.DataProtection.CredHubCore.Test
 dotnet restore --configfile ..\..\nuget.config
-dotnet test --verbosity n
+dotnet xunit -verbose
 if not "%errorlevel%"=="0" goto failure
 cd ..\..
 

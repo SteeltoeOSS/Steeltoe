@@ -20,74 +20,74 @@ namespace Steeltoe.Security.DataProtection.CredHub
     public class CertificateGenerationParameters : KeyParameters
     {
         /// <summary>
-        /// Common name of generated credential value
+        /// Gets or sets common name of generated credential value
         /// </summary>
         [JsonProperty("common_name")]
         public string CommonName { get; set; }
 
         /// <summary>
-        /// Alternative names of generated credential value
+        /// Gets or sets alternative names of generated credential value
         /// </summary>
         [JsonProperty("alternative_names")]
         public List<string> AlternativeNames { get; set; }
 
         /// <summary>
-        /// Organization of generated credential value
+        /// Gets or sets organization of generated credential value
         /// </summary>
         public string Organization { get; set; }
 
         /// <summary>
-        /// Organization Unit of generated credential value
+        /// Gets or sets organization Unit of generated credential value
         /// </summary>
         [JsonProperty("organization_unit")]
         public string OrganizationUnit { get; set; }
 
         /// <summary>
-        /// Locality/city of generated credential value
+        /// Gets or sets locality/city of generated credential value
         /// </summary>
         public string Locality { get; set; }
 
         /// <summary>
-        /// State/province of generated credential value
+        /// Gets or sets state/province of generated credential value
         /// </summary>
         public string State { get; set; }
 
         /// <summary>
-        /// Country of generated credential value
+        /// Gets or sets country of generated credential value
         /// </summary>
         public string Country { get; set; }
 
         /// <summary>
-        /// Key usage values
+        /// Gets or sets key usage values
         /// </summary>
         [JsonProperty("key_usage")]
         public List<KeyUsage> KeyUsage { get; set; }
 
         /// <summary>
-        /// Extended key usage values
+        /// Gets or sets extended key usage values
         /// </summary>
         [JsonProperty("extended_key_usage")]
         public List<ExtendedKeyUsage> ExtendedKeyUsage { get; set; }
 
         /// <summary>
-        /// Duration in days of generated credential value
+        /// Gets or sets duration in days of generated credential value
         /// </summary>
         public int Duration { get; set; } = 365;
 
         /// <summary>
-        /// Name of certificate authority to sign of generated credential value
+        /// Gets or sets name of certificate authority to sign of generated credential value
         /// </summary>
         [JsonProperty("ca")]
         public string CertificateAuthority { get; set; }
 
         /// <summary>
-        ///  Whether to generate credential value as a certificate authority
+        ///  Gets or sets a value indicating whether whether to generate credential value as a certificate authority
         /// </summary>
         [JsonProperty("is_ca")]
         public bool IsCertificateAuthority { get; set; } = false;
 
         /// <summary>
-        /// Whether to self-sign generated credential value
+        /// Gets or sets a value indicating whether whether to self-sign generated credential value
         /// </summary>
         [JsonProperty("self_sign")]
         public bool SelfSign { get; set; } = false;

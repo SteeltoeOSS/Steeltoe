@@ -12,29 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     /// <summary>
-    /// Credential for a user
+    /// Used internally to process results of a Find request
     /// </summary>
-    public class UserCredential : ICredentialValue
+    internal class CredentialFindResponse
     {
         /// <summary>
-        /// Name of the user
+        /// Gets or sets credentials found by query
         /// </summary>
-        public string Username { get; set; }
-
-        /// <summary>
-        /// Password of the user
-        /// </summary>
-        public string Password { get; set; }
-
-        /// <summary>
-        /// Hashed value of the password
-        /// </summary>
-        [JsonProperty("password_hash")]
-        public string PasswordHash { get; set; }
+        public List<FoundCredential> Credentials { get; set; }
     }
 }

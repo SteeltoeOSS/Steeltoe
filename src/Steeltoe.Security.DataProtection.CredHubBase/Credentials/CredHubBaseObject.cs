@@ -13,32 +13,24 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public class CertificateCredential : ICredentialValue
+    /// <summary>
+    /// Common properties for CredHub requests
+    /// </summary>
+    public partial class CredHubBaseObject
     {
         /// <summary>
-        /// Certificate of the Certificate Authority
+        /// Gets or sets name of Credential
         /// </summary>
-        [JsonProperty("ca")]
-        public string CertificateAuthority { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
-        /// Name of CA credential in credhub that has signed this certificate
+        /// Gets or sets type of Credential
         /// </summary>
-        [JsonProperty("ca_name")]
-        public string CertificateAuthorityName { get; set; }
-
-        /// <summary>
-        /// String representation of the certificate
-        /// </summary>
-        public string Certificate { get; set; }
-
-        /// <summary>
-        /// Private key for the certificate
-        /// </summary>
-        [JsonProperty("private_key")]
-        public string PrivateKey { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public CredentialType Type { get; set; }
     }
 }

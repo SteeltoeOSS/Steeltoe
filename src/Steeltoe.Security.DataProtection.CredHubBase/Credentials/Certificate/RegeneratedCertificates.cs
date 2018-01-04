@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     /// <summary>
-    /// Used internally to process a list of paths from CredHub
+    /// Return object from bulk certificate regeneration request
     /// </summary>
-    internal class CredentialPathsResponse
+    public class RegeneratedCertificates
     {
         /// <summary>
-        /// List of paths containing credentials
+        /// Gets or sets names of certificates that were regenerated
         /// </summary>
-        public List<CredentialPath> Paths { get; set; }
+        [JsonProperty("regenerated_credentials")]
+        public List<string> RegeneratedCredentials { get; set; }
     }
 }

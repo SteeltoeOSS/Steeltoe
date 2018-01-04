@@ -16,20 +16,18 @@ using Newtonsoft.Json;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    /// <summary>
-    /// Credential information returned from a Find request
-    /// </summary>
-    public class FoundCredential
+    public abstract class KeyPairCredential : ICredentialValue
     {
         /// <summary>
-        /// Full name of credential
+        /// Gets or sets public key for a credential
         /// </summary>
-        public string Name { get; set; }
+        [JsonProperty("public_key")]
+        public string PublicKey { get; set; }
 
         /// <summary>
-        /// When this version of the credential was created
+        /// Gets or sets private key for a certificate
         /// </summary>
-        [JsonProperty("version_created_at")]
-        public string VersionCreatedAt { get; set; }
+        [JsonProperty("private_key")]
+        public string PrivateKey { get; set; }
     }
 }

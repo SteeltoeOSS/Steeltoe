@@ -17,13 +17,13 @@ using System.Collections.Generic;
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     /// <summary>
-    /// Used internally to process results of a Find request
+    /// Used internally to process a list of paths from CredHub
     /// </summary>
-    internal class CredentialFindResponse
+    internal class CredentialPathsResponse
     {
         /// <summary>
-        /// Credentials found by query
+        /// Gets or sets list of paths containing credentials
         /// </summary>
-        public List<FoundCredential> Credentials { get; set; }
+        public List<CredentialPath> Paths { get; set; }
     }
 }

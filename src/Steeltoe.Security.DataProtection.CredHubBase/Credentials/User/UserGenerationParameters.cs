@@ -14,16 +14,11 @@
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public abstract class CredHubGenerateRequest : CredHubBaseObject
+    public class UserGenerationParameters : PasswordGenerationParameters
     {
         /// <summary>
-        /// Overwrite an existing value if present
+        /// Gets or sets user provided value for username
         /// </summary>
-        public bool Overwrite { get; set; } = false;
-
-        /// <summary>
-        /// Parameters for generating credential
-        /// </summary>
-        public object Parameters { get; set; }
+        public string Username { get; set; }
     }
 }

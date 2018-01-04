@@ -12,20 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public class CredentialPermission
+    public class CredHubCredential<T> : CredHubBaseObject
     {
         /// <summary>
-        /// Schemed string identifying an actor -- auth_type:scope/primary_identifier
+        /// Gets or sets when this (version of this) credential was created
         /// </summary>
-        public string Actor { get; set; }
+        public DateTime Version_Created_At { get; set; }
 
         /// <summary>
-        /// List of operations permissioned for the actor
+        /// Gets or sets credential ID (assigned by CredHub)
         /// </summary>
-        public List<OperationPermissions> Operations { get; set; }
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets value of the credential
+        /// </summary>
+        public T Value { get; set; }
     }
 }

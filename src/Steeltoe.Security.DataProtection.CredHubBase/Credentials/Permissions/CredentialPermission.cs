@@ -12,31 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    /// <summary>
-    /// Configured CredHub client
-    /// </summary>
-    public class CredHubOptions
+    public class CredentialPermission
     {
         /// <summary>
-        /// Routable address of CredHub server
+        /// Gets or sets schemed string identifying an actor -- auth_type:scope/primary_identifier
         /// </summary>
-        public string CredHubUrl { get; set; } = "https://credhub.service.cf.internal:8844/api";
+        public string Actor { get; set; }
 
         /// <summary>
-        /// UAA user with necessary permissions to perform desired CredHub interactions
+        /// Gets or sets list of operations permissioned for the actor
         /// </summary>
-        public string CredHubUser { get; set; }
-
-        /// <summary>
-        /// UAA User's password
-        /// </summary>
-        public string CredHubPassword { get; set; }
-
-        /// <summary>
-        /// Validate server certificates for UAA and/or CredHub servers
-        /// </summary>
-        public bool ValidateCertificates { get; set; } = true;
+        public List<OperationPermissions> Operations { get; set; }
     }
 }

@@ -13,26 +13,28 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public class CredentialSetRequest : CredHubBaseObject
+    /// <summary>
+    /// Credential for a user
+    /// </summary>
+    public class UserCredential : ICredentialValue
     {
         /// <summary>
-        /// Value of the credential to be set
+        /// Gets or sets name of the user
         /// </summary>
-        public ICredentialValue Value { get; set; }
+        public string Username { get; set; }
 
         /// <summary>
-        /// Optionally overwrite an existing value
+        /// Gets or sets password of the user
         /// </summary>
-        public bool Overwrite { get; set; } = false;
+        public string Password { get; set; }
 
         /// <summary>
-        /// Optionally set permissions on the credential
+        /// Gets or sets hashed value of the password
         /// </summary>
-        [JsonProperty("additional_permissions")]
-        public List<CredentialPermission> AdditionalPermissions { get; set; }
+        [JsonProperty("password_hash")]
+        public string PasswordHash { get; set; }
     }
 }

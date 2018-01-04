@@ -20,27 +20,27 @@ namespace Steeltoe.Security.DataProtection.CredHub
     public class PasswordGenerationParameters
     {
         /// <summary>
-        /// Length of generated password value
+        /// Gets or sets length of generated password value
         /// </summary>
         public int? Length { get; set; }
 
         /// <summary>
-        /// Exclude upper case alpha characters from generated credential value
+        /// Gets or sets exclude upper case alpha characters from generated credential value
         /// </summary>
         public bool? ExcludeUpper { get; set; }
 
         /// <summary>
-        /// Exclude lower case alpha characters from generated credential value
+        /// Gets or sets exclude lower case alpha characters from generated credential value
         /// </summary>
         public bool? ExcludeLower { get; set; }
 
         /// <summary>
-        /// Exclude numeric characters from generated credential value
+        /// Gets or sets exclude numeric characters from generated credential value
         /// </summary>
         public bool? ExcludeNumber { get; set; }
 
         /// <summary>
-        /// Include non-alphanumeric characters in generated credential value
+        /// Gets or sets include non-alphanumeric characters in generated credential value
         /// </summary>
         public bool? IncludeSpecial { get; set; }
     }

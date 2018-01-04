@@ -16,18 +16,12 @@ using Newtonsoft.Json;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public abstract class KeyPairCredential : ICredentialValue
+    public class KeyParameters : ICredentialParameter
     {
         /// <summary>
-        /// Public key for a credential
+        /// Gets or sets specify the length of key to be generated
         /// </summary>
-        [JsonProperty("public_key")]
-        public string PublicKey { get; set; }
-
-        /// <summary>
-        /// Private key for a certificate
-        /// </summary>
-        [JsonProperty("private_key")]
-        public string PrivateKey { get; set; }
+        [JsonProperty("key_length")]
+        public CertificateKeyLength KeyLength { get; set; } = CertificateKeyLength.Length_2048;
     }
 }

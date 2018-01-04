@@ -2,6 +2,7 @@
   <Import Project="..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,9 +13,9 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)" />
   </ItemGroup>
-  
+
   <PropertyGroup>
-    <NoWarn>SA1100;SA1101;SA1124;SA1202;SA1204;SA1309;SA1310;SA1313;SA1600;SA1652;SA1611;1591;1701;1702;1705</NoWarn>
+    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json">
@@ -24,12 +25,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.Security.DataProtection.CredHubCore\Steeltoe.Security.DataProtection.CredHubCore.csproj" />
-    <ProjectReference Include="..\..\src\Steeltoe.Security.DataProtection.CredHub\Steeltoe.Security.DataProtection.CredHub.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-      <HintPath>..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.dependencyinjection.abstractions\2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

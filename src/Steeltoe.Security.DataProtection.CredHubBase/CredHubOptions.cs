@@ -12,25 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     /// <summary>
-    /// Common properties for CredHub requests
+    /// Configured CredHub client
     /// </summary>
-    public partial class CredHubBaseObject
+    public class CredHubOptions
     {
         /// <summary>
-        /// Name of Credential
+        /// Gets or sets routable address of CredHub server
         /// </summary>
-        public string Name { get; set; }
+        public string CredHubUrl { get; set; } = "https://credhub.service.cf.internal:8844/api";
 
         /// <summary>
-        /// Type of Credential
+        /// Gets or sets uAA user with necessary permissions to perform desired CredHub interactions
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public CredentialType Type { get; set; }
+        public string CredHubUser { get; set; }
+
+        /// <summary>
+        /// Gets or sets uAA User's password
+        /// </summary>
+        public string CredHubPassword { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether validate server certificates for UAA and/or CredHub servers
+        /// </summary>
+        public bool ValidateCertificates { get; set; } = true;
     }
 }

@@ -13,19 +13,23 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     /// <summary>
-    /// Return object from bulk certificate regeneration request
+    /// Credential information returned from a Find request
     /// </summary>
-    public class RegeneratedCertificates
+    public class FoundCredential
     {
         /// <summary>
-        /// Names of certificates that were regenerated
+        /// Gets or sets full name of credential
         /// </summary>
-        [JsonProperty("regenerated_credentials")]
-        public List<string> RegeneratedCredentials { get; set; }
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this version of the credential was created
+        /// </summary>
+        [JsonProperty("version_created_at")]
+        public string VersionCreatedAt { get; set; }
     }
 }

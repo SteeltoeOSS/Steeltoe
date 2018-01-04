@@ -13,24 +13,32 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    /// <summary>
-    /// Internal use: for request/response with permissions endpoints
-    /// </summary>
-    internal class CredentialPermissions
+    public class CertificateCredential : ICredentialValue
     {
         /// <summary>
-        /// Name of the credential with permissions
+        /// Gets or sets certificate of the Certificate Authority
         /// </summary>
-        [JsonProperty("credential_name")]
-        public string CredentialName { get; set; }
+        [JsonProperty("ca")]
+        public string CertificateAuthority { get; set; }
 
         /// <summary>
-        /// List of actors and their permissions for access to this credential
+        /// Gets or sets name of CA credential in credhub that has signed this certificate
         /// </summary>
-        public List<CredentialPermission> Permissions { get; set; }
+        [JsonProperty("ca_name")]
+        public string CertificateAuthorityName { get; set; }
+
+        /// <summary>
+        /// Gets or sets string representation of the certificate
+        /// </summary>
+        public string Certificate { get; set; }
+
+        /// <summary>
+        /// Gets or sets private key for the certificate
+        /// </summary>
+        [JsonProperty("private_key")]
+        public string PrivateKey { get; set; }
     }
 }

@@ -12,25 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public class CredHubCredential<T> : CredHubBaseObject
+    public abstract class CredHubGenerateRequest : CredHubBaseObject
     {
         /// <summary>
-        /// When this (version of this) credential was created
+        /// Gets or sets a value indicating whether overwrite an existing value if present
         /// </summary>
-        public DateTime Version_Created_At { get; set; }
+        public bool Overwrite { get; set; } = false;
 
         /// <summary>
-        /// Credential ID (assigned by CredHub)
+        /// Gets or sets parameters for generating credential
         /// </summary>
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Value of the credential
-        /// </summary>
-        public T Value { get; set; }
+        public object Parameters { get; set; }
     }
 }

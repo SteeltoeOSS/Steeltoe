@@ -10,7 +10,7 @@ cd src/Steeltoe.Security.DataProtection.RedisCore
 dotnet restore --configfile ../../nuget.config
 cd ../..
 
-cd src/Steeltoe.Security.DataProtection.CredHub
+cd src/Steeltoe.Security.DataProtection.CredHubBase
 dotnet restore --configfile ../../nuget.config
 cd ../..
 

@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public class KeyParameters : ICredentialParameter
+    /// <summary>
+    /// Path to a credential in CredHub
+    /// </summary>
+    public class CredentialPath
     {
         /// <summary>
-        /// Specify the length of key to be generated
+        /// Gets or sets path containing one or more credentials
         /// </summary>
-        [JsonProperty("key_length")]
-        public CertificateKeyLength KeyLength { get; set; } = CertificateKeyLength.Length_2048;
+        public string Path { get; set; }
     }
 }

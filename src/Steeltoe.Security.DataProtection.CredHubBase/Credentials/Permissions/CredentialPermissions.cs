@@ -12,13 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
+using System.Collections.Generic;
+
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public class UserGenerationParameters : PasswordGenerationParameters
+    /// <summary>
+    /// Internal use: for request/response with permissions endpoints
+    /// </summary>
+    internal class CredentialPermissions
     {
         /// <summary>
-        /// User provided value for username
+        /// Gets or sets name of the credential with permissions
         /// </summary>
-        public string Username { get; set; }
+        [JsonProperty("credential_name")]
+        public string CredentialName { get; set; }
+
+        /// <summary>
+        /// Gets or sets list of actors and their permissions for access to this credential
+        /// </summary>
+        public List<CredentialPermission> Permissions { get; set; }
     }
 }
