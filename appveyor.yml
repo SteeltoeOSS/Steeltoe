@@ -14,14 +14,7 @@ test_script:
 build_script:
   - scripts\appveyor_build.cmd
 artifacts:
-- path: 'src\Steeltoe.Security.Authentication.CloudFoundryCore\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Security.Authentication.CloudFoundryOwin\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Security.Authentication.CloudFoundryWcf\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Security.DataProtection.RedisCore\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Security.Authentication.CloudFoundryCore\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Security.Authentication.CloudFoundryOwin\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Security.Authentication.CloudFoundryWcf\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Security.DataProtection.RedisCore\bin\Debug\*.nupkg'
+- path: 'src\**\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false

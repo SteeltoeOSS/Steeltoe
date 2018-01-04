@@ -24,3 +24,5 @@ IF "%APPVEYOR_REPO_BRANCH%"=="dev" COPY config\versions-dev.props .\versions.pro
 IF "%APPVEYOR_REPO_BRANCH:~0,3%"=="upd" COPY config\versions-update.props .\versions.props
 IF NOT "%APPVEYOR_REPO_TAG_NAME%"=="" COPY config\versions.props .\versions.props
 IF "%APPVEYOR_REPO_BRANCH%"=="dev" SET BUILD_TYPE=Debug
+mkdir %USERPROFILE%\localfeed
+nuget sources add -Name localfeed -Source %USERPROFILE%\localfeed -ConfigFile .\nuget.config

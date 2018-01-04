@@ -2,7 +2,8 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <SteeltoeConnectorVersion>2.0.0</SteeltoeConnectorVersion>
+    <SteeltoeConnectorVersion>2.0.0-rc1</SteeltoeConnectorVersion>
+    <SteeltoeCommonVersion>2.0.0-rc1</SteeltoeCommonVersion>
     <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <AspNetCoreDataProtectionRedisVersion>0.3.0</AspNetCoreDataProtectionRedisVersion>
     <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
@@ -12,11 +13,14 @@
     <StyleCopVersion>1.0.2</StyleCopVersion>
     <JsonNetVersion>10.0.3</JsonNetVersion>
     <TestSdkVersion>15.5.0</TestSdkVersion>
+    <XunitAnalyzersVersion>0.8.0</XunitAnalyzersVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
     <HttpClientVersion>4.3.3</HttpClientVersion>
     <OwinOAuthVerions>3.1.0</OwinOAuthVerions>
     <JwtTokensVerions>5.1.4</JwtTokensVerions>
     <CSharpVerion>4.4.0</CSharpVerion>
+    <BouncyCastleVersion>1.8.1.3</BouncyCastleVersion>
+    <MockHttp>3.2.1</MockHttp>
   </PropertyGroup>
 </Project>
