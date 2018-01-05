@@ -39,15 +39,10 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
 
             var rsaKeyParams = (RsaPrivateCrtKeyParameters)obj;
-#if NET461
             var pk = RSA.Create();
             pk.ImportParameters(DotNetUtilities.ToRSAParameters(rsaKeyParams));
             cert.PrivateKey = pk;
             return cert;
-#else
-            var rsaKey = RSA.Create(DotNetUtilities.ToRSAParameters(rsaKeyParams));
-            return cert.CopyWithPrivateKey(rsaKey);
-#endif
         }
     }
 }
