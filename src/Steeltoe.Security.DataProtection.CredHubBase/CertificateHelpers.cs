@@ -16,6 +16,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -40,18 +41,20 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
             var rsaKeyParams = (RsaPrivateCrtKeyParameters)obj;
 #if NET461
-            var pk = RSA.Create();
+            CspParameters parms = new CspParameters();
+            parms.Flags = CspProviderFlags.NoFlags;
+            parms.KeyContainerName = Guid.NewGuid().ToString().ToUpperInvariant();
+            RSACryptoServiceProvider pk = new RSACryptoServiceProvider(parms);
             pk.ImportParameters(DotNetUtilities.ToRSAParameters(rsaKeyParams));
             cert.PrivateKey = pk;
-            return cert;
 #else
             var rsaKey = RSA.Create(DotNetUtilities.ToRSAParameters(rsaKeyParams));
-            var result = cert.CopyWithPrivateKey(rsaKey);
+            cert = cert.CopyWithPrivateKey(rsaKey);
+#endif
 
             // Following is work around for https://github.com/dotnet/corefx/issues/24454
-            var buffer = result.Export(X509ContentType.Pfx, (string)null);
+            var buffer = cert.Export(X509ContentType.Pfx, (string)null);
             return new X509Certificate2(buffer, (string)null);
-#endif
         }
     }
 }

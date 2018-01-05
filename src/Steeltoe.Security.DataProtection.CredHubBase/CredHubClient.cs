@@ -27,6 +27,7 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Runtime.InteropServices;
 using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -85,7 +86,10 @@ namespace Steeltoe.Security.DataProtection.CredHub
             if (File.Exists(cfInstanceCert) && File.Exists(cfInstanceKey))
             {
                 var client = new CredHubClient(credHubOptions.ValidateCertificates);
-                _httpClientHandler = new HttpClientHandler();
+                _httpClientHandler = new HttpClientHandler()
+                {
+                    ClientCertificateOptions = ClientCertificateOption.Manual
+                };
                 var certBytes = File.ReadAllBytes(cfInstanceCert);
                 var keyBytes = File.ReadAllBytes(cfInstanceKey);
                 var appCredentials = CertificateHelpers.GetX509FromBytes(certBytes, keyBytes);
