@@ -47,7 +47,7 @@ namespace Steeltoe.Common.Http
             HttpClient client = null;
             if (Platform.IsFullFramework)
             {
-                client = new HttpClient();
+                client = handler == null ? new HttpClient() : new HttpClient(handler);
             }
             else
             {
@@ -64,7 +64,7 @@ namespace Steeltoe.Common.Http
                 }
                 else
                 {
-                    client = new HttpClient();
+                    client = handler == null ? new HttpClient() : new HttpClient(handler);
                 }
             }
 
@@ -172,7 +172,6 @@ namespace Steeltoe.Common.Http
             bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES,
             ILogger logger = null)
         {
-
             if (string.IsNullOrEmpty(accessTokenUri))
             {
                 throw new ArgumentException(nameof(accessTokenUri));
@@ -192,9 +191,7 @@ namespace Steeltoe.Common.Http
             HttpClient client = GetHttpClient(validateCertificates, timeout);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(validateCertificates, out prevProtocols, out prevValidator);
+            HttpClientHelper.ConfigureCertificateValidatation(validateCertificates, out SecurityProtocolType prevProtocols, out RemoteCertificateValidationCallback prevValidator);
 
             AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
             request.Headers.Authorization = auth;
@@ -214,7 +211,7 @@ namespace Steeltoe.Common.Http
                         {
                             logger?.LogInformation(
                                 "GetAccessToken returned status: {0} while obtaining access token from: {1}",
-                                response.StatusCode, 
+                                response.StatusCode,
                                 accessTokenUri);
                             return null;
                         }
