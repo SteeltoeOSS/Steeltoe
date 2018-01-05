@@ -39,10 +39,19 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
 
             var rsaKeyParams = (RsaPrivateCrtKeyParameters)obj;
+#if NET461
             var pk = RSA.Create();
             pk.ImportParameters(DotNetUtilities.ToRSAParameters(rsaKeyParams));
             cert.PrivateKey = pk;
             return cert;
+#else
+            var rsaKey = RSA.Create(DotNetUtilities.ToRSAParameters(rsaKeyParams));
+            var result = cert.CopyWithPrivateKey(rsaKey);
+
+            // Following is work around for https://github.com/dotnet/corefx/issues/24454
+            var buffer = result.Export(X509ContentType.Pfx, (string)null);
+            return new X509Certificate2(buffer, (string)null);
+#endif
         }
     }
 }
