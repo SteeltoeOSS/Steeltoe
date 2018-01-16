@@ -65,7 +65,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         public async void HandleThreadDumpRequestAsync_ReturnsExpected()
         {
             var opts = new ThreadDumpOptions();
-            DiagnosticListener listener = new DiagnosticListener("test");
 
             ThreadDumper obs = new ThreadDumper(opts);
             var ep = new ThreadDumpEndpoint(opts, obs);
@@ -75,12 +74,12 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
-            Assert.Equal("[]", json);
-            listener.Dispose();
+            Assert.StartsWith("[", json);
+            Assert.EndsWith("]", json);
         }
 
         [Fact]
-        public async void TraceActuator_ReturnsExpectedData()
+        public async void ThreadDumpActuator_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
