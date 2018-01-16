@@ -473,7 +473,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 int dist = (int)Math.Abs(point.Offset - ilOffset);
                 if (dist < distance)
                 {
-                    nearest.File = point.Document.GetName();
+                    nearest.File = Path.GetFileName(point.Document.GetName());
                     nearest.Line = (int)point.StartLine;
                 }
 
@@ -533,6 +533,11 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 if (_pdbReaders.TryGetValue(info, out reader))
                 {
                     return reader;
+                }
+
+                if (!File.Exists(info.FileName))
+                {
+                    return null;
                 }
 
                 try

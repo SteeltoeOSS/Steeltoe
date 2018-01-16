@@ -18,8 +18,8 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.ThreadDump;
+using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.CloudFoundry
 {

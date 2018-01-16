@@ -12,18 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
+
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class StackTraceElement
     {
+        [JsonProperty("className")]
         public string ClassName { get; set; }
 
+        [JsonProperty("fileName")]
         public string FileName { get; set; }
 
+        [JsonProperty("lineNumber")]
         public int LineNumber { get; set; }
 
+        [JsonProperty("methodName")]
         public string MethodName { get; set; }
 
+        [JsonProperty("nativeMethod")]
         public bool IsNativeMethod { get; set; }
     }
 }

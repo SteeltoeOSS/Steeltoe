@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
+
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class LockInfo
     {
+        [JsonProperty("className")]
         public string ClassName { get; set; }
 
+        [JsonProperty("identityHashCode")]
         public int IdentityHashCode { get; set; }
     }
 }

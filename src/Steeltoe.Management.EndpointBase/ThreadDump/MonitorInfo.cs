@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
+
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class MonitorInfo : LockInfo
     {
+
+        [JsonProperty("lockedStackDepth")]
         public int LockedStackDepth { get; set; }
 
+        [JsonProperty("lockedStackFrame")]
         public StackTraceElement LockedStackFrame { get; set; }
     }
 }
