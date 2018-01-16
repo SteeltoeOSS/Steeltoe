@@ -17,5 +17,7 @@
     <TestSdkVersion>15.5.0</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
+    <SymReaderVersion>1.2.0</SymReaderVersion>
+    <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
   </PropertyGroup>
 </Project>
