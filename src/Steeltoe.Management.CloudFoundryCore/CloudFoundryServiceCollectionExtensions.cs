@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.ThreadDump;
 
 namespace Steeltoe.Management.CloudFoundry
 {
@@ -28,6 +29,7 @@ namespace Steeltoe.Management.CloudFoundry
         {
             services.AddCors();
             services.AddCloudFoundryActuator(config);
+            services.AddThreadDumpActuator(config);
             services.AddInfoActuator(config);
             services.AddHealthActuator(config);
             services.AddLoggersActuator(config);
