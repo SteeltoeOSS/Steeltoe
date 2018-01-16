@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
@@ -38,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         public string LockName { get; set; }
 
         [JsonProperty("lockOwnerId")]
-        public long LockOwnerId { get; set; }
+        public long LockOwnerId { get; set; } = -1;
 
         [JsonProperty("lockOwnerName")]
         public string LockOwnerName { get; set; }
@@ -53,6 +54,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         public string ThreadName { get; set; }
 
         [JsonProperty("threadState")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public TState ThreadState { get; set; }
 
         [JsonProperty("waitedCount")]
