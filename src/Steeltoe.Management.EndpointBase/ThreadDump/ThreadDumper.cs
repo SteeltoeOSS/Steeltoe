@@ -139,8 +139,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
                     info.LockInfo = lockInfo;
                     info.LockName = lockInfo.ClassName + "@" + string.Format("{0:X}", lck.Object);
-                    info.LockOwnerId = lck.HasSingleOwner ? lck.Owner.ManagedThreadId : -1;
-                    info.LockOwnerName = lck.HasSingleOwner ? GetThreadName(lck.Owner, threadNames) : "Unknown";
+                    info.LockOwnerId = lck.HasSingleOwner && lck.Owner != null ? lck.Owner.ManagedThreadId : -1;
+                    info.LockOwnerName = lck.HasSingleOwner && lck.Owner != null ? GetThreadName(lck.Owner, threadNames) : "Unknown";
                 }
             }
         }
