@@ -92,11 +92,17 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
 
             using (var server = new TestServer(builder))
             {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-               Assert.NotNull(json);
+                for (int i = 0; i < 10; i++)
+                {
+                    var client = server.CreateClient();
+                    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
+                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                    var json = await result.Content.ReadAsStringAsync();
+                    Assert.NotNull(json);
+                    Assert.NotEqual("[]", json);
+                    Assert.StartsWith("[", json);
+                    Assert.EndsWith("]", json);
+                }
             }
         }
 

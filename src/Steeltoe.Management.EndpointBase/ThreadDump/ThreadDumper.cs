@@ -58,6 +58,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 {
                     DisposeSymbolReaders();
                     dataTarget.Dispose();
+                    GC.Collect();
                 }
             }
 
