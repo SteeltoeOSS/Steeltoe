@@ -2123,7 +2123,7 @@ namespace Microsoft.Diagnostics.Runtime
         {
             if (_originalPid != 0)
             {
-                //CloseHandle(_cloneHandle);  // Causes SEH Exceptions
+                CloseHandle(_cloneHandle);  // Causes SEH Exceptions?
 
                 int hr = PssFreeSnapshot(Process.GetCurrentProcess().Handle, _snapshotHandle);
                 if (hr != 0)
@@ -2364,7 +2364,7 @@ namespace Microsoft.Diagnostics.Runtime
 
         #region PInvoke Enums
         [Flags]
-        private enum PSS_CAPTURE_FLAGS : uint
+        internal enum PSS_CAPTURE_FLAGS : uint
         {
             PSS_CAPTURE_NONE = 0x00000000,
             PSS_CAPTURE_VA_CLONE = 0x00000001,
@@ -2388,7 +2388,7 @@ namespace Microsoft.Diagnostics.Runtime
             PSS_CREATE_RELEASE_SECTION = 0x80000000
         }
 
-        private enum PSS_QUERY_INFORMATION_CLASS
+        internal enum PSS_QUERY_INFORMATION_CLASS
         {
             PSS_QUERY_PROCESS_INFORMATION = 0,
             PSS_QUERY_VA_CLONE_INFORMATION = 1,
@@ -2430,7 +2430,7 @@ namespace Microsoft.Diagnostics.Runtime
         public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool CloseHandle(IntPtr hObject);
+        internal static extern bool CloseHandle(IntPtr hObject);
 
         [DllImport("psapi.dll", SetLastError = true)]
         public static extern bool EnumProcessModules(IntPtr hProcess, [Out] IntPtr[] lphModule, uint cb, [MarshalAs(UnmanagedType.U4)] out uint lpcbNeeded);
@@ -2452,16 +2452,16 @@ namespace Microsoft.Diagnostics.Runtime
         private static extern SafeWin32Handle OpenThread(ThreadAccess dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwThreadId);
 
         [DllImport("kernel32")]
-        private static extern int PssCaptureSnapshot(IntPtr ProcessHandle, PSS_CAPTURE_FLAGS CaptureFlags, int ThreadContextFlags, out IntPtr SnapshotHandle);
+        internal static extern int PssCaptureSnapshot(IntPtr ProcessHandle, PSS_CAPTURE_FLAGS CaptureFlags, int ThreadContextFlags, out IntPtr SnapshotHandle);
 
         [DllImport("kernel32")]
-        private static extern int PssFreeSnapshot(IntPtr ProcessHandle, IntPtr SnapshotHandle);
+        internal static extern int PssFreeSnapshot(IntPtr ProcessHandle, IntPtr SnapshotHandle);
 
         [DllImport("kernel32")]
-        private static extern int PssQuerySnapshot(IntPtr SnapshotHandle, PSS_QUERY_INFORMATION_CLASS InformationClass, out IntPtr Buffer, int BufferLength);
+        internal static extern int PssQuerySnapshot(IntPtr SnapshotHandle, PSS_QUERY_INFORMATION_CLASS InformationClass, out IntPtr Buffer, int BufferLength);
 
         [DllImport("kernel32")]
-        private static extern int GetProcessId(IntPtr hObject);
+        internal static extern int GetProcessId(IntPtr hObject);
         #endregion
 
         private enum ThreadAccess : int

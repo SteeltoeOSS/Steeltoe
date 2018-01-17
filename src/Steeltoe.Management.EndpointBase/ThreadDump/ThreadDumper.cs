@@ -103,7 +103,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             {
                 IList<BlockingObject> allLocks = GetAllLocks(runtime);
 
-                _logger?.LogDebug("Starting thread walk");
+                _logger?.LogTrace("Starting thread walk");
 
                 foreach (var thread in runtime.Threads)
                 {
@@ -126,7 +126,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     }
                 }
 
-                _logger?.LogDebug("Finished thread walk");
+                _logger?.LogTrace("Finished thread walk");
             }
         }
 
@@ -165,7 +165,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 }
             }
 
-            _logger?.LogDebug("Updated threads lock info");
+            _logger?.LogTrace("Updated threads lock info");
         }
 
         private List<LockInfo> GetThisThreadsLockedSyncronizers(ClrThread thread, IList<BlockingObject> allLocks)
@@ -192,7 +192,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 }
             }
 
-            _logger?.LogDebug("Thread has {0} non monitor locks", result.Count);
+            _logger?.LogTrace("Thread has {0} non monitor locks", result.Count);
             return result;
         }
 
@@ -221,13 +221,13 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 }
             }
 
-            _logger?.LogDebug("Thread has {0} monitor locks", result.Count);
+            _logger?.LogTrace("Thread has {0} monitor locks", result.Count);
             return result;
         }
 
         private bool IsUserSuspended(ClrThread thread)
         {
-            _logger?.LogDebug("Thread user suspended {0}", thread.IsUserSuspended);
+            _logger?.LogTrace("Thread user suspended {0}", thread.IsUserSuspended);
             return thread.IsUserSuspended;
         }
 
@@ -239,7 +239,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 result = elements[0].IsNativeMethod;
             }
 
-            _logger?.LogDebug("Thread in native method {0}", result);
+            _logger?.LogTrace("Thread in native method {0}", result);
             return result;
         }
 
@@ -247,7 +247,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         {
             List<StackTraceElement> result = new List<StackTraceElement>();
 
-            _logger?.LogDebug("Starting stack dump for thread");
+            _logger?.LogTrace("Starting stack dump for thread");
 
             if (thread.IsAlive)
             {
@@ -315,7 +315,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 }
             }
 
-            _logger?.LogDebug("Thread state {0}", result);
+            _logger?.LogTrace("Thread state {0}", result);
             return result;
         }
 
@@ -372,14 +372,14 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             }
             else if (thread.IsThreadpoolWorker)
             {
-                name = "Worker-" + name;
+                name = "PoolWorker-" + name;
             }
             else if (thread.IsBackground)
             {
                 name = "Background-" + name;
             }
 
-            _logger?.LogDebug("Processing thread {0}", name);
+            _logger?.LogTrace("Processing thread {0}", name);
             return name;
         }
 
@@ -387,7 +387,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         {
             List<BlockingObject> locks = new List<BlockingObject>();
 
-            _logger?.LogDebug("Starting lock walk");
+            _logger?.LogTrace("Starting lock walk");
             foreach (var thread in runtime.Threads)
             {
                 var blocking = thread.BlockingObjects;
