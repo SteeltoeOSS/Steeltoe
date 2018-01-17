@@ -2123,7 +2123,7 @@ namespace Microsoft.Diagnostics.Runtime
         {
             if (_originalPid != 0)
             {
-                CloseHandle(_cloneHandle);  // Causes SEH Exceptions?
+               // CloseHandle(_cloneHandle);  // Causes SEH Exceptions?
 
                 int hr = PssFreeSnapshot(Process.GetCurrentProcess().Handle, _snapshotHandle);
                 if (hr != 0)

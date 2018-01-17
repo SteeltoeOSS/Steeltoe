@@ -100,7 +100,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             {
                 if (cloneQueryHandle != IntPtr.Zero)
                 {
-                    LiveDataReader.CloseHandle(cloneQueryHandle);  // Causes SEH Exceptions?
                     if (snapshotHandle != IntPtr.Zero)
                     {
                         int hr = LiveDataReader.PssFreeSnapshot(Process.GetCurrentProcess().Handle, snapshotHandle);
