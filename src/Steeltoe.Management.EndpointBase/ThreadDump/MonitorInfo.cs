@@ -18,7 +18,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class MonitorInfo : LockInfo
     {
-
         [JsonProperty("lockedStackDepth")]
         public int LockedStackDepth { get; set; }
 

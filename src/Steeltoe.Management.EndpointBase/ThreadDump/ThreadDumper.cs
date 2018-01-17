@@ -20,15 +20,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class ThreadDumper : IThreadDumper
     {
-        private const string ManagedThreadId_Field1 = "_managedThreadId";
-        private const string ManagedThreadId_Field2 = "m_ManagedThreadId";
-        private const string ManagedThreadName_Field = "m_Name";
-
         private ILogger<ThreadDumper> _logger;
         private IThreadDumpOptions _options;
         private Dictionary<PdbInfo, ISymUnmanagedReader> _pdbReaders = new Dictionary<PdbInfo, ISymUnmanagedReader>();
@@ -48,6 +45,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             {
                 try
                 {
+                    _logger?.LogDebug("Starting thread dump");
                     DumpThreads(dataTarget, results);
                 }
                 catch (Exception e)
@@ -58,7 +56,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 {
                     DisposeSymbolReaders();
                     dataTarget.Dispose();
-                    GC.Collect();
+                    long totalMemory = GC.GetTotalMemory(true);
+                    _logger?.LogInformation("Total Memory {0}", totalMemory);
                 }
             }
 
@@ -67,6 +66,19 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private void DisposeSymbolReaders()
         {
+            foreach (var reader in _pdbReaders)
+            {
+                var symReader = reader.Value;
+                try
+                {
+                    Marshal.FinalReleaseComObject(symReader);
+                }
+                catch (Exception e)
+                {
+                    _logger?.LogDebug(e, "Failed to release SymReader");
+                }
+            }
+
             _pdbReaders.Clear();
         }
 
@@ -90,60 +102,70 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             if (runtime != null)
             {
                 IList<BlockingObject> allLocks = GetAllLocks(runtime);
-                Dictionary<int, string> threadNames = GetAllThreadNames(runtime);
+
+                _logger?.LogDebug("Starting thread walk");
 
                 foreach (var thread in runtime.Threads)
                 {
-                    if (!thread.IsAlive)
+                    if (thread.IsAlive)
                     {
-                        continue;
+                        ThreadInfo threadInfo = new ThreadInfo()
+                        {
+                            ThreadId = thread.ManagedThreadId,
+                            ThreadName = GetThreadName(thread)
+                        };
+
+                        threadInfo.ThreadState = GetThreadState(thread);
+                        threadInfo.StackTrace = GetStackTrace(thread);
+                        threadInfo.IsInNative = IsInNative(threadInfo.StackTrace);
+                        threadInfo.IsSuspended = IsUserSuspended(thread);
+                        threadInfo.LockedMonitors = GetThisThreadsLockedMonitors(thread, allLocks);
+                        threadInfo.LockedSynchronizers = GetThisThreadsLockedSyncronizers(thread, allLocks);
+                        UpdateWithLockInfo(thread, threadInfo);
+                        results.Add(threadInfo);
                     }
-
-                    ThreadInfo threadInfo = new ThreadInfo()
-                    {
-                        ThreadId = thread.ManagedThreadId,
-                        ThreadName = GetThreadName(thread, threadNames)
-                    };
-
-                    threadInfo.ThreadState = GetThreadState(thread);
-                    threadInfo.StackTrace = GetStackTrace(thread);
-                    threadInfo.IsInNative = IsInNative(threadInfo.StackTrace);
-                    threadInfo.IsSuspended = IsUserSuspended(thread);
-                    threadInfo.LockedMonitors = GetThisThreadsLockedMonitors(thread, allLocks);
-                    threadInfo.LockedSynchronizers = GetThisThreadsLockedSyncronizers(thread, allLocks);
-                    UpdateWithLockInfo(thread, threadInfo, threadNames);
-                    results.Add(threadInfo);
                 }
+
+                _logger?.LogDebug("Finished thread walk");
             }
         }
 
-        private void UpdateWithLockInfo(ClrThread thread, ThreadInfo info, Dictionary<int, string> threadNames)
+        private void UpdateWithLockInfo(ClrThread thread, ThreadInfo info)
         {
-            foreach (var lck in thread.BlockingObjects)
+            var locks = thread.BlockingObjects;
+            if (locks != null)
             {
-                if (lck.Taken)
+                foreach (var lck in locks)
                 {
-                    LockInfo lockInfo = null;
-                    if (lck.Reason == BlockingReason.Monitor ||
-                        lck.Reason == BlockingReason.MonitorWait)
+                    if (lck.Taken)
                     {
-                        lockInfo = new MonitorInfo();
-                    }
-                    else
-                    {
-                        lockInfo = new LockInfo();
-                    }
+                        var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
+                        if (lockClass != null)
+                        {
+                            LockInfo lockInfo = null;
+                            if (lck.Reason == BlockingReason.Monitor ||
+                                lck.Reason == BlockingReason.MonitorWait)
+                            {
+                                lockInfo = new MonitorInfo();
+                            }
+                            else
+                            {
+                                lockInfo = new LockInfo();
+                            }
 
-                    var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
-                    lockInfo.ClassName = lockClass.Name;
-                    lockInfo.IdentityHashCode = (int)lck.Object;
+                            lockInfo.ClassName = lockClass.Name;
+                            lockInfo.IdentityHashCode = (int)lck.Object;
 
-                    info.LockInfo = lockInfo;
-                    info.LockName = lockInfo.ClassName + "@" + string.Format("{0:X}", lck.Object);
-                    info.LockOwnerId = lck.HasSingleOwner && lck.Owner != null ? lck.Owner.ManagedThreadId : -1;
-                    info.LockOwnerName = lck.HasSingleOwner && lck.Owner != null ? GetThreadName(lck.Owner, threadNames) : "Unknown";
+                            info.LockInfo = lockInfo;
+                            info.LockName = lockInfo.ClassName + "@" + string.Format("{0:X}", lck.Object);
+                            info.LockOwnerId = lck.HasSingleOwner && lck.Owner != null ? lck.Owner.ManagedThreadId : -1;
+                            info.LockOwnerName = lck.HasSingleOwner && lck.Owner != null ? GetThreadName(lck.Owner) : "Unknown";
+                        }
+                    }
                 }
             }
+
+            _logger?.LogDebug("Updated threads lock info");
         }
 
         private List<LockInfo> GetThisThreadsLockedSyncronizers(ClrThread thread, IList<BlockingObject> allLocks)
@@ -157,22 +179,27 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     if (thread.Address == lck.Owner?.Address)
                     {
                         var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
-                        LockInfo info = new LockInfo()
+                        if (lockClass != null)
                         {
-                            ClassName = lockClass.Name,
-                            IdentityHashCode = (int)lck.Object
-                        };
-                        result.Add(info);
+                            LockInfo info = new LockInfo()
+                            {
+                                ClassName = lockClass.Name,
+                                IdentityHashCode = (int)lck.Object
+                            };
+                            result.Add(info);
+                        }
                     }
                 }
             }
 
+            _logger?.LogDebug("Thread has {0} non monitor locks", result.Count);
             return result;
         }
 
         private List<MonitorInfo> GetThisThreadsLockedMonitors(ClrThread thread, IList<BlockingObject> allLocks)
         {
             List<MonitorInfo> result = new List<MonitorInfo>();
+
             foreach (var lck in allLocks)
             {
                 if (lck.Reason == BlockingReason.Monitor ||
@@ -181,21 +208,26 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     if (thread.Address == lck.Owner?.Address)
                     {
                         var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
-                        MonitorInfo info = new MonitorInfo()
+                        if (lockClass != null)
                         {
-                            ClassName = lockClass.Name,
-                            IdentityHashCode = (int)lck.Object
-                        };
-                        result.Add(info);
+                            MonitorInfo info = new MonitorInfo()
+                            {
+                                ClassName = lockClass.Name,
+                                IdentityHashCode = (int)lck.Object
+                            };
+                            result.Add(info);
+                        }
                     }
                 }
             }
 
+            _logger?.LogDebug("Thread has {0} monitor locks", result.Count);
             return result;
         }
 
         private bool IsUserSuspended(ClrThread thread)
         {
+            _logger?.LogDebug("Thread user suspended {0}", thread.IsUserSuspended);
             return thread.IsUserSuspended;
         }
 
@@ -207,18 +239,29 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 result = elements[0].IsNativeMethod;
             }
 
+            _logger?.LogDebug("Thread in native method {0}", result);
             return result;
         }
 
         private List<StackTraceElement> GetStackTrace(ClrThread thread)
         {
             List<StackTraceElement> result = new List<StackTraceElement>();
-            foreach (ClrStackFrame frame in thread.StackTrace)
+
+            _logger?.LogDebug("Starting stack dump for thread");
+
+            if (thread.IsAlive)
             {
-                StackTraceElement element = GetStackTraceElement(frame);
-                if (element != null)
+                var stackTrace = thread.StackTrace;
+                if (stackTrace != null)
                 {
-                    result.Add(element);
+                    foreach (ClrStackFrame frame in stackTrace)
+                    {
+                        StackTraceElement element = GetStackTraceElement(frame);
+                        if (element != null)
+                        {
+                            result.Add(element);
+                        }
+                    }
                 }
             }
 
@@ -227,7 +270,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private StackTraceElement GetStackTraceElement(ClrStackFrame frame)
         {
-            if (frame.Method == null)
+            if (frame == null || frame.Method == null)
             {
                 return null;
             }
@@ -272,20 +315,24 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 }
             }
 
+            _logger?.LogDebug("Thread state {0}", result);
             return result;
         }
 
         private bool IsWaitingOnMonitor(ClrThread thread)
         {
             bool result = false;
-            foreach (var lck in thread.BlockingObjects)
+            if (thread.BlockingObjects != null)
             {
-                if (lck.Taken)
+                foreach (var lck in thread.BlockingObjects)
                 {
-                    if (lck.Reason == BlockingReason.Monitor ||
-                        lck.Reason == BlockingReason.MonitorWait)
+                    if (lck.Taken)
                     {
-                        result = true;
+                        if (lck.Reason == BlockingReason.Monitor ||
+                            lck.Reason == BlockingReason.MonitorWait)
+                        {
+                            result = true;
+                        }
                     }
                 }
             }
@@ -296,14 +343,17 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         private bool IsWaitingOnNonMonitor(ClrThread thread)
         {
             bool result = false;
-            foreach (var lck in thread.BlockingObjects)
+            if (thread.BlockingObjects != null)
             {
-                if (lck.Taken)
+                foreach (var lck in thread.BlockingObjects)
                 {
-                    if (lck.Reason != BlockingReason.Monitor &&
-                        lck.Reason != BlockingReason.MonitorWait)
+                    if (lck.Taken)
                     {
-                        result = true;
+                        if (lck.Reason != BlockingReason.Monitor &&
+                            lck.Reason != BlockingReason.MonitorWait)
+                        {
+                            result = true;
+                        }
                     }
                 }
             }
@@ -311,19 +361,10 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             return result;
         }
 
-        private string GetThreadName(ClrThread thread, Dictionary<int, string> names)
+        private string GetThreadName(ClrThread thread)
         {
             int id = thread.ManagedThreadId;
-            string name = null;
-            if (names.ContainsKey(id))
-            {
-                name = names[id];
-            }
-
-            if (string.IsNullOrEmpty(name))
-            {
-                name = "Thread-" + id;
-            }
+            string name = "Thread-" + id;
 
             if (thread.IsFinalizer)
             {
@@ -338,97 +379,26 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 name = "Background-" + name;
             }
 
+            _logger?.LogDebug("Processing thread {0}", name);
             return name;
-        }
-
-        private Dictionary<int, string> GetAllThreadNames(ClrRuntime runtime)
-        {
-            Dictionary<int, string> result = new Dictionary<int, string>();
-
-            List<ulong> managedThreadObjects = new List<ulong>();
-
-            foreach (ClrSegment seg in runtime.Heap.Segments)
-            {
-                for (ulong obj = seg.FirstObject; obj != 0; obj = seg.NextObject(obj))
-                {
-                    ClrType type = runtime.Heap.GetObjectType(obj);
-
-                    if (type == null)
-                    {
-                        continue;
-                    }
-
-                    if ("System.Threading.Thread".Equals(type.Name))
-                    {
-                        managedThreadObjects.Add(obj);
-                    }
-                }
-            }
-
-            foreach (var obj in managedThreadObjects)
-            {
-                ClrType type = runtime.Heap.GetObjectType(obj);
-                ClrObject instance = new ClrObject(obj, type);
-                int managedId = GetManagedThreadId(instance);
-                string name = GetManagedThreadName(instance);
-                if (managedId != -1)
-                {
-                    if (!result.ContainsKey(managedId))
-                    {
-                        result.Add(managedId, name);
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private int GetManagedThreadId(ClrObject instance)
-        {
-            int result = -1;
-            try
-            {
-                result = instance.GetField<int>(ManagedThreadId_Field2);
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    result = instance.GetField<int>(ManagedThreadId_Field1);
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            return result;
-        }
-
-        private string GetManagedThreadName(ClrObject instance)
-        {
-            string result = string.Empty;
-            try
-            {
-                result = instance.GetStringField(ManagedThreadName_Field);
-            }
-            catch (Exception)
-            {
-            }
-
-            return result;
         }
 
         private IList<BlockingObject> GetAllLocks(ClrRuntime runtime)
         {
             List<BlockingObject> locks = new List<BlockingObject>();
+
+            _logger?.LogDebug("Starting lock walk");
             foreach (var thread in runtime.Threads)
             {
                 var blocking = thread.BlockingObjects;
-                foreach (var lck in thread.BlockingObjects)
+                if (blocking != null)
                 {
-                    if (lck.Taken)
+                    foreach (var lck in blocking)
                     {
-                        locks.Add(lck);
+                        if (lck.Taken)
+                        {
+                            locks.Add(lck);
+                        }
                     }
                 }
             }
@@ -556,7 +526,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogDebug(e, "Unable to obtain symbol reader");
+                    _logger?.LogDebug(e, "Unable to obtain symbol reader for {0}", info.FileName);
                 }
             }
 
