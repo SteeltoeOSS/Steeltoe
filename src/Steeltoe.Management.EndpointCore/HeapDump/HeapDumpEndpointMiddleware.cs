@@ -58,11 +58,12 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
             string gzFilename = filename + ".gz";
             var result = await CompresssAsync(filename, gzFilename);
+
             if (result != null)
             {
                 using (result)
                 {
-                    context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + gzFilename + "\"");
+                    context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"");
                     context.Response.StatusCode = StatusCodes.Status200OK;
                     context.Response.ContentLength = result.Length;
                     await result.CopyToAsync(context.Response.Body);
