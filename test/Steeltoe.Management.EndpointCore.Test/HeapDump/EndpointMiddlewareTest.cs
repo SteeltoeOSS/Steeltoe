@@ -23,10 +23,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump.Test
+namespace Steeltoe.Management.Endpoint.HeapDump.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
@@ -39,45 +40,44 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:dump:enabled"] = "true",
-            ["management:endpoints:dump:sensitive"] = "false",
+            ["management:endpoints:heapdump:enabled"] = "true",
+            ["management:endpoints:heapdump:sensitive"] = "false",
         };
 
         [Fact]
-        public void IsDumpRequest_ReturnsExpected()
+        public void IsHeapDumpRequest_ReturnsExpected()
         {
-            var opts = new ThreadDumpOptions();
+            var opts = new HeapDumpOptions();
 
-            ThreadDumper obs = new ThreadDumper(opts);
-            var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new ThreadDumpEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/dump");
-            Assert.True(middle.IsThreadDumpRequest(context));
-            var context2 = CreateRequest("PUT", "/dump");
-            Assert.False(middle.IsThreadDumpRequest(context2));
+            HeapDumper obs = new HeapDumper(opts);
+            var ep = new HeapDumpEndpoint(opts, obs);
+            var middle = new HeapDumpEndpointMiddleware(null, ep);
+            var context = CreateRequest("GET", "/heapdump");
+            Assert.True(middle.IsHeapDumpRequest(context));
+            var context2 = CreateRequest("PUT", "/heapdump");
+            Assert.False(middle.IsHeapDumpRequest(context2));
             var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsThreadDumpRequest(context3));
+            Assert.False(middle.IsHeapDumpRequest(context3));
         }
 
         [Fact]
-        public async void HandleThreadDumpRequestAsync_ReturnsExpected()
+        public async void HandleHeapDumpRequestAsync_ReturnsExpected()
         {
-            var opts = new ThreadDumpOptions();
+            var opts = new HeapDumpOptions();
 
-            ThreadDumper obs = new ThreadDumper(opts);
-            var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new ThreadDumpEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/dump");
-            await middle.HandleThreadDumpRequestAsync(context);
+            HeapDumper obs = new HeapDumper(opts);
+            var ep = new HeapDumpEndpoint(opts, obs);
+            var middle = new HeapDumpEndpointMiddleware(null, ep);
+            var context = CreateRequest("GET", "/heapdump");
+            await middle.HandleHeapDumpRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
-            Assert.StartsWith("[", json);
-            Assert.EndsWith("]", json);
+            byte[] buffer = new byte[1024];
+            await context.Response.Body.ReadAsync(buffer, 0, 1024);
+            Assert.NotEqual(0, buffer[0]);
         }
 
         [Fact]
-        public async void ThreadDumpActuator_ReturnsExpectedData()
+        public async void HeapDumpActuator_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -87,17 +87,27 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
                     loggingBuilder.AddDynamicConsole();
                 });
-
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
-                Assert.NotEqual("[]", json);
-                Assert.StartsWith("[", json);
-                Assert.EndsWith("]", json);
+
+                Assert.True(result.Content.Headers.Contains("Content-Type"));
+                var contentType = result.Content.Headers.GetValues("Content-Type");
+                Assert.Equal("application/octet-stream", contentType.Single());
+                Assert.True(result.Content.Headers.Contains("Content-Disposition"));
+
+                string tempFile = Path.GetTempFileName();
+                FileStream fs = new FileStream(tempFile, FileMode.Create);
+                Stream input = await result.Content.ReadAsStreamAsync();
+                await input.CopyToAsync(fs);
+                fs.Close();
+
+                FileStream fs2 = File.Open(tempFile, FileMode.Open);
+                Assert.NotEqual(0, fs2.Length);
+                fs2.Close();
+                File.Delete(tempFile);
             }
         }
 

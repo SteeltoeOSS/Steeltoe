@@ -12,28 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.AspNetCore.Builder;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump.Test
+namespace Steeltoe.Management.Endpoint.HeapDump.Test
 {
-    public class ThreadDumpEndpointTest : BaseTest
+    public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void Constructor_ThrowsIfNullRepo()
+        public void UseHeapDumpActuator_ThrowsIfNulls()
         {
-            Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpoint(new ThreadDumpOptions(), null));
-        }
+            IApplicationBuilder builder = null;
 
-        [Fact]
-        public void Invoke_CallsDumpThreads()
-        {
-            var dumper = new TestThreadDumper();
-            var ep = new ThreadDumpEndpoint(new ThreadDumpOptions(), dumper);
-            var result = ep.Invoke();
-            Assert.NotNull(result);
-            Assert.True(dumper.DumpThreadsCalled);
+            Assert.Throws<ArgumentNullException>(() => builder.UseHeapDumpActuator());
         }
     }
 }

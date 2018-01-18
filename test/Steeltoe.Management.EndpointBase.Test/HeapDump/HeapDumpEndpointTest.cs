@@ -14,26 +14,28 @@
 
 using Steeltoe.Management.Endpoint.Test;
 using System;
+using System.IO;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump.Test
+namespace Steeltoe.Management.Endpoint.HeapDump.Test
 {
-    public class ThreadDumpEndpointTest : BaseTest
+    public class HeapDumpEndpointTest : BaseTest
     {
         [Fact]
         public void Constructor_ThrowsIfNullRepo()
         {
-            Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpoint(new ThreadDumpOptions(), null));
+            Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(new HeapDumpOptions(), null));
         }
 
         [Fact]
-        public void Invoke_CallsDumpThreads()
+        public void Invoke_CreatesDump()
         {
-            var dumper = new TestThreadDumper();
-            var ep = new ThreadDumpEndpoint(new ThreadDumpOptions(), dumper);
+            var dumper = new HeapDumper(new HeapDumpOptions());
+            var ep = new HeapDumpEndpoint(new HeapDumpOptions(), dumper);
             var result = ep.Invoke();
             Assert.NotNull(result);
-            Assert.True(dumper.DumpThreadsCalled);
+            Assert.True(File.Exists(result));
+            File.Delete(result);
         }
     }
 }

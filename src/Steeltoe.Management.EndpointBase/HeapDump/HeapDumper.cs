@@ -14,6 +14,7 @@
 
 using Microsoft.Diagnostics.Runtime;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Diagnostics;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -41,99 +42,102 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
             Process process = Process.GetProcessById(Process.GetCurrentProcess().Id);
 
-            IntPtr cloneQueryHandle = default(IntPtr);
             IntPtr snapshotHandle = default(IntPtr);
-            int clonePid = -1;
-            IntPtr cloneProcessHandle = default(IntPtr);
+            MiniDumper.Result result = default(MiniDumper.Result);
 
             try
             {
                 int hr = LiveDataReader.PssCaptureSnapshot(
                         process.Handle,
-                        LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CAPTURE_VA_CLONE,
+                        GetCaptureFlags(),
                         IntPtr.Size == 8 ? 0x0010001F : 0x0001003F,
                         out snapshotHandle);
 
                 if (hr != 0)
                 {
-                    _logger.LogError(string.Format("Could not create snapshot to process. Error {0}.", hr));
+                    _logger?.LogError(string.Format("Could not create snapshot to process. Error {0}.", hr));
                     return null;
                 }
 
-                hr = LiveDataReader.PssQuerySnapshot(
-                    snapshotHandle,
-                    LiveDataReader.PSS_QUERY_INFORMATION_CLASS.PSS_QUERY_VA_CLONE_INFORMATION,
-                    out cloneQueryHandle,
-                    IntPtr.Size);
-
-                if (hr != 0)
+                fileName = Path.GetFullPath(fileName);
+                using (var dumpFile = new FileStream(fileName, FileMode.Create))
                 {
-                    _logger.LogError(string.Format("Could not query the snapshot. Error {0}.", hr));
-                    return null;
-                }
-
-                clonePid = LiveDataReader.GetProcessId(cloneQueryHandle);
-                cloneProcessHandle = LiveDataReader.OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, false, clonePid);
-
-                if (cloneProcessHandle == IntPtr.Zero)
-                {
-                    _logger.LogError(string.Format("Could not attach to cloned process. Error {0}.", Marshal.GetLastWin32Error()));
-                    return null;
-                }
-
-                string fullPath = Path.GetFullPath(fileName);
-                FileStream dumpFile = new FileStream(fullPath, FileMode.CreateNew);
-                var fileHandle = dumpFile.SafeFileHandle.DangerousGetHandle();
-                if (!MiniDumpWriteDump(cloneProcessHandle, clonePid, fileHandle, MINIDUMP_TYPE.MiniDumpNormal, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero))
-                {
-                    _logger.LogError("MiniDumpWriteDump failed");
-                    return null;
+                    result = MiniDumper.DumpProcess(dumpFile, snapshotHandle, process.Id);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not dump heap.");
+                _logger?.LogError(e, "Could not dump heap.");
                 DeleteFileIfExists(fileName);
                 fileName = null;
             }
             finally
             {
-                if (cloneQueryHandle != IntPtr.Zero)
+                if (snapshotHandle != IntPtr.Zero)
                 {
-                    if (snapshotHandle != IntPtr.Zero)
+                    int hr = LiveDataReader.PssQuerySnapshot(
+                            snapshotHandle,
+                            LiveDataReader.PSS_QUERY_INFORMATION_CLASS.PSS_QUERY_VA_CLONE_INFORMATION,
+                            out IntPtr cloneQueryHandle,
+                            IntPtr.Size);
+
+                    if (hr == 0)
                     {
-                        int hr = LiveDataReader.PssFreeSnapshot(Process.GetCurrentProcess().Handle, snapshotHandle);
-                        if (hr != 0)
+                        int clonePid = LiveDataReader.GetProcessId(cloneQueryHandle);
+                        hr = LiveDataReader.PssFreeSnapshot(Process.GetCurrentProcess().Handle, snapshotHandle);
+                        if (hr == 0)
                         {
-                            _logger.LogError(string.Format("Could not free the snapshot. Error {0}.", hr));
+                            try
+                            {
+                                Process.GetProcessById(clonePid).Kill();
+                            }
+                            catch (Exception e)
+                            {
+                                _logger?.LogError(e, "Could not kill clone pid");
+                            }
+                        }
+                        else
+                        {
+                            _logger?.LogError(string.Format("Could not free the snapshot. Error {0}, Hr {1}.", Marshal.GetLastWin32Error(), hr));
                         }
                     }
-
-                    try
+                    else
                     {
-                        if (clonePid != -1)
-                        {
-                            Process.GetProcessById(clonePid).Kill();
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, "Could not kill clone pid");
+                        _logger?.LogError(string.Format("Could not query the snapshot. Error {0}, Hr {1}.", Marshal.GetLastWin32Error(), hr));
                     }
                 }
+            }
 
-                if (cloneProcessHandle != IntPtr.Zero)
-                {
-                    LiveDataReader.CloseHandle(cloneProcessHandle);
-                }
+            if (result.ReturnValue == 0)
+            {
+                _logger?.LogError(
+                    "MiniDump failed {hr}, {lastError}, {exception}",
+                    result.ReturnValue,
+                    result.ErrorCode,
+                    result.Exception != null ? result.Exception.ToString() : string.Empty);
+                return null;
             }
 
             return fileName;
         }
 
+        internal LiveDataReader.PSS_CAPTURE_FLAGS GetCaptureFlags()
+        {
+            var flags = LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CAPTURE_VA_CLONE |
+                        LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CAPTURE_HANDLES |
+                        LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CAPTURE_HANDLE_NAME_INFORMATION |
+                        LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CAPTURE_HANDLE_BASIC_INFORMATION |
+                        LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CAPTURE_HANDLE_TYPE_SPECIFIC_INFORMATION |
+                        LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CAPTURE_HANDLE_TRACE |
+                        LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CAPTURE_THREADS |
+                        LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CAPTURE_THREAD_CONTEXT |
+                        LiveDataReader.PSS_CAPTURE_FLAGS.PSS_CREATE_MEASURE_PERFORMANCE;
+            return flags;
+        }
+
         internal string CreateFileName()
         {
-            return "minidump-" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + "-live" + ".dump";
+            return "minidump-" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + "-live" + ".dmp";
         }
 
         private void DeleteFileIfExists(string fileName)
@@ -146,38 +150,9 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Could not clean up dump file");
+                    _logger?.LogError(e, "Could not clean up dump file");
                 }
             }
         }
-
-        private enum MINIDUMP_TYPE : uint
-        {
-            MiniDumpNormal = 0x00000000,
-            MiniDumpWithDataSegs = 0x00000001,
-            MiniDumpWithFullMemory = 0x00000002,
-            MiniDumpWithHandleData = 0x00000004,
-            MiniDumpFilterMemory = 0x00000008,
-            MiniDumpScanMemory = 0x00000010,
-            MiniDumpWithUnloadedModules = 0x00000020,
-            MiniDumpWithIndirectlyReferencedMemory = 0x00000040,
-            MiniDumpFilterModulePaths = 0x00000080,
-            MiniDumpWithProcessThreadData = 0x00000100,
-            MiniDumpWithPrivateReadWriteMemory = 0x00000200,
-            MiniDumpWithoutOptionalData = 0x00000400,
-            MiniDumpWithFullMemoryInfo = 0x00000800,
-            MiniDumpWithThreadInfo = 0x00001000,
-            MiniDumpWithCodeSegs = 0x00002000,
-            MiniDumpWithoutAuxiliaryState = 0x00004000,
-            MiniDumpWithFullAuxiliaryState = 0x00008000,
-            MiniDumpWithPrivateWriteCopyMemory = 0x00010000,
-            MiniDumpIgnoreInaccessibleMemory = 0x00020000,
-            MiniDumpWithTokenInformation = 0x00040000,
-            MiniDumpWithModuleHeaders = 0x00080000,
-            MiniDumpFilterTriage = 0x00100000,
-        }
-
-        [DllImport("DbgHelp")]
-        private static extern bool MiniDumpWriteDump(IntPtr processHandle, int processId, IntPtr fileHandle, MINIDUMP_TYPE dumpType, IntPtr excepParam, IntPtr userParam, IntPtr callParam);
     }
 }

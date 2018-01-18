@@ -19,12 +19,12 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump.Test
+namespace Steeltoe.Management.Endpoint.HeapDump.Test
 {
     public class EndpointServiceCollectionTest : BaseTest
     {
         [Fact]
-        public void AddThreadDumpActuator_ThrowsOnNulls()
+        public void AddHeapDumpActuator_ThrowsOnNulls()
         {
             // Arrange
             IServiceCollection services = null;
@@ -32,14 +32,14 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddThreadDumpActuator(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHeapDumpActuator(services, config));
             Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddThreadDumpActuator(services2, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHeapDumpActuator(services2, config));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
         [Fact]
-        public void AddThreadDumpActuator_AddsCorrectServices()
+        public void AddHeapDumpActuator_AddsCorrectServices()
         {
             ServiceCollection services = new ServiceCollection();
             var appSettings = new Dictionary<string, string>()
@@ -47,21 +47,21 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
-                ["management:endpoints:dump:enabled"] = "false",
-                ["management:endpoints:dump:sensitive"] = "false",
+                ["management:endpoints:heapdump:enabled"] = "false",
+                ["management:endpoints:heapdump:sensitive"] = "false",
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
 
-            services.AddThreadDumpActuator(config);
+            services.AddHeapDumpActuator(config);
 
             var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<IThreadDumpOptions>();
+            var options = serviceProvider.GetService<IHeapDumpOptions>();
             Assert.NotNull(options);
-            var repo = serviceProvider.GetService<IThreadDumper>();
+            var repo = serviceProvider.GetService<IHeapDumper>();
             Assert.NotNull(repo);
-            var ep = serviceProvider.GetService<ThreadDumpEndpoint>();
+            var ep = serviceProvider.GetService<HeapDumpEndpoint>();
             Assert.NotNull(ep);
         }
     }

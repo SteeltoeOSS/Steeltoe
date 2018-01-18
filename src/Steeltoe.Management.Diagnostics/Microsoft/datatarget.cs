@@ -2451,13 +2451,13 @@ namespace Microsoft.Diagnostics.Runtime
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern SafeWin32Handle OpenThread(ThreadAccess dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwThreadId);
 
-        [DllImport("kernel32")]
+        [DllImport("kernel32", SetLastError = true)]
         internal static extern int PssCaptureSnapshot(IntPtr ProcessHandle, PSS_CAPTURE_FLAGS CaptureFlags, int ThreadContextFlags, out IntPtr SnapshotHandle);
 
-        [DllImport("kernel32")]
+        [DllImport("kernel32", SetLastError = true)]
         internal static extern int PssFreeSnapshot(IntPtr ProcessHandle, IntPtr SnapshotHandle);
 
-        [DllImport("kernel32")]
+        [DllImport("kernel32", SetLastError = true)]
         internal static extern int PssQuerySnapshot(IntPtr SnapshotHandle, PSS_QUERY_INFORMATION_CLASS InformationClass, out IntPtr Buffer, int BufferLength);
 
         [DllImport("kernel32")]

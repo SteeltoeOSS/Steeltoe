@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
         {
-            var filename = HandleRequest();
+            var filename = endpoint.Invoke();
             logger?.LogDebug("Returning: {0}", filename);
             context.Response.Headers.Add("Content-Type", "application/octet-stream");
 
@@ -60,9 +60,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             var result = await CompresssAsync(filename, gzFilename);
             if (result != null)
             {
-                context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + gzFilename + "\"");
-                context.Response.Body = result;
-                context.Response.StatusCode = StatusCodes.Status200OK;
+                using (result)
+                {
+                    context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + gzFilename + "\"");
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    context.Response.ContentLength = result.Length;
+                    await result.CopyToAsync(context.Response.Body);
+                }
+
+                File.Delete(gzFilename);
             }
             else
             {
@@ -78,7 +84,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 {
                     using (var output = new FileStream(gzFilename, FileMode.CreateNew))
                     {
-                        using (var gzipStream = new GZipStream(output, CompressionLevel.Optimal))
+                        using (var gzipStream = new GZipStream(output, CompressionLevel.Fastest))
                         {
                             await input.CopyToAsync(gzipStream);
                         }
@@ -90,6 +96,10 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             catch (Exception e)
             {
                 logger?.LogError(e, "Unable to compress dump");
+            }
+            finally
+            {
+                File.Delete(filename);
             }
 
             return null;

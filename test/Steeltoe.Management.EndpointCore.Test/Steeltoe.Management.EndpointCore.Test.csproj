@@ -67,7 +67,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="HeapDump\" />
-  </ItemGroup>
 </Project>
