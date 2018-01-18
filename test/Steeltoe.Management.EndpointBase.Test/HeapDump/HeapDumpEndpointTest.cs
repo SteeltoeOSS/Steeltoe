@@ -30,12 +30,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public void Invoke_CreatesDump()
         {
-            var dumper = new HeapDumper(new HeapDumpOptions());
-            var ep = new HeapDumpEndpoint(new HeapDumpOptions(), dumper);
-            var result = ep.Invoke();
-            Assert.NotNull(result);
-            Assert.True(File.Exists(result));
-            File.Delete(result);
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                var dumper = new HeapDumper(new HeapDumpOptions());
+                var ep = new HeapDumpEndpoint(new HeapDumpOptions(), dumper);
+                var result = ep.Invoke();
+                Assert.NotNull(result);
+                Assert.True(File.Exists(result));
+                File.Delete(result);
+            }
         }
     }
 }

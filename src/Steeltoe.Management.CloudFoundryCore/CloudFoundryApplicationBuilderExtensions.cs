@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.ThreadDump;
@@ -38,8 +39,9 @@ namespace Steeltoe.Management.CloudFoundry
             });
 
             app.UseCloudFoundrySecurity();
-            app.UseThreadDumpActuator();
             app.UseCloudFoundryActuator();
+            app.UseThreadDumpActuator();
+            app.UseHeapDumpActuator();
             app.UseInfoActuator();
             app.UseHealthActuator();
             app.UseLoggersActuator();

@@ -63,23 +63,28 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public async void HandleHeapDumpRequestAsync_ReturnsExpected()
         {
-            var opts = new HeapDumpOptions();
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                var opts = new HeapDumpOptions();
 
-            HeapDumper obs = new HeapDumper(opts);
-            var ep = new HeapDumpEndpoint(opts, obs);
-            var middle = new HeapDumpEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/heapdump");
-            await middle.HandleHeapDumpRequestAsync(context);
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-            byte[] buffer = new byte[1024];
-            await context.Response.Body.ReadAsync(buffer, 0, 1024);
-            Assert.NotEqual(0, buffer[0]);
+                HeapDumper obs = new HeapDumper(opts);
+                var ep = new HeapDumpEndpoint(opts, obs);
+                var middle = new HeapDumpEndpointMiddleware(null, ep);
+                var context = CreateRequest("GET", "/heapdump");
+                await middle.HandleHeapDumpRequestAsync(context);
+                context.Response.Body.Seek(0, SeekOrigin.Begin);
+                byte[] buffer = new byte[1024];
+                await context.Response.Body.ReadAsync(buffer, 0, 1024);
+                Assert.NotEqual(0, buffer[0]);
+            }
         }
 
         [Fact]
         public async void HeapDumpActuator_ReturnsExpectedData()
         {
-            var builder = new WebHostBuilder()
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
@@ -87,27 +92,28 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
                     loggingBuilder.AddDynamicConsole();
                 });
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                using (var server = new TestServer(builder))
+                {
+                    var client = server.CreateClient();
+                    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
+                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-                Assert.True(result.Content.Headers.Contains("Content-Type"));
-                var contentType = result.Content.Headers.GetValues("Content-Type");
-                Assert.Equal("application/octet-stream", contentType.Single());
-                Assert.True(result.Content.Headers.Contains("Content-Disposition"));
+                    Assert.True(result.Content.Headers.Contains("Content-Type"));
+                    var contentType = result.Content.Headers.GetValues("Content-Type");
+                    Assert.Equal("application/octet-stream", contentType.Single());
+                    Assert.True(result.Content.Headers.Contains("Content-Disposition"));
 
-                string tempFile = Path.GetTempFileName();
-                FileStream fs = new FileStream(tempFile, FileMode.Create);
-                Stream input = await result.Content.ReadAsStreamAsync();
-                await input.CopyToAsync(fs);
-                fs.Close();
+                    string tempFile = Path.GetTempFileName();
+                    FileStream fs = new FileStream(tempFile, FileMode.Create);
+                    Stream input = await result.Content.ReadAsStreamAsync();
+                    await input.CopyToAsync(fs);
+                    fs.Close();
 
-                FileStream fs2 = File.Open(tempFile, FileMode.Open);
-                Assert.NotEqual(0, fs2.Length);
-                fs2.Close();
-                File.Delete(tempFile);
+                    FileStream fs2 = File.Open(tempFile, FileMode.Open);
+                    Assert.NotEqual(0, fs2.Length);
+                    fs2.Close();
+                    File.Delete(tempFile);
+                }
             }
         }
 

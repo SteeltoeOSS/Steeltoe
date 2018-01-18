@@ -62,24 +62,29 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public async void HandleThreadDumpRequestAsync_ReturnsExpected()
         {
-            var opts = new ThreadDumpOptions();
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                var opts = new ThreadDumpOptions();
 
-            ThreadDumper obs = new ThreadDumper(opts);
-            var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new ThreadDumpEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/dump");
-            await middle.HandleThreadDumpRequestAsync(context);
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
-            Assert.StartsWith("[", json);
-            Assert.EndsWith("]", json);
+                ThreadDumper obs = new ThreadDumper(opts);
+                var ep = new ThreadDumpEndpoint(opts, obs);
+                var middle = new ThreadDumpEndpointMiddleware(null, ep);
+                var context = CreateRequest("GET", "/dump");
+                await middle.HandleThreadDumpRequestAsync(context);
+                context.Response.Body.Seek(0, SeekOrigin.Begin);
+                StreamReader rdr = new StreamReader(context.Response.Body);
+                string json = await rdr.ReadToEndAsync();
+                Assert.StartsWith("[", json);
+                Assert.EndsWith("]", json);
+            }
         }
 
         [Fact]
         public async void ThreadDumpActuator_ReturnsExpectedData()
         {
-            var builder = new WebHostBuilder()
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
@@ -88,16 +93,17 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                     loggingBuilder.AddDynamicConsole();
                 });
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
-                Assert.NotEqual("[]", json);
-                Assert.StartsWith("[", json);
-                Assert.EndsWith("]", json);
+                using (var server = new TestServer(builder))
+                {
+                    var client = server.CreateClient();
+                    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
+                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                    var json = await result.Content.ReadAsStringAsync();
+                    Assert.NotNull(json);
+                    Assert.NotEqual("[]", json);
+                    Assert.StartsWith("[", json);
+                    Assert.EndsWith("]", json);
+                }
             }
         }
 
