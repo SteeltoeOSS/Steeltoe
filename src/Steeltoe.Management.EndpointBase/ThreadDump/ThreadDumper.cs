@@ -58,7 +58,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     DisposeSymbolReaders();
                     dataTarget.Dispose();
                     long totalMemory = GC.GetTotalMemory(true);
-                    _logger?.LogInformation("Total Memory {0}", totalMemory);
+                    _logger?.LogDebug("Total Memory {0}", totalMemory);
                 }
             }
 
