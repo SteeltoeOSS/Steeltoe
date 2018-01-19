@@ -26,6 +26,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class ThreadDumper : IThreadDumper
     {
+        private const int PdbHiddenLine = 0xFEEFEE;
         private ILogger<ThreadDumper> _logger;
         private IThreadDumpOptions _options;
         private Dictionary<PdbInfo, ISymUnmanagedReader> _pdbReaders = new Dictionary<PdbInfo, ISymUnmanagedReader>();
@@ -363,7 +364,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private string GetThreadName(ClrThread thread)
         {
-            int id = thread.ManagedThreadId;
+            uint id = thread.OSThreadId;
             string name = "Thread-" + id;
 
             if (thread.IsFinalizer)
@@ -426,7 +427,14 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     var ilOffset = FindIlOffset(frame);
                     if (ilOffset >= 0)
                     {
-                        return FindNearestLine(seqPoints, ilOffset);
+                        var nearest = FindNearestLine(seqPoints, ilOffset);
+                        if (nearest.Line == PdbHiddenLine)
+                        {
+                            nearest.Line = 0;
+                        }
+
+                        _logger?.LogTrace("FindNearestLine for {0} in method {1} returning {2} in {3}", ilOffset, method.Name, nearest.Line, nearest.File);
+                        return nearest;
                     }
                 }
             }
@@ -499,6 +507,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             ClrModule module = frame.Method?.Type?.Module;
             PdbInfo info = module?.Pdb;
             ISymUnmanagedReader reader = null;
+            string name = string.Empty;
+
             if (info != null)
             {
                 if (_pdbReaders.TryGetValue(info, out reader))
@@ -506,33 +516,40 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     return reader;
                 }
 
-                if (!File.Exists(info.FileName))
+                name = Path.GetFileName(info.FileName);
+                if (!File.Exists(name))
                 {
+                    _logger?.LogTrace("Symbol file {0} missing", name);
                     return null;
                 }
 
                 try
                 {
-                    Stream stream = File.OpenRead(info.FileName);
+                    Stream stream = File.OpenRead(name);
                     if (IsPortablePdb(stream))
                     {
                         var bindar = new SymBinder();
-                        int result = bindar.GetReaderFromPdbFile(new MetaDataImportProvider(module.MetadataImport), info.FileName, out reader);
+                        int result = bindar.GetReaderFromPdbFile(new MetaDataImportProvider(module.MetadataImport), name, out reader);
                     }
                     else
                     {
-                        reader = SymUnmanagedReaderFactory.CreateReaderWithMetadataImport<ISymUnmanagedReader3>(stream, module.MetadataImport, SymUnmanagedReaderCreationOptions.UseComRegistry);
+                        reader = SymUnmanagedReaderFactory.CreateReaderWithMetadataImport<ISymUnmanagedReader3>(stream, module.MetadataImport, SymUnmanagedReaderCreationOptions.Default);
                     }
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogDebug(e, "Unable to obtain symbol reader for {0}", info.FileName);
+                    _logger?.LogError(e, "Unable to obtain symbol reader for {0}", name);
                 }
             }
 
             if (reader != null)
             {
+                _logger?.LogTrace("Symbol file {0} found, reader created", name);
                 _pdbReaders.Add(info, reader);
+            }
+            else
+            {
+                _logger?.LogTrace("Unable to obtain symbol reader for {0}", name);
             }
 
             return reader;
