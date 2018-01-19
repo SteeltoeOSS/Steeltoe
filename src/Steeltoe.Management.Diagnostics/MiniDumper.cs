@@ -143,6 +143,7 @@ namespace Steeltoe.Management.Diagnostics
         }
 
         [DllImport("DbgHelp", SetLastError = true)]
+
         private static extern int MiniDumpWriteDump(IntPtr processHandle, int processId, IntPtr fileHandle, MINIDUMP_TYPE dumpType, IntPtr excepParam, IntPtr userParam, IntPtr callParam);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]

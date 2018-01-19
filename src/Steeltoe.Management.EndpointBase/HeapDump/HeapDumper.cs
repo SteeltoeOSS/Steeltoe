@@ -39,8 +39,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         public string DumpHeap()
         {
             string fileName = CreateFileName();
-
-            Process process = Process.GetProcessById(Process.GetCurrentProcess().Id);
+            int curProcessId = Process.GetCurrentProcess().Id;
+            Process process = Process.GetProcessById(curProcessId);
 
             IntPtr snapshotHandle = default(IntPtr);
             MiniDumper.Result result = default(MiniDumper.Result);
@@ -84,16 +84,22 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                     if (hr == 0)
                     {
                         int clonePid = LiveDataReader.GetProcessId(cloneQueryHandle);
-                        hr = LiveDataReader.PssFreeSnapshot(Process.GetCurrentProcess().Handle, snapshotHandle);
+                        Process cloneProcess = Process.GetProcessById(clonePid);
+
+                        hr = LiveDataReader.PssFreeSnapshot(process.Handle, snapshotHandle);
                         if (hr == 0)
                         {
                             try
                             {
-                                Process.GetProcessById(clonePid).Kill();
+                                cloneProcess.Kill();
                             }
                             catch (Exception e)
                             {
                                 _logger?.LogError(e, "Could not kill clone pid");
+                            }
+                            finally
+                            {
+                                cloneProcess.Dispose();
                             }
                         }
                         else
@@ -106,6 +112,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                         _logger?.LogError(string.Format("Could not query the snapshot. Error {0}, Hr {1}.", Marshal.GetLastWin32Error(), hr));
                     }
                 }
+
+                process.Dispose();
             }
 
             if (result.ReturnValue == 0)

@@ -20,6 +20,7 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using System;
 
 namespace Steeltoe.Management.CloudFoundry
 {
@@ -40,8 +41,13 @@ namespace Steeltoe.Management.CloudFoundry
 
             app.UseCloudFoundrySecurity();
             app.UseCloudFoundryActuator();
-            app.UseThreadDumpActuator();
-            app.UseHeapDumpActuator();
+
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                app.UseThreadDumpActuator();
+                app.UseHeapDumpActuator();
+            }
+
             app.UseInfoActuator();
             app.UseHealthActuator();
             app.UseLoggersActuator();

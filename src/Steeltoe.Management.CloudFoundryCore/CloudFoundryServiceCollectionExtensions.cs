@@ -21,6 +21,7 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using System;
 
 namespace Steeltoe.Management.CloudFoundry
 {
@@ -30,8 +31,13 @@ namespace Steeltoe.Management.CloudFoundry
         {
             services.AddCors();
             services.AddCloudFoundryActuator(config);
-            services.AddThreadDumpActuator(config);
-            services.AddHeapDumpActuator(config);
+
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                services.AddThreadDumpActuator(config);
+                services.AddHeapDumpActuator(config);
+            }
+
             services.AddInfoActuator(config);
             services.AddHealthActuator(config);
             services.AddLoggersActuator(config);
