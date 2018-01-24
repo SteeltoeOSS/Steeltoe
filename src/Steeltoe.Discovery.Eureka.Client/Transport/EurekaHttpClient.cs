@@ -92,6 +92,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     {
                         Headers = response.Headers
                     };
+                    if(response.StatusCode == HttpStatusCode.InternalServerError)
+                    {
+                        var jsonError = await response.Content.ReadAsStringAsync();
+                        _logger?.LogInformation($"Something goes wrong in registering: {jsonError}");
+                    }
                     return resp;
                 }
             }
