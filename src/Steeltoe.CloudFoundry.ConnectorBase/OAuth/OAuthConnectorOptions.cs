@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Configuration;
 using System;
 using System.Collections.Generic;
 
@@ -37,6 +38,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
 
             var section = config.GetSection(SECURITY_CLIENT_SECTION_PREFIX);
             section.Bind(this);
+            ValidateCertificates = GetCertificateValidation(section, config, ValidateCertificates);
 
             section = config.GetSection(SECURITY_RESOURCE_SECTION_PREFIX);
             section.Bind(this);
@@ -60,6 +62,11 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
 
         public List<string> Scope { get; set; }
 
-        public bool Validate_Certificates { get; set; } = OAuthConnectorDefaults.Default_ValidateCertificates;
+        public bool ValidateCertificates { get; set; } = OAuthConnectorDefaults.Default_ValidateCertificates;
+
+        private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, IConfiguration resolve, bool def)
+        {
+            return ConfigurationValuesHelper.GetBoolean("validate_certificates", clientConfigsection, resolve, def);
+        }
     }
 }
