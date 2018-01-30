@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         }
 
         [Fact]
-        public void Constructor_BindsValues()
+        public void Constructor_Binds_Rabbit_Values()
         {
             var appsettings = new Dictionary<string, string>()
             {
@@ -42,6 +42,32 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
                 ["rabbit:client:password"] = "password",
                 ["rabbit:client:username"] = "username",
                 ["rabbit:client:sslEnabled"] = "true"
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            var sconfig = new RabbitMQProviderConnectorOptions(config);
+            Assert.Equal("localhost", sconfig.Server);
+            Assert.Equal(1234, sconfig.Port);
+            Assert.Equal("password", sconfig.Password);
+            Assert.Equal("username", sconfig.Username);
+            Assert.Null(sconfig.Uri);
+            Assert.True(sconfig.SslEnabled);
+            Assert.Equal(RabbitMQProviderConnectorOptions.Default_SSLPort, sconfig.SslPort);
+        }
+
+        [Fact]
+        public void Constructor_Binds_RabbitMQ_Values()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["rabbitmq:client:server"] = "localhost",
+                ["rabbitmq:client:port"] = "1234",
+                ["rabbitmq:client:password"] = "password",
+                ["rabbitmq:client:username"] = "username",
+                ["rabbitmq:client:sslEnabled"] = "true"
             };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
