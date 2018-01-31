@@ -2,7 +2,7 @@
 
 echo Code is built in Unit Tests
 
-cd src/Steeltoe.Discovery.Eureka.Client
+cd src/Steeltoe.Discovery.EurekaBase
 dotnet restore --configfile ../../nuget.config
 cd ../..
 
