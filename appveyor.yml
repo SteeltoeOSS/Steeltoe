@@ -2,8 +2,6 @@ version: '2.0.0-{branch}-{build}'
 init:
   - git config --global core.autocrlf true
 image: Visual Studio 2017
-hosts:
-  api.nuget.org: 93.184.221.200  
 branches:
   only:
     - master

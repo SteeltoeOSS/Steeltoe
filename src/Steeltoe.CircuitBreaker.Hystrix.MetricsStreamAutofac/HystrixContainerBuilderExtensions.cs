@@ -49,7 +49,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             container.RegisterInstance(HystrixDashboardStream.GetInstance()).SingleInstance();
 
-            HystrixRabbitServiceInfo info = config.GetSingletonServiceInfo<HystrixRabbitServiceInfo>();
+            HystrixRabbitMQServiceInfo info = config.GetSingletonServiceInfo<HystrixRabbitMQServiceInfo>();
             HystrixProviderConnectorOptions hystrixConfig = new HystrixProviderConnectorOptions(config);
             HystrixProviderConnectorFactory factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
             container.Register(c => (HystrixConnectionFactory)factory.Create(null)).SingleInstance();
