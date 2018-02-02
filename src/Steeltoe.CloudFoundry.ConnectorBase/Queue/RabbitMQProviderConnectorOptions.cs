@@ -25,6 +25,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         public const string Default_Server = "127.0.0.1";
         public const int Default_Port = 5672;
         public const int Default_SSLPort = 5671;
+        private const string RABBITMQ_CLIENT_SECTION_PREFIX = "rabbitmq:client";
         private const string RABBIT_CLIENT_SECTION_PREFIX = "rabbit:client";
 
         public RabbitMQProviderConnectorOptions()
@@ -41,6 +42,9 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 
             var section = config.GetSection(RABBIT_CLIENT_SECTION_PREFIX);
             section.Bind(this);
+
+            var sectionMQ = config.GetSection(RABBITMQ_CLIENT_SECTION_PREFIX);
+            sectionMQ.Bind(this);
         }
 
         public bool SslEnabled { get; set; } = false;

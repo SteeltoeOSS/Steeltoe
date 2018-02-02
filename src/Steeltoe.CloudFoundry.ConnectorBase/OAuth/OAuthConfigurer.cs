@@ -57,7 +57,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
             options.TokenInfoUrl = config.OAuthServiceUrl + config.TokenInfoUri;
             options.UserInfoUrl = config.OAuthServiceUrl + config.UserInfoUri;
             options.JwtKeyUrl = config.OAuthServiceUrl + config.JwtKeyUri;
-            options.ValidateCertificates = config.Validate_Certificates;
+            options.ValidateCertificates = config.ValidateCertificates;
             if (config.Scope != null)
             {
                 foreach (var scope in config.Scope)

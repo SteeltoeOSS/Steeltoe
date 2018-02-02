@@ -25,7 +25,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             OAuthServiceOptions opts = new OAuthServiceOptions();
             OAuthConnectorOptions config = new OAuthConnectorOptions()
             {
-                Validate_Certificates = false
+                ValidateCertificates = false
             };
             OAuthConfigurer configurer = new OAuthConfigurer();
             configurer.UpdateOptions(config, opts);
