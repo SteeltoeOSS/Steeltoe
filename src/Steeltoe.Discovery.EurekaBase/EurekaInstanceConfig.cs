@@ -153,30 +153,55 @@ namespace Steeltoe.Discovery.Eureka
             if (refresh || string.IsNullOrEmpty(_thisHostAddress))
             {
                 string hostName = GetHostName(refresh);
-                var task = Dns.GetHostAddressesAsync(hostName);
-                task.Wait();
-                if (task.Result != null && task.Result.Length > 0)
+                if (!string.IsNullOrEmpty(hostName))
                 {
-                    foreach (var result in task.Result)
-                    {
-                        if (result.AddressFamily.Equals(AddressFamily.InterNetwork))
-                        {
-                            _thisHostAddress = result.ToString();
-                            break;
-                        }
-                    }
+                    _thisHostAddress = ResolveHostAddress(hostName);
                 }
             }
 
             return _thisHostAddress;
         }
 
-        protected virtual string ResolveHostName()
+        protected virtual string ResolveHostAddress(string hostName)
         {
-            string result = Dns.GetHostName();
+            string result = null;
             try
             {
-                result = Dns.GetHostEntryAsync(result).Result.HostName;
+                var results = Dns.GetHostAddresses(hostName);
+                if (results != null && results.Length > 0)
+                {
+                    foreach (var addr in results)
+                    {
+                        if (addr.Equals(AddressFamily.InterNetwork))
+                        {
+                            result = addr.ToString();
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+
+            return result;
+        }
+
+        protected virtual string ResolveHostName()
+        {
+            string result = null;
+            try
+            {
+                result = Dns.GetHostName();
+                if (!string.IsNullOrEmpty(result))
+                {
+                    var response = Dns.GetHostEntry(result);
+                    if (response != null)
+                    {
+                        return response.HostName;
+                    }
+                }
             }
             catch (Exception)
             {
