@@ -20,7 +20,14 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
     public static class CloudFoundryHostBuilderExtensions
     {
-        public static IWebHostBuilder UseCloudFoundryHosting(this IWebHostBuilder webHostBuilder)
+        /// <summary>
+        /// Enable the application to listen on port(s) provided by the environment at runtime
+        /// </summary>
+        /// <param name="webHostBuilder">Your WebHostBuilder</param>
+        /// <param name="runLocalPort">Set the port number with code so you don't need to set environment variables locally</param>
+        /// <returns>Your WebHostBuilder, now listening on port(s) found in the environment or passed in</returns>
+        /// <remarks>runLocalPort parameter will not be used if an environment variable PORT is found</remarks>
+        public static IWebHostBuilder UseCloudFoundryHosting(this IWebHostBuilder webHostBuilder, int? runLocalPort = null)
         {
             if (webHostBuilder == null)
             {
@@ -32,11 +39,14 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             string portStr = Environment.GetEnvironmentVariable("PORT");
             if (!string.IsNullOrWhiteSpace(portStr))
             {
-                int port;
-                if (int.TryParse(portStr, out port))
+                if (int.TryParse(portStr, out int port))
                 {
                     urls.Add($"http://*:{port}");
                 }
+            }
+            else if (runLocalPort != null)
+            {
+                urls.Add($"http://*:{runLocalPort}");
             }
 
             if (urls.Count > 0)
@@ -53,6 +63,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             {
                 config.AddCloudFoundry();
             });
+
             return hostBuilder;
         }
     }
