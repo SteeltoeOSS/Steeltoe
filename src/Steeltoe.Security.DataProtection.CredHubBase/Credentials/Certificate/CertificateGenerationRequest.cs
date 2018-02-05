@@ -25,8 +25,9 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// </summary>
         /// <param name="credentialName">Name of the credential</param>
         /// <param name="parameters">Variables for certificate generation</param>
+        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
         /// <param name="overwrite">Overwrite any existing value</param>
-        public CertificateGenerationRequest(string credentialName, CertificateGenerationParameters parameters, bool overwrite = false)
+        public CertificateGenerationRequest(string credentialName, CertificateGenerationParameters parameters, List<CredentialPermission> additionalPermissions = null, bool overwrite = false)
         {
             var subjects = new List<string> { parameters.CommonName, parameters.Organization, parameters.OrganizationUnit, parameters.Locality, parameters.State, parameters.Country };
             if (!AtLeastOneProvided(subjects))
@@ -42,6 +43,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             Name = credentialName;
             Type = CredentialType.Certificate;
             Parameters = parameters;
+            AdditionalPermissions = additionalPermissions;
             Overwrite = overwrite;
         }
 

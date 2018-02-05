@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class PasswordGenerationRequest : CredHubGenerateRequest
@@ -22,12 +24,14 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// </summary>
         /// <param name="credentialName">Name of the credential</param>
         /// <param name="parameters">Variables for password generation</param>
+        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
         /// <param name="overwrite">Overwrite any existing value</param>
-        public PasswordGenerationRequest(string credentialName, PasswordGenerationParameters parameters, bool overwrite = false)
+        public PasswordGenerationRequest(string credentialName, PasswordGenerationParameters parameters, List<CredentialPermission> additionalPermissions = null, bool overwrite = false)
         {
             Name = credentialName;
             Type = CredentialType.Password;
             Parameters = parameters;
+            AdditionalPermissions = additionalPermissions;
             Overwrite = overwrite;
         }
     }

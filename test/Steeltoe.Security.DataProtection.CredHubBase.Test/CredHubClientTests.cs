@@ -396,6 +396,31 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         }
 
         [Fact]
+        public async void GenerateAsync_Creates_PasswordWithPermissions()
+        {
+            // arrange
+            var mockHttpMessageHandler = InitializedHandlerWithLogin();
+            var mockRequest = mockHttpMessageHandler
+                .Expect(HttpMethod.Post, credHubBase + "/v1/data")
+                .WithContent("{\"overwrite\":false,\"parameters\":{\"length\":40},\"additional_permissions\":[{\"actor\":\"test\",\"operations\":[\"read\",\"write\"]}],\"name\":\"generated-password\",\"type\":\"Password\"}")
+                .Respond("application/json", "{\"type\":\"password\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-password\",\"value\":\"W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO\"}");
+            var client = await InitializeClientAsync(mockHttpMessageHandler);
+            var request = new PasswordGenerationRequest("generated-password", new PasswordGenerationParameters { Length = 40 }, new List<CredentialPermission> { new CredentialPermission { Actor = "test", Operations = new List<OperationPermissions> { OperationPermissions.read, OperationPermissions.write } } });
+
+            // assert
+            var response = await client.GenerateAsync<PasswordCredential>(request);
+
+            // assert
+            mockHttpMessageHandler.VerifyNoOutstandingExpectation();
+            Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
+            Assert.Equal(CredentialType.Password, response.Type);
+            Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.Version_Created_At);
+            Assert.Equal(Guid.Parse("1a129eff-f467-42bc-b959-772f4dec1f5e"), response.Id);
+            Assert.Equal("/generated-password", response.Name);
+            Assert.Equal("W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO", response.Value.ToString());
+        }
+
+        [Fact]
         public async void GenerateAsync_Creates_User()
         {
             // arrange
