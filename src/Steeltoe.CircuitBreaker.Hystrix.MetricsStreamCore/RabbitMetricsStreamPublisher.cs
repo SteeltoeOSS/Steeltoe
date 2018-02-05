@@ -21,6 +21,7 @@ using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Net.Security;
+using System.Security.Authentication;
 using System.Text;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
@@ -42,11 +43,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
         {
             this.Factory = factory.ConnectionFactory as ConnectionFactory;
             SslOption sslOption = this.Factory.Ssl;
-            if (sslOption != null && sslOption.Enabled && !this.options.Validate_Certificates)
+            if (sslOption != null && sslOption.Enabled)
             {
-                logger?.LogInformation("Hystrix Metrics disabling certificate validation");
-                sslOption.AcceptablePolicyErrors = SslPolicyErrors.RemoteCertificateChainErrors |
-                    SslPolicyErrors.RemoteCertificateNameMismatch | SslPolicyErrors.RemoteCertificateNotAvailable;
+                logger?.LogInformation("Hystrix Metrics using TLS");
+                sslOption.Version = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+                if (!this.options.Validate_Certificates)
+                {
+                    logger?.LogInformation("Hystrix Metrics disabling certificate validation");
+                    sslOption.AcceptablePolicyErrors = SslPolicyErrors.RemoteCertificateChainErrors |
+                        SslPolicyErrors.RemoteCertificateNameMismatch | SslPolicyErrors.RemoteCertificateNotAvailable;
+                }
             }
 
             StartMetricsPublishing();
