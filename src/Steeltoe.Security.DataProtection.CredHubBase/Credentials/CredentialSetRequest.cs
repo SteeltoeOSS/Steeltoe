@@ -25,9 +25,9 @@ namespace Steeltoe.Security.DataProtection.CredHub
         public ICredentialValue Value { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether optionally overwrite an existing value
+        /// Gets or sets a value indicating the overwrite interaction mode
         /// </summary>
-        public bool Overwrite { get; set; } = false;
+        public OverwiteMode Mode { get; set; } = OverwiteMode.noOverwrite;
 
         /// <summary>
         /// Gets or sets optionally set permissions on the credential

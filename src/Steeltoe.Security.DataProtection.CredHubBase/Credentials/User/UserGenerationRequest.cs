@@ -12,16 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class UserGenerationRequest : CredHubGenerateRequest
     {
-        public UserGenerationRequest(string credentialName, UserGenerationParameters parameters, bool overwrite = false)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserGenerationRequest"/> class.
+        /// Use to request a new <see cref="UserCredential"/>
+        /// </summary>
+        /// <param name="credentialName">Name of credential</param>
+        /// <param name="parameters">Variables for username and password generation</param>
+        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
+        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
+        public UserGenerationRequest(string credentialName, UserGenerationParameters parameters, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
         {
             Name = credentialName;
             Type = CredentialType.User;
             Parameters = parameters;
-            Overwrite = overwrite;
+            AdditionalPermissions = additionalPermissions;
+            Mode = overwriteMode;
         }
     }
 }

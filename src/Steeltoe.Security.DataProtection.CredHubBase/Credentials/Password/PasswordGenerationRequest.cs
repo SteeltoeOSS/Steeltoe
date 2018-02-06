@@ -25,14 +25,14 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// <param name="credentialName">Name of the credential</param>
         /// <param name="parameters">Variables for password generation</param>
         /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
-        /// <param name="overwrite">Overwrite any existing value</param>
-        public PasswordGenerationRequest(string credentialName, PasswordGenerationParameters parameters, List<CredentialPermission> additionalPermissions = null, bool overwrite = false)
+        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
+        public PasswordGenerationRequest(string credentialName, PasswordGenerationParameters parameters, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
         {
             Name = credentialName;
             Type = CredentialType.Password;
             Parameters = parameters;
             AdditionalPermissions = additionalPermissions;
-            Overwrite = overwrite;
+            Mode = overwriteMode;
         }
     }
 }

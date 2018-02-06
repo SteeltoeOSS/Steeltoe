@@ -18,13 +18,21 @@ namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class SshSetRequest : CredentialSetRequest
     {
-        public SshSetRequest(string credentialName, string privateKey, string publicKey, List<CredentialPermission> additionalPermissions = null, bool overwrite = false)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SshSetRequest"/> class.
+        /// </summary>
+        /// <param name="credentialName">Name of credential</param>
+        /// <param name="privateKey">Private key for the credential</param>
+        /// <param name="publicKey">Public key for the credential</param>
+        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
+        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
+        public SshSetRequest(string credentialName, string privateKey, string publicKey, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
         {
             Name = credentialName;
             Type = CredentialType.SSH;
             Value = new SshCredential { PrivateKey = privateKey, PublicKey = publicKey };
             AdditionalPermissions = additionalPermissions;
-            Overwrite = overwrite;
+            Mode = overwriteMode;
         }
     }
 }

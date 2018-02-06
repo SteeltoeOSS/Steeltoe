@@ -20,9 +20,9 @@ namespace Steeltoe.Security.DataProtection.CredHub
     public abstract class CredHubGenerateRequest : CredHubBaseObject
     {
         /// <summary>
-        /// Gets or sets a value indicating whether overwrite an existing value if present
+        /// Gets or sets a value indicating the overwrite interaction mode
         /// </summary>
-        public bool Overwrite { get; set; } = false;
+        public OverwiteMode Mode { get; set; } = OverwiteMode.noOverwrite;
 
         /// <summary>
         /// Gets or sets parameters for generating credential

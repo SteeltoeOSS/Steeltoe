@@ -18,25 +18,22 @@ namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class SshGenerationRequest : CredHubGenerateRequest
     {
+        private SshGenerationParameters defaultParams = new SshGenerationParameters { KeyLength = CertificateKeyLength.Length_2048, SshComment = null };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SshGenerationRequest"/> class.
         /// Use to request a new SSH Credential
         /// </summary>
         /// <param name="credentialName">Name of credential</param>
-        /// <param name="keyLength">Optional Key Length (default: 2048)</param>
+        /// <param name="parameters">Optional parameters (defaults to key length 2048 and no SSH Comment)</param>
         /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
-        /// <param name="overwrite">Overwrite existing credential (default: false)</param>
-        /// <param name="sshComment">SSH comment of generated credential value (optional)</param>
-        public SshGenerationRequest(string credentialName, CertificateKeyLength keyLength = CertificateKeyLength.Length_2048, List<CredentialPermission> additionalPermissions = null, bool overwrite = false, string sshComment = null)
+        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
+        public SshGenerationRequest(string credentialName, SshGenerationParameters parameters = null, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
         {
             Name = credentialName;
             Type = CredentialType.SSH;
-            Parameters = new SshGenerationParameters
-            {
-                KeyLength = keyLength,
-                SshComment = sshComment
-            };
-            Overwrite = overwrite;
+            Parameters = parameters ?? defaultParams;
+            Mode = overwriteMode;
             AdditionalPermissions = additionalPermissions;
         }
     }

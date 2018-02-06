@@ -29,9 +29,9 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// <param name="certificateAuthority">Certificate authority value of credential to set</param>
         /// <param name="certificateAuthorityName">Name of CA credential in credhub that has signed this certificate</param>
         /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
-        /// <param name="overwrite">Update any existing value</param>
+        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
         /// <remarks>Must include either the CA or CA Name</remarks>
-        public CertificateSetRequest(string credentialName, string privateKey, string certificate, string certificateAuthority = null, string certificateAuthorityName = null, List<CredentialPermission> additionalPermissions = null, bool overwrite = false)
+        public CertificateSetRequest(string credentialName, string privateKey, string certificate, string certificateAuthority = null, string certificateAuthorityName = null, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
         {
             if (!string.IsNullOrEmpty(certificateAuthority) && !string.IsNullOrEmpty(certificateAuthorityName))
             {
@@ -48,7 +48,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 CertificateAuthorityName = certificateAuthorityName
             };
             AdditionalPermissions = additionalPermissions;
-            Overwrite = overwrite;
+            Mode = overwriteMode;
         }
     }
 }
