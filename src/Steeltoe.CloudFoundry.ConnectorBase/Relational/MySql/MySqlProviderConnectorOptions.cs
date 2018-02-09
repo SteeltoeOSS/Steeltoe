@@ -19,7 +19,9 @@ using System.Text;
 namespace Steeltoe.CloudFoundry.Connector.MySql
 {
     /// <summary>
+    /// Currently enabling properties supported by BOTH of these connectors:
     /// https://dev.mysql.com/doc/connector-net/en/connector-net-connection-options.html
+    /// https://mysql-net.github.io/MySqlConnector/tutorials/migrating-from-connector-net/
     /// </summary>
     public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
     {
@@ -60,57 +62,37 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
         public string SslMode { get; set; }
 
-        public bool? AllowBatch { get; set; }
+        public bool? AllowPublicKeyRetrieval { get; set; }
 
         public bool? AllowUserVariables { get; set; }
 
-        public bool? AutoEnlist { get; set; }
-
-        public bool? CheckParameters { get; set; }
-
         public int? ConnectionTimeout { get; set; }
+
+        public bool? ConvertZeroDateTime { get; set; }
 
         public int? DefaultCommandTimeout { get; set; }
 
-        public int? DefaultTableCacheAge { get; set; }
-
-        public bool? EnableSessionExpireCallback { get; set; }
-
-        public bool? FunctionsReturnString { get; set; }
-
-        public bool? IgnorePrepare { get; set; }
-
-        public bool? IncludeSecurityAsserts { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether various pieces of information are output to any configured TraceListeners
-        /// </summary>
-        /// <remarks>Currently not supported for .NET Core implementations.</remarks>
-        public bool? Logging { get; set; }
+        public int? Keepalive { get; set; }
 
         public bool? OldGuids { get; set; }
 
-        public bool? OldSyntax { get; set; }
-
         public bool? PersistSecurityInfo { get; set; }
-
-        public bool? SqlServerMode { get; set; }
-
-        public bool? TableCache { get; set; }
-
-        public bool? TreatBlobsAsUTF8 { get; set; }
 
         public bool? TreatTinyAsBoolean { get; set; }
 
         public bool? UseAffectedRows { get; set; }
 
-        public bool? UseProcedureBodies { get; set; }
-
         public bool? UseCompression { get; set; }
 
-        public bool? UseUsageAdvisor { get; set; }
+        public int? ConnectionLifeTime { get; set; }
 
-        public bool? UsePerformanceMonitor { get; set; }
+        public bool? ConnectionReset { get; set; }
+
+        public int? MaximumPoolsize { get; set; }
+
+        public int? MinimumPoolsize { get; set; }
+
+        public bool? Pooling { get; set; }
 
         public override string ToString()
         {
@@ -126,30 +108,22 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             AddKeyValue(sb, nameof(Password), Password);
             AddKeyValue(sb, nameof(Database), Database);
             AddKeyValue(sb, nameof(SslMode), SslMode);
-            AddKeyValue(sb, nameof(AllowBatch), AllowBatch);
+            AddKeyValue(sb, nameof(AllowPublicKeyRetrieval), AllowPublicKeyRetrieval);
             AddKeyValue(sb, nameof(AllowUserVariables), AllowUserVariables);
-            AddKeyValue(sb, nameof(AutoEnlist), AutoEnlist);
-            AddKeyValue(sb, nameof(CheckParameters), CheckParameters);
+            AddKeyValue(sb, nameof(ConnectionLifeTime), ConnectionLifeTime);
+            AddKeyValue(sb, nameof(ConnectionReset), ConnectionReset);
             AddKeyValue(sb, nameof(ConnectionTimeout), ConnectionTimeout);
+            AddKeyValue(sb, nameof(ConvertZeroDateTime), ConvertZeroDateTime);
             AddKeyValue(sb, nameof(DefaultCommandTimeout), DefaultCommandTimeout);
-            AddKeyValue(sb, nameof(DefaultTableCacheAge), DefaultTableCacheAge);
-            AddKeyValue(sb, nameof(EnableSessionExpireCallback), EnableSessionExpireCallback);
-            AddKeyValue(sb, nameof(FunctionsReturnString), FunctionsReturnString);
-            AddKeyValue(sb, nameof(IgnorePrepare), IgnorePrepare);
-            AddKeyValue(sb, nameof(IncludeSecurityAsserts), IncludeSecurityAsserts);
-            AddKeyValue(sb, nameof(Logging), Logging);
+            AddKeyValue(sb, nameof(Keepalive), Keepalive);
+            AddKeyValue(sb, nameof(MaximumPoolsize), MaximumPoolsize);
+            AddKeyValue(sb, nameof(MinimumPoolsize), MinimumPoolsize);
             AddKeyValue(sb, nameof(OldGuids), OldGuids);
-            AddKeyValue(sb, nameof(OldSyntax), OldSyntax);
             AddKeyValue(sb, nameof(PersistSecurityInfo), PersistSecurityInfo);
-            AddKeyValue(sb, nameof(SqlServerMode), SqlServerMode);
-            AddKeyValue(sb, nameof(TableCache), TableCache);
-            AddKeyValue(sb, nameof(TreatBlobsAsUTF8), TreatBlobsAsUTF8);
+            AddKeyValue(sb, nameof(Pooling), Pooling);
             AddKeyValue(sb, nameof(TreatTinyAsBoolean), TreatTinyAsBoolean);
             AddKeyValue(sb, nameof(UseAffectedRows), UseAffectedRows);
-            AddKeyValue(sb, nameof(UseProcedureBodies), UseProcedureBodies);
             AddKeyValue(sb, nameof(UseCompression), UseCompression);
-            AddKeyValue(sb, nameof(UseUsageAdvisor), UseUsageAdvisor);
-            AddKeyValue(sb, nameof(UsePerformanceMonitor), UsePerformanceMonitor);
             return sb.ToString();
         }
     }
