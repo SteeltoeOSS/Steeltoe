@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.ConnectorBase.Cache;
 using System;
 using System.IO;
 using System.Reflection;
@@ -195,37 +196,26 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            string[] redisAssemblies = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis" };
-            string[] redisInterfaceTypeNames = new string[] { "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
-            string[] redisImplementationTypeNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCache" };
-            string[] redisOptionNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
-
-            Type redisInterface = ConnectorHelpers.FindType(redisAssemblies, redisInterfaceTypeNames);
-            Type redisConnection = ConnectorHelpers.FindType(redisAssemblies, redisImplementationTypeNames);
-            Type redisOptions = ConnectorHelpers.FindType(redisAssemblies, redisOptionNames);
-
-            if (redisInterface == null || redisConnection == null || redisOptions == null)
+            Type interfaceType = RedisTypeLocator.MicrosoftRedisInterface;
+            Type connectionType = RedisTypeLocator.MicrosoftRedisImplementation;
+            Type optionsType = RedisTypeLocator.MicrosoftRedisOptions;
+            if (interfaceType == null || connectionType == null || optionsType == null)
             {
                 throw new ConnectorException("Unable to find required Redis types, are you missing the Microsoft.Extensions.Caching.Redis Nuget package?");
             }
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisConnection, redisOptions, null);
-            services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
-            services.Add(new ServiceDescriptor(redisConnection, factory.Create, contextLifetime));
+            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, connectionType, optionsType, null);
+            services.Add(new ServiceDescriptor(interfaceType, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(connectionType, factory.Create, contextLifetime));
         }
 
         private static void DoAddConnectionMultiplexer(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            string[] redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName" };
-            string[] redisInterfaceTypeNames = new string[] { "StackExchange.Redis.IConnectionMultiplexer" };
-            string[] redisImplementationTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
-            string[] redisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions" };
-
-            Type redisInterface = ConnectorHelpers.FindType(redisAssemblies, redisInterfaceTypeNames);
-            Type redisImplementation = ConnectorHelpers.FindType(redisAssemblies, redisImplementationTypeNames);
-            Type redisOptions = ConnectorHelpers.FindType(redisAssemblies, redisOptionNames);
-            MethodInfo initializer = ConnectorHelpers.FindMethod(redisImplementation, "Connect", new Type[] { redisOptions, typeof(TextWriter) });
+            Type redisInterface = RedisTypeLocator.StackExchangeRedisInterface;
+            Type redisImplementation = RedisTypeLocator.StackExchangeRedisImplementation;
+            Type redisOptions = RedisTypeLocator.StackExchangeRedisOptions;
+            MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
 
             if (redisInterface == null || redisImplementation == null || redisOptions == null || initializer == null)
             {

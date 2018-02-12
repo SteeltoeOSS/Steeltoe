@@ -63,7 +63,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 Port = 1234,
                 Password = "password",
                 InstanceName = "instanceId",
-                AbortOnConnectFail = false
+                AbortOnConnectFail = false,
+                ConnectTimeout = 1
             };
             RedisServiceInfo si = new RedisServiceInfo("myId", "127.0.0.1", 4321, "sipassword")
             {

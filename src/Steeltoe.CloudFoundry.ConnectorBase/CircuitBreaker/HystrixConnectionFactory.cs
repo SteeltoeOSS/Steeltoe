@@ -20,12 +20,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
     {
         public HystrixConnectionFactory(object realFactory)
         {
-            if (realFactory == null)
-            {
-                throw new ArgumentNullException(nameof(realFactory));
-            }
-
-            ConnectionFactory = realFactory;
+            ConnectionFactory = realFactory ?? throw new ArgumentNullException(nameof(realFactory));
         }
 
         public object ConnectionFactory { get; private set; }

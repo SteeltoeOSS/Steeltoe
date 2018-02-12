@@ -194,7 +194,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 ["redis:client:host"] = "127.0.0.1",
                 ["redis:client:port"] = "1234",
                 ["redis:client:password"] = "password",
-                ["redis:client:abortOnConnectFail"] = "false"
+                ["redis:client:abortOnConnectFail"] = "false",
+                ["redis:client:connectTimeout"] = "1"
             };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();

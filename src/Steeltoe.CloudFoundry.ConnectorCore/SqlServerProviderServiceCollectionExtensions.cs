@@ -24,7 +24,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
     public static class SqlServerProviderServiceCollectionExtensions
     {
         private static string[] sqlServerAssemblies = new string[] { "System.Data.SqlClient" };
-
         private static string[] sqlServerTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
 
         /// <summary>
@@ -90,7 +89,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             Type sqlServerConnection = ConnectorHelpers.FindType(sqlServerAssemblies, sqlServerTypeNames);
             if (sqlServerConnection == null)
             {
-                throw new ConnectorException("Unable to find SqlServerConnection, are you missing SqlServer ADO.NET assembly");
+                throw new ConnectorException("Unable to find System.Data.SqlClient.SqlConnection, are you missing a reference to System.Data.SqlClient?");
             }
 
             SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);

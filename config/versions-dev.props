@@ -6,6 +6,7 @@
     <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
     <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
+    <AutofacVersion>4.6.1</AutofacVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
     <EF6Version>6.1.3</EF6Version>
@@ -18,6 +19,7 @@
     <NpgsqlEFCoreVersion>2.0.0</NpgsqlEFCoreVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <MySqlVersion>6.9.10</MySqlVersion>
+    <SqlClientVersion>4.4.2</SqlClientVersion>
     <JsonNetVersion>10.0.3</JsonNetVersion>
     <TestSdkVersion>15.5.0</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>

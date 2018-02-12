@@ -29,19 +29,9 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 
         public HystrixProviderConnectorFactory(HystrixRabbitMQServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-           if (connectFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectFactory));
-            }
-
             _info = sinfo;
-            _config = config;
-            _type = connectFactory;
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _type = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
             _setUri = FindSetUriMethod(_type);
             if (_setUri == null)
             {
