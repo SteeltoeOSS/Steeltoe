@@ -19,7 +19,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
     public class ConnectorIOptionsTest
     {
         [Fact]
-        public void Value_Resturns_Excpected()
+        public void Value_Returns_Expected()
         {
             var myOpt = new MyOption();
             var opt = new ConnectorIOptions<MyOption>(myOpt);

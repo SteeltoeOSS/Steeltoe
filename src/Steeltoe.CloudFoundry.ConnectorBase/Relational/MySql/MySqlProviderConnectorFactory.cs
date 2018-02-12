@@ -29,13 +29,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
         public MySqlProviderConnectorFactory(MySqlServiceInfo sinfo, MySqlProviderConnectorOptions config, Type type)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
             _info = sinfo;
-            _config = config;
+            _config = config ?? throw new ArgumentNullException(nameof(config));
             ConnectorType = type;
         }
 
