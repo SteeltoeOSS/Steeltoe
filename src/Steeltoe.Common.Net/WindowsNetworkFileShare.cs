@@ -19,7 +19,7 @@ using System.Text;
 
 namespace Steeltoe.Common.Net
 {
-    public class WindowsNetworkFileShare
+    public class WindowsNetworkFileShare : IDisposable
     {
         private const int NO_ERROR = 0;
         private const int ERROR_ACCESS_DENIED = 5;
