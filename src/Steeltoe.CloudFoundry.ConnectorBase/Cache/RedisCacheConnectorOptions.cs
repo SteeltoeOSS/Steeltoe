@@ -171,10 +171,30 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// </summary>
         /// <param name="optionsType">Expects StackExchange.Redis.ConfigurationOptions</param>
         /// <returns>This object typed as ConfigurationOptions</returns>
+        /// <remarks>Includes comma in password detection and workaround for https://github.com/SteeltoeOSS/Connectors/issues/10 </remarks>
         public object ToStackExchangeObject(Type optionsType)
         {
             var stackObject = Activator.CreateInstance(optionsType);
-            return stackObject.GetType().GetMethod("Parse", new Type[] { typeof(string) }).Invoke(stackObject, new object[] { ToString() });
+
+            // to remove this comma workaround, follow up on https://github.com/StackExchange/StackExchange.Redis/issues/680
+            var tempPassword = Password;
+            bool resetPassword = false;
+            if (Password.Contains(","))
+            {
+                Password = string.Empty;
+                resetPassword = true;
+            }
+
+            // this return is effectively "StackExchange.Redis.ConfigurationOptions.Parse(this.ToString())"
+            var config = optionsType.GetMethod("Parse", new Type[] { typeof(string) })
+                                    .Invoke(stackObject, new object[] { ToString() });
+
+            if (resetPassword)
+            {
+                ConnectorHelpers.TrySetProperty(config, "Password", tempPassword);
+            }
+
+            return config;
         }
 
         // internal void AddEndPoints(EndPointCollection result, string endpoints)

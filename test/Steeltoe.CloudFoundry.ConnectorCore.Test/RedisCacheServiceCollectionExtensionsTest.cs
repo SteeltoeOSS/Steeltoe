@@ -193,7 +193,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             {
                 ["redis:client:host"] = "127.0.0.1",
                 ["redis:client:port"] = "1234",
-                ["redis:client:password"] = "password",
+                ["redis:client:password"] = "pass,word",
                 ["redis:client:abortOnConnectFail"] = "false",
                 ["redis:client:connectTimeout"] = "1"
             };
@@ -215,8 +215,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Assert
             Assert.NotNull(service);
             Assert.IsType<ConnectionMultiplexer>(service);
+            Assert.Contains("password=pass,word", (service as ConnectionMultiplexer).Configuration);
             Assert.NotNull(service2);
             Assert.IsType<ConnectionMultiplexer>(service2);
+            Assert.Contains("password=pass,word", (service as ConnectionMultiplexer).Configuration);
         }
 
         [Fact]

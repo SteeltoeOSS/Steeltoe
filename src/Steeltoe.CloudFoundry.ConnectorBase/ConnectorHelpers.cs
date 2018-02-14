@@ -156,5 +156,20 @@ namespace Steeltoe.CloudFoundry.Connector
 
             return null;
         }
+
+        /// <summary>
+        /// Try to set a property on an object
+        /// </summary>
+        /// <param name="obj">Object to set a value on</param>
+        /// <param name="property">Property to set</param>
+        /// <param name="value">Value to use</param>
+        public static void TrySetProperty(object obj, string property, object value)
+        {
+            var prop = obj.GetType().GetProperty(property, BindingFlags.Public | BindingFlags.Instance);
+            if (prop != null && prop.CanWrite)
+            {
+                prop.SetValue(obj, value, null);
+            }
+        }
     }
 }
