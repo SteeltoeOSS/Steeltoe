@@ -35,8 +35,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.False(opts.SecurePortEnabled);
             Assert.Equal(EurekaInstanceOptions.Default_LeaseRenewalIntervalInSeconds, opts.LeaseRenewalIntervalInSeconds);
             Assert.Equal(EurekaInstanceOptions.Default_LeaseExpirationDurationInSeconds, opts.LeaseExpirationDurationInSeconds);
-            Assert.Equal("unknown", opts.VirtualHostName);
-            Assert.Equal("unknown", opts.SecureVirtualHostName);
+            Assert.Null(opts.VirtualHostName);
+            Assert.Null(opts.SecureVirtualHostName);
             Assert.Null(opts.ASGName);
             Assert.NotNull(opts.MetadataMap);
             Assert.Empty(opts.MetadataMap);

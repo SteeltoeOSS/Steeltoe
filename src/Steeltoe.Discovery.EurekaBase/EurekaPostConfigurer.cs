@@ -35,8 +35,15 @@ namespace Steeltoe.Discovery.Eureka
                 }
             }
 
-            options.VirtualHostName = options.AppName;
-            options.SecureVirtualHostName = options.AppName;
+            if (string.IsNullOrEmpty(options.VirtualHostName))
+            {
+                options.VirtualHostName = options.AppName;
+            }
+
+            if (string.IsNullOrEmpty(options.SecureVirtualHostName))
+            {
+                options.SecureVirtualHostName = options.AppName;
+            }
 
             if (defaultId.Equals(options.InstanceId))
             {
