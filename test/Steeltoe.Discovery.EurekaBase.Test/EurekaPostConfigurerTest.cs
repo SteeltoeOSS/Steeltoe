@@ -40,6 +40,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("bar", instOpts.AppName);
             Assert.Equal("instance", instOpts.InstanceId);
             Assert.Equal("registrationMethod", instOpts.RegistrationMethod);
+            Assert.Equal("bar", instOpts.VirtualHostName);
+            Assert.Equal("bar", instOpts.SecureVirtualHostName);
         }
 
         [Fact]
@@ -67,6 +69,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("dontChange", instOpts.AppName);
             Assert.Equal("dontChange", instOpts.InstanceId);
             Assert.Equal("dontChange", instOpts.RegistrationMethod);
+            Assert.Equal("dontChange", instOpts.VirtualHostName);
+            Assert.Equal("dontChange", instOpts.SecureVirtualHostName);
         }
 
         [Fact]
@@ -88,6 +92,36 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("bar", instOpts.AppName);
             Assert.EndsWith("bar:80", instOpts.InstanceId, StringComparison.OrdinalIgnoreCase);
             Assert.Equal("registrationMethod", instOpts.RegistrationMethod);
+            Assert.Equal("bar", instOpts.VirtualHostName);
+            Assert.Equal("bar", instOpts.SecureVirtualHostName);
+        }
+
+        [Fact]
+        public void UpdateConfiguration_UpdatesCorrectly3()
+        {
+            var builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(new Dictionary<string, string>()
+            {
+                { "spring:application:instance_id", "instance" },
+                { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
+            });
+
+            IConfigurationRoot root = builder.Build();
+
+            var instOpts = new EurekaInstanceOptions()
+            {
+                AppName = "dontChange",
+                InstanceId = "dontChange",
+                RegistrationMethod = "dontChange"
+            };
+
+            EurekaPostConfigurer.UpdateConfiguration(root, instOpts);
+
+            Assert.Equal("dontChange", instOpts.AppName);
+            Assert.Equal("dontChange", instOpts.InstanceId);
+            Assert.Equal("dontChange", instOpts.RegistrationMethod);
+            Assert.Equal("dontChange", instOpts.VirtualHostName);
+            Assert.Equal("dontChange", instOpts.SecureVirtualHostName);
         }
     }
 }

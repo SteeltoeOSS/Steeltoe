@@ -32,10 +32,11 @@ namespace Steeltoe.Discovery.Eureka
                 if (!string.IsNullOrEmpty(springAppName))
                 {
                     options.AppName = springAppName;
-                    options.VirtualHostName = springAppName;
-                    options.SecureVirtualHostName = springAppName;
                 }
             }
+
+            options.VirtualHostName = options.AppName;
+            options.SecureVirtualHostName = options.AppName;
 
             if (defaultId.Equals(options.InstanceId))
             {
