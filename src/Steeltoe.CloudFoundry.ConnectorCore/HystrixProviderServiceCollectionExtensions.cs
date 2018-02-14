@@ -25,6 +25,14 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
         private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
         private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
 
+        /// <summary>
+        /// Adds HystrixConnectionFactory to your ServiceCollection
+        /// </summary>
+        /// <param name="services">Your Service Collection</param>
+        /// <param name="config">Application Configuration</param>
+        /// <param name="contextLifetime">Lifetime of the service to inject</param>
+        /// <param name="logFactory">Not implemented</param>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -43,6 +51,15 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             return services;
         }
 
+        /// <summary>
+        /// Adds HystrixConnectionFactory to your ServiceCollection
+        /// </summary>
+        /// <param name="services">Your Service Collection</param>
+        /// <param name="config">Application Configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <param name="contextLifetime">Lifetime of the service to inject</param>
+        /// <param name="logFactory">Not implemented</param>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)

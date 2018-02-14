@@ -28,7 +28,14 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
         private static string[] mySqlAssemblies = new string[] { "MySql.Data", "MySqlConnector" };
         private static string[] mySqlTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
 
-        public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterMySqlConnection(this ContainerBuilder container, IConfiguration config)
+        /// <summary>
+        /// Adds a MySqlConnection (as IDbConnection) to your Autofac Container
+        /// </summary>
+        /// <param name="container">Your Autofac Container Builder</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>the RegistrationBuilder for (optional) additional configuration</returns>
+        public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterMySqlConnection(this ContainerBuilder container, IConfiguration config, string serviceName = null)
         {
             if (container == null)
             {
@@ -46,8 +53,17 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ConnectorException("Unable to find MySqlConnection, are you missing a MySql reference?");
             }
 
+            MySqlServiceInfo info;
+            if (serviceName == null)
+            {
+                info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
+            }
+            else
+            {
+                info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+            }
+
             MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
-            MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
             MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
             return container.Register(c => factory.Create(null)).As<IDbConnection>();
         }

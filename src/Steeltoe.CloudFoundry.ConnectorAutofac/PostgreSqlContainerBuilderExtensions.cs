@@ -28,7 +28,14 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
         private static string[] postgreSqlAssemblies = new string[] { "Npgsql" };
         private static string[] postgreSqlTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
 
-        public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterPostgreSqlConnection(this ContainerBuilder container, IConfiguration config)
+        /// <summary>
+        /// Adds NpgsqlConnection (as IDbConnection) to your Autofac Container
+        /// </summary>
+        /// <param name="container">Your Autofac Container Builder</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>the RegistrationBuilder for (optional) additional configuration</returns>
+        public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterPostgreSqlConnection(this ContainerBuilder container, IConfiguration config, string serviceName = null)
         {
             if (container == null)
             {
@@ -46,8 +53,17 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ConnectorException("Unable to find NpgsqlConnection, are you missing a reference to Npgsql?");
             }
 
+            PostgresServiceInfo info;
+            if (serviceName == null)
+            {
+                info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
+            }
+            else
+            {
+                info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+            }
+
             var postgreSqlConfig = new PostgresProviderConnectorOptions(config);
-            PostgresServiceInfo info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
             PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgreSqlConfig, postgreSqlConnection);
             return container.Register(c => factory.Create(null)).As<IDbConnection>();
         }

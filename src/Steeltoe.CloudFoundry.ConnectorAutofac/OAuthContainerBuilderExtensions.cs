@@ -25,6 +25,13 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
     public static class OAuthContainerBuilderExtensions
     {
+        /// <summary>
+        /// Adds SsoServiceInfo (as IOptions of type OAuthServiceOptions) to your Autofac Container
+        /// </summary>
+        /// <param name="container">Your Autofac Container Builder</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>the RegistrationBuilder for (optional) additional configuration</returns>
         public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterOAuthServiceOptions(this ContainerBuilder container, IConfiguration config, string serviceName = null)
         {
             if (container == null)

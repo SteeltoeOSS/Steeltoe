@@ -27,6 +27,13 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
         private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
         private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
 
+        /// <summary>
+        /// Add a HystrixConnectionFactory to your Autofac Container
+        /// </summary>
+        /// <param name="container">Your Autofac Container Builder</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>the RegistrationBuilder for (optional) additional configuration</returns>
         public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterHystrixConnection(this ContainerBuilder container, IConfiguration config, string serviceName = null)
         {
             if (container == null)

@@ -28,6 +28,13 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
         private static string[] rabbitMQInterfaceTypeNames = new string[] { "RabbitMQ.Client.IConnectionFactory" };
         private static string[] rabbitMQImplementationTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
 
+        /// <summary>
+        /// Adds RabbitMQ ConnectionFactory (as IConnectionFactory and ConnectionFactory) to your Autofac Container
+        /// </summary>
+        /// <param name="container">Your Autofac Container Builder</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>the RegistrationBuilder for (optional) additional configuration</returns>
         public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterRabbitMQConnection(this ContainerBuilder container, IConfiguration config, string serviceName = null)
         {
             if (container == null)

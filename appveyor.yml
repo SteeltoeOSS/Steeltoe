@@ -16,6 +16,8 @@ build_script:
 artifacts:
 - path: 'src\Steeltoe.CloudFoundry.ConnectorBase\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.ConnectorBase\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.ConnectorAutofac\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.CloudFoundry.ConnectorAutofac\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.ConnectorCore\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.ConnectorCore\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.CloudFoundry.Connector.EF6Core\bin\Debug\*.nupkg'
@@ -67,5 +69,5 @@ deploy:
   api_key:
     secure: RGkpu8xIMDC75IAd1qPRdueeTaYj+ddW2bNEw8S7e81940ELu+WV04uWAzqV34/C
   on:
-    branch:  /^update[0-9]{3}/
+    branch: /^update[0-9]{3}/
     appveyor_repo_tag: true    

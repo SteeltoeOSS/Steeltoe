@@ -22,6 +22,13 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
 {
     public static class OAuthServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds OAuthServiceOptions to Service Collection
+        /// </summary>
+        /// <param name="services">Your Service Collection</param>
+        /// <param name="config">Application Configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
@@ -41,6 +48,13 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
             return services;
         }
 
+        /// <summary>
+        /// Adds OAuthServiceOptions to Service Collection
+        /// </summary>
+        /// <param name="services">Your Service Collection</param>
+        /// <param name="config">Application Configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>IServiceCollection for chaining</returns>
         public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config, string serviceName)
         {
             if (services == null)

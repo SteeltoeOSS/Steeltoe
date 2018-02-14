@@ -14,3 +14,7 @@ cd ../..
 cd src/Steeltoe.CloudFoundry.ConnectorCore
 dotnet restore --configfile ../../nuget.config
 cd ../..
+
+cd src/Steeltoe.CloudFoundry.ConnectorAutofac
+dotnet restore --configfile ../../nuget.config
+cd ../..

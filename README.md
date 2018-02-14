@@ -12,7 +12,7 @@ Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/
 
 ## .NET Runtime & Framework Support
 
-The connectors are intended to support both .NET 4.6.1+ and .NET Core (CoreCLR/CoreFX) runtimes. Note that some connectors only support .NET 4.6.1+ since the libraries they depend on do not yet support .NET Core.
+The connectors are intended to support both .NET 4.6.1+ and .NET Core (CoreCLR/CoreFX) runtimes. Note that some connectors only support .NET 4.6.1+ since the libraries they depend on do not support .NET Core.
 
 Where supported the connectors are built and unit tested on Windows, Linux and OSX.
 

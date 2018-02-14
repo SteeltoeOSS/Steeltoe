@@ -28,7 +28,14 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
         private static string[] sqlServerAssemblies = new string[] { "System.Data.SqlClient" };
         private static string[] sqlServerTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
 
-        public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterSqlServerConnection(this ContainerBuilder container, IConfiguration config)
+        /// <summary>
+        /// Adds SqlConnection (as IDbConnection) to your Autofac Container
+        /// </summary>
+        /// <param name="container">Your Autofac Container Builder</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>the RegistrationBuilder for (optional) additional configuration</returns>
+        public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterSqlServerConnection(this ContainerBuilder container, IConfiguration config, string serviceName = null)
         {
             if (container == null)
             {
@@ -46,8 +53,17 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ConnectorException("Unable to find System.Data.SqlClient.SqlConnection, are you missing a System.Data.SqlClient reference?");
             }
 
+            SqlServerServiceInfo info;
+            if (serviceName == null)
+            {
+                info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            }
+            else
+            {
+                info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+            }
+
             var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
-            var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
             return container.Register(c => factory.Create(null)).As<IDbConnection>();
         }

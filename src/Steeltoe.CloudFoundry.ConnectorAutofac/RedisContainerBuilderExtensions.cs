@@ -26,6 +26,13 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
     public static class RedisContainerBuilderExtensions
     {
+        /// <summary>
+        /// Adds RedisCache (as IDistributedCache and RedisCache) to your Autofac Container
+        /// </summary>
+        /// <param name="container">Your Autofac Container Builder</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>the RegistrationBuilder for (optional) additional configuration</returns>
         public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterDistributedRedisCache(
             this ContainerBuilder container,
             IConfiguration config,
@@ -64,6 +71,13 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
             return container.Register(c => factory.Create(null)).As(redisInterface, redisImplementation);
         }
 
+        /// <summary>
+        /// Adds ConnectionMultiplexer (as ConnectionMultiplexer and IConnectionMultiplexer) to your Autofac Container
+        /// </summary>
+        /// <param name="container">Your Autofac Container Builder</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="serviceName">Cloud Foundry service name binding</param>
+        /// <returns>the RegistrationBuilder for (optional) additional configuration</returns>
         public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterRedisConnectionMultiplexer(
             this ContainerBuilder container,
             IConfiguration config,

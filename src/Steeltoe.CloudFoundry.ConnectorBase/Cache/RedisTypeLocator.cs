@@ -14,10 +14,8 @@
 
 using Steeltoe.CloudFoundry.Connector;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 
 namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
 {
@@ -32,18 +30,39 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
         private static string[] stackExchangeRedisImplementationTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
         private static string[] stackExchangeRedisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions" };
 
+        /// <summary>
+        /// Gets IDistributedCache from a Microsoft Cache library
+        /// </summary>
         public static Type MicrosoftRedisInterface => ConnectorHelpers.FindType(msftRedisAssemblies, msftRedisInterfaceTypeNames);
 
+        /// <summary>
+        /// Gets RedisCache from a Microsoft Cache library
+        /// </summary>
         public static Type MicrosoftRedisImplementation => ConnectorHelpers.FindType(msftRedisAssemblies, msftRedisImplementationTypeNames);
 
+        /// <summary>
+        /// Gets RedisCacheOptions from a Microsoft Cache library
+        /// </summary>
         public static Type MicrosoftRedisOptions => ConnectorHelpers.FindType(msftRedisAssemblies, msftRedisOptionNames);
 
+        /// <summary>
+        /// Gets IConnectionMultiplexer from a StackExchange Redis library
+        /// </summary>
         public static Type StackExchangeRedisInterface => ConnectorHelpers.FindType(stackExchangeRedisAssemblies, stackExchangeRedisInterfaceTypeNames);
 
+        /// <summary>
+        /// Gets ConnectionMultiplexer from a StackExchange Redis library
+        /// </summary>
         public static Type StackExchangeRedisImplementation => ConnectorHelpers.FindType(stackExchangeRedisAssemblies, stackExchangeRedisImplementationTypeNames);
 
+        /// <summary>
+        /// Gets ConfigurationOptions from a StackExchange Redis library
+        /// </summary>
         public static Type StackExchangeRedisOptions => ConnectorHelpers.FindType(stackExchangeRedisAssemblies, stackExchangeRedisOptionNames);
 
+        /// <summary>
+        /// Gets the Connect method from a StackExchange Redis library
+        /// </summary>
         public static MethodInfo StackExchangeInitializer =>
             ConnectorHelpers.FindMethod(StackExchangeRedisImplementation, "Connect", new Type[] { StackExchangeRedisOptions, typeof(TextWriter) });
     }
