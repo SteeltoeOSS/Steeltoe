@@ -15,10 +15,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.Cache;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.ConnectorBase.Cache;
 using System;
-using System.IO;
 using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis

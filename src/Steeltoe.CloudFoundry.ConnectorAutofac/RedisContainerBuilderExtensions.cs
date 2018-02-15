@@ -16,9 +16,9 @@ using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector;
+using Steeltoe.CloudFoundry.Connector.Cache;
 using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.ConnectorBase.Cache;
 using System;
 using System.Reflection;
 

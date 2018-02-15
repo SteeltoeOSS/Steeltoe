@@ -179,7 +179,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             // to remove this comma workaround, follow up on https://github.com/StackExchange/StackExchange.Redis/issues/680
             var tempPassword = Password;
             bool resetPassword = false;
-            if (Password.Contains(","))
+            if (Password?.Contains(",") == true)
             {
                 Password = string.Empty;
                 resetPassword = true;

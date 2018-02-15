@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector;
 using System;
 using System.IO;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
+namespace Steeltoe.CloudFoundry.Connector.Cache
 {
     public static class RedisTypeLocator
     {
