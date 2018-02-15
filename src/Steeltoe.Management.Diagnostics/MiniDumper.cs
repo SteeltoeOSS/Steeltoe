@@ -44,6 +44,7 @@ namespace Steeltoe.Management.Diagnostics
                 }
 
                 var fileHandle = dumpFile.SafeFileHandle.DangerousGetHandle();
+                GC.KeepAlive(callbackDelegate);
 
                 result.ReturnValue = MiniDumpWriteDump(processHandle, pid, fileHandle, GetMiniDumpType(), IntPtr.Zero, IntPtr.Zero, callbackParam);
                 result.ErrorCode = Marshal.GetHRForLastWin32Error();
@@ -56,9 +57,10 @@ namespace Steeltoe.Management.Diagnostics
             }
             finally
             {
-                Marshal.FreeHGlobal(callbackParam);
-
-                // GC.KeepAlive(callbackDelegate);
+                if (callbackParam != default(IntPtr))
+                {
+                    Marshal.FreeHGlobal(callbackParam);
+                }
             }
 
             return result;
@@ -156,7 +158,10 @@ namespace Steeltoe.Management.Diagnostics
                 if (Marshal.ReadByte(input + sizeof(int) + IntPtr.Size) == (int)MINIDUMP_CALLBACK_TYPE.IsProcessSnapshotCallback)
                 {
                     var o = (MINIDUMP_CALLBACK_OUTPUT*)output;
-                    o->Status = 1;
+                    if (o != null)
+                    {
+                        o->Status = 1;
+                    }
                 }
             }
 
