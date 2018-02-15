@@ -66,10 +66,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 var opts = new HeapDumpOptions();
+                LoggerFactory loggerFactory = new LoggerFactory();
+                loggerFactory.AddConsole(minLevel: LogLevel.Debug);
+                var logger1 = loggerFactory.CreateLogger<HeapDumper>();
+                var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
+                var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
-                HeapDumper obs = new HeapDumper(opts);
-                var ep = new HeapDumpEndpoint(opts, obs);
-                var middle = new HeapDumpEndpointMiddleware(null, ep);
+                HeapDumper obs = new HeapDumper(opts, logger1);
+                var ep = new HeapDumpEndpoint(opts, obs, logger2);
+                var middle = new HeapDumpEndpointMiddleware(null, ep, logger3);
                 var context = CreateRequest("GET", "/heapdump");
                 await middle.HandleHeapDumpRequestAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
