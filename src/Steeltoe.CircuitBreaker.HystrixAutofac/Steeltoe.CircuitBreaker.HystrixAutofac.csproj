@@ -11,9 +11,9 @@
     <AssemblyName>Steeltoe.CircuitBreaker.HystrixAutofac</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.HystrixAutofac</PackageId>
     <PackageTags>Autofac;ASPNET;Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
-    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

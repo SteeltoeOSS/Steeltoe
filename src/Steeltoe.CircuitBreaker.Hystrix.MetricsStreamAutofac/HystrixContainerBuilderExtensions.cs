@@ -14,15 +14,13 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CircuitBreaker.Hystrix.Config;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.Hystrix;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.ConnectorAutofac;
 using Steeltoe.Common.Options.Autofac;
 using System;
 
@@ -49,10 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             container.RegisterInstance(HystrixDashboardStream.GetInstance()).SingleInstance();
 
-            HystrixRabbitMQServiceInfo info = config.GetSingletonServiceInfo<HystrixRabbitMQServiceInfo>();
-            HystrixProviderConnectorOptions hystrixConfig = new HystrixProviderConnectorOptions(config);
-            HystrixProviderConnectorFactory factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
-            container.Register(c => (HystrixConnectionFactory)factory.Create(null)).SingleInstance();
+            container.RegisterHystrixConnection(config).SingleInstance();
 
             container.RegisterOption<HystrixMetricsStreamOptions>(config.GetSection(HYSTRIX_STREAM_PREFIX));
             container.RegisterType<RabbitMetricsStreamPublisher>().SingleInstance();
