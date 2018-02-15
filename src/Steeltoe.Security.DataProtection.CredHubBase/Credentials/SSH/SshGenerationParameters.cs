@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    internal class SshGenerationParameters : KeyParameters
+    public class SshGenerationParameters : KeyParameters
     {
         [JsonProperty("ssh_comment")]
         public string SshComment { get; set; }

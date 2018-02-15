@@ -18,13 +18,20 @@ namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class PasswordSetRequest : CredentialSetRequest
     {
-        public PasswordSetRequest(string credentialName, string password, List<CredentialPermission> additionalPermissions = null, bool overwrite = false)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PasswordSetRequest"/> class.
+        /// </summary>
+        /// <param name="credentialName">Name of credential</param>
+        /// <param name="password">Value of the credential to set</param>
+        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
+        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
+        public PasswordSetRequest(string credentialName, string password, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
         {
             Name = credentialName;
             Type = CredentialType.Password;
             Value = new PasswordCredential(password);
             AdditionalPermissions = additionalPermissions;
-            Overwrite = overwrite;
+            Mode = overwriteMode;
         }
     }
 }

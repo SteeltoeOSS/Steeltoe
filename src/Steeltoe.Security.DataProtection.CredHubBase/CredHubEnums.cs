@@ -15,6 +15,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
@@ -37,6 +38,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
     }
 
 #pragma warning disable SA1300 // ElementMustBeginWithUpperCaseLetter
+    /// <summary>
+    /// Overwrite mode for existing credentials (https://credhub-api.cfapps.io/#overwriting-credential-values)
+    /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum OverwiteMode
+    {
+        [EnumMember(Value = "no-overwrite")]
+        noOverwrite,
+        overwrite,
+        converge
+    }
+
     /// <summary>
     /// Uses for certificates
     /// </summary>

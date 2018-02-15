@@ -151,7 +151,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Put, credHubBase + "/v1/data")
-                .WithContent("{\"value\":{\"username\":\"testUser\",\"password\":\"testPassword\"},\"overwrite\":false,\"additional_permissions\":[{\"actor\":\"test\",\"operations\":[\"read\",\"write\"]}],\"name\":\"example-user\",\"type\":\"User\"}")
+                .WithContent("{\"value\":{\"username\":\"testUser\",\"password\":\"testPassword\"},\"mode\":\"no-overwrite\",\"additional_permissions\":[{\"actor\":\"test\",\"operations\":[\"read\",\"write\"]}],\"name\":\"example-user\",\"type\":\"User\"}")
                 .Respond("application/json", "{\"type\":\"user\",\"version_created_at\":\"2017-11-22T21:49:09Z\",\"id\":\"b6dffbd6-ccca-4703-a4fd-8d39ca7b564a\",\"name\":\"/example-user\",\"value\":{\"username\":\"testUser\",\"password\":\"testPassword\",\"password_hash\":\"$6$rzwQOeLD$uuZp.sh9mT/bUGSB9i9x8pr.MG8hvo7bsUf2BNEKMVUErzEtYxGdmG6AfHtM1s087DUE1NeC01LOwtDLg3tLb/\"}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new UserSetRequest("example-user", "testUser", "testPassword", new List<CredentialPermission> { new CredentialPermission { Actor = "test", Operations = new List<OperationPermissions> { OperationPermissions.read, OperationPermissions.write } } });
@@ -377,12 +377,37 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
-                .WithContent("{\"overwrite\":false,\"parameters\":{\"length\":40},\"name\":\"generated-password\",\"type\":\"Password\"}")
+                .WithContent("{\"mode\":\"no-overwrite\",\"parameters\":{\"length\":40},\"name\":\"generated-password\",\"type\":\"Password\"}")
                 .Respond("application/json", "{\"type\":\"password\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-password\",\"value\":\"W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO\"}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new PasswordGenerationRequest("generated-password", new PasswordGenerationParameters { Length = 40 });
 
             // act
+            var response = await client.GenerateAsync<PasswordCredential>(request);
+
+            // assert
+            mockHttpMessageHandler.VerifyNoOutstandingExpectation();
+            Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
+            Assert.Equal(CredentialType.Password, response.Type);
+            Assert.Equal(new DateTime(2017, 11, 21, 18, 18, 28, DateTimeKind.Utc), response.Version_Created_At);
+            Assert.Equal(Guid.Parse("1a129eff-f467-42bc-b959-772f4dec1f5e"), response.Id);
+            Assert.Equal("/generated-password", response.Name);
+            Assert.Equal("W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO", response.Value.ToString());
+        }
+
+        [Fact]
+        public async void GenerateAsync_Creates_PasswordWithPermissions()
+        {
+            // arrange
+            var mockHttpMessageHandler = InitializedHandlerWithLogin();
+            var mockRequest = mockHttpMessageHandler
+                .Expect(HttpMethod.Post, credHubBase + "/v1/data")
+                .WithContent("{\"mode\":\"no-overwrite\",\"parameters\":{\"length\":40},\"additional_permissions\":[{\"actor\":\"test\",\"operations\":[\"read\",\"write\"]}],\"name\":\"generated-password\",\"type\":\"Password\"}")
+                .Respond("application/json", "{\"type\":\"password\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-password\",\"value\":\"W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO\"}");
+            var client = await InitializeClientAsync(mockHttpMessageHandler);
+            var request = new PasswordGenerationRequest("generated-password", new PasswordGenerationParameters { Length = 40 }, new List<CredentialPermission> { new CredentialPermission { Actor = "test", Operations = new List<OperationPermissions> { OperationPermissions.read, OperationPermissions.write } } });
+
+            // assert
             var response = await client.GenerateAsync<PasswordCredential>(request);
 
             // assert
@@ -402,7 +427,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
-                .WithContent("{\"overwrite\":false,\"parameters\":{\"length\":40},\"name\":\"generated-user\",\"type\":\"User\"}")
+                .WithContent("{\"mode\":\"no-overwrite\",\"parameters\":{\"length\":40},\"name\":\"generated-user\",\"type\":\"User\"}")
                 .Respond("application/json", "{\"type\":\"user\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-user\",\"value\":{\"username\":\"HzFFMbHuRbtImAWdGmML\",\"password\":\"zVNmqtSHakqRCMb2OtUFtwnoOSJ0T4NCSaaYdIku\",\"password_hash\":\"$6$8Oq5Fmmr$dVjMXUCk.r9I6jpQYapnwtoK80qrpSSCBqezyeB7AFJFPvQQy.tw0LBHSBJjaT9L9W3u1nodrDol8U.knd17y0\"}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new UserGenerationRequest("generated-user", new UserGenerationParameters { Length = 40 });
@@ -429,7 +454,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
-                .WithContent("{\"overwrite\":false,\"parameters\":{\"common_name\":\"TestCA\",\"duration\":365,\"is_ca\":true,\"self_sign\":false,\"key_length\":2048},\"name\":\"example-ca\",\"type\":\"Certificate\"}")
+                .WithContent("{\"mode\":\"no-overwrite\",\"parameters\":{\"common_name\":\"TestCA\",\"duration\":365,\"is_ca\":true,\"self_sign\":false,\"key_length\":2048},\"name\":\"example-ca\",\"type\":\"Certificate\"}")
                 .Respond("application/json", "{\"type\":\"certificate\",\"transitional\":false,\"version_created_at\":\"2017-11-20T15:55:24Z\",\"id\":\"0d698309-cca6-4626-aae3-a72ed664304a\",\"name\":\"/example-ca\",\"value\":{\"ca\":null,\"certificate\":\"-----BEGIN CERTIFICATE-----\\nFakeCertificateText\\n-----END CERTIFICATE-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var parms = new CertificateGenerationParameters { CommonName = "TestCA", IsCertificateAuthority = true };
@@ -457,7 +482,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
-                .WithContent("{\"overwrite\":false,\"parameters\":{\"key_length\":2048},\"name\":\"example-rsa\",\"type\":\"RSA\"}")
+                .WithContent("{\"mode\":\"no-overwrite\",\"parameters\":{\"key_length\":2048},\"name\":\"example-rsa\",\"type\":\"RSA\"}")
                 .Respond("application/json", "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
             var request = new RsaGenerationRequest("example-rsa", CertificateKeyLength.Length_2048);
@@ -483,10 +508,10 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Post, credHubBase + "/v1/data")
-                .WithContent("{\"overwrite\":false,\"parameters\":{\"key_length\":2048},\"name\":\"example-ssh\",\"type\":\"SSH\"}")
+                .WithContent("{\"mode\":\"no-overwrite\",\"parameters\":{\"key_length\":2048},\"name\":\"example-ssh\",\"type\":\"SSH\"}")
                 .Respond("application/json", "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"ssh-rsa FakePublicKeyText asdf\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\",\"public_key_fingerprint\":\"mkiqcOCEUhYsp/0Uu5ZsJlLkKt74/lV4Yz/FKslHxR8\"}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
-            var request = new SshGenerationRequest("example-ssh", CertificateKeyLength.Length_2048);
+            var request = new SshGenerationRequest("example-ssh");
 
             // act
             var response = await client.GenerateAsync<SshCredential>(request);

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class RsaGenerationRequest : CredHubGenerateRequest
@@ -22,13 +24,15 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// </summary>
         /// <param name="credentialName">Name of credential</param>
         /// <param name="keyLength">Optional Key Length (default: 2048)</param>
-        /// <param name="overwrite">Overwrite existing credential (default: false)</param>
-        public RsaGenerationRequest(string credentialName, CertificateKeyLength keyLength = CertificateKeyLength.Length_2048, bool overwrite = false)
+        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
+        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
+        public RsaGenerationRequest(string credentialName, CertificateKeyLength keyLength = CertificateKeyLength.Length_2048, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
         {
             Name = credentialName;
             Type = CredentialType.RSA;
             Parameters = new KeyParameters { KeyLength = keyLength };
-            Overwrite = overwrite;
+            AdditionalPermissions = additionalPermissions;
+            Mode = overwriteMode;
         }
     }
 }

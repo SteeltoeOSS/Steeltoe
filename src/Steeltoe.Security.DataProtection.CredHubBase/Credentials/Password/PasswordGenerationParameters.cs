@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
+
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     /// <summary>
@@ -27,21 +29,25 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// <summary>
         /// Gets or sets exclude upper case alpha characters from generated credential value
         /// </summary>
+        [JsonProperty("exclude_upper")]
         public bool? ExcludeUpper { get; set; }
 
         /// <summary>
         /// Gets or sets exclude lower case alpha characters from generated credential value
         /// </summary>
+        [JsonProperty("exclude_lower")]
         public bool? ExcludeLower { get; set; }
 
         /// <summary>
         /// Gets or sets exclude numeric characters from generated credential value
         /// </summary>
+        [JsonProperty("exclude_number")]
         public bool? ExcludeNumber { get; set; }
 
         /// <summary>
         /// Gets or sets include non-alphanumeric characters in generated credential value
         /// </summary>
+        [JsonProperty("include_special")]
         public bool? IncludeSpecial { get; set; }
     }
 }
