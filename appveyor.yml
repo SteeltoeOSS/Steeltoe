@@ -16,10 +16,10 @@ build_script:
 artifacts:
 - path: 'src\Steeltoe.Discovery.ClientCore\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Discovery.ClientAutofac\bin\Release\*.nupkg'
-- path: 'src\Steeltoe.Discovery.Eureka.Client\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Discovery.EurekaBase\bin\Release\*.nupkg'
 - path: 'src\Steeltoe.Discovery.ClientCore\bin\Debug\*.nupkg'
 - path: 'src\Steeltoe.Discovery.ClientAutofac\bin\Debug\*.nupkg'
-- path: 'src\Steeltoe.Discovery.Eureka.Client\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Discovery.EurekaBase\bin\Debug\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false

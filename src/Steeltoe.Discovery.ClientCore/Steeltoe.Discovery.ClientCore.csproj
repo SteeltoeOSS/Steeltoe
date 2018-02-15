@@ -21,11 +21,11 @@
   </PropertyGroup>
   
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\Steeltoe.Discovery.Eureka.Client\Steeltoe.Discovery.Eureka.Client.csproj" />
+    <ProjectReference Include="..\Steeltoe.Discovery.EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Discovery.Eureka.Client" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Discovery.EurekaBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <ItemGroup>

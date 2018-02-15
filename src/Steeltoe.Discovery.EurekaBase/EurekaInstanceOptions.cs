@@ -28,8 +28,8 @@ namespace Steeltoe.Discovery.Eureka
             this.StatusPageUrlPath = Default_StatusPageUrlPath;
             this.HealthCheckUrlPath = Default_HealthCheckUrlPath;
             this.IsInstanceEnabledOnInit = true;
-            this.VirtualHostName = AppName;
-            this.SecureVirtualHostName = AppName;
+            this.VirtualHostName = null;
+            this.SecureVirtualHostName = null;
             this.InstanceId = GetHostName(false) + ":" + AppName + ":" + NonSecurePort;
         }
 

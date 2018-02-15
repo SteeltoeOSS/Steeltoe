@@ -8,8 +8,8 @@
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.Discovery.Eureka.Client</AssemblyName>
-    <PackageId>Steeltoe.Discovery.Eureka.Client</PackageId>
+    <AssemblyName>Steeltoe.Discovery.EurekaBase</AssemblyName>
+    <PackageId>Steeltoe.Discovery.EurekaBase</PackageId>
     <PackageTags>Eureka, ASPNET Core, Spring, Spring Cloud</PackageTags>
     <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
