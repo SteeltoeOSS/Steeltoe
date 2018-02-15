@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.IO;
@@ -32,8 +33,14 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                var dumper = new HeapDumper(new HeapDumpOptions());
-                var ep = new HeapDumpEndpoint(new HeapDumpOptions(), dumper);
+                LoggerFactory loggerFactory = new LoggerFactory();
+                loggerFactory.AddConsole(minLevel: LogLevel.Debug);
+                var logger1 = loggerFactory.CreateLogger<HeapDumper>();
+                var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
+
+                var dumper = new HeapDumper(new HeapDumpOptions(), logger1);
+                var ep = new HeapDumpEndpoint(new HeapDumpOptions(), dumper, logger2);
+
                 var result = ep.Invoke();
                 Assert.NotNull(result);
                 Assert.True(File.Exists(result));
