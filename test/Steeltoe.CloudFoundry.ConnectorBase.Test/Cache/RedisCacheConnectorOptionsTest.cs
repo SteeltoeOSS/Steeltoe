@@ -54,7 +54,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 ["redis:client:ssl"] = "true",
                 ["redis:client:sslHost"] = "foobar",
                 ["redis:client:writeBuffer"] = "100",
-                ["redis:client:tieBreaker"] = "foobar"
+                ["redis:client:tieBreaker"] = "foobar",
+                ["redis:client:syncTimeout"] = "100"
             };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
@@ -79,6 +80,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Equal("foobar", sconfig.SslHost);
             Assert.Equal("foobar", sconfig.TieBreaker);
             Assert.Equal(100, sconfig.WriteBuffer);
+            Assert.Equal(100, sconfig.SyncTimeout);
 
             Assert.Null(sconfig.ConnectionString);
     }

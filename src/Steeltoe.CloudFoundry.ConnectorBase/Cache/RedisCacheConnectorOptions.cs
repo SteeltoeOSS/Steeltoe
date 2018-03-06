@@ -83,6 +83,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         public int WriteBuffer { get; set; }
 
+        public int SyncTimeout { get; set;}
+
         // You can use this instead of configuring each option seperately
         // If a connection string is provided, the string will be used and
         // the optioons above will be ignored
@@ -145,6 +147,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             if (WriteBuffer > 0)
             {
                 AddKeyValue(sb, "writeBuffer", WriteBuffer);
+            }
+
+            if (SyncTimeout >0)
+            {
+                AddKeyValue(sb, "syncTimeout", SyncTimeout);
             }
 
             // Trim ending ','
