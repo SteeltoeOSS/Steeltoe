@@ -235,7 +235,10 @@ namespace Steeltoe.Extensions.Logging
         private ConsoleLogger CreateLoggerImplementation(string name)
         {
             var includeScopes = _settings?.IncludeScopes ?? _includeScopes;
-            return new ConsoleLogger(name, GetFilter(name), includeScopes);
+            var logger = _delegate.CreateLogger(name) as ConsoleLogger;
+            logger.Filter = GetFilter(name);
+            logger.IncludeScopes = includeScopes;
+            return logger;
         }
 
         private void OnConfigurationReload(object state)
