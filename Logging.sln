@@ -13,24 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2BFFFBDB-66EE-4F9C-9ABE-DB2A9EE49F12}"
 	ProjectSection(SolutionItems) = preProject
-		config\nuget-dev.config = config\nuget-dev.config
-		config\nuget-master.config = config\nuget-master.config
-		config\nuget-update.config = config\nuget-update.config
-		config\nuget.config = config\nuget.config
 		config\versions-dev.props = config\versions-dev.props
 		config\versions-master.props = config\versions-master.props
-		config\versions-update.props = config\versions-update.props
 		config\versions.props = config\versions.props
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{FCAFA831-BB1D-4674-9BEC-E6A2271E7483}"
-	ProjectSection(SolutionItems) = preProject
-		scripts\appveyor_build.cmd = scripts\appveyor_build.cmd
-		scripts\appveyor_install.cmd = scripts\appveyor_install.cmd
-		scripts\appveyor_tests.cmd = scripts\appveyor_tests.cmd
-		scripts\travis_build.sh = scripts\travis_build.sh
-		scripts\travis_install.sh = scripts\travis_install.sh
-		scripts\travis_test.sh = scripts\travis_test.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A1B0D5C-681B-4A1B-8C28-E8AB1936736E}"
