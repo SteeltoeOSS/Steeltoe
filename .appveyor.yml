@@ -8,11 +8,12 @@ branches:
     - dev
     - /^update[0-9]{2}x/          
 install:
-  - scripts\appveyor_install.cmd
+  - git clone https://github.com/SteeltoeOSS/steeltoe-ci.git -v
+  - ps: steeltoe-ci\scripts\appveyor_install.ps1
 test_script:
-  - scripts\appveyor_tests.cmd
+  - ps: steeltoe-ci\scripts\appveyor_tests.ps1
 build_script:
-  - scripts\appveyor_build.cmd
+  - ps: steeltoe-ci\scripts\appveyor_build.ps1
 artifacts:
   - path: '**\*.nupkg'
 environment:
