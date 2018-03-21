@@ -19,7 +19,7 @@ artifacts:
 environment:
   PackageReferencesToUpdate: SteeltoeLoggingVersion
   github_access_token:
-    secure: zWNiuOqWi+Px1YT4DINZpubbAG29UGZMwjSwBjOGmS2ntOlaA2fNWJi2FW9vIVZB
+    secure: ko4J3M/czguVI9AbVdkv5qZuj3Wuzts5nkz/6cypneFkQGWJXDs8Akg7xOEMu8qU
 deploy:
 - provider: NuGet
   skip_symbols: false
