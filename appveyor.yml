@@ -56,4 +56,4 @@ after_deploy:
   - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
   - git config --global user.email "steeltoe@pivotal.io"
   - git config --global user.name "SteeltoeCI"
-  - ps: ci-tools\scripts\update_downstream_props.ps1
+  - ps: steeltoe-ci\scripts\update_downstream_props.ps1
