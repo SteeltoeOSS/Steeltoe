@@ -9,13 +9,13 @@ namespace Steeltoe.Management.Census.Stats.Test
 {
     public class StatsTest
     {
-        [Fact]
+        [Fact(Skip = "Fix statics usage")]
         public void GetStatsRecorder()
         {
             Assert.Equal(typeof(StatsRecorder), Stats.StatsRecorder.GetType());
         }
 
-        [Fact]
+        [Fact(Skip = "Fix statics usage")]
         public void GetViewManager()
         {
             Assert.Equal(typeof(ViewManager), Stats.ViewManager.GetType());
