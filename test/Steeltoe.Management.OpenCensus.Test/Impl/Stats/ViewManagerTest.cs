@@ -107,7 +107,9 @@ namespace Steeltoe.Management.Census.Stats.Test
             viewManager.RegisterView(cumulativeView2);
 
             // Only cumulative views should be exported.
-            Assert.Equal(new HashSet<IView>() { cumulativeView1, cumulativeView2 }, viewManager.AllExportedViews);
+            Assert.Contains(cumulativeView1, viewManager.AllExportedViews);
+            Assert.Contains(cumulativeView2, viewManager.AllExportedViews);
+            Assert.Equal(2, viewManager.AllExportedViews.Count);
         }
 
         [Fact]
