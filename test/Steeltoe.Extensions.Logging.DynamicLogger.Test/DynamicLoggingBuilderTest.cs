@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.Test
@@ -203,6 +204,36 @@ namespace Steeltoe.Extensions.Logging.Test
             var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
             provider.SetLogLevel("Steeltoe.Extensions.Logging.Test", LogLevel.Trace);
             Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
+        }
+
+        [Fact]
+        public void AddDynamicConsole_WithIDynamicMessageProcessor_CallsProcessMessage()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole();
+                }).BuildServiceProvider();
+
+            // act
+            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
+
+            // assert
+            Assert.NotNull(logger);
+            using (var unConsole = new ConsoleOutputBorrower())
+            {
+                logger.LogInformation("This is a test");
+
+                // pause the thread to allow the logging to happen
+                Thread.Sleep(100);
+                var logged = unConsole.ToString();
+                Assert.Contains(TestDynamicMessageProcessor.TEST_STRING, logged);
+                Assert.DoesNotContain("This is a test", logged);
+            }
         }
     }
 }

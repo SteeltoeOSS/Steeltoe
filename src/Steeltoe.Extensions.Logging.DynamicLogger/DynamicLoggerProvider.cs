@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Logging.Console.Internal;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -31,11 +32,12 @@ namespace Steeltoe.Extensions.Logging
         private Func<string, LogLevel, bool> _filter;
         private ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
 
-        private ConcurrentDictionary<string, ConsoleLogger> _loggers = new ConcurrentDictionary<string, ConsoleLogger>();
+        private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ConcurrentDictionary<string, DynamicConsoleLogger>();
         private ConsoleLoggerProvider _delegate;
         private IConsoleLoggerSettings _settings;
         private bool _includeScopes;
         private IOptionsMonitor<LoggerFilterOptions> _filterOptions;
+        private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
@@ -70,11 +72,13 @@ namespace Steeltoe.Extensions.Logging
         /// </summary>
         /// <param name="options">Pass-through to ConsoleLoggerProvider constructor</param>
         /// <param name="filterOptions">Logger filters</param>
-        public DynamicLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options, IOptionsMonitor<LoggerFilterOptions> filterOptions)
+        /// <param name="messageProcessors">message processors to apply to message</param>
+        public DynamicLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options, IOptionsMonitor<LoggerFilterOptions> filterOptions, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         {
             _filterOptions = filterOptions;
             SetFiltersFromOptions();
             _delegate = new ConsoleLoggerProvider(options);
+            _messageProcessors = messageProcessors;
         }
 
         /// <summary>
@@ -232,13 +236,13 @@ namespace Steeltoe.Extensions.Logging
             }
         }
 
-        private ConsoleLogger CreateLoggerImplementation(string name)
+        private DynamicConsoleLogger CreateLoggerImplementation(string name)
         {
             var includeScopes = _settings?.IncludeScopes ?? _includeScopes;
             var logger = _delegate.CreateLogger(name) as ConsoleLogger;
             logger.Filter = GetFilter(name);
             logger.IncludeScopes = includeScopes;
-            return logger;
+            return new DynamicConsoleLogger(logger, _messageProcessors);
         }
 
         private void OnConfigurationReload(object state)

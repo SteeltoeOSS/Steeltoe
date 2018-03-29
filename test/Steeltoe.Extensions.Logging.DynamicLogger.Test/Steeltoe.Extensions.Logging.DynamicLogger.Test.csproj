@@ -6,8 +6,8 @@
     <Description>Unit test project for Steeltoe.Extensions.Logging.DynamicLogger</Description>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
-    <AssemblyName>Steeltoe.Extensions.Logging.CloudFoundry.Test</AssemblyName>
-    <PackageId>Steeltoe.Extensions.Logging.CloudFoundry.Test</PackageId>
+    <AssemblyName>Steeltoe.Extensions.Logging.DynamicLogger.Test</AssemblyName>
+    <PackageId>Steeltoe.Extensions.Logging.DynamicLogger.Test</PackageId>
     <PackageTags>Spring Cloud;Logging;Management;Monitoring</PackageTags>
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
