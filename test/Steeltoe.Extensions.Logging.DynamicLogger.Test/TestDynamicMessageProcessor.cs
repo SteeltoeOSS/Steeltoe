@@ -16,11 +16,12 @@ namespace Steeltoe.Extensions.Logging.Test
 {
     public class TestDynamicMessageProcessor : IDynamicMessageProcessor
     {
-        public const string TEST_STRING = "This is message from TestDynamicMessageProcessor";
+        public bool ProcessCalled { get; set; } = false;
 
         public string Process(string input)
         {
-            return TEST_STRING;
+            ProcessCalled = true;
+            return string.Empty;
         }
     }
 }

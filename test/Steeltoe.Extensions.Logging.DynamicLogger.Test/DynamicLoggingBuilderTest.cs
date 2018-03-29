@@ -224,16 +224,12 @@ namespace Steeltoe.Extensions.Logging.Test
 
             // assert
             Assert.NotNull(logger);
-            using (var unConsole = new ConsoleOutputBorrower())
-            {
-                logger.LogInformation("This is a test");
 
-                // pause the thread to allow the logging to happen
-                Thread.Sleep(100);
-                var logged = unConsole.ToString();
-                Assert.Contains(TestDynamicMessageProcessor.TEST_STRING, logged);
-                Assert.DoesNotContain("This is a test", logged);
-            }
+            logger.LogInformation("This is a test");
+
+            var processor = services.GetService<IDynamicMessageProcessor>() as TestDynamicMessageProcessor;
+            Assert.NotNull(processor);
+            Assert.True(processor.ProcessCalled);
         }
     }
 }

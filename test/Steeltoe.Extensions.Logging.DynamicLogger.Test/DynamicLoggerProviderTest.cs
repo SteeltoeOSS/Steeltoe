@@ -247,7 +247,7 @@ namespace Steeltoe.Extensions.Logging.Test
                 WriteLogEntries(logger);
 
                 // pause the thread to allow the logging to happen
-                Thread.Sleep(10);
+                Thread.Sleep(100);
 
                 var logged = unConsole.ToString();
 
@@ -267,7 +267,7 @@ namespace Steeltoe.Extensions.Logging.Test
                 WriteLogEntries(logger);
 
                 // pause the thread to allow the logging to happen
-                Thread.Sleep(10);
+                Thread.Sleep(100);
 
                 var logged2 = unConsole.ToString();
 
@@ -287,7 +287,7 @@ namespace Steeltoe.Extensions.Logging.Test
                 WriteLogEntries(logger);
 
                 // pause the thread to allow the logging to happen
-                Thread.Sleep(10);
+                Thread.Sleep(100);
 
                 var logged3 = unConsole.ToString();
 
@@ -307,7 +307,7 @@ namespace Steeltoe.Extensions.Logging.Test
                 WriteLogEntries(logger);
 
                 // pause the thread to allow the logging to happen
-                Thread.Sleep(10);
+                Thread.Sleep(100);
 
                 var logged4 = unConsole.ToString();
 
@@ -327,7 +327,7 @@ namespace Steeltoe.Extensions.Logging.Test
                 WriteLogEntries(logger);
 
                 // pause the thread to allow the logging to happen
-                Thread.Sleep(10);
+                Thread.Sleep(100);
 
                 var logged5 = unConsole.ToString();
 
