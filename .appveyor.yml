@@ -17,7 +17,7 @@ build_script:
 artifacts:
   - path: '**\*.nupkg'
 environment:
-  ProjectList: "Steeltoe.Management.Diagnostics Steeltoe.Management.EndpointBase Steeltoe.Management.EndpointCore Steeltoe.Management.CloudFoundryCore"
+  ProjectList: "Steeltoe.Management.Diagnostics Steeltoe.Management.EndpointBase Steeltoe.Management.EndpointCore Steeltoe.Management.CloudFoundryCore Steeltoe.Management.OpenCensus"
   PackageReferencesToUpdate:
   github_access_token:
     secure: ko4J3M/czguVI9AbVdkv5qZuj3Wuzts5nkz/6cypneFkQGWJXDs8Akg7xOEMu8qU

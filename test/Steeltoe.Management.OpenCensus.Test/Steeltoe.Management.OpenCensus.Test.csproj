@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\versions.props" />
+
+  <PropertyGroup>
+    <Description>Unit test project for Steeltoe.Management.OpenCensus</Description>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
+    <AssemblyName>Steeltoe.Management.OpenCensus.Test</AssemblyName>
+    <PackageId>Steeltoe.Management.OpenCensus.Test</PackageId>
+    <PackageTags>OpenCensus;Tracing;Management;Monitoring</PackageTags>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <RootNamespace>Steeltoe.Management.Census</RootNamespace>
+  </PropertyGroup>
+  
+  
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Steeltoe.Management.OpenCensus\Steeltoe.Management.OpenCensus.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+  </ItemGroup>
+
+</Project>

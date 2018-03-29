@@ -35,6 +35,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Diagnostics", "src\Steeltoe.Management.Diagnostics\Steeltoe.Management.Diagnostics.csproj", "{90C54C3B-488B-4449-826F-940A48992522}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus", "src\Steeltoe.Management.OpenCensus\Steeltoe.Management.OpenCensus.csproj", "{3E70DA3F-91DD-4190-9917-B6A11F54236D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus.Test", "test\Steeltoe.Management.OpenCensus.Test\Steeltoe.Management.OpenCensus.Test.csproj", "{4BB15641-2496-468C-BF90-97305801D141}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,14 @@ Global
 		{90C54C3B-488B-4449-826F-940A48992522}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90C54C3B-488B-4449-826F-940A48992522}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90C54C3B-488B-4449-826F-940A48992522}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E70DA3F-91DD-4190-9917-B6A11F54236D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E70DA3F-91DD-4190-9917-B6A11F54236D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E70DA3F-91DD-4190-9917-B6A11F54236D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E70DA3F-91DD-4190-9917-B6A11F54236D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BB15641-2496-468C-BF90-97305801D141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BB15641-2496-468C-BF90-97305801D141}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BB15641-2496-468C-BF90-97305801D141}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BB15641-2496-468C-BF90-97305801D141}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +93,8 @@ Global
 		{6560432C-FF23-4E24-BA2F-08EA22C9D1E1} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{E18FE0C4-04F0-46CB-B96A-E9B2210314D6} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{90C54C3B-488B-4449-826F-940A48992522} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+		{3E70DA3F-91DD-4190-9917-B6A11F54236D} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+		{4BB15641-2496-468C-BF90-97305801D141} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7949396C-4BFF-4834-9BC2-F3A345E9CCE5}
