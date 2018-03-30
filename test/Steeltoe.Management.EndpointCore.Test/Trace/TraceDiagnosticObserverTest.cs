@@ -155,7 +155,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             HttpContext context = CreateRequest();
             TimeSpan time = TimeSpan.FromTicks(10000000);
             var result = obs.GetTimeTaken(time);
-            var expected = (10000000 / obs.TicksPerMilli).ToString();
+            var expected = time.TotalMilliseconds.ToString();
             Assert.Equal(expected, result);
         }
 
@@ -227,7 +227,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.True(headers.ContainsKey("response"));
             var timeTaken = result.Info["timeTaken"] as string;
             Assert.NotNull(timeTaken);
-            var expected = ((20000000 - 10000000) / obs.TicksPerMilli).ToString();
+            var expected = duration.TotalMilliseconds.ToString();
             Assert.Equal(expected, timeTaken);
         }
 
@@ -293,7 +293,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.True(headers.ContainsKey("response"));
             var timeTaken = result.Info["timeTaken"] as string;
             Assert.NotNull(timeTaken);
-            Assert.StartsWith("36", timeTaken);
+            Assert.StartsWith("10", timeTaken);
 
             obs.Dispose();
             listener.Dispose();

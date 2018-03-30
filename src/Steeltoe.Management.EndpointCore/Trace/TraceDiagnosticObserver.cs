@@ -27,7 +27,6 @@ namespace Steeltoe.Management.Endpoint.Trace
     public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     {
         internal ConcurrentQueue<Trace> _queue = new ConcurrentQueue<Trace>();
-        internal long TicksPerMilli = Stopwatch.Frequency / 1000;
 
         private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
         private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
@@ -165,7 +164,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         protected internal string GetTimeTaken(TimeSpan duration)
         {
-            long timeInMilli = duration.Ticks / TicksPerMilli;
+            long timeInMilli = (long)duration.TotalMilliseconds;
             return timeInMilli.ToString();
         }
 
