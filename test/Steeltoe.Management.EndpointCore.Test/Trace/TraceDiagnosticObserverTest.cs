@@ -21,136 +21,118 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Claims;
+using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
 {
-    public class TraceObserverTest : BaseTest
+    public class TraceDiagnosticObserverTest : BaseTest
     {
         [Fact]
         public void Constructor_ThrowsOnNulls()
         {
             // Arrange
-            DiagnosticListener listener = null;
-            DiagnosticListener listener2 = new DiagnosticListener("test");
             ITraceOptions options = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new TraceObserver(listener, options));
-            Assert.Contains(nameof(listener), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => new TraceObserver(listener2, options));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => new TraceDiagnosticObserver(options));
             Assert.Contains(nameof(options), ex2.Message);
-
-            listener2.Dispose();
         }
 
         [Fact]
         public void GetSessionId_NoSession_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
             var result = obs.GetSessionId(context);
             Assert.Null(result);
-            listener.Dispose();
         }
 
         [Fact]
         public void GetSessionId_WithSession_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
 
             var session = new TestSession();
-            ISessionFeature sessFeature = new SessionFeature();
-            sessFeature.Session = session;
+            ISessionFeature sessFeature = new SessionFeature
+            {
+                Session = session
+            };
             context.Features.Set<ISessionFeature>(sessFeature);
 
             var result = obs.GetSessionId(context);
             Assert.Equal("TestSessionId", result);
-            listener.Dispose();
         }
 
         [Fact]
         public void GetUserPrincipal_NotAuthenticated_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
             var result = obs.GetUserPrincipal(context);
             Assert.Null(result);
-            listener.Dispose();
         }
 
         [Fact]
         public void GetUserPrincipal_Authenticated_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
 
             context.User = new ClaimsPrincipal(new MyIdentity());
             var result = obs.GetUserPrincipal(context);
             Assert.Equal("MyTestName", result);
-            listener.Dispose();
         }
 
         [Fact]
         public void GetRemoteAddress_NoConnection_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
             var result = obs.GetRemoteAddress(context);
             Assert.Null(result);
-            listener.Dispose();
         }
 
         [Fact]
         public void GetPathInfo_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
 
             var result = obs.GetPathInfo(context.Request);
             Assert.Equal("/myPath", result);
-            listener.Dispose();
         }
 
         [Fact]
         public void GetRequestUri_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
             var result = obs.GetRequestUri(context.Request);
             Assert.Equal("http://localhost:1111/myPath", result);
-            listener.Dispose();
         }
 
         [Fact]
         public void GetRequestParameters_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
             var result = obs.GetRequestParameters(context.Request);
             Assert.NotNull(result);
@@ -162,31 +144,27 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var barVal = result["bar"];
             Assert.Single(barVal);
             Assert.Equal("foo", barVal[0]);
-            listener.Dispose();
         }
 
         [Fact]
         public void GetTimeTaken_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
-            var result = obs.GetTimeTaken(10000000);
+            TimeSpan time = TimeSpan.FromTicks(10000000);
+            var result = obs.GetTimeTaken(time);
             var expected = (10000000 / obs.TicksPerMilli).ToString();
             Assert.Equal(expected, result);
-
-            listener.Dispose();
         }
 
         [Fact]
         public void GetHeaders_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
 
             var result = obs.GetHeaders(100, context.Request.Headers);
@@ -200,51 +178,40 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.Equal("header2Value", header2Val);
             var statusVal = result["status"] as string;
             Assert.Equal("100", statusVal);
-            listener.Dispose();
         }
 
         [Fact]
-        public void GetProperties_NoProperties_ReturnsExpected()
+        public void GetProperty_NoProperties_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
-            long timeStamp = -1;
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
 
-            obs.GetProperties(new { foo = "bar" }, out HttpContext context, out timeStamp);
-            Assert.Equal(0, timeStamp);
+            obs.GetProperty(new { foo = "bar" }, out HttpContext context);
             Assert.Null(context);
-            listener.Dispose();
         }
 
         [Fact]
-        public void GetProperties_WithProperties_ReturnsExpected()
+        public void GetProperty_WithProperties_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
-            long timeStamp = -1;
-            long expectedTime = Stopwatch.GetTimestamp();
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             var expectedContext = CreateRequest();
 
-            obs.GetProperties(new { httpContext = expectedContext, timestamp = expectedTime }, out HttpContext context, out timeStamp);
-            Assert.Equal(expectedTime, timeStamp);
+            obs.GetProperty(new { HttpContext = expectedContext }, out HttpContext context);
             Assert.True(object.ReferenceEquals(expectedContext, context));
-
-            listener.Dispose();
         }
 
         [Fact]
         public void MakeTrace_ReturnsExpected()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
-            Trace result = obs.MakeTrace(context, 10000000, 20000000);
+            TimeSpan duration = TimeSpan.FromTicks(20000000 - 10000000);
+            Trace result = obs.MakeTrace(context, duration);
             Assert.NotNull(result);
             Assert.NotNull(result.Info);
             Assert.NotEqual(0, result.TimeStamp);
@@ -262,70 +229,53 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.NotNull(timeTaken);
             var expected = ((20000000 - 10000000) / obs.TicksPerMilli).ToString();
             Assert.Equal(expected, timeTaken);
-            listener.Dispose();
         }
 
         [Fact]
-        public void OnNext_IgnoresUnRecognizedEvents()
+        public void ProcessEvent_IgnoresUnprocessableEvents()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
 
-            KeyValuePair<string, object> ignore = new KeyValuePair<string, object>("foobar", null);
-            obs.OnNext(ignore);
-            Assert.Empty(obs._pending);
-            Assert.Empty(obs._queue);
-            listener.Dispose();
-        }
+            // No current activity, event ignored
+            obs.ProcessEvent("foobar", null);
 
-        [Fact]
-        public void OnNext_AddsToPending()
-        {
-            DiagnosticListener listener = new DiagnosticListener("test");
-            TraceOptions option = new TraceOptions();
+            Activity current = new Activity("barfoo");
+            current.Start();
 
-            TraceObserver obs = new TraceObserver(listener, option);
-            long expectedTime = Stopwatch.GetTimestamp();
-            var expectedContext = CreateRequest();
+            // Activity current, but no value provided, event ignored
+            obs.ProcessEvent("foobar", null);
 
-            KeyValuePair<string, object> begin = new KeyValuePair<string, object>(
-                TraceObserver.BEGIN_REQUEST,
-                new { httpContext = expectedContext, timestamp = expectedTime });
+            // Activity current, value provided, event not stop event, event is ignored
+            obs.ProcessEvent("foobar", new object());
 
-            obs.OnNext(begin);
-
-            Assert.Single(obs._pending);
-            Assert.True(obs._pending.ContainsKey(expectedContext.TraceIdentifier));
-            var pending = obs._pending[expectedContext.TraceIdentifier];
-            Assert.Equal(expectedTime, pending.StartTime);
+            // Activity current, event is stop event, no context in event value, event it ignored
+            obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new object());
 
             Assert.Empty(obs._queue);
-            listener.Dispose();
+            current.Stop();
         }
 
         [Fact]
-        public void OnNext_RemovesPending_AddsToQueue()
+        public void Subscribe_Listener_StopActivity_AddsToQueue()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
+            DiagnosticListener listener = new DiagnosticListener("Microsoft.AspNetCore");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
-            long start = Stopwatch.GetTimestamp();
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
+            obs.Subscribe(listener);
+
             var context = CreateRequest();
+            string activityName = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
+            Activity current = new Activity(activityName);
 
-            KeyValuePair<string, object> begin = new KeyValuePair<string, object>(
-                TraceObserver.BEGIN_REQUEST,
-                new { httpContext = context, timestamp = start });
-            obs.OnNext(begin);
+            listener.StartActivity(current, new { HttpContext = context });
 
-            KeyValuePair<string, object> end = new KeyValuePair<string, object>(
-                TraceObserver.END_REQUEST,
-                new { httpContext = context, timestamp = start + 100000 });
-            obs.OnNext(end);
+            Thread.Sleep(1000);
 
-            Assert.Empty(obs._pending);
+            listener.StopActivity(current, new { HttpContext = context });
+
             Assert.Single(obs._queue);
 
             Assert.True(obs._queue.TryPeek(out Trace result));
@@ -343,39 +293,64 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.True(headers.ContainsKey("response"));
             var timeTaken = result.Info["timeTaken"] as string;
             Assert.NotNull(timeTaken);
-            var expected = (100000 / obs.TicksPerMilli).ToString();
-            Assert.Equal(expected, timeTaken);
+            Assert.StartsWith("36", timeTaken);
 
+            obs.Dispose();
             listener.Dispose();
         }
 
         [Fact]
-        public void OnNext_HonorsCapacity()
+        public void ProcessEvent_AddsToQueue()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
+
+            Activity current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
+            current.Start();
+
+            var context = CreateRequest();
+
+            obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new { HttpContext = context });
+
+            Assert.Single(obs._queue);
+
+            Assert.True(obs._queue.TryPeek(out Trace result));
+            Assert.NotNull(result.Info);
+            Assert.NotEqual(0, result.TimeStamp);
+            Assert.True(result.Info.ContainsKey("method"));
+            Assert.True(result.Info.ContainsKey("path"));
+            Assert.True(result.Info.ContainsKey("headers"));
+            Assert.True(result.Info.ContainsKey("timeTaken"));
+            Assert.Equal("GET", result.Info["method"]);
+            Assert.Equal("/myPath", result.Info["path"]);
+            var headers = result.Info["headers"] as Dictionary<string, object>;
+            Assert.NotNull(headers);
+            Assert.True(headers.ContainsKey("request"));
+            Assert.True(headers.ContainsKey("response"));
+            var timeTaken = result.Info["timeTaken"] as string;
+            Assert.NotNull(timeTaken);
+            Assert.Equal("0", timeTaken); // 0 because activity not stopped
+
+            current.Stop();
+        }
+
+        [Fact]
+        public void ProcessEvent_HonorsCapacity()
+        {
+            TraceOptions option = new TraceOptions();
+
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
+            Activity current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
+            current.Start();
+
             for (int i = 0; i < 200; i++)
             {
-                long start = Stopwatch.GetTimestamp();
                 var context = CreateRequest();
-
-                KeyValuePair<string, object> begin = new KeyValuePair<string, object>(
-                    TraceObserver.BEGIN_REQUEST,
-                    new { httpContext = context, timestamp = start });
-                obs.OnNext(begin);
-
-                KeyValuePair<string, object> end = new KeyValuePair<string, object>(
-                    TraceObserver.END_REQUEST,
-                    new { httpContext = context, timestamp = start + 100000 });
-                obs.OnNext(end);
+                obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new { HttpContext = context });
             }
 
-            Assert.Empty(obs._pending);
             Assert.Equal(option.Capacity, obs._queue.Count);
-
-            listener.Dispose();
         }
 
         [Fact]
@@ -384,24 +359,16 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             DiagnosticListener listener = new DiagnosticListener("test");
             TraceOptions option = new TraceOptions();
 
-            TraceObserver obs = new TraceObserver(listener, option);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
+            Activity current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
+            current.Start();
+
             for (int i = 0; i < 200; i++)
             {
-                long start = Stopwatch.GetTimestamp();
                 var context = CreateRequest();
-
-                KeyValuePair<string, object> begin = new KeyValuePair<string, object>(
-                    TraceObserver.BEGIN_REQUEST,
-                    new { httpContext = context, timestamp = start });
-                obs.OnNext(begin);
-
-                KeyValuePair<string, object> end = new KeyValuePair<string, object>(
-                    TraceObserver.END_REQUEST,
-                    new { httpContext = context, timestamp = start + 100000 });
-                obs.OnNext(end);
+                obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new { HttpContext = context });
             }
 
-            Assert.Empty(obs._pending);
             Assert.Equal(option.Capacity, obs._queue.Count);
             List<Trace> traces = obs.GetTraces();
             Assert.Equal(option.Capacity, traces.Count);

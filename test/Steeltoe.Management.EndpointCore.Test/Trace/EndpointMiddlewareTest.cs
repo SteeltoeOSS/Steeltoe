@@ -47,9 +47,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public void IsTraceRequest_ReturnsExpected()
         {
             var opts = new TraceOptions();
-            DiagnosticListener listener = new DiagnosticListener("test");
 
-            TraceObserver obs = new TraceObserver(listener, opts);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TraceEndpoint(opts, obs);
             var middle = new TraceEndpointMiddleware(null, ep);
             var context = CreateRequest("GET", "/trace");
@@ -58,16 +57,14 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.False(middle.IsTraceRequest(context2));
             var context3 = CreateRequest("GET", "/badpath");
             Assert.False(middle.IsTraceRequest(context3));
-            listener.Dispose();
         }
 
         [Fact]
         public async void HandleTraceRequestAsync_ReturnsExpected()
         {
             var opts = new TraceOptions();
-            DiagnosticListener listener = new DiagnosticListener("test");
 
-            TraceObserver obs = new TraceObserver(listener, opts);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
             var middle = new TraceEndpointMiddleware(null, ep);
             var context = CreateRequest("GET", "/trace");
@@ -76,7 +73,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
             Assert.Equal("[]", json);
-            listener.Dispose();
         }
 
         [Fact]

@@ -16,34 +16,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Management.Diagnostics.Listeners;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-    public class TraceObserver : IObserver<KeyValuePair<string, object>>, ITraceRepository
+    public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     {
-        internal const string BEGIN_REQUEST = "Microsoft.AspNetCore.Hosting.BeginRequest";
-        internal const string END_REQUEST = "Microsoft.AspNetCore.Hosting.EndRequest";
-        internal ConcurrentDictionary<string, PendingTrace> _pending = new ConcurrentDictionary<string, PendingTrace>();
         internal ConcurrentQueue<Trace> _queue = new ConcurrentQueue<Trace>();
         internal long TicksPerMilli = Stopwatch.Frequency / 1000;
 
+        private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
+        private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        private ILogger<TraceObserver> _logger;
+        private ILogger<TraceDiagnosticObserver> _logger;
         private ITraceOptions _options;
-        private DiagnosticListener _listener;
 
-        public TraceObserver(DiagnosticListener listener, ITraceOptions options, ILogger<TraceObserver> logger = null)
+        public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
+            : base(DIAGNOSTIC_NAME, logger)
         {
-            _listener = listener ?? throw new ArgumentNullException(nameof(listener));
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
-            _listener.Subscribe(this);
         }
 
         public List<Trace> GetTraces()
@@ -52,65 +49,42 @@ namespace Steeltoe.Management.Endpoint.Trace
             return new List<Trace>(traces);
         }
 
-        public void OnCompleted()
+        public override void ProcessEvent(string key, object value)
         {
-            _queue = null;
-            _pending = null;
-            _logger?.LogInformation("TraceObserver Shutdown");
-        }
-
-        public void OnError(Exception error)
-        {
-            _logger?.LogError("TraceObserver Exception: {0}", error);
-        }
-
-        public void OnNext(KeyValuePair<string, object> value)
-        {
-            if (_queue == null)
+            if (!STOP_EVENT.Equals(key))
             {
                 return;
             }
 
-            if (value.Key.Equals(BEGIN_REQUEST))
+            Activity current = Activity.Current;
+            if (current == null)
             {
-                GetProperties(value.Value, out HttpContext context, out long timeStamp);
-
-                if (context != null && timeStamp != 0)
-                {
-                    if (!_pending.TryAdd(context.TraceIdentifier, new PendingTrace(timeStamp)))
-                    {
-                        _logger?.LogDebug("BeginRequest - Add failed, dropped trace");
-                    }
-                }
+                return;
             }
-            else if (value.Key.Equals(END_REQUEST))
+
+            if (value == null)
             {
-                GetProperties(value.Value, out HttpContext context, out long timeStamp);
+                return;
+            }
 
-                if (context != null && timeStamp != 0)
+            GetProperty(value, out HttpContext context);
+
+            if (context != null)
+            {
+                Trace trace = MakeTrace(context, current.Duration);
+                _queue.Enqueue(trace);
+
+                if (_queue.Count > _options.Capacity)
                 {
-                    if (_pending.TryRemove(context.TraceIdentifier, out PendingTrace pendingTrace))
+                    if (!_queue.TryDequeue(out Trace discard))
                     {
-                        Trace trace = MakeTrace(context, pendingTrace.StartTime, timeStamp);
-                        _queue.Enqueue(trace);
-
-                        if (_queue.Count > _options.Capacity)
-                        {
-                            if (!_queue.TryDequeue(out Trace discard))
-                            {
-                                _logger?.LogDebug("EndRequest - Dequeue failed");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        _logger?.LogDebug("EndRequest - Remove pending failed, dropped trace");
+                        _logger?.LogDebug("Stop - Dequeue failed");
                     }
                 }
             }
         }
 
-        protected internal Trace MakeTrace(HttpContext context, long startTime, long endTime)
+        protected internal Trace MakeTrace(HttpContext context, TimeSpan duration)
         {
             var request = context.Request;
             var response = context.Response;
@@ -171,7 +145,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             if (_options.AddTimeTaken)
             {
-                details.Add("timeTaken", GetTimeTaken(endTime - startTime));
+                details.Add("timeTaken", GetTimeTaken(duration));
             }
 
             return new Trace(GetJavaTime(DateTime.Now.Ticks), details);
@@ -189,9 +163,9 @@ namespace Steeltoe.Management.Endpoint.Trace
             return sessionFeature == null ? null : context.Session.Id;
         }
 
-        protected internal string GetTimeTaken(long ticks)
+        protected internal string GetTimeTaken(TimeSpan duration)
         {
-            long timeInMilli = ticks / TicksPerMilli;
+            long timeInMilli = duration.Ticks / TicksPerMilli;
             return timeInMilli.ToString();
         }
 
@@ -281,31 +255,9 @@ namespace Steeltoe.Management.Endpoint.Trace
             return result;
         }
 
-        protected internal void GetProperties(object obj, out HttpContext context, out long timeStamp)
+        protected internal void GetProperty(object obj, out HttpContext context)
         {
-            context = GetProperty<HttpContext>(obj, "httpContext");
-            timeStamp = GetProperty<long>(obj, "timestamp");
-        }
-
-        private T GetProperty<T>(object o, string name)
-        {
-            var property = o.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
-            if (property == null)
-            {
-                return default(T);
-            }
-
-            return (T)property.GetValue(o);
-        }
-
-        internal class PendingTrace
-        {
-            public PendingTrace(long startTime)
-            {
-                StartTime = startTime;
-            }
-
-            public long StartTime { get; }
+            context = DiagnosticHelpers.GetProperty<HttpContext>(obj, "HttpContext");
         }
     }
 }
