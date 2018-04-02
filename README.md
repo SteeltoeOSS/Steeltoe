@@ -6,9 +6,9 @@ Windows Master (Stable): [![AppVeyor Master](https://ci.appveyor.com/api/project
 
 Windows Dev (Less Stable): [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/w27a5c4x64pd7jyq/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/security/branch/dev)
 
-Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Security.svg?branch=master)](https://travis-ci.org/SteelToeOSS/Security)
+Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Security.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/Security)
 
-Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Security.svg?branch=dev)](https://travis-ci.org/SteelToeOSS/Security)
+Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Security.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Security)
 
 ## .NET Runtime & Framework Support
 
@@ -20,17 +20,15 @@ Where appropriate, the components and samples have been tested on .NET Core SDK,
 
 ## Usage
 
-For more information on how to use these components see the online [Steeltoe documentation](http://steeltoe.io/).
+For more information on how to use these components see the online [Steeltoe documentation](https://steeltoe.io/).
 
 ## Nuget Feeds
 
 All new development is done on the dev branch. More stable versions of the components can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
 
-[Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
-
-[Master feed (Stable)](https://www.myget.org/gallery/steeltoemaster) - https://www.myget.org/gallery/steeltoemaster
-
-[Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/. 
+- [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev)
+- [Master feed (Stable)](https://www.myget.org/gallery/steeltoemaster)
+- [Release or Release Candidate feed](https://www.nuget.org/)
 
 ## Building Pre-requisites
 
@@ -79,4 +77,4 @@ To run the unit tests:
 
 ## Sample Applications
 
-See the [Samples](https://github.com/SteelToeOSS/Samples) repository for examples of how to use these packages.
+See the [Samples](https://github.com/SteeltoeOSS/Samples) repository for examples of how to use these packages.
