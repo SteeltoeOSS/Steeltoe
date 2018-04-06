@@ -23,25 +23,31 @@ namespace Steeltoe.Common.Diagnostics
 {
     public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
     {
-        private const int POLL_DELAY_MILLI = 15000;
+        internal IDisposable _listenersSubscription;
+        internal ILogger<DiagnosticsManager> _logger;
+        internal IList<IDiagnosticObserver> _observers;
+        internal IList<IPolledDiagnosticSource> _sources;
+        internal Thread _workerThread;
+        internal bool _workerThreadShutdown = false;
+        internal int _started = 0;
 
-        private IDisposable listenersSubscription;
-        private ILogger<DiagnosticsManager> logger;
-        private IList<IDiagnosticObserver> observers;
-        private IList<IPolledDiagnosticSource> sources;
-        private Thread workerThread;
-        private bool workerThradShutdown = false;
+        private const int POLL_DELAY_MILLI = 15000;
 
         public DiagnosticsManager(IEnumerable<IPolledDiagnosticSource> polledSources, IEnumerable<IDiagnosticObserver> observers, ILogger<DiagnosticsManager> logger = null)
         {
+            if (polledSources == null)
+            {
+                throw new ArgumentNullException(nameof(polledSources));
+            }
+
             if (observers == null)
             {
                 throw new ArgumentNullException(nameof(observers));
             }
 
-            this.logger = logger;
-            this.observers = observers.ToList();
-            this.sources = polledSources.ToList();
+            this._logger = logger;
+            this._observers = observers.ToList();
+            this._sources = polledSources.ToList();
         }
 
         public void Dispose()
@@ -59,7 +65,7 @@ namespace Steeltoe.Common.Diagnostics
 
         public void OnNext(DiagnosticListener value)
         {
-            foreach (var listener in observers)
+            foreach (var listener in _observers)
             {
                 listener.Subscribe(value);
             }
@@ -67,35 +73,39 @@ namespace Steeltoe.Common.Diagnostics
 
         public void Start()
         {
-            this.listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
-
-            workerThread = new Thread(this.Poller)
+            if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
             {
-                IsBackground = true,
-                Name = "DiagnosticsPoller"
-            };
-            workerThread.Start();
+                this._listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
+
+                _workerThread = new Thread(this.Poller)
+                {
+                    IsBackground = true,
+                    Name = "DiagnosticsPoller"
+                };
+                _workerThread.Start();
+            }
         }
 
         public void Stop()
         {
-            workerThradShutdown = true;
-
-            foreach (var listener in observers)
+            if (Interlocked.CompareExchange(ref _started, 0, 1) == 1)
             {
-                listener.Dispose();
-            }
+                _workerThreadShutdown = true;
 
-            observers.Clear();
+                foreach (var listener in _observers)
+                {
+                    listener.Dispose();
+                }
+            }
         }
 
         private void Poller(object obj)
         {
-            while (!workerThradShutdown)
+            while (!_workerThreadShutdown)
             {
                 try
                 {
-                    foreach (var source in this.sources)
+                    foreach (var source in _sources)
                     {
                         source.Poll();
                     }
@@ -104,7 +114,7 @@ namespace Steeltoe.Common.Diagnostics
                 }
                 catch (Exception e)
                 {
-                    logger?.LogError(e, "Metrics poller exception, terminating");
+                    _logger?.LogError(e, "Diagnostic source poller exception, terminating");
                     return;
                 }
             }
