@@ -6,6 +6,7 @@
     <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
     <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
     <AutofacVersion>4.6.1</AutofacVersion>
+    <DiagnosticSourceVersion>4.4.1</DiagnosticSourceVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
     <HttpVersion>4.3.3</HttpVersion>
     <MockHttpVersion>3.2.1</MockHttpVersion>

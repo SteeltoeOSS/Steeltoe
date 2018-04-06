@@ -38,6 +38,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Diagnostics\" />
+  </ItemGroup>
 
 </Project>
 
