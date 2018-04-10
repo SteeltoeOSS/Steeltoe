@@ -1,7 +1,7 @@
 language: csharp
 dist: trusty
 env:
-  STEELTOE_VERSION: 2.1.0
+  STEELTOE_VERSION: 2.0.1
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     - DOTNET_CLI_TELEMETRY_OPTOUT: 1
