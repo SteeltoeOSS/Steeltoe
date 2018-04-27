@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
         protected internal async Task HandleHealthRequestAsync(HttpContext context)
         {
-            var serialInfo = HandleRequest();
+            var serialInfo = DoRequest(context);
             logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
@@ -60,6 +60,26 @@ namespace Steeltoe.Management.Endpoint.Health
 
             PathString path = new PathString(endpoint.Path);
             return context.Request.Path.Equals(path);
+        }
+
+        protected internal string DoRequest(HttpContext context)
+        {
+            var result = endpoint.Invoke();
+            context.Response.StatusCode = GetStatusCode(result);
+            return Serialize(result);
+        }
+
+        protected internal int GetStatusCode(Health health)
+        {
+            if (health.Status == HealthStatus.DOWN ||
+                health.Status == HealthStatus.OUT_OF_SERVICE)
+            {
+                return 503;
+            }
+            else
+            {
+                return 200;
+            }
         }
     }
 }

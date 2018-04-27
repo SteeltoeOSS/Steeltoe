@@ -97,6 +97,38 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             }
         }
 
+        [Fact]
+        public void GetStatusCode_ReturnsExpected()
+        {
+            var middle = new HealthEndpointMiddleware(null);
+
+            Health health1 = new Health()
+            {
+                Status = HealthStatus.DOWN
+            };
+
+            Assert.Equal(503, middle.GetStatusCode(health1));
+            Health health2 = new Health()
+            {
+                Status = HealthStatus.OUT_OF_SERVICE
+            };
+
+            Assert.Equal(503, middle.GetStatusCode(health2));
+            Health health3 = new Health()
+            {
+                Status = HealthStatus.UP
+            };
+
+            Assert.Equal(200, middle.GetStatusCode(health3));
+
+            Health health4 = new Health()
+            {
+                Status = HealthStatus.UNKNOWN
+            };
+
+            Assert.Equal(200, middle.GetStatusCode(health4));
+        }
+
         private HttpContext CreateRequest(string method, string path)
         {
             HttpContext context = new DefaultHttpContext();
