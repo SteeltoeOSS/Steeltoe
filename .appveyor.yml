@@ -15,7 +15,7 @@ test_script:
 build_script:
   - ps: steeltoe-ci\scripts\appveyor_build.ps1
 artifacts:
-- path: 'src\**\*.nupkg'
+- path: '**\*.nupkg'
 deploy:
 - provider: NuGet
   skip_symbols: false
