@@ -15,7 +15,6 @@
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -43,7 +42,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 return new List<SecurityKey> { resolved };
             }
 
-            JsonWebKeySet keyset = FetchKeySet().GetAwaiter().GetResult();
+            JsonWebKeySet keyset = Task.Run(() => FetchKeySet()).GetAwaiter().GetResult();
             if (keyset != null)
             {
                 foreach (JsonWebKey key in keyset.Keys)
