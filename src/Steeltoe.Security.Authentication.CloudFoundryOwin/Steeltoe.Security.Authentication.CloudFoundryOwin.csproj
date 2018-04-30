@@ -21,8 +21,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="$(CSharpVerion)" />
-    <PackageReference Include="Microsoft.Owin.Security.OAuth" Version="$(OwinOAuthVerions)" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(JwtTokensVerions)" />
+    <PackageReference Include="Microsoft.Owin.Security.Jwt" Version="$(OwinOAuthVerions)" />
+    <PackageReference Include="Steeltoe.Security.Authentication.CloudFoundryCore" Version="$(SteeltoeAuthenticationCoreVersion)" />
     <PackageReference Include="System.Net.Http" Version="$(HttpClientVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
