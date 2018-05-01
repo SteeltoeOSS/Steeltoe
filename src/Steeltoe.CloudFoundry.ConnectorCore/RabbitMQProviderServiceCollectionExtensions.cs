@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.ConnectorBase.Queue;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 
 namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
@@ -97,6 +99,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
             RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
             services.Add(new ServiceDescriptor(rabbitMQInterfaceType, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(rabbitMQImplementationType, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RabbitMQHealthContributor(factory, ctx.GetService<ILogger<RabbitMQHealthContributor>>()), ServiceLifetime.Singleton));
         }
     }
 }

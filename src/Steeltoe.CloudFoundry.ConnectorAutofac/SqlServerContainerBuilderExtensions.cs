@@ -20,6 +20,10 @@ using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
 using System;
 using System.Data;
+using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.ConnectorBase.Cache;
+using Steeltoe.CloudFoundry.ConnectorBase.Relational;
+using Steeltoe.Management.Endpoint.Health;
 
 namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
@@ -65,6 +69,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 
             var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
+            container.RegisterType<RelationalHealthContributor>().As<IHealthContributor>();
             return container.Register(c => factory.Create(null)).As<IDbConnection>();
         }
     }

@@ -20,6 +20,8 @@ using Steeltoe.CloudFoundry.Connector.PostgreSql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Data;
+using Steeltoe.CloudFoundry.ConnectorBase.Relational;
+using Steeltoe.Management.Endpoint.Health;
 
 namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
@@ -65,6 +67,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 
             var postgreSqlConfig = new PostgresProviderConnectorOptions(config);
             PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgreSqlConfig, postgreSqlConnection);
+            container.RegisterType<RelationalHealthContributor>().As<IHealthContributor>();
             return container.Register(c => factory.Create(null)).As<IDbConnection>();
         }
     }

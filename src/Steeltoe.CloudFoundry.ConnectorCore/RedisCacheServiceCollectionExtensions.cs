@@ -17,6 +17,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Cache;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.ConnectorBase.Cache;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 using System.Reflection;
 
@@ -207,6 +209,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, connectionType, optionsType, null);
             services.Add(new ServiceDescriptor(interfaceType, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(connectionType, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RedisHealthContributor(factory, connectionType, ctx.GetService<ILogger<RedisHealthContributor>>()), ServiceLifetime.Singleton));
         }
 
         private static void DoAddConnectionMultiplexer(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
@@ -225,6 +228,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer ?? null);
             services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(redisImplementation, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RedisHealthContributor(factory, redisImplementation, ctx.GetService<ILogger<RedisHealthContributor>>()), ServiceLifetime.Singleton));
         }
     }
 }

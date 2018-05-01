@@ -28,6 +28,7 @@ namespace Steeltoe.CloudFoundry.Connector.Cache
         private static string[] stackExchangeRedisInterfaceTypeNames = new string[] { "StackExchange.Redis.IConnectionMultiplexer" };
         private static string[] stackExchangeRedisImplementationTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
         private static string[] stackExchangeRedisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions" };
+        private static string[] stackExchangeRedisCommandFlagsNames = new string[] { "StackExchange.Redis.CommandFlags" };
 
         /// <summary>
         /// Gets IDistributedCache from a Microsoft Cache library
@@ -53,6 +54,11 @@ namespace Steeltoe.CloudFoundry.Connector.Cache
         /// Gets ConnectionMultiplexer from a StackExchange Redis library
         /// </summary>
         public static Type StackExchangeRedisImplementation => ConnectorHelpers.FindType(stackExchangeRedisAssemblies, stackExchangeRedisImplementationTypeNames);
+
+        /// <summary>
+        /// Gets CommandFlags from StackExchange Redis library
+        /// </summary>
+        public static Type StackExchangeRedisCommandFlagsNames => ConnectorHelpers.FindType(stackExchangeRedisAssemblies, stackExchangeRedisCommandFlagsNames);
 
         /// <summary>
         /// Gets ConfigurationOptions from a StackExchange Redis library
