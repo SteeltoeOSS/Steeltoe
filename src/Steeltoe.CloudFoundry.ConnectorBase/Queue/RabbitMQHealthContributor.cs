@@ -41,7 +41,7 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Queue
             try
             {
                 var connFactory = _factory.Create(null);
-                var createConnectionMethod = ConnectorHelpers.FindMethod(connFactory.GetType(), "CreateConnection");
+                var createConnectionMethod = ConnectorHelpers.FindMethod(connFactory.GetType(), "CreateConnection", new Type[0]);
                 ConnectorHelpers.Invoke(createConnectionMethod, connFactory, null);
 
                 result.Details.Add("status", HealthStatus.UP.ToString());

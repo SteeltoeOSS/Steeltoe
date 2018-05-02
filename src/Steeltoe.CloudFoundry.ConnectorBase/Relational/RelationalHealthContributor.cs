@@ -32,7 +32,7 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Relational
             _dbType = GetDbName(connection);
         }
 
-        public string Id { get; } = "relational-db";
+        public string Id => _dbType;
 
         public Health Health()
         {
@@ -70,10 +70,10 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Relational
             switch (connection.GetType().Name)
             {
                 case "NpgsqlConnection":
-                    result = "Posgress";
+                    result = "PostgreSQL";
                     break;
                 case "SqlConnection":
-                    result = "SQL";
+                    result = "SqlServer";
                     break;
                 case "MySqlConnection":
                     result = "MySQL";
