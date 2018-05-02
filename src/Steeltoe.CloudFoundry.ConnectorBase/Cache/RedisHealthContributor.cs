@@ -37,7 +37,7 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
             _logger = logger;
         }
 
-        public string Id => IsMicrosoftImplementation ? "redis-cache" : "redis";
+        public string Id => IsMicrosoftImplementation ? "Redis-Cache" : "Redis";
 
         public Health Health()
         {

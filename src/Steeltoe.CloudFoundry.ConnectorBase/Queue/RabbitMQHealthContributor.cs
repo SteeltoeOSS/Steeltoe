@@ -32,7 +32,7 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Queue
             _logger = logger;
         }
 
-        public string Id => "rabbit";
+        public string Id => "RabbitMQ";
 
         public Health Health()
         {
