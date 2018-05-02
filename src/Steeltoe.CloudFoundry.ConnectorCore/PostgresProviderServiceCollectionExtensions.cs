@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.ConnectorBase.Relational;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 using System.Data;
 
@@ -97,6 +99,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<IDbConnection>>()), ServiceLifetime.Singleton));
         }
     }
 }

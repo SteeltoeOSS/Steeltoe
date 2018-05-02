@@ -15,9 +15,12 @@
 using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.RabbitMQ;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.ConnectorBase.Queue;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 
 namespace Steeltoe.CloudFoundry.ConnectorAutofac
@@ -66,6 +69,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 
             RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);
             RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
+            container.Register(c => new RabbitMQHealthContributor(factory, c.Resolve<ILogger<RabbitMQHealthContributor>>())).As<IHealthContributor>();
 
             return container.Register(c => factory.Create(null)).As(rabbitMQInterfaceType, rabbitMQImplementationType);
         }

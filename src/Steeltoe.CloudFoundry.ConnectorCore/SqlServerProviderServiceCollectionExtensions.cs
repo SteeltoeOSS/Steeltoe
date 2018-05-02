@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.ConnectorBase.Relational;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 using System.Data;
 
@@ -96,6 +98,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(sqlServerConnection, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<IDbConnection>>()), ServiceLifetime.Singleton));
         }
     }
 }

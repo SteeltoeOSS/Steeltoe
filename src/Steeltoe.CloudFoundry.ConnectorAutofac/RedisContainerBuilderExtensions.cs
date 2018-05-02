@@ -15,10 +15,13 @@
 using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Cache;
 using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.ConnectorBase.Cache;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 using System.Reflection;
 
@@ -68,6 +71,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, null);
+            container.Register(c => new RedisHealthContributor(factory, redisImplementation, c.Resolve<ILogger<RedisHealthContributor>>())).As<IHealthContributor>();
             return container.Register(c => factory.Create(null)).As(redisInterface, redisImplementation);
         }
 
@@ -115,6 +119,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer ?? null);
+            container.Register(c => new RedisHealthContributor(factory, redisImplementation, c.Resolve<ILogger<RedisHealthContributor>>())).As<IHealthContributor>();
             return container.Register(c => factory.Create(null)).As(redisInterface, redisImplementation);
         }
     }

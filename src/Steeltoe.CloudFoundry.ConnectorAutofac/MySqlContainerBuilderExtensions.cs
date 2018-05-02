@@ -20,6 +20,8 @@ using Steeltoe.CloudFoundry.Connector.MySql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Data;
+using Steeltoe.CloudFoundry.ConnectorBase.Relational;
+using Steeltoe.Management.Endpoint.Health;
 
 namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
@@ -65,6 +67,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 
             MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
             MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
+            container.RegisterType<RelationalHealthContributor>().As<IHealthContributor>();
             return container.Register(c => factory.Create(null)).As<IDbConnection>();
         }
     }

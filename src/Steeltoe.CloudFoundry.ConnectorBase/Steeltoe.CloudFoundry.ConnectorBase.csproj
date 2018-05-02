@@ -27,6 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeConfigVersion)" />
+    <PackageReference Include="Steeltoe.Management.EndpointBase" Version="$(SteeltoeEndpointBaseVersion)" />
 
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
