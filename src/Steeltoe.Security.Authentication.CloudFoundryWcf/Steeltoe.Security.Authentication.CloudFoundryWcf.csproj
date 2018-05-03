@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\versions.props" />
 
@@ -20,8 +20,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorBase" Version="$(SteeltoeConnectorVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(JwtTokensVerions)" />
     <PackageReference Include="System.Net.Http" Version="$(HttpClientVersion)" />
+    <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>    

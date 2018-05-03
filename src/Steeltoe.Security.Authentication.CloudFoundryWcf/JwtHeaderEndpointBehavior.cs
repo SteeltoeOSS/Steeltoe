@@ -22,6 +22,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
     public class JwtHeaderEndpointBehavior : BehaviorExtensionElement, IEndpointBehavior
     {
         private const string SSOPropertyName = "ssoName";
+        private CloudFoundryOptions _options;
+        private string _userToken;
+
+        public JwtHeaderEndpointBehavior(CloudFoundryOptions options, string userToken = null)
+        {
+            _options = options;
+            _userToken = userToken;
+        }
 
         [ConfigurationProperty(SSOPropertyName)]
         public string SsoName
@@ -44,7 +52,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public void ApplyClientBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime)
         {
-            clientRuntime.ClientMessageInspectors.Add(new JwtHeaderMessageInspector());
+            clientRuntime.ClientMessageInspectors.Add(new JwtHeaderMessageInspector(_options, _userToken));
         }
 
         public void AddBindingParameters(ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters)
@@ -61,9 +69,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         protected override object CreateBehavior()
         {
-            // Create the  endpoint behavior that will insert the message
-            // inspector into the client runtime
-            return new JwtHeaderEndpointBehavior();
+            // Create the endpoint behavior that will insert the message inspector into the client runtime
+            return new JwtHeaderEndpointBehavior(_options);
         }
     }
 }

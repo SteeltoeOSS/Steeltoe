@@ -18,29 +18,29 @@ using Microsoft.Owin.Security.Jwt;
 using Owin;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.Security.Authentication.CloudFoundry;
 using System.Net.Http;
 
-namespace Steeltoe.Security.Authentication.CloudFoundryOwin
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public static class CloudFoundryJwtBearerExtensions
     {
-        public static void AddCloudFoundryJwtBearer(this IAppBuilder app, IConfiguration config)
+        public static IAppBuilder UseCloudFoundryJwtBearerAuthentication(this IAppBuilder app, IConfiguration config)
         {
-            var cloudFoundryOptions = new CloudFoundryJwtBearerOptions();
+            var cloudFoundryOptions = new CloudFoundryJwtBearerAuthenticationOptions();
             var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
             securitySection.Bind(cloudFoundryOptions);
 
             SsoServiceInfo si = config.GetSingletonServiceInfo<SsoServiceInfo>();
             if (si == null)
             {
-                return;
+                return app;
             }
 
             var jwtTokenUrl = si.AuthDomain + CloudFoundryDefaults.JwtTokenKey;
             var httpMessageHandler = CloudFoundryHelper.GetBackChannelHandler(cloudFoundryOptions.ValidateCertificates);
             var tokenValidationParameters = GetTokenValidationParameters(jwtTokenUrl, httpMessageHandler, cloudFoundryOptions.ValidateCertificates);
-            app.UseJwtBearerAuthentication(
+
+            return app.UseJwtBearerAuthentication(
                 new JwtBearerAuthenticationOptions
                 {
                     TokenValidationParameters = tokenValidationParameters,

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Newtonsoft.Json.Linq;
+using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -30,17 +31,19 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public CloudFoundryClientTokenResolver(CloudFoundryOptions options)
         {
-            Options = options ?? throw new ArgumentNullException("options null");
+            Options = options ?? throw new ArgumentNullException("Options are required");
         }
 
         public virtual async Task<string> GetAccessToken()
         {
             HttpRequestMessage requestMessage = GetTokenRequestMessage();
 
-            RemoteCertificateValidationCallback prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-            ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            HttpClientHelper.ConfigureCertificateValidatation(Options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
 
-            HttpClient client = new HttpClient();
+            HttpClient client = new HttpClient
+            {
+                BaseAddress = new Uri(Options.OAuthServiceUrl)
+            };
 
             HttpResponseMessage response = null;
             try
@@ -49,11 +52,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             }
             catch (Exception ex)
             {
-                throw new Exception("Error getting  access token:" + ex.Message);
+                throw new Exception("Error getting access token:" + ex.Message);
             }
             finally
             {
-                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+                HttpClientHelper.RestoreCertificateValidation(Options.ValidateCertificates, protocolType, prevValidator);
             }
 
             if (response.IsSuccessStatusCode)

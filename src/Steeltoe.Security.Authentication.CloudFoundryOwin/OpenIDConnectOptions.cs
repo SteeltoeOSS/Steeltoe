@@ -41,6 +41,18 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 
         public string SignInAsAuthenticationType { get; set; }
 
+        /// <summary>
+        /// Gets or sets additional scopes beyond 'openid' when requesting tokens
+        /// </summary>
+        public string AdditionalScopes { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to validate SSO server certificate
+        /// </summary>
+        public bool ValidateCertificates { get; set; } = true;
+
+        public string TokenInfoUrl => AuthDomain + "/check_token";
+
         public ISecureDataFormat<AuthenticationProperties> StateDataFormat { get; set; }
     }
 }

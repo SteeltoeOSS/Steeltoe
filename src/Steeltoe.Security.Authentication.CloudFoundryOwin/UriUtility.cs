@@ -25,7 +25,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 
             var queryString = WebUtilities.AddQueryString(uri, Constants.ParamsClientID, options.ClientID);
             queryString = WebUtilities.AddQueryString(queryString, Constants.ParamsResponseType, "code");
-            queryString = WebUtilities.AddQueryString(queryString, Constants.ParamsScope, Constants.ScopeOpenID);
+            queryString = WebUtilities.AddQueryString(queryString, Constants.ParamsScope, $"{Constants.ScopeOpenID} {options.AdditionalScopes}");
             queryString = WebUtilities.AddQueryString(queryString, Constants.ParamsRedirectUri, DetermineRedirectUri(options));
 
             return queryString;

@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Steeltoe.CloudFoundry.Connector;
+using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
@@ -20,12 +23,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
     {
         public const string AUTHENTICATION_SCHEME = "CloudFoundry";
         public const string OAUTH_AUTHENTICATION_SCHEME = "CloudFoundry.OAuth";
-
-        internal const string Default_AuthorizationUri = "/oauth/authorize";
-        internal const string Default_AccessTokenUri = "/oauth/token";
-        internal const string Default_UserInfoUri = "/userinfo";
-        internal const string Default_CheckTokenUri = "/check_token";
-        internal const string Default_JwtTokenKey = "/token_key";
 
         public string TokenInfoUrl { get; set; }
 
@@ -43,19 +40,25 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public string ClientSecret { get; set; }
 
-        public string AuthorizationEndpoint { get; set; }
+        public string AuthorizationEndpoint { get; set; } = "oauth/authorize";
 
-        public string AccessTokenEndpoint { get; set; }
+        public string AccessTokenEndpoint { get; set; } = "oauth/token";
 
-        public string UserInformationEndpoint { get; set; }
+        public string UserInformationEndpoint { get; set; } = "userinfo";
 
-        public string TokenInfoEndpoint { get; set; }
+        public string TokenInfoEndpoint { get; set; } = "check_token";
 
-        public string JwtKeyEndpoint { get; set; }
+        public string JwtKeyEndpoint { get; set; } = "token_key";
 
         public string[] RequiredScopes { get; set; }
 
         public string[] AdditionalAudiences { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to use app credentials or forward users's credentials
+        /// </summary>
+        /// <remarks>Setting to true results in passing the user's JWT to downstream services</remarks>
+        public bool ForwardUserCredentials { get; set; } = false;
 
         public TokenValidationParameters TokenValidationParameters { get; set; }
 
@@ -64,7 +67,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         internal CloudFoundryTokenValidator TokenValidator { get; set; }
 
         public CloudFoundryOptions()
-            : this(System.Environment.GetEnvironmentVariable("sso_auth_domain"))
+           : this(System.Environment.GetEnvironmentVariable("sso_auth_domain"))
         {
             ClientId = System.Environment.GetEnvironmentVariable("sso_client_id");
             ClientSecret = System.Environment.GetEnvironmentVariable("sso_client_secret");
@@ -81,11 +84,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         {
             // CallbackPath = new PathString("/signin-cloudfoundry");
             OAuthServiceUrl = authUrl;
-            AuthorizationEndpoint = authUrl + Default_AuthorizationUri;
-            AccessTokenEndpoint = authUrl + Default_AccessTokenUri;
-            UserInformationEndpoint = authUrl + Default_UserInfoUri;
-            TokenInfoEndpoint = authUrl + Default_CheckTokenUri;
-            JwtKeyEndpoint = authUrl + Default_JwtTokenKey;
             ValidateCertificates = false;
             ValidateAudience = true;
             ValidateIssuer = true;
@@ -94,7 +92,23 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             TokenValidator = TokenValidator ?? new CloudFoundryTokenValidator(this);
 
             TokenValidationParameters = GetTokenValidationParameters(this);
-       }
+        }
+
+        public CloudFoundryOptions(IConfiguration config)
+        {
+            // CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX
+            var securitySection = config.GetSection("security:oauth2:client");
+            securitySection.Bind(this);
+
+            SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+
+            OAuthServiceUrl = info.AuthDomain;
+            ClientId = info.ClientId;
+            ClientSecret = info.ClientSecret;
+            TokenKeyResolver = TokenKeyResolver ?? new CloudFoundryTokenKeyResolver(this);
+            TokenValidator = TokenValidator ?? new CloudFoundryTokenValidator(this);
+            TokenValidationParameters = TokenValidationParameters ?? GetTokenValidationParameters(this);
+        }
 
         internal static TokenValidationParameters GetTokenValidationParameters(CloudFoundryOptions options)
         {

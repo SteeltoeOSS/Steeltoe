@@ -23,8 +23,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public class ScopePermissionAttribute : CodeAccessSecurityAttribute
     {
-        public string ConfigurationName { get; set; }
-
         public string Scope { get; set; }
 
         public ScopePermissionAttribute(SecurityAction action)
@@ -34,15 +32,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public override IPermission CreatePermission()
         {
-            string scope = null;
-            if (!string.IsNullOrEmpty(ConfigurationName))
-            {
-                scope = Environment.GetEnvironmentVariable(ConfigurationName);
-            }
-
-            scope = scope ?? Scope;
-
-            return new ScopePermission(Thread.CurrentPrincipal.Identity.Name, scope);
+            return new ScopePermission(Thread.CurrentPrincipal.Identity.Name, Scope);
         }
     }
 }
