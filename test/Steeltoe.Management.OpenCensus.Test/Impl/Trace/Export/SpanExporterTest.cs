@@ -33,7 +33,6 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             sampledSpanContext = SpanContext.Create(TraceId.GenerateRandomId(random), SpanId.GenerateRandomId(random), TraceOptions.Builder().SetIsSampled(true).Build());
             notSampledSpanContext = SpanContext.Create(TraceId.GenerateRandomId(random), SpanId.GenerateRandomId(random), TraceOptions.DEFAULT);
             startEndHandler = new StartEndHandler(spanExporter, runningSpanStore, null, new SimpleEventQueue());
-            //MockitoAnnotations.initMocks(this);
 
             spanExporter.RegisterHandler("test.service", serviceHandler);
         }

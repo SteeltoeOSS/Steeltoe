@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 MutableMean.Create(),
                 MutableDistribution.Create(BUCKET_BOUNDARIES) };
 
-            List<Double> values = new List<double>() { -1.0, 1.0, -5.0, 20.0, 5.0 };
+            List<double> values = new List<double>() { -1.0, 1.0, -5.0, 20.0, 5.0 };
 
             foreach (double value in values)
             {

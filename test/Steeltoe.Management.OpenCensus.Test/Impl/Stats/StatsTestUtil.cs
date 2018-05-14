@@ -1,4 +1,5 @@
-﻿using Steeltoe.Management.Census.Stats.Aggregations;
+﻿using Steeltoe.Management.Census.Common;
+using Steeltoe.Management.Census.Stats.Aggregations;
 using Steeltoe.Management.Census.Tags;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,8 @@ namespace Steeltoe.Management.Census.Stats.Test
 {
     internal static class StatsTestUtil
     {
+        static readonly ITimestamp ZERO_TIMESTAMP = Timestamp.Create(0, 0);
+
         internal static IAggregationData CreateAggregationData(IAggregation aggregation, IMeasure measure, params double[] values)
         {
             MutableAggregation mutableAggregation = MutableViewData.CreateMutableAggregation(aggregation);
@@ -18,6 +21,15 @@ namespace Steeltoe.Management.Census.Stats.Test
             }
             return MutableViewData.CreateAggregationData(mutableAggregation, measure);
         }
+
+        internal static IViewData CreateEmptyViewData(IView view)
+        {
+            return ViewData.Create(
+                view,
+                new Dictionary<TagValues, IAggregationData>(),
+                ZERO_TIMESTAMP, ZERO_TIMESTAMP);
+        }
+
         internal static void AssertAggregationMapEquals(
             IDictionary<TagValues, IAggregationData> actual,
             IDictionary<TagValues, IAggregationData> expected,

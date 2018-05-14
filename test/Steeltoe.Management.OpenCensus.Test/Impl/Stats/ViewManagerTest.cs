@@ -615,86 +615,91 @@ namespace Steeltoe.Management.Census.Stats.Test
                 EPSILON);
         }
 
-        //[Fact]
-        //public void RegisterRecordAndGetView_StatsDisabled()
-        //{
-        //    statsComponent.setState(StatsCollectionState.DISABLED);
-        //    View view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, Arrays.asList(KEY));
-        //    viewManager.RegisterView(view);
-        //    statsRecorder
-        //        .NewMeasureMap()
-        //        .Put(MEASURE_DOUBLE, 1.1)
-        //        .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
-        //    Assert.Equal(viewManager.GetView(VIEW_NAME)).isEqualTo(CreateEmptyViewData(view));
-        //}
+        [Fact]
+        public void RegisterRecordAndGetView_StatsDisabled()
+        {
+            statsComponent.State = StatsCollectionState.DISABLED;
+            IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
+            viewManager.RegisterView(view);
+            statsRecorder
+                .NewMeasureMap()
+                .Put(MEASURE_DOUBLE, 1.1)
+                .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
+            Assert.Equal(StatsTestUtil.CreateEmptyViewData(view), viewManager.GetView(VIEW_NAME));
+        }
 
-        //[Fact]
-        //public void RegisterRecordAndGetView_StatsReenabled()
-        //{
-        //    statsComponent.setState(StatsCollectionState.DISABLED);
-        //    statsComponent.setState(StatsCollectionState.ENABLED);
-        //    View view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, Arrays.asList(KEY));
-        //    viewManager.RegisterView(view);
-        //    statsRecorder
-        //        .NewMeasureMap()
-        //        .Put(MEASURE_DOUBLE, 1.1)
-        //        .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
-        //    StatsTestUtil.AssertAggregationMapEquals(
-        //        viewManager.GetView(VIEW_NAME).AggregationMap,
-        //        ImmutableMap.of(
-        //            Arrays.asList(VALUE), StatsTestUtil.CreateAggregationData(MEAN, MEASURE_DOUBLE, 1.1)),
-        //        EPSILON);
-        //}
+        [Fact]
+        public void RegisterRecordAndGetView_StatsReenabled()
+        {
+            statsComponent.State = StatsCollectionState.DISABLED;
+            statsComponent.State = StatsCollectionState.ENABLED;
+            IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
+            viewManager.RegisterView(view);
+            statsRecorder
+                .NewMeasureMap()
+                .Put(MEASURE_DOUBLE, 1.1)
+                .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
+            TagValues tv = TagValues.Create(new List<ITagValue>() { VALUE });
+            StatsTestUtil.AssertAggregationMapEquals(
+                viewManager.GetView(VIEW_NAME).AggregationMap,
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    { tv, StatsTestUtil.CreateAggregationData(MEAN, MEASURE_DOUBLE, 1.1) }
+                },
+                EPSILON);
+        }
 
-        //[Fact]
-        //public void RegisterViewWithStatsDisabled_RecordAndGetViewWithStatsEnabled()
-        //{
-        //    statsComponent.setState(StatsCollectionState.DISABLED);
-        //    View view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, Arrays.asList(KEY));
-        //    viewManager.RegisterView(view); // view will still be registered.
+        [Fact]
+        public void RegisterViewWithStatsDisabled_RecordAndGetViewWithStatsEnabled()
+        {
+            statsComponent.State =StatsCollectionState.DISABLED;
+            IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
+            viewManager.RegisterView(view); // view will still be registered.
 
-        //    statsComponent.setState(StatsCollectionState.ENABLED);
-        //    statsRecorder
-        //        .NewMeasureMap()
-        //        .Put(MEASURE_DOUBLE, 1.1)
-        //        .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
-        //    StatsTestUtil.AssertAggregationMapEquals(
-        //        viewManager.GetView(VIEW_NAME).AggregationMap,
-        //        ImmutableMap.of(
-        //            Arrays.asList(VALUE), StatsTestUtil.CreateAggregationData(MEAN, MEASURE_DOUBLE, 1.1)),
-        //        EPSILON);
-        //}
+            statsComponent.State =StatsCollectionState.ENABLED;
+            statsRecorder
+                .NewMeasureMap()
+                .Put(MEASURE_DOUBLE, 1.1)
+                .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
+            TagValues tv = TagValues.Create(new List<ITagValue>() { VALUE });
+            StatsTestUtil.AssertAggregationMapEquals(
+                viewManager.GetView(VIEW_NAME).AggregationMap,
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    { tv, StatsTestUtil.CreateAggregationData(MEAN, MEASURE_DOUBLE, 1.1) }
+                },
+                EPSILON);
+        }
 
-        //[Fact]
-        //public void RegisterDifferentViewWithSameNameWithStatsDisabled()
-        //{
-        //    statsComponent.setState(StatsCollectionState.DISABLED);
-        //    View view1 =
-        //        View.Create(
-        //            VIEW_NAME,
-        //            "View description.",
-        //            MEASURE_DOUBLE,
-        //            DISTRIBUTION,
-        //            Arrays.asList(KEY),
-        //            CUMULATIVE);
-        //    View view2 =
-        //        View.Create(
-        //            VIEW_NAME,
-        //            "This is a different description.",
-        //            MEASURE_DOUBLE,
-        //            DISTRIBUTION,
-        //            Arrays.asList(KEY),
-        //            CUMULATIVE);
-        //    testFailedToRegisterView(
-        //        view1, view2, "A different view with the same name is already registered");
-        //}
+        [Fact]
+        public void RegisterDifferentViewWithSameNameWithStatsDisabled()
+        {
+            statsComponent.State = StatsCollectionState.DISABLED;
+            IView view1 =
+                View.Create(
+                    VIEW_NAME,
+                    "View description.",
+                    MEASURE_DOUBLE,
+                    DISTRIBUTION,
+                    new List<ITagKey>() { KEY });
+            IView view2 =
+                View.Create(
+                    VIEW_NAME,
+                    "This is a different description.",
+                    MEASURE_DOUBLE,
+                    DISTRIBUTION,
+                    new List<ITagKey>() { KEY });
 
-        //[Fact]
-        //public void SettingStateToDisabledWillClearStats_Cumulative()
-        //{
-        //    View cumulativeView = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, Arrays.asList(KEY));
-        //    settingStateToDisabledWillClearStats(cumulativeView);
-        //}
+            TestFailedToRegisterView(
+                view1, view2, "A different view with the same name is already registered");
+        }
+
+        [Fact]
+        public void SettingStateToDisabledWillClearStats_Cumulative()
+        {
+            IView cumulativeView = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
+            SettingStateToDisabledWillClearStats(cumulativeView);
+        }
 
         //[Fact]
         //public void SettingStateToDisabledWillClearStats_Interval()
@@ -710,44 +715,47 @@ namespace Steeltoe.Management.Census.Stats.Test
         //    settingStateToDisabledWillClearStats(intervalView);
         //}
 
-        //private void SettingStateToDisabledWillClearStats(View view)
-        //{
-        //    Timestamp timestamp1 = Timestamp.Create(1, 0);
-        //    clock.Time = (timestamp1);
-        //    viewManager.RegisterView(view);
-        //    statsRecorder
-        //        .NewMeasureMap()
-        //        .Put(MEASURE_DOUBLE, 1.1)
-        //        .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
-        //    StatsTestUtil.AssertAggregationMapEquals(
-        //        viewManager.GetView(view.getName()).AggregationMap,
-        //        ImmutableMap.of(
-        //            Arrays.asList(VALUE),
-        //            StatsTestUtil.CreateAggregationData(view.getAggregation(), view.getMeasure(), 1.1)),
-        //        EPSILON);
+        private void SettingStateToDisabledWillClearStats(IView view)
+        {
+            ITimestamp timestamp1 = Timestamp.Create(1, 0);
+            clock.Time = timestamp1;
+            viewManager.RegisterView(view);
+            statsRecorder
+                .NewMeasureMap()
+                .Put(MEASURE_DOUBLE, 1.1)
+                .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
+            TagValues tv = TagValues.Create(new List<ITagValue>() { VALUE });
+            StatsTestUtil.AssertAggregationMapEquals(
+                viewManager.GetView(view.Name).AggregationMap,
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    { tv, StatsTestUtil.CreateAggregationData(view.Aggregation, view.Measure, 1.1) }
+                },
+                EPSILON);
 
-        //    Timestamp timestamp2 = Timestamp.Create(2, 0);
-        //    clock.Time = (timestamp2);
-        //    statsComponent.setState(StatsCollectionState.DISABLED); // This will clear stats.
-        //    Assert.Equal(viewManager.GetView(view.getName())).isEqualTo(CreateEmptyViewData(view));
+            ITimestamp timestamp2 = Timestamp.Create(2, 0);
+            clock.Time = timestamp2;
+            statsComponent.State = StatsCollectionState.DISABLED; // This will clear stats.
+            Assert.Equal(StatsTestUtil.CreateEmptyViewData(view), viewManager.GetView(view.Name));
 
-        //    Timestamp timestamp3 = Timestamp.Create(3, 0);
-        //    clock.Time = (timestamp3);
-        //    statsComponent.setState(StatsCollectionState.ENABLED);
+            ITimestamp timestamp3 = Timestamp.Create(3, 0);
+            clock.Time = timestamp3;
+            statsComponent.State = StatsCollectionState.ENABLED;
 
-        //    Timestamp timestamp4 = Timestamp.Create(4, 0);
-        //    clock.Time = (timestamp4);
-        //    // This ViewData does not have any stats, but it should not be an empty ViewData, since it has
-        //    // non-zero TimeStamps.
-        //    ViewData viewData = viewManager.GetView(view.getName());
-        //    Assert.Equal(viewData.AggregationMap).isEmpty();
-        //    AggregationWindowData windowData = viewData.getWindowData();
-        //    if (windowData instanceof CumulativeData) {
-        //        Assert.Equal(windowData).isEqualTo(CumulativeData.Create(timestamp3, timestamp4));
-        //    } else {
-        //        Assert.Equal(windowData).isEqualTo(IntervalData.Create(timestamp4));
-        //    }
-        //}
+            ITimestamp timestamp4 = Timestamp.Create(4, 0);
+            clock.Time = timestamp4;
+            // This ViewData does not have any stats, but it should not be an empty ViewData, since it has
+            // non-zero TimeStamps.
+            IViewData viewData = viewManager.GetView(view.Name);
+            Assert.Empty(viewData.AggregationMap);
+            Assert.Equal(timestamp3, viewData.Start);
+            Assert.Equal(timestamp4, viewData.End);
+            //if (windowData instanceof CumulativeData) {
+            //    Assert.Equal(windowData).isEqualTo(CumulativeData.Create(timestamp3, timestamp4));
+            //} else {
+            //    Assert.Equal(windowData).isEqualTo(IntervalData.Create(timestamp4));
+            //}
+        }
 
         private static IMeasureMap PutToMeasureMap(IMeasureMap measureMap, IMeasure measure, double value)
         {

@@ -20,6 +20,10 @@ namespace Steeltoe.Management.Census.Trace.Test
         public override Status Status { get; set; }
         public override string Name { get; }
 
+        public override ISpanId ParentSpanId { get; }
+
+        public override bool HasEnded => true;
+
         public override void AddAnnotation(string description, IDictionary<string, IAttributeValue> attributes)
         {
         }

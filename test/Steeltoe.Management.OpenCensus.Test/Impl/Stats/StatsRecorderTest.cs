@@ -1,4 +1,5 @@
-﻿using Steeltoe.Management.Census.Internal;
+﻿using Steeltoe.Management.Census.Common;
+using Steeltoe.Management.Census.Internal;
 using Steeltoe.Management.Census.Stats.Aggregations;
 using Steeltoe.Management.Census.Stats.Measures;
 using Steeltoe.Management.Census.Tags;
@@ -23,9 +24,11 @@ namespace Steeltoe.Management.Census.Stats.Test
         private static readonly IMeasureDouble MEASURE_DOUBLE_NO_VIEW_2 = MeasureDouble.Create("my measurement no view 2", "description", "us");
         private static readonly IViewName VIEW_NAME = ViewName.Create("my view");
 
-        private readonly StatsComponent statsComponent;
-        private readonly IViewManager viewManager;
-        private readonly IStatsRecorder statsRecorder;
+        private StatsComponent statsComponent;
+        private IViewManager viewManager;
+        private IStatsRecorder statsRecorder;
+
+        static readonly ITimestamp ZERO_TIMESTAMP = Timestamp.Create(0, 0);
 
         public StatsRecorderTest()
         {
@@ -55,7 +58,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         }
 
         [Fact]
-        public void record_CurrentContextSet()
+        public void Record_CurrentContextSet()
         {
             IView view =
                 View.Create(
@@ -114,7 +117,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         }
 
         [Fact]
-        public void recordTwice()
+        public void RecordTwice()
         {
             IView view =
                 View.Create(
@@ -143,62 +146,73 @@ namespace Steeltoe.Management.Census.Stats.Test
                 1e-6);
         }
 
-        //[Fact]
-        //public void Record_StatsDisabled()
-        //{
-        //    IView view =
-        //        View.Create(
-        //            VIEW_NAME,
-        //            "description",
-        //            MEASURE_DOUBLE,
-        //            Sum.Create(),
-        //      new List<ITagKey>() { KEY });
+        [Fact]
+        public void Record_StatsDisabled()
+        {
+            IView view =
+                View.Create(
+                    VIEW_NAME,
+                    "description",
+                    MEASURE_DOUBLE,
+                    Sum.Create(),
+              new List<ITagKey>() { KEY });
 
-        //    viewManager.RegisterView(view);
-        //    statsComponent.State (StatsCollectionState.DISABLED);
-        //    statsRecorder
-        //        .newMeasureMap()
-        //        .put(MEASURE_DOUBLE, 1.0)
-        //        .record(new SimpleTagContext(Tag.Create(KEY, VALUE)));
-        //    assertThat(viewManager.getView(VIEW_NAME)).isEqualTo(CreateEmptyViewData(view));
-        //}
+            viewManager.RegisterView(view);
+            statsComponent.State = StatsCollectionState.DISABLED;
+            statsRecorder
+                .NewMeasureMap()
+                .Put(MEASURE_DOUBLE, 1.0)
+                .Record(new SimpleTagContext(Tag.Create(KEY, VALUE)));
+            Assert.Equal(CreateEmptyViewData(view), viewManager.GetView(VIEW_NAME));
+        }
 
-        //      [Fact]
-        //public void record_StatsReenabled()
-        //      {
-        //          View view =
-        //              View.Create(
-        //                  VIEW_NAME,
-        //                  "description",
-        //                  MEASURE_DOUBLE,
-        //                  Sum.Create(),
-        //                  Arrays.asList(KEY),
-        //                  Cumulative.Create());
-        //          viewManager.registerView(view);
+        [Fact]
+        public void Record_StatsReenabled()
+        {
+            IView view =
+                View.Create(
+                    VIEW_NAME,
+                    "description",
+                    MEASURE_DOUBLE,
+                    Sum.Create(),
+                    new List<ITagKey>() { KEY });
 
-        //          statsComponent.setState(StatsCollectionState.DISABLED);
-        //          statsRecorder
-        //              .newMeasureMap()
-        //              .put(MEASURE_DOUBLE, 1.0)
-        //              .record(new SimpleTagContext(Tag.Create(KEY, VALUE)));
-        //          assertThat(viewManager.getView(VIEW_NAME)).isEqualTo(CreateEmptyViewData(view));
+            viewManager.RegisterView(view);
 
-        //          statsComponent.setState(StatsCollectionState.ENABLED);
-        //          assertThat(viewManager.getView(VIEW_NAME).getAggregationMap()).isEmpty();
-        //          assertThat(viewManager.getView(VIEW_NAME).getWindowData())
-        //              .isNotEqualTo(CumulativeData.Create(ZERO_TIMESTAMP, ZERO_TIMESTAMP));
-        //          statsRecorder
-        //              .newMeasureMap()
-        //              .put(MEASURE_DOUBLE, 4.0)
-        //              .record(new SimpleTagContext(Tag.Create(KEY, VALUE)));
-        //          StatsTestUtil.assertAggregationMapEquals(
-        //              viewManager.getView(VIEW_NAME).getAggregationMap(),
-        //              ImmutableMap.of(
-        //                  Arrays.asList(VALUE),
-        //                  StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 4.0)),
-        //              1e-6);
-        //      }
+            statsComponent.State = StatsCollectionState.DISABLED;
+            statsRecorder
+                .NewMeasureMap()
+                .Put(MEASURE_DOUBLE, 1.0)
+                .Record(new SimpleTagContext(Tag.Create(KEY, VALUE)));
+            Assert.Equal(CreateEmptyViewData(view), viewManager.GetView(VIEW_NAME));
 
+            statsComponent.State = StatsCollectionState.ENABLED;
+            Assert.Empty(viewManager.GetView(VIEW_NAME).AggregationMap);
+            //assertThat(viewManager.getView(VIEW_NAME).getWindowData())
+            //    .isNotEqualTo(CumulativeData.Create(ZERO_TIMESTAMP, ZERO_TIMESTAMP));
+            statsRecorder
+                .NewMeasureMap()
+                .Put(MEASURE_DOUBLE, 4.0)
+                .Record(new SimpleTagContext(Tag.Create(KEY, VALUE)));
+            TagValues tv = TagValues.Create(new List<ITagValue>() { VALUE });
+            StatsTestUtil.AssertAggregationMapEquals(
+                viewManager.GetView(VIEW_NAME).AggregationMap,
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    { tv,  StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 4.0) }
+                },
+                1e-6);
+        }
+
+        // Create an empty ViewData with the given View.
+        static IViewData CreateEmptyViewData(IView view)
+        {
+            return ViewData.Create(
+                view,
+                new Dictionary<TagValues, IAggregationData>(),
+                ZERO_TIMESTAMP, ZERO_TIMESTAMP);
+
+        }
         class SimpleTagContext : TagContextBase
         {
             private readonly IList<ITag> tags;
