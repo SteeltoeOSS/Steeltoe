@@ -51,9 +51,10 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Queue
             catch (Exception e)
             {
                 if (e is TargetInvocationException)
-                { 
+                {
                     e = e.InnerException;
                 }
+
                 _logger.LogInformation($"Rabbit connection down!");
                 result.Details.Add("error", e.GetType().Name + ": " + e.Message);
                 result.Details.Add("status", HealthStatus.DOWN.ToString());

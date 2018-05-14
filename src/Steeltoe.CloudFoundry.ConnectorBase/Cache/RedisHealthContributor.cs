@@ -64,6 +64,7 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
                 {
                     e = e.InnerException;
                 }
+
                 _logger.LogInformation($"Redis connection down!");
                 result.Details.Add("error", e.GetType().Name + ": " + e.Message);
                 result.Details.Add("status", HealthStatus.DOWN.ToString());

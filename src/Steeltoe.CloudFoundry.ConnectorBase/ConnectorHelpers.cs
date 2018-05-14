@@ -50,12 +50,12 @@ namespace Steeltoe.CloudFoundry.Connector
         {
             foreach (var assemblyName in assemblyNames)
             {
-                Assembly assembly = ConnectorHelpers.FindAssembly(assemblyName);
+                Assembly assembly = FindAssembly(assemblyName);
                 if (assembly != null)
                 {
                     foreach (var type in typeNames)
                     {
-                        Type result = ConnectorHelpers.FindType(assembly, type);
+                        Type result = FindType(assembly, type);
                         if (result != null)
                         {
                             return result;

@@ -149,6 +149,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             Type extensionType = ConnectorHelpers.FindType(postgresEntityAssemblies, postgresEntityTypeNames);
             if (extensionType == null)
             {
+                Console.WriteLine($"Searched in {string.Join(", ", postgresEntityAssemblies)} | for {string.Join(", ", postgresEntityTypeNames)}");
                 throw new ConnectorException("Unable to find DbContextOptionsBuilder extension, are you missing Postgres EntityFramework Core assembly");
             }
 
