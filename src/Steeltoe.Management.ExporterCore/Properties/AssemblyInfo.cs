@@ -12,24 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
+using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Management.Diagnostics.Listeners
-{
-    public static class DiagnosticHelpers
-    {
-        public static T GetProperty<T>(object o, string name)
-        {
-            var property = o.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
-            if (property == null)
-            {
-                return default(T);
-            }
-
-            return (T)property.GetValue(o);
-        }
-    }
-}
+[assembly: InternalsVisibleTo("Steeltoe.Management.TracingBase.Test")]
