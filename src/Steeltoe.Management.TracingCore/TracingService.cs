@@ -18,14 +18,14 @@ using Steeltoe.Common.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Diagnostics
+namespace Steeltoe.Management.Tracing
 {
-    internal class DiagnosticServices : IHostedService
+    internal class TracingService : IHostedService
     {
         private IDiagnosticsManager observerManager;
-        private ILogger<DiagnosticServices> logger;
+        private ILogger<TracingService> logger;
 
-        public DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger = null)
+        public TracingService(IDiagnosticsManager observerManager, ILogger<TracingService> logger = null)
         {
             this.observerManager = observerManager;
             this.logger = logger;

@@ -12,21 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Management.Diagnostics.Listeners
-{
-    public interface IDiagnosticObserver : IObserver<KeyValuePair<string, object>>
-    {
-        string ListenerName { get; }
-
-        void Subscribe(DiagnosticListener listener);
-
-        void Dispose();
-
-        void ProcessEvent(string key, object value);
-    }
-}
+[assembly: InternalsVisibleTo("Steeltoe.Management.TracingBase.Test")]

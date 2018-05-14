@@ -12,16 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Steeltoe.Management.Diagnostics.Listeners
+namespace Steeltoe.Management.Tracing
 {
-    public interface IDiagnosticObserverManager
+    public interface ITracingOptions
     {
-        void Start();
+        string Name { get; }
 
-        void Stop();
+        string IngressIgnorePattern { get; }
+
+        string EgressIgnorePattern { get; }
+
+        int MaxNumberOfAttributes { get; }
+
+        int MaxNumberOfAnnotations { get; }
+
+        int MaxNumberOfMessageEvents { get; }
+
+        int MaxNumberOfLinks { get; }
+
+        bool AlwaysSample { get; }
+
+        bool NeverSample { get;  }
+
+        bool UseShortTraceIds { get; }
     }
 }

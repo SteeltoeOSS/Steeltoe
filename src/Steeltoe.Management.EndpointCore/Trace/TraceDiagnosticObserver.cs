@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Management.Diagnostics.Listeners;
+using Steeltoe.Common.Diagnostics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -28,7 +28,8 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         internal ConcurrentQueue<Trace> _queue = new ConcurrentQueue<Trace>();
 
-        private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
+        private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
+        private const string OBSERVER_NAME = "TraceDiagnosticObserver";
         private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -36,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         private ITraceOptions _options;
 
         public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
-            : base(DIAGNOSTIC_NAME, logger)
+            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
