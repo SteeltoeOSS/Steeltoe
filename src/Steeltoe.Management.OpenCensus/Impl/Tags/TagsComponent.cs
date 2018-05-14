@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Census.Tags
         private readonly ITagger tagger;
         private readonly ITagPropagationComponent tagPropagationComponent;
 
-        internal TagsComponent()
+        public TagsComponent()
         {
             state = new CurrentTaggingState();
             tagger = new Tagger(state);

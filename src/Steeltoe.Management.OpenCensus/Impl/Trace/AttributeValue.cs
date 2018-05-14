@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
-    public class AttributeValue : IAttributeValue
+    public abstract class AttributeValue : IAttributeValue
     {
         public static IAttributeValue<string> StringAttributeValue(string stringValue)
         {
@@ -28,6 +28,13 @@ namespace Steeltoe.Management.Census.Trace
         internal AttributeValue()
         {
         }
+
+        public abstract T Match<T>(
+            Func<string, T> stringFunction,
+            Func<bool, T> booleanFunction,
+            Func<long, T> longFunction,
+            Func<object, T> defaultFunction);
+        
     }
 
     public sealed class AttributeValue<T> : AttributeValue, IAttributeValue<T>
@@ -88,8 +95,37 @@ namespace Steeltoe.Management.Census.Trace
 
         public override string ToString()
         {
-            // TODO:
-            return Value.ToString();
+            return "AttributeValue{"
+                + "Value=" + Value.ToString()
+                + "}";
+        }
+
+        public override M Match<M>(
+            Func<string, M> stringFunction,
+            Func<bool, M> booleanFunction,
+            Func<long, M> longFunction,
+            Func<object, M> defaultFunction)
+        {
+            if (typeof(T) == typeof(string))
+            {
+                string value = Value as string;
+                return stringFunction(value);
+            }
+
+            if (typeof(T) == typeof(long))
+            {
+                long val = (long)(object)Value;
+                return longFunction(val);
+            }
+
+            if (typeof(T) == typeof(bool))
+            {
+                bool val = (bool)(object)Value;
+                return booleanFunction(val);
+            }
+
+            return defaultFunction(Value);
+
         }
     }
 }

@@ -301,6 +301,22 @@ namespace Steeltoe.Management.Census.Trace
             }
         }
 
+        public override ISpanId ParentSpanId
+        {
+            get
+            {
+                return parentSpanId;
+            }
+        }
+
+        public override bool HasEnded
+        {
+            get
+            {
+                return hasBeenEnded;
+            }
+        }
+
         internal override ISpanData ToSpanData()
         {
 

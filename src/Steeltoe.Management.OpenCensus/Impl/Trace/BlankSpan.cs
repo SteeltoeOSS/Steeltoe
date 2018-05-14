@@ -40,6 +40,16 @@ namespace Steeltoe.Management.Census.Trace
             }
         }
 
+        public override ISpanId ParentSpanId
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public override bool HasEnded => true;
+
         public override void PutAttributes(IDictionary<string, IAttributeValue> attributes)
         {
         }

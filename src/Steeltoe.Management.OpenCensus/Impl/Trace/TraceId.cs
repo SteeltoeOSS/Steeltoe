@@ -90,8 +90,10 @@ namespace Steeltoe.Management.Census.Trace
         public string ToLowerBase16()
         {
             var bytes = Bytes;
-            return Arrays.ByteArrayToString(bytes);
+            var result = Arrays.ByteArrayToString(bytes);
+            return result;
         }
+
 
         public long LowerLong
         {
@@ -101,7 +103,9 @@ namespace Steeltoe.Management.Census.Trace
                 for (int i = 0; i < 8; i++)
                 {
                     result <<= 8;
+#pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
                     result |= (bytes[i] & 0xff);
+#pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand
                 }
  
                 if (result < 0)

@@ -32,6 +32,10 @@ namespace Steeltoe.Management.Census.Stats
                 //isRead = true;
                 return StatsCollectionState.DISABLED;
             }
+            set
+            {
+
+            }
         }
     }
 }

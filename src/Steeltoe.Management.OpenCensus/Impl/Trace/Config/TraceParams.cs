@@ -68,7 +68,7 @@ namespace Steeltoe.Management.Census.Trace.Config
         }
 
 
-        public override Boolean Equals(object o)
+        public override bool Equals(object o)
         {
             if (o == this)
             {

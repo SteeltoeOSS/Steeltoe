@@ -40,6 +40,27 @@ namespace Steeltoe.Management.Census.Stats
         public override StatsCollectionState State
         {
             get { return state.Value; }
+            set
+            {
+                ViewManager manager = viewManager as ViewManager;
+                if (manager == null)
+                {
+                    return;
+                }
+                var result = state.Set(value);
+                if (result)
+                {
+                    if (value == StatsCollectionState.DISABLED)
+                    {
+                        manager.ClearStats();
+                    }
+                    else
+                    {
+                        manager.ResumeStatsCollection();
+                    }
+                }
+            }
         }
+
     }
 }

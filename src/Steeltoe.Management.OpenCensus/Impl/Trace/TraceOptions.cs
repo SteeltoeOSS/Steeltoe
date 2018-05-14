@@ -14,6 +14,7 @@ namespace Steeltoe.Management.Census.Trace
         public const int SIZE = 1;
 
         public static readonly TraceOptions DEFAULT = new TraceOptions(DEFAULT_OPTIONS);
+        public static readonly TraceOptions SAMPLED = new TraceOptions(1);
 
         // The set of enabled features is determined by all the enabled bits.
         private byte options;
@@ -87,16 +88,6 @@ namespace Steeltoe.Management.Census.Trace
             {
                 return HasOption(IS_SAMPLED);
             }
-            //set
-            //{
-            //    if (value)
-            //    {
-            //        SetOption(IS_SAMPLED);
-            //    } else
-            //    {
-            //        ClearOption(IS_SAMPLED);
-            //    }
-            //}
         }
 
         public override bool Equals(object obj)

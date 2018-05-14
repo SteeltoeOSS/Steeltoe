@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Census.Common
         const long MILLIS_PER_SECOND = 1000L;
         const long NANOS_PER_MILLI = 1000 * 1000;
         const long NANOS_PER_SECOND = NANOS_PER_MILLI * MILLIS_PER_SECOND;
-        const long TICKS_PER_NANO = 100;
 
 
         public static ITimestamp Create(long seconds, int nanos)

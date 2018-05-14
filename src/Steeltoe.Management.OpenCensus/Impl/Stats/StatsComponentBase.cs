@@ -8,6 +8,6 @@ namespace Steeltoe.Management.Census.Stats
     {
         public abstract IViewManager ViewManager { get; }
         public abstract IStatsRecorder StatsRecorder { get; }
-        public abstract StatsCollectionState State { get; }
+        public abstract StatsCollectionState State { get; set; }
     }
 }

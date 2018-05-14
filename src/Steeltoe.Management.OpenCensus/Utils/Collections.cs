@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
-    internal static class Collections
+    public static class Collections
     {
         public static string ToString<K, V>(IDictionary<K, V> dict)
         {
@@ -33,8 +33,11 @@ namespace Steeltoe.Management.Census.Utils
             StringBuilder sb = new StringBuilder();
             foreach (var val in list)
             {
-                sb.Append(val.ToString());
-                sb.Append(" ");
+                if (val != null)
+                {
+                    sb.Append(val.ToString());
+                    sb.Append(" ");
+                }
             }
             return sb.ToString();
         }
@@ -44,10 +47,6 @@ namespace Steeltoe.Management.Census.Utils
             var c1Dist = c1.Distinct();
             var c2Dist = c2.Distinct();
             return c1.Count == c2.Count && c1Dist.Count() == c2Dist.Count() && c1Dist.Intersect(c2Dist).Count() == c1Dist.Count();
-            //var c1Ic2 = c1.Intersect(c2);
-            //var c2Ic1 = c2.Intersect(c1);
-            //return c1.Count == c2.Count && c1.Intersect(c2).Count() == c1.Count;
-            //return c1.Count == c2.Count && c1.Intersect(c2).Count() == c2.Intersect(c1).Count();
         }
     }
     

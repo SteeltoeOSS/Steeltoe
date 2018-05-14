@@ -7,11 +7,11 @@ namespace Steeltoe.Management.Census.Trace.Propagation
 {
     public sealed class B3Format : TextFormatBase
     {
-        internal const string X_B3_TRACE_ID = "X─B3─TraceId";
-        internal const string X_B3_SPAN_ID = "X─B3─SpanId";
-        internal const string X_B3_PARENT_SPAN_ID = "X─B3─ParentSpanId";
-        internal const string X_B3_SAMPLED = "X─B3─Sampled";
-        internal const string X_B3_FLAGS = "X-B3-Flags";
+        public const string X_B3_TRACE_ID = "X-B3-TraceId";
+        public const string X_B3_SPAN_ID = "X-B3-SpanId";
+        public const string X_B3_PARENT_SPAN_ID = "X-B3-ParentSpanId";
+        public const string X_B3_SAMPLED = "X-B3-Sampled";
+        public const string X_B3_FLAGS = "X-B3-Flags";
         private static readonly List<string> FIELDS = new List<string>() {X_B3_TRACE_ID, X_B3_SPAN_ID, X_B3_PARENT_SPAN_ID, X_B3_SAMPLED, X_B3_FLAGS};
 
         // Used as the upper TraceId.SIZE hex characters of the traceID. B3-propagation used to send

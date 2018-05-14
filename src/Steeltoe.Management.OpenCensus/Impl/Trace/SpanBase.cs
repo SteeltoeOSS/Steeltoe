@@ -20,6 +20,8 @@ namespace Steeltoe.Management.Census.Trace
         public abstract long EndNanoTime { get; }
         public abstract long LatencyNs { get; }
         public abstract bool IsSampleToLocalSpanStore { get; }
+        public abstract ISpanId ParentSpanId { get; }
+
         internal SpanBase() { }
         protected SpanBase(ISpanContext context, SpanOptions options = SpanOptions.NONE)
         {
@@ -54,6 +56,15 @@ namespace Steeltoe.Management.Census.Trace
         public void End()
         {
             End(EndSpanOptions.DEFAULT);
+        }
+
+        public abstract bool HasEnded { get; }
+
+        public override string ToString()
+        {
+            return "Span[" +
+                Name +
+                "]";
         }
     }
 }

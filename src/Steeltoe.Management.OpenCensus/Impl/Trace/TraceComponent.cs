@@ -10,6 +10,12 @@ namespace Steeltoe.Management.Census.Trace
 {
     public sealed class TraceComponent : TraceComponentBase
     {
+        public TraceComponent()
+            : this(DateTimeOffsetClock.INSTANCE, new RandomGenerator(), new SimpleEventQueue())
+        {
+
+        }
+
         public TraceComponent(IClock clock, IRandomGenerator randomHandler, IEventQueue eventQueue)
         {
             Clock = clock;
