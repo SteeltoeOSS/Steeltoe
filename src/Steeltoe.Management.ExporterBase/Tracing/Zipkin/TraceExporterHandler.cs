@@ -152,12 +152,12 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
             {
                if (label.Key.Equals(SpanAttributeConstants.SpanKindKey))
                 {
-                    if (label.Value.Equals(SpanAttributeConstants.ClientSpanKind))
+                    if (IsClientSpanKind(label.Value))
                     {
                         return ZipkinSpanKind.CLIENT;
                     }
 
-                    if (label.Value.Equals(SpanAttributeConstants.ServerSpanKind))
+                    if (IsServerSpanKind(label.Value))
                     {
                         return ZipkinSpanKind.SERVER;
                     }
@@ -170,6 +170,48 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
             }
 
             return ZipkinSpanKind.CLIENT;
+        }
+
+        private bool IsClientSpanKind(IAttributeValue value)
+        {
+            return value.Match(
+            (arg) =>
+            {
+                return arg.Equals(SpanAttributeConstants.ClientSpanKind);
+            },
+            (arg) =>
+            {
+                return false;
+            },
+            (arg) =>
+            {
+                return false;
+            },
+            (arg) =>
+            {
+                return false;
+            });
+        }
+
+        private bool IsServerSpanKind(IAttributeValue value)
+        {
+            return value.Match(
+            (arg) =>
+            {
+                return arg.Equals(SpanAttributeConstants.ServerSpanKind);
+            },
+            (arg) =>
+            {
+                return false;
+            },
+            (arg) =>
+            {
+                return false;
+            },
+            (arg) =>
+            {
+                return false;
+            });
         }
 
         private async void SendSpansAsync(List<ZipkinSpan> spans)
