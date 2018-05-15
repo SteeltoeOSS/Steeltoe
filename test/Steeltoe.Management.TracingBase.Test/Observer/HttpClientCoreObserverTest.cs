@@ -118,7 +118,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
             Assert.Null(spanContext.Previous);
-            Assert.Equal("http:/", span.Name);
+            Assert.Equal("httpclient:/", span.Name);
 
             var exception = new Exception("Help");
             obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, new { Request = request, Exception = exception });
@@ -159,7 +159,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
             Assert.Null(spanContext.Previous);
-            Assert.Equal("http:/", span.Name);
+            Assert.Equal("httpclient:/", span.Name);
 
             var response = GetHttpResponseMessage(HttpStatusCode.OK);
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request, Response = response, RequestTaskStatus = TaskStatus.RanToCompletion });
@@ -195,7 +195,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
             Assert.Null(spanContext.Previous);
-            Assert.Equal("http:/", span.Name);
+            Assert.Equal("httpclient:/", span.Name);
 
             Assert.True(request.Headers.Contains(B3Format.X_B3_TRACE_ID));
             Assert.True(request.Headers.Contains(B3Format.X_B3_SPAN_ID));

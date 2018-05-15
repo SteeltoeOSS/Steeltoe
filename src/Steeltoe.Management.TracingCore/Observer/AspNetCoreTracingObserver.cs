@@ -27,32 +27,6 @@ namespace Steeltoe.Management.Tracing.Observer
     {
         private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
 
-        protected internal static void EndSpanIfNeeded(SpanContext previousContext, SpanContext newContext, bool threadContextChanged)
-        {
-            if (!threadContextChanged)
-            {
-                return;
-            }
-
-            if (previousContext == null)
-            {
-                return;
-            }
-
-            var previous = previousContext.Active;
-            if (previous is Span span &&
-                newContext == null &&
-                !span.HasEnded)
-            {
-                span.End();
-            }
-        }
-
-        protected static void HandleValueChangedEvent(AsyncLocalValueChangedArgs<SpanContext> arg)
-        {
-            EndSpanIfNeeded(arg.PreviousValue, arg.CurrentValue, arg.ThreadContextChanged);
-        }
-
         protected ITracing Tracing { get; }
 
         protected ITextFormat Propagation { get; }

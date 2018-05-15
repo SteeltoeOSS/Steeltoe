@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         private const string OBSERVER_NAME = "AspNetCoreHostingDiagnosticObserver";
 
-        private static AsyncLocal<SpanContext> active = new AsyncLocal<SpanContext>((arg) => HandleValueChangedEvent(arg));
+        private static AsyncLocal<SpanContext> active = new AsyncLocal<SpanContext>();
 
         private readonly HeaderDictionaryGetter headerGetter = new HeaderDictionaryGetter();
 

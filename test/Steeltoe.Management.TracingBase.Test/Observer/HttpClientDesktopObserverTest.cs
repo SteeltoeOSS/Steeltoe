@@ -107,7 +107,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
             Assert.Null(spanContext.Previous);
-            Assert.Equal("http:/", span.Name);
+            Assert.Equal("httpclient:/", span.Name);
 
             var respHeaders = new WebHeaderCollection();
             respHeaders.Add("TEST", "Header");
@@ -144,7 +144,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
             Assert.Null(spanContext.Previous);
-            Assert.Equal("http:/", span.Name);
+            Assert.Equal("httpclient:/", span.Name);
 
             Assert.NotNull(request.Headers.Get(B3Format.X_B3_TRACE_ID));
             Assert.NotNull(request.Headers.Get(B3Format.X_B3_SPAN_ID));

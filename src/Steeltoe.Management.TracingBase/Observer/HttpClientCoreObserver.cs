@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         private HeaderDictionarySetter headerSetter = new HeaderDictionarySetter();
 
-        public HttpClientCoreObserver(ITracingOptions options, ITracing tracing, ILogger logger = null)
+        public HttpClientCoreObserver(ITracingOptions options, ITracing tracing, ILogger<HttpClientCoreObserver> logger = null)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, tracing, logger)
         {
         }
@@ -216,7 +216,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         private string ExtractSpanName(HttpRequestMessage message)
         {
-            return "http:" + message.RequestUri.AbsolutePath;
+            return "httpclient:" + message.RequestUri.AbsolutePath;
         }
 
         public class HeaderDictionarySetter : ISetter<HttpRequestHeaders>

@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         private const string OBSERVER_NAME = "AspNetCoreMvcActionDiagnosticObserver";
 
-        private static AsyncLocal<SpanContext> active = new AsyncLocal<SpanContext>((arg) => HandleValueChangedEvent(arg));
+        private static AsyncLocal<SpanContext> active = new AsyncLocal<SpanContext>();
 
         public AspNetCoreMvcActionObserver(ITracingOptions options, ITracing tracing, ILogger<AspNetCoreMvcActionObserver> logger = null)
             : base(OBSERVER_NAME, options, tracing, logger)
