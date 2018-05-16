@@ -20,8 +20,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2BFFFB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A1B0D5C-681B-4A1B-8C28-E8AB1936736E}"
 	ProjectSection(SolutionItems) = preProject
+		.appveyor.yml = .appveyor.yml
 		.travis.yml = .travis.yml
-		appveyor.yml = appveyor.yml
+		nuget.config = nuget.config
+		README.md = README.md
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
