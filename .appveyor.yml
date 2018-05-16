@@ -20,6 +20,8 @@ build_script:
 artifacts:
   - path: '**\*.nupkg'
 environment:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
   PackageReferencesToUpdate: SteeltoeCommonVersion
   github_access_token:
     secure: ko4J3M/czguVI9AbVdkv5qZuj3Wuzts5nkz/6cypneFkQGWJXDs8Akg7xOEMu8qU
