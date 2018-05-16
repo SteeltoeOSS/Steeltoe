@@ -6,7 +6,6 @@
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.Management.Endpoint</Description>
     <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
     <AssemblyName>Steeltoe.Management.EndpointBase.Test</AssemblyName>
     <PackageId>Steeltoe.Management.EndpointBase.Test</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
