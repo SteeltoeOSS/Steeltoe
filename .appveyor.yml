@@ -20,6 +20,8 @@ build_script:
 artifacts:
   - path: '**\*.nupkg'
 environment:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
   ProjectList: Steeltoe.CloudFoundry.ConnectorBase Steeltoe.CloudFoundry.ConnectorCore Steeltoe.CloudFoundry.Connector.EF6Core Steeltoe.CloudFoundry.Connector.EFCore Steeltoe.CloudFoundry.ConnectorAutofac
   PackageReferencesToUpdate: SteeltoeConnectorVersion
   github_access_token:
