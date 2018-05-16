@@ -8,6 +8,9 @@ branches:
     - dev
     - /^update[0-9]{2}x/          
 install:
+  # Install .NET Core 2.1
+  - ps: Invoke-WebRequest -Uri "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "install-dotnet.ps1"
+  - ps: .\install-dotnet.ps1 -Version 2.1.300-rc1-008673
   - git clone https://github.com/SteeltoeOSS/steeltoe-ci.git -v
   - ps: steeltoe-ci\scripts\appveyor_install.ps1
 test_script:
@@ -17,6 +20,8 @@ build_script:
 artifacts:
   - path: '**\*.nupkg'
 environment:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
   ProjectList: Steeltoe.Extensions.Configuration.CloudFoundryBase Steeltoe.Extensions.Configuration.ConfigServerBase Steeltoe.Extensions.Configuration.CloudFoundryCore Steeltoe.Extensions.Configuration.CloudFoundryAutofac Steeltoe.Extensions.Configuration.ConfigServerCore Steeltoe.Extensions.Configuration.ConfigServerAutofac
   PackageReferencesToUpdate: SteeltoeConfigVersion
   github_access_token:

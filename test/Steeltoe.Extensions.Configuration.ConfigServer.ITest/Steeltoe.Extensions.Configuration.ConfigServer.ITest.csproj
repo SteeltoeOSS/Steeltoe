@@ -1,10 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="..\..\versions.props" />
-
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
+    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +25,7 @@
 
     <!-- 4.3.0 of this package has problems on net46+, by default that version gets included, so we have to force using 4.3.1+ in apps -->
     <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" />
+
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
