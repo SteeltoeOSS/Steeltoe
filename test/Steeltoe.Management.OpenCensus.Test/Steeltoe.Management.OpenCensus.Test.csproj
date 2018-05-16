@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.Management.OpenCensus</Description>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
     <AssemblyName>Steeltoe.Management.OpenCensus.Test</AssemblyName>
     <PackageId>Steeltoe.Management.OpenCensus.Test</PackageId>

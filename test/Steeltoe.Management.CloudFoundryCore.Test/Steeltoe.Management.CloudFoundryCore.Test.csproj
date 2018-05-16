@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.Management.CloudFoundryCore</Description>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.3</RuntimeFrameworkVersion>
     <AssemblyName>Steeltoe.Management.CloudFoundryCore.Test</AssemblyName>
     <PackageId>Steeltoe.Management.CloudFoundryCore.Test</PackageId>
