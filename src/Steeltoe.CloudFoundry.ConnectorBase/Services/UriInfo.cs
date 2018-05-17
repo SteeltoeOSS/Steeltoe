@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Net;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
@@ -22,17 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         private char[] colon = new char[] { ':' };
 
-        public UriInfo(string scheme, string host, int port, string username, string password)
-            : this(scheme, host, port, username, password, null, null)
-        {
-        }
-
-        public UriInfo(string scheme, string host, int port, string username, string password, string path)
-            : this(scheme, host, port, username, password, path, null)
-        {
-        }
-
-        public UriInfo(string scheme, string host, int port, string username, string password, string path, string query)
+        public UriInfo(string scheme, string host, int port, string username, string password, string path = null, string query = null)
         {
             Scheme = scheme;
             Host = host;
@@ -45,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             UriString = MakeUri(scheme, host, port, username, password, path, query).ToString();
         }
 
-        public UriInfo(string uristring)
+        public UriInfo(string uristring, bool urlEncodedCredentials = false)
         {
             this.UriString = uristring;
 
@@ -59,8 +50,17 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 Query = GetQuery(uri.PathAndQuery);
 
                 string[] userinfo = GetUserInfo(uri.UserInfo);
-                this.UserName = userinfo[0];
-                this.Password = userinfo[1];
+
+                if (urlEncodedCredentials)
+                {
+                    UserName = WebUtility.UrlDecode(userinfo[0]);
+                    Password = WebUtility.UrlDecode(userinfo[1]);
+                }
+                else
+                {
+                    UserName = userinfo[0];
+                    Password = userinfo[1];
+                }
             }
         }
 
