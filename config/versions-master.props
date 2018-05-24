@@ -12,11 +12,11 @@
     <BouncyCastleVersion>1.8.1.3</BouncyCastleVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
-    <CSharpVerion>4.4.0</CSharpVerion>
+    <CSharpVersion>4.4.0</CSharpVersion>
     <HttpClientVersion>4.3.3</HttpClientVersion>
     <JsonNetVersion>10.0.3</JsonNetVersion>
-    <OwinOAuthVerions>4.0.0</OwinOAuthVerions>
-    <JwtTokensVerions>5.2.2</JwtTokensVerions>
+    <OwinOAuthVersion>4.0.0</OwinOAuthVersion>
+    <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <TestSdkVersion>15.5.0</TestSdkVersion>
     <MockHttp>3.2.1</MockHttp>
     <XunitAnalyzersVersion>0.8.0</XunitAnalyzersVersion>
