@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     /// <summary>
@@ -25,18 +27,34 @@ namespace Steeltoe.Security.DataProtection.CredHub
         public string CredHubUrl { get; set; } = "https://credhub.service.cf.internal:8844/api";
 
         /// <summary>
-        /// Gets or sets uAA user with necessary permissions to perform desired CredHub interactions
+        /// Gets or sets Client Id for interactions with UAA
         /// </summary>
-        public string CredHubUser { get; set; }
+        public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets uAA User's password
+        /// Gets or sets Client Secret for interactions with UAA
         /// </summary>
-        public string CredHubPassword { get; set; }
+        public string ClientSecret { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether validate server certificates for UAA and/or CredHub servers
+        /// Gets or sets a value indicating whether validate server certificates for UAA and CredHub servers
         /// </summary>
         public bool ValidateCertificates { get; set; } = true;
+
+        /// <summary>
+        /// Perform basic validation to make sure a Client Id and Secret have been provided
+        /// </summary>
+        public void Validate()
+        {
+            if (string.IsNullOrEmpty(ClientId))
+            {
+                throw new ArgumentException("A Client Id is required for the CredHub Client");
+            }
+
+            if (string.IsNullOrEmpty(ClientSecret))
+            {
+                throw new ArgumentException("A Client Secret is required for the CredHub Client");
+            }
+        }
     }
 }
