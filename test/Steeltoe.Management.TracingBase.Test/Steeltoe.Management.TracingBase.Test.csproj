@@ -5,7 +5,7 @@
 
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.Management.TracingBase</Description>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.TracingBase.Test</AssemblyName>
     <PackageId>Steeltoe.Management.TracingBase.Test</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring;Tracing</PackageTags>
