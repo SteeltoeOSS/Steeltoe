@@ -28,12 +28,7 @@ namespace Steeltoe.Common.Discovery
 
         public DiscoveryHttpClientHandlerBase(IDiscoveryClient client, ILogger logger = null)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            _client = client;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
             _logger = logger;
         }
 
@@ -48,15 +43,21 @@ namespace Steeltoe.Common.Discovery
             var instances = _client.GetInstances(current.Host);
             if (instances.Count > 0)
             {
-                int indx = _random.Next(instances.Count);
-                current = new Uri(instances[indx].Uri, current.PathAndQuery);
+                var index = _random.Next(instances.Count);
+                var result = instances[index].Uri;
+                current = new Uri(result, current.PathAndQuery);
+                _logger?.LogDebug("Resolved {url} to {service}", current, result);
+            }
+            else
+            {
+                _logger?.LogWarning("Attempted to resolve service for {url} but found 0 instances", current.Host);
             }
 
             _logger?.LogDebug("LookupService() returning {0} ", current.ToString());
             return current;
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        internal async Task<HttpResponseMessage> SharedSendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var current = request.RequestUri;
             try
@@ -73,6 +74,11 @@ namespace Steeltoe.Common.Discovery
             {
                 request.RequestUri = current;
             }
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            return await SharedSendAsync(request, cancellationToken);
         }
     }
 }
