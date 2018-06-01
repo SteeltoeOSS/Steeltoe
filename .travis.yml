@@ -7,7 +7,7 @@ env:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     - DOTNET_CLI_TELEMETRY_OPTOUT: 1
 mono: none
-dotnet: 2.1.300-rc1-008673
+dotnet: 2.1.300
 os:
   - linux
   - osx

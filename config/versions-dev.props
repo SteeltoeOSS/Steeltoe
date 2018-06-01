@@ -4,25 +4,25 @@
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
     <SteeltoeConfigVersion>2.1.0-dev-00226</SteeltoeConfigVersion>
     <SteeltoeEndpointBaseVersion>2.1.0-dev-00116</SteeltoeEndpointBaseVersion>
-    <AspNetCoreVersion>2.1.0-rc1-final</AspNetCoreVersion>
-    <AspNetCoreTestVersion>2.1.0-rc1-final</AspNetCoreTestVersion>
-    <AspNetCoreMvcTestVersion>2.1.0-rc1-final</AspNetCoreMvcTestVersion>
+    <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
+    <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
+    <AspNetCoreMvcTestVersion>2.1.0</AspNetCoreMvcTestVersion>
     <AutofacVersion>4.6.1</AutofacVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <EF6Version>6.2.0</EF6Version>
-    <EFCoreVersion>2.1.0-preview2-final</EFCoreVersion>
-    <EFCoreTestVersion>2.1.0-preview2-final</EFCoreTestVersion>
+    <EFCoreVersion>2.1.0</EFCoreVersion>
+    <EFCoreTestVersion>2.1.0</EFCoreTestVersion>
     <JsonNetVersion>10.0.3</JsonNetVersion>
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
     <MySqlVersion>6.10.7</MySqlVersion>
-    <NpgsqlVersion>4.0.0-preview2</NpgsqlVersion>
-    <NpgsqlEFCoreVersion>2.1.0-preview2</NpgsqlEFCoreVersion>
+    <NpgsqlVersion>4.0.0</NpgsqlVersion>
+    <NpgsqlEFCoreVersion>2.1.0</NpgsqlEFCoreVersion>
     <PomeloEFCoreVersion>2.0.1</PomeloEFCoreVersion>
     <RabbitClientVersion>5.1.0-rc1</RabbitClientVersion>
-    <SqlClientVersion>4.5.0-rc1</SqlClientVersion>
+    <SqlClientVersion>4.5.0</SqlClientVersion>
     <StackExchangeVersion>1.2.6</StackExchangeVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
-    <TestSdkVersion>15.7.0</TestSdkVersion>
+    <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
   </PropertyGroup>
