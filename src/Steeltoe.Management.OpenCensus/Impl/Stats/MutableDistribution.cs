@@ -7,14 +7,14 @@ namespace Steeltoe.Management.Census.Stats
     internal sealed class MutableDistribution : MutableAggregation
     {
         private const double TOLERANCE = 1e-6;
-        internal double Sum { get; private set; } = 0.0;
-        internal double Mean { get; private set; } = 0.0;
-        internal long Count { get; private set; } = 0;
-        internal double SumOfSquaredDeviations { get; private set; } = 0.0;
+        internal double Sum { get; set; } = 0.0;
+        internal double Mean { get; set; } = 0.0;
+        internal long Count { get; set; } = 0;
+        internal double SumOfSquaredDeviations { get; set; } = 0.0;
 
         // Initial "impossible" values, that will get reset as soon as first value is added.
-        internal double Min { get; private set; } = Double.PositiveInfinity;
-        internal double Max { get; private set; } = Double.NegativeInfinity;
+        internal double Min { get; set; } = Double.PositiveInfinity;
+        internal double Max { get; set; } = Double.NegativeInfinity;
 
         internal IBucketBoundaries BucketBoundaries { get; }
         internal long[] BucketCounts { get; }
@@ -127,7 +127,7 @@ namespace Steeltoe.Management.Census.Stats
                 this.BucketCounts[i] += bucketCounts[i];
             }
         }
-        internal override T Match<T>(Func<MutableSum, T> p0, Func<MutableCount, T> p1, Func<MutableMean, T> p2, Func<MutableDistribution, T> p3)
+        internal override T Match<T>(Func<MutableSum, T> p0, Func<MutableCount, T> p1, Func<MutableMean, T> p2, Func<MutableDistribution, T> p3, Func<MutableLastValue, T> p4)
         {
             return p3.Invoke(this);
         }

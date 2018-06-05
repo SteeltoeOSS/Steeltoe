@@ -44,6 +44,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         private static readonly ISum SUM = Sum.Create();
         private static readonly IMean MEAN = Mean.Create();
         private static readonly IDistribution DISTRIBUTION = Distribution.Create(BUCKET_BOUNDARIES);
+        private static readonly ILastValue LAST_VALUE = LastValue.Create();
 
         private readonly TestClock clock;
 
@@ -235,6 +236,17 @@ namespace Steeltoe.Management.Census.Stats.Test
         public void TestRecordLong_Sum_Cumulative()
         {
             TestRecordCumulative(MEASURE_LONG, SUM, 1000, 2000, 3000, 4000);
+        }
+        [Fact]
+        public void TestRecordDouble_Lastvalue_Cumulative()
+        {
+            TestRecordCumulative(MEASURE_DOUBLE, LAST_VALUE, 11.1, 22.2, 33.3, 44.4);
+        }
+
+        [Fact]
+        public void TestRecordLong_Lastvalue_Cumulative()
+        {
+            TestRecordCumulative(MEASURE_LONG, LAST_VALUE, 1000, 2000, 3000, 4000);
         }
 
         private void TestRecordCumulative(IMeasure measure, IAggregation aggregation, params double[] values)

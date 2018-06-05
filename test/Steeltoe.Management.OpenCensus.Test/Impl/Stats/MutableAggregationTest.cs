@@ -18,6 +18,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.InRange(MutableSum.Create().Sum, 0-TOLERANCE, 0+TOLERANCE);
             Assert.Equal(0, MutableCount.Create().Count);
             Assert.InRange(MutableMean.Create().Mean, 0-TOLERANCE, 0+TOLERANCE);
+            Assert.True(Double.IsNaN(MutableLastValue.Create().LastValue));
 
             IBucketBoundaries bucketBoundaries = BucketBoundaries.Create(new List<double>() { 0.1, 2.2, 33.3 });
             MutableDistribution mutableDistribution = MutableDistribution.Create(bucketBoundaries);
@@ -53,7 +54,8 @@ namespace Steeltoe.Management.Census.Stats.Test
                 MutableSum.Create(),
                 MutableCount.Create(),
                 MutableMean.Create(),
-                MutableDistribution.Create(BUCKET_BOUNDARIES) };
+                MutableDistribution.Create(BUCKET_BOUNDARIES),
+                MutableLastValue.Create()};
 
             List<double> values = new List<double>() { -1.0, 1.0, -5.0, 20.0, 5.0 };
 
@@ -84,6 +86,8 @@ namespace Steeltoe.Management.Census.Stats.Test
 
                     {
                         Assert.InRange(arg.Mean, 4.0-TOLERANCE, 4.0+TOLERANCE);
+                        Assert.InRange(arg.Max, 20.0 - TOLERANCE, 20 + TOLERANCE);
+                        Assert.InRange(arg.Min, -5.0 - TOLERANCE, -5.0 + TOLERANCE);
                         return null;
 
                     },
@@ -91,7 +95,13 @@ namespace Steeltoe.Management.Census.Stats.Test
                     {
                         Assert.Equal(new long[] { 0, 2, 2, 1 }, arg.BucketCounts);
                         return null;
-                    });
+                    },
+                    (arg) =>
+                    {
+                        Assert.InRange(arg.LastValue, 5.0 - TOLERANCE, 5.0 + TOLERANCE);
+                        return null;
+                    }
+                    );
             }
         }
 
@@ -100,10 +110,11 @@ namespace Steeltoe.Management.Census.Stats.Test
         {
             List<MutableAggregation> aggregations =
                 new List<MutableAggregation>(){
-            MutableSum.Create(),
-            MutableCount.Create(),
-            MutableMean.Create(),
-            MutableDistribution.Create(BUCKET_BOUNDARIES) };
+                MutableSum.Create(),
+                MutableCount.Create(),
+                MutableMean.Create(),
+                MutableDistribution.Create(BUCKET_BOUNDARIES),
+                MutableLastValue.Create()};
 
             List<String> actual = new List<String>();
             foreach (MutableAggregation aggregation in aggregations)
@@ -127,10 +138,16 @@ namespace Steeltoe.Management.Census.Stats.Test
                         (arg) =>
                         {
                             return "DISTRIBUTION";
-                        }));
+                        },
+                        (arg) =>
+                        {
+                            return "LASTVALUE";
+                        }
+                        )
+                        );
             }
 
-            Assert.Equal(new List<string>() { "SUM", "COUNT", "MEAN", "DISTRIBUTION" }, actual);
+            Assert.Equal(new List<string>() { "SUM", "COUNT", "MEAN", "DISTRIBUTION", "LASTVALUE" }, actual);
         }
 
         [Fact]

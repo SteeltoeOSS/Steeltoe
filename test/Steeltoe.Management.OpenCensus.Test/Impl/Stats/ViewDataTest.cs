@@ -90,7 +90,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                         ENTRIES,
                         Timestamp.FromMillis(1000), Timestamp.FromMillis(2000));
             Assert.Equal(data1, data2);
-           
+
             //.addEqualityGroup(
             IViewData data3 = ViewData.Create(
                         cumulativeView,
@@ -102,12 +102,12 @@ namespace Steeltoe.Management.Census.Stats.Test
             //.addEqualityGroup(
             //IViewData data4 = ViewData.Create(intervalView, ENTRIES, IntervalData.Create(Timestamp.fromMillis(2000))),
             //IViewData data5 = ViewData.Create(intervalView, ENTRIES, IntervalData.Create(Timestamp.fromMillis(2000))))
-                //.addEqualityGroup(
-                //    ViewData.Create(
-                //        intervalView,
-                //        Collections.< List<TagValue>, AggregationData > emptyMap(),
-                //        IntervalData.Create(Timestamp.fromMillis(2000))))
-                //.testEquals();
+            //.addEqualityGroup(
+            //    ViewData.Create(
+            //        intervalView,
+            //        Collections.< List<TagValue>, AggregationData > emptyMap(),
+            //        IntervalData.Create(Timestamp.fromMillis(2000))))
+            //.testEquals();
         }
 
         //        [Fact]
@@ -178,73 +178,104 @@ namespace Steeltoe.Management.Census.Stats.Test
         //        IntervalData.Create(Timestamp.fromMillis(1000)));
         //  }
 
-        //  [Fact]
-        //  public void preventStartTimeLaterThanEndTime()
+        //[Fact]
+        //public void PreventStartTimeLaterThanEndTime()
         //{
-        //    thrown.expect(IllegalArgumentException.class);
+        //   // thrown.expect(IllegalArgumentException.class);
         //    CumulativeData.Create(Timestamp.fromMillis(3000), Timestamp.fromMillis(2000));
         //  }
 
-        //[Fact]
-        //public void PreventAggregationAndAggregationDataMismatch_SumDouble_SumLong()
-        //{
-        //    AggregationAndAggregationDataMismatch(
-        //        CreateView(Sum.Create(), MEASURE_DOUBLE),
-        //        ImmutableMap.< List<TagValue>, AggregationData > of(
-        //            Arrays.asList(V1, V2), SumDataLong.Create(100)));
-        //}
+        [Fact]
+        public void PreventAggregationAndAggregationDataMismatch_SumDouble_SumLong()
+        {
+            var tagValues = TagValues.Create(new List<ITagValue>() { V1, V2 });
+            AggregationAndAggregationDataMismatch(
+                CreateView(Sum.Create(), MEASURE_DOUBLE),
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    {tagValues, SumDataLong.Create(100) }
+                });
+        }
 
-        //[Fact]
-        //  public void preventAggregationAndAggregationDataMismatch_SumLong_SumDouble()
-        //{
-        //    aggregationAndAggregationDataMismatch(
-        //        CreateView(Sum.Create(), MEASURE_LONG),
-        //        ImmutableMap.< List<TagValue>, AggregationData > of(
-        //            Arrays.asList(V1, V2), SumDataDouble.Create(100)));
-        //}
+        [Fact]
+        public void PreventAggregationAndAggregationDataMismatch_SumLong_SumDouble()
+        {
+            var tagValues = TagValues.Create(new List<ITagValue>() { V1, V2 });
+            AggregationAndAggregationDataMismatch(
+                CreateView(Sum.Create(), MEASURE_LONG),
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    {tagValues, SumDataDouble.Create(100) }
+                });
+        }
 
-        //[Fact]
-        //  public void preventAggregationAndAggregationDataMismatch_Count_Distribution()
-        //{
-        //    aggregationAndAggregationDataMismatch(CreateView(Count.Create()), ENTRIES);
-        //}
+        [Fact]
+        public void PreventAggregationAndAggregationDataMismatch_Count_Distribution()
+        {
+            AggregationAndAggregationDataMismatch(CreateView(Count.Create()), ENTRIES);
+        }
 
-        //[Fact]
-        //  public void preventAggregationAndAggregationDataMismatch_Mean_Distribution()
-        //{
-        //    aggregationAndAggregationDataMismatch(CreateView(Mean.Create()), ENTRIES);
-        //}
+        [Fact]
+        public void PreventAggregationAndAggregationDataMismatch_Mean_Distribution()
+        {
+            AggregationAndAggregationDataMismatch(CreateView(Mean.Create()), ENTRIES);
+        }
 
-        //[Fact]
-        //  public void preventAggregationAndAggregationDataMismatch_Distribution_Count()
-        //{
-        //    aggregationAndAggregationDataMismatch(
-        //        CreateView(DISTRIBUTION),
-        //        ImmutableMap.of(
-        //            Arrays.asList(V1, V2),
-        //            DistributionData.Create(1, 1, 1, 1, 0, Arrays.asList(0L, 1L, 0L)),
-        //            Arrays.asList(V10, V20),
-        //            CountData.Create(100)));
-        //}
+        [Fact]
+        public void PreventAggregationAndAggregationDataMismatch_Distribution_Count()
+        {
+            var tagValues1 = TagValues.Create(new List<ITagValue>() { V1, V2 });
+            var tagValues2 = TagValues.Create(new List<ITagValue>() { V10, V20 });
+            AggregationAndAggregationDataMismatch(
+                CreateView(DISTRIBUTION),
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    { tagValues1, DistributionData.Create(1, 1, 1, 1, 0, new List<long>() {0L, 1L, 0L }) },
+                    { tagValues2, CountData.Create(100) }
+                });
+        }
 
-        //private static View CreateView(Aggregation aggregation)
-        //{
-        //    return CreateView(aggregation, MEASURE_DOUBLE);
-        //}
+        [Fact]
+        public void PreventAggregationAndAggregationDataMismatch_LastValueDouble_LastValueLong()
+        {
+            var tagValues = TagValues.Create(new List<ITagValue>() { V1, V2 });
+            AggregationAndAggregationDataMismatch(
+                CreateView(LastValue.Create(), MEASURE_DOUBLE),
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    {tagValues, LastValueDataLong.Create(100) }
+                });
+        }
 
-        //private static View CreateView(Aggregation aggregation, Measure measure)
-        //{
-        //    return View.Create(NAME, DESCRIPTION, measure, aggregation, TAG_KEYS, CUMULATIVE);
-        //}
+        [Fact]
+        public void PreventAggregationAndAggregationDataMismatch_LastValueLong_LastValueDouble()
+        {
+            var tagValues = TagValues.Create(new List<ITagValue>() { V1, V2 });
+            AggregationAndAggregationDataMismatch(
+                CreateView(LastValue.Create(), MEASURE_LONG),
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    {tagValues, LastValueDataDouble.Create(100) }
+                });
+        }
 
-        //private void AggregationAndAggregationDataMismatch(IView view, IDictionary<TagValues, IAggregationData> entries)
-        //{
-        //    //CumulativeData cumulativeData =
-        //    //    CumulativeData.Create(Timestamp.fromMillis(1000), Timestamp.fromMillis(2000));
-        //    //thrown.expect(IllegalArgumentException);
-        //    //thrown.expectMessage("Aggregation and AggregationData types mismatch. ");
-        //    ViewData.Create(view, entries, Timestamp.FromMillis(1000), Timestamp.FromMillis(2000));
-        //}
+        private static IView CreateView(IAggregation aggregation)
+        {
+            return CreateView(aggregation, MEASURE_DOUBLE);
+        }
 
+        private static IView CreateView(IAggregation aggregation, IMeasure measure)
+        {
+            return View.Create(NAME, DESCRIPTION, measure, aggregation, TAG_KEYS);
+        }
+
+        private void AggregationAndAggregationDataMismatch(IView view, IDictionary<TagValues, IAggregationData> entries)
+        {
+            //CumulativeData cumulativeData =
+            //    CumulativeData.Create(Timestamp.fromMillis(1000), Timestamp.fromMillis(2000));
+            //thrown.expect(IllegalArgumentException);
+            //thrown.expectMessage("Aggregation and AggregationData types mismatch. ");
+            Assert.Throws<ArgumentException>(() => ViewData.Create(view, entries, Timestamp.FromMillis(1000), Timestamp.FromMillis(2000)));
+        }
     }
 }

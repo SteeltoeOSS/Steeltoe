@@ -14,20 +14,21 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 {
     public class CloudFoundryForwarderOptions
     {
-        private const string CONFIG_PREFIX = "management:metrics:exporter:cloudfoundry";
-        private const string SPRING_APPLICATION_PREFIX = "spring:application";
-        private const string FORWARDER_NAME = "metrics-forwarder";
-        private const string ENDPOINT_KEY = "endpoint";
-        private const string ACCESS_KEY = "access_key";
+        public const string CONFIG_PREFIX = "management:metrics:exporter:cloudfoundry";
+        public const string SPRING_APPLICATION_PREFIX = "spring:application";
+        public const string FORWARDER_NAME = "metrics-forwarder";
+        public const string ENDPOINT_KEY = "endpoint";
+        public const string ACCESS_KEY = "access_key";
 
-        private const int DEFAULT_TIMEOUT = 3;
-        private const int DEFAULT_RATE = 60000;
+        public const int DEFAULT_TIMEOUT = 3;
+        public const int DEFAULT_RATE = 60000;
 
         public CloudFoundryForwarderOptions()
             : base()
@@ -36,6 +37,11 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         public CloudFoundryForwarderOptions(IConfiguration config)
         {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             var section = config.GetSection(CONFIG_PREFIX);
             if (section != null)
             {

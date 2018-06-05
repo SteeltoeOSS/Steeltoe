@@ -12,6 +12,7 @@ namespace Steeltoe.Management.Census.Stats
              Func<ICount, M> p1,
              Func<IMean, M> p2,
              Func<IDistribution, M> p3,
-             Func<IAggregation, M> p4);
+             Func<ILastValue, M> p4,
+             Func<IAggregation, M> p6);
     }
 }

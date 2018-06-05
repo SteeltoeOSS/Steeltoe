@@ -8,5 +8,7 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
     {
         double Mean { get; }
         long Count { get; }
+        double Max { get; }
+        double Min { get; }
     }
 }
