@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.InRange(((MutableSum)MutableViewData.CreateMutableAggregation(Sum.Create())).Sum, 0.0 - EPSILON, 0.0 + EPSILON);
             Assert.Equal(0, ((MutableCount)MutableViewData.CreateMutableAggregation(Count.Create())).Count);
             Assert.InRange(((MutableMean)MutableViewData.CreateMutableAggregation(Mean.Create())).Mean, 0.0 - EPSILON, 0.0 + EPSILON);
-
+            Assert.True(Double.IsNaN( ((MutableLastValue)MutableViewData.CreateMutableAggregation(LastValue.Create())).LastValue));
 
             MutableDistribution mutableDistribution =
                 (MutableDistribution)
@@ -74,6 +74,9 @@ namespace Steeltoe.Management.Census.Stats.Test
 
             aggregates.Add(MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_DOUBLE));
             aggregates.Add(MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_LONG));
+            aggregates.Add(MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_DOUBLE));
+            aggregates.Add(MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_LONG));
+
             foreach (MutableAggregation mutableAggregation in mutableAggregations)
             {
                 aggregates.Add(MutableViewData.CreateAggregationData(mutableAggregation, MEASURE_DOUBLE));
@@ -81,10 +84,12 @@ namespace Steeltoe.Management.Census.Stats.Test
             List<IAggregationData> expected = new List<IAggregationData>()
             {
                 SumDataDouble.Create(0),
-                    SumDataLong.Create(0),
-                    CountData.Create(0),
-                    MeanData.Create(0, 0),
-                    DistributionData.Create(
+                SumDataLong.Create(0),
+                LastValueDataDouble.Create(Double.NaN),
+                LastValueDataLong.Create(0),
+                CountData.Create(0),
+                MeanData.Create(0, 0, Double.MaxValue, Double.MinValue),
+                DistributionData.Create(
                         0,
                         0,
                         Double.PositiveInfinity,

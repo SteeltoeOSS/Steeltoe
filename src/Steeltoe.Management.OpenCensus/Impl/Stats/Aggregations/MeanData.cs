@@ -9,16 +9,20 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
     {
         public double Mean { get; }
         public long Count { get; }
+        public double Max { get; }
+        public double Min { get; }
 
-        internal MeanData(double mean, long count)
+        internal MeanData(double mean, long count, double min, double max)
         {
             this.Mean = mean;
             this.Count = count;
+            this.Min = min;
+            this.Max = max;
         }
 
-        public static IMeanData Create(double mean, long count)
+        public static IMeanData Create(double mean, long count, double min, double max)
         {
-            return new MeanData(mean, count);
+            return new MeanData(mean, count, min, max);
         }
 
         public override M Match<M>(
@@ -27,6 +31,8 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
             Func<ICountData, M> p2,
             Func<IMeanData, M> p3,
             Func<IDistributionData, M> p4,
+            Func<ILastValueDataDouble, M> p5,
+            Func<ILastValueDataLong, M> p6,
             Func<IAggregationData, M> defaultFunction)
         {
             return p3.Invoke(this);
@@ -37,6 +43,8 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
         {
             return "MeanData{"
                 + "mean=" + Mean + ", "
+                + "min=" + Min + ", "
+                + "max=" + Max + ", "
                 + "count=" + Count
                 + "}";
         }
@@ -51,7 +59,9 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
             {
                 MeanData that = (MeanData)o;
                 return (DoubleUtil.ToInt64(this.Mean) == DoubleUtil.ToInt64(that.Mean))
-                     && (this.Count == that.Count);
+                        && (this.Count == that.Count)
+                        && (DoubleUtil.ToInt64(this.Min) == DoubleUtil.ToInt64(that.Min))
+                        && (DoubleUtil.ToInt64(this.Max) == DoubleUtil.ToInt64(that.Max));
             }
             return false;
         }
@@ -61,6 +71,10 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
             long h = 1;
             h *= 1000003;
             h ^= (DoubleUtil.ToInt64(this.Mean) >> 32) ^ DoubleUtil.ToInt64(this.Mean);
+            h *= 1000003;
+            h ^= (DoubleUtil.ToInt64(this.Min) >> 32) ^ DoubleUtil.ToInt64(this.Min);
+            h *= 1000003;
+            h ^= (DoubleUtil.ToInt64(this.Max) >> 32) ^ DoubleUtil.ToInt64(this.Max);
             h *= 1000003;
             h ^= (this.Count >> 32) ^ this.Count;
             return (int)h;

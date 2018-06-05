@@ -84,6 +84,18 @@ namespace Steeltoe.Management.Census.Stats.Test
                     return null;
                 },
                 (arg) =>
+                {
+                    Assert.IsType<LastValueDataDouble>(actual);
+                    Assert.InRange(((LastValueDataDouble)actual).LastValue, arg.LastValue - tolerance, arg.LastValue + tolerance);
+                    return null;
+                },
+                (arg) =>
+                {
+                    Assert.IsType<LastValueDataLong>(actual);
+                    Assert.Equal(arg.LastValue, ((LastValueDataLong)actual).LastValue);
+                    return null;
+                },
+                (arg) =>
                  {
                      throw new ArgumentException();
                  });

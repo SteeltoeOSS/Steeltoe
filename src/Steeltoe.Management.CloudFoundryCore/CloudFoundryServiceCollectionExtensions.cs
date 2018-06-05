@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
@@ -42,6 +43,7 @@ namespace Steeltoe.Management.CloudFoundry
             services.AddHealthActuator(config);
             services.AddLoggersActuator(config);
             services.AddTraceActuator(config);
+            services.AddMetricsActuator(config);
         }
     }
 }

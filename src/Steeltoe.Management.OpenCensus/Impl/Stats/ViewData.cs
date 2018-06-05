@@ -149,7 +149,32 @@ namespace Steeltoe.Management.Census.Stats
                         throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
                     }
                     return null;
-                }, 
+                },
+                (arg) =>
+                {
+                    measure.Match<object>(
+                        (arg1) =>
+                        {
+                            if (!(aggregationData is ILastValueDataDouble))
+                            {
+                                throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
+                            }
+                            return null;
+                        },
+                        (arg1) =>
+                        {
+                            if (!(aggregationData is ILastValueDataLong))
+                            {
+                                throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
+                            }
+                            return null;
+                        },
+                        (arg1) =>
+                        {
+                            throw new ArgumentException();
+                        });
+                    return null;
+                },
                 (arg) =>
                 {
                     throw new ArgumentException();

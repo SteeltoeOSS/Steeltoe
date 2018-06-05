@@ -34,16 +34,16 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         private const int PAYLOAD_TOO_LARGE = 413;
         private const int TOO_MANY_REQUESTS = 429;
 
-        private CloudFoundryForwarderOptions settings;
+        private CloudFoundryForwarderOptions options;
         private IStats stats;
         private IViewManager viewManager;
         private Thread workerThread;
         private bool shutdown = false;
         private ILogger<CloudFoundryForwarderExporter> logger;
 
-        public CloudFoundryForwarderExporter(CloudFoundryForwarderOptions settings, IStats stats, ILogger<CloudFoundryForwarderExporter> logger = null)
+        public CloudFoundryForwarderExporter(CloudFoundryForwarderOptions options, IStats stats, ILogger<CloudFoundryForwarderExporter> logger = null)
         {
-            this.settings = settings;
+            this.options = options;
             this.stats = stats;
             this.viewManager = stats.ViewManager;
             this.logger = logger;
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             shutdown = true;
         }
 
-        private void Run(object obj)
+        protected internal void Run(object obj)
         {
             logger?.LogInformation("Exporting metrics to metrics forwarder service");
 
@@ -75,14 +75,14 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                     long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
                     HttpClient client = GetHttpClient();
-                    var requestUri = new Uri(settings.Endpoint);
+                    var requestUri = new Uri(options.Endpoint);
                     var request = GetHttpRequestMessage(HttpMethod.Post, requestUri);
                     Message message = GetMessage(viewManager.AllExportedViews, timeStamp);
                     request.Content = GetRequestContent(message);
 
                     DoPost(client, request);
 
-                    Thread.Sleep(settings.RateMilli);
+                    Thread.Sleep(options.RateMilli);
                 }
                 catch (Exception e)
                 {
@@ -92,10 +92,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             }
         }
 
-        private async void DoPost(HttpClient client, HttpRequestMessage request)
+        protected internal async void DoPost(HttpClient client, HttpRequestMessage request)
         {
             HttpClientHelper.ConfigureCertificateValidatation(
-                settings.ValidateCertificates,
+                options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
             try
@@ -123,7 +123,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                         }
                         else
                         {
-                            logger?.LogError("Failed to send metrics to Metrics Forwarder service. Discarding metrics.  StatusCode: {0}", statusCode);
+                            logger?.LogError("Failed to send metrics to Metrics Forwarder service. Discarding metrics.  StatusCode: {status}", statusCode);
                         }
                     }
 
@@ -132,44 +132,23 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             }
             catch (Exception e)
             {
-                logger?.LogError("DoPost Exception:", e);
+                logger?.LogError(e, "DoPost Exception: {uri}", request.RequestUri);
             }
             finally
             {
                 client.Dispose();
-                HttpClientHelper.RestoreCertificateValidation(settings.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(options.ValidateCertificates, prevProtocols, prevValidator);
             }
         }
 
-        private Message GetMessage(ISet<IView> exportedViews, long timeStamp)
+        protected internal Message GetMessage(ISet<IView> exportedViews, long timeStamp)
         {
-            IList<IView> views = new List<IView>(exportedViews);
-            Instance instance = new Instance(GetInstanceId(), GetInstanceIndex(), GetMetrics(views, timeStamp));
-            Application application = new Application(settings.ApplicationId, new List<Instance>() { instance });
+            Instance instance = new Instance(GetInstanceId(), GetInstanceIndex(), GetMetricsForExportedViews(exportedViews, timeStamp));
+            Application application = new Application(options.ApplicationId, new List<Instance>() { instance });
             return new Message(new List<Application>() { application });
         }
 
-        private string GetInstanceId()
-        {
-            if (string.IsNullOrEmpty(settings.InstanceId))
-            {
-                return Environment.GetEnvironmentVariable("CF_INSTANCE_GUID");
-            }
-
-            return settings.InstanceId;
-        }
-
-        private string GetInstanceIndex()
-        {
-            if (string.IsNullOrEmpty(settings.InstanceIndex))
-            {
-                return Environment.GetEnvironmentVariable("CF_INSTANCE_INDEX");
-            }
-
-            return settings.InstanceIndex;
-        }
-
-        private IList<Metric> GetMetrics(IList<IView> exportedViews, long timeStamp)
+        protected internal IList<Metric> GetMetricsForExportedViews(ISet<IView> exportedViews, long timeStamp)
         {
             var result = new List<Metric>();
             foreach (var view in exportedViews)
@@ -190,127 +169,132 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             return result;
         }
 
-        private void ResetMetrics()
+        protected internal IList<Metric> CreateMetricsFromViewData(IViewData viewData, long timeStamp)
         {
-            stats.State = StatsCollectionState.DISABLED;
-            stats.State = StatsCollectionState.ENABLED;
-        }
-
-        private IList<Metric> CreateMetricsFromViewData(IViewData data, long timeStamp)
-        {
-            IView view = data.View;
-            MetricType type = GetMetricType(view.Aggregation);
-
-            string unit = view.Measure.Unit;
-            string name = view.Measure.Name;
-            var duration = data.End.SubtractTimestamp(data.Start);
-
             List<Metric> result = new List<Metric>();
-            foreach (var entry in data.AggregationMap)
+            foreach (var entry in viewData.AggregationMap)
             {
-                var tagValues = entry.Key;
-                var aggData = entry.Value;
-                IDictionary<string, string> tags = MatchTagKeyAndValues(view, tagValues);
-
-                IList<Metric> metrics = GetMetrics(name, type, timeStamp, unit, tags, aggData, duration);
+                IList<Metric> metrics = CreateMetrics(entry.Key, entry.Value, viewData, timeStamp);
                 result.AddRange(metrics);
             }
 
             return result;
         }
 
-        private IList<Metric> GetMetrics(string measureName, MetricType type, long timeStamp, string unit, IDictionary<string, string> tags, IAggregationData aggregationData, IDuration period)
+        protected internal List<Metric> CreateMetrics(TagValues tagValues, IAggregationData agg, IViewData viewData, long timeStamp)
         {
             List<Metric> results = new List<Metric>();
 
-            // TODO: Seems this is only type supported by PCF
-            type = MetricType.GAUGE;
+            var unit = viewData.View.Measure.Unit;
+            var name = viewData.View.Name.AsString;
+            var tags = GetTagKeysAndValues(viewData.View.Columns, tagValues.Values);
+            var statistic = GetStatistic(viewData.View.Aggregation, viewData.View.Measure);
 
-            aggregationData.Match<object>(
+            agg.Match<object>(
                 (arg) =>
                 {
-                    results.AddRange(CreateMetrics(measureName, type, timeStamp, unit, tags, arg.Sum));
-                    return null;
-                },
-                (arg) =>
-                {
-                    results.AddRange(CreateMetrics(measureName, type, timeStamp, unit, tags, arg.Sum));
-                    return null;
-                },
-                (arg) =>
-                {
-                    results.AddRange(CreateMetrics(measureName, type, timeStamp, unit, tags, arg.Count));
-                    return null;
-                },
-                (arg) =>
-                {
-                    results.AddRange(CreateMetrics(measureName, ".samples", type, timeStamp, "long", tags, arg.Count));
-                    results.AddRange(CreateMetrics(measureName, ".mean", type, timeStamp, unit, tags, arg.Mean));
-                    return null;
-                },
-                (arg) =>
-                {
-                    results.AddRange(CreateMetrics(measureName, ".samples", type, timeStamp, "long", tags, arg.Count));
-                    results.AddRange(CreateMetrics(measureName, ".mean", type, timeStamp, unit, tags, arg.Mean));
-                    results.AddRange(CreateMetrics(measureName, ".min", type, timeStamp, unit, tags, arg.Min));
-                    results.AddRange(CreateMetrics(measureName, ".max", type, timeStamp, unit, tags, arg.Max));
-
-                    var stdDeviation = Math.Sqrt((arg.SumOfSquaredDeviations / arg.Count) - 1);
-                    if (double.IsNaN(stdDeviation))
+                    if (statistic == "unknown")
                     {
-                        stdDeviation = 0.0;
+                        statistic = "total";
+                    }
+                    tags["statistic"] = statistic;
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Sum));
+                    return null;
+                },
+                (arg) =>
+                {
+                    if (statistic == "unknown")
+                    {
+                        statistic = "total";
+                    }
+                    tags["statistic"] = statistic;
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Sum));
+                    return null;
+                },
+                (arg) =>
+                {
+                    if (statistic == "unknown")
+                    {
+                        statistic = "count";
+                    }
+                    tags["statistic"] = statistic;
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Count));
+                    return null;
+                },
+                (arg) =>
+                {
+                    if (statistic == "unknown")
+                    {
+                        statistic = "total";
                     }
 
-                    results.AddRange(CreateMetrics(measureName, ".stddev", type, timeStamp, unit, tags, stdDeviation));
+                    IDictionary<string, string> copy = new Dictionary<string, string>(tags);
+                    copy["statistic"] = "count";
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, "count", copy, arg.Count));
 
+                    copy = new Dictionary<string, string>(tags);
+                    copy["statistic"] = "mean";
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, copy, arg.Mean));
+
+                    tags["statistic"] = statistic;
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Count * arg.Mean));
+
+                    return null;
+                },
+                (arg) =>
+                {
+                    if (statistic == "unknown")
+                    {
+                        statistic = "total";
+                    }
+                    IDictionary<string, string> copy = new Dictionary<string, string>(tags);
+                    copy["statistic"] = "count";
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, "count", copy, arg.Count));
+
+                    copy = new Dictionary<string, string>(tags);
+                    copy["statistic"] = "mean";
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, copy, arg.Mean));
+
+                    copy = new Dictionary<string, string>(tags);
+                    copy["statistic"] = "max";
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, copy, arg.Max));
+
+                    tags["statistic"] = statistic;
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Count * arg.Mean));
+
+                    return null;
+                },
+                (arg) =>
+                {
+                    if (statistic == "unknown")
+                    {
+                        statistic = "value";
+                    }
+                    tags["statistic"] = statistic;
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.LastValue));
+                    return null;
+                },
+                (arg) =>
+                {
+                    if (statistic == "unknown")
+                    {
+                        statistic = "value";
+                    }
+                    tags["statistic"] = statistic;
+                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.LastValue));
                     return null;
                 },
                 (arg) =>
                 {
                     return null;
                 });
-            return results;
-        }
-
-        private IList<Metric> CreateMetrics(string measureName, MetricType type, long timeStamp, string unit, IDictionary<string, string> tags, double value)
-        {
-            return CreateMetrics(measureName, string.Empty, type, timeStamp, unit, tags, value);
-        }
-
-        private IList<Metric> CreateMetrics(string measureName, string metricNameSuffix, MetricType type, long timeStamp, string unit, IDictionary<string, string> tags, double value)
-        {
-            List<Metric> results = new List<Metric>();
-            if (tags.Count == 0)
-            {
-                results.Add(new Metric(measureName + metricNameSuffix, type, timeStamp, unit, tags, value));
-            }
-            else
-            {
-                foreach (var tag in tags)
-                {
-                    var metricName = MakeMetricName(measureName, tag.Value) + metricNameSuffix;
-                    results.Add(new Metric(metricName, type, timeStamp, unit, new Dictionary<string, string>() { { tag.Key, tag.Value } }, value));
-                }
-            }
 
             return results;
         }
 
-        private string MakeMetricName(string measureName, string tag)
+        protected internal IDictionary<string, string> GetTagKeysAndValues(IList<ITagKey> keys, IList<ITagValue> values)
         {
-            if (!string.IsNullOrEmpty(tag))
-            {
-                return measureName + "." + tag;
-            }
-
-            return measureName;
-        }
-
-        private IDictionary<string, string> MatchTagKeyAndValues(IView view, TagValues tagValues)
-        {
-            var keys = view.Columns;
-            var values = tagValues.Values;
-            Dictionary<string, string> result = new Dictionary<string, string>();
+            IDictionary<string, string> result = new Dictionary<string, string>();
 
             if (keys.Count != values.Count)
             {
@@ -322,42 +306,81 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             {
                 var key = keys[i];
                 var val = values[i];
-                result[key.Name] = val.AsString;
+                if (val != null)
+                {
+                    result.Add(key.Name, val.AsString);
+                }
             }
 
             return result;
         }
 
-        private double GetMetricValue(IAggregationData aggregationData)
+        protected internal string GetStatistic(IAggregation agg, IMeasure measure)
         {
-            return aggregationData.Match(
-                (arg) => { return arg.Sum; },
-                (arg) => { return arg.Sum; },
-                (arg) => { return arg.Count; },
-                (arg) => { return arg.Mean; },
-                (arg) => { return arg.Mean; },
-                (arg) => { return 0.0; });
+            var result = agg.Match<string>(
+                (arg) =>
+                {
+                    return "total";
+                },
+                (arg) =>
+                {
+                    return "count";
+                },
+                (arg) =>
+                {
+                    return "total";
+                },
+                (arg) =>
+                {
+                    return "total";
+                },
+                (arg) =>
+                {
+                    return "value";
+                },
+                (arg) =>
+                {
+                    return "unknown";
+                });
+
+            if (MeasureUnit.IsTimeUnit(measure.Unit) && result == "total")
+            {
+                result = "totalTime";
+            }
+
+            return result;
         }
 
-        private MetricType GetMetricType(IAggregation aggregation)
+        protected internal string GetInstanceId()
         {
-            return aggregation.Match(
-                (arg) => { return MetricType.COUNTER; },
-                (arg) => { return MetricType.COUNTER; },
-                (arg) => { return MetricType.GAUGE; },
-                (arg) => { return MetricType.GAUGE; },
-                (arg) => { return MetricType.UNKNOWN; });
+            if (string.IsNullOrEmpty(options.InstanceId))
+            {
+                return Environment.GetEnvironmentVariable("CF_INSTANCE_GUID");
+            }
+
+            return options.InstanceId;
         }
 
-        private HttpRequestMessage GetHttpRequestMessage(HttpMethod method, Uri requestUri)
+        protected internal string GetInstanceIndex()
+        {
+            if (string.IsNullOrEmpty(options.InstanceIndex))
+            {
+                return Environment.GetEnvironmentVariable("CF_INSTANCE_INDEX");
+            }
+
+            return options.InstanceIndex;
+        }
+
+        protected internal HttpRequestMessage GetHttpRequestMessage(HttpMethod method, Uri requestUri)
         {
             var request = new HttpRequestMessage(method, requestUri);
-            request.Headers.Add("Authorization", settings.AccessToken);
+            request.Headers.Add("Authorization", options.AccessToken);
             request.Headers.Add("Accept", "application/json");
+            logger?.LogDebug("GetHttpRequestMessage {0}, token: {1}", request.RequestUri, options.AccessToken);
             return request;
         }
 
-        private HttpContent GetRequestContent(Message toSerialize)
+        protected internal HttpContent GetRequestContent(Message toSerialize)
         {
             try
             {
@@ -373,9 +396,15 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             return new StringContent(string.Empty, Encoding.UTF8, "application/json");
         }
 
-        private HttpClient GetHttpClient()
+        protected internal HttpClient GetHttpClient()
         {
-            return HttpClientHelper.GetHttpClient(settings.ValidateCertificates, settings.TimeoutSeconds * 1000);
+            return HttpClientHelper.GetHttpClient(options.ValidateCertificates, options.TimeoutSeconds * 1000);
+        }
+
+        protected internal void ResetMetrics()
+        {
+            stats.State = StatsCollectionState.DISABLED;
+            stats.State = StatsCollectionState.ENABLED;
         }
     }
 }

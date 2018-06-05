@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Tracing.Observer
         internal ConcurrentDictionary<HttpWebRequest, SpanContext> Pending = new ConcurrentDictionary<HttpWebRequest, SpanContext>();
 
         private const string DIAGNOSTIC_NAME = "System.Net.Http.Desktop";
-        private const string OBSERVER_NAME = "HttpDesktopObserver";
+        private const string OBSERVER_NAME = "HttpClientDesktopObserver";
 
         private HeaderDictionarySetter headerSetter = new HeaderDictionarySetter();
 

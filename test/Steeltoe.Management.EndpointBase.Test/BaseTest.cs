@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Test
@@ -33,6 +34,13 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             var lf = new LoggerFactory();
             return lf.CreateLogger<T>();
+        }
+
+        public string Serialize<T>(T value)
+        {
+            return JsonConvert.SerializeObject(
+                value,
+                new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
         }
     }
 }

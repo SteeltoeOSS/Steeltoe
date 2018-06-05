@@ -24,6 +24,14 @@ namespace Steeltoe.Management.Census.Utils
             {
                 return 0x7ff8000000000000L;
             }
+            if (arg == Double.MaxValue)
+            {
+                return Int64.MaxValue;
+            }
+            if (arg == Double.MinValue)
+            {
+                return Int64.MinValue;
+            }
             return Convert.ToInt64(arg);
 
         }

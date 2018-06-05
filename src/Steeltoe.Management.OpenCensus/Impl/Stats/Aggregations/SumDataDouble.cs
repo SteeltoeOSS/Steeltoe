@@ -26,6 +26,8 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
             Func<ICountData, M> p2,
             Func<IMeanData, M> p3,
             Func<IDistributionData, M> p4,
+            Func<ILastValueDataDouble, M> p5,
+            Func<ILastValueDataLong, M> p6,
             Func<IAggregationData, M> defaultFunction)
         {
             return p0.Invoke(this);

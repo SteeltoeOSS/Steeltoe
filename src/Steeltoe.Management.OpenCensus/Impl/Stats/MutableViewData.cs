@@ -101,6 +101,7 @@ namespace Steeltoe.Management.Census.Stats
                 CreateMutableCount,
                 CreateMutableMean,
                 CreateMutableDistribution,
+                CreateMutableLastValue,
                 ThrowArgumentException);
         }
 
@@ -127,14 +128,35 @@ namespace Steeltoe.Management.Census.Stats
                  },
                 CreateCountData,
                 CreateMeanData,
-                CreateDistributionData);
+                CreateDistributionData,
+                (mlval) =>
+                {
+                    return measure.Match<IAggregationData>(
+                        (mdouble) =>
+                        {
+                            return LastValueDataDouble.Create(mlval.LastValue);
+                        },
+                        (mlong) =>
+                        {
+                            if (Double.IsNaN(mlval.LastValue))
+                            {
+                                return LastValueDataLong.Create(0);
+                            }
+                            return LastValueDataLong.Create((long)Math.Round(mlval.LastValue));
+                        },
+                        (invalid) =>
+                        {
+                            throw new ArgumentException();
+                        });
+                }
+                );
         }
 
         // Covert a mapping from TagValues to MutableAggregation, to a mapping from TagValues to
         // AggregationData.
-        internal static IDictionary<T, IAggregationData> CreateAggregationMap<T>(IDictionary<T, MutableAggregation> tagValueAggregationMap, IMeasure measure)
+        internal static IDictionary<TagValues, IAggregationData> CreateAggregationMap(IDictionary<TagValues, MutableAggregation> tagValueAggregationMap, IMeasure measure)
         {
-            IDictionary<T, IAggregationData> map = new Dictionary<T, IAggregationData>();
+            IDictionary<TagValues, IAggregationData> map = new Dictionary<TagValues, IAggregationData>();
             foreach (var entry in tagValueAggregationMap)
             {
                 map.Add(entry.Key, CreateAggregationData(entry.Value, measure));
@@ -145,10 +167,11 @@ namespace Steeltoe.Management.Census.Stats
         private static Func<ISum, MutableAggregation> CreateMutableSum { get; } = (s) => { return MutableSum.Create(); };
         private static Func<ICount, MutableAggregation> CreateMutableCount { get; } = (s) => { return MutableCount.Create(); };
         private static Func<IMean, MutableAggregation> CreateMutableMean { get; } = (s) => { return MutableMean.Create(); };
+        private static Func<ILastValue, MutableAggregation> CreateMutableLastValue { get; } = (s) => { return MutableLastValue.Create(); };
         private static Func<IDistribution, MutableAggregation> CreateMutableDistribution { get; } = (s) => { return MutableDistribution.Create(s.BucketBoundaries); };
         private static Func<IAggregation, MutableAggregation> ThrowArgumentException { get; } = (s) => { throw new ArgumentException(); };
         private static Func<MutableCount, IAggregationData> CreateCountData { get; } = (s) => { return CountData.Create(s.Count); };
-        private static Func<MutableMean, IAggregationData> CreateMeanData { get; } = (s) => { return MeanData.Create(s.Mean, s.Count); };
+        private static Func<MutableMean, IAggregationData> CreateMeanData { get; } = (s) => { return MeanData.Create(s.Mean, s.Count, s.Min, s.Max); };
         private static Func<MutableDistribution, IAggregationData> CreateDistributionData { get; } = (s) => 
             {
                 List<long> boxedBucketCounts = new List<long>();

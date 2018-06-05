@@ -38,13 +38,25 @@ namespace Steeltoe.Management.Census.Tags
                 {
                     return false;
                 }
-                foreach(var t in Values)
+
+                for(int i = 0; i < Values.Count; i++)
                 {
-                    if (!that.Values.Contains(t))
+                    if (Values[i] == null)
                     {
-                        return false;
+                        if (that.Values[i] != null)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (!Values[i].Equals(that.Values[i]))
+                        {
+                            return false;
+                        }
                     }
                 }
+
                 return true;
             }
             return false;

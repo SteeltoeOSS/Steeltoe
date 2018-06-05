@@ -42,11 +42,15 @@ namespace Steeltoe.Management.Census.Stats.Test
             IAggregation a9 = Mean.Create();
             IAggregation a10 = Mean.Create();
 
+            IAggregation a11 = LastValue.Create();
+            IAggregation a12 = LastValue.Create();
+
             Assert.Equal(a1, a2);
             Assert.Equal(a3, a4);
             Assert.Equal(a5, a6);
             Assert.Equal(a7, a8);
             Assert.Equal(a9, a10);
+            Assert.Equal(a11, a12);
 
         }
 
@@ -58,8 +62,9 @@ namespace Steeltoe.Management.Census.Stats.Test
                                 Sum.Create(),
                                 Count.Create(),
                                 Mean.Create(),
-                                Distribution.Create(BucketBoundaries.Create(new List<double>() {-10.0, 1.0, 5.0 }))};
-            List<String> actual = new List<String>();
+                                Distribution.Create(BucketBoundaries.Create(new List<double>() {-10.0, 1.0, 5.0 })),
+                                LastValue.Create()};
+        List<String> actual = new List<String>();
             foreach (IAggregation aggregation in aggregations)
             {
                 actual.Add(
@@ -82,11 +87,15 @@ namespace Steeltoe.Management.Census.Stats.Test
                         },
                         (arg) =>
                         {
+                            return "LASTVALUE";
+                        },
+                        (arg) =>
+                        {
                             throw new ArgumentException();
                         }));
 
             }
-            Assert.Equal(new List<string>() { "SUM", "COUNT", "MEAN", "DISTRIBUTION" }, actual);
+            Assert.Equal(new List<string>() { "SUM", "COUNT", "MEAN", "DISTRIBUTION", "LASTVALUE" }, actual);
         }
     }
 }

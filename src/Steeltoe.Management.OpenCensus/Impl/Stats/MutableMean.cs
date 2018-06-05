@@ -6,8 +6,8 @@ namespace Steeltoe.Management.Census.Stats
 {
     internal sealed class MutableMean : MutableAggregation
     {
-        internal double Sum { get; private set; } = 0.0;
-        internal long Count { get; private set; } = 0;
+        internal double Sum { get; set; } = 0.0;
+        internal long Count { get; set; } = 0;
         internal double Mean
         {
             get
@@ -15,6 +15,9 @@ namespace Steeltoe.Management.Census.Stats
                 return Count == 0 ? 0 : Sum / Count;
             }
         }
+        internal double Min { get; set; } = Double.MaxValue;
+        internal double Max { get; set; } = Double.MinValue;
+
         internal MutableMean() { }
 
         internal static MutableMean Create()
@@ -26,6 +29,14 @@ namespace Steeltoe.Management.Census.Stats
         {
             Count++;
             Sum += value;
+            if (value < Min)
+            {
+                Min = value;
+            }
+            if (value > Max)
+            {
+                Max = value;
+            }
         }
 
         internal override void Combine(MutableAggregation other, double fraction)
@@ -40,8 +51,18 @@ namespace Steeltoe.Management.Census.Stats
             Count += rounded;
 
             this.Sum += mutable.Sum * fraction;
+
+            if (mutable.Min < this.Min)
+            {
+                this.Min = mutable.Min;
+            }
+            if (mutable.Max > this.Max)
+            {
+                this.Max = mutable.Max;
+            }
+
         }
-        internal override T Match<T>(Func<MutableSum, T> p0, Func<MutableCount, T> p1, Func<MutableMean, T> p2, Func<MutableDistribution, T> p3)
+        internal override T Match<T>(Func<MutableSum, T> p0, Func<MutableCount, T> p1, Func<MutableMean, T> p2, Func<MutableDistribution, T> p3, Func<MutableLastValue, T> p4)
         {
             return p2.Invoke(this);
         }
