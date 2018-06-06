@@ -241,12 +241,12 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
-                    _logger?.LogDebug("DoPost {0}, status: {1}", request.RequestUri, response.StatusCode);
+                    _logger?.LogDebug("DoPost {uri}, status: {status}", request.RequestUri, response.StatusCode);
                     if (response.StatusCode != HttpStatusCode.OK &&
                         response.StatusCode != HttpStatusCode.Accepted)
                     {
                         var statusCode = (int)response.StatusCode;
-                        _logger?.LogError("Failed to send traces to Zipkin. Discarding traces.  StatusCode: {0}", statusCode);
+                        _logger?.LogError("Failed to send traces to Zipkin. Discarding traces.  StatusCode: {status}, Uri: {uri}", statusCode, request.RequestUri);
                     }
 
                     return;
@@ -254,7 +254,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
             }
             catch (Exception e)
             {
-                _logger?.LogError("DoPost Exception:", e);
+                _logger?.LogError(e, "DoPost Exception: {uri}", request.RequestUri);
             }
             finally
             {
