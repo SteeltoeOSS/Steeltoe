@@ -45,8 +45,8 @@ namespace Steeltoe.Common.Discovery
             {
                 var index = _random.Next(instances.Count);
                 var result = instances[index].Uri;
+                _logger?.LogDebug("Resolved {url} to {service}", current.Host, result.Host);
                 current = new Uri(result, current.PathAndQuery);
-                _logger?.LogDebug("Resolved {url} to {service}", current, result);
             }
             else
             {

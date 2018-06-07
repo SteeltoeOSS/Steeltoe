@@ -21,20 +21,29 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Http.Discovery
 {
+    /// <summary>
+    /// A <see cref="DelegatingHandler"/> implementation that performs Service Discovery
+    /// </summary>
     public class DiscoveryHttpMessageHandler : DelegatingHandler
     {
         private DiscoveryHttpClientHandlerBase discoveryBase;
 
-        public DiscoveryHttpMessageHandler(IDiscoveryClient client, ILogger<DiscoveryHttpClientHandler> logger = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiscoveryHttpMessageHandler"/> class.
+        /// </summary>
+        /// <param name="discoveryClient">Service discovery client to use - provided by calling services.AddDiscoveryClient(Configuration)</param>
+        /// <param name="logger">ILogger for capturing logs from Discovery operations</param>
+        public DiscoveryHttpMessageHandler(IDiscoveryClient discoveryClient, ILogger<DiscoveryHttpClientHandler> logger = null)
         {
-            discoveryBase = new DiscoveryHttpClientHandlerBase(client, logger);
+            if (discoveryClient == null)
+            {
+                throw new ArgumentNullException(nameof(discoveryClient));
+            }
+
+            discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, logger);
         }
 
-        public virtual Uri LookupService(Uri current)
-        {
-            return discoveryBase.LookupService(current);
-        }
-
+        /// <inheritdoc />
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             return await discoveryBase.SharedSendAsync(request, cancellationToken);
