@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(new HeapDumpOptions(), null));
         }
 
-        [Fact(Skip = "Fails on Appveyor")]
+        [Fact]
         public void Invoke_CreatesDump()
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
