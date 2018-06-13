@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Security;
 using System;
@@ -55,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
 
-            if (IsCloudFoundryRequest(context))
+            if (Platform.IsCloudFoundry && _options.IsEnabled && IsCloudFoundryRequest(context))
             {
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
