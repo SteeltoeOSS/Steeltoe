@@ -13,20 +13,20 @@
 // limitations under the License.
 
 using System;
-using System.Runtime.InteropServices;
+using Xunit;
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common.Test
 {
-    public static class Platform
+    public class PlatformTest
     {
-        public const string NET_FRAMEWORK = ".NET Framework";
-        public const string NET_CORE = ".NET Core";
-        public const string VCAP_APPLICATION = "VCAP_APPLICATION";
-
-        public static bool IsFullFramework => RuntimeInformation.FrameworkDescription.StartsWith(NET_FRAMEWORK);
-
-        public static bool IsNetCore => RuntimeInformation.FrameworkDescription.StartsWith(NET_CORE);
-
-        public static bool IsCloudFoundry => Environment.GetEnvironmentVariable(VCAP_APPLICATION) != null;
+        [Fact]
+        public void IsCloudFoundry_ReturnsExpected()
+        {
+            Assert.False(Platform.IsCloudFoundry);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");
+            Assert.True(Platform.IsCloudFoundry);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Assert.False(Platform.IsCloudFoundry);
+        }
     }
 }
