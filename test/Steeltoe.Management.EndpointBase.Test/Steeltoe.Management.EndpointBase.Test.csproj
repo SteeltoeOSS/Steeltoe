@@ -45,6 +45,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
