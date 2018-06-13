@@ -4,7 +4,7 @@
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
     <SteeltoeLoggingVersion>2.1.0-dev-00055</SteeltoeLoggingVersion>
     <SteeltoeCommonVersion>2.1.0-dev-00063</SteeltoeCommonVersion>
-    <SteeltoeConfigVersion>2.1.0-dev-00229</SteeltoeConfigVersion>
+    <SteeltoeConfigVersion>2.1.0-dev-00230</SteeltoeConfigVersion>
     <SystemDiagnosticsVersion>4.5.0</SystemDiagnosticsVersion>
     <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
     <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
