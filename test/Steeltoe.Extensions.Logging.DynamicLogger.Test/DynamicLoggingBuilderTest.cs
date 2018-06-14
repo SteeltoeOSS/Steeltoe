@@ -15,6 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Threading;
 using Xunit;
@@ -28,6 +30,7 @@ namespace Steeltoe.Extensions.Logging.Test
             ["Logging:IncludeScopes"] = "false",
             ["Logging:Console:LogLevel:Default"] = "Information",
             ["Logging:Console:LogLevel:A.B.C.D"] = "Critical",
+            ["Logging:Console:DisableColors"] = "True",
             ["Logging:LogLevel:Steeltoe.Extensions.Logging.Test"] = "Information",
             ["Logging:LogLevel:Default"] = "Warning"
         };
@@ -230,6 +233,29 @@ namespace Steeltoe.Extensions.Logging.Test
             var processor = services.GetService<IDynamicMessageProcessor>() as TestDynamicMessageProcessor;
             Assert.NotNull(processor);
             Assert.True(processor.ProcessCalled);
+        }
+
+
+        [Fact]
+        public void DynamicLevelSetting_ParmLessAddDynamic_AddsConsoleOptions()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole();
+                })
+                .BuildServiceProvider();
+
+            // act
+            var options = services.GetService<IOptionsMonitor<ConsoleLoggerOptions>>();
+
+            // assert
+            Assert.NotNull(options);
+            Assert.NotNull(options.CurrentValue);
+            Assert.True(options.CurrentValue.DisableColors);
         }
     }
 }
