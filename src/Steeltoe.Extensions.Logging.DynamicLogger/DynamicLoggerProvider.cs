@@ -35,7 +35,6 @@ namespace Steeltoe.Extensions.Logging
         private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ConcurrentDictionary<string, DynamicConsoleLogger>();
         private ConsoleLoggerProvider _delegate;
         private IConsoleLoggerSettings _settings;
-        private bool _includeScopes;
         private IOptionsMonitor<LoggerFilterOptions> _filterOptions;
         private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
@@ -48,10 +47,6 @@ namespace Steeltoe.Extensions.Logging
             _delegate = new ConsoleLoggerProvider(settings);
             _settings = settings;
             SetFiltersFromSettings();
-            if (_settings.ChangeToken != null)
-            {
-                _settings.ChangeToken.RegisterChangeCallback(OnConfigurationReload, null);
-            }
         }
 
         /// <summary>
@@ -64,7 +59,6 @@ namespace Steeltoe.Extensions.Logging
             _delegate = new ConsoleLoggerProvider(filter, includeScopes);
             _filter = filter ?? _falseFilter;
             _settings = null;
-            _includeScopes = includeScopes;
         }
 
         /// <summary>
@@ -238,40 +232,9 @@ namespace Steeltoe.Extensions.Logging
 
         private DynamicConsoleLogger CreateLoggerImplementation(string name)
         {
-            var includeScopes = _settings?.IncludeScopes ?? _includeScopes;
             var logger = _delegate.CreateLogger(name) as ConsoleLogger;
             logger.Filter = GetFilter(name);
-            logger.IncludeScopes = includeScopes;
             return new DynamicConsoleLogger(logger, _messageProcessors);
-        }
-
-        private void OnConfigurationReload(object state)
-        {
-            try
-            {
-                // The settings object needs to change here, because the old one is probably holding on
-                // to an old change token.
-                _settings = _settings.Reload();
-
-                var includeScopes = _settings?.IncludeScopes ?? false;
-                foreach (var logger in _loggers.Values)
-                {
-                    logger.Filter = GetFilter(logger.Name);
-                    logger.IncludeScopes = includeScopes;
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine($"Error while loading configuration changes.{Environment.NewLine}{ex}");
-            }
-            finally
-            {
-                // The token will change each time it reloads, so we need to register again.
-                if (_settings?.ChangeToken != null)
-                {
-                    _settings.ChangeToken.RegisterChangeCallback(OnConfigurationReload, null);
-                }
-            }
         }
 
         /// <summary>

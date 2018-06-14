@@ -50,12 +50,8 @@ namespace Steeltoe.Extensions.Logging
             set => _delegate.Filter = value;
         }
 
-        public bool IncludeScopes
-        {
-            get => _delegate.IncludeScopes;
-
-            set => _delegate.IncludeScopes = value;
-        }
+        [Obsolete("Changing this property has no effect. Use " + nameof(ConsoleLoggerOptions) + "." + nameof(ConsoleLoggerOptions.IncludeScopes) + " instead")]
+        public bool IncludeScopes { get; set; }
 
         public string Name => _delegate.Name;
 
