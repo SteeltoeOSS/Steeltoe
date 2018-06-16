@@ -14,12 +14,13 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-    public class HealthEndpointMiddleware : EndpointMiddleware<Health>
+    public class HealthEndpointMiddleware : EndpointMiddleware<HealthCheckResult>
     {
         private RequestDelegate _next;
 
@@ -69,10 +70,9 @@ namespace Steeltoe.Management.Endpoint.Health
             return Serialize(result);
         }
 
-        protected internal int GetStatusCode(Health health)
+        protected internal int GetStatusCode(HealthCheckResult health)
         {
-            if (health.Status == HealthStatus.DOWN ||
-                health.Status == HealthStatus.OUT_OF_SERVICE)
+            if (health.Status == HealthStatus.DOWN || health.Status == HealthStatus.OUT_OF_SERVICE)
             {
                 return 503;
             }

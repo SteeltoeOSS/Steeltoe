@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 
@@ -19,27 +20,24 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public class DefaultHealthAggregator : IHealthAggregator
     {
-        public Health Aggregate(IList<IHealthContributor> contributors)
+        public HealthCheckResult Aggregate(IList<IHealthContributor> contributors)
         {
             if (contributors == null)
             {
-                return new Health();
+                return new HealthCheckResult();
             }
 
-            Health result = new Health();
+            var result = new HealthCheckResult();
             foreach (var contributor in contributors)
             {
-                Health h = null;
+                HealthCheckResult h = null;
                 try
                 {
                     h = contributor.Health();
                 }
                 catch (Exception)
                 {
-                    h = new Health()
-                    {
-                        Status = HealthStatus.UNKNOWN
-                    };
+                    h = new HealthCheckResult();
                 }
 
                 if (h.Status > result.Status)

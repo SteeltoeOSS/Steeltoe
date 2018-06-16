@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -29,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:sensitive"] = "false",
@@ -102,26 +103,26 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
             var middle = new HealthEndpointMiddleware(null);
 
-            Health health1 = new Health()
+            var health1 = new HealthCheckResult()
             {
                 Status = HealthStatus.DOWN
             };
 
             Assert.Equal(503, middle.GetStatusCode(health1));
-            Health health2 = new Health()
+            var health2 = new HealthCheckResult()
             {
                 Status = HealthStatus.OUT_OF_SERVICE
             };
 
             Assert.Equal(503, middle.GetStatusCode(health2));
-            Health health3 = new Health()
+            var health3 = new HealthCheckResult()
             {
                 Status = HealthStatus.UP
             };
 
             Assert.Equal(200, middle.GetStatusCode(health3));
 
-            Health health4 = new Health()
+            var health4 = new HealthCheckResult()
             {
                 Status = HealthStatus.UNKNOWN
             };

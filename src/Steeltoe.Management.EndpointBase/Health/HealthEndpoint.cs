@@ -13,13 +13,14 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-    public class HealthEndpoint : AbstractEndpoint<Health>
+    public class HealthEndpoint : AbstractEndpoint<HealthCheckResult>
     {
         private IHealthAggregator _aggregator;
         private IList<IHealthContributor> _contributors;
@@ -33,17 +34,12 @@ namespace Steeltoe.Management.Endpoint.Health
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (aggregator == null)
-            {
-                throw new ArgumentNullException(nameof(aggregator));
-            }
-
             if (contributors == null)
             {
                 throw new ArgumentNullException(nameof(contributors));
             }
 
-            _aggregator = aggregator;
+            _aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
             _contributors = contributors.ToList();
             _logger = logger;
         }
@@ -56,12 +52,12 @@ namespace Steeltoe.Management.Endpoint.Health
             }
         }
 
-        public override Health Invoke()
+        public override HealthCheckResult Invoke()
         {
             return BuildHealth(_aggregator, _contributors);
         }
 
-        protected virtual Health BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors)
+        protected virtual HealthCheckResult BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors)
         {
             return _aggregator.Aggregate(contributors);
         }

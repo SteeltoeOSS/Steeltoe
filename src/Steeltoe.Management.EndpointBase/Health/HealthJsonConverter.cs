@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
+using Steeltoe.Common.HealthChecks;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Health
@@ -21,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(Health);
+            return objectType == typeof(HealthCheckResult);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -31,9 +32,8 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            Health health = value as Health;
             writer.WriteStartObject();
-            if (health != null)
+            if (value is HealthCheckResult health)
             {
                 writer.WritePropertyName("status");
                 writer.WriteValue(health.Status.ToString());

@@ -14,7 +14,9 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Middleware
@@ -58,13 +60,18 @@ namespace Steeltoe.Management.Endpoint.Middleware
         {
             try
             {
-                return JsonConvert.SerializeObject(
-                    result,
-                    new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+                var serializerSettings = new JsonSerializerSettings()
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                };
+                serializerSettings.Converters.Add(new HealthJsonConverter());
+
+                return JsonConvert.SerializeObject(result, serializerSettings);
             }
             catch (Exception e)
             {
-                logger?.LogError("Error {0} serializaing {1}", e, result);
+                logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
             }
 
             return string.Empty;

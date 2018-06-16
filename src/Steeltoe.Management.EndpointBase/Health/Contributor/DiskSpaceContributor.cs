@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.HealthChecks;
 using System.IO;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor
@@ -23,21 +24,14 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor
 
         public DiskSpaceContributor(DiskSpaceContributorOptions options = null)
         {
-            if (options == null)
-            {
-                _options = new DiskSpaceContributorOptions();
-            }
-            else
-            {
-                _options = options;
-            }
+            _options = options ?? new DiskSpaceContributorOptions();
         }
 
         public string Id { get; } = ID;
 
-        public Health Health()
+        public HealthCheckResult Health()
         {
-            Health result = new Health();
+            HealthCheckResult result = new HealthCheckResult();
 
             var fullPath = Path.GetFullPath(_options.Path);
             DirectoryInfo dirInfo = new DirectoryInfo(fullPath);

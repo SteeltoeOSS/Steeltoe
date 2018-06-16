@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.HealthChecks;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
     public interface IHealthAggregator
     {
-        Health Aggregate(IList<IHealthContributor> contributors);
+        HealthCheckResult Aggregate(IList<IHealthContributor> contributors);
     }
 }
