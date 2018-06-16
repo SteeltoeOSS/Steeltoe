@@ -16,59 +16,80 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.Cache
+namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public static class RedisTypeLocator
     {
-        private static string[] msftRedisAssemblies = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis" };
-        private static string[] msftRedisInterfaceTypeNames = new string[] { "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
-        private static string[] msftRedisImplementationTypeNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCache" };
-        private static string[] msftRedisOptionNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
-        private static string[] stackExchangeRedisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName" };
-        private static string[] stackExchangeRedisInterfaceTypeNames = new string[] { "StackExchange.Redis.IConnectionMultiplexer" };
-        private static string[] stackExchangeRedisImplementationTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
-        private static string[] stackExchangeRedisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions" };
-        private static string[] stackExchangeRedisCommandFlagsNames = new string[] { "StackExchange.Redis.CommandFlags" };
+        public static string[] MicrosoftAssemblies = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis" };
+        public static string[] MicrosoftInterfaceTypeNames = new string[] { "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
+        public static string[] MicrosoftImplementationTypeNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCache" };
+        public static string[] MicrosoftOptionNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
+        public static string[] StackExchangeAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName" };
+        public static string[] StackExchangeInterfaceTypeNames = new string[] { "StackExchange.Redis.IConnectionMultiplexer" };
+        public static string[] StackExchangeImplementationTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
+        public static string[] StackExchangeOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions" };
+        public static string[] StackExchangeCommandFlagsNamesValue = new string[] { "StackExchange.Redis.CommandFlags" };
 
         /// <summary>
         /// Gets IDistributedCache from a Microsoft Cache library
         /// </summary>
-        public static Type MicrosoftRedisInterface => ConnectorHelpers.FindType(msftRedisAssemblies, msftRedisInterfaceTypeNames);
+        public static Type MicrosoftInterface => FindTypeOrThrow(MicrosoftAssemblies, MicrosoftInterfaceTypeNames);
 
         /// <summary>
         /// Gets RedisCache from a Microsoft Cache library
         /// </summary>
-        public static Type MicrosoftRedisImplementation => ConnectorHelpers.FindType(msftRedisAssemblies, msftRedisImplementationTypeNames);
+        public static Type MicrosoftImplementation => FindTypeOrThrow(MicrosoftAssemblies, MicrosoftImplementationTypeNames);
 
         /// <summary>
         /// Gets RedisCacheOptions from a Microsoft Cache library
         /// </summary>
-        public static Type MicrosoftRedisOptions => ConnectorHelpers.FindType(msftRedisAssemblies, msftRedisOptionNames);
+        public static Type MicrosoftOptions => FindTypeOrThrow(MicrosoftAssemblies, MicrosoftOptionNames);
 
         /// <summary>
         /// Gets IConnectionMultiplexer from a StackExchange Redis library
         /// </summary>
-        public static Type StackExchangeRedisInterface => ConnectorHelpers.FindType(stackExchangeRedisAssemblies, stackExchangeRedisInterfaceTypeNames);
+        public static Type StackExchangeInterface => FindTypeOrThrow(StackExchangeAssemblies, StackExchangeInterfaceTypeNames);
 
         /// <summary>
         /// Gets ConnectionMultiplexer from a StackExchange Redis library
         /// </summary>
-        public static Type StackExchangeRedisImplementation => ConnectorHelpers.FindType(stackExchangeRedisAssemblies, stackExchangeRedisImplementationTypeNames);
+        public static Type StackExchangeImplementation => FindTypeOrThrow(StackExchangeAssemblies, StackExchangeImplementationTypeNames);
 
         /// <summary>
         /// Gets CommandFlags from StackExchange Redis library
         /// </summary>
-        public static Type StackExchangeRedisCommandFlagsNames => ConnectorHelpers.FindType(stackExchangeRedisAssemblies, stackExchangeRedisCommandFlagsNames);
+        public static Type StackExchangeCommandFlagsNames => FindTypeOrThrow(StackExchangeAssemblies, StackExchangeCommandFlagsNamesValue);
 
         /// <summary>
         /// Gets ConfigurationOptions from a StackExchange Redis library
         /// </summary>
-        public static Type StackExchangeRedisOptions => ConnectorHelpers.FindType(stackExchangeRedisAssemblies, stackExchangeRedisOptionNames);
+        public static Type StackExchangeOptions => FindTypeOrThrow(StackExchangeAssemblies, StackExchangeOptionNames);
 
         /// <summary>
         /// Gets the Connect method from a StackExchange Redis library
         /// </summary>
-        public static MethodInfo StackExchangeInitializer =>
-            ConnectorHelpers.FindMethod(StackExchangeRedisImplementation, "Connect", new Type[] { StackExchangeRedisOptions, typeof(TextWriter) });
+        public static MethodInfo StackExchangeInitializer => FindMethodOrThrow(StackExchangeImplementation, "Connect", new Type[] { StackExchangeOptions, typeof(TextWriter) });
+
+        private static Type FindTypeOrThrow(string[] assemblies, string[] types)
+        {
+            var type = ConnectorHelpers.FindType(assemblies, types);
+            if (type == null)
+            {
+                throw new ConnectorException("Unable to find required Redis types, are you missing a Redis Nuget package?");
+            }
+
+            return type;
+        }
+
+        private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
+        {
+            var returnType = ConnectorHelpers.FindMethod(type, methodName, parameters);
+            if (returnType == null)
+            {
+                throw new ConnectorException("Unable to find required Redis types, are you missing a Redis Nuget package?");
+            }
+
+            return returnType;
+        }
     }
 }

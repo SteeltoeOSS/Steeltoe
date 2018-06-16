@@ -15,6 +15,8 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
+using Steeltoe.CloudFoundry.Connector.RabbitMQ;
+using Steeltoe.Common.HealthChecks;
 using System;
 using Xunit;
 
@@ -60,6 +62,23 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
             Assert.NotNull(rabbitMQFactory);
             Assert.IsType<ConnectionFactory>(rabbitMQIFactory);
             Assert.IsType<ConnectionFactory>(rabbitMQFactory);
+        }
+
+        [Fact]
+        public void RegisterRabbitMQConnection_AddsHealthContributorToContainer()
+        {
+            // arrange
+            ContainerBuilder container = new ContainerBuilder();
+            IConfiguration config = new ConfigurationBuilder().Build();
+
+            // act
+            var regBuilder = RabbitMQContainerBuilderExtensions.RegisterRabbitMQConnection(container, config);
+            var services = container.Build();
+            var healthContributor = services.Resolve<IHealthContributor>();
+
+            // assert
+            Assert.NotNull(healthContributor);
+            Assert.IsType<RabbitMQHealthContributor>(healthContributor);
         }
     }
 }

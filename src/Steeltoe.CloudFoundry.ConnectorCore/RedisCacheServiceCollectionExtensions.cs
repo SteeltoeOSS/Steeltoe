@@ -15,10 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Cache;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.ConnectorBase.Cache;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Reflection;
 
@@ -29,12 +27,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         #region Microsoft.Extensions.Caching.Redis
 
         /// <summary>
-        /// Add IDistributedCache to ServiceCollection
+        /// Add IDistributedCache and its IHealthContributor to ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache</remarks>
         public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -51,13 +50,14 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         }
 
         /// <summary>
-        /// Add IDistributedCache to ServiceCollection
+        /// Add IDistributedCache and its IHealthContributor to ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">Name of service to add</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache</remarks>
         public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -79,14 +79,15 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         }
 
         /// <summary>
-        /// Add IDistributedCache to ServiceCollection
+        /// Add IDistributedCache and its IHealthContributor to ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="applicationConfiguration">App configuration</param>
         /// <param name="connectorConfiguration">Connector configuration</param>
         /// <param name="serviceName">Name of service to add</param>
-        /// <param name="contextLifetime">Lifetime of the service to inject</param>
+        /// <param name="contextLifetime"><see cref="ServiceLifetime"/> of the service to inject</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache</remarks>
         public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
@@ -100,15 +101,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             }
 
             var configToConfigure = connectorConfiguration ?? applicationConfiguration;
-            RedisServiceInfo info;
-            if (serviceName != null)
-            {
-                info = configToConfigure.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
-            }
-            else
-            {
-                info = configToConfigure.GetSingletonServiceInfo<RedisServiceInfo>();
-            }
+
+            RedisServiceInfo info = serviceName != null
+                ? configToConfigure.GetRequiredServiceInfo<RedisServiceInfo>(serviceName)
+                : configToConfigure.GetSingletonServiceInfo<RedisServiceInfo>();
 
             DoAddIDistributedCache(services, info, configToConfigure, contextLifetime);
             return services;
@@ -119,11 +115,12 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         #region StackExchange.Redis
 
         /// <summary>
-        /// Add Redis Connection Multiplexer to ServiceCollection
+        /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer</remarks>
         public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
@@ -140,12 +137,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         }
 
         /// <summary>
-        /// Add Redis Connection Multiplexer to ServiceCollection
+        /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">Name of service to add</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer</remarks>
         public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, string serviceName)
         {
             if (services == null)
@@ -167,14 +165,15 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         }
 
         /// <summary>
-        /// Add Redis Connection Multiplexer to ServiceCollection
+        /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="applicationConfiguration">App configuration</param>
         /// <param name="connectorConfiguration">Connector configuration</param>
         /// <param name="serviceName">Name of service to add</param>
-        /// <param name="contextLifetime">Lifetime of the service to inject</param>
+        /// <param name="contextLifetime"><see cref="ServiceLifetime"/> of the service to inject</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer</remarks>
         public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
@@ -197,13 +196,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            Type interfaceType = RedisTypeLocator.MicrosoftRedisInterface;
-            Type connectionType = RedisTypeLocator.MicrosoftRedisImplementation;
-            Type optionsType = RedisTypeLocator.MicrosoftRedisOptions;
-            if (interfaceType == null || connectionType == null || optionsType == null)
-            {
-                throw new ConnectorException("Unable to find required Redis types, are you missing the Microsoft.Extensions.Caching.Redis Nuget package?");
-            }
+            Type interfaceType = RedisTypeLocator.MicrosoftInterface;
+            Type connectionType = RedisTypeLocator.MicrosoftImplementation;
+            Type optionsType = RedisTypeLocator.MicrosoftOptions;
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, connectionType, optionsType, null);
@@ -214,15 +209,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         private static void DoAddConnectionMultiplexer(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            Type redisInterface = RedisTypeLocator.StackExchangeRedisInterface;
-            Type redisImplementation = RedisTypeLocator.StackExchangeRedisImplementation;
-            Type redisOptions = RedisTypeLocator.StackExchangeRedisOptions;
+            Type redisInterface = RedisTypeLocator.StackExchangeInterface;
+            Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
+            Type redisOptions = RedisTypeLocator.StackExchangeOptions;
             MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
-
-            if (redisInterface == null || redisImplementation == null || redisOptions == null || initializer == null)
-            {
-                throw new ConnectorException("Unable to find required Redis types, are you missing a StackExchange.Redis Nuget Package?");
-            }
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer ?? null);

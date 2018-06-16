@@ -17,6 +17,7 @@ using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Hystrix;
+using Steeltoe.CloudFoundry.Connector.RabbitMQ;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
@@ -24,9 +25,6 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
     public static class HystrixContainerBuilderExtensions
     {
-        private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
-        private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
-
         /// <summary>
         /// Add a HystrixConnectionFactory to your Autofac Container
         /// </summary>
@@ -46,25 +44,13 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Type rabbitFactory = ConnectorHelpers.FindType(rabbitAssemblies, rabbitTypeNames);
-            if (rabbitFactory == null)
-            {
-                throw new ConnectorException("Unable to find RabbitMQ ConnectionFactory type. RabbitMQ.Client assembly may be missing");
-            }
+            HystrixRabbitMQServiceInfo info = serviceName == null
+                ? config.GetSingletonServiceInfo<HystrixRabbitMQServiceInfo>()
+                : config.GetRequiredServiceInfo<HystrixRabbitMQServiceInfo>(serviceName);
 
-            HystrixRabbitMQServiceInfo info;
-
-            if (serviceName == null)
-            {
-                info = config.GetSingletonServiceInfo<HystrixRabbitMQServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<HystrixRabbitMQServiceInfo>(serviceName);
-            }
-
-            HystrixProviderConnectorOptions hystrixConfig = new HystrixProviderConnectorOptions(config);
-            HystrixProviderConnectorFactory factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
+            Type rabbitFactory = RabbitMQTypeLocator.ConnectionFactory;
+            var hystrixConfig = new HystrixProviderConnectorOptions(config);
+            var factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
 
             return container.Register(c => factory.Create(null)).As<HystrixConnectionFactory>();
         }

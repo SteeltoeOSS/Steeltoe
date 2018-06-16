@@ -14,6 +14,8 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -58,6 +60,23 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
             // assert
             Assert.NotNull(dbConn);
             Assert.IsType<SqlConnection>(dbConn);
+        }
+
+        [Fact]
+        public void RegisterSqlServerConnection_AddsHealthContributorToContainer()
+        {
+            // arrange
+            ContainerBuilder container = new ContainerBuilder();
+            IConfiguration config = new ConfigurationBuilder().Build();
+
+            // act
+            var regBuilder = SqlServerContainerBuilderExtensions.RegisterSqlServerConnection(container, config);
+            var services = container.Build();
+            var healthContributor = services.Resolve<IHealthContributor>();
+
+            // assert
+            Assert.NotNull(healthContributor);
+            Assert.IsType<RelationalHealthContributor>(healthContributor);
         }
     }
 }

@@ -13,32 +13,31 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
 
-namespace Steeltoe.CloudFoundry.ConnectorBase.Relational
+namespace Steeltoe.CloudFoundry.Connector.Relational
 {
     public class RelationalHealthContributor : IHealthContributor
     {
         public readonly IDbConnection _connection;
         private readonly ILogger<IDbConnection> _logger;
-        private readonly string _dbType;
 
-        public RelationalHealthContributor(IDbConnection connection, ILogger<IDbConnection> logger)
+        public RelationalHealthContributor(IDbConnection connection, ILogger<IDbConnection> logger = null)
         {
             _connection = connection;
             _logger = logger;
-            _dbType = GetDbName(connection);
+            Id = GetDbName(connection);
         }
 
-        public string Id => _dbType;
+        public string Id { get; }
 
-        public Health Health()
+        public HealthCheckResult Health()
         {
-            _logger.LogInformation($"Checking {_dbType} connection health!");
-            Health result = new Health();
-            result.Details.Add("database", _dbType);
+            _logger?.LogTrace("Checking {DbConnection} health", Id);
+            var result = new HealthCheckResult();
+            result.Details.Add("database", Id);
             try
             {
                 _connection.Open();
@@ -47,14 +46,15 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Relational
                 var qresult = cmd.ExecuteScalar();
                 result.Details.Add("status", HealthStatus.UP.ToString());
                 result.Status = HealthStatus.UP;
-                _logger.LogInformation($"{_dbType} connection up!");
+                _logger?.LogTrace("{DbConnection} up!", Id);
             }
             catch (Exception e)
             {
-                _logger.LogInformation($"{_dbType} connection down!");
+                _logger?.LogError("{DbConnection} down! {HealthCheckException}", Id, e.Message);
                 result.Details.Add("error", e.GetType().Name + ": " + e.Message);
                 result.Details.Add("status", HealthStatus.DOWN.ToString());
                 result.Status = HealthStatus.DOWN;
+                result.Description = $"{Id} health check failed";
             }
             finally
             {

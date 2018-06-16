@@ -15,9 +15,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.CloudFoundry.Connector.Relational.MySql;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.ConnectorBase.Relational;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
 
@@ -25,17 +26,15 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 {
     public static class MySqlProviderServiceCollectionExtensions
     {
-        private static string[] mySqlAssemblies = new string[] { "MySql.Data", "MySqlConnector" };
-        private static string[] mySqlTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
-
         /// <summary>
-        /// Add MySql to a ServiceCollection
+        /// Add MySql and its IHealthContributor to a ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>MySqlConnection is retrievable as both MySqlConnection and IDbConnection</remarks>
         public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -55,7 +54,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         }
 
         /// <summary>
-        /// Add MySql to a ServiceCollection
+        /// Add MySql and its IHealthContributor to a ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
@@ -63,6 +62,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>MySqlConnection is retrievable as both MySqlConnection and IDbConnection</remarks>
         public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -88,14 +88,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
         private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            Type mySqlConnection = ConnectorHelpers.FindType(mySqlAssemblies, mySqlTypeNames);
-            if (mySqlConnection == null)
-            {
-                throw new ConnectorException("Unable to find MySqlConnection, are you missing MySql ADO.NET assembly");
-            }
-
-            MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
-            MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
+            Type mySqlConnection = ConnectorHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
+            var mySqlConfig = new MySqlProviderConnectorOptions(config);
+            var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(mySqlConnection, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<IDbConnection>>()), ServiceLifetime.Singleton));

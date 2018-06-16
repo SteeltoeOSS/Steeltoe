@@ -17,11 +17,9 @@ using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.Cache;
 using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.ConnectorBase.Cache;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Reflection;
 
@@ -51,27 +49,17 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Type redisInterface = RedisTypeLocator.MicrosoftRedisInterface;
-            Type redisImplementation = RedisTypeLocator.MicrosoftRedisImplementation;
-            Type redisOptions = RedisTypeLocator.MicrosoftRedisOptions;
-            if (redisInterface == null || redisImplementation == null || redisOptions == null)
-            {
-                throw new ConnectorException("Unable to find required Redis types, are you missing the Microsoft.Extensions.Caching.Redis Nuget package?");
-            }
+            Type redisInterface = RedisTypeLocator.MicrosoftInterface;
+            Type redisImplementation = RedisTypeLocator.MicrosoftImplementation;
+            Type redisOptions = RedisTypeLocator.MicrosoftOptions;
 
-            RedisServiceInfo info;
-            if (serviceName != null)
-            {
-                info = config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
-            }
-            else
-            {
-                info = config.GetSingletonServiceInfo<RedisServiceInfo>();
-            }
+            RedisServiceInfo info = serviceName != null
+                ? config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName)
+                : config.GetSingletonServiceInfo<RedisServiceInfo>();
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, null);
-            container.Register(c => new RedisHealthContributor(factory, redisImplementation, c.Resolve<ILogger<RedisHealthContributor>>())).As<IHealthContributor>();
+            container.Register(c => new RedisHealthContributor(factory, redisImplementation, c.ResolveOptional<ILogger<RedisHealthContributor>>())).As<IHealthContributor>();
             return container.Register(c => factory.Create(null)).As(redisInterface, redisImplementation);
         }
 
@@ -97,29 +85,18 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Type redisInterface = RedisTypeLocator.StackExchangeRedisInterface;
-            Type redisImplementation = RedisTypeLocator.StackExchangeRedisImplementation;
-            Type redisOptions = RedisTypeLocator.StackExchangeRedisOptions;
+            Type redisInterface = RedisTypeLocator.StackExchangeInterface;
+            Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
+            Type redisOptions = RedisTypeLocator.StackExchangeOptions;
             MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
 
-            if (redisInterface == null || redisImplementation == null || redisOptions == null || initializer == null)
-            {
-                throw new ConnectorException("Unable to find required Redis types, are you missing a StackExchange.Redis Nuget Package?");
-            }
-
-            RedisServiceInfo info;
-            if (serviceName != null)
-            {
-                info = config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
-            }
-            else
-            {
-                info = config.GetSingletonServiceInfo<RedisServiceInfo>();
-            }
+            RedisServiceInfo info = serviceName != null
+                ? config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName)
+                : config.GetSingletonServiceInfo<RedisServiceInfo>();
 
             RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
             RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer ?? null);
-            container.Register(c => new RedisHealthContributor(factory, redisImplementation, c.Resolve<ILogger<RedisHealthContributor>>())).As<IHealthContributor>();
+            container.Register(c => new RedisHealthContributor(factory, redisImplementation, c.ResolveOptional<ILogger<RedisHealthContributor>>())).As<IHealthContributor>();
             return container.Register(c => factory.Create(null)).As(redisInterface, redisImplementation);
         }
     }

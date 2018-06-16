@@ -13,14 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.Cache;
-using Steeltoe.CloudFoundry.Connector.Redis;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
+namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisHealthContributor : IHealthContributor
     {
@@ -28,9 +25,9 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
         private readonly Type _implType;
         private readonly ILogger<RedisHealthContributor> _logger;
 
-        private bool IsMicrosoftImplementation => _implType == RedisTypeLocator.MicrosoftRedisImplementation;
+        private bool IsMicrosoftImplementation => _implType == RedisTypeLocator.MicrosoftImplementation;
 
-        public RedisHealthContributor(RedisServiceConnectorFactory factory, Type implType, ILogger<RedisHealthContributor> logger)
+        public RedisHealthContributor(RedisServiceConnectorFactory factory, Type implType, ILogger<RedisHealthContributor> logger = null)
         {
             _factory = factory;
             _implType = implType;
@@ -39,10 +36,10 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
 
         public string Id => IsMicrosoftImplementation ? "Redis-Cache" : "Redis";
 
-        public Health Health()
+        public HealthCheckResult Health()
         {
-            _logger.LogInformation($"Checking redis connection health!");
-            Health result = new Health();
+            _logger?.LogTrace("Checking Redis connection health");
+            HealthCheckResult result = new HealthCheckResult();
             try
             {
                 if (IsMicrosoftImplementation)
@@ -54,9 +51,10 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
                     DoStackExchangeHealth(result);
                 }
 
+                // Spring Boot health checks also include cluster size and slot metrics
                 result.Details.Add("status", HealthStatus.UP.ToString());
                 result.Status = HealthStatus.UP;
-                _logger.LogInformation($"Redis connection up!");
+                _logger?.LogTrace("Redis connection up!");
             }
             catch (Exception e)
             {
@@ -65,18 +63,19 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Cache
                     e = e.InnerException;
                 }
 
-                _logger.LogInformation($"Redis connection down!");
+                _logger?.LogError("Redis connection down! {HealthCheckException}", e.Message);
                 result.Details.Add("error", e.GetType().Name + ": " + e.Message);
                 result.Details.Add("status", HealthStatus.DOWN.ToString());
                 result.Status = HealthStatus.DOWN;
+                result.Description = "Redis health check failed";
             }
 
             return result;
         }
 
-        private void DoStackExchangeHealth(Health health)
+        private void DoStackExchangeHealth(HealthCheckResult health)
         {
-            var commandFlagsEnum = RedisTypeLocator.StackExchangeRedisCommandFlagsNames;
+            var commandFlagsEnum = RedisTypeLocator.StackExchangeCommandFlagsNames;
             var none = Enum.Parse(commandFlagsEnum, "None");
             var connector = _factory.Create(null);
 

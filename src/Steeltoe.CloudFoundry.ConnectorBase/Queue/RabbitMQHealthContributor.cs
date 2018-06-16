@@ -13,20 +13,18 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.RabbitMQ;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.ConnectorBase.Queue
+namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
     public class RabbitMQHealthContributor : IHealthContributor
     {
         private readonly RabbitMQProviderConnectorFactory _factory;
         private readonly ILogger<RabbitMQHealthContributor> _logger;
 
-        public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger)
+        public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
         {
             _factory = factory;
             _logger = logger;
@@ -34,19 +32,25 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Queue
 
         public string Id => "RabbitMQ";
 
-        public Health Health()
+        public HealthCheckResult Health()
         {
-            _logger.LogInformation($"Checking rabbit connection health!");
-            Health result = new Health();
+            _logger?.LogTrace("Checking RabbitMQ connection health");
+            var result = new HealthCheckResult();
             try
             {
                 var connFactory = _factory.Create(null);
                 var createConnectionMethod = ConnectorHelpers.FindMethod(connFactory.GetType(), "CreateConnection", new Type[0]);
-                ConnectorHelpers.Invoke(createConnectionMethod, connFactory, null);
+                var connection = ConnectorHelpers.Invoke(createConnectionMethod, connFactory, null);
 
+                if (connection == null)
+                {
+                    throw new ConnectorException("Failed to open RabbitMQ connection!");
+                }
+
+                // Spring Boot health checks also include RMQ version the server is running
                 result.Details.Add("status", HealthStatus.UP.ToString());
                 result.Status = HealthStatus.UP;
-                _logger.LogInformation($"Rabbit connection up!");
+                _logger?.LogTrace("RabbitMQ connection up!");
             }
             catch (Exception e)
             {
@@ -55,10 +59,11 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Queue
                     e = e.InnerException;
                 }
 
-                _logger.LogInformation($"Rabbit connection down!");
+                _logger?.LogError("RabbitMQ connection down! {HealthCheckException}", e.Message);
                 result.Details.Add("error", e.GetType().Name + ": " + e.Message);
                 result.Details.Add("status", HealthStatus.DOWN.ToString());
                 result.Status = HealthStatus.DOWN;
+                result.Description = e.Message;
             }
 
             return result;

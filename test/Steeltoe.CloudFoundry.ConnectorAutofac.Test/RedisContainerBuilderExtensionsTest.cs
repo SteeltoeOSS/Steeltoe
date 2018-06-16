@@ -17,6 +17,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
+using Steeltoe.CloudFoundry.Connector.Redis;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -66,6 +68,23 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         }
 
         [Fact]
+        public void RegisterRedisCacheConnection_AddsHealthContributorToContainer()
+        {
+            // arrange
+            ContainerBuilder container = new ContainerBuilder();
+            IConfiguration config = new ConfigurationBuilder().Build();
+
+            // act
+            var regBuilder = RedisContainerBuilderExtensions.RegisterDistributedRedisCache(container, config);
+            var services = container.Build();
+            var healthContributor = services.Resolve<IHealthContributor>();
+
+            // assert
+            Assert.NotNull(healthContributor);
+            Assert.IsType<RedisHealthContributor>(healthContributor);
+        }
+
+        [Fact]
         public void RegisterRedisConnectionMultiplexerConnection_Requires_Builder()
         {
             // arrange
@@ -111,6 +130,23 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
             Assert.IsType<ConnectionMultiplexer>(redisConnectionMultiplexer);
             Assert.NotNull(redisIConnectionMultiplexer);
             Assert.IsType<ConnectionMultiplexer>(redisIConnectionMultiplexer);
+        }
+
+        [Fact]
+        public void RegisterRedisConnectionMultiplexer_AddsHealthContributorToContainer()
+        {
+            // arrange
+            ContainerBuilder container = new ContainerBuilder();
+            IConfiguration config = new ConfigurationBuilder().Build();
+
+            // act
+            var regBuilder = RedisContainerBuilderExtensions.RegisterRedisConnectionMultiplexer(container, config);
+            var services = container.Build();
+            var healthContributor = services.Resolve<IHealthContributor>();
+
+            // assert
+            Assert.NotNull(healthContributor);
+            Assert.IsType<RedisHealthContributor>(healthContributor);
         }
     }
 }

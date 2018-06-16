@@ -15,6 +15,8 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -62,6 +64,23 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
             // assert
             Assert.NotNull(dbConn);
             Assert.IsType<NpgsqlConnection>(dbConn);
+        }
+
+        [Fact]
+        public void RegisterPostgreSqlConnection_AddsHealthContributorToContainer()
+        {
+            // arrange
+            ContainerBuilder container = new ContainerBuilder();
+            IConfiguration config = new ConfigurationBuilder().Build();
+
+            // act
+            var regBuilder = PostgreSqlContainerBuilderExtensions.RegisterPostgreSqlConnection(container, config);
+            var services = container.Build();
+            var healthContributor = services.Resolve<IHealthContributor>();
+
+            // assert
+            Assert.NotNull(healthContributor);
+            Assert.IsType<RelationalHealthContributor>(healthContributor);
         }
     }
 }

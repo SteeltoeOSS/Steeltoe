@@ -15,6 +15,8 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
 using Xunit;
@@ -58,6 +60,23 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
             // assert
             Assert.NotNull(dbConn);
             Assert.IsType<MySqlConnection>(dbConn);
+        }
+
+        [Fact]
+        public void RegisterMySqlConnection_AddsHealthContributorToContainer()
+        {
+            // arrange
+            ContainerBuilder container = new ContainerBuilder();
+            IConfiguration config = new ConfigurationBuilder().Build();
+
+            // act
+            var regBuilder = MySqlContainerBuilderExtensions.RegisterMySqlConnection(container, config);
+            var services = container.Build();
+            var healthContributor = services.Resolve<IHealthContributor>();
+
+            // assert
+            Assert.NotNull(healthContributor);
+            Assert.IsType<RelationalHealthContributor>(healthContributor);
         }
     }
 }

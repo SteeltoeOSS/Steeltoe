@@ -44,19 +44,13 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OAuthConnectorOptions oauthConfig = new OAuthConnectorOptions(config);
+            SsoServiceInfo info = serviceName == null
+                ? config.GetSingletonServiceInfo<SsoServiceInfo>()
+                : config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
 
-            SsoServiceInfo info;
-            if (serviceName == null)
-            {
-                info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
-            }
+            var oauthConfig = new OAuthConnectorOptions(config);
+            var factory = new OAuthConnectorFactory(info, oauthConfig);
 
-            OAuthConnectorFactory factory = new OAuthConnectorFactory(info, oauthConfig);
             return container.Register(c => factory.Create(null)).As<IOptions<OAuthServiceOptions>>();
         }
     }

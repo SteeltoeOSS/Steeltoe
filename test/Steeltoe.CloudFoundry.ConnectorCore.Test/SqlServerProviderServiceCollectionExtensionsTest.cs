@@ -14,13 +14,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.Extensions.Configuration;
-using System;
-using System.Data.SqlClient;
-using Xunit;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System;
 using System.Data;
+using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
 {
@@ -142,6 +142,23 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Assert.Contains("192.168.0.80", connString);
             Assert.Contains("uf33b2b30783a4087948c30f6c3b0c90f", connString);
             Assert.Contains("Pefbb929c1e0945b5bab5b8f0d110c503", connString);
+        }
+
+        [Fact]
+        public void AddSqlServerConnection_AddsRelationalHealthContributor()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act
+            SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
         }
     }
 }

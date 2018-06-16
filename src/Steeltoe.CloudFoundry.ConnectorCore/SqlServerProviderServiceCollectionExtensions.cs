@@ -15,9 +15,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.CloudFoundry.Connector.Relational.SqlServer;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.ConnectorBase.Relational;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
 
@@ -25,9 +26,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
     public static class SqlServerProviderServiceCollectionExtensions
     {
-        private static string[] sqlServerAssemblies = new string[] { "System.Data.SqlClient" };
-        private static string[] sqlServerTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
-
         /// <summary>
         /// Add SQL Server to a ServiceCollection
         /// </summary>
@@ -88,14 +86,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            Type sqlServerConnection = ConnectorHelpers.FindType(sqlServerAssemblies, sqlServerTypeNames);
-            if (sqlServerConnection == null)
-            {
-                throw new ConnectorException("Unable to find System.Data.SqlClient.SqlConnection, are you missing a reference to System.Data.SqlClient?");
-            }
-
-            SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);
-            SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
+            Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
+            var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
+            var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(sqlServerConnection, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<IDbConnection>>()), ServiceLifetime.Singleton));

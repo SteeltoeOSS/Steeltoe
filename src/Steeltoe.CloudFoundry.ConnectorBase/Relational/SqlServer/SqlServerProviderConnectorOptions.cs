@@ -77,6 +77,12 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         public string Pw { get; set; }
 
+        /// <summary>
+        /// Gets or sets the length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
+        /// </summary>
+        /// <remarks>Default value is 15</remarks>
+        public int? Timeout { get; set; }
+
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
@@ -90,6 +96,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             AddKeyValue(sb, "User Id", Username);
             AddKeyValue(sb, "Password", Password);
             AddKeyValue(sb, "Integrated Security", IntegratedSecurity);
+            AddKeyValue(sb, nameof(Timeout), Timeout);
 
             return sb.ToString();
         }

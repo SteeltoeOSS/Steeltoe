@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
@@ -212,6 +213,23 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
             Assert.Equal("192.168.0.90", service.HostName);
             Assert.Equal("Dd6O1BPXUHdrmzbP", service.UserName);
             Assert.Equal("7E1LxXnlH2hhlPVt", service.Password);
+        }
+
+        [Fact]
+        public void AddRabbitMQConnection_AddsRabbitMQHealthContributor()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act
+            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
         }
     }
 }

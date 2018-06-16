@@ -15,9 +15,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.CloudFoundry.Connector.Relational.PostgreSql;
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.ConnectorBase.Relational;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
 
@@ -25,11 +26,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
     public static class PostgresProviderServiceCollectionExtensions
     {
-        private static string[] postgresAssemblies = new string[] { "Npgsql" };
-        private static string[] postgresTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
-
         /// <summary>
-        /// Add Postgres to a ServiceCollection
+        /// Add NpgsqlConnection and its IHealthContributor to a ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
@@ -37,6 +35,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection</remarks>
         public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, bool registerInterface = true, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -56,7 +55,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         }
 
         /// <summary>
-        /// Add Postgres to a ServiceCollection
+        /// Add NpgsqlConnection and its IHealthContributor to a ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
@@ -64,6 +63,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection</remarks>
         public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -89,14 +89,9 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
         private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            Type postgresConnection = ConnectorHelpers.FindType(postgresAssemblies, postgresTypeNames);
-            if (postgresConnection == null)
-            {
-                throw new ConnectorException("Unable to find NpgsqlConnection, are you missing Postgres ADO.NET assembly");
-            }
-
-            PostgresProviderConnectorOptions postgresConfig = new PostgresProviderConnectorOptions(config);
-            PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
+            Type postgresConnection = ConnectorHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
+            var postgresConfig = new PostgresProviderConnectorOptions(config);
+            var factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<IDbConnection>>()), ServiceLifetime.Singleton));
