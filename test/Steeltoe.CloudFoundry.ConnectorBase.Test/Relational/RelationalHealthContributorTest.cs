@@ -49,7 +49,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             Assert.Contains(status.Details.Keys, k => k == "error");
         }
 
-        [Fact/*(Skip = "Integration test - requires local db server")*/]
+        [Fact(Skip = "Integration test - requires local db server")]
         public void Sql_Is_Connected_Returns_Up_Status()
         {
             // arrange
@@ -86,7 +86,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             Assert.Contains(status.Details.Keys, k => k == "error");
         }
 
-        [Fact/*(Skip = "Integration test - requires local db server")*/]
+        [Fact(Skip = "Integration test - requires local db server")]
         public void MySql_Is_Connected_Returns_Up_Status()
         {
             // arrange
@@ -123,7 +123,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             Assert.Contains(status.Details.Keys, k => k == "error");
         }
 
-        [Fact/*(Skip = "Integration test - requires local db server")*/]
+        [Fact(Skip = "Integration test - requires local db server")]
         public void PostgreSql_Is_Connected_Returns_Up_Status()
         {
             // arrange

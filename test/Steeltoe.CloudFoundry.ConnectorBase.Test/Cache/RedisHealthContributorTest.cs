@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Cache
             Assert.Equal("Redis health check failed", status.Description);
         }
 
-        [Fact/*(Skip = "Integration test - Requires local server")*/]
+        [Fact(Skip = "Integration test - Requires local server")]
         public void StackExchange_Is_Connected_Returns_Up_Status()
         {
             // arrange
@@ -75,7 +75,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Cache
             Assert.Equal("Redis health check failed", status.Description);
         }
 
-        [Fact/*(Skip = "Integration test - Requires local server")*/]
+        [Fact(Skip = "Integration test - Requires local server")]
         public void Microsoft_Is_Connected_Returns_Up_Status()
         {
             // arrange

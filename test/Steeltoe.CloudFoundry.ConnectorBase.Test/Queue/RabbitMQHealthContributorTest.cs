@@ -43,7 +43,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Queue
             Assert.Equal("Failed to open RabbitMQ connection!", status.Description);
         }
 
-        [Fact/*(Skip = "Integration test - Requires local RMQ server")*/]
+        [Fact(Skip = "Integration test - Requires local RMQ server")]
         public void Is_Connected_Returns_Up_Status()
         {
             // arrange
