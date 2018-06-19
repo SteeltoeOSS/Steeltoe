@@ -42,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         {
             while (!token.IsCancellationRequested)
             {
-                Time.WaitUntil(() => { return token.IsCancellationRequested; }, _period.Milliseconds);
+                Time.WaitUntil(() => { return token.IsCancellationRequested; }, (int)_period.TotalMilliseconds);
 
                 if (!token.IsCancellationRequested)
                 {
