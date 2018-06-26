@@ -24,7 +24,6 @@ namespace Steeltoe.Management.Endpoint.Refresh
     {
         private ILogger<RefreshEndpoint> _logger;
         private IConfiguration _configuration;
-        private IHostingEnvironment _env;
 
         public RefreshEndpoint(IRefreshOptions options, IConfiguration configuration, ILogger<RefreshEndpoint> logger = null)
             : base(options)
