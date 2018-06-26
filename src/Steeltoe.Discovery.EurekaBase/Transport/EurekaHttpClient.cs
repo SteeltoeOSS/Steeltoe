@@ -45,6 +45,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         protected HttpClient _client;
         protected ILogger _logger;
+        private static readonly char[] COLON_DELIMIT = new char[] { ':' };
 
         public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null)
             : this(config, new Dictionary<string, string>(), logFactory) => _client = client;
@@ -479,7 +480,19 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         protected internal virtual HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
         {
-            var request = new HttpRequestMessage(method, requestUri);
+            string rawUri = requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+            string rawUserInfo = requestUri.GetComponents(UriComponents.UserInfo, UriFormat.Unescaped);
+
+            var request = new HttpRequestMessage(method, rawUri);
+            if (!string.IsNullOrEmpty(rawUserInfo) && rawUserInfo.Contains(":"))
+            {
+                string[] userInfo = GetUserInfo(rawUserInfo);
+                if (userInfo.Length >= 2)
+                {
+                    request = HttpClientHelper.GetRequestMessage(method, rawUri, userInfo[0], userInfo[1]);
+                }
+            }
+
             foreach (var header in _headers)
             {
                 request.Headers.Add(header.Key, header.Value);
@@ -682,6 +695,16 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
 
             return sb.ToString();
+        }
+
+        private string[] GetUserInfo(string userInfo)
+        {
+            string[] result = null;
+            if (!string.IsNullOrEmpty(userInfo))
+            {
+                result = userInfo.Split(COLON_DELIMIT);
+            }
+            return result;
         }
     }
 }
