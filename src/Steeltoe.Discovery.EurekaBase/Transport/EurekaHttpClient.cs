@@ -707,6 +707,5 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             return result;
         }
-
     }
 }
