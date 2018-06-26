@@ -704,7 +704,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
             {
                 result = userInfo.Split(COLON_DELIMIT);
             }
+
             return result;
         }
+
     }
 }
