@@ -64,6 +64,9 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<IMappingsOptions>();
             Assert.NotNull(options);
+
+            var routeMappings = serviceProvider.GetService<IRouteMappings>();
+            Assert.NotNull(routeMappings);
         }
     }
 }

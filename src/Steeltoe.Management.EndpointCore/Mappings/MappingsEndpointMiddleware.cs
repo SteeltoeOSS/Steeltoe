@@ -18,8 +18,11 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Internal;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -31,10 +34,12 @@ namespace Steeltoe.Management.Endpoint.Mappings
         private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
         private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
         private readonly IMappingsOptions _options;
+        private readonly IRouteMappings _routeMappings;
 
         public MappingsEndpointMiddleware(
             RequestDelegate next,
             IMappingsOptions options,
+            IRouteMappings routeMappings = null,
             IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
             IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
             ILogger<MappingsEndpointMiddleware> logger = null)
@@ -42,6 +47,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
         {
             _next = next;
             _options = options;
+            _routeMappings = routeMappings;
             _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
             _apiDescriptionProviders = apiDescriptionProviders;
         }
@@ -70,18 +76,20 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
         protected internal ApplicationMappings GetApplicationMappings(HttpContext context)
         {
+            IDictionary<string, IList<MappingDescription>> desc = new Dictionary<string, IList<MappingDescription>>();
             if (_actionDescriptorCollectionProvider != null)
             {
                 ApiDescriptionProviderContext apiContext = GetApiDescriptions(_actionDescriptorCollectionProvider?.ActionDescriptors?.Items);
-                IDictionary<string, IList<MappingDescription>> mappingDescriptions = GetMappingDescriptions(apiContext);
-                var contextMappings = new ContextMappings(mappingDescriptions);
-                return new ApplicationMappings(contextMappings);
+                desc = GetMappingDescriptions(apiContext);
             }
-            else
+
+            if (_routeMappings != null)
             {
-                var contextMappings = new ContextMappings();
-                return new ApplicationMappings(contextMappings);
+                AddRouteMappingsDescriptions(_routeMappings, desc);
             }
+
+            var contextMappings = new ContextMappings(desc);
+            return new ApplicationMappings(contextMappings);
         }
 
         protected internal bool IsMappingsRequest(HttpContext context)
@@ -155,11 +163,63 @@ namespace Steeltoe.Management.Endpoint.Mappings
             return routeDetails;
         }
 
+        protected internal void AddRouteMappingsDescriptions(IRouteMappings routeMappings, IDictionary<string, IList<MappingDescription>> desc)
+        {
+            if (routeMappings == null)
+            {
+                return;
+            }
+
+            foreach (var router in routeMappings.Routers)
+            {
+                var route = router as Route;
+                if (route != null)
+                {
+                    var details = GetRouteDetails(route);
+                    desc.TryGetValue("CoreRouteHandler", out IList<MappingDescription> mapList);
+
+                    if (mapList == null)
+                    {
+                        mapList = new List<MappingDescription>();
+                        desc.Add("CoreRouteHandler", mapList);
+                    }
+
+                    var mapDesc = new MappingDescription("CoreRouteHandler", details);
+                    mapList.Add(mapDesc);
+                }
+            }
+        }
+
+        protected internal IRouteDetails GetRouteDetails(Route route)
+        {
+            var routeDetails = new AspNetCoreRouteDetails();
+
+            routeDetails.HttpMethods = GetHttpMethods(route);
+            routeDetails.RouteTemplate = route.RouteTemplate;
+
+            return routeDetails;
+        }
+
         private IList<string> GetHttpMethods(ApiDescription desc)
         {
             if (!string.IsNullOrEmpty(desc.HttpMethod))
             {
                 return new List<string>() { desc.HttpMethod };
+            }
+
+            return null;
+        }
+
+        private IList<string> GetHttpMethods(Route route)
+        {
+            var constraints = route.Constraints;
+            if (constraints.TryGetValue("httpMethod", out IRouteConstraint routeConstraint))
+            {
+                var methodConstraint = routeConstraint as HttpMethodRouteConstraint;
+                if (methodConstraint != null)
+                {
+                    return methodConstraint.AllowedMethods;
+                }
             }
 
             return null;

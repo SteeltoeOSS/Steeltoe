@@ -39,6 +39,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             }
 
             services.TryAddSingleton<IMappingsOptions>(new MappingsOptions(config));
+            services.TryAddSingleton<IRouteMappings, RouteMappings>();
         }
     }
 }
