@@ -33,6 +33,10 @@ namespace Steeltoe.Common.Diagnostics
 
         private const int POLL_DELAY_MILLI = 15000;
 
+        private static readonly Lazy<DiagnosticsManager> AsSingleton = new Lazy<DiagnosticsManager>(() => new DiagnosticsManager());
+
+        public static DiagnosticsManager Instance => AsSingleton.Value;
+
         public DiagnosticsManager(IEnumerable<IPolledDiagnosticSource> polledSources, IEnumerable<IDiagnosticObserver> observers, ILogger<DiagnosticsManager> logger = null)
         {
             if (polledSources == null)
@@ -49,6 +53,17 @@ namespace Steeltoe.Common.Diagnostics
             this._observers = observers.ToList();
             this._sources = polledSources.ToList();
         }
+
+        internal DiagnosticsManager(ILogger<DiagnosticsManager> logger = null)
+        {
+            this._logger = logger;
+            this._observers = new List<IDiagnosticObserver>();
+            this._sources = new List<IPolledDiagnosticSource>();
+        }
+
+        public IList<IDiagnosticObserver> Observers => _observers;
+
+        public IList<IPolledDiagnosticSource> Sources => _sources;
 
         public void Dispose()
         {
