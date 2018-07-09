@@ -149,14 +149,7 @@ namespace Steeltoe.Extensions.Logging
             // update the default filter for new instances
             if (category == "Default")
             {
-                if (filter != null)
-                {
-                    _filter = filter;
-                }
-                else
-                {
-                    _filter = (cat, lvl) => lvl >= GetConfiguredLevel("Default");
-                }
+                _filter = filter ?? ((cat, lvl) => lvl >= GetConfiguredLevel("Default"));
             }
             else
             {
@@ -177,20 +170,16 @@ namespace Steeltoe.Extensions.Logging
                 }
                 else
                 {
-                    _runningFilters.TryAdd(category, filter);
+                    if (filter != null)
+                    {
+                        _runningFilters.TryAdd(category, filter);
+                    }
                 }
 
                 // update existing loggers under this category, or reset them to what they inherit
                 foreach (var l in _loggers.Where(s => s.Key.StartsWith(category)))
                 {
-                    if (filter != null)
-                    {
-                        l.Value.Filter = filter;
-                    }
-                    else
-                    {
-                        l.Value.Filter = GetFilter(category);
-                    }
+                    l.Value.Filter = filter ?? GetFilter(category);
                 }
             }
         }
