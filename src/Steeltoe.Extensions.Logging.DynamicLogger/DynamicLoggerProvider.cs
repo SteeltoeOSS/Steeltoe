@@ -153,6 +153,12 @@ namespace Steeltoe.Extensions.Logging
             }
             else
             {
+                // if setting filter level on a namespace (not actual logger) that hasn't previously been configured
+                if (!_runningFilters.Any(entry => entry.Key.Equals(category)) && filter != null)
+                {
+                    _runningFilters.TryAdd(category, filter);
+                }
+
                 // update the filter dictionary first so that loggers can inherit changes when we reset
                 if (_runningFilters.Any(entry => entry.Key.StartsWith(category)))
                 {
