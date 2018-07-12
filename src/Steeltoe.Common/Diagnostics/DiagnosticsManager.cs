@@ -68,6 +68,18 @@ namespace Steeltoe.Common.Diagnostics
         public void Dispose()
         {
             Stop();
+
+            if (_observers != null)
+            {
+                _observers.Clear();
+            }
+
+            if (_sources != null)
+            {
+                _sources.Clear();
+            }
+
+            _logger = null;
         }
 
         public void OnCompleted()
