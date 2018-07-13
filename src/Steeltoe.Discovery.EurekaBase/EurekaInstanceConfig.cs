@@ -172,7 +172,7 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     foreach (var addr in results)
                     {
-                        if (addr.Equals(AddressFamily.InterNetwork))
+                        if (addr.AddressFamily.Equals(AddressFamily.InterNetwork))
                         {
                             result = addr.ToString();
                             break;

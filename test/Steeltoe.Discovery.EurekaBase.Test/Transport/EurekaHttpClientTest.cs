@@ -662,6 +662,34 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
+        public void GetRequestMessage_No_Auth_When_Creds_Not_In_Url()
+        {
+            var config = new EurekaClientConfig()
+            {
+                EurekaServerServiceUrls = "http://boo:123/eureka/"
+            };
+            var client = new EurekaHttpClient(config);
+            var result = client.GetRequestMessage(HttpMethod.Post, new Uri(config.EurekaServerServiceUrls));
+            Assert.Equal(HttpMethod.Post, result.Method);
+            Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
+            Assert.False(result.Headers.Contains("Authorization"));
+        }
+
+        [Fact]
+        public void GetRequestMessage_Adds_Auth_When_Creds_In_Url()
+        {
+            var config = new EurekaClientConfig()
+            {
+                EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/"
+            };
+            var client = new EurekaHttpClient(config);
+            var result = client.GetRequestMessage(HttpMethod.Post, new Uri(config.EurekaServerServiceUrls));
+            Assert.Equal(HttpMethod.Post, result.Method);
+            Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
+            Assert.True(result.Headers.Contains("Authorization"));
+        }
+
+        [Fact]
         public void GetRequestUri_ReturnsCorrect_WithQueryArguments()
         {
             var config = new EurekaClientConfig()
