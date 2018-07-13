@@ -11,13 +11,13 @@
     <EF6Version>6.2.0</EF6Version>
     <EFCoreVersion>2.1.0</EFCoreVersion>
     <EFCoreTestVersion>2.1.0</EFCoreTestVersion>
-    <JsonNetVersion>10.0.3</JsonNetVersion>
+    <JsonNetVersion>11.0.2</JsonNetVersion>
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
     <MySqlVersion>6.10.7</MySqlVersion>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
     <NpgsqlEFCoreVersion>2.1.0</NpgsqlEFCoreVersion>
     <PomeloEFCoreVersion>2.0.1</PomeloEFCoreVersion>
-    <RabbitClientVersion>5.1.0-rc1</RabbitClientVersion>
+    <RabbitClientVersion>5.1.0</RabbitClientVersion>
     <SqlClientVersion>4.5.0</SqlClientVersion>
     <StackExchangeVersion>1.2.6</StackExchangeVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
