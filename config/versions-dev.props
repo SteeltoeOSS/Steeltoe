@@ -14,7 +14,7 @@
     <StyleCopVersion>1.0.2</StyleCopVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
     <HttpClientVersion>4.3.3</HttpClientVersion>
-    <JsonNetVersion>10.0.3</JsonNetVersion>
+    <JsonNetVersion>11.0.2</JsonNetVersion>
     <OwinOAuthVersion>4.0.0</OwinOAuthVersion>
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <TestSdkVersion>15.7.2</TestSdkVersion>
