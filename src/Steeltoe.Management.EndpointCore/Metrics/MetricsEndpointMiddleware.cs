@@ -18,7 +18,6 @@ using Steeltoe.Management.Endpoint.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Metrics
@@ -28,14 +27,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
         private RequestDelegate _next;
 
         public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, ILogger<MetricsEndpointMiddleware> logger = null)
-            : base(endpoint, logger)
+            : base(endpoint, null, false, logger)
         {
             _next = next;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (IsMetricsRequest(context))
+            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleMetricsRequestAsync(context);
             }
@@ -47,13 +46,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public override string HandleRequest(MetricsRequest arg)
         {
-            var result = endpoint.Invoke(arg);
-            if (result == null)
-            {
-                return null;
-            }
-
-            return Serialize(result);
+            var result = _endpoint.Invoke(arg);
+            return result == null ? null : Serialize(result);
         }
 
         protected internal async Task HandleMetricsRequestAsync(HttpContext context)
@@ -61,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             HttpRequest request = context.Request;
             HttpResponse response = context.Response;
 
-            logger?.LogDebug("Incoming path: {0}", request.Path.Value);
+            _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
             string metricName = GetMetricName(request);
             if (!string.IsNullOrEmpty(metricName))
@@ -73,8 +67,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
                 if (serialInfo != null)
                 {
-                    await context.Response.WriteAsync(serialInfo);
                     response.StatusCode = (int)HttpStatusCode.OK;
+                    await context.Response.WriteAsync(serialInfo);
                 }
                 else
                 {
@@ -85,16 +79,16 @@ namespace Steeltoe.Management.Endpoint.Metrics
             {
                 // GET /metrics
                 var serialInfo = this.HandleRequest(null);
-                logger?.LogDebug("Returning: {0}", serialInfo);
+                _logger?.LogDebug("Returning: {0}", serialInfo);
                 response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
-                await context.Response.WriteAsync(serialInfo);
                 response.StatusCode = (int)HttpStatusCode.OK;
+                await context.Response.WriteAsync(serialInfo);
             }
         }
 
         protected internal string GetMetricName(HttpRequest request)
         {
-            PathString epPath = new PathString(endpoint.Path);
+            PathString epPath = new PathString(_endpoint.Path);
             if (request.Path.StartsWithSegments(epPath, out PathString remaining))
             {
                 if (remaining.HasValue)
@@ -144,17 +138,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             }
 
             return null;
-        }
-
-        protected internal bool IsMetricsRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(endpoint.Path);
-            return context.Request.Path.StartsWithSegments(path);
         }
     }
 }

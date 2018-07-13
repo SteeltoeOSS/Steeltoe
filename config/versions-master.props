@@ -21,5 +21,8 @@
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
     <MoqVersion>4.8.2</MoqVersion>
+    <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
+    <WebApiCoreVersion>5.2.4</WebApiCoreVersion>
+    <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
   </PropertyGroup>
 </Project>

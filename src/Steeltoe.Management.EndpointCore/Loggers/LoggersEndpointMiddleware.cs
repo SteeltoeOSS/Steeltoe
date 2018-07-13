@@ -14,12 +14,10 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.Middleware;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Loggers
@@ -29,14 +27,14 @@ namespace Steeltoe.Management.Endpoint.Loggers
         private RequestDelegate _next;
 
         public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, ILogger<LoggersEndpointMiddleware> logger = null)
-            : base(endpoint, logger)
+            : base(endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
             _next = next;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (IsLoggerRequest(context))
+            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleLoggersRequestAsync(context);
             }
@@ -54,19 +52,19 @@ namespace Steeltoe.Management.Endpoint.Loggers
             if (context.Request.Method.Equals("POST"))
             {
                 // POST - change a logger level
-                logger?.LogDebug("Incoming path: {0}", request.Path.Value);
-                PathString epPath = new PathString(endpoint.Path);
+                _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
+                PathString epPath = new PathString(_endpoint.Path);
                 if (request.Path.StartsWithSegments(epPath, out PathString remaining))
                 {
                     if (remaining.HasValue)
                     {
                         string loggerName = remaining.Value.TrimStart('/');
 
-                        var change = Deserialize(request.Body);
+                        var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
 
                         change.TryGetValue("configuredLevel", out string level);
 
-                        logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
+                        _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
                         if (!string.IsNullOrEmpty(loggerName))
                         {
                             var changeReq = new LoggersChangeRequest(loggerName, level);
@@ -83,42 +81,9 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
             // GET request
             var serialInfo = this.HandleRequest(null);
-            logger?.LogDebug("Returning: {0}", serialInfo);
+            _logger?.LogDebug("Returning: {0}", serialInfo);
             response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
-        }
-
-        protected internal bool IsLoggerRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET") && !context.Request.Method.Equals("POST"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(endpoint.Path);
-            return context.Request.Path.StartsWithSegments(path);
-        }
-
-        private Dictionary<string, string> Deserialize(Stream stream)
-        {
-            try
-            {
-                var serializer = new JsonSerializer();
-
-                using (var sr = new StreamReader(stream))
-                {
-                    using (var jsonTextReader = new JsonTextReader(sr))
-                    {
-                        return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                logger?.LogError("Error {0} deserializing", e);
-            }
-
-            return new Dictionary<string, string>();
         }
     }
 }

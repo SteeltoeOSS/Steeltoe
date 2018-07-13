@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -43,32 +42,12 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         };
 
         [Fact]
-        public void IsRefreshRequest_ReturnsExpected()
-        {
-            var opts = new RefreshOptions();
-
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
-
-            var ep = new RefreshEndpoint(opts, config);
-            var middle = new RefreshEndpointMiddleware(null, ep);
-
-            var context = CreateRequest("GET", "/refresh");
-            Assert.True(middle.IsEnvRequest(context));
-            var context2 = CreateRequest("PUT", "/refresh");
-            Assert.False(middle.IsEnvRequest(context2));
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsEnvRequest(context3));
-        }
-
-        [Fact]
         public async void HandleRefreshRequestAsync_ReturnsExpected()
         {
             var opts = new RefreshOptions();
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
 
             var ep = new RefreshEndpoint(opts, config);
@@ -86,14 +65,16 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         [Fact]
         public async void RefreshActuator_ReturnsExpectedData()
         {
+            var anc_env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
             var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
+                .ConfigureLogging((webhostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
@@ -103,6 +84,23 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
                 var expected = "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:sensitive\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\",\"environment\",\"applicationName\"]";
                 Assert.Equal(expected, json);
             }
+
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", anc_env);
+        }
+
+        [Fact]
+        public void RefreshEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new RefreshOptions();
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appSettings);
+            var config = configurationBuilder.Build();
+            var ep = new RefreshEndpoint(opts, config);
+            var middle = new RefreshEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

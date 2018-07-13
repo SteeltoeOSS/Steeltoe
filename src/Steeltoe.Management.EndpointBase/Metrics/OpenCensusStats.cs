@@ -13,11 +13,16 @@
 // limitations under the License.
 
 using Steeltoe.Management.Census.Stats;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
     public class OpenCensusStats : IStats
     {
+        private static readonly Lazy<OpenCensusStats> AsSingleton = new Lazy<OpenCensusStats>(() => new OpenCensusStats());
+
+        public static OpenCensusStats Instance => AsSingleton.Value;
+
         private IStatsComponent statsComponent = new StatsComponent();
 
         public OpenCensusStats()

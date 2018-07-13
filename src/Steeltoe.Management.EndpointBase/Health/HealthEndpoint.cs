@@ -57,6 +57,13 @@ namespace Steeltoe.Management.Endpoint.Health
             return BuildHealth(_aggregator, _contributors);
         }
 
+        public int GetStatusCode(HealthCheckResult health)
+        {
+            return health.Status == HealthStatus.DOWN || health.Status == HealthStatus.OUT_OF_SERVICE
+                ? 503
+                : 200;
+        }
+
         protected virtual HealthCheckResult BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors)
         {
             return _aggregator.Aggregate(contributors);

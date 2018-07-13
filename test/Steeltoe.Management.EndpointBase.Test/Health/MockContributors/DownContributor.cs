@@ -16,7 +16,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
 {
-    internal class DownContributor : IHealthContributor
+    public class DownContributor : IHealthContributor
     {
         public string Id { get; } = "Down";
 

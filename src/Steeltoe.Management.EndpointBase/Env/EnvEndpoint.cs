@@ -22,8 +22,8 @@ namespace Steeltoe.Management.Endpoint.Env
 {
     public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>
     {
-        private ILogger<EnvEndpoint> _logger;
-        private IConfiguration _configuration;
+        private readonly ILogger<EnvEndpoint> _logger;
+        private readonly IConfiguration _configuration;
         private IHostingEnvironment _env;
 
         public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostingEnvironment env, ILogger<EnvEndpoint> logger = null)
@@ -57,8 +57,7 @@ namespace Steeltoe.Management.Endpoint.Env
         public virtual IList<PropertySourceDescriptor> GetPropertySources(IConfiguration configuration)
         {
             List<PropertySourceDescriptor> results = new List<PropertySourceDescriptor>();
-            IConfigurationRoot root = configuration as IConfigurationRoot;
-            if (root != null)
+            if (configuration is IConfigurationRoot root)
             {
                 foreach (var provider in root.Providers)
                 {
@@ -91,13 +90,9 @@ namespace Steeltoe.Management.Endpoint.Env
 
         public virtual string GetPropertySourceName(IConfigurationProvider provider)
         {
-            FileConfigurationProvider fileProvider = provider as FileConfigurationProvider;
-            if (fileProvider != null)
-            {
-                return provider.GetType().Name + ": [" + fileProvider.Source.Path + "]";
-            }
-
-            return provider.GetType().Name;
+            return provider is FileConfigurationProvider fileProvider
+                ? provider.GetType().Name + ": [" + fileProvider.Source.Path + "]"
+                : provider.GetType().Name;
         }
     }
 }

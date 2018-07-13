@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -82,6 +83,19 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             }
 
             Assert.Equal(HealthStatus.UP, info.Status);
+        }
+
+        [Fact]
+        public void GetStatusCode_ReturnsExpected()
+        {
+            var opts = new HealthOptions();
+            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
+            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
+
+            Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.DOWN }));
+            Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OUT_OF_SERVICE }));
+            Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UP }));
+            Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UNKNOWN }));
         }
     }
 }

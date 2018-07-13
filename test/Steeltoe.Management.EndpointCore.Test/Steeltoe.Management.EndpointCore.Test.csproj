@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj" />
   </ItemGroup>
 
   <ItemGroup>

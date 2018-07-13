@@ -23,10 +23,10 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
     {
         public bool GetTracesCalled { get; set; }
 
-        public List<Trace> GetTraces()
+        public List<TraceResult> GetTraces()
         {
             GetTracesCalled = true;
-            return new List<Trace>();
+            return new List<TraceResult>();
         }
     }
 }

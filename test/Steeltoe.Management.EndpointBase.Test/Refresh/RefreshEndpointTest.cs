@@ -13,12 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Refresh.Test

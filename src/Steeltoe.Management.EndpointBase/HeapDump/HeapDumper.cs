@@ -26,14 +26,16 @@ namespace Steeltoe.Management.Endpoint.HeapDump
     {
         private const int PROCESS_VM_READ = 0x10;
         private const int PROCESS_QUERY_INFORMATION = 0x0400;
+        private readonly string _basePathOverride;
 
         private ILogger<HeapDumper> _logger;
         private IHeapDumpOptions _options;
 
-        public HeapDumper(IHeapDumpOptions options, ILogger<HeapDumper> logger = null)
+        public HeapDumper(IHeapDumpOptions options, string basePathOverride = null, ILogger<HeapDumper> logger = null)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
+            _basePathOverride = basePathOverride;
         }
 
         public string DumpHeap()
@@ -57,6 +59,11 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 {
                     _logger?.LogError(string.Format("Could not create snapshot to process. Error {0}.", hr));
                     return null;
+                }
+
+                if (_basePathOverride != null)
+                {
+                    fileName = _basePathOverride + fileName;
                 }
 
                 fileName = Path.GetFullPath(fileName);

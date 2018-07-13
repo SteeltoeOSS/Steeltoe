@@ -13,12 +13,17 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 
 namespace Steeltoe.Management.Endpoint
 {
     public abstract class AbstractEndpoint : IEndpoint
     {
         protected IEndpointOptions options;
+
+        private IEnumerable<HttpMethod> AllowedMethods { get; }
 
         public AbstractEndpoint(IEndpointOptions options)
         {
@@ -37,6 +42,10 @@ namespace Steeltoe.Management.Endpoint
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
+    /// <summary>
+    /// Base class for management endpoints
+    /// </summary>
+    /// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
     public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TResult>
     {
         public AbstractEndpoint(IEndpointOptions options)
@@ -50,8 +59,17 @@ namespace Steeltoe.Management.Endpoint
         }
     }
 
+    /// <summary>
+    /// Base class for endpoints that allow POST requests
+    /// </summary>
+    /// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
+    /// <typeparam name="TRequest">Type of request that can be passed to this endpoint</typeparam>
     public abstract class AbstractEndpoint<TResult, TRequest> : AbstractEndpoint, IEndpoint<TResult, TRequest>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AbstractEndpoint{TResult, TRequest}"/> class.
+        /// </summary>
+        /// <param name="options">Endpoint configuration options</param>
         public AbstractEndpoint(IEndpointOptions options)
             : base(options)
         {

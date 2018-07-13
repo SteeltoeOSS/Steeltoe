@@ -24,9 +24,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
         }
 
-        public override List<Trace> Invoke()
+        public override List<TraceResult> Invoke()
         {
-            return new List<Trace>();
+            return new List<TraceResult>();
         }
     }
 }

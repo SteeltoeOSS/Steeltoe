@@ -24,14 +24,14 @@ namespace Steeltoe.Management.Endpoint.Env
         private RequestDelegate _next;
 
         public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, ILogger<EnvEndpointMiddleware> logger = null)
-            : base(endpoint, logger)
+            : base(endpoint, logger: logger)
         {
             _next = next;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (IsEnvRequest(context))
+            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleEnvRequestAsync(context);
             }
@@ -44,20 +44,9 @@ namespace Steeltoe.Management.Endpoint.Env
         protected internal async Task HandleEnvRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest();
-            logger?.LogDebug("Returning: {0}", serialInfo);
+            _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
-        }
-
-        protected internal bool IsEnvRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(endpoint.Path);
-            return context.Request.Path.Equals(path);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -43,36 +43,6 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             ["management:endpoints:loggers:enabled"] = "true",
             ["management:endpoints:loggers:sensitive"] = "false",
         };
-
-        [Fact]
-        public void IsLoggersRequest_ReturnsExpected()
-        {
-            var opts = new LoggersOptions();
-
-            var ep = new LoggersEndpoint(opts, null);
-            var middle = new LoggersEndpointMiddleware(null, ep);
-
-            var context = CreateRequest("GET", "/loggers");
-            Assert.True(middle.IsLoggerRequest(context));
-
-            var context2 = CreateRequest("PUT", "/loggers");
-            Assert.False(middle.IsLoggerRequest(context2));
-
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsLoggerRequest(context3));
-
-            var context4 = CreateRequest("POST", "/loggers");
-            Assert.True(middle.IsLoggerRequest(context4));
-
-            var context5 = CreateRequest("POST", "/badpath");
-            Assert.False(middle.IsLoggerRequest(context5));
-
-            var context6 = CreateRequest("POST", "/loggers/Foo.Bar.Class");
-            Assert.True(middle.IsLoggerRequest(context6));
-
-            var context7 = CreateRequest("POST", "/badpath/Foo.Bar.Class");
-            Assert.False(middle.IsLoggerRequest(context7));
-        }
 
         [Fact]
         public async void HandleLoggersRequestAsync_ReturnsExpected()
@@ -94,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         {
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
-               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
                .ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddDynamicConsole(context.Configuration));
 
             using (var server = new TestServer(builder))
@@ -122,14 +92,14 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public async void LoggersActuator_AcceptsPost()
         {
-             var builder = new WebHostBuilder()
-                .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
-                .ConfigureLogging((context, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
-                    loggingBuilder.AddDynamicConsole();
-                });
+            var builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
+               .ConfigureLogging((context, loggingBuilder) =>
+               {
+                   loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
+                   loggingBuilder.AddDynamicConsole();
+               });
 
             using (var server = new TestServer(builder))
             {
@@ -150,7 +120,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         {
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
-               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
                .ConfigureLogging((context, loggingBuilder) =>
                {
                    loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
@@ -173,6 +143,22 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                 Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint.Loggers"].effectiveLevel.ToString());
                 Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint.Loggers.LoggersEndpointMiddleware"].effectiveLevel.ToString());
             }
+        }
+
+        [Fact]
+        public void LoggersEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new LoggersOptions();
+            var ep = new LoggersEndpoint(opts, null);
+            var middle = new LoggersEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("POST", "/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("POST", "/loggers/Foo.Bar.Class"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath/Foo.Bar.Class"));
         }
 
         private HttpContext CreateRequest(string method, string path)

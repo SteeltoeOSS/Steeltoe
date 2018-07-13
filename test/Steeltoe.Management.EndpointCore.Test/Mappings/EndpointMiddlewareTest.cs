@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
             var opts = new MappingsOptions();
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
             var host = new HostingEnvironment()
             {
@@ -70,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
             var opts = new MappingsOptions();
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
             var host = new HostingEnvironment()
             {
@@ -92,7 +92,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         {
             var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);

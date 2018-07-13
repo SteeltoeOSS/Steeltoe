@@ -12,29 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Trace
+namespace Steeltoe.Management.Endpoint
 {
-    public class Trace
+    public static class StringExtensions
     {
-        public Trace(long timestamp, Dictionary<string, object> info)
+        public static bool StartsWithSegments(this string incoming, string other, out string remaining)
         {
-            if (info == null)
+            string value1 = incoming ?? string.Empty;
+            string value2 = other ?? string.Empty;
+            if (value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentNullException(nameof(info));
+                if (value1.Length == value2.Length || value1[value2.Length] == '/')
+                {
+                    remaining = value1.Substring(value2.Length);
+                    return true;
+                }
             }
 
-            TimeStamp = timestamp;
-            Info = info;
+            remaining = string.Empty;
+            return false;
         }
-
-        [JsonProperty("timestamp")]
-        public long TimeStamp { get; }
-
-        [JsonProperty("info")]
-        public Dictionary<string, object> Info { get; }
     }
 }

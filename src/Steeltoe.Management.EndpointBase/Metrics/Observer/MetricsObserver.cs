@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         protected Regex PathMatcher { get; set; }
 
-        public MetricsObserver(string observerName, string diagnosticName, IMetricsOptions options, IStats censusStats, ITags censusTags, ILogger logger)
+        public MetricsObserver(string observerName, string diagnosticName, IMetricsOptions options, IStats censusStats, ITags censusTags, ILogger logger = null)
             : base(observerName, diagnosticName, logger)
         {
             ViewManager = censusStats.ViewManager;

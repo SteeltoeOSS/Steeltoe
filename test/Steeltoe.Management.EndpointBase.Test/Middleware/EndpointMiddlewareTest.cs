@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Middleware.Test
     internal class TestMiddleware1 : EndpointMiddleware<string>
     {
         public TestMiddleware1(IEndpoint<string> endpoint, ILogger logger)
-            : base(endpoint, logger)
+            : base(endpoint, logger: logger)
         {
         }
     }
@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Middleware.Test
     internal class TestMiddleware2 : EndpointMiddleware<string, string>
     {
         public TestMiddleware2(IEndpoint<string, string> endpoint, ILogger logger)
-            : base(endpoint, logger)
+            : base(endpoint, logger: logger)
         {
         }
     }

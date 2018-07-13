@@ -14,11 +14,16 @@
 
 using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Census.Tags.Propagation;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
     public class OpenCensusTags : ITags
     {
+        private static readonly Lazy<OpenCensusTags> AsSingleton = new Lazy<OpenCensusTags>(() => new OpenCensusTags());
+
+        public static OpenCensusTags Instance => AsSingleton.Value;
+
         private readonly ITagsComponent tagsComponent = new TagsComponent();
 
         public ITagger Tagger

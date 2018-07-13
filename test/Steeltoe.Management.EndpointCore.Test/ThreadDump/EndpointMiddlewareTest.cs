@@ -21,7 +21,6 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using Xunit;
@@ -30,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -42,22 +41,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             ["management:endpoints:dump:enabled"] = "true",
             ["management:endpoints:dump:sensitive"] = "false",
         };
-
-        [Fact]
-        public void IsDumpRequest_ReturnsExpected()
-        {
-            var opts = new ThreadDumpOptions();
-
-            ThreadDumper obs = new ThreadDumper(opts);
-            var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new ThreadDumpEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/dump");
-            Assert.True(middle.IsThreadDumpRequest(context));
-            var context2 = CreateRequest("PUT", "/dump");
-            Assert.False(middle.IsThreadDumpRequest(context2));
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsThreadDumpRequest(context3));
-        }
 
         [Fact]
         public async void HandleThreadDumpRequestAsync_ReturnsExpected()
@@ -86,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             {
                 var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -105,6 +88,19 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                     Assert.EndsWith("]", json);
                 }
             }
+        }
+
+        [Fact]
+        public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new ThreadDumpOptions();
+            ThreadDumper obs = new ThreadDumper(opts);
+            var ep = new ThreadDumpEndpoint(opts, obs);
+            var middle = new ThreadDumpEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

@@ -211,7 +211,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
             TimeSpan duration = TimeSpan.FromTicks(20000000 - 10000000);
-            Trace result = obs.MakeTrace(context, duration);
+            TraceResult result = obs.MakeTrace(context, duration);
             Assert.NotNull(result);
             Assert.NotNull(result.Info);
             Assert.NotEqual(0, result.TimeStamp);
@@ -278,7 +278,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
             Assert.Single(obs._queue);
 
-            Assert.True(obs._queue.TryPeek(out Trace result));
+            Assert.True(obs._queue.TryPeek(out TraceResult result));
             Assert.NotNull(result.Info);
             Assert.NotEqual(0, result.TimeStamp);
             Assert.True(result.Info.ContainsKey("method"));
@@ -315,7 +315,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
             Assert.Single(obs._queue);
 
-            Assert.True(obs._queue.TryPeek(out Trace result));
+            Assert.True(obs._queue.TryPeek(out TraceResult result));
             Assert.NotNull(result.Info);
             Assert.NotEqual(0, result.TimeStamp);
             Assert.True(result.Info.ContainsKey("method"));
@@ -370,7 +370,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             }
 
             Assert.Equal(option.Capacity, obs._queue.Count);
-            List<Trace> traces = obs.GetTraces();
+            List<TraceResult> traces = obs.GetTraces();
             Assert.Equal(option.Capacity, traces.Count);
             Assert.Equal(option.Capacity, obs._queue.Count);
 

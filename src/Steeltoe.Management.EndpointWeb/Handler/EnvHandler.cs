@@ -13,26 +13,16 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using System;
+using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Security;
 
-namespace Steeltoe.Management.Endpoint.Test
+namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class BaseTest : IDisposable
+    public class EnvHandler : ActuatorHandler<EnvEndpoint, EnvironmentDescriptor>
     {
-        public BaseTest()
+        public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, ISecurityService securityService, ILogger<EnvHandler> logger = null)
+            : base(endpoint, securityService, null, true, logger)
         {
-            ManagementOptions._instance = null;
-        }
-
-        public void Dispose()
-        {
-            ManagementOptions._instance = null;
-        }
-
-        public ILogger<T> GetLogger<T>()
-        {
-            var lf = new LoggerFactory();
-            return lf.CreateLogger<T>();
         }
     }
 }

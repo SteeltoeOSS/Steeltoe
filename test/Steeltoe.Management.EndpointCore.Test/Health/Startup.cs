@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -30,7 +31,21 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHealthActuator(Configuration);
+            switch (Configuration.GetValue<string>("HealthCheckType"))
+            {
+                case "down":
+                    services.AddHealthActuator(Configuration, new Type[] { typeof(DownContributor) });
+                    break;
+                case "out":
+                    services.AddHealthActuator(Configuration, new Type[] { typeof(OutOfSserviceContributor) });
+                    break;
+                case "unknown":
+                    services.AddHealthActuator(Configuration, new Type[] { typeof(UnknownContributor) });
+                    break;
+                default:
+                    services.AddHealthActuator(Configuration);
+                    break;
+            }
         }
 
         public void Configure(IApplicationBuilder app)

@@ -14,46 +14,59 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Steeltoe.Management.Endpoint.Health;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 
 namespace Steeltoe.Management.Endpoint.Middleware
 {
     public class EndpointMiddleware<TResult>
     {
-        protected IEndpoint<TResult> endpoint;
-        protected ILogger logger;
+        protected IEndpoint<TResult> _endpoint;
+        protected ILogger _logger;
+        protected IEnumerable<HttpMethod> _allowedMethods;
+        protected bool _exactRequestPathMatching;
 
-        public EndpointMiddleware(ILogger logger)
+        public EndpointMiddleware(IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
         {
-            this.logger = logger;
+            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
+            _exactRequestPathMatching = exactRequestPathMatching;
+            _logger = logger;
         }
 
-        public EndpointMiddleware(IEndpoint<TResult> endpoint, ILogger logger)
-            : this(logger)
+        public EndpointMiddleware(IEndpoint<TResult> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : this(allowedMethods, exactRequestPathMatching, logger)
         {
-            this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         internal IEndpoint<TResult> Endpoint
         {
             get
             {
-                return endpoint;
+                return _endpoint;
             }
 
             set
             {
-                endpoint = value;
+                _endpoint = value;
             }
         }
 
         public virtual string HandleRequest()
         {
-            var result = endpoint.Invoke();
+            var result = _endpoint.Invoke();
             return Serialize(result);
+        }
+
+        public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        {
+            return _exactRequestPathMatching
+                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
         protected virtual string Serialize(TResult result)
@@ -71,7 +84,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
             }
             catch (Exception e)
             {
-                logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
+                _logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
             }
 
             return string.Empty;
@@ -81,18 +94,25 @@ namespace Steeltoe.Management.Endpoint.Middleware
 #pragma warning disable SA1402 // File may only contain a single class
     public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
     {
-        protected new IEndpoint<TResult, TRequest> endpoint;
+        protected new IEndpoint<TResult, TRequest> _endpoint;
 
-        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, ILogger logger)
-            : base(logger)
+        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(allowedMethods, exactRequestPathMatching, logger)
         {
-            this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public virtual string HandleRequest(TRequest arg)
         {
-            var result = endpoint.Invoke(arg);
+            var result = _endpoint.Invoke(arg);
             return Serialize(result);
+        }
+
+        public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        {
+            return _exactRequestPathMatching
+                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class

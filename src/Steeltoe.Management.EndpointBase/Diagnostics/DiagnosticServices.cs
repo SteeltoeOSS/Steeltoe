@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Diagnostics
 {
-    internal class DiagnosticServices : IHostedService
+    public class DiagnosticServices : IHostedService
     {
         private IDiagnosticsManager observerManager;
         private ILogger<DiagnosticServices> logger;

@@ -156,8 +156,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var reqData = stats.ViewManager.GetView(ViewName.Create("http.server.requests"));
             var aggData1 = reqData.SumWithTags() as IDistributionData;
             Assert.Equal(2, aggData1.Count);
-            Assert.InRange(aggData1.Mean, 997.0, 1003.0);
-            Assert.InRange(aggData1.Max, 997.0, 1003.0);
+            Assert.True(aggData1.Mean > 1000.00);
+            Assert.True(aggData1.Max > 1000.00);
 
             act.Stop();
         }

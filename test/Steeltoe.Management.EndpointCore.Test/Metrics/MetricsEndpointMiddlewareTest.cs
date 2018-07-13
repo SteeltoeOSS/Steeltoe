@@ -28,40 +28,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
     public class MetricsEndpointMiddlewareTest : BaseTest
     {
         [Fact]
-        public void IsMetricsRequest_ReturnsExpected()
-        {
-            var opts = new MetricsOptions();
-            var stats = new OpenCensusStats();
-
-            var ep = new MetricsEndpoint(opts, stats);
-            var middle = new MetricsEndpointMiddleware(null, ep);
-
-            var context = CreateRequest("GET", "/metrics");
-            Assert.True(middle.IsMetricsRequest(context));
-
-            var context2 = CreateRequest("PUT", "/metrics");
-            Assert.False(middle.IsMetricsRequest(context2));
-
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsMetricsRequest(context3));
-
-            var context4 = CreateRequest("POST", "/metrics");
-            Assert.False(middle.IsMetricsRequest(context4));
-
-            var context5 = CreateRequest("DELETE", "/metrics");
-            Assert.False(middle.IsMetricsRequest(context5));
-
-            var context6 = CreateRequest("GET", "/metrics/Foo.Bar.Class");
-            Assert.True(middle.IsMetricsRequest(context6));
-
-            var context7 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "?tag=key:value&tag=key1:value1");
-            Assert.True(middle.IsMetricsRequest(context7));
-
-            var context8 = CreateRequest("GET", "/metrics", "?tag=key:value&tag=key1:value1");
-            Assert.True(middle.IsMetricsRequest(context7));
-        }
-
-        [Fact]
         public void ParseTag_ReturnsExpected()
         {
             var opts = new MetricsOptions();
@@ -183,6 +149,24 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
             Assert.Equal("{\"name\":\"test.test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45.0}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
+        }
+
+        [Fact]
+        public void MetricsEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+            var ep = new MetricsEndpoint(opts, stats);
+            var middle = new MetricsEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("DELETE", "/metrics"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics?tag=key:value&tag=key1:value1"));
         }
 
         private HttpContext CreateRequest(string method, string path, string query = null)
