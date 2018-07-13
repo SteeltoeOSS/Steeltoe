@@ -24,17 +24,15 @@ Currently all of the code and samples have been tested on .NET Core 2.0, .NET 4.
 
 ## Usage
 
-See the [Steeltoe documentation](http://steeltoe.io/) for information on how to use these components in your applications.
+See the [Steeltoe documentation](https://steeltoe.io/) for information on how to use these components in your applications.
 
 ## Nuget Feeds
 
 All new configuration provider development is done on the dev branch. More stable versions of the providers can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
 
-[Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
-
-[Master feed (Stable)](https://www.myget.org/gallery/steeltoemaster) - https://www.myget.org/gallery/steeltoemaster
-
-[Release or Release Candidate feed](https://www.nuget.org/) - https://www.nuget.org/.
+- [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev)
+- [Master feed (Stable)](https://www.myget.org/gallery/steeltoemaster)
+- [Release or Release Candidate feed](https://www.nuget.org/)
 
 ## Building Pre-requisites
 
