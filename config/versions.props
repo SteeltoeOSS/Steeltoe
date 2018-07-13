@@ -2,18 +2,18 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <SteeltoeConnectorVersion>2.0.0</SteeltoeConnectorVersion>
-    <SteeltoeCommonVersion>2.0.0</SteeltoeCommonVersion>
-    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
-    <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
-    <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
-    <AspNetCoreDepTestVersion>2.0.0</AspNetCoreDepTestVersion>
+    <SteeltoeConnectorVersion>2.1.0</SteeltoeConnectorVersion>
+    <SteeltoeCommonVersion>2.1.0</SteeltoeCommonVersion>
+    <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
+    <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
+    <AspNetCoreMvcTestVersion>2.1.0</AspNetCoreMvcTestVersion>
+    <AspNetCoreDepTestVersion>2.1.0</AspNetCoreDepTestVersion>
     <HttpVersion>4.3.3</HttpVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
-    <StyleCopVersion>1.0.2</StyleCopVersion>    
-    <JsonNetVersion>10.0.3</JsonNetVersion>
+    <StyleCopVersion>1.0.2</StyleCopVersion>
+    <JsonNetVersion>11.0.2</JsonNetVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
-    <TestSdkVersion>15.5.0</TestSdkVersion>
+    <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
