@@ -11,7 +11,7 @@
     <HttpVersion>4.3.3</HttpVersion>
     <MockHttpVersion>3.2.1</MockHttpVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
-    <JsonNetVersion>10.0.3</JsonNetVersion>
+    <JsonNetVersion>11.0.2</JsonNetVersion>
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
