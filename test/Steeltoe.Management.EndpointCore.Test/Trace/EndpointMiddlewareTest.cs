@@ -21,7 +21,6 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using Xunit;
@@ -30,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -44,30 +43,11 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         };
 
         [Fact]
-        public void IsTraceRequest_ReturnsExpected()
-        {
-            var opts = new TraceOptions();
-            DiagnosticListener listener = new DiagnosticListener("test");
-
-            TraceObserver obs = new TraceObserver(listener, opts);
-            var ep = new TraceEndpoint(opts, obs);
-            var middle = new TraceEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/trace");
-            Assert.True(middle.IsTraceRequest(context));
-            var context2 = CreateRequest("PUT", "/trace");
-            Assert.False(middle.IsTraceRequest(context2));
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsTraceRequest(context3));
-            listener.Dispose();
-        }
-
-        [Fact]
         public async void HandleTraceRequestAsync_ReturnsExpected()
         {
             var opts = new TraceOptions();
-            DiagnosticListener listener = new DiagnosticListener("test");
 
-            TraceObserver obs = new TraceObserver(listener, opts);
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
             var middle = new TraceEndpointMiddleware(null, ep);
             var context = CreateRequest("GET", "/trace");
@@ -76,7 +56,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
             Assert.Equal("[]", json);
-            listener.Dispose();
         }
 
         [Fact]
@@ -84,7 +63,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -99,6 +78,19 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
                 var json = await result.Content.ReadAsStringAsync();
                Assert.NotNull(json);
             }
+        }
+
+        [Fact]
+        public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new TraceOptions();
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
+            var ep = new TraceEndpoint(opts, obs);
+            var middle = new TraceEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

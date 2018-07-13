@@ -18,6 +18,6 @@ namespace Steeltoe.Management.Endpoint.Trace
 {
     public interface ITraceRepository
     {
-        List<Trace> GetTraces();
+        List<TraceResult> GetTraces();
     }
 }

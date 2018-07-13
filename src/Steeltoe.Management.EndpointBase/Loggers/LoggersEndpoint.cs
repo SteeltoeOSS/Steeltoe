@@ -13,16 +13,18 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
     public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>
     {
-        private static List<string> levels = new List<string>()
+        private static readonly List<string> Levels = new List<string>()
         {
             LoggerLevels.MapLogLevel(LogLevel.None),
             LoggerLevels.MapLogLevel(LogLevel.Critical),
@@ -86,7 +88,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         public virtual void AddLevels(Dictionary<string, object> result)
         {
-            result.Add("levels", levels);
+            result.Add("levels", Levels);
         }
 
         public virtual ICollection<ILoggerConfiguration> GetLoggerConfigurations(IDynamicLoggerProvider provider)
@@ -114,6 +116,28 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
 
             provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
+        }
+
+        public Dictionary<string, string> DeserializeRequest(Stream stream)
+        {
+            try
+            {
+                var serializer = new JsonSerializer();
+
+                using (var sr = new StreamReader(stream))
+                {
+                    using (var jsonTextReader = new JsonTextReader(sr))
+                    {
+                        return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError("Exception deserializing LoggersEndpoint Request: {Exception}", e);
+            }
+
+            return new Dictionary<string, string>();
         }
     }
 }

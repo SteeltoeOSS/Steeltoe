@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -25,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_InitializesDefaults()
         {
-            var health = new Health();
+            var health = new HealthCheckResult();
             Assert.Equal(HealthStatus.UNKNOWN, health.Status);
             Assert.NotNull(health.Details);
             Assert.Empty(health.Details);
@@ -35,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Serialize_Default_ReturnsExpected()
         {
-            Health health = new Health();
+            var health = new HealthCheckResult();
             var json = Serialize(health);
             Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
         }
@@ -43,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Serialize_WithDetails_ReturnsExpected()
         {
-            Health health = new Health()
+            var health = new HealthCheckResult()
             {
                 Status = HealthStatus.OUT_OF_SERVICE,
                 Description = "Test",
@@ -55,14 +58,21 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 }
             };
             var json = Serialize(health);
-            Assert.Equal("{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"item1\":{\"StringProperty\":\"Testdata\",\"IntProperty\":100,\"BoolProperty\":true},\"item2\":\"String\",\"item3\":false}", json);
+            Assert.Equal("{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"item1\":{\"stringProperty\":\"Testdata\",\"intProperty\":100,\"boolProperty\":true},\"item2\":\"String\",\"item3\":false}", json);
         }
 
-        private string Serialize(Health result)
+        private string Serialize(HealthCheckResult result)
         {
             try
             {
-                return JsonConvert.SerializeObject(result, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+                var serializerSettings = new JsonSerializerSettings()
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                };
+                serializerSettings.Converters.Add(new HealthJsonConverter());
+
+                return JsonConvert.SerializeObject(result, serializerSettings);
             }
             catch (Exception)
             {

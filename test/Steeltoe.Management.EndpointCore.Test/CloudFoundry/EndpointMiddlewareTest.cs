@@ -46,23 +46,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         };
 
         [Fact]
-        public void IsCloudFoundryRequest_ReturnsExpected()
-        {
-            var opts = new CloudFoundryOptions();
-            var ep = new CloudFoundryEndpoint(opts);
-            var middle = new CloudFoundryEndpointMiddleware(null, ep);
-
-            var context = CreateRequest("GET", "/");
-            Assert.True(middle.IsCloudFoundryRequest(context));
-
-            var context2 = CreateRequest("PUT", "/");
-            Assert.False(middle.IsCloudFoundryRequest(context2));
-
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsCloudFoundryRequest(context3));
-        }
-
-        [Fact]
         public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
         {
             var opts = new CloudFoundryOptions();
@@ -118,6 +101,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 // assert
                 Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\"},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\"}}}", json);
             }
+        }
+
+        [Fact]
+        public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new CloudFoundryOptions();
+            var ep = new CloudFoundryEndpoint(opts);
+            var middle = new CloudFoundryEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

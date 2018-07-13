@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,16 +28,19 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private string _propFile;
+        private ILogger _logger;
 
-        public GitInfoContributor()
+        public GitInfoContributor(ILogger<GitInfoContributor> logger = null)
             : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GITPROPERTIES_FILE)
         {
+            _logger = logger;
         }
 
-        public GitInfoContributor(string propFile)
+        public GitInfoContributor(string propFile, ILogger<GitInfoContributor> logger = null)
             : base()
         {
             _propFile = propFile;
+            _logger = logger;
         }
 
         public virtual void Contribute(IInfoBuilder builder)
@@ -77,6 +81,10 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
                     builder.AddInMemoryCollection(dict);
                     return builder.Build();
                 }
+            }
+            else
+            {
+                _logger?.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", propFile);
             }
 
             return null;

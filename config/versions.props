@@ -2,22 +2,30 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <SteeltoeLoggingVersion>2.0.0</SteeltoeLoggingVersion>
-    <SteeltoeCommonVersion>2.0.0</SteeltoeCommonVersion>
-    <DiagnosticSourceVersion>4.4.1</DiagnosticSourceVersion>
-    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
-    <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
-    <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
-    <AspNetCoreDepTestVersion>2.0.0</AspNetCoreDepTestVersion>
+    <SteeltoeLoggingVersion>2.1.0</SteeltoeLoggingVersion>
+    <SteeltoeCommonVersion>2.1.0</SteeltoeCommonVersion>
+    <SteeltoeConfigVersion>2.1.0</SteeltoeConfigVersion>
+    <SystemDiagnosticsVersion>4.5.0</SystemDiagnosticsVersion>
+    <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
+    <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
+    <AspNetCoreMvcTestVersion>2.1.0</AspNetCoreMvcTestVersion>
+    <AspNetCoreDepTestVersion>2.1.0</AspNetCoreDepTestVersion>
+    <AutofacVersion>4.6.1</AutofacVersion>
+    <CSharpVersion>4.5.0</CSharpVersion>
     <HttpVersion>4.3.3</HttpVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
-    <StyleCopVersion>1.0.2</StyleCopVersion>    
+    <StyleCopVersion>1.0.2</StyleCopVersion>
     <DriveInfoVersion>4.3.1</DriveInfoVersion>
-    <JsonNetVersion>10.0.3</JsonNetVersion>
-    <TestSdkVersion>15.5.0</TestSdkVersion>
+    <JsonNetVersion>11.0.2</JsonNetVersion>
+    <OwinVersion>4.0.0</OwinVersion>
+    <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
+    <MoqVersion>4.8.2</MoqVersion>
+    <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
+    <AspNetVersion>5.2.4</AspNetVersion>
+    <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
   </PropertyGroup>
 </Project>

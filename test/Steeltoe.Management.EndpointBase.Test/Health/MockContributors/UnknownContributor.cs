@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.HealthChecks;
+
 namespace Steeltoe.Management.Endpoint.Health.Test
 {
-    internal class UnknownContributor : IHealthContributor
+    public class UnknownContributor : IHealthContributor
     {
         public string Id { get; } = "Unknown";
 
-        public Health Health()
+        public HealthCheckResult Health()
         {
-            return new Health()
+            return new HealthCheckResult()
             {
                 Status = HealthStatus.UNKNOWN
             };

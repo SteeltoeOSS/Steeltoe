@@ -15,7 +15,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Endpoint.Diagnostics;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -38,8 +42,12 @@ namespace Steeltoe.Management.Endpoint.Trace
                 throw new ArgumentNullException(nameof(config));
             }
 
+            services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
+            services.TryAddSingleton<ITraceRepository>((p) => (ITraceRepository)p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
             services.TryAddSingleton<ITraceOptions>(new TraceOptions(config));
-            services.TryAddSingleton<ITraceRepository, TraceObserver>();
             services.TryAddSingleton<TraceEndpoint>();
         }
     }

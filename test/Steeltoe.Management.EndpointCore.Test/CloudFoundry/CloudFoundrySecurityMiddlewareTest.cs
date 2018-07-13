@@ -25,7 +25,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
-    public class CloudFoundrySecurityMiddlewareTest
+    public class CloudFoundrySecurityMiddlewareTest : IDisposable
     {
         private Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
@@ -44,20 +44,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             ["info:NET:ASPNET:version"] = "2.0.0"
         };
 
-        [Fact]
-        public void IsCloudFoundryRequest_ReturnsExpected()
+        public CloudFoundrySecurityMiddlewareTest()
         {
-            var opts = new CloudFoundryOptions();
-            var middle = new CloudFoundrySecurityMiddleware(null, opts, null);
-
-            var context = CreateRequest("GET", "/");
-            Assert.True(middle.IsCloudFoundryRequest(context));
-
-            var context2 = CreateRequest("PUT", "/");
-            Assert.True(middle.IsCloudFoundryRequest(context2));
-
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.True(middle.IsCloudFoundryRequest(context3));
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
         }
 
         [Fact]
@@ -184,6 +173,82 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
+        public async void CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalse()
+        {
+            var appSettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:sensitive"] = "false",
+                ["management:endpoints:path"] = "/",
+                ["management:endpoints:info:enabled"] = "true",
+                ["management:endpoints:info:sensitive"] = "false",
+                ["management:endpoints:cloudfoundry:enabled"] = "false",
+                ["info:application:name"] = "foobar",
+                ["info:application:version"] = "1.0.0",
+                ["info:application:date"] = "5/1/2008",
+                ["info:application:time"] = "8:30:52 AM",
+                ["info:NET:type"] = "Core",
+                ["info:NET:version"] = "2.0.0",
+                ["info:NET:ASPNET:type"] = "Core",
+                ["info:NET:ASPNET:version"] = "2.0.0",
+                ["vcap:application:application_id"] = "foobar",
+                ["vcap:application:cf_api"] = "http://localhost:9999/foo"
+            };
+
+            var builder = new WebHostBuilder()
+                .UseStartup<StartupWithSecurity>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/info");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async void CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalseViaEnvVariables()
+        {
+            Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
+            var appSettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:sensitive"] = "false",
+                ["management:endpoints:path"] = "/",
+                ["management:endpoints:info:enabled"] = "true",
+                ["management:endpoints:info:sensitive"] = "false",
+                ["info:application:name"] = "foobar",
+                ["info:application:version"] = "1.0.0",
+                ["info:application:date"] = "5/1/2008",
+                ["info:application:time"] = "8:30:52 AM",
+                ["info:NET:type"] = "Core",
+                ["info:NET:version"] = "2.0.0",
+                ["info:NET:ASPNET:type"] = "Core",
+                ["info:NET:ASPNET:version"] = "2.0.0",
+                ["vcap:application:application_id"] = "foobar",
+                ["vcap:application:cf_api"] = "http://localhost:9999/foo"
+            };
+
+            var builder = new WebHostBuilder()
+                .UseStartup<StartupWithSecurity>()
+                .ConfigureAppConfiguration((builderContext, config) =>
+                {
+                    config.AddInMemoryCollection(appSettings);
+                    config.AddEnvironmentVariables();
+                });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/info");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
+
+            Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED",  null);
+        }
+
+        [Fact]
         public void GetAccessToken_ReturnsExpected()
         {
             var opts = new CloudFoundryOptions();
@@ -208,6 +273,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.NotNull(result);
             Assert.Equal(Security.Permissions.NONE, result.Permissions);
             Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
+        }
+
+        public void Dispose()
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
         }
 
         private HttpContext CreateRequest(string method, string path)

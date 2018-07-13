@@ -63,8 +63,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
         {
-            var infoOpts = new InfoOptions();
-            infoOpts.Enabled = false;
+            var infoOpts = new InfoOptions { Enabled = false };
             var cloudOpts = new CloudFoundryOptions();
 
             var ep = new CloudFoundryEndpoint(cloudOpts);
@@ -81,10 +80,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
         {
-            var infoOpts = new InfoOptions();
-            infoOpts.Enabled = true;
-            var cloudOpts = new CloudFoundryOptions();
-            cloudOpts.Enabled = false;
+            var infoOpts = new InfoOptions { Enabled = true };
+            var cloudOpts = new CloudFoundryOptions { Enabled = false };
 
             var ep = new CloudFoundryEndpoint(cloudOpts);
 

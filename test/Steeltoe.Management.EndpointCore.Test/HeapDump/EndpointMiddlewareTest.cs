@@ -21,7 +21,6 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -31,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -45,22 +44,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         };
 
         [Fact]
-        public void IsHeapDumpRequest_ReturnsExpected()
-        {
-            var opts = new HeapDumpOptions();
-
-            HeapDumper obs = new HeapDumper(opts);
-            var ep = new HeapDumpEndpoint(opts, obs);
-            var middle = new HeapDumpEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/heapdump");
-            Assert.True(middle.IsHeapDumpRequest(context));
-            var context2 = CreateRequest("PUT", "/heapdump");
-            Assert.False(middle.IsHeapDumpRequest(context2));
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsHeapDumpRequest(context3));
-        }
-
-        [Fact(Skip = "Fails on Appveyor")]
         public async void HandleHeapDumpRequestAsync_ReturnsExpected()
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
@@ -72,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
-                HeapDumper obs = new HeapDumper(opts, logger1);
+                HeapDumper obs = new HeapDumper(opts, logger: logger1);
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
                 var middle = new HeapDumpEndpointMiddleware(null, ep, logger3);
                 var context = CreateRequest("GET", "/heapdump");
@@ -84,14 +67,14 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             }
         }
 
-        [Fact(Skip = "Fails on Appveyor")]
+        [Fact]
         public async void HeapDumpActuator_ReturnsExpectedData()
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -120,6 +103,19 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                     File.Delete(tempFile);
                 }
             }
+        }
+
+        [Fact]
+        public void HeapDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new HeapDumpOptions();
+            HeapDumper obs = new HeapDumper(opts);
+            var ep = new HeapDumpEndpoint(opts, obs);
+            var middle = new HeapDumpEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

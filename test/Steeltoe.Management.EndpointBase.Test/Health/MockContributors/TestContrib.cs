@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.HealthChecks;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -37,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
         public string Id { get; private set; }
 
-        public Health Health()
+        public HealthCheckResult Health()
         {
             if (Throws)
             {
@@ -45,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             }
 
             Called = true;
-            return new Health()
+            return new HealthCheckResult()
             {
                 Status = HealthStatus.UP
             };

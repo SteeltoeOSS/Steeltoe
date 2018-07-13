@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.HealthChecks;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -24,9 +25,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
         }
 
-        public override Health Invoke()
+        public override HealthCheckResult Invoke()
         {
-            return new Health();
+            return new HealthCheckResult();
         }
     }
 }

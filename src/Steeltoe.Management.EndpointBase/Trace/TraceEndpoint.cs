@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-    public class TraceEndpoint : AbstractEndpoint<List<Trace>>
+    public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>
     {
         private ILogger<TraceEndpoint> _logger;
         private ITraceRepository _traceRepo;
@@ -38,12 +38,12 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
         }
 
-        public override List<Trace> Invoke()
+        public override List<TraceResult> Invoke()
         {
             return DoInvoke(_traceRepo);
         }
 
-        public List<Trace> DoInvoke(ITraceRepository repo)
+        public List<TraceResult> DoInvoke(ITraceRepository repo)
         {
             return repo.GetTraces();
         }
