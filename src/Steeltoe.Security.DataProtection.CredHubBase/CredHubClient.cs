@@ -19,15 +19,12 @@ using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
-using System.Runtime.InteropServices;
 using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -55,61 +52,6 @@ namespace Steeltoe.Security.DataProtection.CredHub
         }
 
         /// <summary>
-        /// Expects CF_INSTANCE_CERT and CF_INSTANCE_KEY to be set in the environment (automatically set by DIEGO in cloud foundry)
-        /// </summary>
-        /// <param name="credHubOptions">CredHub client configuration values</param>
-        /// <param name="logger">Pass in a logger if you want logs</param>
-        /// <param name="httpClient">Optionally override the http client used to talk to credhub - added for tests only</param>
-        /// <returns>An initialized CredHub client (using mTLS)</returns>
-        public static async Task<CredHubClient> CreateMTLSClientAsync(CredHubOptions credHubOptions, ILogger logger = null, HttpClient httpClient = null)
-        {
-            _logger = logger;
-            _baseCredHubUrl = credHubOptions.CredHubUrl;
-
-            var cfInstanceCert = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT") ?? string.Empty;
-            var cfInstanceKey = Environment.GetEnvironmentVariable("CF_INSTANCE_KEY");
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && cfInstanceCert.StartsWith("/"))
-            {
-                _logger?.LogTrace("Detected Windows OS and root-relative paths for application credentials: converting to app-relative paths");
-                cfInstanceCert = ".." + cfInstanceCert;
-                cfInstanceKey = ".." + cfInstanceKey;
-            }
-
-            if (string.IsNullOrEmpty(cfInstanceCert) || string.IsNullOrEmpty(cfInstanceKey))
-            {
-                _logger?.LogCritical("Cloud Foundry application credentials not found in the environment");
-                throw new ArgumentException("Application Credentials not found (Missing ENV variable for Instance Cert and/or Key)");
-            }
-
-            _logger?.LogTrace("Application certificate: " + cfInstanceCert);
-            _logger?.LogTrace("Application key: " + cfInstanceKey);
-            if (File.Exists(cfInstanceCert) && File.Exists(cfInstanceKey))
-            {
-                var client = new CredHubClient(credHubOptions.ValidateCertificates);
-                _httpClientHandler = new HttpClientHandler()
-                {
-                    ClientCertificateOptions = ClientCertificateOption.Manual
-                };
-                var certBytes = File.ReadAllBytes(cfInstanceCert);
-                var keyBytes = File.ReadAllBytes(cfInstanceKey);
-                var appCredentials = CertificateHelpers.GetX509FromBytes(certBytes, keyBytes);
-                if (!appCredentials.HasPrivateKey)
-                {
-                    throw new Exception("Private key is missing, mTLS won't work");
-                }
-
-                _httpClientHandler.ClientCertificates.Add(appCredentials);
-                _httpClient = httpClient ?? client.InitializeHttpClient(_httpClientHandler);
-
-                return await client.InitializeAsync();
-            }
-            else
-            {
-                throw new Exception($"Application credentials not found (Failed to load Instance Cert [{cfInstanceCert}] and/or Key [{cfInstanceKey}])");
-            }
-        }
-
-        /// <summary>
         /// Initialize a CredHub Client with user credentials for the appropriate UAA server
         /// </summary>
         /// <param name="credHubOptions">CredHub client configuration values</param>
@@ -123,7 +65,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             var client = new CredHubClient(credHubOptions.ValidateCertificates);
             _httpClientHandler = new HttpClientHandler();
             _httpClient = httpClient ?? client.InitializeHttpClient(_httpClientHandler);
-            return client.InitializeAsync(credHubOptions.CredHubUser, credHubOptions.CredHubPassword);
+            return client.InitializeAsync(credHubOptions);
         }
 
         private HttpClient InitializeHttpClient(HttpClientHandler httpClientHandler)
@@ -131,32 +73,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             return HttpClientHelper.GetHttpClient(_validateCertificates, httpClientHandler, DEFAULT_TIMEOUT);
         }
 
-        private async Task<CredHubClient> InitializeAsync()
-        {
-            HttpClientHelper.ConfigureCertificateValidatation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
-            try
-            {
-                var info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}");
-                if (!info.IsSuccessStatusCode)
-                {
-                    // we don't NEED to throw an error here as this was more of a connectivity test than anything else
-                    // throw new CredHubException($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode}");
-                    _logger?.LogError($"Failed calling {_baseCredHubUrl.Replace("/api", "/info")}: {info.StatusCode} -- CredHub interactions may not work!");
-                }
-            }
-            catch (Exception e)
-            {
-                _logger?.LogCritical($"Encountered an exception calling /info on the CredHub server: {e}");
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(_validateCertificates, protocolType, prevValidator);
-            }
-
-            return this;
-        }
-
-        private async Task<CredHubClient> InitializeAsync(string credHubUser, string credHubPassword)
+        private async Task<CredHubClient> InitializeAsync(CredHubOptions options)
         {
             HttpClientHelper.ConfigureCertificateValidatation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
@@ -177,13 +94,13 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 }
 
                 // login to UAA
-                var header = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{credHubUser}:{credHubPassword}")));
+                var header = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{options.ClientId}:{options.ClientSecret}")));
                 _httpClient.DefaultRequestHeaders.Authorization = header;
                 var postParams = new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("response_type", "token")
-            };
+                {
+                    new KeyValuePair<string, string>("grant_type", "client_credentials"),
+                    new KeyValuePair<string, string>("response_type", "token")
+                };
                 var response = await _httpClient.PostAsync(tokenUri, new FormUrlEncodedContent(postParams));
 
                 if (response.IsSuccessStatusCode)

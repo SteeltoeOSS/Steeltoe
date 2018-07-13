@@ -24,7 +24,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             // In order to talk to Pivotal SSO tile, we must limit the TLS defaults used by the service
             // point manager, otherwise the SSO tile will reject the TLS level on the connection and remotely
             // close the socket.
-            System.Net.ServicePointManager.SecurityProtocol =
+            ServicePointManager.SecurityProtocol =
                 SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
             return app.Use(typeof(OpenIDConnectAuthenticationMiddleware), app, options);

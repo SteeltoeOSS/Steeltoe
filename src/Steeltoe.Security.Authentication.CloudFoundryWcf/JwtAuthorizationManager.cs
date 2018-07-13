@@ -20,13 +20,20 @@ using System.Web.Hosting;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
+    // https://docs.microsoft.com/en-us/dotnet/framework/wcf/extending/custom-authorization
     public class JwtAuthorizationManager : ServiceAuthorizationManager
     {
-        public CloudFoundryOptions Options { get; internal protected set; }
+        private static CloudFoundryOptions _options;
 
         public JwtAuthorizationManager()
             : base()
         {
+        }
+
+        public JwtAuthorizationManager(CloudFoundryOptions options)
+            : base()
+        {
+            _options = options;
         }
 
         protected override bool CheckAccessCore(OperationContext operationContext)
@@ -54,14 +61,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 }
 
                 // Get SSO Config
-                Options = Options ?? new CloudFoundryOptions();
-                if (Options.OAuthServiceUrl == null || Options.OAuthServiceUrl.Length == 0)
+                if (_options?.OAuthServiceUrl == null || _options?.OAuthServiceUrl?.Length == 0)
                 {
                     CloudFoundryTokenValidator.ThrowJwtException("SSO Configuration is missing", null);
                 }
 
                 // Validate Token
-                ClaimsPrincipal claimsPrincipal = Options.TokenValidator.ValidateToken(jwt);
+                ClaimsPrincipal claimsPrincipal = _options.TokenValidator.ValidateToken(jwt);
                 if (claimsPrincipal == null)
                 {
                     return false;
@@ -103,8 +109,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                     cur.User = principal;
                 }
             }
-
-            // Thread.CurrentPrincipal = principal;
         }
     }
 }

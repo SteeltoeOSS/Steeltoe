@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -43,20 +41,13 @@ namespace Steeltoe.Security.DataProtection.CredHubCore
             }
 
             var credHubOptions = config.GetSection("CredHubClient").Get<CredHubOptions>();
+            credHubOptions.Validate();
+
             CredHubClient credHubClient;
             try
             {
-                // if a username and password were supplied, use that auth method, otherwise expect Diego to provide credentials on PCF
-                if (!string.IsNullOrEmpty(credHubOptions?.CredHubUser) && !string.IsNullOrEmpty(credHubOptions?.CredHubPassword))
-                {
-                    startupLogger?.LogTrace("Using UAA auth for CredHub client");
-                    credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions).Result;
-                }
-                else
-                {
-                    startupLogger?.LogTrace("Using mTLS auth for CredHub client");
-                    credHubClient = CredHubClient.CreateMTLSClientAsync(credHubOptions ?? new CredHubOptions()).Result;
-                }
+                startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
+                credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions).Result;
 
                 services.AddSingleton<ICredHubClient>(credHubClient);
             }

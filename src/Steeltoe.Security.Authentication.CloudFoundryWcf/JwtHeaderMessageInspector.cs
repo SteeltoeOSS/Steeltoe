@@ -13,24 +13,37 @@
 // limitations under the License.
 
 using System;
+using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
     public class JwtHeaderMessageInspector : IClientMessageInspector
     {
         private string _token;
+        private CloudFoundryOptions _options;
+        private string _userToken;
 
-        public JwtHeaderMessageInspector()
+        public JwtHeaderMessageInspector(CloudFoundryOptions options, string userToken)
         {
+            _options = options;
+            _userToken = userToken;
         }
 
-        public object BeforeSendRequest(ref System.ServiceModel.Channels.Message request, System.ServiceModel.IClientChannel channel)
+        public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
-            if (_token == null)
+            if (_options.ForwardUserCredentials)
             {
-                _token = GetAccessToken();
+                _token = _userToken;
+            }
+            else
+            {
+                if (_token == null)
+                {
+                    _token = GetAccessToken();
+                }
             }
 
             HttpRequestMessageProperty httpRequestMessage;
@@ -52,7 +65,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             return null;
         }
 
-        public void AfterReceiveReply(ref System.ServiceModel.Channels.Message reply, object correlationState)
+        public void AfterReceiveReply(ref Message reply, object correlationState)
         {
             HttpResponseMessageProperty httpResponse;
             if (reply.Properties.ContainsKey(HttpResponseMessageProperty.Name))
@@ -65,20 +78,18 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         private string GetAccessToken()
         {
-            CloudFoundryOptions options = new CloudFoundryOptions();
-
-            CloudFoundryClientTokenResolver tokenResolver = new CloudFoundryClientTokenResolver(options);
+            CloudFoundryClientTokenResolver tokenResolver = new CloudFoundryClientTokenResolver(_options);
 
             try
             {
-               string accessToken = tokenResolver.GetAccessToken().GetAwaiter().GetResult();
+               string accessToken = Task.Run(() => tokenResolver.GetAccessToken()).GetAwaiter().GetResult();
 
                return accessToken;
             }
             catch (Exception ex)
             {
                 Console.Out.WriteLine(ex.Message + ex.StackTrace);
-                throw new Exception("Cannont obtain the Access Token" + ex.Message);
+                throw;
             }
         }
     }

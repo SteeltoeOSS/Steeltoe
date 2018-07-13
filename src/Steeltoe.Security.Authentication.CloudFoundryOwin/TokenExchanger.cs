@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json.Linq;
+using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,8 +48,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
                 new KeyValuePair<string, string>(Constants.ParamsClientID, options.ClientID),
                 new KeyValuePair<string, string>(Constants.ParamsClientSecret, options.ClientSecret),
                 new KeyValuePair<string, string>(Constants.ParamsGrantType, Constants.GrantTypeAuthorizationCode),
-                new KeyValuePair<string, string>(Constants.ParamsResponseType, Constants.ResponseTypeIDToken),
-                new KeyValuePair<string, string>(Constants.ParamsTokenFormat, Constants.TokenFormatOpaque),
                 new KeyValuePair<string, string>(Constants.ParamsRedirectUri, redirect_url),
                 new KeyValuePair<string, string>(Constants.ParamsCode, code)
             };
@@ -58,43 +59,59 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
                 Debug.WriteLine(item.Key + ": " + item.Value);
             }
 
+            HttpClientHelper.ConfigureCertificateValidatation(options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+
             using (var client = new HttpClient())
             {
                 var byteArray = Encoding.ASCII.GetBytes(options.ClientID + ":" + options.ClientSecret);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
-                var response = await client.PostAsync(targetUrl, content);
-                if (response.IsSuccessStatusCode)
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                try
                 {
-                    string resultJson = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine("Got from token endpoint:" + resultJson);
-                    dynamic data = JObject.Parse(resultJson);
-                    string jwtToken = data.id_token;
-                    Debug.WriteLine("Retrieved authorization token from IDP: " + jwtToken);
-                    JwtSecurityToken securityToken = new JwtSecurityToken(jwtToken);
-                    var claimsId = new ClaimsIdentity(options.SignInAsAuthenticationType);
-                    string userName = securityToken.Claims.First(c => c.Type == "user_name").Value;
-                    string email = securityToken.Claims.First(c => c.Type == "email").Value;
-                    string userId = securityToken.Claims.First(c => c.Type == "user_id").Value;
-                    foreach (var claim in securityToken.Claims)
+                    var response = await client.PostAsync(targetUrl, content);
+                    if (response.IsSuccessStatusCode)
                     {
-                        Debug.WriteLine(claim.Type + " : " + claim.Value);
+                        var tokens = await response.Content.ReadAsJsonAsync<OpenIDTokenResponse>();
+                        Debug.WriteLine("Identity token from IDP: " + tokens.IdentityToken);
+                        Debug.WriteLine("Access token from IDP: " + tokens.AccessToken);
+                        JwtSecurityToken securityToken = new JwtSecurityToken(tokens.IdentityToken);
+                        var claimsId = new ClaimsIdentity(options.SignInAsAuthenticationType);
+                        string userName = securityToken.Claims.First(c => c.Type == "user_name").Value;
+                        string email = securityToken.Claims.First(c => c.Type == "email").Value;
+                        string userId = securityToken.Claims.First(c => c.Type == "user_id").Value;
+                        foreach (var claim in securityToken.Claims)
+                        {
+                            Debug.WriteLine(claim.Type + " : " + claim.Value);
+                        }
 
-                        // claimsId.AddClaim(claim);
+                        claimsId.AddClaims(new List<Claim>
+                        {
+                            new Claim(ClaimTypes.NameIdentifier, userId),
+                            new Claim(ClaimTypes.Name, userName),
+                            new Claim(ClaimTypes.Email, email),
+                        });
+
+                        var additionalScopes = tokens.Scope.Split(' ').Where(s => s != "openid");
+                        foreach (var scope in additionalScopes)
+                        {
+                            claimsId.AddClaim(new Claim("scope", scope));
+                        }
+
+                        claimsId.AddClaim(new Claim(ClaimTypes.Authentication, tokens.AccessToken));
+
+                        return claimsId;
                     }
-
-                    claimsId.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
-                    claimsId.AddClaim(new Claim(ClaimTypes.Name, userName));
-                    claimsId.AddClaim(new Claim(ClaimTypes.Email, email));
-                    return claimsId;
+                    else
+                    {
+                        Debug.WriteLine("Failed call to exchange code for token : " + response.StatusCode);
+                        Debug.WriteLine(response.ReasonPhrase);
+                        string resultJson = await response.Content.ReadAsStringAsync();
+                        Debug.WriteLine(resultJson);
+                        return null;
+                    }
                 }
-                else
+                finally
                 {
-                    Debug.WriteLine("Failed call to exchange code for token : " + response.StatusCode);
-                    Debug.WriteLine(response.ReasonPhrase);
-                    string resultJson = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine(resultJson);
-                    return null;
+                    HttpClientHelper.RestoreCertificateValidation(options.ValidateCertificates, protocolType, prevValidator);
                 }
             }
         }

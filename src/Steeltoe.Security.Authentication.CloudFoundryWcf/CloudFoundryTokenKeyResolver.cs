@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Microsoft.IdentityModel.Tokens;
+using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
-
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -43,7 +43,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 return new List<SecurityKey> { resolved };
             }
 
-            JsonWebKeySet keyset = FetchKeySet().GetAwaiter().GetResult();
+            JsonWebKeySet keyset = Task.Run(() => FetchKeySet()).GetAwaiter().GetResult();
             if (keyset != null)
             {
                 foreach (JsonWebKey key in keyset.Keys)
@@ -73,14 +73,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, Options.JwtKeyEndpoint);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            RemoteCertificateValidationCallback prevValidator = null;
-
             using (var handler = new HttpClientHandler())
             {
-                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                HttpClientHelper.ConfigureCertificateValidatation(Options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
 
-                HttpClient client = new HttpClient(handler);
+                HttpClient client = new HttpClient(handler)
+                {
+                    BaseAddress = new Uri(Options.OAuthServiceUrl)
+                };
 
                 HttpResponseMessage response = null;
                 try
@@ -93,7 +93,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 }
                 finally
                 {
-                    ServicePointManager.ServerCertificateValidationCallback = prevValidator;
+                    HttpClientHelper.RestoreCertificateValidation(Options.ValidateCertificates, protocolType, prevValidator);
                 }
 
                 if (response.IsSuccessStatusCode)

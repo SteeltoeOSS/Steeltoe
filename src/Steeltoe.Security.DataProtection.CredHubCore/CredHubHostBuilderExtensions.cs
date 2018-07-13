@@ -17,7 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Security.DataProtection.CredHub;
 using System;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Security.DataProtection.CredHubCore
 {
@@ -50,18 +49,11 @@ namespace Steeltoe.Security.DataProtection.CredHubCore
                     CredHubClient credHubClient = null;
 
                     var credHubOptions = builtConfig.GetSection("CredHubClient").Get<CredHubOptions>();
+                    credHubOptions.Validate();
                     try
                     {
-                        if (!string.IsNullOrEmpty(credHubOptions?.CredHubUser) && !string.IsNullOrEmpty(credHubOptions?.CredHubPassword))
-                        {
-                            startupLogger?.LogTrace("Using UAA auth for CredHub client");
-                            credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).Result;
-                        }
-                        else
-                        {
-                            startupLogger?.LogTrace("Using mTLS auth for CredHub client");
-                            credHubClient = CredHubClient.CreateMTLSClientAsync(credHubOptions ?? new CredHubOptions(), credhubLogger).Result;
-                        }
+                        startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
+                        credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).Result;
                     }
                     catch (Exception e)
                     {

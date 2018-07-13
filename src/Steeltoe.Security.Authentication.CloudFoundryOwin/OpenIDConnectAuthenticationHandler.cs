@@ -63,6 +63,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             return ticket;
         }
 
+        protected override Task InitializeCoreAsync()
+        {
+            return base.InitializeCoreAsync();
+        }
+
         protected override Task ApplyResponseChallengeAsync()
         {
             if (Response.StatusCode == 401)
@@ -89,11 +94,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             }
 
             return Task.FromResult<object>(null);
-        }
-
-        protected override Task InitializeCoreAsync()
-        {
-            return base.InitializeCoreAsync();
         }
     }
 }
