@@ -9,8 +9,8 @@
     <AspNetCoreDepTestVersion>2.1.0</AspNetCoreDepTestVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
-    <JsonNetVersion>10.0.3</JsonNetVersion>
-    <TestSdkVersion>15.7.0</TestSdkVersion>
+    <JsonNetVersion>11.0.2</JsonNetVersion>
+    <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
   </PropertyGroup>
