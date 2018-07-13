@@ -11,7 +11,7 @@
     <HttpVersion>4.3.3</HttpVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>    
-    <JsonNetVersion>10.0.3</JsonNetVersion>
+    <JsonNetVersion>11.0.2</JsonNetVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
