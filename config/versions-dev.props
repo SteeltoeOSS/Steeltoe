@@ -16,7 +16,7 @@
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
     <DriveInfoVersion>4.3.1</DriveInfoVersion>
-    <JsonNetVersion>10.0.3</JsonNetVersion>
+    <JsonNetVersion>11.0.2</JsonNetVersion>
     <OwinVersion>4.0.0</OwinVersion>
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
