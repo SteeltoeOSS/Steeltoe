@@ -26,13 +26,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
         public PostgresProviderConnectorFactory(PostgresServiceInfo sinfo, PostgresProviderConnectorOptions config, Type type)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
             _info = sinfo;
-            _config = config;
+            _config = config ?? throw new ArgumentNullException(nameof(config));
             _type = type;
         }
 

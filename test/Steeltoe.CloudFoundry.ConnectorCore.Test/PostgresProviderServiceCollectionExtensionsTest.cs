@@ -14,8 +14,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
+using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Data;
@@ -141,6 +142,23 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             Assert.Contains("postgres.testcloud.com", connString);
             Assert.Contains("lmu7c96mgl99b2t1hvdgd5q94v", connString);
             Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
+        }
+
+        [Fact]
+        public void AddPosgreSqlConnection_AddsRelationalHealthContributor()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act
+            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
         }
     }
 }

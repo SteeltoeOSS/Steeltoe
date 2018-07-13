@@ -20,6 +20,7 @@ using Steeltoe.CloudFoundry.Connector.EFCore.Test;
 using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
@@ -184,7 +185,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
         }
 
         [Fact]
-        public void AddDbContexts_WithECrunchyVCAPs_AddsDbContexts()
+        public void AddDbContexts_WithCrunchyVCAPs_AddsDbContexts()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -193,6 +194,48 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_Crunchy);
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act and Assert
+            services.AddDbContext<GoodDbContext>(options =>
+                  options.UseNpgsql(config));
+
+            var built = services.BuildServiceProvider();
+            var service = built.GetService<GoodDbContext>();
+            Assert.NotNull(service);
+
+            var con = service.Database.GetDbConnection();
+            Assert.NotNull(con);
+            var postCon = con as NpgsqlConnection;
+            Assert.NotNull(postCon);
+
+            var connString = con.ConnectionString;
+            Assert.NotNull(connString);
+
+            Assert.Contains("Host=10.194.59.205", connString);
+            Assert.Contains("Port=5432", connString);
+            Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString);
+            Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString);
+            Assert.Contains("Database=steeltoe", connString);
+        }
+
+        [Fact]
+        public void AddDbContexts_WithEncodedCrunchyVCAPs_AddsDbContexts()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerEncodedVCAP_Crunchy);
+
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["postgres:client:urlEncodedCredentials"] = "true"
+            };
+
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(appsettings);
             builder.AddCloudFoundry();
             var config = builder.Build();
 

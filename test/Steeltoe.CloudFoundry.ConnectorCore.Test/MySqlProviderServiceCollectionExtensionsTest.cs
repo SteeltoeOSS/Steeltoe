@@ -14,11 +14,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using Xunit;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System.Data;
+using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Common.HealthChecks;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System;
+using System.Data;
+using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
@@ -139,6 +141,23 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             Assert.Contains("192.168.0.90", connString);
             Assert.Contains("Dd6O1BPXUHdrmzbP", connString);
             Assert.Contains("7E1LxXnlH2hhlPVt", connString);
+        }
+
+        [Fact]
+        public void AddMySqlConnection_AddsRelationalHealthContributor()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act
+            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
         }
     }
 }

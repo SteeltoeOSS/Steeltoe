@@ -17,7 +17,10 @@ using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.MySql;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.CloudFoundry.Connector.Relational.MySql;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
 
@@ -25,11 +28,8 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
     public static class MySqlContainerBuilderExtensions
     {
-        private static string[] mySqlAssemblies = new string[] { "MySql.Data", "MySqlConnector" };
-        private static string[] mySqlTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
-
         /// <summary>
-        /// Adds a MySqlConnection (as IDbConnection) to your Autofac Container
+        /// Adds a MySqlConnection (as IDbConnection and MySqlConnection) to your Autofac Container
         /// </summary>
         /// <param name="container">Your Autofac Container Builder</param>
         /// <param name="config">Application configuration</param>
@@ -47,25 +47,15 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Type mySqlConnection = ConnectorHelpers.FindType(mySqlAssemblies, mySqlTypeNames);
-            if (mySqlConnection == null)
-            {
-                throw new ConnectorException("Unable to find MySqlConnection, are you missing a MySql reference?");
-            }
+            MySqlServiceInfo info = serviceName == null
+                ? config.GetSingletonServiceInfo<MySqlServiceInfo>()
+                : config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
-            MySqlServiceInfo info;
-            if (serviceName == null)
-            {
-                info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
-            }
-
-            MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
-            MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
-            return container.Register(c => factory.Create(null)).As<IDbConnection>();
+            Type mySqlConnection = MySqlTypeLocator.MySqlConnection;
+            var mySqlConfig = new MySqlProviderConnectorOptions(config);
+            var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
+            container.RegisterType<RelationalHealthContributor>().As<IHealthContributor>();
+            return container.Register(c => factory.Create(null)).As(typeof(IDbConnection), mySqlConnection);
         }
     }
 }

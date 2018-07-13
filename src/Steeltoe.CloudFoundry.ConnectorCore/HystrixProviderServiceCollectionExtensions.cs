@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.RabbitMQ;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
@@ -22,9 +23,6 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 {
     public static class HystrixProviderServiceCollectionExtensions
     {
-        private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
-        private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
-
         /// <summary>
         /// Adds HystrixConnectionFactory to your ServiceCollection
         /// </summary>
@@ -85,12 +83,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 
         private static void DoAdd(IServiceCollection services, HystrixRabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            Type rabbitFactory = ConnectorHelpers.FindType(rabbitAssemblies, rabbitTypeNames);
-            if (rabbitFactory == null)
-            {
-                throw new ConnectorException("Unable to find ConnectionFactory, are you missing RabbitMQ assembly");
-            }
-
+            Type rabbitFactory = RabbitMQTypeLocator.ConnectionFactory;
             HystrixProviderConnectorOptions hystrixConfig = new HystrixProviderConnectorOptions(config);
             HystrixProviderConnectorFactory factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
             services.Add(new ServiceDescriptor(typeof(HystrixConnectionFactory), factory.Create, contextLifetime));

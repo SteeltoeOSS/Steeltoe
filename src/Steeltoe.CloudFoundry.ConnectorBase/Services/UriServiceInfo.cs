@@ -28,10 +28,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             Info = new UriInfo(uriString, username, password);
         }
 
-        public UriServiceInfo(string id, string uriString)
+        public UriServiceInfo(string id, string uriString, bool urlEncodedCredentials = false)
             : base(id)
         {
-            Info = new UriInfo(uriString);
+            Info = new UriInfo(uriString, urlEncodedCredentials);
         }
 
         public UriInfo Info { get; internal protected set; }

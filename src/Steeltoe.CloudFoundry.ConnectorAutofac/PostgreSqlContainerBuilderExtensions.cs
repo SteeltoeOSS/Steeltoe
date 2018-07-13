@@ -17,7 +17,10 @@ using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.PostgreSql;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.CloudFoundry.Connector.Relational.PostgreSql;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
 
@@ -25,11 +28,8 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
     public static class PostgreSqlContainerBuilderExtensions
     {
-        private static string[] postgreSqlAssemblies = new string[] { "Npgsql" };
-        private static string[] postgreSqlTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
-
         /// <summary>
-        /// Adds NpgsqlConnection (as IDbConnection) to your Autofac Container
+        /// Adds NpgsqlConnection (as IDbConnection and NpgsqlConnection) to your Autofac Container
         /// </summary>
         /// <param name="container">Your Autofac Container Builder</param>
         /// <param name="config">Application configuration</param>
@@ -47,25 +47,15 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Type postgreSqlConnection = ConnectorHelpers.FindType(postgreSqlAssemblies, postgreSqlTypeNames);
-            if (postgreSqlConnection == null)
-            {
-                throw new ConnectorException("Unable to find NpgsqlConnection, are you missing a reference to Npgsql?");
-            }
+            PostgresServiceInfo info = serviceName == null
+                ? config.GetSingletonServiceInfo<PostgresServiceInfo>()
+                : config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
-            PostgresServiceInfo info;
-            if (serviceName == null)
-            {
-                info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
-            }
-
+            Type postgreSqlConnection = PostgreSqlTypeLocator.NpgsqlConnection;
             var postgreSqlConfig = new PostgresProviderConnectorOptions(config);
-            PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgreSqlConfig, postgreSqlConnection);
-            return container.Register(c => factory.Create(null)).As<IDbConnection>();
+            var factory = new PostgresProviderConnectorFactory(info, postgreSqlConfig, postgreSqlConnection);
+            container.RegisterType<RelationalHealthContributor>().As<IHealthContributor>();
+            return container.Register(c => factory.Create(null)).As(typeof(IDbConnection), postgreSqlConnection);
         }
     }
 }

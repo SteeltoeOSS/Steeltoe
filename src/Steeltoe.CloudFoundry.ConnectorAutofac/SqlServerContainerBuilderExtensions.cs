@@ -16,8 +16,11 @@ using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.CloudFoundry.Connector.Relational.SqlServer;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
 
@@ -25,11 +28,8 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
     public static class SqlServerContainerBuilderExtensions
     {
-        private static string[] sqlServerAssemblies = new string[] { "System.Data.SqlClient" };
-        private static string[] sqlServerTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
-
         /// <summary>
-        /// Adds SqlConnection (as IDbConnection) to your Autofac Container
+        /// Adds SqlConnection (as IDbConnection and SqlConnection) to your Autofac Container
         /// </summary>
         /// <param name="container">Your Autofac Container Builder</param>
         /// <param name="config">Application configuration</param>
@@ -47,25 +47,16 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Type sqlServerConnection = ConnectorHelpers.FindType(sqlServerAssemblies, sqlServerTypeNames);
-            if (sqlServerConnection == null)
-            {
-                throw new ConnectorException("Unable to find System.Data.SqlClient.SqlConnection, are you missing a System.Data.SqlClient reference?");
-            }
+            SqlServerServiceInfo info = serviceName == null
+                ? config.GetSingletonServiceInfo<SqlServerServiceInfo>()
+                : config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
-            SqlServerServiceInfo info;
-            if (serviceName == null)
-            {
-                info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
-            }
-
+            Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
             var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
-            return container.Register(c => factory.Create(null)).As<IDbConnection>();
+
+            container.RegisterType<RelationalHealthContributor>().As<IHealthContributor>();
+            return container.Register(c => factory.Create(null)).As(typeof(IDbConnection), sqlServerConnection);
         }
     }
 }

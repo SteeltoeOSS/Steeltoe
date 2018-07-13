@@ -15,19 +15,17 @@
 using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.RabbitMQ;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
 
 namespace Steeltoe.CloudFoundry.ConnectorAutofac
 {
     public static class RabbitMQContainerBuilderExtensions
     {
-        private static string[] rabbitMQAssemblies = new string[] { "RabbitMQ.Client" };
-        private static string[] rabbitMQInterfaceTypeNames = new string[] { "RabbitMQ.Client.IConnectionFactory" };
-        private static string[] rabbitMQImplementationTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
-
         /// <summary>
         /// Adds RabbitMQ ConnectionFactory (as IConnectionFactory and ConnectionFactory) to your Autofac Container
         /// </summary>
@@ -47,25 +45,16 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Type rabbitMQInterfaceType = ConnectorHelpers.FindType(rabbitMQAssemblies, rabbitMQInterfaceTypeNames);
-            Type rabbitMQImplementationType = ConnectorHelpers.FindType(rabbitMQAssemblies, rabbitMQImplementationTypeNames);
-            if (rabbitMQInterfaceType == null || rabbitMQImplementationType == null)
-            {
-                throw new ConnectorException("Unable to find ConnectionFactory, are you missing RabbitMQ assembly");
-            }
+            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
+            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 
-            RabbitMQServiceInfo info;
-            if (serviceName == null)
-            {
-                info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
-            }
+            RabbitMQServiceInfo info = serviceName == null
+                ? config.GetSingletonServiceInfo<RabbitMQServiceInfo>()
+                : config.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
 
             RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);
             RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
+            container.Register(c => new RabbitMQHealthContributor(factory, c.ResolveOptional<ILogger<RabbitMQHealthContributor>>())).As<IHealthContributor>();
 
             return container.Register(c => factory.Create(null)).As(rabbitMQInterfaceType, rabbitMQImplementationType);
         }

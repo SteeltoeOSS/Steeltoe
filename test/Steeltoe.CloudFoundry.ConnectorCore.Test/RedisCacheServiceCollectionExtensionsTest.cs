@@ -17,8 +17,9 @@ using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Common.HealthChecks;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -97,6 +98,23 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Assert
             Assert.NotNull(service);
             Assert.IsType<RedisCache>(service);
+        }
+
+        [Fact]
+        public void AddDistributedRedisCache_AddsRedisHealthContributor()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act
+            RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
         }
 
         [Fact]
@@ -219,6 +237,23 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.NotNull(service2);
             Assert.IsType<ConnectionMultiplexer>(service2);
             Assert.Contains("password=pass,word", (service as ConnectionMultiplexer).Configuration);
+        }
+
+        [Fact]
+        public void AddRedisConnectionMultiplexer_AddsRedisHealthContributor()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act
+            RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
         }
 
         [Fact]

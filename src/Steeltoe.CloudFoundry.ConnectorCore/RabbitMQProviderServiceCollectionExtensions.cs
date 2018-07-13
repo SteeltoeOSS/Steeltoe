@@ -15,25 +15,24 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.RabbitMQ;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
 
 namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
     public static class RabbitMQProviderServiceCollectionExtensions
     {
-        private static string[] rabbitMQAssemblies = new string[] { "RabbitMQ.Client" };
-        private static string[] rabbitMQInterfaceTypeNames = new string[] { "RabbitMQ.Client.IConnectionFactory" };
-        private static string[] rabbitMQImplementationTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
-
         /// <summary>
-        /// Add RabbitMQ to a ServiceCollection
+        /// Add RabbitMQ and its IHealthContributor to a ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>RabbitMQ.Client.ConnectionFactory is retrievable as both ConnectionFactory and IConnectionFactory</remarks>
         public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -53,7 +52,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         }
 
         /// <summary>
-        /// Add RabbitMQ to a ServiceCollection
+        /// Add RabbitMQ and its IHealthContributor to a ServiceCollection
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
@@ -61,6 +60,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
+        /// <remarks>RabbitMQ.Client.ConnectionFactory is retrievable as both ConnectionFactory and IConnectionFactory</remarks>
         public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
@@ -86,17 +86,14 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 
         private static void DoAdd(IServiceCollection services, RabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            Type rabbitMQInterfaceType = ConnectorHelpers.FindType(rabbitMQAssemblies, rabbitMQInterfaceTypeNames);
-            Type rabbitMQImplementationType = ConnectorHelpers.FindType(rabbitMQAssemblies, rabbitMQImplementationTypeNames);
-            if (rabbitMQInterfaceType == null || rabbitMQImplementationType == null)
-            {
-                throw new ConnectorException("Unable to find ConnectionFactory, are you missing RabbitMQ assembly");
-            }
+            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
+            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 
             RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);
             RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
             services.Add(new ServiceDescriptor(rabbitMQInterfaceType, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(rabbitMQImplementationType, factory.Create, contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RabbitMQHealthContributor(factory, ctx.GetService<ILogger<RabbitMQHealthContributor>>()), ServiceLifetime.Singleton));
         }
     }
 }
