@@ -15,13 +15,14 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Metrics;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
 {
-    public class MetricsContainerBuilderExtensionsTest
+    public class MetricsContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void RegisterMetricsMiddleware_ThrowsOnNulls()

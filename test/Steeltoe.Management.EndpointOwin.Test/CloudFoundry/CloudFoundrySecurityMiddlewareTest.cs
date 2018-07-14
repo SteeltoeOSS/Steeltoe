@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Primitives;
 using Microsoft.Owin.Testing;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using System.Net;
@@ -22,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {
-    public class CloudFoundrySecurityMiddlewareTest : IDisposable
+    public class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         private readonly SecurityBase _base = new SecurityBase(new CloudFoundryOptions());
 
@@ -123,9 +124,14 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
+            base.Dispose();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Environment.SetEnvironmentVariable("VCAP__APPLICATION__APPLICATION_ID", null);
+            Environment.SetEnvironmentVariable("management__endpoints__cloudfoundry__enabled", null);
+            Environment.SetEnvironmentVariable("VCAP__APPLICATION__APPLICATION_ID", null);
+            Environment.SetEnvironmentVariable("VCAP__APPLICATION__CF_API", null);
         }
     }
 }

@@ -55,7 +55,6 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public override void HandleRequest(HttpContext context)
         {
-
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(MappingsHandler));
 
             ApplicationMappings result = GetApplicationMappings();
@@ -65,7 +64,6 @@ namespace Steeltoe.Management.Endpoint.Handler
             context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             context.Response.StatusCode = (int)HttpStatusCode.OK;
             context.Response.Write(serialInfo);
-
         }
 
         protected internal ApplicationMappings GetApplicationMappings()
@@ -91,7 +89,6 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(Collection<ApiDescription> apiDescriptors)
         {
-
             // The apiDescriptors should have descriptors for both attribute and conventional WebAPI routes
             IDictionary<string, IList<MappingDescription>> mappingDescriptions = new Dictionary<string, IList<MappingDescription>>();
             foreach (var desc in apiDescriptors)
@@ -226,7 +223,8 @@ namespace Steeltoe.Management.Endpoint.Handler
             if (route.Url.StartsWith("/"))
             {
                 routeDetails.RouteTemplate = route.Url;
-            } else
+            }
+            else
             {
                 routeDetails.RouteTemplate = "/" + route.Url;
             }

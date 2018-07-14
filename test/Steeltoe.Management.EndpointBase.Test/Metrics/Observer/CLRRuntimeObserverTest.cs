@@ -15,12 +15,13 @@
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Stats.Aggregations;
 using Steeltoe.Management.Census.Tags;
+using Steeltoe.Management.Endpoint.Test;
 using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
-    public class CLRRuntimeObserverTest
+    public class CLRRuntimeObserverTest : BaseTest
     {
         [Fact]
         public void Constructor_RegistersExpectedViews()

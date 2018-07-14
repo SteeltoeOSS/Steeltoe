@@ -16,6 +16,7 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
 {
-    public class InfoContainerBuilderExtensionsTest
+    public class InfoContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void RegisterInfoMiddleware_ThrowsOnNulls()

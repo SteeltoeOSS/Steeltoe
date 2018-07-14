@@ -15,6 +15,7 @@
 using Microsoft.Owin.Testing;
 using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +25,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Loggers.Test
 {
-    public class LoggersEndpointOwinMiddlewareTest : OwinBaseTest
+    public class LoggersEndpointOwinMiddlewareTest : BaseTest
     {
         [Fact]
         public async void LoggersInvoke_ReturnsExpected()

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Owin.Testing;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Trace.Test
 {
-    public class TraceEndpointOwinMiddlewareTest : OwinBaseTest
+    public class TraceEndpointOwinMiddlewareTest : BaseTest
     {
         [Fact]
         public async void TraceInvoke_ReturnsExpected()

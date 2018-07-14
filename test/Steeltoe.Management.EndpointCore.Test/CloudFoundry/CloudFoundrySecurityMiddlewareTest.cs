@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,7 +26,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
-    public class CloudFoundrySecurityMiddlewareTest : IDisposable
+    public class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         private Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
@@ -244,8 +245,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 var result = await client.GetAsync("http://localhost/info");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
-
-            Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED",  null);
         }
 
         [Fact]
@@ -275,9 +274,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
+            base.Dispose();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", null);
         }
 
         private HttpContext CreateRequest(string method, string path)

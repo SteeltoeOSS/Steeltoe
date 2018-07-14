@@ -18,6 +18,7 @@ using Steeltoe.Management.Census.Stats.Aggregations;
 using Steeltoe.Management.Census.Stats.Measures;
 using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Metrics.Test
 {
-    public class MetricsEndpointOwinMiddlewareTest : OwinBaseTest
+    public class MetricsEndpointOwinMiddlewareTest : BaseTest
     {
         [Fact]
         public void ParseTag_ReturnsExpected()

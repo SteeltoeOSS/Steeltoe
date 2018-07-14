@@ -15,6 +15,7 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.CloudFoundry;
 using System;
 using System.Web;
@@ -22,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
 {
-    public class CloudFoundryContainerBuilderExtensionsTest
+    public class CloudFoundryContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void RegisterCloudFoundryMiddleware_ThrowsOnNulls()

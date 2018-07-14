@@ -59,38 +59,5 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterType<MetricsEndpoint>().SingleInstance();
             container.RegisterType<MetricsEndpointOwinMiddleware>().SingleInstance();
         }
-
-        /// <summary>
-        /// Register the Metrics endpoint, Http Module and options
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        //public static void RegisterMetricsModule(this ContainerBuilder container, IConfiguration config)
-        //{
-        //    if (container == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(container));
-        //    }
-
-        //    if (config == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(config));
-        //    }
-
-        //    container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().SingleInstance();
-        //    container.RegisterType<DiagnosticServices>().As<IHostedService>().SingleInstance();
-        //    container.RegisterType<CLRRuntimeSource>().As<IPolledDiagnosticSource>();
-
-        //    container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>().SingleInstance();
-
-        //    // TODO: container.RegisterType<AspNetCoreHostingObserver>().As<IDiagnosticObserver>(); <-- in EndpointCore
-        //    container.RegisterType<CLRRuntimeObserver>().As<IDiagnosticObserver>();
-
-        //    container.RegisterType<OpenCensusStats>().As<IStats>().SingleInstance();
-        //    container.RegisterType<OpenCensusTags>().As<ITags>().SingleInstance();
-
-        //    container.RegisterType<MetricsEndpoint>().SingleInstance();
-        //    container.RegisterType<MetricsModule>().As<IHttpModule>();
-        //}
     }
 }

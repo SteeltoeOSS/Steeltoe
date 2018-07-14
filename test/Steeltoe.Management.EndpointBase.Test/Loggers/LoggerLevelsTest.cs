@@ -13,11 +13,12 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
-    public class LoggerLevelsTest
+    public class LoggerLevelsTest : BaseTest
     {
         [Fact]
         public void MapLogLevel_ToString_ReturnsExpected()

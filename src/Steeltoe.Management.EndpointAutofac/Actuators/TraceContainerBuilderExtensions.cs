@@ -50,50 +50,5 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<List<TraceResult>>>().SingleInstance();
         }
-
-        /// <summary>
-        /// Register a request tracing OWIN middleware
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        //public static void RegisterRequestTracingModule(this ContainerBuilder container, IConfiguration config)
-        //{
-        //    if (container == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(container));
-        //    }
-
-        //    if (config == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(config));
-        //    }
-
-        //    container.RegisterType<RequestTracingModule>().As<IHttpModule>();
-        //}
-
-        /// <summary>
-        /// Register the Trace endpoint, OWIN middleware and options
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        //public static void RegisterTraceModule(this ContainerBuilder container, IConfiguration config)
-        //{
-        //    if (container == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(container));
-        //    }
-
-        //    if (config == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(config));
-        //    }
-
-        //    container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().SingleInstance();
-        //    container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
-
-        //    container.RegisterType<WebTraceRepository>().As(typeof(ITraceRepository), typeof(WebTraceRepository)).SingleInstance();
-        //    container.RegisterType<TraceEndpoint>().SingleInstance();
-        //    container.RegisterType<TraceModule>().As<IHttpModule>();
-        //}
     }
 }

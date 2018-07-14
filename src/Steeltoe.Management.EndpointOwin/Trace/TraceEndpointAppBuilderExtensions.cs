@@ -25,7 +25,6 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 {
     public static class TraceEndpointAppBuilderExtensions
     {
-
         /// <summary>
         /// Add Request Trace endpoint middleware to OWIN Pipeline
         /// </summary>

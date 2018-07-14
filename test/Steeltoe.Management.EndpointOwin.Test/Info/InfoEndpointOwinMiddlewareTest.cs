@@ -16,6 +16,7 @@ using Microsoft.Owin.Testing;
 using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
 using System.Net;
@@ -23,7 +24,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Info.Test
 {
-    public class InfoEndpointOwinMiddlewareTest : OwinBaseTest
+    public class InfoEndpointOwinMiddlewareTest : BaseTest
     {
         [Fact]
         public async void InfoInvoke_ReturnsExpected()

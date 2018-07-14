@@ -46,28 +46,5 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterType<ThreadDumpEndpoint>().As<IEndpoint<List<ThreadInfo>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<List<ThreadInfo>>>().SingleInstance();
         }
-
-        /// <summary>
-        /// Register the ThreadDump endpoint, HttpModule and options
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        //public static void RegisterThreadDumpModule(this ContainerBuilder container, IConfiguration config)
-        //{
-        //    if (container == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(container));
-        //    }
-
-        //    if (config == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(config));
-        //    }
-
-        //    container.RegisterType<ThreadDumper>().As<IThreadDumper>().SingleInstance();
-        //    container.RegisterInstance(new ThreadDumpOptions(config)).As<IThreadDumpOptions>();
-        //    container.RegisterType<ThreadDumpEndpoint>();
-        //    container.RegisterType<ThreadDumpModule>().As<IHttpModule>();
-        //}
     }
 }

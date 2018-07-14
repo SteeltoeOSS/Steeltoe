@@ -47,29 +47,5 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<EnvironmentDescriptor>>().SingleInstance();
         }
-
-        /// <summary>
-        /// Register the ENV endpoint, Http Module and options
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
-        //public static void RegisterEnvModule(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
-        //{
-        //    if (container == null)
-        //    {
-        //        throw new System.ArgumentNullException(nameof(container));
-        //    }
-
-        //    if (config == null)
-        //    {
-        //        throw new System.ArgumentNullException(nameof(config));
-        //    }
-
-        //    container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
-        //    container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment()).As<IHostingEnvironment>();
-        //    container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>();
-        //    container.RegisterType<EnvModule>().As<IHttpModule>();
-        //}
     }
 }

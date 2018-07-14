@@ -15,13 +15,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Builder;
 using Owin;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
 {
-    public class HeapDumpEndpointAppBuilderExtensionsTest : OwinBaseTest
+    public class HeapDumpEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void UseHeapDumpEndpointMiddleware_ThrowsIfBuilderNull()

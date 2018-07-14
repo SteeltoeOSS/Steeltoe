@@ -15,13 +15,14 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.HeapDump;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.HeapDump;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
 {
-    public class HeapDumpContainerBuilderExtensionsTest
+    public class HeapDumpContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void RegisterHeapDumpMiddleware_ThrowsOnNulls()

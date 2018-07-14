@@ -10,6 +10,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointAutofac\Steeltoe.Management.EndpointAutofac.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj" />
   </ItemGroup>
 
   <ItemGroup>

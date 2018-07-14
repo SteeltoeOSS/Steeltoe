@@ -23,8 +23,6 @@ namespace Steeltoe.Management.Endpoint
     {
         protected IEndpointOptions options;
 
-        private IEnumerable<HttpMethod> AllowedMethods { get; }
-
         public AbstractEndpoint(IEndpointOptions options)
         {
             this.options = options ?? throw new ArgumentNullException(nameof(options));

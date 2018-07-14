@@ -16,13 +16,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Builder;
 using Owin;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Metrics.Test
 {
-    public class MetricsEndpointAppBuilderExtensionsTest : OwinBaseTest
+    public class MetricsEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void UseMetricsEndpointMiddleware_ThrowsIfBuilderNull()

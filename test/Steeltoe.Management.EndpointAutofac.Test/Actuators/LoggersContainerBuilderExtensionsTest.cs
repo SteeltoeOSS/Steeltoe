@@ -15,13 +15,14 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Loggers;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
 {
-    public class LoggersContainerBuilderExtensionsTest
+    public class LoggersContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void RegisterLoggersMiddleware_ThrowsOnNulls()

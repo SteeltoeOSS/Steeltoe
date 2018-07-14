@@ -17,13 +17,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
 {
-    public class EnvContainerBuilderExtensionsTest
+    public class EnvContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void RegisterEnvMiddleware_ThrowsOnNulls()

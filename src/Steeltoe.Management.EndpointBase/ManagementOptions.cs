@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint
 {

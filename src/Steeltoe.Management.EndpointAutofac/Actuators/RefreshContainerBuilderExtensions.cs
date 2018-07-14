@@ -45,27 +45,5 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterType<RefreshEndpoint>().As<IEndpoint<IList<string>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<IList<string>>>().SingleInstance();
         }
-
-        /// <summary>
-        /// Register the Refresh endpoint, HttpModule and options
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        //public static void RegisterRefreshModule(this ContainerBuilder container, IConfiguration config)
-        //{
-        //    if (container == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(container));
-        //    }
-
-        //    if (config == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(config));
-        //    }
-
-        //    container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
-        //    container.RegisterType<RefreshEndpoint>();
-        //    container.RegisterType<RefreshModule>().As<IHttpModule>();
-        //}
     }
 }

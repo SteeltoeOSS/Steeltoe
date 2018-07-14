@@ -13,11 +13,12 @@
 // limitations under the License.
 
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointBase.Test.CloudFoundry
 {
-    public class SecurityBaseTest
+    public class SecurityBaseTest : BaseTest
     {
         [Fact]
         public void IsCloudFoundryRequest_ReturnsExpected()

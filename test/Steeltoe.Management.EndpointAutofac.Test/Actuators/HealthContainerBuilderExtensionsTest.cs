@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Health;
 using System;
 using System.Web;
@@ -24,7 +25,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
 {
-    public class HealthContainerBuilderExtensionsTest
+    public class HealthContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void RegisterHealthMiddleware_ThrowsOnNulls()

@@ -15,13 +15,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Builder;
 using Owin;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {
-    public class CloudFoundryEndpointAppBuilderExtensionsTest : OwinBaseTest
+    public class CloudFoundryEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void UseCloudFoundryEndpointMiddleware_ThrowsIfBuilderNull()

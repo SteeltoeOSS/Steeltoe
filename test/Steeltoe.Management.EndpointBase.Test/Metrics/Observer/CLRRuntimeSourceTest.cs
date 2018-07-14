@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Tags;
+using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
-    public class CLRRuntimeSourceTest
+    public class CLRRuntimeSourceTest : BaseTest
     {
         private const string DIAGNOSTIC_NAME = "Steeltoe.ClrMetrics";
 

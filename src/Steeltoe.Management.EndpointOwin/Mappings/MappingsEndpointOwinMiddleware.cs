@@ -71,13 +71,6 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
                 desc = GetMappingDescriptions(_apiExplorer.ApiDescriptions);
             }
 
-            // RouteTable contains routes for everything
-            //var routeCollection = RouteTable.Routes;
-            //if (routeCollection != null)
-            //{
-            //    AddRouteMappingsDescriptions(routeCollection, desc);
-            //}
-
             var contextMappings = new ContextMappings(desc);
             return new ApplicationMappings(contextMappings);
         }
@@ -144,88 +137,6 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
             return routeDetails;
         }
 
-        //protected internal void AddRouteMappingsDescriptions(RouteCollection routes, IDictionary<string, IList<MappingDescription>> desc)
-        //{
-        //    if (routes == null)
-        //    {
-        //        return;
-        //    }
-
-        //    // The RouteCollection will contain routes for everything (WebAPI, MVC, etc).
-        //    // Since we already processed WebAPI routes, we try to ignore those as we process each route
-        //    foreach (var router in routes)
-        //    {
-        //        var route = router as Route;
-        //        if (route != null)
-        //        {
-        //            var details = GetRouteDetails(route);
-
-        //            // If we are able to get an ActionDescriptor from this route
-        //            // then it is a MVC route that is based on attributes and we can extract the controller
-        //            // and controller method the route is tied to
-        //            var actionDesc = TryGetActionDescriptor(route);
-        //            if (actionDesc != null)
-        //            {
-        //                var refActionDesc = GetReflectedActionDescription(actionDesc);
-        //                if (refActionDesc != null)
-        //                {
-        //                    var attrs = refActionDesc.GetCustomAttributes(false);
-        //                    details.HttpMethods = GetHttpMethods(attrs);
-
-        //                    desc.TryGetValue(refActionDesc.ControllerDescriptor.ControllerType.FullName, out IList<MappingDescription> mapList);
-
-        //                    if (mapList == null)
-        //                    {
-        //                        mapList = new List<MappingDescription>();
-        //                        desc.Add(refActionDesc.ControllerDescriptor.ControllerType.FullName, mapList);
-        //                    }
-
-        //                    var mapDesc = new MappingDescription(refActionDesc.MethodInfo, details);
-        //                    mapList.Add(mapDesc);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                var handler = route.RouteHandler;
-        //                if (handler != null)
-        //                {
-        //                    // Ignore WebApi handler routes as the ApiExplorer already provided those mappings
-        //                    if (!(handler is HttpControllerRouteHandler))
-        //                    {
-        //                        var handlerType = handler.GetType().ToString();
-        //                        desc.TryGetValue(handlerType, out IList<MappingDescription> mapList);
-
-        //                        if (mapList == null)
-        //                        {
-        //                            mapList = new List<MappingDescription>();
-        //                            desc.Add(handlerType, mapList);
-        //                        }
-
-        //                        var mapDesc = new MappingDescription("IHttpHandler.ProcessRequest(HttpContext context)", details);
-        //                        mapList.Add(mapDesc);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //protected internal AspNetRouteDetails GetRouteDetails(Route route)
-        //{
-        //    var routeDetails = new AspNetRouteDetails();
-
-        //    if (route.Url.StartsWith("/"))
-        //    {
-        //        routeDetails.RouteTemplate = route.Url;
-        //    }
-        //    else
-        //    {
-        //        routeDetails.RouteTemplate = "/" + route.Url;
-        //    }
-
-        //    return routeDetails;
-        //}
-
         private IList<string> GetHttpMethods(ApiDescription desc)
         {
             if (!string.IsNullOrEmpty(desc.HttpMethod.Method))
@@ -256,31 +167,6 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
 
             return null;
         }
-
-        //private ActionDescriptor[] TryGetActionDescriptor(Route route)
-        //{
-        //    if (route.DataTokens == null)
-        //    {
-        //        return null;
-        //    }
-
-        //    if (route.DataTokens.TryGetValue("MS_DirectRouteActions", out object actionDescriptor))
-        //    {
-        //        return actionDescriptor as ActionDescriptor[];
-        //    }
-
-        //    return null;
-        //}
-
-        //private ReflectedActionDescriptor GetReflectedActionDescription(ActionDescriptor[] actionDesc)
-        //{
-        //    if (actionDesc.Length > 0)
-        //    {
-        //        return actionDesc[0] as ReflectedActionDescriptor;
-        //    }
-
-        //    return null;
-        //}
 
         private string GetHttpMethodForType(Type type)
         {

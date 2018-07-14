@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Testing;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Refresh.Test
 {
-    public class RefreshEndpointOwinMiddlewareTest : OwinBaseTest
+    public class RefreshEndpointOwinMiddlewareTest : BaseTest
     {
         [Fact]
         public async void RefreshInvoke_ReturnsExpected()

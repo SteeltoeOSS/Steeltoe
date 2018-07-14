@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Steeltoe.Common.Diagnostics;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Test
@@ -25,9 +26,10 @@ namespace Steeltoe.Management.Endpoint.Test
             ManagementOptions._instance = null;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             ManagementOptions._instance = null;
+            DiagnosticsManager.Instance.Dispose();
         }
 
         public ILogger<T> GetLogger<T>()

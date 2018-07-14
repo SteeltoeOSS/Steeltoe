@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Builder;
 using Owin;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
@@ -22,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Trace.Test
 {
-    public class TraceEndpointAppBuilderExtensionsTest : OwinBaseTest
+    public class TraceEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void UseTraceActuator_ThrowsIfBuilderNull()

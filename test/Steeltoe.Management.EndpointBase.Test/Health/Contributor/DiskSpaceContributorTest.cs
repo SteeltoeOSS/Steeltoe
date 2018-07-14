@@ -13,11 +13,12 @@
 // limitations under the License.
 
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
 {
-    public class DiskSpaceContributorTest
+    public class DiskSpaceContributorTest : BaseTest
     {
         [Fact]
         public void Constructor_InitializesWithDefaults()

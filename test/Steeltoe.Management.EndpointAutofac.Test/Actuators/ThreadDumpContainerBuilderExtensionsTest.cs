@@ -15,6 +15,7 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.EndpointOwin;
 using System;
@@ -23,7 +24,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
 {
-    public class ThreadDumpContainerBuilderExtensionsTest
+    public class ThreadDumpContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void RegisterThreadDumpMiddleware_ThrowsOnNulls()

@@ -22,6 +22,8 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {
     public class Startup
     {
+        public static IConfiguration Config { get; set; }
+
         public void Configuration(IAppBuilder app)
         {
             var builder = new ConfigurationBuilder();
@@ -40,7 +42,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 
             builder.AddInMemoryCollection(appSettings);
             builder.AddEnvironmentVariables();
-            var config = builder.Build();
+            var config = Config = builder.Build();
 
             app.UseCloudFoundryEndpointMiddleware(config);
             app.UseInfoEndpointMiddleware(config);

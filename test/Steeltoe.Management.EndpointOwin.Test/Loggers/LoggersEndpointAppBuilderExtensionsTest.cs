@@ -17,13 +17,14 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Owin.Builder;
 using Owin;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Loggers.Test
 {
-    public class LoggersEndpointAppBuilderExtensionsTest : OwinBaseTest
+    public class LoggersEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void UseLoggersActuator_ThrowsIfBuilderNull()

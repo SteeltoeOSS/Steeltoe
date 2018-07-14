@@ -72,53 +72,5 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterType<InfoEndpoint>().As<IEndpoint<Dictionary<string, object>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<Dictionary<string, object>>>().SingleInstance();
         }
-
-        /// <summary>
-        /// Register the Info endpoint, HttpModule and options
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        //public static void RegisterInfoModule(this ContainerBuilder container, IConfiguration config)
-        //{
-        //    if (container == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(container));
-        //    }
-
-        //    if (config == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(config));
-        //    }
-
-        //    container.RegisterInfoModule(config, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
-        //}
-
-        /// <summary>
-        /// Register the Info endpoint, HttpModule and options
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="contributors">Contributors to application information</param>
-        //public static void RegisterInfoModule(this ContainerBuilder container, IConfiguration config, params IInfoContributor[] contributors)
-        //{
-        //    if (container == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(container));
-        //    }
-
-        //    if (config == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(config));
-        //    }
-
-        //    foreach (var c in contributors)
-        //    {
-        //        container.RegisterInstance(c).As<IInfoContributor>();
-        //    }
-
-        //    container.RegisterInstance(new InfoOptions(config)).As<IInfoOptions>();
-        //    container.RegisterType<InfoEndpoint>();
-        //    container.RegisterType<InfoModule>().As<IHttpModule>();
-        //}
     }
 }

@@ -15,6 +15,7 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Mappings;
 using System;
 using System.Web.Http;
@@ -23,7 +24,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
 {
-    public class MappingsContainerBuilderExtensionsTest
+    public class MappingsContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
         public void RegisterMappingsMiddleware_ThrowsOnNulls()

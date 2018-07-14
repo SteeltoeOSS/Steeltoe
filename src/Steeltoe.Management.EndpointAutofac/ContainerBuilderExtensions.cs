@@ -44,7 +44,6 @@ namespace Steeltoe.Management.EndpointAutofac
             container.RegisterDiagnosticSourceMiddleware();
             container.RegisterCloudFoundrySecurityActuator(config);
             container.RegisterCloudFoundryActuator(config);
-            //container.RegisterEnvActuator(config); // not used by Cloud Foundry
             container.RegisterHealthActuator(config);
             container.RegisterHeapDumpActuator(config);
             container.RegisterInfoActuator(config);
@@ -55,7 +54,6 @@ namespace Steeltoe.Management.EndpointAutofac
             }
 
             container.RegisterMetricsActuator(config);
-            //container.RegisterRefreshActuator(config); // not used by Cloud Foundry
             container.RegisterThreadDumpActuator(config);
             container.RegisterTraceActuator(config);
         }
@@ -77,28 +75,5 @@ namespace Steeltoe.Management.EndpointAutofac
                 diagManager.Start();
             }
         }
-
-        /// <summary>
-        /// Add all actuator Http Modules, configure CORS and Cloud Foundry request security
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        //public static void RegisterCloudFoundryModules(this ContainerBuilder container, IConfiguration config)
-        //{
-        //    container.RegisterRequestTracingModule(config);
-        //    //container.RegisterCloudFoundrySecurityModule(config);
-        //    container.RegisterCloudFoundryModule(config);
-        //    container.RegisterEnvModule(config); // not used by Cloud Foundry
-        //    container.RegisterHealthModule(config);
-        //    container.RegisterHeapDumpModule(config);
-        //    container.RegisterInfoModule(config);
-        //    container.RegisterLoggersModule(config);
-
-        //    // container.RegisterMappingsModule(config); // not implemented
-        //    container.RegisterMetricsModule(config);
-        //    container.RegisterRefreshModule(config); // not used by Cloud Foundry
-        //    container.RegisterThreadDumpModule(config);
-        //    container.RegisterTraceModule(config);
-        //}
     }
 }

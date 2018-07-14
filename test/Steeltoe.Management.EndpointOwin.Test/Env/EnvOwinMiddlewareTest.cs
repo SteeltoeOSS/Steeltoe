@@ -15,13 +15,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Testing;
 using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Net;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Env.Test
 {
-    public class EnvOwinMiddlewareTest : OwinBaseTest
+    public class EnvOwinMiddlewareTest : BaseTest
     {
         [Fact]
         public async void EnvInvoke_ReturnsExpected()
