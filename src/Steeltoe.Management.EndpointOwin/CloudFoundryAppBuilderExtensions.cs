@@ -15,6 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
+using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.EndpointOwin.CloudFoundry;
 using Steeltoe.Management.EndpointOwin.Health;
 using Steeltoe.Management.EndpointOwin.HeapDump;
@@ -24,6 +26,7 @@ using Steeltoe.Management.EndpointOwin.Mappings;
 using Steeltoe.Management.EndpointOwin.ThreadDump;
 using Steeltoe.Management.EndpointOwin.Trace;
 using System;
+using System.Collections.Generic;
 using System.Web.Http.Description;
 
 namespace Steeltoe.Management.EndpointOwin
@@ -51,6 +54,33 @@ namespace Steeltoe.Management.EndpointOwin
 
             app.UseInfoActuator(configuration, loggerFactory);
             app.UseHealthActuator(configuration, loggerFactory);
+            app.UseLoggersActuator(configuration, loggerProvider, loggerFactory);
+            app.UseTraceActuator(configuration, null, loggerFactory);
+            app.UseMappingActuator(configuration, apiExplorer, loggerFactory);
+        }
+
+        /// <summary>
+        /// Add all Cloud Foundry Actuators (Info, Health, Loggers, Trace)
+        /// </summary>
+        /// <param name="app">AppBuilder needing actuators added</param>
+        /// <param name="configuration">configuration to use for actuators</param>
+        /// <param name="healthContributors">custom health contributors</param>
+        /// <param name="apiExplorer">a IApiExplorer to use for mappings actuator</param>
+        /// <param name="loggerProvider">the Steeltoe logging provider to use for loggers actuator</param>
+        /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
+        public static void UseCloudFoundryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
+        {
+            app.UseCloudFoundrySecurityMiddleware(configuration, loggerFactory);
+            app.UseCloudFoundryActuator(configuration, loggerFactory);
+
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                app.UseThreadDumpActuator(configuration, loggerFactory);
+                app.UseHeapDumpActuator(configuration, null, loggerFactory);
+            }
+
+            app.UseInfoActuator(configuration, loggerFactory);
+            app.UseHealthActuator(new HealthOptions(configuration), new DefaultHealthAggregator(), healthContributors, loggerFactory);
             app.UseLoggersActuator(configuration, loggerProvider, loggerFactory);
             app.UseTraceActuator(configuration, null, loggerFactory);
             app.UseMappingActuator(configuration, apiExplorer, loggerFactory);
