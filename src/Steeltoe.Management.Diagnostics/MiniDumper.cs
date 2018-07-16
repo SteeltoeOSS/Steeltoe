@@ -31,9 +31,11 @@ namespace Steeltoe.Management.Diagnostics
         {
             IntPtr callbackParam = default(IntPtr);
             Result result = default(Result);
+            GCHandle callbackHandle = default(GCHandle);
             try
             {
                 var callbackDelegate = new MiniDumpCallback(MiniDumpCallbackMethod);
+                callbackHandle = GCHandle.Alloc(callbackDelegate);
                 callbackParam = Marshal.AllocHGlobal(IntPtr.Size * 2);
 
                 unsafe
@@ -44,7 +46,6 @@ namespace Steeltoe.Management.Diagnostics
                 }
 
                 var fileHandle = dumpFile.SafeFileHandle.DangerousGetHandle();
-                GC.KeepAlive(callbackDelegate);
 
                 result.ReturnValue = MiniDumpWriteDump(processHandle, pid, fileHandle, GetMiniDumpType(), IntPtr.Zero, IntPtr.Zero, callbackParam);
                 result.ErrorCode = Marshal.GetHRForLastWin32Error();
@@ -60,6 +61,11 @@ namespace Steeltoe.Management.Diagnostics
                 if (callbackParam != default(IntPtr))
                 {
                     Marshal.FreeHGlobal(callbackParam);
+                }
+
+                if (callbackHandle.IsAllocated)
+                {
+                    callbackHandle.Free();
                 }
             }
 

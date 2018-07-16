@@ -50,6 +50,7 @@ namespace Steeltoe.Management.Endpoint.Handler
                 {
                     context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"");
                     context.Response.StatusCode = (int)HttpStatusCode.OK;
+                    context.Response.BufferOutput = false;
                     result.CopyTo(context.Response.OutputStream);
                 }
 
