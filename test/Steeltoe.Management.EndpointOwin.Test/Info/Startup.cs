@@ -42,7 +42,7 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
             builder.AddEnvironmentVariables();
             var config = builder.Build();
 
-            app.UseInfoEndpointMiddleware(config);
+            app.UseInfoActuator(config);
         }
     }
 }

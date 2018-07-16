@@ -27,13 +27,13 @@ namespace Steeltoe.Management.EndpointOwin.Env
     public static class EnvEndpointAppBuilderExtensions
     {
         /// <summary>
-        /// Add Environment middleware to OWIN Pipeline
+        /// Add Environment actuator endpoint to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring env endpoint and inclusion in response</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Env Endpoint added</returns>
-        public static IAppBuilder UseEnvEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseEnvActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -52,7 +52,7 @@ namespace Steeltoe.Management.EndpointOwin.Env
                 ContentRootPath = AppContext.BaseDirectory
             };
             hostingEnvironment.ContentRootFileProvider = new PhysicalFileProvider(hostingEnvironment.ContentRootPath);
-            return builder.UseEnvEndpointMiddleware(config, hostingEnvironment, loggerFactory);
+            return builder.UseEnvActuator(config, hostingEnvironment, loggerFactory);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Steeltoe.Management.EndpointOwin.Env
         /// <param name="hostingEnvironment"><see cref="IHostingEnvironment"/> of the application</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Env Endpoint added</returns>
-        public static IAppBuilder UseEnvEndpointMiddleware(this IAppBuilder builder, IConfiguration config, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseEnvActuator(this IAppBuilder builder, IConfiguration config, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {

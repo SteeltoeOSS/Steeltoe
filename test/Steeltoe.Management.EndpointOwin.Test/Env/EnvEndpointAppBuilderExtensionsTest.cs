@@ -24,20 +24,20 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
     public class EnvEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseEnvEndpointOwinMiddleware_ThrowsIfBuilderNull()
+        public void UseEnvActuator_ThrowsIfBuilderNull()
         {
             IAppBuilder builder = null;
             IConfiguration config = new ConfigurationBuilder().Build();
 
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseEnvEndpointMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseEnvActuator(config));
             Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
-        public void UseEnvEndpointOwinMiddleware_ThrowsIfConfigNull()
+        public void UseEnvActuator_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseEnvEndpointMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseEnvActuator(null));
             Assert.Equal("config", exception.ParamName);
         }
     }

@@ -35,7 +35,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
             var config = builder.Build();
 
             app.UseDiagnosticSourceMiddleware();
-            app.UseMetricsEndpointMiddleware(config);
+            app.UseMetricsActuator(config);
 
             DiagnosticsManager.Instance.Start();
         }

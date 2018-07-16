@@ -26,14 +26,14 @@ namespace Steeltoe.Management.EndpointOwin.Trace
     public static class TraceEndpointAppBuilderExtensions
     {
         /// <summary>
-        /// Add Request Trace endpoint middleware to OWIN Pipeline
+        /// Add Request Trace actuator endpoint to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
         /// <param name="traceRepository">repository to put traces in</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Trace Endpoint added</returns>
-        public static IAppBuilder UseTraceEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {

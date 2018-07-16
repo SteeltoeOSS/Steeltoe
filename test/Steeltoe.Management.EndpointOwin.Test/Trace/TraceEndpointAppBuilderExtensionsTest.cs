@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
             var config = new ConfigurationBuilder().Build();
             var traceRepo = new TraceDiagnosticObserver(new TraceOptions(config));
 
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseTraceEndpointMiddleware(config, traceRepo));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseTraceActuator(config, traceRepo));
             Assert.Equal("builder", exception.ParamName);
         }
 
@@ -42,7 +42,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
             IAppBuilder builder = new AppBuilder();
             var traceRepo = new TraceDiagnosticObserver(new TraceOptions());
 
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseTraceEndpointMiddleware(null, traceRepo));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseTraceActuator(null, traceRepo));
             Assert.Equal("config", exception.ParamName);
         }
     }

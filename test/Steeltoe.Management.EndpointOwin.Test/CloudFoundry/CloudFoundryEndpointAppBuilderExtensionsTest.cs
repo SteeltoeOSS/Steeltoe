@@ -25,19 +25,19 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
     public class CloudFoundryEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseCloudFoundryEndpointMiddleware_ThrowsIfBuilderNull()
+        public void UseCloudFoundryActuator_ThrowsIfBuilderNull()
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundryEndpointMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundryActuator(config));
             Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
-        public void UseCloudFoundryEndpointMiddleware_ThrowsIfConfigNull()
+        public void UseCloudFoundryActuator_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundryEndpointMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundryActuator(null));
             Assert.Equal("config", exception.ParamName);
         }
     }

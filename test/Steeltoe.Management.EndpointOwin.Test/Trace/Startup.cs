@@ -35,7 +35,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
             var config = builder.Build();
 
             app.UseDiagnosticSourceMiddleware();
-            app.UseTraceEndpointMiddleware(config);
+            app.UseTraceActuator(config);
 
             DiagnosticsManager.Instance.Start();
         }

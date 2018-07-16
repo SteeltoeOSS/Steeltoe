@@ -25,13 +25,13 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
     public static class ThreadDumpEndpointAppBuilderExtensions
     {
         /// <summary>
-        /// Add Thread Dump middleware to OWIN Pipeline
+        /// Add Thread Dump actuator endpoint to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Thread Dump Endpoint added</returns>
-        public static IAppBuilder UseThreadDumpEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseThreadDumpActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -45,18 +45,18 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
 
             var options = new ThreadDumpOptions(config);
             var threadDumper = new ThreadDumper(options, loggerFactory?.CreateLogger<ThreadDumper>());
-            return builder.UseThreadDumpEndpointMiddleware(options, threadDumper, loggerFactory);
+            return builder.UseThreadDumpActuator(options, threadDumper, loggerFactory);
         }
 
         /// <summary>
-        /// Add HealthCheck middleware to OWIN Pipeline
+        /// Add HealthCheck actuator endpoint to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="options">Options for configuring the thread dump endpoint</param>
         /// <param name="threadDumper">Class responsible for dumping threads</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
-        public static IAppBuilder UseThreadDumpEndpointMiddleware(this IAppBuilder builder, IThreadDumpOptions options, IThreadDumper threadDumper, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseThreadDumpActuator(this IAppBuilder builder, IThreadDumpOptions options, IThreadDumper threadDumper, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {

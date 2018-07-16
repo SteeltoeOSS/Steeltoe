@@ -26,13 +26,13 @@ namespace Steeltoe.Management.EndpointOwin.Health
     public static class HealthEndpointAppBuilderExtensions
     {
         /// <summary>
-        /// Add HealthCheck middleware to OWIN Pipeline
+        /// Add HealthCheck actuator endpoint to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring health endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
-        public static IAppBuilder UseHealthEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseHealthActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
                 throw new ArgumentNullException(nameof(config));
             }
 
-            return builder.UseHealthEndpointMiddleware(new HealthOptions(config), new DefaultHealthAggregator(), loggerFactory);
+            return builder.UseHealthActuator(new HealthOptions(config), new DefaultHealthAggregator(), loggerFactory);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
         /// <param name="options"><see cref="IHealthOptions"/> for configuring Health endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
-        public static IAppBuilder UseHealthEndpointMiddleware(this IAppBuilder builder, IHealthOptions options, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseHealthActuator(this IAppBuilder builder, IHealthOptions options, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -66,7 +66,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return builder.UseHealthEndpointMiddleware(options, new DefaultHealthAggregator(), loggerFactory);
+            return builder.UseHealthActuator(options, new DefaultHealthAggregator(), loggerFactory);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
         /// <param name="aggregator"><see cref="IHealthAggregator"/> for determining how to report aggregate health of the application</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
-        public static IAppBuilder UseHealthEndpointMiddleware(this IAppBuilder builder, IHealthOptions options, IHealthAggregator aggregator, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseHealthActuator(this IAppBuilder builder, IHealthOptions options, IHealthAggregator aggregator, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -94,7 +94,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
                 throw new ArgumentNullException(nameof(aggregator));
             }
 
-            return builder.UseHealthEndpointMiddleware(options, aggregator, GetDefaultHealthContributors(), loggerFactory);
+            return builder.UseHealthActuator(options, aggregator, GetDefaultHealthContributors(), loggerFactory);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
         /// <param name="contributors">A list of <see cref="IHealthContributor"/> to monitor for determining application health</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
-        public static IAppBuilder UseHealthEndpointMiddleware(this IAppBuilder builder, IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseHealthActuator(this IAppBuilder builder, IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {

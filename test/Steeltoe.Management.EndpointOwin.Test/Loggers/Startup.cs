@@ -43,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
             LoggerFactory = new LoggerFactory();
             LoggerFactory.AddProvider(LoggerProvider);
 
-            app.UseLoggersEndpointMiddleware(config, LoggerProvider, LoggerFactory);
+            app.UseLoggersActuator(config, LoggerProvider, LoggerFactory);
         }
     }
 }

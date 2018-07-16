@@ -25,19 +25,19 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
     public class RefreshEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseRefreshEndpointMiddleware_ThrowsIfBuilderNull()
+        public void UseRefreshActuator_ThrowsIfBuilderNull()
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseRefreshEndpointMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseRefreshActuator(config));
             Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
-        public void UseRefreshEndpointMiddleware_ThrowsIfConfigNull()
+        public void UseRefreshActuator_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseRefreshEndpointMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseRefreshActuator(null));
             Assert.Equal("config", exception.ParamName);
         }
     }

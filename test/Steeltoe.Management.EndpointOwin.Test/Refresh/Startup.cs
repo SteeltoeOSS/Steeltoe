@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
             builder.AddInMemoryCollection(appSettings);
             var config = builder.Build();
 
-            app.UseRefreshEndpointMiddleware(config);
+            app.UseRefreshActuator(config);
         }
     }
 }

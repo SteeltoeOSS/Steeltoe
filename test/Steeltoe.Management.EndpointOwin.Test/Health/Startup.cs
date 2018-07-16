@@ -30,10 +30,10 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             builder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var config = builder.Build();
 
-            app.UseHealthEndpointMiddleware(config);
-            app.UseHealthEndpointMiddleware(new HealthOptions { Id = "down" }, new DefaultHealthAggregator(), new List<IHealthContributor> { new DownContributor() });
-            app.UseHealthEndpointMiddleware(new HealthOptions { Id = "out" }, new DefaultHealthAggregator(), new List<IHealthContributor> { new OutOfSserviceContributor() });
-            app.UseHealthEndpointMiddleware(new HealthOptions { Id = "unknown" }, new DefaultHealthAggregator(), new List<IHealthContributor> { new UnknownContributor() });
+            app.UseHealthActuator(config);
+            app.UseHealthActuator(new HealthOptions { Id = "down" }, new DefaultHealthAggregator(), new List<IHealthContributor> { new DownContributor() });
+            app.UseHealthActuator(new HealthOptions { Id = "out" }, new DefaultHealthAggregator(), new List<IHealthContributor> { new OutOfSserviceContributor() });
+            app.UseHealthActuator(new HealthOptions { Id = "unknown" }, new DefaultHealthAggregator(), new List<IHealthContributor> { new UnknownContributor() });
         }
     }
 }

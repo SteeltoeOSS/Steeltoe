@@ -26,38 +26,38 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
     public class ThreadDumpEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseThreadDumpEndpointMiddleware_ThrowsIfBuilderNull()
+        public void UseThreadDumpActuator_ThrowsIfBuilderNull()
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpEndpointMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpActuator(config));
             Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
-        public void UseThreadDumpEndpointMiddleware_ThrowsIfConfigNull()
+        public void UseThreadDumpActuator_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpEndpointMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpActuator(null));
             Assert.Equal("config", exception.ParamName);
         }
 
         [Fact]
-        public void UseThreadDumpEndpointMiddleware_ThrowsIfOptionsNull()
+        public void UseThreadDumpActuator_ThrowsIfOptionsNull()
         {
             IAppBuilder builder = new AppBuilder();
             var threadDumper = new ThreadDumper(new ThreadDumpOptions());
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpEndpointMiddleware(null, threadDumper));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpActuator(null, threadDumper));
             Assert.Equal("options", exception.ParamName);
         }
 
         [Fact]
-        public void UseThreadDumpEndpointMiddleware_ThrowsIfDumperNull()
+        public void UseThreadDumpActuator_ThrowsIfDumperNull()
         {
             IAppBuilder builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
             var options = new ThreadDumpOptions(config);
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpEndpointMiddleware(options, null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpActuator(options, null));
             Assert.Equal("threadDumper", exception.ParamName);
         }
     }

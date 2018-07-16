@@ -23,14 +23,14 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
     public static class HeapDumpEndpointAppBuilderExtensions
     {
         /// <summary>
-        /// Adds OWIN Middleware for providing Heap Dumps to OWIN pipeline
+        /// Adds actuator endpoint providing Heap Dumps to OWIN pipeline
         /// </summary>
         /// <param name="builder">Your <see cref="IAppBuilder"/></param>
         /// <param name="config"><see cref="IConfiguration"/> for configuring the endpoint</param>
         /// <param name="applicationPathOnDisk">Provide the path to the app directory if heap dumps are failing due to access restrictions</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging inside the middleware and its components</param>
         /// <returns>Your <see cref="IAppBuilder"/> with Heap Dump middleware attached</returns>
-        public static IAppBuilder UseHeapDumpEndpointMiddleware(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
 
             var options = new HeapDumpOptions(config);
             var heapDumper = new HeapDumper(options, applicationPathOnDisk, loggerFactory?.CreateLogger<HeapDumper>());
-            return builder.UseHeapDumpEndpointMiddleware(options, heapDumper, loggerFactory);
+            return builder.UseHeapDumpActuator(options, heapDumper, loggerFactory);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         /// <param name="heapDumper"><see cref="HeapDumper"/> or other implementer of <see cref="IHeapDumper"/> for retrieving a heap dump</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging inside the middleware and its components</param>
         /// <returns>Your <see cref="IAppBuilder"/> with Heap Dump middleware attached</returns>
-        public static IAppBuilder UseHeapDumpEndpointMiddleware(this IAppBuilder builder, IHeapDumpOptions options, IHeapDumper heapDumper, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IHeapDumpOptions options, IHeapDumper heapDumper, ILoggerFactory loggerFactory = null)
         {
             if (options == null)
             {

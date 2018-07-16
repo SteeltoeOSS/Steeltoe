@@ -25,13 +25,13 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
     public static class RefreshEndpointAppBuilderExtensions
     {
         /// <summary>
-        /// Add (Config) Refresh middleware to OWIN Pipeline
+        /// Add (Config) Refresh actuator endpoint to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring refresh endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Refresh Endpoint added</returns>
-        public static IAppBuilder UseRefreshEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseRefreshActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {

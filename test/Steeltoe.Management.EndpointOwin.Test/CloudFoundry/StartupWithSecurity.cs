@@ -44,8 +44,8 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             var config = builder.Build();
 
             app.UseCloudFoundrySecurityMiddleware(config);
-            app.UseCloudFoundryEndpointMiddleware(config);
-            app.UseInfoEndpointMiddleware(config);
+            app.UseCloudFoundryActuator(config);
+            app.UseInfoActuator(config);
         }
     }
 }

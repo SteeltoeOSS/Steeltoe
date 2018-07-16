@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
             builder.AddInMemoryCollection(appSettings);
             var config = builder.Build();
 
-            app.UseThreadDumpEndpointMiddleware(config);
+            app.UseThreadDumpActuator(config);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within the middleware</param>
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry actuator attached</returns>
-        public static IAppBuilder UseCloudFoundryEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseCloudFoundryActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {

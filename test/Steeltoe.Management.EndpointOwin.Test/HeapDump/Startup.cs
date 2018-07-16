@@ -33,7 +33,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
             builder.AddEnvironmentVariables();
             var config = builder.Build();
 
-            app.UseHeapDumpEndpointMiddleware(config);
+            app.UseHeapDumpActuator(config);
         }
     }
 }

@@ -26,37 +26,37 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
     public class MetricsEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseMetricsEndpointMiddleware_ThrowsIfBuilderNull()
+        public void UseMetricsActuator_ThrowsIfBuilderNull()
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsActuator(config));
             Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
-        public void UseMetricsEndpointMiddleware_ThrowsIfConfigNull()
+        public void UseMetricsActuator_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsActuator(null));
             Assert.Equal("config", exception.ParamName);
         }
 
         [Fact]
-        public void UseMetricsEndpointMiddleware_ThrowsIfStatsNull()
+        public void UseMetricsActuator_ThrowsIfStatsNull()
         {
             IAppBuilder builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(config, stats: null, tags: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsActuator(config, stats: null, tags: null));
             Assert.Equal("stats", exception.ParamName);
         }
 
         [Fact]
-        public void UseMetricsEndpointMiddleware_ThrowsIfTagsNull()
+        public void UseMetricsActuator_ThrowsIfTagsNull()
         {
             IAppBuilder builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(config, stats: OpenCensusStats.Instance, tags: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsActuator(config, stats: OpenCensusStats.Instance, tags: null));
             Assert.Equal("tags", exception.ParamName);
         }
     }

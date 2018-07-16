@@ -26,7 +26,7 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
             builder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var config = builder.Build();
 
-            app.UseEnvEndpointMiddleware(config);
+            app.UseEnvActuator(config);
         }
     }
 }

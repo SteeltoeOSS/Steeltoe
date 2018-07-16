@@ -25,19 +25,19 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
     public class HeapDumpEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseHeapDumpEndpointMiddleware_ThrowsIfBuilderNull()
+        public void UseHeapDumpActuator_ThrowsIfBuilderNull()
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHeapDumpEndpointMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHeapDumpActuator(config));
             Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
-        public void UseHeapDumpEndpointMiddleware_ThrowsIfConfigNull()
+        public void UseHeapDumpActuator_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHeapDumpEndpointMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHeapDumpActuator(null));
             Assert.Equal("config", exception.ParamName);
         }
     }

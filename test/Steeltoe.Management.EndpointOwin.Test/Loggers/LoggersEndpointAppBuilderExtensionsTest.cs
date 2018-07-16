@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
             var provider = new DynamicLoggerProvider(new ConsoleLoggerSettings());
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersEndpointMiddleware(config, provider));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersActuator(config, provider));
             Assert.Equal("builder", exception.ParamName);
         }
 
@@ -41,7 +41,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
         {
             IAppBuilder builder = new AppBuilder();
             var provider = new DynamicLoggerProvider(new ConsoleLoggerSettings());
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersEndpointMiddleware(null, provider));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersActuator(null, provider));
             Assert.Equal("config", exception.ParamName);
         }
 
@@ -50,7 +50,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
         {
             IAppBuilder builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersEndpointMiddleware(config, null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersActuator(config, null));
             Assert.Equal("loggerProvider", exception.ParamName);
         }
     }

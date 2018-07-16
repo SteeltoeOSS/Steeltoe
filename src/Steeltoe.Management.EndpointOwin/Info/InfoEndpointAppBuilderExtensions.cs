@@ -26,13 +26,13 @@ namespace Steeltoe.Management.EndpointOwin.Info
     public static class InfoEndpointAppBuilderExtensions
     {
         /// <summary>
-        /// Add Info middleware to OWIN Pipeline
+        /// Add Info actuator endpoint to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring info endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Info Endpoint added</returns>
-        public static IAppBuilder UseInfoEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -44,18 +44,18 @@ namespace Steeltoe.Management.EndpointOwin.Info
                 throw new ArgumentNullException(nameof(config));
             }
 
-            return builder.UseInfoEndpointMiddleware(config, GetDefaultInfoContributors(config, loggerFactory), loggerFactory);
+            return builder.UseInfoActuator(config, GetDefaultInfoContributors(config, loggerFactory), loggerFactory);
         }
 
         /// <summary>
-        /// Add Info middleware to OWIN Pipeline
+        /// Add Info actuator endpoint to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring info endpoint</param>
         /// <param name="contributors">IInfo Contributors to collect into from</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Info Endpoint added</returns>
-        public static IAppBuilder UseInfoEndpointMiddleware(this IAppBuilder builder, IConfiguration config, IList<IInfoContributor> contributors, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config, IList<IInfoContributor> contributors, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
