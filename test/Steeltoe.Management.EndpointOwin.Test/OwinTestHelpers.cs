@@ -59,10 +59,11 @@ namespace Steeltoe.Management.EndpointOwin.Test
             return reader.ReadToEnd();
         }
 
-        public static IOwinContext CreateRequest(string method, string path)
+        public static IOwinContext CreateRequest(string method, string path, Stream bodyStream = null)
         {
             var context = new Mock<OwinContext>();
-            context.Setup(r => r.Response).Returns(new OwinResponse { Body = new MemoryStream() });
+            bodyStream = bodyStream ?? new MemoryStream();
+            context.Setup(r => r.Response).Returns(new OwinResponse { Body = bodyStream });
             context.Setup(r => r.Request).Returns(new OwinRequest
                 {
                     Method = method,
