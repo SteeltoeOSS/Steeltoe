@@ -18,6 +18,7 @@ using Owin;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.EndpointOwin.CloudFoundry;
+using Steeltoe.Management.EndpointOwin.Diagnostics;
 using Steeltoe.Management.EndpointOwin.Health;
 using Steeltoe.Management.EndpointOwin.HeapDump;
 using Steeltoe.Management.EndpointOwin.Info;
@@ -43,6 +44,7 @@ namespace Steeltoe.Management.EndpointOwin
         /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
         public static void UseCloudFoundryActuators(this IAppBuilder app, IConfiguration configuration, IApiExplorer apiExplorer,  ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
+            app.UseDiagnosticSourceMiddleware(loggerFactory);
             app.UseCloudFoundrySecurityMiddleware(configuration, loggerFactory);
             app.UseCloudFoundryActuator(configuration, loggerFactory);
 
@@ -70,6 +72,7 @@ namespace Steeltoe.Management.EndpointOwin
         /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
         public static void UseCloudFoundryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
+            app.UseDiagnosticSourceMiddleware(loggerFactory);
             app.UseCloudFoundrySecurityMiddleware(configuration, loggerFactory);
             app.UseCloudFoundryActuator(configuration, loggerFactory);
 

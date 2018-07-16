@@ -39,9 +39,9 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new CloudFoundryOptions(config)).As<ICloudFoundryOptions>();
-            container.RegisterType<CloudFoundryEndpoint>();
-            container.RegisterType<CloudFoundryEndpointOwinMiddleware>();
+            container.RegisterInstance(new CloudFoundryOptions(config)).As<ICloudFoundryOptions>().SingleInstance();
+            container.RegisterType<CloudFoundryEndpoint>().SingleInstance();
+            container.RegisterType<CloudFoundryEndpointOwinMiddleware>().SingleInstance();
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterCloudFoundrySecurityActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterCloudFoundrySecurityMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -61,7 +61,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterType<CloudFoundrySecurityOwinMiddleware>();
+            container.RegisterType<CloudFoundrySecurityOwinMiddleware>().SingleInstance();
         }
     }
 }

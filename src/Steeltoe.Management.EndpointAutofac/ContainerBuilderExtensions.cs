@@ -42,7 +42,7 @@ namespace Steeltoe.Management.EndpointAutofac
             }
 
             container.RegisterDiagnosticSourceMiddleware();
-            container.RegisterCloudFoundrySecurityActuator(config);
+            container.RegisterCloudFoundrySecurityMiddleware(config);
             container.RegisterCloudFoundryActuator(config);
             container.RegisterHealthActuator(config);
             container.RegisterHeapDumpActuator(config);
