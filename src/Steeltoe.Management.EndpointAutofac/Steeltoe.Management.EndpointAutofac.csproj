@@ -46,12 +46,4 @@
     </AdditionalFiles>
   </ItemGroup>
   
-  <ItemGroup>
-    <ProjectReference Include="..\Steeltoe.Management.EndpointWeb\Steeltoe.Management.EndpointWeb.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="System.Web" />
-  </ItemGroup>
-
 </Project>
