@@ -15,7 +15,7 @@
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebApi" Version="$(AspNetVersion)" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Owin" Version="$(AspNetVersion)" />
     <PackageReference Include="Microsoft.Owin" Version="$(OwinVersion)" />
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
