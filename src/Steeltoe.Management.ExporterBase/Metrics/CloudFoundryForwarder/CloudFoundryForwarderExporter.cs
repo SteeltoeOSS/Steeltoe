@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Steeltoe.Common.Http;
-using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Tags;
 using System;
@@ -34,12 +33,14 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         private const int PAYLOAD_TOO_LARGE = 413;
         private const int TOO_MANY_REQUESTS = 429;
 
+        private readonly ILogger<CloudFoundryForwarderExporter> logger;
+        private readonly ICloudFoundryMetricWriter metricFormatWriter;
+
         private CloudFoundryForwarderOptions options;
         private IStats stats;
         private IViewManager viewManager;
         private Thread workerThread;
         private bool shutdown = false;
-        private ILogger<CloudFoundryForwarderExporter> logger;
 
         public CloudFoundryForwarderExporter(CloudFoundryForwarderOptions options, IStats stats, ILogger<CloudFoundryForwarderExporter> logger = null)
         {
@@ -47,6 +48,14 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             this.stats = stats;
             this.viewManager = stats.ViewManager;
             this.logger = logger;
+            if (options.MicrometerMetricWriter)
+            {
+                this.metricFormatWriter = new MicrometerMetricWriter(options, stats, logger);
+            }
+            else
+            {
+                this.metricFormatWriter = new SpringBootMetricWriter(options, stats, logger);
+            }
         }
 
         public void Start()
@@ -174,178 +183,8 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             List<Metric> result = new List<Metric>();
             foreach (var entry in viewData.AggregationMap)
             {
-                IList<Metric> metrics = CreateMetrics(entry.Key, entry.Value, viewData, timeStamp);
+                IList<Metric> metrics = metricFormatWriter.CreateMetrics(viewData, entry.Value, entry.Key, timeStamp);
                 result.AddRange(metrics);
-            }
-
-            return result;
-        }
-
-        protected internal List<Metric> CreateMetrics(TagValues tagValues, IAggregationData agg, IViewData viewData, long timeStamp)
-        {
-            List<Metric> results = new List<Metric>();
-
-            var unit = viewData.View.Measure.Unit;
-            var name = viewData.View.Name.AsString;
-            var tags = GetTagKeysAndValues(viewData.View.Columns, tagValues.Values);
-            var statistic = GetStatistic(viewData.View.Aggregation, viewData.View.Measure);
-
-            agg.Match<object>(
-                (arg) =>
-                {
-                    if (statistic == "unknown")
-                    {
-                        statistic = "total";
-                    }
-                    tags["statistic"] = statistic;
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Sum));
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == "unknown")
-                    {
-                        statistic = "total";
-                    }
-                    tags["statistic"] = statistic;
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Sum));
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == "unknown")
-                    {
-                        statistic = "count";
-                    }
-                    tags["statistic"] = statistic;
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Count));
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == "unknown")
-                    {
-                        statistic = "total";
-                    }
-
-                    IDictionary<string, string> copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "count";
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, "count", copy, arg.Count));
-
-                    copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "mean";
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, copy, arg.Mean));
-
-                    tags["statistic"] = statistic;
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Count * arg.Mean));
-
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == "unknown")
-                    {
-                        statistic = "total";
-                    }
-                    IDictionary<string, string> copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "count";
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, "count", copy, arg.Count));
-
-                    copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "mean";
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, copy, arg.Mean));
-
-                    copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "max";
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, copy, arg.Max));
-
-                    tags["statistic"] = statistic;
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Count * arg.Mean));
-
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == "unknown")
-                    {
-                        statistic = "value";
-                    }
-                    tags["statistic"] = statistic;
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.LastValue));
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == "unknown")
-                    {
-                        statistic = "value";
-                    }
-                    tags["statistic"] = statistic;
-                    results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.LastValue));
-                    return null;
-                },
-                (arg) =>
-                {
-                    return null;
-                });
-
-            return results;
-        }
-
-        protected internal IDictionary<string, string> GetTagKeysAndValues(IList<ITagKey> keys, IList<ITagValue> values)
-        {
-            IDictionary<string, string> result = new Dictionary<string, string>();
-
-            if (keys.Count != values.Count)
-            {
-                logger?.LogWarning("TagKeys and TagValues don't have same size., ignoring tags");
-                return result;
-            }
-
-            for (int i = 0; i < keys.Count; i++)
-            {
-                var key = keys[i];
-                var val = values[i];
-                if (val != null)
-                {
-                    result.Add(key.Name, val.AsString);
-                }
-            }
-
-            return result;
-        }
-
-        protected internal string GetStatistic(IAggregation agg, IMeasure measure)
-        {
-            var result = agg.Match<string>(
-                (arg) =>
-                {
-                    return "total";
-                },
-                (arg) =>
-                {
-                    return "count";
-                },
-                (arg) =>
-                {
-                    return "total";
-                },
-                (arg) =>
-                {
-                    return "total";
-                },
-                (arg) =>
-                {
-                    return "value";
-                },
-                (arg) =>
-                {
-                    return "unknown";
-                });
-
-            if (MeasureUnit.IsTimeUnit(measure.Unit) && result == "total")
-            {
-                result = "totalTime";
             }
 
             return result;

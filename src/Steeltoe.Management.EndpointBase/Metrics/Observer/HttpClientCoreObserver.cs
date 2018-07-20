@@ -52,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             clientCountMeasure = MeasureLong.Create("client.core.totalRequests", "Total request count", "count");
 
             var view = View.Create(
-                    ViewName.Create("http.client.requests"),
+                    ViewName.Create("http.client.request.time"),
                     "Total request time",
                     clientTimeMeasure,
                     Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
@@ -60,7 +60,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             ViewManager.RegisterView(view);
 
             view = View.Create(
-                ViewName.Create("http.client.requests.count"),
+                ViewName.Create("http.client.request.count"),
                     "Total request counts",
                     clientCountMeasure,
                     Sum.Create(),

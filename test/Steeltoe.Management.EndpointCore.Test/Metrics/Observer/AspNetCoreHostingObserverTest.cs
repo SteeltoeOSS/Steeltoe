@@ -37,7 +37,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var tags = new OpenCensusTags();
             var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
 
-            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.requests")));
+            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.time")));
+            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.count")));
         }
 
         [Fact]
@@ -153,7 +154,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleStopEvent(act, context);
             observer.HandleStopEvent(act, context);
 
-            var reqData = stats.ViewManager.GetView(ViewName.Create("http.server.requests"));
+            var reqData = stats.ViewManager.GetView(ViewName.Create("http.server.request.time"));
             var aggData1 = reqData.SumWithTags() as IDistributionData;
             Assert.Equal(2, aggData1.Count);
             Assert.True(aggData1.Mean > 1000.00);

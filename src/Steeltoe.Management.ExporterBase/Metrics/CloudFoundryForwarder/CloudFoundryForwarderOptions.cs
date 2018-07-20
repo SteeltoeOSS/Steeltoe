@@ -95,6 +95,8 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         public string InstanceIndex { get; set; }
 
+        public bool MicrometerMetricWriter { get; set; } = false;
+
         private void ConfigureServiceCredentials(Dictionary<string, Credential> credentials)
         {
             if (string.IsNullOrEmpty(Endpoint))

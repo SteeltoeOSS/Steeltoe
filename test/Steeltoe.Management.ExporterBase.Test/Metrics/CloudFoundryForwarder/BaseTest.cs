@@ -13,6 +13,11 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Stats.Measures;
+using Steeltoe.Management.Census.Tags;
+using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
 {
@@ -23,6 +28,28 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             return JsonConvert.SerializeObject(
                 value,
                 new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+        }
+
+        public void SetupTestView(OpenCensusStats stats, IAggregation agg, IMeasure measure = null, string viewName = "test.test")
+        {
+            ITagKey aKey = TagKey.Create("a");
+            ITagKey bKey = TagKey.Create("b");
+            ITagKey cKey = TagKey.Create("c");
+
+            if (measure == null)
+            {
+                measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.Bytes);
+            }
+
+            IViewName testViewName = ViewName.Create(viewName);
+            IView testView = View.Create(
+                                        testViewName,
+                                        "test",
+                                        measure,
+                                        agg,
+                                        new List<ITagKey>() { aKey, bKey, cKey });
+
+            stats.ViewManager.RegisterView(testView);
         }
     }
 }
