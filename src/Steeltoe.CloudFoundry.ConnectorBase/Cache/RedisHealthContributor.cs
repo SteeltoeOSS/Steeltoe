@@ -25,7 +25,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         private readonly Type _implType;
         private readonly ILogger<RedisHealthContributor> _logger;
 
-        private bool IsMicrosoftImplementation => _implType == RedisTypeLocator.MicrosoftImplementation;
+        private bool IsMicrosoftImplementation => _implType.FullName.Contains("Microsoft");
 
         public RedisHealthContributor(RedisServiceConnectorFactory factory, Type implType, ILogger<RedisHealthContributor> logger = null)
         {

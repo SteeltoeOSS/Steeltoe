@@ -59,7 +59,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
 
             // assert
             Assert.NotNull(dbConn);
-            Assert.IsType<MySqlConnection>(dbConn);
+            Assert.Equal(typeof(MySqlConnection).FullName, dbConn.GetType().FullName);
         }
 
         [Fact]
