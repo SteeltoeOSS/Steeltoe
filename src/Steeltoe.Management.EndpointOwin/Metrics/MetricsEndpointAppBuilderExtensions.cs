@@ -84,6 +84,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             var hostObserver = new OwinHostingObserver(options, stats, tags, loggerFactory?.CreateLogger<OwinHostingObserver>());
             var clrObserver = new CLRRuntimeObserver(options, stats, tags, loggerFactory?.CreateLogger<CLRRuntimeObserver>());
             DiagnosticsManager.Instance.Observers.Add(hostObserver);
+            DiagnosticsManager.Instance.Observers.Add(clrObserver);
 
             var clrSource = new CLRRuntimeSource();
             DiagnosticsManager.Instance.Sources.Add(clrSource);
