@@ -75,7 +75,15 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         protected internal void Run(object obj)
         {
-            logger?.LogInformation("Exporting metrics to metrics forwarder service");
+            if (string.IsNullOrEmpty(options.AccessToken) || string.IsNullOrEmpty(options.Endpoint))
+            {
+                logger?.LogInformation("Unable to export metrics to metrics forwarder service, service binding missing!");
+                Stop();
+            }
+            else
+            {
+                logger?.LogInformation("Exporting metrics to metrics forwarder service");
+            }
 
             while (!shutdown)
             {
