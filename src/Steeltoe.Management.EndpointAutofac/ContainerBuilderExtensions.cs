@@ -53,7 +53,6 @@ namespace Steeltoe.Management.EndpointAutofac
                 container.RegisterMappingsActuator(config, apiExplorer);
             }
 
-            container.RegisterMetricsActuator(config);
             container.RegisterThreadDumpActuator(config);
             container.RegisterTraceActuator(config);
         }
