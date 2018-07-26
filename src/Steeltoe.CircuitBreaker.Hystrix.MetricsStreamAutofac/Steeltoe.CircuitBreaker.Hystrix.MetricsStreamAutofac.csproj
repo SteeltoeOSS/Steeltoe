@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreVersion)" />
+    <!--<PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />-->
     <PackageReference Include="Steeltoe.CloudFoundry.ConnectorAutofac" Version="$(SteeltoeConnectorVersion)" />
     <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
