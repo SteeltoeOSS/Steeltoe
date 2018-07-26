@@ -3,13 +3,14 @@
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
     <SteeltoeConfigVersion>2.1.0-master-00238</SteeltoeConfigVersion>
-    <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
+    <ExtensionsVersion>2.0.0</ExtensionsVersion>
+    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
     <AspNetCoreMvcTestVersion>2.1.0</AspNetCoreMvcTestVersion>
     <AutofacVersion>4.6.1</AutofacVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <EF6Version>6.2.0</EF6Version>
-    <EFCoreVersion>2.1.0</EFCoreVersion>
+    <EFCoreVersion>2.0.0</EFCoreVersion>
     <EFCoreTestVersion>2.1.0</EFCoreTestVersion>
     <JsonNetVersion>11.0.2</JsonNetVersion>
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
