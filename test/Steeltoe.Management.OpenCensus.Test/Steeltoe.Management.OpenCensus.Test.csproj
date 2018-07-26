@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.Management.OpenCensus</Description>
-    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.OpenCensus.Test</AssemblyName>
     <PackageId>Steeltoe.Management.OpenCensus.Test</PackageId>
     <PackageTags>OpenCensus;Tracing;Management;Monitoring</PackageTags>

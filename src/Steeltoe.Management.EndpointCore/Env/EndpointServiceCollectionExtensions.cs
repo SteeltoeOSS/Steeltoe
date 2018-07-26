@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Env
@@ -37,6 +38,18 @@ namespace Steeltoe.Management.Endpoint.Env
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
+            services.TryAddSingleton<IHostingEnvironment>((provider) =>
+            {
+                var service = provider.GetRequiredService<Microsoft.AspNetCore.Hosting.IHostingEnvironment>();
+                return new GenericHostingEnvironment()
+                {
+                    EnvironmentName = service.EnvironmentName,
+                    ApplicationName = service.ApplicationName,
+                    ContentRootFileProvider = service.ContentRootFileProvider,
+                    ContentRootPath = service.ContentRootPath
+                };
+            });
 
             services.TryAddSingleton<IEnvOptions>(new EnvOptions(config));
             services.TryAddSingleton<EnvEndpoint>();
