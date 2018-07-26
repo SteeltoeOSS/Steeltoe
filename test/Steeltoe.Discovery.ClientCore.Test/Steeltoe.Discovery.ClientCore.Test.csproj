@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\versions.props" />
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -24,8 +24,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
 
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreTestVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreDepTestVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
