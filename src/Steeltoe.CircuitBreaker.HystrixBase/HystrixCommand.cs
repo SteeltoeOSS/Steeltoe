@@ -31,27 +31,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected new readonly Action _fallback;
 
         public HystrixCommand(IHystrixCommandGroupKey group, Action run = null, Action fallback = null, ILogger logger = null)
-            : this(group, null, null, null, null, null, null, null, null, null, null, null, run, fallback)
+            : this(group, null, null, null, null, null, null, null, null, null, null, null, run, fallback, logger)
         {
         }
 
         public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, Action run = null,  Action fallback = null, ILogger logger = null)
-            : this(group, null, threadPool, null, null, null, null, null, null, null, null, null, run, fallback)
+            : this(group, null, threadPool, null, null, null, null, null, null, null, null, null, run, fallback, logger)
         {
         }
 
         public HystrixCommand(IHystrixCommandGroupKey group, int executionIsolationThreadTimeoutInMilliseconds, Action run = null, Action fallback = null, ILogger logger = null)
-            : this(group, null, null, null, null, new HystrixCommandOptions() { ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds }, null, null, null, null, null, null, run, fallback)
+            : this(group, null, null, null, null, new HystrixCommandOptions() { ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds }, null, null, null, null, null, null, run, fallback, logger)
         {
         }
 
         public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, int executionIsolationThreadTimeoutInMilliseconds, Action run = null, Action fallback = null, ILogger logger = null)
-            : this(group, null, threadPool, null, null, new HystrixCommandOptions() { ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds }, null, null, null, null, null, null, run, fallback)
+            : this(group, null, threadPool, null, null, new HystrixCommandOptions() { ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds }, null, null, null, null, null, null, run, fallback, logger)
         {
         }
 
         public HystrixCommand(IHystrixCommandOptions commandOptions, Action run = null, Action fallback = null, ILogger logger = null)
-            : this(commandOptions.GroupKey, commandOptions.CommandKey, commandOptions.ThreadPoolKey, null, null, commandOptions, commandOptions.ThreadPoolOptions, null, null, null, null, null, run, fallback)
+            : this(commandOptions.GroupKey, commandOptions.CommandKey, commandOptions.ThreadPoolKey, null, null, commandOptions, commandOptions.ThreadPoolOptions, null, null, null, null, null, run, fallback, logger)
         {
         }
 
