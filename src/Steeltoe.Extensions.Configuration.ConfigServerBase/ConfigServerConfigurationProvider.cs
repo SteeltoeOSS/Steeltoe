@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -410,7 +411,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         protected internal virtual string ConvertValue(object value)
         {
-            return value.ToString();
+            return Convert.ToString(value, CultureInfo.InvariantCulture);
         }
 
         /// <summary>
