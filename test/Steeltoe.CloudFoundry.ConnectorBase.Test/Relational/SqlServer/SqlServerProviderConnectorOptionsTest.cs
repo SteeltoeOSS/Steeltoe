@@ -103,5 +103,33 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             // assert
             Assert.NotEqual(appsettings["sqlserver:credentials:ConnectionString"], sconfig.ToString());
         }
+
+        [Fact]
+        public void ConnectionString_Overridden_By_CloudFoundryConfig_CredsInUrl()
+        {
+            // arrange
+            // simulate an appsettings file
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
+            };
+
+            // add environment variables as Cloud Foundry would
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP_CredsInUrl);
+
+            // add settings to config
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddEnvironmentVariables();
+            configurationBuilder.AddCloudFoundry();
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new SqlServerProviderConnectorOptions(config);
+
+            // assert
+            Assert.NotEqual(appsettings["sqlserver:credentials:ConnectionString"], sconfig.ToString());
+        }
     }
 }

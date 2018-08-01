@@ -46,12 +46,26 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         public void Update_With_ServiceInfo_Updates_Config()
         {
             SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
-            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://updatedserver:1433;databaseName=udpateddb", "updateduser", "updatedpassword");
+            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://updatedserver:1433;databaseName=updateddb", "updateduser", "updatedpassword");
 
             configurer.UpdateConfiguration(si, config);
 
             Assert.Equal("updatedserver", config.Server);
-            Assert.Equal("udpateddb", config.Database);
+            Assert.Equal("updateddb", config.Database);
+            Assert.Equal("updateduser", config.Username);
+            Assert.Equal("updatedpassword", config.Password);
+        }
+
+        [Fact]
+        public void Update_With_ServiceInfo_CredsInUrl_Updates_Config()
+        {
+            SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
+            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "sqlserver://updateduser:updatedpassword@updatedserver:1433;databaseName=updateddb");
+
+            configurer.UpdateConfiguration(si, config);
+
+            Assert.Equal("updatedserver", config.Server);
+            Assert.Equal("updateddb", config.Database);
             Assert.Equal("updateduser", config.Username);
             Assert.Equal("updatedpassword", config.Password);
         }
@@ -74,6 +88,24 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
 
             // override provided by environment
             SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
+
+            // apply override
+            var opts = configurer.Configure(si, config);
+
+            // resulting options should contain values parsed from environment
+            Assert.Contains("Data Source=servername", opts);
+            Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e;", opts);
+            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP;", opts);
+            Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts);
+        }
+
+        [Fact]
+        public void Configure_With_ServiceInfo_CredsInUrl_Overrides_Config()
+        {
+            SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
+
+            // override provided by environment
+            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e");
 
             // apply override
             var opts = configurer.Configure(si, config);

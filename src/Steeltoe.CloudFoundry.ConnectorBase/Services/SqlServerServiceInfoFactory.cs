@@ -57,7 +57,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public IServiceInfo Create(string id, string url, string username, string password)
         {
-            return new SqlServerServiceInfo(id, url, username, password);
+            if (username == null && password == null)
+            {
+                return new SqlServerServiceInfo(id, url);
+            }
+            else
+            {
+                return new SqlServerServiceInfo(id, url, username, password);
+            }
         }
     }
 }
