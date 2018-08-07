@@ -46,12 +46,12 @@ namespace Steeltoe.Management.Endpoint.Module
         {
             if (_logger == null)
             {
-                _logger = ActuatorConfiguration.LoggerFactory?.CreateLogger<ActuatorModule>();
+                _logger = ActuatorConfigurator.LoggerFactory?.CreateLogger<ActuatorModule>();
             }
 
             if (_handlers == null)
             {
-                _handlers = ActuatorConfiguration.ConfiguredHandlers;
+                _handlers = ActuatorConfigurator.ConfiguredHandlers;
             }
 
             EventHandlerTaskAsyncHelper asyncHelper = new EventHandlerTaskAsyncHelper(FilterAndPreProcessRequest);

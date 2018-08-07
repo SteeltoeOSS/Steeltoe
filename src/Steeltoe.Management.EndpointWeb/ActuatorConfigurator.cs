@@ -43,33 +43,33 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Http.Description;
 
-[assembly: PreApplicationStartMethod(typeof(Steeltoe.Management.Endpoint.ActuatorConfiguration), "ConfigureModules")]
+[assembly: PreApplicationStartMethod(typeof(Steeltoe.Management.Endpoint.ActuatorConfigurator), "ConfigureModules")]
 
 namespace Steeltoe.Management.Endpoint
 {
-    public static class ActuatorConfiguration
+    public static class ActuatorConfigurator
     {
         public static ILoggerFactory LoggerFactory { get; set; }
 
-        public static void ConfigureForCloudFoundry(IConfiguration configuration, ILoggerProvider dynamicLogger, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
+        public static void UseCloudFoundryActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
         {
-            ConfigureSecurityService(configuration, null, loggerFactory);
-            ConfigureCloudFoundryEndpoint(configuration, loggerFactory);
-            ConfigureHealthEndpoint(configuration, null, null, loggerFactory);
-            ConfigureHeapDumpEndpoint(configuration, null, loggerFactory);
-            ConfigureThreadDumpEndpoint(configuration, null, loggerFactory);
-            ConfigureInfoEndpoint(configuration, null, loggerFactory);
-            ConfigureLoggerEndpoint(configuration, dynamicLogger, loggerFactory);
-            ConfigureTraceEndpoint(configuration, null, loggerFactory);
-            ConfigureMappingsEndpoint(configuration, apiExplorer, loggerFactory);
+            UseCloudFoundrySecurity(configuration, null, loggerFactory);
+            UseCloudFoundryActuator(configuration, loggerFactory);
+            UseHealthActuator(configuration, null, healthContributors, loggerFactory);
+            UseHeapDumpActuator(configuration, null, loggerFactory);
+            UseThreadDumpActuator(configuration, null, loggerFactory);
+            UseInfoActuator(configuration, null, loggerFactory);
+            UseLoggerActuator(configuration, dynamicLogger, loggerFactory);
+            UseTraceActuator(configuration, null, loggerFactory);
+            UseMappingsActuator(configuration, apiExplorer, loggerFactory);
         }
 
-        public static void ConfigureAll(IConfiguration configuration, ILoggerProvider dynamicLogger, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
+        public static void UseAllActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
         {
-            ConfigureForCloudFoundry(configuration, dynamicLogger, apiExplorer, loggerFactory);
-            ConfigureEnvEndpoint(configuration, null, loggerFactory);
-            ConfigureRefreshEndpoint(configuration, loggerFactory);
-            ConfigureMetricsEndpoint(configuration, loggerFactory);
+            UseCloudFoundryActuators(configuration, dynamicLogger, healthContributors, apiExplorer, loggerFactory);
+            UseEnvActuator(configuration, null, loggerFactory);
+            UseRefreshActuator(configuration, loggerFactory);
+            UseMetricsActuator(configuration, loggerFactory);
         }
 
         public static void ConfigureModules()
@@ -78,12 +78,12 @@ namespace Steeltoe.Management.Endpoint
             DynamicModuleUtility.RegisterModule(typeof(ActuatorModule));
         }
 
-        public static void ConfigureSecurityService(IConfiguration configuration, ISecurityService securityService, ILoggerFactory loggerFactory = null)
+        public static void UseCloudFoundrySecurity(IConfiguration configuration, ISecurityService securityService, ILoggerFactory loggerFactory = null)
         {
             SecurityService = securityService ?? new CloudFoundrySecurity(new CloudFoundryOptions(configuration), CreateLogger<CloudFoundrySecurity>(loggerFactory));
         }
 
-        public static void ConfigureCloudFoundryEndpoint(IConfiguration configuration, ILoggerFactory loggerFactory = null)
+        public static void UseCloudFoundryActuator(IConfiguration configuration, ILoggerFactory loggerFactory = null)
         {
             var options = new CloudFoundryOptions(configuration);
             var ep = new CloudFoundryEndpoint(options, CreateLogger<CloudFoundryEndpoint>(loggerFactory));
@@ -93,7 +93,7 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler2);
         }
 
-        public static void ConfigureHeapDumpEndpoint(IConfiguration configuration, IHeapDumper heapDumper = null, ILoggerFactory loggerFactory = null)
+        public static void UseHeapDumpActuator(IConfiguration configuration, IHeapDumper heapDumper = null, ILoggerFactory loggerFactory = null)
         {
             var options = new HeapDumpOptions(configuration);
             heapDumper = heapDumper ?? new HeapDumper(options);
@@ -102,7 +102,7 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void ConfigureHealthEndpoint(IConfiguration configuration, IHealthAggregator healthAggregator = null, IEnumerable<IHealthContributor> contributors = null, ILoggerFactory loggerFactory = null)
+        public static void UseHealthActuator(IConfiguration configuration, IHealthAggregator healthAggregator = null, IEnumerable<IHealthContributor> contributors = null, ILoggerFactory loggerFactory = null)
         {
             var options = new HealthOptions(configuration);
             healthAggregator = healthAggregator ?? new DefaultHealthAggregator();
@@ -112,7 +112,7 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void ConfigureInfoEndpoint(IConfiguration configuration, IEnumerable<IInfoContributor> contributors = null, ILoggerFactory loggerFactory = null)
+        public static void UseInfoActuator(IConfiguration configuration, IEnumerable<IInfoContributor> contributors = null, ILoggerFactory loggerFactory = null)
         {
             var options = new InfoOptions(configuration);
             contributors = contributors ?? new List<IInfoContributor>() { new GitInfoContributor(), new AppSettingsInfoContributor(configuration) };
@@ -121,14 +121,14 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void ConfigureLoggerEndpoint(IConfiguration configuration, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
+        public static void UseLoggerActuator(IConfiguration configuration, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
             var ep = new LoggersEndpoint(new LoggersOptions(configuration), loggerProvider, CreateLogger<LoggersEndpoint>(loggerFactory));
             var handler = new LoggersHandler(ep, SecurityService, CreateLogger<LoggersHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void ConfigureThreadDumpEndpoint(IConfiguration configuration, IThreadDumper threadDumper = null, ILoggerFactory loggerFactory = null)
+        public static void UseThreadDumpActuator(IConfiguration configuration, IThreadDumper threadDumper = null, ILoggerFactory loggerFactory = null)
         {
             var options = new ThreadDumpOptions(configuration);
             threadDumper = threadDumper ?? new ThreadDumper(options);
@@ -137,7 +137,7 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void ConfigureTraceEndpoint(IConfiguration configuration, ITraceRepository traceRepository, ILoggerFactory loggerFactory = null)
+        public static void UseTraceActuator(IConfiguration configuration, ITraceRepository traceRepository, ILoggerFactory loggerFactory = null)
         {
             var options = new TraceOptions(configuration);
             traceRepository = traceRepository ?? new TraceDiagnosticObserver(options, CreateLogger<TraceDiagnosticObserver>(loggerFactory));
@@ -147,14 +147,14 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void ConfigureRefreshEndpoint(IConfiguration configuration, ILoggerFactory loggerFactory = null)
+        public static void UseRefreshActuator(IConfiguration configuration, ILoggerFactory loggerFactory = null)
         {
             var ep = new RefreshEndpoint(new RefreshOptions(configuration), configuration, CreateLogger<RefreshEndpoint>(loggerFactory));
             var handler = new RefreshHandler(ep, SecurityService, CreateLogger<RefreshHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void ConfigureEnvEndpoint(IConfiguration configuration, IHostingEnvironment hostingEnvironment = null, ILoggerFactory loggerFactory = null)
+        public static void UseEnvActuator(IConfiguration configuration, IHostingEnvironment hostingEnvironment = null, ILoggerFactory loggerFactory = null)
         {
             var options = new EnvOptions(configuration);
             hostingEnvironment = hostingEnvironment ?? new DefaultHostingEnvironment("development");
@@ -163,7 +163,7 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void ConfigureMetricsEndpoint(IConfiguration configuration, ILoggerFactory loggerFactory)
+        public static void UseMetricsActuator(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             var options = new MetricsOptions(configuration);
 
@@ -179,7 +179,7 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void ConfigureMappingsEndpoint(IConfiguration configuration, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
+        public static void UseMappingsActuator(IConfiguration configuration, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
         {
             var options = new MappingsOptions(configuration);
             var handler = new MappingsHandler(options, SecurityService, apiExplorer, CreateLogger<MappingsHandler>(loggerFactory));
