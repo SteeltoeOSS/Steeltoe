@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.MySql;
 using Steeltoe.CloudFoundry.Connector.PostgreSql;
@@ -23,6 +24,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
 using Steeltoe.Common.HealthChecks;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using Xunit;
 
@@ -30,6 +32,67 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
 {
     public class RelationalHealthContributorTest
     {
+        [Fact]
+        public void GetMySqlContributor_ReturnsContributor()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["mysql:client:server"] = "localhost",
+                ["mysql:client:port"] = "1234",
+                ["mysql:client:PersistSecurityInfo"] = "true",
+                ["mysql:client:password"] = "password",
+                ["mysql:client:username"] = "username"
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+            var contrib = RelationalHealthContributor.GetMySqlContributor(config);
+            Assert.NotNull(contrib);
+            var status = contrib.Health();
+            Assert.Equal(HealthStatus.DOWN, status.Status);
+        }
+
+        [Fact]
+        public void GetPostgreSqlContributor_ReturnsContributor()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["postgres:client:host"] = "localhost",
+                ["postgres:client:port"] = "1234",
+                ["postgres:client:password"] = "password",
+                ["postgres:client:username"] = "username"
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+            var contrib = RelationalHealthContributor.GetPostgreSqlContributor(config);
+            Assert.NotNull(contrib);
+            var status = contrib.Health();
+            Assert.Equal(HealthStatus.DOWN, status.Status);
+        }
+
+        [Fact]
+        public void GetSqlServerContributor_ReturnsContributor()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["sqlserver:credentials:uid"] = "username",
+                ["sqlserver:credentials:uri"] = "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e",
+                ["sqlserver:credentials:db"] = "de5aa3a747c134b3d8780f8cc80be519e",
+                ["sqlserver:credentials:pw"] = "password"
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+            var contrib = RelationalHealthContributor.GetSqlServerContributor(config);
+            Assert.NotNull(contrib);
+            var status = contrib.Health();
+            Assert.Equal(HealthStatus.DOWN, status.Status);
+        }
+
         [Fact]
         public void Sql_Not_Connected_Returns_Down_Status()
         {

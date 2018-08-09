@@ -12,16 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Test.Cache
 {
     public class RedisHealthContributorTest
     {
+        [Fact]
+        public void GetRedisContributor_ReturnsContributor()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["redis:client:host"] = "localhost",
+                ["redis:client:port"] = "1234",
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+            var contrib = RedisHealthContributor.GetRedisContributor(config);
+            Assert.NotNull(contrib);
+            var status = contrib.Health();
+            Assert.Equal(HealthStatus.DOWN, status.Status);
+        }
+
         [Fact]
         public void StackExchange_Not_Connected_Returns_Down_Status()
         {

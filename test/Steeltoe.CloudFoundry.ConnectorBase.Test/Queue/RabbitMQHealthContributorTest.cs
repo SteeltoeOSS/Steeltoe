@@ -12,17 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.RabbitMQ;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Test.Queue
 {
     public class RabbitMQHealthContributorTest
     {
+        [Fact]
+        public void GetRabbitMQContributor_ReturnsContributor()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["rabbit:client:server"] = "localhost",
+                ["rabbit:client:port"] = "1234",
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+            var contrib = RabbitMQHealthContributor.GetRabbitMQContributor(config);
+            Assert.NotNull(contrib);
+            var status = contrib.Health();
+            Assert.Equal(HealthStatus.DOWN, status.Status);
+        }
+
         [Fact]
         public void Not_Connected_Returns_Down_Status()
         {
