@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Reflection;
@@ -21,6 +23,23 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisHealthContributor : IHealthContributor
     {
+        public static IHealthContributor GetRedisContributor(IConfiguration configuration, ILogger<RedisHealthContributor> logger = null)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
+            Type redisOptions = RedisTypeLocator.StackExchangeOptions;
+            MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
+
+            var info = configuration.GetSingletonServiceInfo<RedisServiceInfo>();
+            RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(configuration);
+            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
+            return new RedisHealthContributor(factory, redisImplementation, logger);
+        }
+
         private readonly RedisServiceConnectorFactory _factory;
         private readonly Type _implType;
         private readonly ILogger<RedisHealthContributor> _logger;

@@ -12,7 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.MySql;
+using Steeltoe.CloudFoundry.Connector.PostgreSql;
+using Steeltoe.CloudFoundry.Connector.Relational.MySql;
+using Steeltoe.CloudFoundry.Connector.Relational.PostgreSql;
+using Steeltoe.CloudFoundry.Connector.Relational.SqlServer;
+using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.CloudFoundry.Connector.SqlServer;
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
@@ -21,10 +29,55 @@ namespace Steeltoe.CloudFoundry.Connector.Relational
 {
     public class RelationalHealthContributor : IHealthContributor
     {
-        public readonly IDbConnection _connection;
-        private readonly ILogger<IDbConnection> _logger;
+        public static IHealthContributor GetMySqlContributor(IConfiguration configuration, ILogger<RelationalHealthContributor> logger = null)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
 
-        public RelationalHealthContributor(IDbConnection connection, ILogger<IDbConnection> logger = null)
+            var info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
+            Type mySqlConnection = ConnectorHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
+            var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
+            var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
+            var connection = factory.Create(null) as IDbConnection;
+            return new RelationalHealthContributor(connection, logger);
+        }
+
+        public static IHealthContributor GetPostgreSqlContributor(IConfiguration configuration, ILogger<RelationalHealthContributor> logger = null)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
+            Type postgresConnection = ConnectorHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
+            var postgresConfig = new PostgresProviderConnectorOptions(configuration);
+            var factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
+            var connection = factory.Create(null) as IDbConnection;
+            return new RelationalHealthContributor(connection, logger);
+        }
+
+        public static IHealthContributor GetSqlServerContributor(IConfiguration configuration, ILogger<RelationalHealthContributor> logger = null)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            var info = configuration.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
+            var sqlServerConfig = new SqlServerProviderConnectorOptions(configuration);
+            var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
+            var connection = factory.Create(null) as IDbConnection;
+            return new RelationalHealthContributor(connection, logger);
+        }
+
+        public readonly IDbConnection _connection;
+        private readonly ILogger<RelationalHealthContributor> _logger;
+
+        public RelationalHealthContributor(IDbConnection connection, ILogger<RelationalHealthContributor> logger = null)
         {
             _connection = connection;
             _logger = logger;

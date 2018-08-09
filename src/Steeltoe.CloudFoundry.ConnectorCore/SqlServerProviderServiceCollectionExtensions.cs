@@ -91,7 +91,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(sqlServerConnection, factory.Create, contextLifetime));
-            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<IDbConnection>>()), ServiceLifetime.Singleton));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), ServiceLifetime.Singleton));
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433;databaseName=invalidDatabaseName", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
             var logrFactory = new LoggerFactory();
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<IDbConnection>());
+            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());
 
             // act
             var status = h.Health();
@@ -58,7 +58,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433;databaseName=master", "steeltoe", "steeltoe");
             var logrFactory = new LoggerFactory();
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<IDbConnection>());
+            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());
 
             // act
             var status = h.Health();
@@ -76,7 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             var sInfo = new MySqlServiceInfo("MyId", "mysql://localhost:80;databaseName=invalidDatabaseName");
             var logrFactory = new LoggerFactory();
             var connFactory = new MySqlProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<IDbConnection>());
+            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());
 
             // act
             var status = h.Health();
@@ -95,7 +95,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             var sInfo = new MySqlServiceInfo("MyId", "mysql://steeltoe:steeltoe@localhost:3306");
             var logrFactory = new LoggerFactory();
             var connFactory = new MySqlProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<IDbConnection>());
+            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());
 
             // act
             var status = h.Health();
@@ -113,7 +113,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             var sInfo = new PostgresServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var logrFactory = new LoggerFactory();
             var connFactory = new PostgresProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<IDbConnection>());
+            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());
 
             // act
             var status = h.Health();
@@ -132,7 +132,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             var sInfo = new PostgresServiceInfo("MyId", "postgres://steeltoe:steeltoe@localhost:5432/postgres");
             var logrFactory = new LoggerFactory();
             var connFactory = new PostgresProviderConnectorFactory(sInfo, sqlConfig, implementationType);
-            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<IDbConnection>());
+            var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());
 
             // act
             var status = h.Health();

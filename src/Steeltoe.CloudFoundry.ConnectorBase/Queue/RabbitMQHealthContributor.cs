@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Reflection;
@@ -21,6 +23,23 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
     public class RabbitMQHealthContributor : IHealthContributor
     {
+        public static IHealthContributor GetRabbitMQContributor(IConfiguration configuration, ILogger<RabbitMQHealthContributor> logger = null)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
+            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
+
+            var info = configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>();
+
+            RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions(configuration);
+            RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
+            return new RabbitMQHealthContributor(factory, logger);
+        }
+
         private readonly RabbitMQProviderConnectorFactory _factory;
         private readonly ILogger<RabbitMQHealthContributor> _logger;
 
