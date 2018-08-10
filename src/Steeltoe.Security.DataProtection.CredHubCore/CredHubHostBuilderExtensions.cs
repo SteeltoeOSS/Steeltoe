@@ -46,7 +46,7 @@ namespace Steeltoe.Security.DataProtection.CredHubCore
                 webHostBuilder.ConfigureAppConfiguration((context, config) =>
                 {
                     var builtConfig = config.Build();
-                    CredHubClient credHubClient = null;
+                    CredHubClient credHubClient;
 
                     var credHubOptions = builtConfig.GetSection("CredHubClient").Get<CredHubOptions>();
                     credHubOptions.Validate();
@@ -58,6 +58,9 @@ namespace Steeltoe.Security.DataProtection.CredHubCore
                     catch (Exception e)
                     {
                         startupLogger?.LogCritical(e, "Failed to initialize CredHub client");
+
+                        // return early to prevent call we know will fail
+                        return;
                     }
 
                     try
