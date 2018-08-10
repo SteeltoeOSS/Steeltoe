@@ -24,24 +24,6 @@ namespace Steeltoe.Security.DataProtection.CredHubCore.Test
 {
     public class CredHubServiceCollectionExtensionsTest
     {
-        ////[Fact(Skip = ("This test is incomplete, needs to write creds to disk and let the code read them in later")]
-        ////public void AddCredHubClient_WithEnvVars_ReturnsClient()
-        ////{
-        ////    // Arrange
-        ////    IServiceCollection services = new ServiceCollection();
-        ////    var appsettings = new Dictionary<string, string>();
-        ////    Environment.SetEnvironmentVariable("CF_INSTANCE_CERT", "invalid");
-        ////    Environment.SetEnvironmentVariable("CF_INSTANCE_KEY", "invalid");
-
-        ////    ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-        ////    configurationBuilder.AddInMemoryCollection(appsettings);
-        ////    var config = configurationBuilder.Build();
-
-        ////    // Act and Assert
-        ////    services.AddCredHubClient(config);
-        ////    Assert.True(services.Contains(new ServiceDescriptor(typeof(ICredHubClient), null)));
-        ////}
-
         ////[Fact(Skip = "This test is incomplete, would require a mocked server to return the token")]
         ////public void AddCredHubClient_WithUAACreds_UsesUAACreds()
         ////{

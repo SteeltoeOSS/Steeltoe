@@ -47,7 +47,7 @@ namespace Steeltoe.Security.DataProtection.CredHubCore
             try
             {
                 startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
-                credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions).Result;
+                credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions).GetAwaiter().GetResult();
 
                 services.AddSingleton<ICredHubClient>(credHubClient);
             }

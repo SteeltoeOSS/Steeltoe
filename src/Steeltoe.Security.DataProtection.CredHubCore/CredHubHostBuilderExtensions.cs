@@ -53,7 +53,7 @@ namespace Steeltoe.Security.DataProtection.CredHubCore
                     try
                     {
                         startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
-                        credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).Result;
+                        credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
                     }
                     catch (Exception e)
                     {
@@ -62,8 +62,11 @@ namespace Steeltoe.Security.DataProtection.CredHubCore
 
                     try
                     {
-                        var interpolated = credHubClient.InterpolateServiceDataAsync(vcapServices).Result;
-                        builtConfig.GetSection("vcap:services").Bind(interpolated);
+                        // send the interpolate request to CredHub
+                        string interpolated = credHubClient.InterpolateServiceDataAsync(vcapServices).GetAwaiter().GetResult();
+
+                        // update the environment variable for this process
+                        Environment.SetEnvironmentVariable("VCAP_SERVICES", interpolated);
                     }
                     catch (Exception e)
                     {
