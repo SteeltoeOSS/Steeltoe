@@ -137,7 +137,7 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler);
         }
 
-        public static void UseTraceActuator(IConfiguration configuration, ITraceRepository traceRepository, ILoggerFactory loggerFactory = null)
+        public static void UseTraceActuator(IConfiguration configuration, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
         {
             var options = new TraceOptions(configuration);
             traceRepository = traceRepository ?? new TraceDiagnosticObserver(options, CreateLogger<TraceDiagnosticObserver>(loggerFactory));
