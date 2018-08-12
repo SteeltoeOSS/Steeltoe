@@ -78,7 +78,7 @@ namespace Steeltoe.Management.Endpoint
             DynamicModuleUtility.RegisterModule(typeof(ActuatorModule));
         }
 
-        public static void UseCloudFoundrySecurity(IConfiguration configuration, ISecurityService securityService, ILoggerFactory loggerFactory = null)
+        public static void UseCloudFoundrySecurity(IConfiguration configuration, ISecurityService securityService = null, ILoggerFactory loggerFactory = null)
         {
             SecurityService = securityService ?? new CloudFoundrySecurity(new CloudFoundryOptions(configuration), CreateLogger<CloudFoundrySecurity>(loggerFactory));
         }
