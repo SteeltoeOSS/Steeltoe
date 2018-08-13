@@ -147,9 +147,12 @@ namespace Steeltoe.Discovery.Client
 
         public class ApplicationLifecycle : IDiscoveryLifecycle
         {
-            public ApplicationLifecycle(IApplicationLifetime lifeCycle)
+            public ApplicationLifecycle(IApplicationLifetime lifeCycle, IDiscoveryClient client)
             {
                 ApplicationStopping = lifeCycle.ApplicationStopping;
+
+                // hook things up so that that things are unregistered when the application terminates
+                ApplicationStopping.Register(() => { client.ShutdownAsync().GetAwaiter().GetResult(); });
             }
 
             public CancellationToken ApplicationStopping { get; set; }

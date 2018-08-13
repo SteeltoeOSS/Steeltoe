@@ -136,7 +136,7 @@ namespace Steeltoe.Discovery.Eureka
         public override T.Task ShutdownAsync()
         {
             _appInfoManager.InstanceStatus = InstanceStatus.DOWN;
-            return ShutdownAsync();
+            return base.ShutdownAsync();
         }
     }
 }

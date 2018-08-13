@@ -23,6 +23,9 @@ namespace Steeltoe.Discovery.Client
         public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
         {
             var service = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
+
+            // make sure that the lifcycle object is created
+            var lifecycle = app.ApplicationServices.GetRequiredService<IDiscoveryLifecycle>();
             return app;
         }
     }
