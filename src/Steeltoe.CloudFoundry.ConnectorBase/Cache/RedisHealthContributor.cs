@@ -43,6 +43,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         private readonly RedisServiceConnectorFactory _factory;
         private readonly Type _implType;
         private readonly ILogger<RedisHealthContributor> _logger;
+        private object _connector;
+        private object _database;
+        private object _flags;
+        private MethodInfo _pingMethod;
+        private MethodInfo _getMethod;
 
         private bool IsMicrosoftImplementation => _implType.FullName.Contains("Microsoft");
 
@@ -59,8 +64,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         {
             _logger?.LogTrace("Checking Redis connection health");
             HealthCheckResult result = new HealthCheckResult();
+
             try
             {
+                Connect();
+
                 if (IsMicrosoftImplementation)
                 {
                     DoMicrosoftHealth();
@@ -94,22 +102,38 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         private void DoStackExchangeHealth(HealthCheckResult health)
         {
-            var commandFlagsEnum = RedisTypeLocator.StackExchangeCommandFlagsNames;
-            var none = Enum.Parse(commandFlagsEnum, "None");
-            var connector = _factory.Create(null);
-
-            var getDatabaseMethod = ConnectorHelpers.FindMethod(connector.GetType(), "GetDatabase");
-            var db = ConnectorHelpers.Invoke(getDatabaseMethod, connector, new object[] { -1, null });
-            var pingMethod = ConnectorHelpers.FindMethod(db.GetType(), "Ping");
-            var latency = (TimeSpan)ConnectorHelpers.Invoke(pingMethod, db, new[] { none });
+            var latency = (TimeSpan)ConnectorHelpers.Invoke(_pingMethod, _database, new[] { _flags });
             health.Details.Add("ping", latency.TotalMilliseconds);
         }
 
         private void DoMicrosoftHealth()
         {
-            var connector = _factory.Create(null);
-            var getMethod = connector.GetType().GetMethod("Get");
-            getMethod.Invoke(connector, new object[] { "1" });
+            _getMethod.Invoke(_connector, new object[] { "1" });
+        }
+
+        private void Connect()
+        {
+            if (_connector == null)
+            {
+                _connector = _factory.Create(null);
+                if (_connector == null)
+                {
+                    throw new ConnectorException("Unable to connect to Redis");
+                }
+
+                if (IsMicrosoftImplementation)
+                {
+                    _getMethod = _connector.GetType().GetMethod("Get");
+                }
+                else
+                {
+                    var commandFlagsEnum = RedisTypeLocator.StackExchangeCommandFlagsNames;
+                    _flags = Enum.Parse(commandFlagsEnum, "None");
+                    var getDatabaseMethod = ConnectorHelpers.FindMethod(_connector.GetType(), "GetDatabase");
+                    _database = ConnectorHelpers.Invoke(getDatabaseMethod, _connector, new object[] { -1, null });
+                    _pingMethod = ConnectorHelpers.FindMethod(_database.GetType(), "Ping");
+                }
+            }
         }
     }
 }
