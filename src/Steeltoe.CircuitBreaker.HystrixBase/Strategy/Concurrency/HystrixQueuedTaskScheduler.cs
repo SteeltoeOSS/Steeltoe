@@ -29,6 +29,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         [ThreadStatic]
         private static bool isHystrixThreadPoolThread;
 
+        private readonly object _lock = new object();
+
         public HystrixQueuedTaskScheduler(IHystrixThreadPoolOptions options)
             : base(options)
         {
@@ -73,13 +75,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         {
             if (runningThreads < corePoolSize)
             {
-                Interlocked.Increment(ref runningThreads);
-                StartThreadPoolWorker();
+                lock (_lock)
+                {
+                    if (runningThreads < corePoolSize)
+                    {
+                        Interlocked.Increment(ref runningThreads);
+                        StartThreadPoolWorker();
+                    }
+                }
             }
             else if (allowMaxToDivergeFromCore && runningThreads < maximumPoolSize)
             {
-                Interlocked.Increment(ref runningThreads);
-                StartThreadPoolWorker();
+                lock (_lock)
+                {
+                    if (runningThreads < maximumPoolSize)
+                    {
+                        Interlocked.Increment(ref runningThreads);
+                        StartThreadPoolWorker();
+                    }
+                }
             }
 
             if (!IsQueueSpaceAvailable)
