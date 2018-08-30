@@ -95,6 +95,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 result.Details.Add("status", HealthStatus.DOWN.ToString());
                 result.Status = HealthStatus.DOWN;
                 result.Description = "Redis health check failed";
+                _connector = null;
+                _database = null;
             }
 
             return result;
