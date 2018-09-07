@@ -14,23 +14,20 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Info.Contributor;
-using Steeltoe.Management.EndpointOwin;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.EndpointOwin.CloudFoundry;
 using System;
-using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
 {
-    public static class InfoContainerBuilderExtensions
+    public static class CloudFoundryContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Info endpoint, OWIN middleware and options
+        /// Register the Cloud Foundry endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterCloudFoundryActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -42,16 +39,17 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInfoActuator(config, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
+            container.RegisterInstance(new CloudFoundryOptions(config)).As<ICloudFoundryOptions>().SingleInstance();
+            container.RegisterType<CloudFoundryEndpoint>().SingleInstance();
+            container.RegisterType<CloudFoundryEndpointOwinMiddleware>().SingleInstance();
         }
 
         /// <summary>
-        /// Register the Info endpoint, OWIN middleware and options
+        /// Add security checks on requests to OWIN middlewares
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="contributors">Contributors to application information</param>
-        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config, params IInfoContributor[] contributors)
+        public static void RegisterCloudFoundrySecurityMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -63,14 +61,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            foreach (var c in contributors)
-            {
-                container.RegisterInstance(c).As<IInfoContributor>().SingleInstance();
-            }
-
-            container.RegisterInstance(new InfoOptions(config)).As<IInfoOptions>().SingleInstance();
-            container.RegisterType<InfoEndpoint>().As<IEndpoint<Dictionary<string, object>>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<Dictionary<string, object>>>().SingleInstance();
+            container.RegisterType<CloudFoundrySecurityOwinMiddleware>().SingleInstance();
         }
     }
 }

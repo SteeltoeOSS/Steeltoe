@@ -14,21 +14,19 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.Health;
 using System;
-using System.Web;
+using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
 {
-    public class HealthContainerBuilderExtensionsTest : BaseTest
+    public class InfoContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void RegisterHealthMiddleware_ThrowsOnNulls()
+        public void RegisterInfoMiddleware_ThrowsOnNulls()
         {
             // Arrange
             ContainerBuilder containerNull = null;
@@ -37,8 +35,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => HealthContainerBuilderExtensions.RegisterHealthActuator(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => HealthContainerBuilderExtensions.RegisterHealthActuator(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -46,25 +44,25 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         }
 
         [Fact]
-        public void RegisterHealthMiddleware_RegistersComponents()
+        public void RegisterInfoMiddleware_RegistersComponents()
         {
             // Arrange
             ContainerBuilder containerBuilder = new ContainerBuilder();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            HealthContainerBuilderExtensions.RegisterHealthActuator(containerBuilder, config);
+            InfoContainerBuilderExtensions.RegisterInfoActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
-            Assert.True(container.IsRegistered<IHealthOptions>(), "Health options are registered");
-            Assert.True(container.IsRegistered<IHealthContributor>(), "At least one health contributor registered");
-            Assert.True(container.IsRegistered<HealthEndpoint>(), "Health endpoint is registered");
-            Assert.True(container.IsRegistered<HealthEndpointOwinMiddleware>(), "Env endpoint middleware is registered");
+            Assert.True(container.IsRegistered<IInfoOptions>(), "Info options are registered");
+            Assert.True(container.IsRegistered<IInfoContributor>(), "At least one Info contributor registered");
+            Assert.True(container.IsRegistered<IEndpoint<Dictionary<string, object>>>(), "Info endpoint is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<Dictionary<string, object>>>(), "Env endpoint middleware is registered");
         }
 
         ////[Fact]
-        ////public void RegisterHealthModule_ThrowsOnNulls()
+        ////public void RegisterInfoModule_ThrowsOnNulls()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerNull = null;
@@ -73,8 +71,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    var ex = Assert.Throws<ArgumentNullException>(() => HealthContainerBuilderExtensions.RegisterHealthModule(containerNull, config));
-        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => HealthContainerBuilderExtensions.RegisterHealthModule(containerBuilder, configNull));
+        ////    var ex = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoModule(containerNull, config));
+        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoModule(containerBuilder, configNull));
 
         ////    // Assert
         ////    Assert.Equal("container", ex.ParamName);
@@ -82,21 +80,21 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         ////}
 
         ////[Fact]
-        ////public void RegisterHealthModule_RegistersComponents()
+        ////public void RegisterInfoModule_RegistersComponents()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerBuilder = new ContainerBuilder();
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    HealthContainerBuilderExtensions.RegisterHealthModule(containerBuilder, config);
+        ////    InfoContainerBuilderExtensions.RegisterInfoModule(containerBuilder, config);
         ////    var container = containerBuilder.Build();
 
         ////    // Assert
-        ////    Assert.True(container.IsRegistered<IHealthOptions>(), "Health options are registered");
-        ////    Assert.True(container.IsRegistered<IEndpoint<HealthCheckResult>>(), "Health endpoint is registered"); // REVIEW this should probably be registered as HealthEndpoint
-        ////    Assert.True(container.IsRegistered<IHealthContributor>(), "At least one health contributor registered");
-        ////    Assert.True(container.IsRegistered<IHttpModule>(), "Health HttpModule is registered");
+        ////    Assert.True(container.IsRegistered<IInfoOptions>(), "Info options are registered");
+        ////    Assert.True(container.IsRegistered<InfoEndpoint>(), "Info endpoint is registered");
+        ////    Assert.True(container.IsRegistered<IInfoContributor>(), "At least one Info contributor registered");
+        ////    Assert.True(container.IsRegistered<IHttpModule>(), "Info HttpModule is registered");
         ////}
     }
 }

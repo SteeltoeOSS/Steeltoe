@@ -22,7 +22,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
 {
     public class MappingsContainerBuilderExtensionsTest : BaseTest
     {

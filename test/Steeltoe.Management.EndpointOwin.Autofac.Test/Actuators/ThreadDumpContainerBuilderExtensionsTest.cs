@@ -17,12 +17,11 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.EndpointOwin;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
 {
     public class ThreadDumpContainerBuilderExtensionsTest : BaseTest
     {

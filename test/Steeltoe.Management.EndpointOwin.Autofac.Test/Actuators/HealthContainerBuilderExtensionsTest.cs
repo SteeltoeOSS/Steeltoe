@@ -14,18 +14,21 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.HeapDump;
+using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.HeapDump;
+using Steeltoe.Management.EndpointOwin.Health;
 using System;
+using System.Web;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
 {
-    public class HeapDumpContainerBuilderExtensionsTest : BaseTest
+    public class HealthContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void RegisterHeapDumpMiddleware_ThrowsOnNulls()
+        public void RegisterHealthMiddleware_ThrowsOnNulls()
         {
             // Arrange
             ContainerBuilder containerNull = null;
@@ -34,8 +37,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpActuator(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpActuator(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => HealthContainerBuilderExtensions.RegisterHealthActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => HealthContainerBuilderExtensions.RegisterHealthActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -43,25 +46,25 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         }
 
         [Fact]
-        public void RegisterHeapDumpMiddleware_RegistersComponents()
+        public void RegisterHealthMiddleware_RegistersComponents()
         {
             // Arrange
             ContainerBuilder containerBuilder = new ContainerBuilder();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            HeapDumpContainerBuilderExtensions.RegisterHeapDumpActuator(containerBuilder, config);
+            HealthContainerBuilderExtensions.RegisterHealthActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
-            Assert.True(container.IsRegistered<IHeapDumpOptions>(), "HeapDump options are registered");
-            Assert.True(container.IsRegistered<IHeapDumper>(), "HeapDumper is registered");
-            Assert.True(container.IsRegistered<HeapDumpEndpoint>(), "HeapDump endpoint is registered");
-            Assert.True(container.IsRegistered<HeapDumpEndpointOwinMiddleware>(), "Env endpoint middleware is registered");
+            Assert.True(container.IsRegistered<IHealthOptions>(), "Health options are registered");
+            Assert.True(container.IsRegistered<IHealthContributor>(), "At least one health contributor registered");
+            Assert.True(container.IsRegistered<HealthEndpoint>(), "Health endpoint is registered");
+            Assert.True(container.IsRegistered<HealthEndpointOwinMiddleware>(), "Env endpoint middleware is registered");
         }
 
         ////[Fact]
-        ////public void RegisterHeapDumpModule_ThrowsOnNulls()
+        ////public void RegisterHealthModule_ThrowsOnNulls()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerNull = null;
@@ -70,8 +73,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    var ex = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpModule(containerNull, config));
-        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpModule(containerBuilder, configNull));
+        ////    var ex = Assert.Throws<ArgumentNullException>(() => HealthContainerBuilderExtensions.RegisterHealthModule(containerNull, config));
+        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => HealthContainerBuilderExtensions.RegisterHealthModule(containerBuilder, configNull));
 
         ////    // Assert
         ////    Assert.Equal("container", ex.ParamName);
@@ -79,21 +82,21 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         ////}
 
         ////[Fact]
-        ////public void RegisterHeapDumpModule_RegistersComponents()
+        ////public void RegisterHealthModule_RegistersComponents()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerBuilder = new ContainerBuilder();
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    HeapDumpContainerBuilderExtensions.RegisterHeapDumpModule(containerBuilder, config);
+        ////    HealthContainerBuilderExtensions.RegisterHealthModule(containerBuilder, config);
         ////    var container = containerBuilder.Build();
 
         ////    // Assert
-        ////    Assert.True(container.IsRegistered<IHeapDumpOptions>(), "HeapDump options are registered");
-        ////    Assert.True(container.IsRegistered<IHeapDumper>(), "HeapDumper is registered");
-        ////    Assert.True(container.IsRegistered<HeapDumpEndpoint>(), "HeapDump endpoint is registered");
-        ////    Assert.True(container.IsRegistered<IHttpModule>(), "HeapDump HttpModule is registered");
+        ////    Assert.True(container.IsRegistered<IHealthOptions>(), "Health options are registered");
+        ////    Assert.True(container.IsRegistered<IEndpoint<HealthCheckResult>>(), "Health endpoint is registered"); // REVIEW this should probably be registered as HealthEndpoint
+        ////    Assert.True(container.IsRegistered<IHealthContributor>(), "At least one health contributor registered");
+        ////    Assert.True(container.IsRegistered<IHttpModule>(), "Health HttpModule is registered");
         ////}
     }
 }

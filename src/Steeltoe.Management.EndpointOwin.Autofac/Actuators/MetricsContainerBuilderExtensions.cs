@@ -15,23 +15,23 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Trace;
-using Steeltoe.Management.EndpointOwin;
-using Steeltoe.Management.EndpointOwin.Trace;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
+using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Metrics.Observer;
+using Steeltoe.Management.EndpointOwin.Metrics;
 using System;
-using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
 {
-    public static class TraceContainerBuilderExtensions
+    public static class MetricsContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Trace endpoint, OWIN middleware and options
+        /// Register the Metrics endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterTraceActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterMetricsActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -43,12 +43,19 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
-            container.RegisterType<TraceDiagnosticObserver>().As<IDiagnosticObserver>().As<ITraceRepository>().SingleInstance();
             container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
+            container.RegisterType<CLRRuntimeSource>().As<IPolledDiagnosticSource>().SingleInstance();
 
-            container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<List<TraceResult>>>().SingleInstance();
+            container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>().SingleInstance();
+
+            container.RegisterType<OwinHostingObserver>().As<IDiagnosticObserver>().SingleInstance();
+            container.RegisterType<CLRRuntimeObserver>().As<IDiagnosticObserver>().SingleInstance();
+
+            container.RegisterType<OpenCensusStats>().As<IStats>().IfNotRegistered(typeof(IStats)).SingleInstance();
+            container.RegisterType<OpenCensusTags>().As<ITags>().IfNotRegistered(typeof(ITags)).SingleInstance();
+
+            container.RegisterType<MetricsEndpoint>().SingleInstance();
+            container.RegisterType<MetricsEndpointOwinMiddleware>().SingleInstance();
         }
     }
 }

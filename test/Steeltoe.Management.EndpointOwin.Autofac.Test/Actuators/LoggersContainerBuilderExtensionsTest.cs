@@ -14,18 +14,18 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.Metrics;
+using Steeltoe.Management.EndpointOwin.Loggers;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
 {
-    public class MetricsContainerBuilderExtensionsTest : BaseTest
+    public class LoggersContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void RegisterMetricsMiddleware_ThrowsOnNulls()
+        public void RegisterLoggersMiddleware_ThrowsOnNulls()
         {
             // Arrange
             ContainerBuilder containerNull = null;
@@ -34,8 +34,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => MetricsContainerBuilderExtensions.RegisterMetricsActuator(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MetricsContainerBuilderExtensions.RegisterMetricsActuator(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => LoggersContainerBuilderExtensions.RegisterLoggersActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => LoggersContainerBuilderExtensions.RegisterLoggersActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -43,20 +43,20 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         }
 
         [Fact]
-        public void RegisterMetricsMiddleware_RegistersComponents()
+        public void RegisterLoggersMiddleware_RegistersComponents()
         {
             // Arrange
             ContainerBuilder containerBuilder = new ContainerBuilder();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            MetricsContainerBuilderExtensions.RegisterMetricsActuator(containerBuilder, config);
+            LoggersContainerBuilderExtensions.RegisterLoggersActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
-            Assert.True(container.IsRegistered<IMetricsOptions>(), "Metrics options are registered");
-            Assert.True(container.IsRegistered<MetricsEndpoint>(), "Metrics endpoint is registered");
-            Assert.True(container.IsRegistered<MetricsEndpointOwinMiddleware>(), "Metrics endpoint middleware is registered");
+            Assert.True(container.IsRegistered<ILoggersOptions>(), "Loggers options are registered");
+            Assert.True(container.IsRegistered<LoggersEndpoint>(), "Loggers endpoint is registered");
+            Assert.True(container.IsRegistered<LoggersEndpointOwinMiddleware>(), "Loggers endpoint middleware is registered");
         }
     }
 }

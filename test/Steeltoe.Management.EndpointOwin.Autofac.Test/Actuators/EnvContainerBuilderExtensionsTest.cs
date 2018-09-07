@@ -14,21 +14,19 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin;
 using System;
-using System.Collections.Generic;
-using System.Web;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
 {
-    public class InfoContainerBuilderExtensionsTest : BaseTest
+    public class EnvContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void RegisterInfoMiddleware_ThrowsOnNulls()
+        public void RegisterEnvMiddleware_ThrowsOnNulls()
         {
             // Arrange
             ContainerBuilder containerNull = null;
@@ -37,8 +35,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoActuator(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoActuator(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => EnvContainerBuilderExtensions.RegisterEnvActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => EnvContainerBuilderExtensions.RegisterEnvActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -46,25 +44,25 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         }
 
         [Fact]
-        public void RegisterInfoMiddleware_RegistersComponents()
+        public void RegisterEnvMiddleware_RegistersComponents()
         {
             // Arrange
             ContainerBuilder containerBuilder = new ContainerBuilder();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            InfoContainerBuilderExtensions.RegisterInfoActuator(containerBuilder, config);
+            EnvContainerBuilderExtensions.RegisterEnvActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
-            Assert.True(container.IsRegistered<IInfoOptions>(), "Info options are registered");
-            Assert.True(container.IsRegistered<IInfoContributor>(), "At least one Info contributor registered");
-            Assert.True(container.IsRegistered<IEndpoint<Dictionary<string, object>>>(), "Info endpoint is registered");
-            Assert.True(container.IsRegistered<EndpointOwinMiddleware<Dictionary<string, object>>>(), "Env endpoint middleware is registered");
+            Assert.True(container.IsRegistered<IEnvOptions>(), "Env options are registered");
+            Assert.True(container.IsRegistered<IHostingEnvironment>(), "IHostingEnvironment is registered");
+            Assert.True(container.IsRegistered<IEndpoint<EnvironmentDescriptor>>(), "Env endpoint is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<EnvironmentDescriptor>>(), "Env endpoint middleware is registered");
         }
 
         ////[Fact]
-        ////public void RegisterInfoModule_ThrowsOnNulls()
+        ////public void RegisterEnvModule_ThrowsOnNulls()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerNull = null;
@@ -73,8 +71,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    var ex = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoModule(containerNull, config));
-        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoModule(containerBuilder, configNull));
+        ////    var ex = Assert.Throws<ArgumentNullException>(() => EnvContainerBuilderExtensions.RegisterEnvModule(containerNull, config));
+        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => EnvContainerBuilderExtensions.RegisterEnvModule(containerBuilder, configNull));
 
         ////    // Assert
         ////    Assert.Equal("container", ex.ParamName);
@@ -82,21 +80,21 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         ////}
 
         ////[Fact]
-        ////public void RegisterInfoModule_RegistersComponents()
+        ////public void RegisterEnvModule_RegistersComponents()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerBuilder = new ContainerBuilder();
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    InfoContainerBuilderExtensions.RegisterInfoModule(containerBuilder, config);
+        ////    EnvContainerBuilderExtensions.RegisterEnvModule(containerBuilder, config);
         ////    var container = containerBuilder.Build();
 
         ////    // Assert
-        ////    Assert.True(container.IsRegistered<IInfoOptions>(), "Info options are registered");
-        ////    Assert.True(container.IsRegistered<InfoEndpoint>(), "Info endpoint is registered");
-        ////    Assert.True(container.IsRegistered<IInfoContributor>(), "At least one Info contributor registered");
-        ////    Assert.True(container.IsRegistered<IHttpModule>(), "Info HttpModule is registered");
+        ////    Assert.True(container.IsRegistered<IEnvOptions>(), "Env options are registered");
+        ////    Assert.True(container.IsRegistered<IHostingEnvironment>(), "IHostingEnvironment is registered");
+        ////    Assert.True(container.IsRegistered<IEndpoint<EnvironmentDescriptor>>(), "Env endpoint is registered");
+        ////    Assert.True(container.IsRegistered<IHttpModule>(), "Env HttpModule is registered");
         ////}
     }
 }

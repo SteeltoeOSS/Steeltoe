@@ -14,22 +14,22 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.EndpointOwin;
+using Steeltoe.Management.Endpoint.Env;
 using System;
-using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
 {
-    public static class RefreshContainerBuilderExtensions
+    public static class EnvContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Refresh endpoint, OWIN middleware and options
+        /// Register the ENV endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterRefreshActuator(this ContainerBuilder container, IConfiguration config)
+        /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
+        public static void RegisterEnvActuator(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
         {
             if (container == null)
             {
@@ -41,9 +41,10 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
-            container.RegisterType<RefreshEndpoint>().As<IEndpoint<IList<string>>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<IList<string>>>().SingleInstance();
+            container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
+            container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment() { EnvironmentName = "Production" }).As<IHostingEnvironment>();
+            container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<EnvironmentDescriptor>>().SingleInstance();
         }
     }
 }

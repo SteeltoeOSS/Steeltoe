@@ -14,23 +14,22 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Env;
-using Steeltoe.Management.EndpointOwin;
+using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.EndpointOwin.Mappings;
 using System;
+using System.Web.Http.Description;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
 {
-    public static class EnvContainerBuilderExtensions
+    public static class MappingsContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the ENV endpoint, OWIN middleware and options
+        /// Register the Mappings endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
-        public static void RegisterEnvActuator(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
+        /// <param name="apiExplorer"><see cref="ApiExplorer"/> for iterating registered routes</param>
+        public static void RegisterMappingsActuator(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer)
         {
             if (container == null)
             {
@@ -42,10 +41,15 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
-            container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment() { EnvironmentName = "Production" }).As<IHostingEnvironment>();
-            container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<EnvironmentDescriptor>>().SingleInstance();
+            if (apiExplorer == null)
+            {
+                throw new ArgumentNullException(nameof(apiExplorer));
+            }
+
+            container.RegisterInstance(new MappingsOptions(config)).As<IMappingsOptions>();
+            container.RegisterInstance(apiExplorer);
+            container.RegisterType<MappingsEndpoint>().SingleInstance();
+            container.RegisterType<MappingsEndpointOwinMiddleware>().SingleInstance();
         }
     }
 }

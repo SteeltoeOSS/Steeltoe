@@ -16,7 +16,7 @@ using Autofac;
 using Steeltoe.Management.EndpointOwin.Diagnostics;
 using System;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators
+namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
 {
     public static class DiagnosticSourceContainerBuilderExtensions
     {
