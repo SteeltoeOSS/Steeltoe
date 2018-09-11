@@ -88,7 +88,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
-                    _logger?.LogDebug("RegisterAsync {0}, status: {1}", requestUri.ToString(), response.StatusCode);
+                    _logger?.LogDebug("RegisterAsync {RequestUri}, status: {StatusCode}", requestUri.ToString(), response.StatusCode);
                     EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode)
                     {
                         Headers = response.Headers
@@ -104,7 +104,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("RegisterAsync Exception:", e);
+                _logger?.LogError(e, "RegisterAsync Failed");
                 throw;
             }
             finally
@@ -170,7 +170,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     }
 
                     _logger?.LogDebug(
-                        "SendHeartbeatAsync {0}, status: {1}, instanceInfo: {2}",
+                        "SendHeartbeatAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}",
                         requestUri.ToString(),
                         response.StatusCode,
                         (infoResp != null) ? infoResp.ToString() : "null");
@@ -183,7 +183,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("SendHeartbeatAsync Exception: {0}", e);
+                _logger?.LogError(e, "SendHeartBeatAsync Failed");
                 throw;
             }
             finally
@@ -254,7 +254,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     }
 
                     _logger?.LogDebug(
-                        "GetApplicationAsync {0}, status: {1}, application: {2}",
+                        "GetApplicationAsync {RequestUri}, status: {StatusCode}, application: {Application}",
                         requestUri.ToString(),
                         response.StatusCode,
                         (appResp != null) ? appResp.ToString() : "null");
@@ -267,7 +267,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("GetApplicationAsync Exception: {0}", e);
+                _logger?.LogError(e, "GetApplicationAsync Failed");
                 throw;
             }
             finally
@@ -329,7 +329,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
-                    _logger?.LogDebug("CancelAsync {0}, status: {1}", requestUri.ToString(), response.StatusCode);
+                    _logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}", requestUri.ToString(), response.StatusCode);
                     EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode)
                     {
                         Headers = response.Headers
@@ -339,7 +339,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("CancelAsync Exception: {0}", e);
+                _logger?.LogError(e, "CancelAsync Failed");
                 throw;
             }
             finally
@@ -385,7 +385,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
-                    _logger?.LogDebug("DeleteStatusOverrideAsync {0}, status: {1}", requestUri.ToString(), response.StatusCode);
+                    _logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}", requestUri.ToString(), response.StatusCode);
                     EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode)
                     {
                         Headers = response.Headers
@@ -395,7 +395,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("DeleteStatusOverrideAsync Exception: {0}", e);
+                _logger?.LogError(e, "DeleteStatusOverrideAsync Failed");
                 throw;
             }
             finally
@@ -443,7 +443,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
                 {
-                    _logger?.LogDebug("StatusUpdateAsync {0}, status: {1}", requestUri.ToString(), response.StatusCode);
+                    _logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}", requestUri.ToString(), response.StatusCode);
                     EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode)
                     {
                         Headers = response.Headers
@@ -453,7 +453,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("StatusUpdateAsync Exception: {0}", e);
+                _logger?.LogError(e, "StatusUpdateAsync Failed");
                 throw;
             }
             finally
@@ -555,7 +555,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     }
 
                     _logger?.LogDebug(
-                        "DoGetInstanceAsync {0}, status: {1}, instanceInfo: {2}",
+                        "DoGetInstanceAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}",
                        requestUri.ToString(),
                        response.StatusCode,
                        (infoResp != null) ? infoResp.ToString() : "null");
@@ -568,7 +568,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("DoGetInstanceAsync Exception: {0}", e);
+                _logger?.LogError(e, "DoGetInstanceAsync Failed");
                 throw;
             }
             finally
@@ -616,7 +616,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     }
 
                     _logger?.LogDebug(
-                        "DoGetApplicationsAsync {0}, status: {1}, applications: {2}",
+                        "DoGetApplicationsAsync {RequestUri}, status: {StatusCode}, applications: {Application}",
                         requestUri.ToString(),
                         response.StatusCode,
                         (appsResp != null) ? appsResp.ToString() : "null");
@@ -629,7 +629,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError("DoGetApplicationsAsync Exception: {0}", e);
+                _logger?.LogError(e, "DoGetApplicationsAsync Failed");
                 throw;
             }
             finally
@@ -654,12 +654,12 @@ namespace Steeltoe.Discovery.Eureka.Transport
             try
             {
                 string json = JsonConvert.SerializeObject(toSerialize);
-                _logger?.LogDebug("GetRequestContent generated JSON: {0}", json);
+                _logger?.LogDebug($"GetRequestContent generated JSON: {json}");
                 return new StringContent(json, Encoding.UTF8, "application/json");
             }
             catch (Exception e)
             {
-                _logger?.LogError("GetRequestContent Exception: {0}", e);
+                _logger?.LogError(e, "GetRequestContent Failed");
             }
 
             return new StringContent(string.Empty, Encoding.UTF8, "application/json");

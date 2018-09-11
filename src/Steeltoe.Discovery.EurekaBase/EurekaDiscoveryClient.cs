@@ -121,7 +121,7 @@ namespace Steeltoe.Discovery.Eureka
             List<IServiceInstance> instances = new List<IServiceInstance>();
             foreach (InstanceInfo info in infos)
             {
-                _logger?.LogDebug("GetInstances returning: {0}", info.ToString());
+                _logger?.LogDebug($"GetInstances returning: {info}");
                 instances.Add(new EurekaServiceInstance(info));
             }
 
