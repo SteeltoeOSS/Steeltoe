@@ -20,7 +20,7 @@ artifacts:
 environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  ProjectList: "Steeltoe.Management.Diagnostics Steeltoe.Management.OpenCensus Steeltoe.Management.EndpointBase Steeltoe.Management.TracingBase Steeltoe.Management.ExporterBase Steeltoe.Management.EndpointCore Steeltoe.Management.TracingCore Steeltoe.Management.ExporterCore Steeltoe.Management.CloudFoundryCore Steeltoe.Management.EndpointWeb Steeltoe.Management.EndpointOwin Steeltoe.Management.EndpointAutofac"
+  ProjectList: "Steeltoe.Management.Diagnostics Steeltoe.Management.OpenCensus Steeltoe.Management.EndpointBase Steeltoe.Management.TracingBase Steeltoe.Management.ExporterBase Steeltoe.Management.EndpointCore Steeltoe.Management.TracingCore Steeltoe.Management.ExporterCore Steeltoe.Management.CloudFoundryCore Steeltoe.Management.EndpointWeb Steeltoe.Management.EndpointOwin Steeltoe.Management.EndpointOwin.Autofac"
   PackageReferencesToUpdate:
   github_access_token:
     secure: ko4J3M/czguVI9AbVdkv5qZuj3Wuzts5nkz/6cypneFkQGWJXDs8Akg7xOEMu8qU

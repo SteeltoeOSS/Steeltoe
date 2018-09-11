@@ -9,7 +9,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointAutofac\Steeltoe.Management.EndpointOwin.Autofac.csproj" />
+    <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointOwin.Autofac\Steeltoe.Management.EndpointOwin.Autofac.csproj" />
     <ProjectReference Include="..\Steeltoe.Management.EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj" />
   </ItemGroup>
 
