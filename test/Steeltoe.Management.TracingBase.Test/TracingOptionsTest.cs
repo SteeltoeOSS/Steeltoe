@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Equal(TracingOptions.DEFAULT_INGRESS_IGNORE_PATTERN, opts.IngressIgnorePattern);
             Assert.False(opts.AlwaysSample);
             Assert.False(opts.NeverSample);
-            Assert.False(opts.UseShortTraceIds);
+            Assert.True(opts.UseShortTraceIds);
             Assert.Equal(TracingOptions.DEFAULT_EGRESS_IGNORE_PATTERN, opts.EgressIgnorePattern);
             Assert.Equal(0, opts.MaxNumberOfAnnotations);
             Assert.Equal(0, opts.MaxNumberOfAttributes);

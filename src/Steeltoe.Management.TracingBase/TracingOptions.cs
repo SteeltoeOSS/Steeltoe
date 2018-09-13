@@ -76,7 +76,7 @@ namespace Steeltoe.Management.Tracing
 
         public bool NeverSample { get; set; }
 
-        public bool UseShortTraceIds { get; set; }
+        public bool UseShortTraceIds { get; set; } = true;
 
         internal string GetApplicationName(string defaultName, IConfiguration config)
         {
