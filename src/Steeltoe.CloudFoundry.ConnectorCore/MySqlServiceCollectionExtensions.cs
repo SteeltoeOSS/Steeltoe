@@ -15,23 +15,26 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.CloudFoundry.Connector.Relational.MySql;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
+using System.Data;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
+namespace Steeltoe.CloudFoundry.Connector.MySql
 {
-    public static class MySqlDbContextServiceCollectionExtensions
+    public static class MySqlServiceCollectionExtensions
     {
         /// <summary>
-        /// Add a MySql-backed DbContext and MySQL health contributor to the Service Collection
+        /// Add an IHealthContributor to a ServiceCollection for MySQL
         /// </summary>
-        /// <typeparam name="TContext">Type of DbContext to add</typeparam>
-        /// <param name="services">Service Collection</param>
-        /// <param name="config">Application Configuration</param>
+        /// <param name="services">Service collection to add to</param>
+        /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
+        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -44,22 +47,21 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
             }
 
             MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
-            DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
         /// <summary>
-        /// Add a MySql-backed DbContext and MySQL health contributor to the Service Collection
+        /// Add an IHealthContributor to a ServiceCollection for MySQL
         /// </summary>
-        /// <typeparam name="TContext">Type of DbContext to add</typeparam>
-        /// <param name="services">Service Collection</param>
-        /// <param name="config">Application Configuration</param>
-        /// <param name="serviceName">Name of service binding in Cloud Foundry</param>
+        /// <param name="services">Service collection to add to</param>
+        /// <param name="config">App configuration</param>
+        /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
+        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -77,17 +79,16 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
             }
 
             MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
-            DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, IConfiguration config, MySqlServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
-
-            MySqlDbContextConnectorFactory factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
-            services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
+            var mySqlConfig = new MySqlProviderConnectorOptions(config);
+            var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, MySqlTypeLocator.MySqlConnection);
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), contextLifetime));
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
         }
 
         [Fact]
-        public void UseMySql_ThrowsIfConfigurtionNull()
+        public void UseMySql_ThrowsIfConfigurationNull()
         {
             // Arrange
             DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();

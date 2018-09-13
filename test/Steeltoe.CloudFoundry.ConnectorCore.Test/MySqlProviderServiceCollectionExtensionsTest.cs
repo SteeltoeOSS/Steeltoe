@@ -48,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         }
 
         [Fact]
-        public void AddMySqlConnection_ThrowsIfConfigurtionNull()
+        public void AddMySqlConnection_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();

@@ -48,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         }
 
         [Fact]
-        public void AddPostgresConnection_ThrowsIfConfigurtionNull()
+        public void AddPostgresConnection_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();

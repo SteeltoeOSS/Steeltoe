@@ -48,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         }
 
         [Fact]
-        public void AddSqlServerConnection_ThrowsIfConfigurtionNull()
+        public void AddSqlServerConnection_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();

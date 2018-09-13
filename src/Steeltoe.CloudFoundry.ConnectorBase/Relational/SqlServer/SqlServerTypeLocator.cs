@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector;
 using System;
 
 namespace Steeltoe.CloudFoundry.Connector.Relational.SqlServer
@@ -33,7 +32,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.SqlServer
         public static readonly string[] ConnectionTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
 
         /// <summary>
-        /// Gets SqlConnection from a MySQL Library
+        /// Gets SqlConnection from a SQL Server Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
         public static Type SqlConnection
