@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         public LoggersEndpoint(ILoggersOptions options, ILoggerProvider cloudFoundryLoggerProvider, ILogger<LoggersEndpoint> logger = null)
             : base(options)
         {
-            _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider as DynamicLoggerProvider;
+            _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider as IDynamicLoggerProvider;
             _logger = logger;
         }
 
