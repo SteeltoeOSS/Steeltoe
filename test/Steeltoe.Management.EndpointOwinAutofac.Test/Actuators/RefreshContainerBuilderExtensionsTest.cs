@@ -14,18 +14,20 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.Loggers;
+using Steeltoe.Management.EndpointOwin;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
-    public class LoggersContainerBuilderExtensionsTest : BaseTest
+    public class RefreshContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void RegisterLoggersMiddleware_ThrowsOnNulls()
+        public void RegisterRefreshMiddleware_ThrowsOnNulls()
         {
             // Arrange
             ContainerBuilder containerNull = null;
@@ -34,8 +36,8 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => LoggersContainerBuilderExtensions.RegisterLoggersActuator(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => LoggersContainerBuilderExtensions.RegisterLoggersActuator(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => RefreshContainerBuilderExtensions.RegisterRefreshActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => RefreshContainerBuilderExtensions.RegisterRefreshActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -43,20 +45,20 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
         }
 
         [Fact]
-        public void RegisterLoggersMiddleware_RegistersComponents()
+        public void RegisterRefreshMiddleware_RegistersComponents()
         {
             // Arrange
             ContainerBuilder containerBuilder = new ContainerBuilder();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            LoggersContainerBuilderExtensions.RegisterLoggersActuator(containerBuilder, config);
+            RefreshContainerBuilderExtensions.RegisterRefreshActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
-            Assert.True(container.IsRegistered<ILoggersOptions>(), "Loggers options are registered");
-            Assert.True(container.IsRegistered<LoggersEndpoint>(), "Loggers endpoint is registered");
-            Assert.True(container.IsRegistered<LoggersEndpointOwinMiddleware>(), "Loggers endpoint middleware is registered");
+            Assert.True(container.IsRegistered<IRefreshOptions>(), "Refresh options are registered");
+            Assert.True(container.IsRegistered<IEndpoint<IList<string>>>(), "Refresh endpoint is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<IList<string>>>(), "Refresh endpoint middleware is registered");
         }
     }
 }

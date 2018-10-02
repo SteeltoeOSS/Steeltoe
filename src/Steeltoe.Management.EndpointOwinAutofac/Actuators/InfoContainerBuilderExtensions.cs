@@ -17,10 +17,11 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
+using Steeltoe.Management.EndpointOwin;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
     public static class InfoContainerBuilderExtensions
     {

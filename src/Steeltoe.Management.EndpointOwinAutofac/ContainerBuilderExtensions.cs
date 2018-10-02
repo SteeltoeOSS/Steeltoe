@@ -15,11 +15,11 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.EndpointOwin.Autofac.Actuators;
+using Steeltoe.Management.EndpointOwinAutofac.Actuators;
 using System;
 using System.Web.Http.Description;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac
+namespace Steeltoe.Management.EndpointOwinAutofac
 {
     public static class ContainerBuilderExtensions
     {

@@ -23,7 +23,7 @@ using System;
 using System.Web;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
     public class HealthContainerBuilderExtensionsTest : BaseTest
     {

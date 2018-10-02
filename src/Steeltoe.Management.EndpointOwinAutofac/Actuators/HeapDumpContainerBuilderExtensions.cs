@@ -14,22 +14,21 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.HeapDump;
+using Steeltoe.Management.EndpointOwin.HeapDump;
 using System;
+using System.IO;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
-    public static class EnvContainerBuilderExtensions
+    public static class HeapDumpContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the ENV endpoint, OWIN middleware and options
+        /// Register the HeapDump endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
-        public static void RegisterEnvActuator(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
+        public static void RegisterHeapDumpActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -41,10 +40,18 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
-            container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment() { EnvironmentName = "Production" }).As<IHostingEnvironment>();
-            container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<EnvironmentDescriptor>>().SingleInstance();
+            container.RegisterInstance(new HeapDumpOptions(config)).As<IHeapDumpOptions>();
+
+            // REVIEW: is this path override necessary? Running under IIS Express, the path comes up wrong
+            container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot()).SingleInstance();
+            container.RegisterType<HeapDumpEndpoint>().SingleInstance();
+            container.RegisterType<HeapDumpEndpointOwinMiddleware>().SingleInstance();
+        }
+
+        private static string GetContentRoot()
+        {
+            var basePath = (string)AppDomain.CurrentDomain.GetData("APP_CONTEXT_BASE_DIRECTORY") ?? AppDomain.CurrentDomain.BaseDirectory;
+            return Path.GetFullPath(basePath);
         }
     }
 }

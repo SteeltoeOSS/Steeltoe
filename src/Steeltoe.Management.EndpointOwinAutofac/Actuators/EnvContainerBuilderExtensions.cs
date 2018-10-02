@@ -14,23 +14,23 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Diagnostics;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Trace;
-using Steeltoe.Management.EndpointOwin.Trace;
+using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.EndpointOwin;
 using System;
-using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
-    public static class TraceContainerBuilderExtensions
+    public static class EnvContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Trace endpoint, OWIN middleware and options
+        /// Register the ENV endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterTraceActuator(this ContainerBuilder container, IConfiguration config)
+        /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
+        public static void RegisterEnvActuator(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
         {
             if (container == null)
             {
@@ -42,12 +42,10 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
-            container.RegisterType<TraceDiagnosticObserver>().As<IDiagnosticObserver>().As<ITraceRepository>().SingleInstance();
-            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
-
-            container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<List<TraceResult>>>().SingleInstance();
+            container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
+            container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment() { EnvironmentName = "Production" }).As<IHostingEnvironment>();
+            container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<EnvironmentDescriptor>>().SingleInstance();
         }
     }
 }

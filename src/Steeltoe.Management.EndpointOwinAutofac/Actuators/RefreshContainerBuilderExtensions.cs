@@ -14,21 +14,22 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.EndpointOwin.HeapDump;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.EndpointOwin;
 using System;
-using System.IO;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
-    public static class HeapDumpContainerBuilderExtensions
+    public static class RefreshContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the HeapDump endpoint, OWIN middleware and options
+        /// Register the Refresh endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHeapDumpActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterRefreshActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -40,18 +41,9 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new HeapDumpOptions(config)).As<IHeapDumpOptions>();
-
-            // REVIEW: is this path override necessary? Running under IIS Express, the path comes up wrong
-            container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot()).SingleInstance();
-            container.RegisterType<HeapDumpEndpoint>().SingleInstance();
-            container.RegisterType<HeapDumpEndpointOwinMiddleware>().SingleInstance();
-        }
-
-        private static string GetContentRoot()
-        {
-            var basePath = (string)AppDomain.CurrentDomain.GetData("APP_CONTEXT_BASE_DIRECTORY") ?? AppDomain.CurrentDomain.BaseDirectory;
-            return Path.GetFullPath(basePath);
+            container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
+            container.RegisterType<RefreshEndpoint>().As<IEndpoint<IList<string>>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<IList<string>>>().SingleInstance();
         }
     }
 }

@@ -16,17 +16,18 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.ThreadDump;
+using Steeltoe.Management.EndpointOwin;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
-    public class TraceContainerBuilderExtensionsTest : BaseTest
+    public class ThreadDumpContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void RegisterTraceMiddleware_ThrowsOnNulls()
+        public void RegisterThreadDumpMiddleware_ThrowsOnNulls()
         {
             // Arrange
             ContainerBuilder containerNull = null;
@@ -35,8 +36,8 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => TraceContainerBuilderExtensions.RegisterTraceActuator(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => TraceContainerBuilderExtensions.RegisterTraceActuator(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => ThreadDumpContainerBuilderExtensions.RegisterThreadDumpActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => ThreadDumpContainerBuilderExtensions.RegisterThreadDumpActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -44,21 +45,21 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
         }
 
         [Fact]
-        public void RegisterTraceMiddleware_RegistersComponents()
+        public void RegisterThreadDumpMiddleware_RegistersComponents()
         {
             // Arrange
             ContainerBuilder containerBuilder = new ContainerBuilder();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            TraceContainerBuilderExtensions.RegisterTraceActuator(containerBuilder, config);
+            ThreadDumpContainerBuilderExtensions.RegisterThreadDumpActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
-            Assert.True(container.IsRegistered<ITraceOptions>(), "Trace options are registered");
-            Assert.True(container.IsRegistered<ITraceRepository>(), "ITraceRepository is registered");
-            Assert.True(container.IsRegistered<IEndpoint<List<TraceResult>>>(), "Trace endpoint is registered");
-            Assert.True(container.IsRegistered<EndpointOwinMiddleware<List<TraceResult>>>(), "Trace endpoint middleware is registered");
+            Assert.True(container.IsRegistered<IThreadDumpOptions>(), "ThreadDump options are registered");
+            Assert.True(container.IsRegistered<IThreadDumper>(), "ThreadDumper is registered");
+            Assert.True(container.IsRegistered<IEndpoint<List<ThreadInfo>>>(), "ThreadDump endpoint is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<List<ThreadInfo>>>(), "ThreadDump endpoint middleware is registered");
         }
     }
 }

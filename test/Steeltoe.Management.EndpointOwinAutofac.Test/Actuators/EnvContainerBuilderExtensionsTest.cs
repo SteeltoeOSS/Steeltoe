@@ -14,18 +14,20 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.HeapDump;
+using Microsoft.Extensions.Hosting;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.HeapDump;
+using Steeltoe.Management.EndpointOwin;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
-    public class HeapDumpContainerBuilderExtensionsTest : BaseTest
+    public class EnvContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void RegisterHeapDumpMiddleware_ThrowsOnNulls()
+        public void RegisterEnvMiddleware_ThrowsOnNulls()
         {
             // Arrange
             ContainerBuilder containerNull = null;
@@ -34,8 +36,8 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpActuator(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpActuator(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => EnvContainerBuilderExtensions.RegisterEnvActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => EnvContainerBuilderExtensions.RegisterEnvActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -43,25 +45,25 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
         }
 
         [Fact]
-        public void RegisterHeapDumpMiddleware_RegistersComponents()
+        public void RegisterEnvMiddleware_RegistersComponents()
         {
             // Arrange
             ContainerBuilder containerBuilder = new ContainerBuilder();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            HeapDumpContainerBuilderExtensions.RegisterHeapDumpActuator(containerBuilder, config);
+            EnvContainerBuilderExtensions.RegisterEnvActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
-            Assert.True(container.IsRegistered<IHeapDumpOptions>(), "HeapDump options are registered");
-            Assert.True(container.IsRegistered<IHeapDumper>(), "HeapDumper is registered");
-            Assert.True(container.IsRegistered<HeapDumpEndpoint>(), "HeapDump endpoint is registered");
-            Assert.True(container.IsRegistered<HeapDumpEndpointOwinMiddleware>(), "Env endpoint middleware is registered");
+            Assert.True(container.IsRegistered<IEnvOptions>(), "Env options are registered");
+            Assert.True(container.IsRegistered<IHostingEnvironment>(), "IHostingEnvironment is registered");
+            Assert.True(container.IsRegistered<IEndpoint<EnvironmentDescriptor>>(), "Env endpoint is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<EnvironmentDescriptor>>(), "Env endpoint middleware is registered");
         }
 
         ////[Fact]
-        ////public void RegisterHeapDumpModule_ThrowsOnNulls()
+        ////public void RegisterEnvModule_ThrowsOnNulls()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerNull = null;
@@ -70,8 +72,8 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    var ex = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpModule(containerNull, config));
-        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpModule(containerBuilder, configNull));
+        ////    var ex = Assert.Throws<ArgumentNullException>(() => EnvContainerBuilderExtensions.RegisterEnvModule(containerNull, config));
+        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => EnvContainerBuilderExtensions.RegisterEnvModule(containerBuilder, configNull));
 
         ////    // Assert
         ////    Assert.Equal("container", ex.ParamName);
@@ -79,21 +81,21 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
         ////}
 
         ////[Fact]
-        ////public void RegisterHeapDumpModule_RegistersComponents()
+        ////public void RegisterEnvModule_RegistersComponents()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerBuilder = new ContainerBuilder();
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    HeapDumpContainerBuilderExtensions.RegisterHeapDumpModule(containerBuilder, config);
+        ////    EnvContainerBuilderExtensions.RegisterEnvModule(containerBuilder, config);
         ////    var container = containerBuilder.Build();
 
         ////    // Assert
-        ////    Assert.True(container.IsRegistered<IHeapDumpOptions>(), "HeapDump options are registered");
-        ////    Assert.True(container.IsRegistered<IHeapDumper>(), "HeapDumper is registered");
-        ////    Assert.True(container.IsRegistered<HeapDumpEndpoint>(), "HeapDump endpoint is registered");
-        ////    Assert.True(container.IsRegistered<IHttpModule>(), "HeapDump HttpModule is registered");
+        ////    Assert.True(container.IsRegistered<IEnvOptions>(), "Env options are registered");
+        ////    Assert.True(container.IsRegistered<IHostingEnvironment>(), "IHostingEnvironment is registered");
+        ////    Assert.True(container.IsRegistered<IEndpoint<EnvironmentDescriptor>>(), "Env endpoint is registered");
+        ////    Assert.True(container.IsRegistered<IHttpModule>(), "Env HttpModule is registered");
         ////}
     }
 }

@@ -20,7 +20,7 @@ using Steeltoe.Management.EndpointOwin.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
     public class CloudFoundryContainerBuilderExtensionsTest : BaseTest
     {

@@ -58,11 +58,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Exporte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin", "src\Steeltoe.Management.EndpointOwin\Steeltoe.Management.EndpointOwin.csproj", "{15EA9784-0887-4CA9-8FC4-B9E7C5D2F95A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin.Autofac", "src\Steeltoe.Management.EndpointOwin.Autofac\Steeltoe.Management.EndpointOwin.Autofac.csproj", "{FCF5A911-989B-4DCD-9165-D00A66F9F11B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac", "src\Steeltoe.Management.EndpointOwinAutofac\Steeltoe.Management.EndpointOwinAutofac.csproj", "{FCF5A911-989B-4DCD-9165-D00A66F9F11B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin.Test", "test\Steeltoe.Management.EndpointOwin.Test\Steeltoe.Management.EndpointOwin.Test.csproj", "{D2236310-69D7-4623-B76E-615C2BA5322E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin.Autofac.Test", "test\Steeltoe.Management.EndpointOwin.Autofac.Test\Steeltoe.Management.EndpointOwin.Autofac.Test.csproj", "{C23A188B-ECD2-4730-85EA-BE3930DD4786}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac.Test", "test\Steeltoe.Management.EndpointOwinAutofac.Test\Steeltoe.Management.EndpointOwinAutofac.Test.csproj", "{C23A188B-ECD2-4730-85EA-BE3930DD4786}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb", "src\Steeltoe.Management.EndpointWeb\Steeltoe.Management.EndpointWeb.csproj", "{80CA3842-F0DC-4245-A10F-2C027E4B82F6}"
 EndProject

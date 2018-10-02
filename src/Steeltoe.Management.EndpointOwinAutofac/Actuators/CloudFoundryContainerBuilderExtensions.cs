@@ -18,7 +18,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.EndpointOwin.CloudFoundry;
 using System;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
     public static class CloudFoundryContainerBuilderExtensions
     {

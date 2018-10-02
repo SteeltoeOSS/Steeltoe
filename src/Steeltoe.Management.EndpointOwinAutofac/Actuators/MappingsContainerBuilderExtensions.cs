@@ -19,7 +19,7 @@ using Steeltoe.Management.EndpointOwin.Mappings;
 using System;
 using System.Web.Http.Description;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
     public static class MappingsContainerBuilderExtensions
     {

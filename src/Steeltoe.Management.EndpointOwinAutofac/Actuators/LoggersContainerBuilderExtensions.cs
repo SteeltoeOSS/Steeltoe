@@ -23,7 +23,7 @@ using Steeltoe.Management.EndpointOwin.Loggers;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
     public static class LoggersContainerBuilderExtensions
     {

@@ -14,19 +14,18 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointOwin.HeapDump;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
-    public class InfoContainerBuilderExtensionsTest : BaseTest
+    public class HeapDumpContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void RegisterInfoMiddleware_ThrowsOnNulls()
+        public void RegisterHeapDumpMiddleware_ThrowsOnNulls()
         {
             // Arrange
             ContainerBuilder containerNull = null;
@@ -35,8 +34,8 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoActuator(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoActuator(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -44,25 +43,25 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
         }
 
         [Fact]
-        public void RegisterInfoMiddleware_RegistersComponents()
+        public void RegisterHeapDumpMiddleware_RegistersComponents()
         {
             // Arrange
             ContainerBuilder containerBuilder = new ContainerBuilder();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            InfoContainerBuilderExtensions.RegisterInfoActuator(containerBuilder, config);
+            HeapDumpContainerBuilderExtensions.RegisterHeapDumpActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
-            Assert.True(container.IsRegistered<IInfoOptions>(), "Info options are registered");
-            Assert.True(container.IsRegistered<IInfoContributor>(), "At least one Info contributor registered");
-            Assert.True(container.IsRegistered<IEndpoint<Dictionary<string, object>>>(), "Info endpoint is registered");
-            Assert.True(container.IsRegistered<EndpointOwinMiddleware<Dictionary<string, object>>>(), "Env endpoint middleware is registered");
+            Assert.True(container.IsRegistered<IHeapDumpOptions>(), "HeapDump options are registered");
+            Assert.True(container.IsRegistered<IHeapDumper>(), "HeapDumper is registered");
+            Assert.True(container.IsRegistered<HeapDumpEndpoint>(), "HeapDump endpoint is registered");
+            Assert.True(container.IsRegistered<HeapDumpEndpointOwinMiddleware>(), "Env endpoint middleware is registered");
         }
 
         ////[Fact]
-        ////public void RegisterInfoModule_ThrowsOnNulls()
+        ////public void RegisterHeapDumpModule_ThrowsOnNulls()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerNull = null;
@@ -71,8 +70,8 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    var ex = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoModule(containerNull, config));
-        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => InfoContainerBuilderExtensions.RegisterInfoModule(containerBuilder, configNull));
+        ////    var ex = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpModule(containerNull, config));
+        ////    var ex2 = Assert.Throws<ArgumentNullException>(() => HeapDumpContainerBuilderExtensions.RegisterHeapDumpModule(containerBuilder, configNull));
 
         ////    // Assert
         ////    Assert.Equal("container", ex.ParamName);
@@ -80,21 +79,21 @@ namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators.Test
         ////}
 
         ////[Fact]
-        ////public void RegisterInfoModule_RegistersComponents()
+        ////public void RegisterHeapDumpModule_RegistersComponents()
         ////{
         ////    // Arrange
         ////    ContainerBuilder containerBuilder = new ContainerBuilder();
         ////    IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         ////    // Act
-        ////    InfoContainerBuilderExtensions.RegisterInfoModule(containerBuilder, config);
+        ////    HeapDumpContainerBuilderExtensions.RegisterHeapDumpModule(containerBuilder, config);
         ////    var container = containerBuilder.Build();
 
         ////    // Assert
-        ////    Assert.True(container.IsRegistered<IInfoOptions>(), "Info options are registered");
-        ////    Assert.True(container.IsRegistered<InfoEndpoint>(), "Info endpoint is registered");
-        ////    Assert.True(container.IsRegistered<IInfoContributor>(), "At least one Info contributor registered");
-        ////    Assert.True(container.IsRegistered<IHttpModule>(), "Info HttpModule is registered");
+        ////    Assert.True(container.IsRegistered<IHeapDumpOptions>(), "HeapDump options are registered");
+        ////    Assert.True(container.IsRegistered<IHeapDumper>(), "HeapDumper is registered");
+        ////    Assert.True(container.IsRegistered<HeapDumpEndpoint>(), "HeapDump endpoint is registered");
+        ////    Assert.True(container.IsRegistered<IHttpModule>(), "HeapDump HttpModule is registered");
         ////}
     }
 }

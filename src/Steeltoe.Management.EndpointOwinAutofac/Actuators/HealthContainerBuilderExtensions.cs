@@ -20,7 +20,7 @@ using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.EndpointOwin.Health;
 using System;
 
-namespace Steeltoe.Management.EndpointOwin.Autofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
     public static class HealthContainerBuilderExtensions
     {
