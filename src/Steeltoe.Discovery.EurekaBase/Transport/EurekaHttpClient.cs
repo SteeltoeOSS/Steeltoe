@@ -34,6 +34,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected IDictionary<string, string> _headers;
 
         protected IEurekaClientConfig _config;
+        protected IEurekaDiscoveryClientHandlerProvider _handlerProvider;
 
         protected virtual IEurekaClientConfig Config
         {
@@ -50,14 +51,15 @@ namespace Steeltoe.Discovery.Eureka.Transport
         public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null)
             : this(config, new Dictionary<string, string>(), logFactory) => _client = client;
 
-        public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null)
-            : this(config, new Dictionary<string, string>(), logFactory)
+        public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
+            : this(config, new Dictionary<string, string>(), logFactory, handlerProvider)
         {
         }
 
-        public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null)
+        public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
+            _handlerProvider = handlerProvider;
             Initialize(headers, logFactory);
         }
 
@@ -644,6 +646,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             if (_client != null)
             {
                 return _client;
+            }
+
+            if (_handlerProvider != null)
+            {
+                return HttpClientHelper.GetHttpClient(config.ValidateCertificates, _handlerProvider.GetHttpClientHandler(), config.EurekaServerConnectTimeoutSeconds * 1000);
             }
 
             return HttpClientHelper.GetHttpClient(config.ValidateCertificates, config.EurekaServerConnectTimeoutSeconds * 1000);

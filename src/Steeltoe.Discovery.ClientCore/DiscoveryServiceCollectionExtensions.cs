@@ -20,6 +20,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka;
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 
 namespace Steeltoe.Discovery.Client
