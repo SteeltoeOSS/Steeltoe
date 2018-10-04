@@ -49,8 +49,10 @@ namespace Steeltoe.Extensions.Logging
             }
 
             var settings = new ConsoleLoggerSettings().FromConfiguration(configuration);
+            var provider = new DynamicLoggerProvider(settings);
             builder.AddFilter<DynamicLoggerProvider>(null, LogLevel.Trace);
-            builder.AddProvider(new DynamicLoggerProvider(settings));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicLoggerProvider>((p) => provider));
+            builder.Services.AddSingleton<IDynamicLoggerProvider>((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
             return builder;
         }
 

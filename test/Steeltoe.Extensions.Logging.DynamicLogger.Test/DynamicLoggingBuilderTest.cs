@@ -302,5 +302,25 @@ namespace Steeltoe.Extensions.Logging.Test
             services.Dispose();
             dlogProvider.Dispose();
         }
+
+        [Fact]
+        public void AddDynamicConsole_WithConfigurationParam_AddsServices()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder => builder.AddDynamicConsole(configuration))
+                .BuildServiceProvider();
+
+            // act
+            var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+            var logProviders = services.GetServices<ILoggerProvider>();
+
+            // assert
+            Assert.NotNull(dlogProvider);
+            Assert.NotEmpty(logProviders);
+            Assert.Single(logProviders);
+            Assert.IsType<DynamicLoggerProvider>(logProviders.SingleOrDefault());
+        }
     }
 }
