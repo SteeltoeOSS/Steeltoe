@@ -149,7 +149,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         public void LoggersEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new LoggersOptions();
-            var ep = new LoggersEndpoint(opts, null);
+            var ep = new LoggersEndpoint(opts, (IDynamicLoggerProvider)null);
             var middle = new LoggersEndpointMiddleware(null, ep);
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/loggers"));
@@ -159,6 +159,40 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath"));
             Assert.True(middle.RequestVerbAndPathMatch("POST", "/loggers/Foo.Bar.Class"));
             Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath/Foo.Bar.Class"));
+        }
+
+        [Fact]
+        public async void LoggersActuator_MultipleProviders_ReturnsExpectedData()
+        {
+            var builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
+               .ConfigureLogging((context, loggingBuilder) =>
+               {
+                   loggingBuilder.AddDynamicConsole(context.Configuration);
+                   loggingBuilder.AddDebug();
+               });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+
+                var loggers = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                Assert.NotNull(loggers);
+                Assert.True(loggers.ContainsKey("levels"));
+                Assert.True(loggers.ContainsKey("loggers"));
+
+                // at least one logger should be returned
+                Assert.True(loggers["loggers"].ToString().Length > 2);
+
+                // parse the response into a dynamic object, verify that Default was returned and configured at Warning
+                dynamic parsedObject = JsonConvert.DeserializeObject(json);
+                Assert.Equal("WARN", parsedObject.loggers.Default.configuredLevel.ToString());
+            }
         }
 
         private HttpContext CreateRequest(string method, string path)

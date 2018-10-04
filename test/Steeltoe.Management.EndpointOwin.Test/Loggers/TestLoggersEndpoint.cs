@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
 using System.Collections.Generic;
 
@@ -20,7 +21,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
 {
     internal class TestLoggersEndpoint : LoggersEndpoint
     {
-        public TestLoggersEndpoint(ILoggersOptions options, ILoggerProvider loggerProvider = null, ILogger<LoggersEndpoint> logger = null)
+        public TestLoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider loggerProvider = null, ILogger<LoggersEndpoint> logger = null)
             : base(options, loggerProvider, logger)
         {
         }

@@ -25,7 +25,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
     public class Startup
     {
         public static ILoggerFactory LoggerFactory;
-        public static ILoggerProvider LoggerProvider;
+        public static IDynamicLoggerProvider LoggerProvider;
 
         public void Configuration(IAppBuilder app)
         {

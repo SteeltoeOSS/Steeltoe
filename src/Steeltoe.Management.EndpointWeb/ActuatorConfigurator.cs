@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Handler;
@@ -123,7 +124,7 @@ namespace Steeltoe.Management.Endpoint
 
         public static void UseLoggerActuator(IConfiguration configuration, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
-            var ep = new LoggersEndpoint(new LoggersOptions(configuration), loggerProvider, CreateLogger<LoggersEndpoint>(loggerFactory));
+            var ep = new LoggersEndpoint(new LoggersOptions(configuration), loggerProvider as IDynamicLoggerProvider, CreateLogger<LoggersEndpoint>(loggerFactory));
             var handler = new LoggersHandler(ep, SecurityService, CreateLogger<LoggersHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
         }
