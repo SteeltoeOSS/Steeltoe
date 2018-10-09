@@ -14,23 +14,24 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.EndpointOwin;
+using Steeltoe.Management.EndpointOwin.Trace;
 using System;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
-    public static class EnvContainerBuilderExtensions
+    public static class TraceContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the ENV endpoint, OWIN middleware and options
+        /// Register the Trace endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
-        public static void RegisterEnvActuator(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
+        public static void RegisterTraceActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -42,10 +43,12 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
-            container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment() { EnvironmentName = "Production" }).As<IHostingEnvironment>();
-            container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<EnvironmentDescriptor>>().SingleInstance();
+            container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
+            container.RegisterType<TraceDiagnosticObserver>().As<IDiagnosticObserver>().As<ITraceRepository>().SingleInstance();
+            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
+
+            container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<List<TraceResult>>>().SingleInstance();
         }
     }
 }

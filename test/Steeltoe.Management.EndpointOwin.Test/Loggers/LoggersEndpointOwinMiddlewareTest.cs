@@ -14,6 +14,7 @@
 
 using Microsoft.Owin.Testing;
 using Newtonsoft.Json;
+using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
@@ -107,7 +108,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
         public void LoggersEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new LoggersOptions();
-            var ep = new LoggersEndpoint(opts, null);
+            var ep = new LoggersEndpoint(opts, (IDynamicLoggerProvider)null);
             var middle = new LoggersEndpointOwinMiddleware(null, ep);
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/loggers"));

@@ -20,10 +20,9 @@ using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin;
 using System;
 using System.Collections.Generic;
-using System.Web;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
     public class InfoContainerBuilderExtensionsTest : BaseTest
     {

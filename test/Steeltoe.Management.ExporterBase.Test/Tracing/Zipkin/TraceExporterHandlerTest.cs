@@ -65,11 +65,71 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 Status.OK,
                 Timestamp.Create(EPOCH_SECONDS + 1505855799, 465726528) /* endTimestamp */);
 
-            var handler = new TraceExporterHandler(new TraceExporterOptions());
+            var handler = new TraceExporterHandler(new TraceExporterOptions() { UseShortTraceIds = false });
             var result = handler.GenerateSpan(data, localEndpoint);
 
             var zspan = ZipkinSpan.NewBuilder()
                 .TraceId(traceId)
+                .ParentId(parentId)
+                .Id(spanId)
+                .Kind(ZipkinSpanKind.SERVER)
+                .Name(data.Name)
+                .Timestamp(1505855794000000L + (194009601L / 1000))
+                .Duration(
+                    (1505855799000000L + (465726528L / 1000))
+                        - (1505855794000000L + (194009601L / 1000)))
+                .LocalEndpoint(localEndpoint)
+                .AddAnnotation(1505855799000000L + (433901068L / 1000), "RECEIVED")
+                .AddAnnotation(1505855799000000L + (459486280L / 1000), "SENT")
+                .PutTag("census.status_code", "OK")
+                .Build();
+
+            Assert.Equal(zspan, result);
+        }
+
+        [Fact]
+        public void GenerateSpan_ShortTraceId()
+        {
+            ZipkinEndpoint localEndpoint = new ZipkinEndpoint()
+            {
+                ServiceName = "tweetiebird"
+            };
+
+            var traceId = "00000000000000006b562147388b35bf";
+            var shorttraceId = "6b562147388b35bf";
+            var spanId = "9cc1e3049173be09";
+            var parentId = "8b03ab423da481c5";
+
+            Dictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>();
+            IList<ITimedEvent<IAnnotation>> annotations = new List<ITimedEvent<IAnnotation>>();
+            List<ITimedEvent<IMessageEvent>> networkEvents = new List<ITimedEvent<IMessageEvent>>()
+            {
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 433901068), new MessageEventBuilder(MessageEventType.RECEIVED, 0, 0, 0).SetCompressedMessageSize(7).Build()),
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 459486280), new MessageEventBuilder(MessageEventType.SENT, 0, 0, 0).SetCompressedMessageSize(13).Build())
+            };
+
+            ISpanData data = SpanData.Create(
+                SpanContext.Create(
+                    TraceId.FromBytes(Arrays.StringToByteArray(traceId)),
+                    SpanId.FromBytes(Arrays.StringToByteArray(spanId)),
+                    TraceOptions.FromBytes(new byte[] { 1 })),
+                SpanId.FromBytes(Arrays.StringToByteArray(parentId)),
+                true, /* hasRemoteParent */
+                "Recv.helloworld.Greeter.SayHello", /* name */
+                Timestamp.Create(EPOCH_SECONDS + 1505855794, 194009601) /* startTimestamp */,
+                Attributes.Create(attributes, 0 /* droppedAttributesCount */),
+                TimedEvents<IAnnotation>.Create(annotations, 0 /* droppedEventsCount */),
+                TimedEvents<IMessageEvent>.Create(networkEvents, 0 /* droppedEventsCount */),
+                LinkList.Create(new List<ILink>(), 0 /* droppedLinksCount */),
+                null, /* childSpanCount */
+                Status.OK,
+                Timestamp.Create(EPOCH_SECONDS + 1505855799, 465726528) /* endTimestamp */);
+
+            var handler = new TraceExporterHandler(new TraceExporterOptions());
+            var result = handler.GenerateSpan(data, localEndpoint);
+
+            var zspan = ZipkinSpan.NewBuilder()
+                .TraceId(shorttraceId)
                 .ParentId(parentId)
                 .Id(spanId)
                 .Kind(ZipkinSpanKind.SERVER)

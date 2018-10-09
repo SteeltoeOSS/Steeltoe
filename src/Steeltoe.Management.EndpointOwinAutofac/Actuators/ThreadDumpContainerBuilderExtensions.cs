@@ -15,21 +15,21 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.EndpointOwin.HeapDump;
+using Steeltoe.Management.Endpoint.ThreadDump;
+using Steeltoe.Management.EndpointOwin;
 using System;
-using System.IO;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
-    public static class HeapDumpContainerBuilderExtensions
+    public static class ThreadDumpContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the HeapDump endpoint, OWIN middleware and options
+        /// Register the ThreadDump endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHeapDumpActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterThreadDumpActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -41,18 +41,10 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new HeapDumpOptions(config)).As<IHeapDumpOptions>();
-
-            // REVIEW: is this path override necessary? Running under IIS Express, the path comes up wrong
-            container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot()).SingleInstance();
-            container.RegisterType<HeapDumpEndpoint>().SingleInstance();
-            container.RegisterType<HeapDumpEndpointOwinMiddleware>().SingleInstance();
-        }
-
-        private static string GetContentRoot()
-        {
-            var basePath = (string)AppDomain.CurrentDomain.GetData("APP_CONTEXT_BASE_DIRECTORY") ?? AppDomain.CurrentDomain.BaseDirectory;
-            return Path.GetFullPath(basePath);
+            container.RegisterType<ThreadDumper>().As<IThreadDumper>().SingleInstance();
+            container.RegisterInstance(new ThreadDumpOptions(config)).As<IThreadDumpOptions>();
+            container.RegisterType<ThreadDumpEndpoint>().As<IEndpoint<List<ThreadInfo>>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<List<ThreadInfo>>>().SingleInstance();
         }
     }
 }

@@ -20,7 +20,7 @@ using Steeltoe.Management.EndpointOwin.Loggers;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
     public class LoggersContainerBuilderExtensionsTest : BaseTest
     {
