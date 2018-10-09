@@ -142,7 +142,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, IConfiguration resolve, bool def)
         {
-            return ConfigurationValuesHelper.GetBoolean("validate_certificates", clientConfigsection, resolve, def);
+            return ConfigurationValuesHelper.GetBoolean("validateCertificates", clientConfigsection, resolve, def) &&
+                ConfigurationValuesHelper.GetBoolean("validate_certificates", clientConfigsection, resolve, def);
         }
     }
 }
