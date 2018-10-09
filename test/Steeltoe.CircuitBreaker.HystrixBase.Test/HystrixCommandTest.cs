@@ -154,6 +154,54 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        public void TestExecutionRejectionWithFallbackException()
+        {
+            List<Thread> threads = new List<Thread>();
+            int threadRunCount = 0;
+            int exceptionCount = 0;
+
+            for (int i = 0; i < 15; i++)
+            {
+                var thread = new Thread(() =>
+                {
+                    // Run() delays 5 seconds, Fallback() throws exception
+                    // Command timeout set to 3 * 5000, so doesn't timeout
+                    var cmd = new BasicDelayCommand(5000, true);
+                    try
+                    {
+                        Assert.Equal(5000, cmd.Execute());
+                    }
+                    catch (Exception e)
+                    {
+                        Assert.IsType<HystrixRuntimeException>(e);
+                        Assert.IsType<RejectedExecutionException>(e.InnerException);
+                        Interlocked.Increment(ref exceptionCount);
+                    }
+
+                    Interlocked.Increment(ref threadRunCount);
+                });
+
+                thread.Start();
+                threads.Add(thread);
+            }
+
+            // Wait for all threads to finish, all commands completed
+            foreach (var thread in threads)
+            {
+                thread.Join();
+            }
+
+            Assert.Equal(15, threadRunCount);
+            Assert.Equal(5, exceptionCount);
+
+            // Run() delays 1 seconds, Fallback() throws exception
+            // Command timeout set to 3 * 1000, so doesn't timeout
+            // This command should succeed as all commands have finished
+            var c = new BasicDelayCommand(1000, true);
+            Assert.Equal(1000, c.Execute());
+        }
+
+        [Fact]
         public void TestExecutionFailureWithFallbackFailure()
         {
             TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.FAILURE);
@@ -5878,6 +5926,36 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         protected override string CacheKey
         {
             get { return arg; }
+        }
+    }
+
+    internal class BasicDelayCommand : HystrixCommand<int>
+    {
+        public int Delay { get; }
+
+        public bool ThrowException { get; }
+
+        public BasicDelayCommand(int delay, bool throwException)
+            : base(HystrixCommandGroupKeyDefault.AsKey("BasicDelayCommand"), delay * 3)
+        {
+            Delay = delay;
+            ThrowException = throwException;
+        }
+
+        protected override int Run()
+        {
+            Thread.Sleep(Delay);
+            return Delay;
+        }
+
+        protected override int RunFallback()
+        {
+            if (ThrowException)
+            {
+                throw new Exception("RunFallback Exception");
+            }
+
+            return Delay;
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class
