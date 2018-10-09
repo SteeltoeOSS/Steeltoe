@@ -174,6 +174,94 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         }
 
         [Fact]
+        public void AddConfigServer_ValidateCertificates_DisablesCertValidation()
+        {
+            // Arrange
+            var appsettings = @"
+{
+    'spring': {
+      'cloud': {
+        'config': {
+            'validateCertificates': false
+        }
+      }
+    }
+}";
+            var path = TestHelpers.CreateTempFile(appsettings);
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
+            var environment = new HostingEnvironment();
+            configurationBuilder.AddJsonFile(fileName);
+
+            // Act and Assert
+            configurationBuilder.AddConfigServer(environment);
+
+            ConfigServerConfigurationProvider configServerProvider = null;
+            foreach (IConfigurationSource source in configurationBuilder.Sources)
+            {
+                configServerProvider = source as ConfigServerConfigurationProvider;
+                if (configServerProvider != null)
+                {
+                    break;
+                }
+            }
+
+            Assert.NotNull(configServerProvider);
+            configurationBuilder.Build();
+
+            ConfigServerClientSettings settings = configServerProvider.Settings;
+
+            Assert.False(settings.ValidateCertificates);
+        }
+
+        [Fact]
+        public void AddConfigServer_Validate_Certificates_DisablesCertValidation()
+        {
+            // Arrange
+            var appsettings = @"
+{
+    'spring': {
+      'cloud': {
+        'config': {
+            'validate_certificates': false
+        }
+      }
+    }
+}";
+            var path = TestHelpers.CreateTempFile(appsettings);
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
+            var environment = new HostingEnvironment();
+            configurationBuilder.AddJsonFile(fileName);
+
+            // Act and Assert
+            configurationBuilder.AddConfigServer(environment);
+
+            ConfigServerConfigurationProvider configServerProvider = null;
+            foreach (IConfigurationSource source in configurationBuilder.Sources)
+            {
+                configServerProvider = source as ConfigServerConfigurationProvider;
+                if (configServerProvider != null)
+                {
+                    break;
+                }
+            }
+
+            Assert.NotNull(configServerProvider);
+            configurationBuilder.Build();
+
+            ConfigServerClientSettings settings = configServerProvider.Settings;
+
+            Assert.False(settings.ValidateCertificates);
+        }
+
+        [Fact]
         public void AddConfigServer_XmlAppSettingsConfiguresClient()
         {
             // Arrange
