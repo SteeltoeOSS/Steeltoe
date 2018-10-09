@@ -111,8 +111,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 
             var reqData = stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.time"));
             var aggData1 = reqData.SumWithTags() as IDistributionData;
-            Assert.InRange(aggData1.Mean, 995.0, 1005.0);
-            Assert.InRange(aggData1.Max, 995.0, 1005.0);
+            Assert.InRange(aggData1.Mean, 990.0, 1025.0);
+            Assert.InRange(aggData1.Max, 990.0, 1025.0);
 
             reqData = stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.count"));
             var aggData2 = reqData.SumWithTags() as ISumDataLong;
