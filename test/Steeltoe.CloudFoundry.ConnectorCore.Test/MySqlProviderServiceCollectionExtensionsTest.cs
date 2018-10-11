@@ -19,6 +19,7 @@ using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using Xunit;
 
@@ -141,6 +142,35 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             Assert.Contains("192.168.0.90", connString);
             Assert.Contains("Dd6O1BPXUHdrmzbP", connString);
             Assert.Contains("7E1LxXnlH2hhlPVt", connString);
+        }
+
+        [Fact]
+        public void AddMySqlConnection_WithAzureBrokerVCAPs_AddsMySqlConnection()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerAzureVCAP);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["mysql:client:urlEncodedCredentials"] = "true"
+            };
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            builder.AddInMemoryCollection(appsettings);
+            var config = builder.Build();
+
+            // Act and Assert
+            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
+
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
+            Assert.NotNull(service);
+            var connString = service.ConnectionString;
+            Assert.Contains("ub6oyk1kkh", connString);         // database
+            Assert.Contains("3306", connString);                                            // port
+            Assert.Contains("451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.azure.com", connString);                                    // host
+            Assert.Contains("wj7tsxai7i@451200b4-c29d-4346-9a0a-70bc109bb6e9", connString); // user
+            Assert.Contains("10PUO82Uhqk8F2ii", connString);                                // password
         }
 
         [Fact]

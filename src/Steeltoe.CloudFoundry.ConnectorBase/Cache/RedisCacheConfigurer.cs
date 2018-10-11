@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CloudFoundry.Connector.Services;
+using System.Net;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
@@ -47,7 +48,14 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             if (!string.IsNullOrEmpty(si.Password))
             {
-                configuration.Password = si.Password;
+                if (configuration.UrlEncodedCredentials)
+                {
+                    configuration.Password = WebUtility.UrlDecode(si.Password);
+                }
+                else
+                {
+                    configuration.Password = si.Password;
+                }
             }
         }
     }

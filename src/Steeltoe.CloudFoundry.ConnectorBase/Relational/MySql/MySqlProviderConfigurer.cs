@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CloudFoundry.Connector.Services;
+using System.Net;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql
 {
@@ -34,8 +35,17 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
             if (!string.IsNullOrEmpty(si.Uri))
             {
                 configuration.Port = si.Port;
-                configuration.Username = si.UserName;
-                configuration.Password = si.Password;
+                if (configuration.UrlEncodedCredentials)
+                {
+                    configuration.Username = WebUtility.UrlDecode(si.UserName);
+                    configuration.Password = WebUtility.UrlDecode(si.Password);
+                }
+                else
+                {
+                    configuration.Username = si.UserName;
+                    configuration.Password = si.Password;
+                }
+
                 configuration.Server = si.Host;
                 configuration.Database = si.Path;
             }

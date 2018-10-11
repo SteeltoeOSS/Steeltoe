@@ -38,6 +38,40 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
                             ]
                         }";
 
+        public static string SingleServerAzureVCAP = @"
+                        {
+      'azure-sql-12-0': [
+        {
+          'name': 'azure-beetmssql',
+          'instance_name': 'azure-beetmssql',
+          'binding_name': null,
+          'credentials': {
+            'host': 'fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net',
+            'port': 1433,
+            'database': 'f1egl8ify4',
+            'username': 'rgmm5zlri4',
+            'password': '737mAU1pj6HcBxzw',
+            'uri': 'sqlserver://rgmm5zlri4:737mAU1pj6HcBxzw@fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net:1433/f1egl8ify4;encrypt=true;trustServerCertificate=true',
+            'tags': null,
+            'jdbcUrl': 'jdbc:sqlserver://fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net:1433;database=f1egl8ify4;user=rgmm5zlri4;password=737mAU1pj6HcBxzw;encrypt=true;trustServerCertificate=true;',
+            'encrypt': true
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'azure-sql-12-0',
+          'provider': null,
+          'plan': 'basic',
+          'tags': [
+            'Azure',
+            'SQL',
+            'DBMS',
+            'Server',
+            'Database'
+          ]
+    }
+      ]
+    }";
+
         public static string SingleServerVCAPNoTag = @"
                         {
                             'SqlServer': [

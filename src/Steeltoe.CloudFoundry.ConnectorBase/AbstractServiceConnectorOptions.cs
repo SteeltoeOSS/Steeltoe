@@ -47,6 +47,11 @@ namespace Steeltoe.CloudFoundry.Connector
             this._keyValueTerm = keyValueTerm;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether your service broker UrlEncodes service credentials
+        /// </summary>
+        public bool UrlEncodedCredentials { get; set; } = false;
+
         protected internal void AddKeyValue(StringBuilder sb, string key, int? value)
         {
             AddKeyValue(sb, key, value?.ToString());

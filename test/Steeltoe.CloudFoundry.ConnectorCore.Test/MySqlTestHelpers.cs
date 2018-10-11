@@ -41,6 +41,41 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         }
       ]
 }";
+        public static string SingleServerAzureVCAP = @"
+{
+      'azure-mysql-5-7': [
+        {
+          'name': 'azure-beetmysql',
+          'instance_name': 'azure-beetmysql',
+          'binding_name': null,
+          'credentials': {
+            'host': '451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.azure.com',
+            'port': 3306,
+            'database': 'ub6oyk1kkh',
+            'username': 'wj7tsxai7i@451200b4-c29d-4346-9a0a-70bc109bb6e9',
+            'password': '10PUO82Uhqk8F2ii',
+            'sslRequired': true,
+            'uri': 'mysql://wj7tsxai7i%40451200b4-c29d-4346-9a0a-70bc109bb6e9:10PUO82Uhqk8F2ii@451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.azure.com:3306/ub6oyk1kkh?useSSL=true&requireSSL=true',
+            'tags': [
+              'mysql'
+            ]
+    },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'azure-mysql-5-7',
+          'provider': null,
+          'plan': 'basic',
+          'tags': [
+            'Azure',
+            'MySQL',
+            'DBMS',
+            'Server',
+            'Database'
+          ]
+}
+      ]
+    }
+";
 
         public static string TwoServerVCAP = @"
 {
