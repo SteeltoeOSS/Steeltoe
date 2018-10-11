@@ -55,17 +55,17 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         {
             if (!Data.ContainsKey("vcap:application:instance_id"))
             {
-                Data["vcap:application:instance_id"] = _settingsReader.InstanceId;
+                Data["vcap:application:instance_id"] = !string.IsNullOrEmpty(_settingsReader.InstanceId) ? _settingsReader.InstanceId : "-1";
             }
 
             if (!Data.ContainsKey("vcap:application:instance_index"))
             {
-                Data["vcap:application:instance_index"] = _settingsReader.InstanceIndex;
+                Data["vcap:application:instance_index"] = !string.IsNullOrEmpty(_settingsReader.InstanceIndex) ? _settingsReader.InstanceIndex : "-1";
             }
 
             if (!Data.ContainsKey("vcap:application:port"))
             {
-                Data["vcap:application:port"] = _settingsReader.InstancePort;
+                Data["vcap:application:port"] = !string.IsNullOrEmpty(_settingsReader.InstancePort) ? _settingsReader.InstancePort : "-1";
             }
 
             Data["vcap:application:instance_ip"] = _settingsReader.InstanceIp;
