@@ -3,7 +3,7 @@
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
     <SteeltoeLoggingVersion>2.2.0-dev-00074</SteeltoeLoggingVersion>
-    <SteeltoeCommonVersion>2.2.0-dev-00081</SteeltoeCommonVersion>
+    <SteeltoeCommonVersion>2.2.0-dev-00003</SteeltoeCommonVersion>
     <SteeltoeConfigVersion>2.2.0-dev-00263</SteeltoeConfigVersion>
     <SystemDiagnosticsVersion>4.5.0</SystemDiagnosticsVersion>
     <ExtensionsVersion>2.0.0</ExtensionsVersion>
