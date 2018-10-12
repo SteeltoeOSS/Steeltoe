@@ -1,14 +1,14 @@
-version: '2.1.1-{branch}-{build}'
+version: '2.2.0-{branch}-{build}'
 init:
   - git config --global core.autocrlf true
-image: Visual Studio 2017  
+image: Visual Studio 2017
+skip_tags: true
 branches:
   only:
     - master
     - dev
-    - /^update[0-9]{2}x/          
+    - /^update[0-9]{2}x/
 install:
-  - ps: dotnet --info
   - git clone https://github.com/SteeltoeOSS/steeltoe-ci.git -v
   - ps: steeltoe-ci\scripts\appveyor_install.ps1
 test_script:
