@@ -15,8 +15,9 @@ test_script:
   - ps: steeltoe-ci\scripts\appveyor_tests.ps1
 build_script:
   - ps: steeltoe-ci\scripts\appveyor_build.ps1
+  - ps: steeltoe-ci\scripts\sign-packages.ps1
 artifacts:
-  - path: '**\*.nupkg'
+  - path: 'localfeed\*.nupkg'
 environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -24,6 +25,10 @@ environment:
   PackageReferencesToUpdate: SteeltoeEurekaVersion
   github_access_token:
     secure: ko4J3M/czguVI9AbVdkv5qZuj3Wuzts5nkz/6cypneFkQGWJXDs8Akg7xOEMu8qU
+  SignClientUser:
+    secure: Tt9mySuspn9dHJOLKMoGxrNJvJbpBrWK44UI9Qc9+eNilYdoukHZ3jUF06pl2r60
+  SignClientSecret:
+    secure: ZmCTr+SyfQtewSNsiB8OMISmQJp8RfjRSK0Dvg60iTQ=
 deploy:
 - provider: NuGet
   skip_symbols: false
