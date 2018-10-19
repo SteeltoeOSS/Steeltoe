@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Common.Configuration.Test
@@ -172,6 +173,45 @@ namespace Steeltoe.Common.Configuration.Test
             // Act and Assert
             string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
             Assert.Equal("foo=my-app2.10.244.0.34.xip.io", result);
+        }
+
+        [Fact]
+        public void GetResolvedConfigurationPlaceholders_ReturnsValues_WhenResolved()
+        {
+            // arrange
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(
+                new Dictionary<string, string>()
+                {
+                    { "foo", "${bar}" },
+                    { "bar", "baz" }
+                });
+
+            // act
+            var resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
+
+            // assert
+            Assert.Contains(resolved, f => f.Key == "foo");
+            Assert.DoesNotContain(resolved, f => f.Key == "bar");
+            Assert.Equal("baz", resolved.First(k => k.Key == "foo").Value);
+        }
+
+        [Fact]
+        public void GetResolvedConfigurationPlaceholders_ReturnsEmpty_WhenUnResolved()
+        {
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(
+                new Dictionary<string, string>()
+                {
+                    { "foo", "${bar}" }
+                });
+
+            // act
+            var resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
+
+            // assert
+            Assert.Contains(resolved, f => f.Key == "foo");
+            Assert.Equal(string.Empty, resolved.First(k => k.Key == "foo").Value);
         }
 
         private static string CreateTempFile(string contents)

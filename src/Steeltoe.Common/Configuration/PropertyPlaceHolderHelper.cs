@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Steeltoe.Common.Configuration
@@ -44,7 +45,30 @@ namespace Steeltoe.Common.Configuration
             return ParseStringValue(property, config, new HashSet<string>(), logger);
         }
 
-        private static string ParseStringValue(string property, IConfiguration config, ISet<string> visitedPlaceHolders, ILogger logger = null)
+        /// <summary>
+        /// Finds all placeholders of the form <code> ${some:config:reference?default_if_not_present}</code>,
+        /// resolves them from other values in the configuration, returns a new list to add to your configuration.
+        /// </summary>
+        /// <param name="config">The configuration to use as both source and target for placeholder resolution.</param>
+        /// <param name="logger">Optional logger</param>
+        /// <returns>A list of keys with resolved values. Add to your <see cref="ConfigurationBuilder"/> with method 'AddInMemoryCollection'</returns>
+        public static IEnumerable<KeyValuePair<string, string>> GetResolvedConfigurationPlaceholders(IConfiguration config, ILogger logger = null)
+        {
+            // setup a holding tank for resolved values
+            var resolvedValues = new Dictionary<string, string>();
+            var visitedPlaceholders = new HashSet<string>();
+
+            // iterate all config entries where the value isn't null and contains both the prefix and suffix that identify placeholders
+            foreach (var entry in config.AsEnumerable().Where(e => e.Value != null && e.Value.Contains(PREFIX) && e.Value.Contains(SUFFIX)))
+            {
+                logger?.LogTrace("Found a property placeholder '{0}' to resolve for key '{1}", entry.Value, entry.Key);
+                resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, config, visitedPlaceholders, logger, true));
+            }
+
+            return resolvedValues;
+        }
+
+        private static string ParseStringValue(string property, IConfiguration config, ISet<string> visitedPlaceHolders, ILogger logger = null, bool useEmptyStringIfNotFound = false)
         {
             if (config == null)
             {
@@ -93,6 +117,10 @@ namespace Steeltoe.Common.Configuration
                                 propVal = defaultValue;
                             }
                         }
+                        else if (useEmptyStringIfNotFound)
+                        {
+                            propVal = string.Empty;
+                        }
                     }
 
                     if (propVal != null)
@@ -101,7 +129,7 @@ namespace Steeltoe.Common.Configuration
                         // previously resolved placeholder value.
                         propVal = ParseStringValue(propVal, config, visitedPlaceHolders);
                         result.Replace(startIndex, endIndex + SUFFIX.Length, propVal);
-                        logger?.LogDebug("Resolved placeholder '{0}'" + placeholder);
+                        logger?.LogDebug("Resolved placeholder '{0}'", placeholder);
                         startIndex = result.IndexOf(PREFIX, startIndex + propVal.Length);
                     }
                     else
