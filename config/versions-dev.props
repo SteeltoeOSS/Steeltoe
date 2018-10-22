@@ -2,7 +2,7 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <SteeltoeLoggingVersion>2.2.0-dev-00075</SteeltoeLoggingVersion>
+    <SteeltoeLoggingVersion>2.2.0-dev-00077</SteeltoeLoggingVersion>
     <SteeltoeCommonVersion>2.2.0-dev-00083</SteeltoeCommonVersion>
     <SteeltoeConfigVersion>2.2.0-dev-00270</SteeltoeConfigVersion>
     <SystemDiagnosticsVersion>4.5.0</SystemDiagnosticsVersion>
