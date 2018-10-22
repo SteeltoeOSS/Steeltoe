@@ -29,7 +29,7 @@ namespace Steeltoe.Extensions.Logging
         private static readonly Func<string, LogLevel, bool> _trueFilter = (cat, level) => true;
         private static readonly Func<string, LogLevel, bool> _falseFilter = (cat, level) => false;
 
-        private Func<string, LogLevel, bool> _filter;
+        private Func<string, LogLevel, bool> _filter = _falseFilter;
         private ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
 
         private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ConcurrentDictionary<string, DynamicConsoleLogger>();
