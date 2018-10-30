@@ -106,7 +106,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "RegisterAsync Failed");
+                _logger?.LogError(e, "RegisterAsync Failed, request was made to {requestUri}", requestUri);
                 throw;
             }
             finally
@@ -185,7 +185,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "SendHeartBeatAsync Failed");
+                _logger?.LogError(e, "SendHeartBeatAsync Failed, request was made to {requestUri}", requestUri);
                 throw;
             }
             finally
@@ -269,7 +269,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "GetApplicationAsync Failed");
+                _logger?.LogError(e, "GetApplicationAsync Failed, request was made to {requestUri}", requestUri);
                 throw;
             }
             finally
@@ -341,7 +341,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "CancelAsync Failed");
+                _logger?.LogError(e, "CancelAsync Failed, request was made to {requestUri}", requestUri);
                 throw;
             }
             finally
@@ -397,7 +397,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "DeleteStatusOverrideAsync Failed");
+                _logger?.LogError(e, "DeleteStatusOverrideAsync Failed, request was made to {requestUri}", requestUri);
                 throw;
             }
             finally
@@ -455,7 +455,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "StatusUpdateAsync Failed");
+                _logger?.LogError(e, "StatusUpdateAsync Failed, request was made to {requestUri}", requestUri);
                 throw;
             }
             finally
@@ -570,7 +570,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "DoGetInstanceAsync Failed");
+                _logger?.LogError(e, "DoGetInstanceAsync Failed, request was made to {requestUri}", requestUri);
                 throw;
             }
             finally
@@ -631,7 +631,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "DoGetApplicationsAsync Failed");
+                _logger?.LogError(e, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri);
                 throw;
             }
             finally

@@ -364,7 +364,7 @@ namespace Steeltoe.Discovery.Eureka
             catch (Exception e)
             {
                 // Log
-                _logger?.LogError(e, "FetchRegistry Failed");
+                _logger?.LogError(e, "FetchRegistry Failed for Eureka service urls: {EurekaServerServiceUrls}", ClientConfig.EurekaServerServiceUrls);
                 return false;
             }
 
