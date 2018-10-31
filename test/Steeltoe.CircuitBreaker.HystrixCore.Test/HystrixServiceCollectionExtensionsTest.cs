@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
@@ -130,6 +131,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(expectedCommandKey, command.CommandKey);
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options._dynamic);
+            var expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
+            Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
+            var threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
+            Assert.NotNull(threadOptions);
+            Assert.NotNull(threadOptions._dynamic);
+            Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -143,6 +150,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(expectedCommandKey, command.CommandKey);
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options._dynamic);
+            expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
+            Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
+            threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
+            Assert.NotNull(threadOptions);
+            Assert.NotNull(threadOptions._dynamic);
+            Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
             services = new ServiceCollection();
             HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, "GroupKey", config);
@@ -154,6 +167,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(expectedCommandKey, command.CommandKey);
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options._dynamic);
+            expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(command.CommandGroup.Name);
+            Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
+            threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
+            Assert.NotNull(threadOptions);
+            Assert.NotNull(threadOptions._dynamic);
+            Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -167,6 +186,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(expectedCommandKey, command.CommandKey);
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options._dynamic);
+            expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(command.CommandGroup.Name);
+            Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
+            threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
+            Assert.NotNull(threadOptions);
+            Assert.NotNull(threadOptions._dynamic);
+            Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -178,6 +203,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(commandKey, command.CommandKey);
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options._dynamic);
+            expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
+            Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
+            threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
+            Assert.NotNull(threadOptions);
+            Assert.NotNull(threadOptions._dynamic);
+            Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -191,6 +222,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(commandKey, command.CommandKey);
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options._dynamic);
+            expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
+            Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
+            threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
+            Assert.NotNull(threadOptions);
+            Assert.NotNull(threadOptions._dynamic);
+            Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
             services = new ServiceCollection();
             HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, "GroupKey", "CommandKey", config);
@@ -201,6 +238,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal("CommandKey", command.CommandKey.Name);
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options._dynamic);
+            expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(command.CommandGroup.Name);
+            Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
+            threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
+            Assert.NotNull(threadOptions);
+            Assert.NotNull(threadOptions._dynamic);
+            Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
             services = new ServiceCollection();
             config = new ConfigurationBuilder().Build();
@@ -214,6 +257,60 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal("CommandKey", command.CommandKey.Name);
             Assert.NotNull(command.Options);
             Assert.NotNull(command.Options._dynamic);
+            expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(command.CommandGroup.Name);
+            Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
+            threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
+            Assert.NotNull(threadOptions);
+            Assert.NotNull(threadOptions._dynamic);
+            Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
+        }
+
+        [Fact]
+        public void AddHystrixCommand_WithConfiguration_ConfiguresSettings()
+        {
+            var appSettings = new Dictionary<string, string>()
+            {
+                ["hystrix:command:default:metrics:rollingStats:timeInMilliseconds"] = "5555",
+                ["hystrix:command:default:circuitBreaker:errorThresholdPercentage"] = "55",
+                ["hystrix:command:default:circuitBreaker:sleepWindowInMilliseconds"] = "9999",
+                ["hystrix:command:default:circuitBreaker:requestVolumeThreshold"] = "1111",
+                ["hystrix:command:default:execution:isolation:thread:timeoutInMilliseconds"] = "2222",
+                ["hystrix:threadpool:default:coreSize"] = "33",
+                ["hystrix:threadpool:default:maximumSize"] = "55",
+                ["hystrix:threadpool:default:maxQueueSize"] = "66",
+                ["hystrix:threadpool:default:queueSizeRejectionThreshold"] = "6",
+                ["hystrix:threadpool:default:allowMaximumSizeToDivergeFromCoreSize"] = "false"
+            };
+
+            IServiceCollection services = new ServiceCollection();
+            IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+            HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(services, groupKey, config);
+            var provider = services.BuildServiceProvider();
+            var command = provider.GetService<DummyCommand>();
+            Assert.NotNull(command);
+            Assert.Equal(groupKey, command.CommandGroup);
+            var expectedCommandKey = HystrixCommandKeyDefault.AsKey(typeof(DummyCommand).Name);
+            Assert.Equal(expectedCommandKey, command.CommandKey);
+            Assert.NotNull(command.Options);
+            Assert.NotNull(command.Options._dynamic);
+            var expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
+            Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
+            var threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
+            Assert.NotNull(threadOptions);
+            Assert.NotNull(threadOptions._dynamic);
+            Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
+
+            Assert.Equal(55, threadOptions.MaximumSize);
+            Assert.Equal(33, threadOptions.CoreSize);
+            Assert.Equal(66, threadOptions.MaxQueueSize);
+            Assert.Equal(6, threadOptions.QueueSizeRejectionThreshold);
+            Assert.False(threadOptions.AllowMaximumSizeToDivergeFromCoreSize);
+
+            Assert.Equal(5555, command.Options.MetricsRollingStatisticalWindowInMilliseconds);
+            Assert.Equal(2222, command.Options.ExecutionTimeoutInMilliseconds);
+            Assert.Equal(55, command.Options.CircuitBreakerErrorThresholdPercentage);
+            Assert.Equal(9999, command.Options.CircuitBreakerSleepWindowInMilliseconds);
+            Assert.Equal(1111, command.Options.CircuitBreakerRequestVolumeThreshold);
         }
     }
 }
