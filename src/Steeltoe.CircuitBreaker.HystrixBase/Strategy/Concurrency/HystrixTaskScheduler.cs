@@ -193,30 +193,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             System.Threading.ThreadPool.QueueUserWorkItem(
                 (t) =>
                 {
-                    try
+                    Task item = t as Task;
+                    if (item != null)
                     {
-                        Task item = t as Task;
-                        if (item != null)
+                        try
                         {
-                            try
-                            {
-                                Interlocked.Increment(ref this.runningTasks);
-                                TryExecuteTask(item);
-                            }
-                            catch (Exception)
-                            {
-                                // Log
-                            }
-                            finally
-                            {
-                                Interlocked.Decrement(ref this.runningTasks);
-                                Interlocked.Increment(ref completedTasks);
-                            }
+                            TryExecuteTask(item);
                         }
-                    }
-                    finally
-                    {
-                        Interlocked.Decrement(ref runningThreads);
+                        catch (Exception)
+                        {
+                            // Log
+                        }
                     }
                 }, task);
         }
