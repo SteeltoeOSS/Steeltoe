@@ -1056,14 +1056,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
             SingleThreadedPoolWithQueue pool = new SingleThreadedPoolWithQueue(10, 1);
 
+            TestCommandRejection d1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+            TestCommandRejection d2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+
             // Schedule 2 items, one will be taken off and start running, the second will get queued
             // the thread pool won't pick it up because we're bypassing the pool and adding to the queue directly so this will keep the queue full
-            Task t = new Task(() => Time.Wait(500));
+            Task t = new Task((o) => Time.Wait(500), d1);
             t.Start(pool.GetTaskScheduler());
 
             Time.Wait(10);
 
-            Task t2 = new Task(() => Time.Wait(500));
+            Task t2 = new Task((o) => Time.Wait(500), d2);
             t2.Start(pool.GetTaskScheduler());
 
             TestCommandRejection command = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);

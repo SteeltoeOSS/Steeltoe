@@ -73,6 +73,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         protected override void QueueTask(Task task)
         {
+            bool isCommand = task.AsyncState is IHystrixInvokable;
+            if (!isCommand)
+            {
+                RunContinuation(task);
+                return;
+            }
+
             if (runningThreads < corePoolSize)
             {
                 lock (_lock)

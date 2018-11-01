@@ -1206,12 +1206,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             if (options.ExecutionIsolationStrategy == ExecutionIsolationStrategy.THREAD)
             {
-                void threadExec()
+                void threadExec(object command)
                 {
                     ExecuteCommandWithThreadAction();
                 }
 
-                _execThreadTask = new Task(threadExec, CancellationToken.None, TaskCreationOptions.LongRunning);
+                _execThreadTask = new Task(threadExec, this, CancellationToken.None, TaskCreationOptions.LongRunning);
             }
             else
             {

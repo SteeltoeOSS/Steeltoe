@@ -14,6 +14,7 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
@@ -118,7 +119,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         {
             get
             {
-                return this.completedTasks;
+                return this.runningTasks;
             }
         }
 
@@ -185,6 +186,39 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         public bool IsShutdown
         {
             get { return shutdown; }
+        }
+
+        protected void RunContinuation(Task task)
+        {
+            System.Threading.ThreadPool.QueueUserWorkItem(
+                (t) =>
+                {
+                    try
+                    {
+                        Task item = t as Task;
+                        if (item != null)
+                        {
+                            try
+                            {
+                                Interlocked.Increment(ref this.runningTasks);
+                                TryExecuteTask(item);
+                            }
+                            catch (Exception)
+                            {
+                                // Log
+                            }
+                            finally
+                            {
+                                Interlocked.Decrement(ref this.runningTasks);
+                                Interlocked.Increment(ref completedTasks);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        Interlocked.Decrement(ref runningThreads);
+                    }
+                }, task);
         }
     }
 }
