@@ -25,6 +25,9 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
 {
+    /// <summary>
+    /// Tests for the extension method that adds both the DbConnection and the health check
+    /// </summary>
     public class SqlServerProviderServiceCollectionExtensionsTest
     {
         public SqlServerProviderServiceCollectionExtensionsTest()

@@ -494,7 +494,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             var redis1 = result1[0];
             Assert.Equal("10.66.32.54", redis1.Host);
 
-            var resutlt2 = creator.GetServiceInfos<MongoServiceInfo>();
+            var resutlt2 = creator.GetServiceInfos<MongoDbServiceInfo>();
             Assert.Equal(2, resutlt2.Count);
 
             var result3 = creator.GetServiceInfos<EurekaServiceInfo>();

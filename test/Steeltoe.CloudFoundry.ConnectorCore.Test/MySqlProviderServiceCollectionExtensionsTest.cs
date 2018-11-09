@@ -25,6 +25,9 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
+    /// <summary>
+    /// Tests for the extension method that adds both the DbConnection and the health check
+    /// </summary>
     public class MySqlProviderServiceCollectionExtensionsTest
     {
         public MySqlProviderServiceCollectionExtensionsTest()

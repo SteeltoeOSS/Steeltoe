@@ -12,25 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
-    public class MongoServiceInfoFactory : ServiceInfoFactory
+    public class MongoDbServiceInfo : UriServiceInfo
     {
-        public MongoServiceInfoFactory()
-            : base(new Tags("mongodb"), MongoServiceInfo.MONGODB_SCHEME)
+        public const string MONGODB_SCHEME = "mongodb";
+
+        public MongoDbServiceInfo(string id, string host, int port, string username, string password, string db)
+            : base(id, MONGODB_SCHEME, host, port, username, password, db)
         {
         }
 
-        public override IServiceInfo Create(Service binding)
+        public MongoDbServiceInfo(string id, string uri)
+            : base(id, uri)
         {
-            string uri = GetUriFromCredentials(binding.Credentials);
-            return new MongoServiceInfo(binding.Name, uri);
         }
     }
 }

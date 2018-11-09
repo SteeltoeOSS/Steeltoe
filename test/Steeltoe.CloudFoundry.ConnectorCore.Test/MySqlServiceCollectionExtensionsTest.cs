@@ -23,6 +23,9 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
+    /// <summary>
+    /// Tests for the extension method that adds just the health check
+    /// </summary>
     public class MySqlServiceCollectionExtensionsTest
     {
         public MySqlServiceCollectionExtensionsTest()

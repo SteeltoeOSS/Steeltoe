@@ -44,6 +44,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public string Host => Info.Host;
 
+        public string[] Hosts => Info.Hosts;
+
         public int Port => Info.Port;
 
         public string Path => Info.Path;

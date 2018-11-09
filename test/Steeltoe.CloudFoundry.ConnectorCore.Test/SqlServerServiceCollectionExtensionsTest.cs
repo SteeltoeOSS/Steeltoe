@@ -22,6 +22,9 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
 {
+    /// <summary>
+    /// Tests for the extension method that adds just the health check
+    /// </summary>
     public class SqlServerServiceCollectionExtensionsTest
     {
         public SqlServerServiceCollectionExtensionsTest()

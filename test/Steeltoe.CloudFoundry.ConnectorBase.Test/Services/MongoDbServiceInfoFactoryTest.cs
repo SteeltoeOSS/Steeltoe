@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
-    public class MongoServiceInfoFactoryTest
+    public class MongoDbServiceInfoFactoryTest
     {
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
@@ -31,14 +31,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Credentials = new Credential()
                 {
                     { "hostname", new Credential("192.168.0.90") },
-                    { "port", new Credential("3306") },
+                    { "port", new Credential("27017") },
                     { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                    { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                    }
+                    { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                }
             };
-            MongoServiceInfoFactory factory = new MongoServiceInfoFactory();
+            MongoDbServiceInfoFactory factory = new MongoDbServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
@@ -54,14 +54,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Credentials = new Credential()
                 {
                     { "hostname", new Credential("192.168.0.90") },
-                    { "port", new Credential("3306") },
+                    { "port", new Credential("27017") },
                     { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                    { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                    }
+                    { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                }
             };
-            MongoServiceInfoFactory factory = new MongoServiceInfoFactory();
+            MongoDbServiceInfoFactory factory = new MongoDbServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
@@ -77,15 +77,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Credentials = new Credential()
                 {
                     { "hostname", new Credential("192.168.0.90") },
-                    { "port", new Credential("3306") },
+                    { "port", new Credential("27017") },
                     { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                    { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                    { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                    }
+                    { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                    { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                }
             };
-            MongoServiceInfoFactory factory = new MongoServiceInfoFactory();
+            MongoDbServiceInfoFactory factory = new MongoDbServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
@@ -101,23 +101,22 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 Credentials = new Credential()
                 {
                     { "hostname", new Credential("192.168.0.90") },
-                    { "port", new Credential("3306") },
+                    { "port", new Credential("27017") },
                     { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                    { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                    }
+                    { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
+                }
             };
-            MongoServiceInfoFactory factory = new MongoServiceInfoFactory();
-            var info = factory.Create(s) as MongoServiceInfo;
+            MongoDbServiceInfoFactory factory = new MongoDbServiceInfoFactory();
+            var info = factory.Create(s) as MongoDbServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("mongodbService", info.Id);
             Assert.Equal("7E1LxXnlH2hhlPVt", info.Password);
             Assert.Equal("Dd6O1BPXUHdrmzbP", info.UserName);
             Assert.Equal("192.168.0.90", info.Host);
-            Assert.Equal(3306, info.Port);
+            Assert.Equal(27017, info.Port);
             Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", info.Path);
-            Assert.Equal("reconnect=true", info.Query);
         }
     }
 }
