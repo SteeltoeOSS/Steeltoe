@@ -104,6 +104,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 
             // assert
             Assert.NotEqual(appsettings["mysql:client:ConnectionString"], sconfig.ToString());
+
+            // NOTE: for this test, we don't expect VCAP_SERVICES to be parsed,
+            //          this test is only here to demonstrate that when a binding is present,
+            //          a pre-supplied connectionString is not returned
         }
     }
 }

@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
@@ -44,7 +46,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             if (uri != null)
             {
                 Scheme = uri.Scheme;
-                Host = uri.Host;
+                if (Host == null)
+                {
+                    Host = uri.Host;
+                }
+
                 Port = uri.Port;
                 Path = GetPath(uri.PathAndQuery);
                 Query = GetQuery(uri.PathAndQuery);
@@ -72,7 +78,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             if (uri != null)
             {
                 Scheme = uri.Scheme;
-                Host = uri.Host;
+                if (Host == null)
+                {
+                    Host = uri.Host;
+                }
+
                 Port = uri.Port;
                 Path = GetPath(uri.PathAndQuery);
                 Query = GetQuery(uri.PathAndQuery);
@@ -85,6 +95,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         public string Scheme { get; internal protected set; }
 
         public string Host { get; internal protected set; }
+
+        public string[] Hosts { get; internal protected set; }
 
         public int Port { get; internal protected set; }
 
@@ -150,6 +162,27 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
             catch (Exception)
             {
+                // URI parsing will fail if multiple (comma separated) hosts were provided...
+                if (uriString.Contains(","))
+                {
+                    // Slide past the protocol
+                    var splitUri = UriString.Split('/');
+
+                    // get the host list (and maybe credentials)
+                    // -- pre-emptively set it as the Host property rather than a local variable
+                    //      since the connector is likely to expect this format here anyway
+                    var credentialAndHost = splitUri[2];
+
+                    // skip over credentials if they're present
+                    Host = credentialAndHost.Contains('@') ? credentialAndHost.Split('@')[1] : credentialAndHost;
+
+                    // add the hosts to a separate property for reconstruction later
+                    Hosts = Host.Split(',');
+
+                    // swap all the hosts out with a placeholder so we can parse the rest of the info
+                    return new Uri(uriString.Replace(Host, "multipleHostsDetected"));
+                }
+
                 return null;
             }
         }
