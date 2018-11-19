@@ -15,6 +15,7 @@
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -45,7 +46,15 @@ namespace Steeltoe.Management.Endpoint.Health
                     result.Status = h.Status;
                 }
 
-                result.Details.Add(contributor.Id, h.Details);
+                if (!result.Details.ContainsKey(contributor.Id))
+                {
+                    result.Details.Add(contributor.Id, h.Details);
+                }
+                else
+                {
+                    // add the contribtor with a -n appended to the id
+                    result.Details.Add(string.Concat(contributor.Id, "-", result.Details.Count(k => k.Key == contributor.Id)), h.Details);
+                }
             }
 
             return result;
