@@ -15,7 +15,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer

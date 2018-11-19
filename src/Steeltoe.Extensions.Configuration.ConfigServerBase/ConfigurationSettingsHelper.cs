@@ -21,6 +21,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     public static class ConfigurationSettingsHelper
     {
         private const string SPRING_APPLICATION_PREFIX = "spring:application";
+        private const string VCAP_SERVICES_CONFIGSERVER_PREFIX = "vcap:services:p-config-server:0";
 
         public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IConfiguration config)
         {
@@ -57,6 +58,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             settings.RetryAttempts = GetRetryMaxAttempts(clientConfigsection, config, settings.RetryAttempts);
             settings.Token = GetToken(clientConfigsection, config);
             settings.Timeout = GetTimeout(clientConfigsection, config, settings.Timeout);
+            settings.AccessTokenUri = GetAccessTokenUri(clientConfigsection, config);
+            settings.ClientId = GetClientId(clientConfigsection, config);
+            settings.ClientSecret = GetClientSecret(clientConfigsection, config);
+            settings.TokenRenewRate = GetTokenRenewRate(clientConfigsection, config);
+            settings.TokenTtl = GetTokenTtl(clientConfigsection, config);
+            // Override Config server URI 
+            settings.Uri = GetCloudFoundryUri(clientConfigsection, config, settings.Uri);
         }
 
         private static int GetRetryMaxAttempts(IConfigurationSection clientConfigsection, IConfiguration resolve, int def)
@@ -144,6 +152,55 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             return ConfigurationValuesHelper.GetBoolean("validateCertificates", clientConfigsection, resolve, def) &&
                 ConfigurationValuesHelper.GetBoolean("validate_certificates", clientConfigsection, resolve, def);
+        }
+
+        private static string GetClientSecret(IConfigurationSection configServerSection, IConfiguration config)
+        {
+            var vcapConfigServerSection = config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
+            return ConfigurationValuesHelper.GetSetting(
+                "credentials:client_secret",
+                vcapConfigServerSection,
+                configServerSection,
+                config,
+                ConfigServerClientSettings.DEFAULT_CLIENT_SECRET);
+        }
+
+        private static string GetClientId(IConfigurationSection configServerSection, IConfiguration config)
+        {
+            var vcapConfigServerSection = config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
+            return ConfigurationValuesHelper.GetSetting(
+                "credentials:client_id",
+                vcapConfigServerSection,
+                configServerSection,
+                config,
+                ConfigServerClientSettings.DEFAULT_CLIENT_ID);
+        }
+
+        private static string GetAccessTokenUri(IConfigurationSection configServerSection, IConfiguration config)
+        {
+            var vcapConfigServerSection = config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
+            return ConfigurationValuesHelper.GetSetting(
+                "credentials:access_token_uri",
+                vcapConfigServerSection,
+                configServerSection,
+                config,
+                ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI);
+        }
+
+        private static int GetTokenRenewRate(IConfigurationSection configServerSection, IConfiguration resolve)
+        {
+            return ConfigurationValuesHelper.GetInt("tokenRenewRate", configServerSection, resolve, ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_RENEW_RATE);
+        }
+
+        private static int GetTokenTtl(IConfigurationSection configServerSection, IConfiguration resolve)
+        {
+            return ConfigurationValuesHelper.GetInt("tokenTtl", configServerSection, resolve, ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL);
+        }
+
+        private static string GetCloudFoundryUri(IConfiguration configServerSection, IConfiguration config, string def)
+        {
+            var vcapConfigServerSection = config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
+            return ConfigurationValuesHelper.GetSetting("credentials:uri", vcapConfigServerSection, configServerSection, config, def);
         }
     }
 }

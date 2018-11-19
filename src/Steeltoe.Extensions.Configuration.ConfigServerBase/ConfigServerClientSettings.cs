@@ -77,6 +77,31 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public const int DEFAULT_TIMEOUT_MILLISECONDS = 6 * 1000;
 
+        /// <summary>
+        /// Default Vault Token Time to Live setting
+        /// </summary>
+        public const int DEFAULT_VAULT_TOKEN_TTL = 300000;
+
+        /// <summary>
+        /// Default Vault Token renewal rate
+        /// </summary>
+        public const int DEFAULT_VAULT_TOKEN_RENEW_RATE = 60000;
+
+        /// <summary>
+        /// Default address used by provider to obtain a OAuth Access Token
+        /// </summary>
+        public const string DEFAULT_ACCESS_TOKEN_URI = null;
+
+        /// <summary>
+        /// Default client id used by provider to obtain a OAuth Access Token
+        /// </summary>
+        public const string DEFAULT_CLIENT_ID = null;
+
+        /// <summary>
+        /// Default client secret used by provider to obtain a OAuth Access Token
+        /// </summary>
+        public const string DEFAULT_CLIENT_SECRET = null;
+
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
         private string username;
         private string password;
@@ -196,6 +221,31 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// Gets or sets returns the request timeout in milliseconds
         /// </summary>
         public virtual int Timeout { get; set; }
+
+        /// <summary>
+        /// Gets or sets address used by provider to obtain a OAuth Access Token
+        /// </summary>
+        public virtual string AccessTokenUri { get; set; } = DEFAULT_ACCESS_TOKEN_URI;
+
+        /// <summary>
+        /// Gets or sets client id used by provider to obtain a OAuth Access Token
+        /// </summary>
+        public virtual string ClientId { get; set; } = DEFAULT_CLIENT_ID;
+
+        /// <summary>
+        /// Gets or sets client secret used by provider to obtain a OAuth Access Token
+        /// </summary>
+        public virtual string ClientSecret { get; set; } = DEFAULT_CLIENT_SECRET;
+
+        /// <summary>
+        /// Gets or sets vault token Time to Live setting in Millisecoonds
+        /// </summary>
+        public virtual int TokenTtl { get; set; } = DEFAULT_VAULT_TOKEN_TTL;
+
+        /// <summary>
+        /// Gets or sets vault token renew rate in Milliseconds
+        /// </summary>
+        public virtual int TokenRenewRate { get; set; } = DEFAULT_VAULT_TOKEN_RENEW_RATE;
 
         internal string GetRawUri()
         {

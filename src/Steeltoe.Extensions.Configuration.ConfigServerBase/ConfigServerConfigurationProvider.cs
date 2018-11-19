@@ -49,8 +49,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         protected ILogger _logger;
 
         private const string ArrayPattern = @"(\[[0-9]+\])*$";
+        private const string VAULT_RENEW_PATH = "vault/v1/auth/token/renew-self";
+        private const string VAULT_TOKEN_HEADER = "X-Vault-Token";
+
         private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
         private static readonly string[] EMPTY_LABELS = new string[] { string.Empty };
+
+        private Timer tokenRenewTimer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class with default
@@ -223,7 +228,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The HttpRequestMessage built from the path</returns>
         protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri)
         {
-            var request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, _settings.Username, _settings.Password);
+            HttpRequestMessage request = null;
+            if (string.IsNullOrEmpty(_settings.AccessTokenUri))
+            {
+                request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, _settings.Username, _settings.Password);
+            }
+            else
+            {
+                request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, FetchAccessToken);
+            }
 
             if (!string.IsNullOrEmpty(_settings.Token))
             {
@@ -255,6 +268,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             Data["spring:cloud:config:retry:initialInterval"] = _settings.RetryInitialInterval.ToString();
             Data["spring:cloud:config:retry:maxInterval"] = _settings.RetryMaxInterval.ToString();
             Data["spring:cloud:config:retry:multiplier"] = _settings.RetryMultiplier.ToString();
+
+            Data["spring:cloud:config:access_token_uri"] = _settings.AccessTokenUri;
+            Data["spring:cloud:config:client_secret"] = _settings.ClientSecret;
+            Data["spring:cloud:config:client_id"] = _settings.ClientId;
+            Data["spring:cloud:config:tokenTtl"] = _settings.TokenTtl.ToString();
+            Data["spring:cloud:config:tokenRenewRate"] = _settings.TokenRenewRate.ToString();
         }
 
         /// <summary>
@@ -427,6 +446,107 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         protected internal virtual void RenewToken(string token)
         {
+            if (tokenRenewTimer == null)
+            {
+                tokenRenewTimer = new Timer(
+                    this.RefreshVaultTokenAsync,
+                    null,
+                    TimeSpan.FromMilliseconds(_settings.TokenRenewRate),
+                    TimeSpan.FromMilliseconds(_settings.TokenRenewRate));
+            }
+        }
+
+        /// <summary>
+        /// Conduct the OAuth2 client_credentials grant flow returning a task that can be used to obtain the
+        /// results
+        /// </summary>
+        /// <returns>The task object representing asynchronous operation</returns>
+        protected internal string FetchAccessToken()
+        {
+            if (string.IsNullOrEmpty(_settings.AccessTokenUri))
+            {
+                return null;
+            }
+
+            return HttpClientHelper.GetAccessToken(
+                _settings.AccessTokenUri,
+                _settings.ClientId,
+                _settings.ClientSecret,
+                _settings.Timeout,
+                _settings.ValidateCertificates).Result;
+        }
+
+        protected internal async void RefreshVaultTokenAsync(object state)
+        {
+            if (string.IsNullOrEmpty(Settings.Token))
+            {
+                return;
+            }
+
+            var obscuredToken = Settings.Token.Substring(0, 4) + "[*]" + Settings.Token.Substring(Settings.Token.Length - 4);
+
+            // If certificate validation is disabled, inject a callback to handle properly
+            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+            HttpClientHelper.ConfigureCertificateValidatation(
+                _settings.ValidateCertificates,
+                out prevProtocols,
+                out RemoteCertificateValidationCallback prevValidator);
+
+            HttpClient client = null;
+            try
+            {
+                client = GetHttpClient(Settings);
+
+                var uri = GetVaultRenewUri();
+                var message = GetValutRenewMessage(uri);
+
+                _logger?.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
+
+                using (HttpResponseMessage response = await client.SendAsync(message).ConfigureAwait(false))
+                {
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        _logger?.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError("Unable to renew Vault token {0}. Is the token invalid or expired? - {1}", obscuredToken, e);
+            }
+            finally
+            {
+                client.Dispose();
+                HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
+            }
+        }
+
+        protected internal virtual string GetVaultRenewUri()
+        {
+            var rawUri = Settings.RawUri;
+            if (!rawUri.EndsWith("/"))
+            {
+                rawUri = rawUri + "/";
+            }
+
+            return rawUri + VAULT_RENEW_PATH;
+        }
+
+        protected internal virtual HttpRequestMessage GetValutRenewMessage(string requestUri)
+        {
+            var request = HttpClientHelper.GetRequestMessage(HttpMethod.Post, requestUri, FetchAccessToken);
+
+            if (!string.IsNullOrEmpty(Settings.Token))
+            {
+                request.Headers.Add(VAULT_TOKEN_HEADER, Settings.Token);
+            }
+
+            int renewTtlSeconds = Settings.TokenTtl / 1000;
+            string json = "{\"increment\":" + renewTtlSeconds.ToString() + "}";
+
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            request.Content = content;
+            return request;
         }
 
         /// <summary>
