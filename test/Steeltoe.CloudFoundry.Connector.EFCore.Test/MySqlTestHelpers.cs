@@ -72,7 +72,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             'name': 'cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355',
             'username': 'Dd6O1BPXUHdrmzbP',
             'password': '7E1LxXnlH2hhlPVt',
-            'uri': 'mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true',
+            'uri': 'mysql://Dd6O1BPXUHdrmzbP0:7E1LxXnlH2hhlPVt0@192.168.0.91:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd0407903550?reconnect=true',
             'jdbcUrl': 'jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt'
           },
           'syslog_drain_url': null,

@@ -147,6 +147,40 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
         }
 
         [Fact]
+        public void AddDbContext_MultipleMySqlServices_AddWithName_Adds()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
+
+            // Assert
+            var built = services.BuildServiceProvider();
+            var service = built.GetService<GoodDbContext>();
+            Assert.NotNull(service);
+
+            var con = service.Database.GetDbConnection();
+            Assert.NotNull(con);
+            Assert.IsType<MySqlConnection>(con);
+
+            var connString = con.ConnectionString;
+            Assert.NotNull(connString);
+            Assert.Contains("Server=192.168.0.91", connString);
+            Assert.Contains("Port=3306", connString);
+            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd0407903550", connString);
+            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP0", connString);
+            Assert.Contains("Password=7E1LxXnlH2hhlPVt0", connString);
+        }
+
+        [Fact]
         public void AddDbContexts_WithVCAPs_AddsDbContexts()
         {
             // Arrange
