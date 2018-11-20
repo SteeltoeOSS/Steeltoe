@@ -14,8 +14,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Configuration.ConfigServer;
+using Steeltoe.Common;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
@@ -60,6 +62,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             if (defaultSettings == null)
             {
                 throw new ArgumentNullException(nameof(defaultSettings));
+            }
+
+            if (!configurationBuilder.Sources.Any(c => c.GetType() == typeof(CloudFoundryConfigurationSource)))
+            {
+                configurationBuilder.Add(new CloudFoundryConfigurationSource());
             }
 
             configurationBuilder.Add(new ConfigServerConfigurationProvider(defaultSettings, logFactory));

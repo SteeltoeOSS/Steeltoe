@@ -56,9 +56,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             configurationBuilder.AddConfigServer(settings);
 
             ConfigServerConfigurationProvider configServerProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Sources)
+            foreach (IConfigurationSource source in configurationBuilder.Sources)
             {
-                configServerProvider = provider as ConfigServerConfigurationProvider;
+                configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
                 {
                     break;
@@ -80,9 +80,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             configurationBuilder.AddConfigServer(settings, loggerFactory);
 
             ConfigServerConfigurationProvider configServerProvider = null;
-            foreach (IConfigurationProvider provider in configurationBuilder.Sources)
+            foreach (IConfigurationSource source in configurationBuilder.Sources)
             {
-                configServerProvider = provider as ConfigServerConfigurationProvider;
+                configServerProvider = source as ConfigServerConfigurationProvider;
                 if (configServerProvider != null)
                 {
                     break;

@@ -63,7 +63,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             settings.ClientSecret = GetClientSecret(clientConfigsection, config);
             settings.TokenRenewRate = GetTokenRenewRate(clientConfigsection, config);
             settings.TokenTtl = GetTokenTtl(clientConfigsection, config);
-            // Override Config server URI 
+
+            // Override Config server URI
             settings.Uri = GetCloudFoundryUri(clientConfigsection, config, settings.Uri);
         }
 
