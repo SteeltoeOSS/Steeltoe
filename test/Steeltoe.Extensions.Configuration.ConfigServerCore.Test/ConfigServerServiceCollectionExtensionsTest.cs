@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
 
@@ -84,6 +85,28 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Null(options.Username);
             Assert.Null(options.Password);
             Assert.Null(options.Token);
+            Assert.Null(options.AccessTokenUri);
+            Assert.Null(options.ClientId);
+            Assert.Null(options.ClientSecret);
+        }
+
+        [Fact]
+        public void ConfigureConfigServerClientOptions_ConfiguresCloudFoundryOptions()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            var environment = new HostingEnvironment();
+
+            // Act and Assert
+            var builder = new ConfigurationBuilder().AddConfigServer(environment);
+            var config = builder.Build();
+            services.ConfigureConfigServerClientOptions(config);
+
+            var serviceProvider = services.BuildServiceProvider();
+            var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();
+            Assert.NotNull(app);
+            var service = serviceProvider.GetService<IOptions<CloudFoundryServicesOptions>>();
+            Assert.NotNull(service);
         }
     }
 }

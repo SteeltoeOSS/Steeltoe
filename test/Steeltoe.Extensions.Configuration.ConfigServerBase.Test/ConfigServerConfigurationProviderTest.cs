@@ -564,25 +564,35 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void AddConfigServerClientSettings_ChangesDataDictionary()
         {
             // Arrange
-            ConfigServerClientSettings settings = new ConfigServerClientSettings();
-
-            settings.Enabled = true;
-            settings.Environment = "environment";
-            settings.FailFast = false;
-            settings.Label = "label";
-            settings.Name = "name";
-            settings.Password = "password";
-            settings.Uri = "http://foo.bar/";
-            settings.Username = "username";
-            settings.ValidateCertificates = false;
-            settings.Token = "vaulttoken";
+            ConfigServerClientSettings settings = new ConfigServerClientSettings
+            {
+                AccessTokenUri = "http://foo.bar/",
+                ClientId = "client_id",
+                ClientSecret = "client_secret",
+                Enabled = true,
+                Environment = "environment",
+                FailFast = false,
+                Label = "label",
+                Name = "name",
+                Password = "password",
+                Uri = "http://foo.bar/",
+                Username = "username",
+                ValidateCertificates = false,
+                Token = "vaulttoken",
+                TokenRenewRate = 1,
+                TokenTtl = 2
+            };
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
 
             // Act and Assert
             provider.AddConfigServerClientSettings();
 
-            string value;
-
+            Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out string value));
+            Assert.Equal("http://foo.bar/", value);
+            Assert.True(provider.TryGet("spring:cloud:config:client_id", out value));
+            Assert.Equal("client_id", value);
+            Assert.True(provider.TryGet("spring:cloud:config:client_secret", out value));
+            Assert.Equal("client_secret", value);
             Assert.True(provider.TryGet("spring:cloud:config:env", out value));
             Assert.Equal("environment", value);
             Assert.True(provider.TryGet("spring:cloud:config:label", out value));
@@ -606,6 +616,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("vaulttoken", value);
             Assert.True(provider.TryGet("spring:cloud:config:timeout", out value));
             Assert.Equal("6000", value);
+            Assert.True(provider.TryGet("spring:cloud:config:tokenRenewRate", out value));
+            Assert.Equal("1", value);
+            Assert.True(provider.TryGet("spring:cloud:config:tokenTtl", out value));
+            Assert.Equal("2", value);
         }
 
         [Fact]

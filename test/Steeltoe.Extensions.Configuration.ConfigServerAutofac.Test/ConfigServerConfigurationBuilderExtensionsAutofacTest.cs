@@ -43,6 +43,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test
                     break;
                 }
             }
+
             Assert.NotNull(provider);
             var settings = provider.Settings;
             Assert.NotNull(settings);
