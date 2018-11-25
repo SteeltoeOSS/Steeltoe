@@ -711,7 +711,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var result = client.StartTimer("MyTimer", 100, TimerFuncThrows);
             Assert.NotNull(result);
             System.Threading.Thread.Sleep(1000);
-            Assert.True(_timerFuncCount > 1);
+            Assert.True(_timerFuncCount >= 1);
             result.Dispose();
         }
 
@@ -728,9 +728,9 @@ namespace Steeltoe.Discovery.Eureka.Test
             var result = client.StartTimer("MyTimer", 100, TimerFuncThrows);
             Assert.NotNull(result);
             System.Threading.Thread.Sleep(1000);
-            Assert.True(_timerFuncCount > 1);
-            var currentCount = _timerFuncCount;
+            Assert.True(_timerFuncCount >= 1);
             result.Dispose();
+            var currentCount = _timerFuncCount;
             System.Threading.Thread.Sleep(1000);
             Assert.Equal(currentCount, _timerFuncCount);
         }
