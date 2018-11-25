@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Steeltoe.Common.Http;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -40,13 +41,28 @@ namespace Steeltoe.Discovery.Eureka.Transport
         {
             get
             {
+                if (_configOptions != null)
+                {
+                    return _configOptions.CurrentValue;
+                }
+
                 return _config;
             }
         }
 
         protected HttpClient _client;
         protected ILogger _logger;
+        private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
+        private IOptionsMonitor<EurekaClientOptions> _configOptions;
+
+        public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IEurekaDiscoveryClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
+        {
+            _config = null;
+            _configOptions = config ?? throw new ArgumentNullException(nameof(config));
+            _handlerProvider = handlerProvider;
+            Initialize(new Dictionary<string, string>(), logFactory);
+        }
 
         public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null)
             : this(config, new Dictionary<string, string>(), logFactory) => _client = client;
@@ -469,6 +485,22 @@ namespace Steeltoe.Discovery.Eureka.Transport
         {
         }
 
+        internal string FetchAccessToken()
+        {
+            var config = Config as EurekaClientOptions;
+            if (config == null || string.IsNullOrEmpty(config.AccessTokenUri))
+            {
+                return null;
+            }
+
+            return HttpClientHelper.GetAccessToken(
+                config.AccessTokenUri,
+                config.ClientId,
+                config.ClientSecret,
+                DEFAULT_GETACCESSTOKEN_TIMEOUT,
+                config.ValidateCertificates).Result;
+        }
+
         protected internal static string MakeServiceUrl(string serviceUrl)
         {
             var url = new Uri(serviceUrl).ToString();
@@ -480,19 +512,23 @@ namespace Steeltoe.Discovery.Eureka.Transport
             return url;
         }
 
-        protected internal virtual HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
+        protected internal HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
         {
             string rawUri = requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
             string rawUserInfo = requestUri.GetComponents(UriComponents.UserInfo, UriFormat.Unescaped);
-
             var request = new HttpRequestMessage(method, rawUri);
-            if (!string.IsNullOrEmpty(rawUserInfo) && rawUserInfo.Contains(":"))
+
+            if (!string.IsNullOrEmpty(rawUserInfo) && rawUserInfo.IndexOfAny(COLON_DELIMIT) > 0)
             {
                 string[] userInfo = GetUserInfo(rawUserInfo);
                 if (userInfo.Length >= 2)
                 {
                     request = HttpClientHelper.GetRequestMessage(method, rawUri, userInfo[0], userInfo[1]);
                 }
+            }
+            else
+            {
+                request = HttpClientHelper.GetRequestMessage(method, rawUri, FetchAccessToken);
             }
 
             foreach (var header in _headers)

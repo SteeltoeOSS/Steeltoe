@@ -31,7 +31,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void Constructor_Throws_IfConfigNull()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient(null));
+            var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient((IEurekaClientConfig)null));
             Assert.Contains("config", ex.Message);
         }
 

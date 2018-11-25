@@ -23,6 +23,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
+    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorBase" Version="$(SteeltoeConnectorVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
