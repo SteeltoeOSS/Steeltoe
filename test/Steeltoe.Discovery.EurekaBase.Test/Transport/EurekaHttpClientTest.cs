@@ -673,6 +673,19 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal(HttpMethod.Post, result.Method);
             Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
             Assert.False(result.Headers.Contains("Authorization"));
+
+            // arrange
+            var clientOptions = new EurekaClientOptions { ServiceUrl = "http://boo:123/eureka/" };
+            var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
+            client = new EurekaHttpClient(optionsMonitor);
+
+            // act
+            result = client.GetRequestMessage(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls));
+
+            // assert
+            Assert.Equal(HttpMethod.Post, result.Method);
+            Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
+            Assert.False(result.Headers.Contains("Authorization"));
         }
 
         [Fact]
@@ -684,6 +697,19 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             };
             var client = new EurekaHttpClient(config);
             var result = client.GetRequestMessage(HttpMethod.Post, new Uri(config.EurekaServerServiceUrls));
+            Assert.Equal(HttpMethod.Post, result.Method);
+            Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
+            Assert.True(result.Headers.Contains("Authorization"));
+
+            // arrange
+            var clientOptions = new EurekaClientOptions { ServiceUrl = "http://user:pass@boo:123/eureka/" };
+            var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
+            client = new EurekaHttpClient(optionsMonitor);
+
+            // act
+            result = client.GetRequestMessage(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls));
+
+            // assert
             Assert.Equal(HttpMethod.Post, result.Method);
             Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
             Assert.True(result.Headers.Contains("Authorization"));
