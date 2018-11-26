@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public interface IAttributeValue
     {
          T Match<T>(
@@ -12,6 +13,7 @@ namespace Steeltoe.Management.Census.Trace
              Func<long, T> longFunction,
              Func<object, T> defaultFunction);
     }
+    [Obsolete("Use OpenCensus project packages")]
     public interface IAttributeValue<T> : IAttributeValue
     {
         T Value { get; }

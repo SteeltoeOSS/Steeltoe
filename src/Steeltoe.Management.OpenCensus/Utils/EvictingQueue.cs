@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class EvictingQueue<T> : IEnumerable<T>, IEnumerable
     {
         private readonly Queue<T> _delegate;

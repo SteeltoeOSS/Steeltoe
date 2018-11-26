@@ -14,9 +14,9 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Propagation;
-using Steeltoe.Management.Census.Trace.Unsafe;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Propagation;
+using OpenCensus.Trace.Unsafe;
 using Steeltoe.Management.Tracing.Test;
 using System;
 using System.IO;
@@ -350,9 +350,9 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
             var obs = new AspNetCoreHostingObserver(opts, tracing);
             var request = GetHttpRequestMessage();
-            request.Request.Headers.Add(B3Format.X_B3_TRACE_ID, new StringValues(TRACE_ID_BASE16));
-            request.Request.Headers.Add(B3Format.X_B3_SPAN_ID, new StringValues(SPAN_ID_BASE16));
-            request.Request.Headers.Add(B3Format.X_B3_SAMPLED, new StringValues("1"));
+            request.Request.Headers.Add(B3Format.XB3TraceId, new StringValues(TRACE_ID_BASE16));
+            request.Request.Headers.Add(B3Format.XB3SpanId, new StringValues(SPAN_ID_BASE16));
+            request.Request.Headers.Add(B3Format.XB3Sampled, new StringValues("1"));
 
             var context = obs.ExtractTraceContext(request);
             Assert.Equal(TRACE_ID_BASE16, context.TraceId.ToLowerBase16());
@@ -360,9 +360,9 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.True(context.TraceOptions.IsSampled);
 
             request = GetHttpRequestMessage();
-            request.Request.Headers.Add(B3Format.X_B3_TRACE_ID, new StringValues(TRACE_ID_BASE16_EIGHT_BYTES));
-            request.Request.Headers.Add(B3Format.X_B3_SPAN_ID, new StringValues(SPAN_ID_BASE16));
-            request.Request.Headers.Add(B3Format.X_B3_SAMPLED, new StringValues("1"));
+            request.Request.Headers.Add(B3Format.XB3TraceId, new StringValues(TRACE_ID_BASE16_EIGHT_BYTES));
+            request.Request.Headers.Add(B3Format.XB3SpanId, new StringValues(SPAN_ID_BASE16));
+            request.Request.Headers.Add(B3Format.XB3Sampled, new StringValues("1"));
 
             context = obs.ExtractTraceContext(request);
             Assert.Equal("0000000000000000" + TRACE_ID_BASE16_EIGHT_BYTES, context.TraceId.ToLowerBase16());

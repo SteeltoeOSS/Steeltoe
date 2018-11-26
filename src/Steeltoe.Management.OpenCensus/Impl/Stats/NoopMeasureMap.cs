@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class NoopMeasureMap : MeasureMapBase
     {
         internal static readonly NoopMeasureMap INSTANCE = new NoopMeasureMap();

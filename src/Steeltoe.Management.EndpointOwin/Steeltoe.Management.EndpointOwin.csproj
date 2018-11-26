@@ -28,12 +28,10 @@
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Steeltoe.Management.EndpointBase\Steeltoe.Management.EndpointBase.csproj" />
-    <ProjectReference Include="..\Steeltoe.Management.OpenCensus\Steeltoe.Management.OpenCensus.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Management.EndpointBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Management.OpenCensus" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <PropertyGroup>

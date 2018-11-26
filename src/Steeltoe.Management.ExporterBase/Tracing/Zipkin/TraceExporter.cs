@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Export;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Export;
 
 namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 {

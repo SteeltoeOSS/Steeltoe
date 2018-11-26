@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal static class SpanExtensions
     {
 

@@ -8,6 +8,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class TraceComponentBase : ITraceComponent
     {
         internal static ITraceComponent NewNoopTraceComponent

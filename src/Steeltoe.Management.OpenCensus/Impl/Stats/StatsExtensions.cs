@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     public static class StatsExtensions
     {
         public static bool ContainsKeys(this IView view, List<ITagKey> keys)

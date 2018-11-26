@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Census.Trace.Unsafe;
+using OpenCensus.Trace.Unsafe;
 using System.Collections.Generic;
 using Xunit;
 

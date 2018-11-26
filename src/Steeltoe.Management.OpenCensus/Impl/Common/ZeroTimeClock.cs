@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Common
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class ZeroTimeClock : IClock
     {
         public static readonly ZeroTimeClock INSTANCE = new ZeroTimeClock();

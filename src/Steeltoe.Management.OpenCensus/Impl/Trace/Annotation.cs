@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class Annotation : IAnnotation
     {
         private static readonly ReadOnlyDictionary<string, IAttributeValue> EMPTY_ATTRIBUTES =

@@ -1,6 +1,9 @@
 ﻿
+using System;
+
 namespace Steeltoe.Management.Census.Trace.Config
 {
+    [Obsolete("Use OpenCensus project packages")]
     public interface ITraceParams
     {
         ISampler Sampler { get; }

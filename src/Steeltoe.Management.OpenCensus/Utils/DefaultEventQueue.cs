@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class DefaultEventQueue : IEventQueue
     {
         public void Enqueue(IEventQueueEntry entry)

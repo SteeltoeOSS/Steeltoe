@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Internal
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class NoopScope : IScope
     {
         public static readonly IScope INSTANCE = new NoopScope();

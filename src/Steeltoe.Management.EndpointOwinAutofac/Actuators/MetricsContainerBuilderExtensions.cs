@@ -14,9 +14,9 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using OpenCensus.Stats;
+using OpenCensus.Tags;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.EndpointOwin.Metrics;

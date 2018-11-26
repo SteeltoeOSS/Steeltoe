@@ -1,8 +1,9 @@
 ﻿using Steeltoe.Management.Census.Common;
-
+using System;
 
 namespace Steeltoe.Management.Census.Internal
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class TimestampConverter : ITimestampConverter
     {
         private readonly ITimestamp timestamp;

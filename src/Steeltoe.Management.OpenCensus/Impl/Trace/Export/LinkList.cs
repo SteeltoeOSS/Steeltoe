@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class LinkList : ILinks
     {
         public static LinkList Create(IList<ILink> links, int droppedLinksCount)

@@ -16,10 +16,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Propagation;
+using OpenCensus.Trace.Unsafe;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Propagation;
-using Steeltoe.Management.Census.Trace.Unsafe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,7 +122,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
             span.PutErrorAttribute(GetExceptionMessage(exception))
                 .PutErrorStackTraceAttribute(GetExceptionStackTrace(exception))
-                .Status = Status.ABORTED;
+                .Status = Status.Aborted;
         }
 
         protected internal void HandleStartEvent(HttpContext context)

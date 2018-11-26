@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Config
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class TraceParams : ITraceParams
     {
         private const double DEFAULT_PROBABILITY = 1e-4;

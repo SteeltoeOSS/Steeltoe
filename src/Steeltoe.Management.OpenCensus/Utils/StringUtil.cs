@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal static class StringUtil
     {
         public static bool IsPrintableString(String str)

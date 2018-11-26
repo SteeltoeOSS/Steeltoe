@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     public interface IMeasureMap
     {
         IMeasureMap Put(IMeasureDouble measure, double value);

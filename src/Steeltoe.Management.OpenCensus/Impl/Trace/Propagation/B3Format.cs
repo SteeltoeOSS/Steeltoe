@@ -5,6 +5,7 @@ using Steeltoe.Management.Census.Trace;
 
 namespace Steeltoe.Management.Census.Trace.Propagation
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class B3Format : TextFormatBase
     {
         public const string X_B3_TRACE_ID = "X-B3-TraceId";

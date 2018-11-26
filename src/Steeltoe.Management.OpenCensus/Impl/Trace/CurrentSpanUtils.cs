@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal static class CurrentSpanUtils
     {
         public static ISpan CurrentSpan

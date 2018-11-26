@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class RunningSpanStoreBase : IRunningSpanStore
     {
         private static readonly IRunningSpanStore NOOP_RUNNING_SPAN_STORE = new NoopRunningSpanStore();

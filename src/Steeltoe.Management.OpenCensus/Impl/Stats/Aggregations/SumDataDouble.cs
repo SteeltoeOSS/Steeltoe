@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats.Aggregations
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class SumDataDouble : AggregationData, ISumDataDouble
     {
         public double Sum { get; }

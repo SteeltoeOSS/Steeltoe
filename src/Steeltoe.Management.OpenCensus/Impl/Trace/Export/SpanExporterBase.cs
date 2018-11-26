@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class SpanExporterBase : ISpanExporter
     {
         private static readonly ISpanExporter NOOP_SPAN_EXPORTER = new NoopSpanExporter();

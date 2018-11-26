@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class NoopExportComponent : IExportComponent
     {
         private readonly ISampledSpanStore noopSampledSpanStore = Export.SampledSpanStoreBase.NewNoopSampledSpanStore;

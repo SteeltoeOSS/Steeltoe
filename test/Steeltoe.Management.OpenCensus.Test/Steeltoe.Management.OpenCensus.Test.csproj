@@ -32,5 +32,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
   </ItemGroup>
-
+  <PropertyGroup>
+    <NoWarn>0618</NoWarn>
+  </PropertyGroup>
 </Project>

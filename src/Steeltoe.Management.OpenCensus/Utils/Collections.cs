@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
+    [Obsolete("Use OpenCensus project packages")]
     public static class Collections
     {
         public static string ToString<K, V>(IDictionary<K, V> dict)

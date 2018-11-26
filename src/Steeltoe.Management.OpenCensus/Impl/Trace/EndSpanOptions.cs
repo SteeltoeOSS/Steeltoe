@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class EndSpanOptions
     {
         public static readonly EndSpanOptions DEFAULT = new EndSpanOptions(false); 

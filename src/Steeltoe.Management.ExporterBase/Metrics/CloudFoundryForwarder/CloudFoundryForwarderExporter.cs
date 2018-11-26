@@ -14,9 +14,8 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OpenCensus.Stats;
 using Steeltoe.Common.Http;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
 using System;
 using System.Collections.Generic;
 using System.Net;

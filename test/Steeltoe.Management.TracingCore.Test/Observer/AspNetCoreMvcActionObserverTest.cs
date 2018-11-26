@@ -15,8 +15,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Unsafe;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Unsafe;
 using Steeltoe.Management.Tracing.Test;
 using System;
 using System.IO;

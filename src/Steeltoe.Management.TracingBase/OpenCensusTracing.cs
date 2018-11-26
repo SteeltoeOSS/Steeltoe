@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Config;
-using Steeltoe.Management.Census.Trace.Export;
-using Steeltoe.Management.Census.Trace.Propagation;
-using Steeltoe.Management.Census.Trace.Sampler;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Config;
+using OpenCensus.Trace.Export;
+using OpenCensus.Trace.Propagation;
+using OpenCensus.Trace.Sampler;
 
 namespace Steeltoe.Management.Tracing
 {

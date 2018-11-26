@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace Steeltoe.Management.Census.Tags.Unsafe
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal static class AsyncLocalContext
     {
         private static readonly ITagContext EMPTY_TAG_CONTEXT = new EmptyTagContext();

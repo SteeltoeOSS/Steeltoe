@@ -1,9 +1,11 @@
 ﻿using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Trace.Config;
 using Steeltoe.Management.Census.Trace.Internal;
+using System;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class Tracer : TracerBase
     {
 

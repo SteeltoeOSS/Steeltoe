@@ -5,6 +5,7 @@ using Steeltoe.Management.Census.Common;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class SpanData : ISpanData
     {
         public static ISpanData Create(

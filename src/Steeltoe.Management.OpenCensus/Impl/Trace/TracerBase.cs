@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class TracerBase : ITracer
     {
         private static readonly NoopTracer noopTracer = new NoopTracer();

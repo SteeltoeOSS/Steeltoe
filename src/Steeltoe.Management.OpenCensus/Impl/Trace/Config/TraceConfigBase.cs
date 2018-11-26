@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Config
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class TraceConfigBase : ITraceConfig
     {
         private static readonly NoopTraceConfig NOOP_TRACE_CONFIG = new NoopTraceConfig();

@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class CumulativeMutableViewData : MutableViewData
     {
         private ITimestamp start;

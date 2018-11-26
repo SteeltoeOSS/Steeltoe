@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Census.Tags
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class TagContextBase : ITagContext
     {
 

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class NoopSampledSpanStore : SampledSpanStoreBase
     {
         private static readonly ISampledPerSpanNameSummary EMPTY_PER_SPAN_NAME_SUMMARY = SampledPerSpanNameSummary.Create(

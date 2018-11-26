@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
+using OpenCensus.Stats;
+using OpenCensus.Tags;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder

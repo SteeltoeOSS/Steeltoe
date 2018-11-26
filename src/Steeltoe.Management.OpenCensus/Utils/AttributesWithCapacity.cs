@@ -8,6 +8,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class AttributesWithCapacity : IDictionary<string, IAttributeValue>
     {
         private OrderedDictionary _delegate = new OrderedDictionary();

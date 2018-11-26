@@ -5,6 +5,7 @@ using Steeltoe.Management.Census.Trace;
 
 namespace Steeltoe.Management.Census.Trace.Propagation
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class BinaryFormatBase : IBinaryFormat
     {
         internal static readonly NoopBinaryFormat NOOP_BINARY_FORMAT = new NoopBinaryFormat();

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class SpanBuilderBase : ISpanBuilder
     {
         public abstract ISpanBuilder SetSampler(ISampler sampler);

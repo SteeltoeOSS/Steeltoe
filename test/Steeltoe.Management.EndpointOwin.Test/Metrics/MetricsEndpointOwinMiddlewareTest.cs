@@ -13,13 +13,12 @@
 // limitations under the License.
 
 using Microsoft.Owin;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Stats.Aggregations;
-using Steeltoe.Management.Census.Stats.Measures;
-using Steeltoe.Management.Census.Tags;
+using OpenCensus.Stats;
+using OpenCensus.Stats.Aggregations;
+using OpenCensus.Stats.Measures;
+using OpenCensus.Tags;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;

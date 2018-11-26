@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class ViewName : IViewName
     {
         internal const int NAME_MAX_LENGTH = 255;

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class ViewManagerBase : IViewManager
     {
         public abstract ISet<IView> AllExportedViews { get; }

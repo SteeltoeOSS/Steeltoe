@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class CurrentStatsState
     {
         private StatsCollectionState currentState = StatsCollectionState.ENABLED;

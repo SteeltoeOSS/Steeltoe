@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class ConcurrentIntrusiveList<T> where T : IElement<T>
     {
         private int size = 0;

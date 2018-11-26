@@ -14,10 +14,10 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OpenCensus.Common;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Export;
 using Steeltoe.Common.Http;
-using Steeltoe.Management.Census.Common;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Export;
 using System;
 using System.Collections.Generic;
 using System.Net;

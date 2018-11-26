@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class SampledPerSpanNameSummary : ISampledPerSpanNameSummary
     {
         public IDictionary<ISampledLatencyBucketBoundaries, int> NumbersOfLatencySampledSpans { get; }

@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class StartEndHandler : IStartEndHandler
     {
         private readonly ISpanExporter _spanExporter;

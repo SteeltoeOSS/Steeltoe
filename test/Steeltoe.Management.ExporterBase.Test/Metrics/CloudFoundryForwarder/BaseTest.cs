@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Stats.Measures;
-using Steeltoe.Management.Census.Tags;
+using OpenCensus.Stats;
+using OpenCensus.Stats.Measures;
+using OpenCensus.Tags;
 using System;
 using System.Collections.Generic;
 

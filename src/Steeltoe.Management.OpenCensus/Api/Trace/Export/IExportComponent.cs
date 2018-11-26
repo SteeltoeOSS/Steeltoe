@@ -1,5 +1,8 @@
-﻿namespace Steeltoe.Management.Census.Trace.Export
+﻿using System;
+
+namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public interface IExportComponent
     {
         ISpanExporter SpanExporter { get; }

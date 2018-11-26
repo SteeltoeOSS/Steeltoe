@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Propagation
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class PropagationComponentBase : IPropagationComponent
     {
         private static readonly IPropagationComponent NOOP_PROPAGATION_COMPONENT = new NoopPropagationComponent();

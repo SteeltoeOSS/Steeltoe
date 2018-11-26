@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class AttributeValue : IAttributeValue
     {
         public static IAttributeValue<string> StringAttributeValue(string stringValue)
@@ -36,7 +37,7 @@ namespace Steeltoe.Management.Census.Trace
             Func<object, T> defaultFunction);
         
     }
-
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class AttributeValue<T> : AttributeValue, IAttributeValue<T>
     {
         public static IAttributeValue<string> Create(string stringValue)

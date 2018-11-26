@@ -10,6 +10,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class Span : SpanBase
     {
         private readonly ISpanId parentSpanId;

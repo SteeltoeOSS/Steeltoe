@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal static class Arrays
     {
         public static bool Equals(byte[] array1, byte[] array2)

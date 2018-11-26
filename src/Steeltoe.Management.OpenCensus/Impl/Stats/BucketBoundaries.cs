@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class BucketBoundaries : IBucketBoundaries
     {
         public IList<double> Boundaries { get; }

@@ -29,5 +29,6 @@
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <AspNetVersion>5.2.4</AspNetVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
+    <OpenCensusVersion>0.1.0-beta1-4002</OpenCensusVersion>
   </PropertyGroup>
 </Project>

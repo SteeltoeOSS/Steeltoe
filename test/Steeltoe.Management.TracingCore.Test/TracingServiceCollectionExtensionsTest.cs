@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using OpenCensus.Trace;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Census.Trace;
 using System;
 using System.Linq;
 using Xunit;

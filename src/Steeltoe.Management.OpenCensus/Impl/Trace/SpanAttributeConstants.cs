@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public static class SpanAttributeConstants
     {
         public const string SpanKindKey = "span.kind";

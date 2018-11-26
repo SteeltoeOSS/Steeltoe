@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Config
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class NoopTraceConfig : TraceConfigBase
     {
         public override ITraceParams ActiveTraceParams

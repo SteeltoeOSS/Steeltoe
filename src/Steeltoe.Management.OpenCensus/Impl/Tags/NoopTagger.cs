@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Tags
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class NoopTagger : TaggerBase
     {
         internal static readonly ITagger INSTANCE = new NoopTagger();

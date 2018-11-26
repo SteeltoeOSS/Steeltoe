@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class TraceEvents<T>
     {
         private int totalRecordedEvents = 0;

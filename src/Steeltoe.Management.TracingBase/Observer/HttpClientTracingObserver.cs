@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Propagation;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Propagation;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading;

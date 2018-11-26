@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Stats.Aggregations;
-using Steeltoe.Management.Census.Stats.Measures;
-using Steeltoe.Management.Census.Tags;
+using OpenCensus.Stats;
+using OpenCensus.Stats.Aggregations;
+using OpenCensus.Stats.Measures;
+using OpenCensus.Tags;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

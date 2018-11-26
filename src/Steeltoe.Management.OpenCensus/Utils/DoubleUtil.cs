@@ -6,6 +6,7 @@ namespace Steeltoe.Management.Census.Utils
 {
     internal static class DoubleUtil
     {
+        [Obsolete("Use OpenCensus project packages")]
         public static long ToInt64(double arg)
         {
 

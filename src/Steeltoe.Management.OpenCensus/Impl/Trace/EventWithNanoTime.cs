@@ -2,9 +2,11 @@
 
 using Steeltoe.Management.Census.Internal;
 using Steeltoe.Management.Census.Trace.Export;
+using System;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class EventWithNanoTime<T>
     {
         private readonly long nanoTime;

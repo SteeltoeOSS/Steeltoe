@@ -1,8 +1,10 @@
 ﻿using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Internal;
+using System;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class ExportComponent : ExportComponentBase
     {
         private const int EXPORTER_BUFFER_SIZE = 32;

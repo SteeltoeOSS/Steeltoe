@@ -5,6 +5,7 @@ using Steeltoe.Management.Census.Trace;
 
 namespace Steeltoe.Management.Census.Trace.Propagation
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class NoopBinaryFormat : IBinaryFormat
     {
         public ISpanContext FromByteArray(byte[] bytes)

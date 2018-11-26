@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Stats.Aggregations;
-using Steeltoe.Management.Census.Tags;
+using OpenCensus.Stats;
+using OpenCensus.Stats.Aggregations;
+using OpenCensus.Tags;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Diagnostics;
@@ -22,7 +22,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test

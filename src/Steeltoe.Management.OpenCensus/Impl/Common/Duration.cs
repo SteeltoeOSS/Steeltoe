@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Common
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class Duration : IDuration
     {
         const long MAX_SECONDS = 315576000000L;

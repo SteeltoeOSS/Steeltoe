@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class MutableCount : MutableAggregation
     {
         internal long Count { get; private set; } = 0;

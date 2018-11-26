@@ -15,11 +15,11 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using OpenCensus.Stats;
+using OpenCensus.Stats.Aggregations;
+using OpenCensus.Stats.Measures;
+using OpenCensus.Tags;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Stats.Aggregations;
-using Steeltoe.Management.Census.Stats.Measures;
-using Steeltoe.Management.Census.Tags;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;

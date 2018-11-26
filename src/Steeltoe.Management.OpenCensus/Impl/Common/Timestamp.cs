@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Common
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class Timestamp : ITimestamp
     {
         const long MAX_SECONDS = 315576000000L;

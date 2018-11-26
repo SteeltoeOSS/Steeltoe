@@ -1,5 +1,8 @@
-﻿namespace Steeltoe.Management.Census.Stats
+﻿using System;
+
+namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     public static class MeasureUnit
     {
         public static string Bytes { get; } = "bytes";

@@ -8,6 +8,7 @@ using Steeltoe.Management.Census.Trace.Propagation;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class NoopTraceComponent : ITraceComponent
     {
         private readonly IExportComponent noopExportComponent = Export.ExportComponentBase.NewNoopExportComponent;

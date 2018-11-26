@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
+    [Obsolete("Use OpenCensus project packages")]
     public static class CanonicalCodeExtensions
     {
         public static Status ToStatus(this CanonicalCode code)

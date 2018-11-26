@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Tags
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class CurrentTaggingState
     {
 

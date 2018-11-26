@@ -15,9 +15,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Unsafe;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Unsafe;
 using System.Threading;
 
 namespace Steeltoe.Management.Tracing.Observer

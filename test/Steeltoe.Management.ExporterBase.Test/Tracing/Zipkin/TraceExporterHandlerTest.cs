@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Census.Common;
-using Steeltoe.Management.Census.Internal;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Export;
-using Steeltoe.Management.Census.Utils;
+using OpenCensus.Common;
+using OpenCensus.Internal;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Export;
 using Steeltoe.Management.Exporter.Tracing.Zipkin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -44,16 +44,16 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             IList<ITimedEvent<IAnnotation>> annotations = new List<ITimedEvent<IAnnotation>>();
             List<ITimedEvent<IMessageEvent>> networkEvents = new List<ITimedEvent<IMessageEvent>>()
             {
-                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 433901068), new MessageEventBuilder(MessageEventType.RECEIVED, 0, 0, 0).SetCompressedMessageSize(7).Build()),
-                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 459486280), new MessageEventBuilder(MessageEventType.SENT, 0, 0, 0).SetCompressedMessageSize(13).Build())
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 433901068), MessageEvent.Builder(MessageEventType.RECEIVED, 0).SetCompressedMessageSize(7).SetUncompressedMessageSize(0).Build()),
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 459486280), MessageEvent.Builder(MessageEventType.SENT, 0).SetCompressedMessageSize(13).SetUncompressedMessageSize(0).Build())
             };
 
             ISpanData data = SpanData.Create(
                 SpanContext.Create(
-                    TraceId.FromBytes(Arrays.StringToByteArray(traceId)),
-                    SpanId.FromBytes(Arrays.StringToByteArray(spanId)),
+                    TraceId.FromBytes(StringToByteArray(traceId)),
+                    SpanId.FromBytes(StringToByteArray(spanId)),
                     TraceOptions.FromBytes(new byte[] { 1 })),
-                SpanId.FromBytes(Arrays.StringToByteArray(parentId)),
+                SpanId.FromBytes(StringToByteArray(parentId)),
                 true, /* hasRemoteParent */
                 "Recv.helloworld.Greeter.SayHello", /* name */
                 Timestamp.Create(EPOCH_SECONDS + 1505855794, 194009601) /* startTimestamp */,
@@ -62,7 +62,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 TimedEvents<IMessageEvent>.Create(networkEvents, 0 /* droppedEventsCount */),
                 LinkList.Create(new List<ILink>(), 0 /* droppedLinksCount */),
                 null, /* childSpanCount */
-                Status.OK,
+                Status.Ok,
                 Timestamp.Create(EPOCH_SECONDS + 1505855799, 465726528) /* endTimestamp */);
 
             var handler = new TraceExporterHandler(new TraceExporterOptions() { UseShortTraceIds = false });
@@ -81,7 +81,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 .LocalEndpoint(localEndpoint)
                 .AddAnnotation(1505855799000000L + (433901068L / 1000), "RECEIVED")
                 .AddAnnotation(1505855799000000L + (459486280L / 1000), "SENT")
-                .PutTag("census.status_code", "OK")
+                .PutTag("census.status_code", "Ok")
                 .Build();
 
             Assert.Equal(zspan, result);
@@ -104,16 +104,16 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             IList<ITimedEvent<IAnnotation>> annotations = new List<ITimedEvent<IAnnotation>>();
             List<ITimedEvent<IMessageEvent>> networkEvents = new List<ITimedEvent<IMessageEvent>>()
             {
-                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 433901068), new MessageEventBuilder(MessageEventType.RECEIVED, 0, 0, 0).SetCompressedMessageSize(7).Build()),
-                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 459486280), new MessageEventBuilder(MessageEventType.SENT, 0, 0, 0).SetCompressedMessageSize(13).Build())
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 433901068), MessageEvent.Builder(MessageEventType.RECEIVED, 0).SetCompressedMessageSize(7).SetUncompressedMessageSize(0).Build()),
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 459486280), MessageEvent.Builder(MessageEventType.SENT, 0).SetCompressedMessageSize(13).SetUncompressedMessageSize(0).Build())
             };
 
             ISpanData data = SpanData.Create(
                 SpanContext.Create(
-                    TraceId.FromBytes(Arrays.StringToByteArray(traceId)),
-                    SpanId.FromBytes(Arrays.StringToByteArray(spanId)),
+                    TraceId.FromBytes(StringToByteArray(traceId)),
+                    SpanId.FromBytes(StringToByteArray(spanId)),
                     TraceOptions.FromBytes(new byte[] { 1 })),
-                SpanId.FromBytes(Arrays.StringToByteArray(parentId)),
+                SpanId.FromBytes(StringToByteArray(parentId)),
                 true, /* hasRemoteParent */
                 "Recv.helloworld.Greeter.SayHello", /* name */
                 Timestamp.Create(EPOCH_SECONDS + 1505855794, 194009601) /* startTimestamp */,
@@ -122,7 +122,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 TimedEvents<IMessageEvent>.Create(networkEvents, 0 /* droppedEventsCount */),
                 LinkList.Create(new List<ILink>(), 0 /* droppedLinksCount */),
                 null, /* childSpanCount */
-                Status.OK,
+                Status.Ok,
                 Timestamp.Create(EPOCH_SECONDS + 1505855799, 465726528) /* endTimestamp */);
 
             var handler = new TraceExporterHandler(new TraceExporterOptions());
@@ -141,10 +141,44 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 .LocalEndpoint(localEndpoint)
                 .AddAnnotation(1505855799000000L + (433901068L / 1000), "RECEIVED")
                 .AddAnnotation(1505855799000000L + (459486280L / 1000), "SENT")
-                .PutTag("census.status_code", "OK")
+                .PutTag("census.status_code", "Ok")
                 .Build();
 
             Assert.Equal(zspan, result);
+        }
+
+        internal static byte[] StringToByteArray(string src)
+        {
+            int size = src.Length / 2;
+            byte[] bytes = new byte[size];
+            for (int i = 0, j = 0; i < size; i++)
+            {
+                int high = HexCharToInt(src[j++]);
+                int low = HexCharToInt(src[j++]);
+                bytes[i] = (byte)(high << 4 | low);
+            }
+
+            return bytes;
+        }
+
+        internal static int HexCharToInt(char c)
+        {
+            if ((c >= '0') && (c <= '9'))
+            {
+                return c - '0';
+            }
+
+            if ((c >= 'a') && (c <= 'f'))
+            {
+                return (c - 'a') + 10;
+            }
+
+            if ((c >= 'A') && (c <= 'F'))
+            {
+                return (c - 'A') + 10;
+            }
+
+            throw new ArgumentOutOfRangeException("Invalid character: " + c);
         }
     }
 }

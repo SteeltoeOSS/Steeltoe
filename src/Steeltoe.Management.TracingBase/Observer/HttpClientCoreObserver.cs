@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using OpenCensus.Common;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Propagation;
+using OpenCensus.Trace.Unsafe;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Common;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Propagation;
-using Steeltoe.Management.Census.Trace.Unsafe;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -108,7 +108,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
             span.PutErrorAttribute(GetExceptionMessage(exception))
                 .PutErrorStackTraceAttribute(GetExceptionStackTrace(exception))
-                .Status = Status.ABORTED;
+                .Status = Status.Aborted;
             }
 
         protected internal void HandleStartEvent(HttpRequestMessage request)
@@ -161,7 +161,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            var spanContext = context as SpanContext;
+            SpanContext spanContext = context as SpanContext;
 
             if (spanContext != null)
             {
@@ -175,13 +175,13 @@ namespace Steeltoe.Management.Tracing.Observer
                 if (taskStatus == TaskStatus.Faulted)
                 {
                     span.PutErrorAttribute("TaskStatus.Faulted")
-                        .Status = Status.ABORTED;
+                        .Status = Status.Aborted;
                 }
 
                 if (taskStatus == TaskStatus.Canceled)
                 {
                     span.PutErrorAttribute("TaskStatus.Canceled")
-                        .Status = Status.CANCELLED;
+                        .Status = Status.Cancelled;
                 }
 
                 span.End();
@@ -201,16 +201,16 @@ namespace Steeltoe.Management.Tracing.Observer
                 traceId = traceId.Substring(traceId.Length - 16, 16);
             }
 
-            headerSetter.Put(headers, B3Format.X_B3_TRACE_ID, traceId);
-            headerSetter.Put(headers, B3Format.X_B3_SPAN_ID, Tracer.CurrentSpan.Context.SpanId.ToLowerBase16());
+            headerSetter.Put(headers, B3Format.XB3TraceId, traceId);
+            headerSetter.Put(headers, B3Format.XB3SpanId, Tracer.CurrentSpan.Context.SpanId.ToLowerBase16());
             if (Tracer.CurrentSpan.Context.TraceOptions.IsSampled)
             {
-                headerSetter.Put(headers, B3Format.X_B3_SAMPLED, "1");
+                headerSetter.Put(headers, B3Format.XB3Sampled, "1");
             }
 
             if (parentSpan != null)
             {
-                headerSetter.Put(headers, B3Format.X_B3_PARENT_SPAN_ID, parentSpan.Context.SpanId.ToLowerBase16());
+                headerSetter.Put(headers, B3Format.XB3ParentSpanId, parentSpan.Context.SpanId.ToLowerBase16());
             }
         }
 

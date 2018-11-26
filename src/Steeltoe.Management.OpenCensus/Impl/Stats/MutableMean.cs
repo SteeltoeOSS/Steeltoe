@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class MutableMean : MutableAggregation
     {
         internal double Sum { get; set; } = 0.0;

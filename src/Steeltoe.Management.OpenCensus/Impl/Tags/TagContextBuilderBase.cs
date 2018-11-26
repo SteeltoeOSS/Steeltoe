@@ -5,6 +5,7 @@ using Steeltoe.Management.Census.Common;
 
 namespace Steeltoe.Management.Census.Tags
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class TagContextBuilderBase : ITagContextBuilder
     {
         public abstract ITagContext Build();

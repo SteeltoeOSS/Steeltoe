@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class TraceId : ITraceId
     {
         public const int SIZE = 16;

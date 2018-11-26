@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Tags.Propagation
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class TagContextBinarySerializer : TagContextBinarySerializerBase
     {
         private static readonly byte[] EMPTY_BYTE_ARRAY = { };

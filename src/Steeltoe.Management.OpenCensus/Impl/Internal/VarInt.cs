@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Internal
 {
+    [Obsolete("Use OpenCensus project packages")]
     public static class VarInt
     {
         /** Maximum encoded size of 32-bit positive integers (in bytes) */

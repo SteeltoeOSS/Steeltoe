@@ -9,6 +9,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class MeasureToViewMap
     {
         private object _lck = new object();

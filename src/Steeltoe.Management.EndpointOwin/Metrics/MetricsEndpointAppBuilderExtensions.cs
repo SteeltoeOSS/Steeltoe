@@ -14,10 +14,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using OpenCensus.Stats;
+using OpenCensus.Tags;
 using Owin;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using System;

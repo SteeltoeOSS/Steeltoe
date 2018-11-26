@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public static class SpanExtensions
     {
         public static ISpan PutClientSpanKindAttribute(this ISpan span)

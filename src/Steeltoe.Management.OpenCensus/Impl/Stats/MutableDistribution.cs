@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class MutableDistribution : MutableAggregation
     {
         private const double TOLERANCE = 1e-6;

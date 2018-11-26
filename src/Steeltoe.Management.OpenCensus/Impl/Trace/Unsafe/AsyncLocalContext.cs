@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Census.Trace.Unsafe
 {
+    [Obsolete("Use OpenCensus project packages")]
     public static class AsyncLocalContext
     {
         private static List<IAsyncLocalContextListener> callbacks = new List<IAsyncLocalContextListener>();

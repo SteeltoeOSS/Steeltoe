@@ -9,6 +9,7 @@ namespace Steeltoe.Management.Census.Trace
     /// child <see cref="SpanBase"/> and across process boundaries. It contains the identifiers <see cref="TraceId"/>
     /// and <see cref="SpanId"/> associated with the <see cref="SpanBase"/> and a set of <see cref="TraceOptions"/>.
     /// </summary>
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class SpanContext : ISpanContext
     {
         public static readonly SpanContext INVALID = new SpanContext(Trace.TraceId.INVALID, Trace.SpanId.INVALID, TraceOptions.DEFAULT);

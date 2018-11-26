@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class SpanExporter : SpanExporterBase
     {
         private SpanExporterWorker _worker { get; }

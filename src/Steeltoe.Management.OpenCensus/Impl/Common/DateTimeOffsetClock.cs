@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Common
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class DateTimeOffsetClock : IClock
     {
         internal const long MILLIS_PER_SECOND = 1000L;

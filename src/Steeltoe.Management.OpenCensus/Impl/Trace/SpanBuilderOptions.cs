@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class SpanBuilderOptions
     {
         internal IRandomGenerator RandomHandler { get; }

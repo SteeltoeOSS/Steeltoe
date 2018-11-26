@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using OpenCensus.Trace;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Census.Trace;
 using System.Text;
 
 namespace Steeltoe.Management.Tracing

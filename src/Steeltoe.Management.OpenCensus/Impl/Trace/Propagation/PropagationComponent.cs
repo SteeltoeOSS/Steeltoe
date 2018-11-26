@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Propagation
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class PropagationComponent : PropagationComponentBase
     {
         private readonly BinaryFormat binaryFormat = new BinaryFormat();

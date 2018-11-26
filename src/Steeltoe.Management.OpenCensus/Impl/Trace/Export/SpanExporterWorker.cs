@@ -6,6 +6,7 @@ using Steeltoe.Management.Census.Common;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class SpanExporterWorker : IDisposable
     {
         private int _bufferSize;

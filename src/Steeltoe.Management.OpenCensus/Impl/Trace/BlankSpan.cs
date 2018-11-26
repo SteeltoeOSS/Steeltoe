@@ -5,6 +5,7 @@ using Steeltoe.Management.Census.Trace.Export;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class BlankSpan : SpanBase
     {
         public static readonly BlankSpan INSTANCE = new BlankSpan();

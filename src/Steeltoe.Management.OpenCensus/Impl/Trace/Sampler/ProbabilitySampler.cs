@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Sampler
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class ProbabilitySampler : ISampler
     {
         internal ProbabilitySampler(double probability, long idUpperBound)

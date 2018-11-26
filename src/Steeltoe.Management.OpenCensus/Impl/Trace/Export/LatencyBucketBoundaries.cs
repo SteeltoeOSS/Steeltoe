@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class LatencyBucketBoundaries : ISampledLatencyBucketBoundaries
     {
         public static readonly ISampledLatencyBucketBoundaries ZERO_MICROSx10 = new LatencyBucketBoundaries(0, 10000);

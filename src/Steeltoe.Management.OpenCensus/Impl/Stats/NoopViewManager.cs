@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class NoopViewManager : ViewManagerBase
     {
         private static readonly ITimestamp ZERO_TIMESTAMP = Timestamp.Create(0, 0);

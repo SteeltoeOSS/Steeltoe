@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class InProcessSampledSpanStore : SampledSpanStoreBase
     {
         private const int NUM_SAMPLES_PER_LATENCY_BUCKET = 10;

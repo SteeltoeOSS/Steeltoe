@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Sampler
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class NeverSampleSampler : ISampler
     {
         internal NeverSampleSampler() { }

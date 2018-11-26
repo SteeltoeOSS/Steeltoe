@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Tags
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal sealed class NoopTagContextBuilder : TagContextBuilderBase
     {
         internal static readonly ITagContextBuilder INSTANCE = new NoopTagContextBuilder();

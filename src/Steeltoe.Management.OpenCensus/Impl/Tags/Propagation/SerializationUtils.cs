@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Tags.Propagation
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal static class SerializationUtils
     {
         internal const int VERSION_ID = 0;

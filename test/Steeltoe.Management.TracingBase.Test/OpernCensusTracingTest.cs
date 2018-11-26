@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Sampler;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Sampler;
 using System.Collections.Generic;
 using Xunit;
 

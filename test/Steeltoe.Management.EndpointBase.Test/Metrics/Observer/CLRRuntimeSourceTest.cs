@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
+using OpenCensus.Stats;
+using OpenCensus.Tags;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;

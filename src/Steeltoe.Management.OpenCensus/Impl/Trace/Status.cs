@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class Status
     {
         public static readonly Status OK = new Status(CanonicalCode.OK);

@@ -14,18 +14,16 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
+using OpenCensus.Stats;
+using OpenCensus.Stats.Aggregations;
+using OpenCensus.Stats.Measures;
+using OpenCensus.Tags;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Stats.Aggregations;
-using Steeltoe.Management.Census.Stats.Measures;
-using Steeltoe.Management.Census.Tags;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {

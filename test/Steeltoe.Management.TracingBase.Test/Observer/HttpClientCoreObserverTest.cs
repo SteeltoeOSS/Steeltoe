@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Propagation;
-using Steeltoe.Management.Census.Trace.Unsafe;
+using OpenCensus.Trace;
+using OpenCensus.Trace.Propagation;
+using OpenCensus.Trace.Unsafe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -197,20 +197,20 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.Null(spanContext.Previous);
             Assert.Equal("httpclient:/", span.Name);
 
-            Assert.True(request.Headers.Contains(B3Format.X_B3_TRACE_ID));
-            Assert.True(request.Headers.Contains(B3Format.X_B3_SPAN_ID));
-            Assert.False(request.Headers.Contains(B3Format.X_B3_PARENT_SPAN_ID));
+            Assert.True(request.Headers.Contains(B3Format.XB3TraceId));
+            Assert.True(request.Headers.Contains(B3Format.XB3SpanId));
+            Assert.False(request.Headers.Contains(B3Format.XB3ParentSpanId));
 
-            var spanId = request.Headers.GetValues(B3Format.X_B3_SPAN_ID).Single();
+            var spanId = request.Headers.GetValues(B3Format.XB3SpanId).Single();
             Assert.Equal(span.Context.SpanId.ToLowerBase16(), spanId);
 
-            var traceId = request.Headers.GetValues(B3Format.X_B3_TRACE_ID).Single();
+            var traceId = request.Headers.GetValues(B3Format.XB3TraceId).Single();
             var expected = GetTraceId(opts, span.Context);
             Assert.Equal(expected, traceId);
 
             if (span.Context.TraceOptions.IsSampled)
             {
-                Assert.True(request.Headers.Contains(B3Format.X_B3_SAMPLED));
+                Assert.True(request.Headers.Contains(B3Format.XB3Sampled));
             }
 
             Assert.False(span.HasEnded);
@@ -238,20 +238,20 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             obs.InjectTraceContext(request, null);
 
-            Assert.True(request.Headers.Contains(B3Format.X_B3_TRACE_ID));
-            Assert.True(request.Headers.Contains(B3Format.X_B3_SPAN_ID));
-            Assert.False(request.Headers.Contains(B3Format.X_B3_PARENT_SPAN_ID));
+            Assert.True(request.Headers.Contains(B3Format.XB3TraceId));
+            Assert.True(request.Headers.Contains(B3Format.XB3SpanId));
+            Assert.False(request.Headers.Contains(B3Format.XB3ParentSpanId));
 
-            var spanId = request.Headers.GetValues(B3Format.X_B3_SPAN_ID).Single();
+            var spanId = request.Headers.GetValues(B3Format.XB3SpanId).Single();
             Assert.Equal(span.Context.SpanId.ToLowerBase16(), spanId);
 
-            var traceId = request.Headers.GetValues(B3Format.X_B3_TRACE_ID).Single();
+            var traceId = request.Headers.GetValues(B3Format.XB3TraceId).Single();
             var expected = GetTraceId(opts, span.Context);
             Assert.Equal(expected, traceId);
 
             if (span.Context.TraceOptions.IsSampled)
             {
-                Assert.True(request.Headers.Contains(B3Format.X_B3_SAMPLED));
+                Assert.True(request.Headers.Contains(B3Format.XB3Sampled));
             }
         }
 

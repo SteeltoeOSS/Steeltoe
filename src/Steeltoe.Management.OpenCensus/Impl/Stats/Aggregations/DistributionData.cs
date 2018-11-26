@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats.Aggregations
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class DistributionData : AggregationData, IDistributionData
     {
         public double Mean { get; }

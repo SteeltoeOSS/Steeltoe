@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal abstract class MutableViewData
     {
         private const long MILLIS_PER_SECOND = 1000L;

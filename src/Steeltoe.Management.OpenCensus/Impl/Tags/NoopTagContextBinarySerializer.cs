@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Tags
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class NoopTagContextBinarySerializer : TagContextBinarySerializerBase
     {
         internal static readonly ITagContextBinarySerializer INSTANCE = new NoopTagContextBinarySerializer();

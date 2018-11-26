@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public sealed class TimedEvents<T> : ITimedEvents<T>
     {
         public static ITimedEvents<T> Create(IList<ITimedEvent<T>> events, int droppedEventsCount)

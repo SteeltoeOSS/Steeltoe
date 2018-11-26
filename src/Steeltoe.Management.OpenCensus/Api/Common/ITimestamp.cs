@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Common
 {
+    [Obsolete("Use OpenCensus project packages")]
     public interface ITimestamp : IComparable<ITimestamp>
     {
         long Seconds { get; }

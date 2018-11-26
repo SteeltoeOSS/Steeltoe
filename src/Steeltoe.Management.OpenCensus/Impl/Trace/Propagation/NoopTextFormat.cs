@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Propagation
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class NoopTextFormat : TextFormatBase
     {
         internal NoopTextFormat() { }

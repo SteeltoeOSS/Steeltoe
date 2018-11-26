@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class SampledSpanStoreSummary : ISampledSpanStoreSummary
     {
         public static ISampledSpanStoreSummary Create(IDictionary<string, ISampledPerSpanNameSummary> perSpanNameSummary)

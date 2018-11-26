@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class NoopSpanBuilder : SpanBuilderBase
     {
         internal static ISpanBuilder CreateWithParent(string spanName, ISpan parent = null)

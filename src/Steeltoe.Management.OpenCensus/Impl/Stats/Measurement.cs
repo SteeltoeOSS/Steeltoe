@@ -5,6 +5,7 @@ using Steeltoe.Management.Census.Stats.Measurements;
 
 namespace Steeltoe.Management.Census.Stats
 {
+    [Obsolete("Use OpenCensus project packages")]
     public abstract class Measurement : IMeasurement
     {
         public abstract IMeasure Measure { get; }

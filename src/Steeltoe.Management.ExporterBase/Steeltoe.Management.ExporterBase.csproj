@@ -22,15 +22,8 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Management.ExporterBase.xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\Steeltoe.Management.OpenCensus\Steeltoe.Management.OpenCensus.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Management.OpenCensus" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-
   <ItemGroup>
+    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
     <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeConfigVersion)" />
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">

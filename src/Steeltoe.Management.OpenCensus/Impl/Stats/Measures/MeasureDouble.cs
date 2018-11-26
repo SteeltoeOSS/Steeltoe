@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Stats.Measures
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class MeasureDouble : Measure, IMeasureDouble
     {
         public override String Name { get; }

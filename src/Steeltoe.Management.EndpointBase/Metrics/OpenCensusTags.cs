@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Census.Tags;
-using Steeltoe.Management.Census.Tags.Propagation;
+using OpenCensus.Tags;
+using OpenCensus.Tags.Propagation;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Metrics

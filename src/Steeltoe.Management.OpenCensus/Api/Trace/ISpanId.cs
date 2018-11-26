@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
+    [Obsolete("Use OpenCensus project packages")]
     public interface ISpanId : IComparable<ISpanId>
     {
         byte[] Bytes { get; }
