@@ -34,10 +34,9 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
         private const string STATUS_CODE = "census.status_code";
         private const string STATUS_DESCRIPTION = "census.status_description";
 
-        private const long MILLIS_PER_SECOND = 1000L;
-        private const long NANOS_PER_MILLI = 1000 * 1000;
-        private const long NANOS_PER_SECOND = NANOS_PER_MILLI * MILLIS_PER_SECOND;
-        private const long EPOCH_SECONDS = 62135596800;
+        private const long MillisPerSecond = 1000L;
+        private const long NanosPerMillisecond = 1000 * 1000;
+        private const long NanosPerSecond = NanosPerMillisecond * MillisPerSecond;
         private ITraceExporterOptions _options;
         private ILogger _logger;
         private ZipkinEndpoint _localEndpoint;
@@ -64,9 +63,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
         internal ZipkinSpan GenerateSpan(ISpanData spanData, ZipkinEndpoint localEndpoint)
         {
             ISpanContext context = spanData.Context;
-            long startTimestamp = ToEpochMicros(spanData.StartTimestamp);
-
-            long endTimestamp = ToEpochMicros(spanData.EndTimestamp);
+            long startTimestamp = ToEpochMicroseconds(spanData.StartTimestamp);
+            long endTimestamp = ToEpochMicroseconds(spanData.EndTimestamp);
 
             ZipkinSpan.Builder spanBuilder =
                 ZipkinSpan.NewBuilder()
@@ -74,7 +72,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                     .Id(EncodeSpanId(context.SpanId))
                     .Kind(ToSpanKind(spanData))
                     .Name(spanData.Name)
-                    .Timestamp(ToEpochMicros(spanData.StartTimestamp))
+                    .Timestamp(ToEpochMicroseconds(spanData.StartTimestamp))
                     .Duration(endTimestamp - startTimestamp)
                     .LocalEndpoint(localEndpoint);
 
@@ -101,23 +99,22 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
             foreach (var annotation in spanData.Annotations.Events)
             {
                 spanBuilder.AddAnnotation(
-                    ToEpochMicros(annotation.Timestamp), annotation.Event.Description);
+                    ToEpochMicroseconds(annotation.Timestamp), annotation.Event.Description);
             }
 
             foreach (var networkEvent in spanData.MessageEvents.Events)
             {
                 spanBuilder.AddAnnotation(
-                    ToEpochMicros(networkEvent.Timestamp), networkEvent.Event.Type.ToString());
+                    ToEpochMicroseconds(networkEvent.Timestamp), networkEvent.Event.Type.ToString());
             }
 
             return spanBuilder.Build();
         }
 
-        private long ToEpochMicros(ITimestamp timestamp)
+        private long ToEpochMicroseconds(ITimestamp timestamp)
         {
-            long nanos = ((timestamp.Seconds - EPOCH_SECONDS) * NANOS_PER_SECOND) + timestamp.Nanos;
+            long nanos = (timestamp.Seconds * NanosPerSecond) + timestamp.Nanos;
             long micros = nanos / 1000L;
-            long millis = micros / 1000L;
             return micros;
         }
 

@@ -13,21 +13,16 @@
 // limitations under the License.
 
 using OpenCensus.Common;
-using OpenCensus.Internal;
 using OpenCensus.Trace;
 using OpenCensus.Trace.Export;
-using Steeltoe.Management.Exporter.Tracing.Zipkin;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
 {
     public class TraceExporterHandlerTest
     {
-        private const long EPOCH_SECONDS = 62135596800;
-
         [Fact]
         public void GenerateSpan()
         {
@@ -44,8 +39,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             IList<ITimedEvent<IAnnotation>> annotations = new List<ITimedEvent<IAnnotation>>();
             List<ITimedEvent<IMessageEvent>> networkEvents = new List<ITimedEvent<IMessageEvent>>()
             {
-                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 433901068), MessageEvent.Builder(MessageEventType.RECEIVED, 0).SetCompressedMessageSize(7).SetUncompressedMessageSize(0).Build()),
-                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 459486280), MessageEvent.Builder(MessageEventType.SENT, 0).SetCompressedMessageSize(13).SetUncompressedMessageSize(0).Build())
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(1505855799, 433901068), MessageEvent.Builder(MessageEventType.RECEIVED, 0).SetCompressedMessageSize(7).SetUncompressedMessageSize(0).Build()),
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(1505855799, 459486280), MessageEvent.Builder(MessageEventType.SENT, 0).SetCompressedMessageSize(13).SetUncompressedMessageSize(0).Build())
             };
 
             ISpanData data = SpanData.Create(
@@ -56,14 +51,14 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 SpanId.FromBytes(StringToByteArray(parentId)),
                 true, /* hasRemoteParent */
                 "Recv.helloworld.Greeter.SayHello", /* name */
-                Timestamp.Create(EPOCH_SECONDS + 1505855794, 194009601) /* startTimestamp */,
+                Timestamp.Create(1505855794, 194009601) /* startTimestamp */,
                 Attributes.Create(attributes, 0 /* droppedAttributesCount */),
                 TimedEvents<IAnnotation>.Create(annotations, 0 /* droppedEventsCount */),
                 TimedEvents<IMessageEvent>.Create(networkEvents, 0 /* droppedEventsCount */),
                 LinkList.Create(new List<ILink>(), 0 /* droppedLinksCount */),
                 null, /* childSpanCount */
                 Status.Ok,
-                Timestamp.Create(EPOCH_SECONDS + 1505855799, 465726528) /* endTimestamp */);
+                Timestamp.Create(1505855799, 465726528) /* endTimestamp */);
 
             var handler = new TraceExporterHandler(new TraceExporterOptions() { UseShortTraceIds = false });
             var result = handler.GenerateSpan(data, localEndpoint);
@@ -104,8 +99,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             IList<ITimedEvent<IAnnotation>> annotations = new List<ITimedEvent<IAnnotation>>();
             List<ITimedEvent<IMessageEvent>> networkEvents = new List<ITimedEvent<IMessageEvent>>()
             {
-                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 433901068), MessageEvent.Builder(MessageEventType.RECEIVED, 0).SetCompressedMessageSize(7).SetUncompressedMessageSize(0).Build()),
-                TimedEvent<IMessageEvent>.Create(Timestamp.Create(EPOCH_SECONDS + 1505855799, 459486280), MessageEvent.Builder(MessageEventType.SENT, 0).SetCompressedMessageSize(13).SetUncompressedMessageSize(0).Build())
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(1505855799, 433901068), MessageEvent.Builder(MessageEventType.RECEIVED, 0).SetCompressedMessageSize(7).SetUncompressedMessageSize(0).Build()),
+                TimedEvent<IMessageEvent>.Create(Timestamp.Create(1505855799, 459486280), MessageEvent.Builder(MessageEventType.SENT, 0).SetCompressedMessageSize(13).SetUncompressedMessageSize(0).Build())
             };
 
             ISpanData data = SpanData.Create(
@@ -116,14 +111,14 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 SpanId.FromBytes(StringToByteArray(parentId)),
                 true, /* hasRemoteParent */
                 "Recv.helloworld.Greeter.SayHello", /* name */
-                Timestamp.Create(EPOCH_SECONDS + 1505855794, 194009601) /* startTimestamp */,
+                Timestamp.Create(1505855794, 194009601) /* startTimestamp */,
                 Attributes.Create(attributes, 0 /* droppedAttributesCount */),
                 TimedEvents<IAnnotation>.Create(annotations, 0 /* droppedEventsCount */),
                 TimedEvents<IMessageEvent>.Create(networkEvents, 0 /* droppedEventsCount */),
                 LinkList.Create(new List<ILink>(), 0 /* droppedLinksCount */),
                 null, /* childSpanCount */
                 Status.Ok,
-                Timestamp.Create(EPOCH_SECONDS + 1505855799, 465726528) /* endTimestamp */);
+                Timestamp.Create(1505855799, 465726528) /* endTimestamp */);
 
             var handler = new TraceExporterHandler(new TraceExporterOptions());
             var result = handler.GenerateSpan(data, localEndpoint);
