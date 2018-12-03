@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/management",
-            ["management:endpoints:info:enabled"] = "false",
+            ["management:endpoints:info:enabled"] = "true",
             ["management:endpoints:info:sensitive"] = "false",
             ["management:endpoints:info:id"] = "infomanagement",
             ["info:application:name"] = "foobar",
