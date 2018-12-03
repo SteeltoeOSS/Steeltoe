@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -120,6 +121,8 @@ namespace Steeltoe.Management.Endpoint
 
         public virtual string Id { get; set; }
 
+        public virtual List<string> AltIds { get; set; }
+
         public virtual string Path
         {
             get
@@ -136,6 +139,24 @@ namespace Steeltoe.Management.Endpoint
                 }
 
                 return path + Id;
+            }
+        }
+
+        public virtual List<string> AltPaths
+        {
+            get
+            {
+                List<string> altPaths = new List<string>();
+                string path = Global.Path;
+
+                if (!path.EndsWith("/"))
+                {
+                    path = path + "/";
+                }
+
+                AltIds?.ForEach(id => altPaths.Add(path + id));
+
+                return altPaths;
             }
         }
 

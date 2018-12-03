@@ -70,9 +70,15 @@ namespace Steeltoe.Management.EndpointOwin
 
         public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return _exactRequestPathMatching
-                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
+                && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
+        public virtual bool PathMatches(bool exactMatch, List<string> endpointPaths, string requestPath)
+        {
+            return exactMatch
+                ? endpointPaths.Any(ep => requestPath.Equals(ep))
+                : endpointPaths.Any(ep => requestPath.StartsWith(ep));
         }
 
         protected virtual string Serialize<T>(T result)
@@ -116,9 +122,8 @@ namespace Steeltoe.Management.EndpointOwin
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return _exactRequestPathMatching
-                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
+                           && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class

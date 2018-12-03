@@ -68,13 +68,15 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         protected internal string GetMetricName(HttpRequest request)
         {
-            var epPath = _endpoint.Path;
-            var psPath = request.Path;
-            if (psPath.StartsWithSegments(epPath, out string remaining))
+            foreach (string epPath in _endpoint.Paths)
             {
-                if (!string.IsNullOrEmpty(remaining))
+                var psPath = request.Path;
+                if (psPath.StartsWithSegments(epPath, out string remaining))
                 {
-                    return remaining.TrimStart('/');
+                    if (!string.IsNullOrEmpty(remaining))
+                    {
+                        return remaining.TrimStart('/');
+                    }
                 }
             }
 

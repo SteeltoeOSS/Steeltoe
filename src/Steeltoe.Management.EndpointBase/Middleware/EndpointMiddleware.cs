@@ -64,10 +64,16 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return (_exactRequestPathMatching ? requestPath.Equals(_endpoint.Path)
-              : requestPath.StartsWith(_endpoint.Path))
+            return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
                  && _endpoint.Enabled
                  && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
+        public virtual bool PathMatches(bool exactMatch, List<string> endpointPaths, string requestPath)
+        {
+            return exactMatch
+                ? endpointPaths.Any(ep => requestPath.Equals(ep))
+                : endpointPaths.Any(ep => requestPath.StartsWith(ep));
         }
 
         protected virtual string Serialize(TResult result)
@@ -111,8 +117,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return (_exactRequestPathMatching ? requestPath.Equals(_endpoint.Path)
-               : requestPath.StartsWith(_endpoint.Path))
+            return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
                   && _endpoint.Enabled
                   && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }

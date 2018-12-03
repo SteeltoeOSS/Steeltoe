@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             var opts = new ThreadDumpOptions();
             Assert.True(opts.Enabled);
             Assert.True(opts.Sensitive);
-            Assert.Equal("dump", opts.Id);
+            Assert.Equal("threaddump", opts.Id);
         }
 
         [Fact]
@@ -69,8 +69,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
 
             Assert.True(opts.Enabled);
             Assert.True(opts.Sensitive);
-            Assert.Equal("dump", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/dump", opts.Path);
+            Assert.Equal("threaddump", opts.Id);
+            Assert.Equal("/cloudfoundryapplication/threaddump", opts.Path);
         }
     }
 }

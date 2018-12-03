@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var opts = new TraceOptions();
             Assert.True(opts.Enabled);
             Assert.True(opts.Sensitive);
-            Assert.Equal("trace", opts.Id);
+            Assert.Equal("httptrace", opts.Id);
             Assert.Equal(100, opts.Capacity);
             Assert.True(opts.AddTimeTaken);
             Assert.True(opts.AddRequestHeaders);

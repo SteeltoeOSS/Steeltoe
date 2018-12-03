@@ -59,7 +59,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         private bool IsCloudFoundryRequest(IOwinContext context)
         {
             var methodMatch = context.Request.Method == "GET";
-            var pathMatch = context.Request.Path.Value.Equals(_endpoint.Path);
+            var pathMatch = _endpoint.Paths.Any(ep => ep.Equals(context.Request.Path.Value));
             return methodMatch && pathMatch;
         }
     }

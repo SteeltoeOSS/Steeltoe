@@ -52,24 +52,27 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                 {
                     // POST - change a logger level
                     _logger?.LogDebug("Incoming logger path: {0}", context.Request.Path.Value);
-                    PathString epPath = new PathString(_endpoint.Path);
-                    if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining))
+                    foreach (string path in _endpoint.Paths)
                     {
-                        if (remaining.HasValue)
+                        PathString epPath = new PathString(path);
+                        if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining))
                         {
-                            string loggerName = remaining.Value.TrimStart('/');
-
-                            var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
-
-                            change.TryGetValue("configuredLevel", out string level);
-
-                            _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
-                            if (!string.IsNullOrEmpty(loggerName))
+                            if (remaining.HasValue)
                             {
-                                var changeReq = new LoggersChangeRequest(loggerName, level);
-                                _endpoint.Invoke(changeReq);
-                                context.Response.StatusCode = (int)HttpStatusCode.OK;
-                                return;
+                                string loggerName = remaining.Value.TrimStart('/');
+
+                                var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
+
+                                change.TryGetValue("configuredLevel", out string level);
+
+                                _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
+                                if (!string.IsNullOrEmpty(loggerName))
+                                {
+                                    var changeReq = new LoggersChangeRequest(loggerName, level);
+                                    _endpoint.Invoke(changeReq);
+                                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                    return;
+                                }
                             }
                         }
                     }

@@ -108,9 +108,15 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return _exactRequestPathMatching
-                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
+                && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
+        public virtual bool PathMatches(bool exactMatch, List<string> endpointPaths, string requestPath)
+        {
+            return exactMatch
+                ? endpointPaths.Any(ep => requestPath.Equals(ep))
+                : endpointPaths.Any(ep => requestPath.StartsWith(ep));
         }
 
         public async override Task<bool> IsAccessAllowed(HttpContext context)
@@ -139,9 +145,8 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return _exactRequestPathMatching
-                  ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                  : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
+                && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
         public async override Task<bool> IsAccessAllowed(HttpContext context)

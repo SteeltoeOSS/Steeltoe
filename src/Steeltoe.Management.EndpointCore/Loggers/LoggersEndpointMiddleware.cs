@@ -53,24 +53,27 @@ namespace Steeltoe.Management.Endpoint.Loggers
             {
                 // POST - change a logger level
                 _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
-                PathString epPath = new PathString(_endpoint.Path);
-                if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+                foreach (string path in _endpoint.Paths)
                 {
-                    if (remaining.HasValue)
+                    PathString epPath = new PathString(path);
+                    if (request.Path.StartsWithSegments(epPath, out PathString remaining))
                     {
-                        string loggerName = remaining.Value.TrimStart('/');
-
-                        var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
-
-                        change.TryGetValue("configuredLevel", out string level);
-
-                        _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
-                        if (!string.IsNullOrEmpty(loggerName))
+                        if (remaining.HasValue)
                         {
-                            var changeReq = new LoggersChangeRequest(loggerName, level);
-                            HandleRequest(changeReq);
-                            response.StatusCode = (int)HttpStatusCode.OK;
-                            return;
+                            string loggerName = remaining.Value.TrimStart('/');
+
+                            var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
+
+                            change.TryGetValue("configuredLevel", out string level);
+
+                            _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
+                            if (!string.IsNullOrEmpty(loggerName))
+                            {
+                                var changeReq = new LoggersChangeRequest(loggerName, level);
+                                HandleRequest(changeReq);
+                                response.StatusCode = (int)HttpStatusCode.OK;
+                                return;
+                            }
                         }
                     }
                 }
