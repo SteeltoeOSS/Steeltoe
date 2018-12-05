@@ -26,7 +26,8 @@ namespace Steeltoe.Common.Http.Discovery
     /// </summary>
     public class DiscoveryHttpMessageHandler : DelegatingHandler
     {
-        private DiscoveryHttpClientHandlerBase discoveryBase;
+        private readonly ILogger _logger;
+        private DiscoveryHttpClientHandlerBase _discoveryBase;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DiscoveryHttpMessageHandler"/> class.
@@ -35,18 +36,28 @@ namespace Steeltoe.Common.Http.Discovery
         /// <param name="logger">ILogger for capturing logs from Discovery operations</param>
         public DiscoveryHttpMessageHandler(IDiscoveryClient discoveryClient, ILogger<DiscoveryHttpClientHandler> logger = null)
         {
-            if (discoveryClient == null)
-            {
-                throw new ArgumentNullException(nameof(discoveryClient));
-            }
-
-            discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, logger);
+            _discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, logger);
+            _logger = logger;
         }
 
         /// <inheritdoc />
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            return await discoveryBase.SharedSendAsync(request, cancellationToken);
+            var current = request.RequestUri;
+            try
+            {
+                request.RequestUri = _discoveryBase.LookupService(current);
+                return await base.SendAsync(request, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _logger?.LogDebug(e, "Exception during SendAsync()");
+                throw;
+            }
+            finally
+            {
+                request.RequestUri = current;
+            }
         }
     }
 }
