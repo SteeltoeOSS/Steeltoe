@@ -45,36 +45,18 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
         /// Gets IMongoClient from MongoDB Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type IMongoClient
-        {
-            get
-            {
-                var type = ConnectorHelpers.FindType(Assemblies, ConnectionInterfaceTypeNames);
-                if (type == null)
-                {
-                    throw new ConnectorException("Unable to find IMongoClient, are you missing a MongoDB driver?");
-                }
-
-                return type;
-            }
-        }
+        public static Type IMongoClient { get { return ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames, "IMongoClient", "a MongoDB driver"); } }
 
         /// <summary>
         /// Gets MongoClient from MongoDB Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type MongoClient
-        {
-            get
-            {
-                var type = ConnectorHelpers.FindType(Assemblies, ConnectionTypeNames);
-                if (type == null)
-                {
-                    throw new ConnectorException("Unable to find MongoClient, are you missing a MongoDB driver?");
-                }
+        public static Type MongoClient { get { return ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "MongoClient", "a MongoDB driver"); } }
 
-                return type;
-            }
-        }
+        /// <summary>
+        /// Gets MongoUrl from MongoDB Library
+        /// </summary>
+        /// <exception cref="ConnectorException">When type is not found</exception>
+        public static Type MongoUrl { get { return ConnectorHelpers.FindTypeOrThrow(Assemblies, MongoConnectionInfo, "MongoUrl", "a MongoDB driver"); } }
     }
 }

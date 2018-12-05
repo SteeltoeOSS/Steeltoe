@@ -68,6 +68,27 @@ namespace Steeltoe.CloudFoundry.Connector
         }
 
         /// <summary>
+        /// Search a list of assemblies for the first matching type
+        /// </summary>
+        /// <param name="assemblyNames">List of assembly names to search</param>
+        /// <param name="typeNames">List of suitable types</param>
+        /// <param name="typeName">To use in exception</param>
+        /// <param name="assemblyShortDescription">Describe what might be missing</param>
+        /// <returns>An appropriate type</returns>
+        /// <remarks>Great for finding an implementation type that could have one or more names in one or more assemblies</remarks>
+        /// <exception cref="ConnectorException">When type isn't found</exception>
+        public static Type FindTypeOrThrow(string[] assemblyNames, string[] typeNames, string typeName, string assemblyShortDescription)
+        {
+            var type = FindType(assemblyNames, typeNames);
+            if (type == null)
+            {
+                throw new ConnectorException($"Unable to find {typeName}, are you missing {assemblyShortDescription}?");
+            }
+
+            return type;
+        }
+
+        /// <summary>
         /// Find a type from within an assembly
         /// </summary>
         /// <param name="assembly">The assembly to search</param>
