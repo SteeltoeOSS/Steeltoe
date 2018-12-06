@@ -51,8 +51,9 @@ namespace Steeltoe.Common.Configuration
         /// </summary>
         /// <param name="config">The configuration to use as both source and target for placeholder resolution.</param>
         /// <param name="logger">Optional logger</param>
+        /// <param name="useEmptyStringIfNotFound">Replace the placeholder with an empty string, so the application does not see it</param>
         /// <returns>A list of keys with resolved values. Add to your <see cref="ConfigurationBuilder"/> with method 'AddInMemoryCollection'</returns>
-        public static IEnumerable<KeyValuePair<string, string>> GetResolvedConfigurationPlaceholders(IConfiguration config, ILogger logger = null)
+        public static IEnumerable<KeyValuePair<string, string>> GetResolvedConfigurationPlaceholders(IConfiguration config, ILogger logger = null, bool useEmptyStringIfNotFound = true)
         {
             // setup a holding tank for resolved values
             var resolvedValues = new Dictionary<string, string>();
@@ -62,7 +63,7 @@ namespace Steeltoe.Common.Configuration
             foreach (var entry in config.AsEnumerable().Where(e => e.Value != null && e.Value.Contains(PREFIX) && e.Value.Contains(SUFFIX)))
             {
                 logger?.LogTrace("Found a property placeholder '{0}' to resolve for key '{1}", entry.Value, entry.Key);
-                resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, config, visitedPlaceholders, logger, true));
+                resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, config, visitedPlaceholders, logger, useEmptyStringIfNotFound));
             }
 
             return resolvedValues;
