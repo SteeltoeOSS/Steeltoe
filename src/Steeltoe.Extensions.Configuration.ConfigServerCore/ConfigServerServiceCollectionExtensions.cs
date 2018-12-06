@@ -44,6 +44,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return services;
         }
 
+        [Obsolete("No longer necessary; IConfiguration added by default")]
         public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
