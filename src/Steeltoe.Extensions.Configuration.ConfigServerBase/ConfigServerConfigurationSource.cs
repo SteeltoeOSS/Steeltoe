@@ -21,9 +21,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     public class ConfigServerConfigurationSource : IConfigurationSource
     {
-        internal IList<IConfigurationSource> _sources = new List<IConfigurationSource>();
+        protected internal IList<IConfigurationSource> _sources = new List<IConfigurationSource>();
 
-        internal IDictionary<string, object> _properties = new Dictionary<string, object>();
+        protected internal IDictionary<string, object> _properties = new Dictionary<string, object>();
 
         /// <summary>
         /// Gets the default settings the Config Server client uses to contact the Config Server
@@ -31,10 +31,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public ConfigServerClientSettings DefaultSettings { get; }
 
         /// <summary>
-        /// Gets the configuration the Config Server client uses to contact the Config Server.
+        /// Gets or sets gets the configuration the Config Server client uses to contact the Config Server.
         /// Values returned override the default values provided in <see cref="DefaultSettings"/>
         /// </summary>
-        public IConfiguration Configuration { get; private set; }
+        public IConfiguration Configuration { get; protected set; }
 
         /// <summary>
         /// Gets the logger factory used by the Config Server client
