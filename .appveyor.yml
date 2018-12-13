@@ -21,7 +21,7 @@ artifacts:
 environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  ProjectList: Steeltoe.Extensions.Configuration.CloudFoundryBase Steeltoe.Extensions.Configuration.ConfigServerBase Steeltoe.Extensions.Configuration.CloudFoundryCore Steeltoe.Extensions.Configuration.CloudFoundryAutofac Steeltoe.Extensions.Configuration.ConfigServerCore Steeltoe.Extensions.Configuration.ConfigServerAutofac
+  ProjectList: Steeltoe.Extensions.Configuration.CloudFoundryBase Steeltoe.Extensions.Configuration.ConfigServerBase Steeltoe.Extensions.Configuration.PlaceholderBase Steeltoe.Extensions.Configuration.CloudFoundryCore Steeltoe.Extensions.Configuration.PlaceholderCore Steeltoe.Extensions.Configuration.CloudFoundryAutofac Steeltoe.Extensions.Configuration.ConfigServerCore Steeltoe.Extensions.Configuration.ConfigServerAutofac
   PackageReferencesToUpdate: SteeltoeConfigVersion
   github_access_token:
     secure: ko4J3M/czguVI9AbVdkv5qZuj3Wuzts5nkz/6cypneFkQGWJXDs8Akg7xOEMu8qU

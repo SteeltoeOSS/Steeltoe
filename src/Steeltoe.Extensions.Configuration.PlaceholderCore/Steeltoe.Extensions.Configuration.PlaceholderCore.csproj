@@ -1,36 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\versions.props" />
   <PropertyGroup>
-    <Description>Spring Cloud Config Server Configuration Provider - Base Package</Description>
+    <Description>Configuration Placeholder Resolver - Core Package</Description>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Authors>Pivotal;dtillman</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.Extensions.Configuration.ConfigServerBase</AssemblyName>
-    <PackageId>Steeltoe.Extensions.Configuration.ConfigServerBase</PackageId>
-    <PackageTags>Spring Cloud;Spring Cloud Config Server</PackageTags>
+    <AssemblyName>Steeltoe.Extensions.Configuration.PlaceholderCore</AssemblyName>
+    <PackageId>Steeltoe.Extensions.Configuration.PlaceholderCore</PackageId>
+    <PackageTags>Configuration;Placeholders</PackageTags>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
   <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Extensions.Configuration.ConfigServerBase.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Extensions.Configuration.PlaceholderCore.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
   
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\Steeltoe.Extensions.Configuration.CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
-    <ProjectReference Include="..\Steeltoe.Extensions.Configuration.PlaceHolderBase\Steeltoe.Extensions.Configuration.PlaceHolderBase.csproj" />
+    <ProjectReference Include="..\Steeltoe.Extensions.Configuration.PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Extensions.Configuration.PlaceHolderBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Extensions.Configuration.PlaceholderBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
   
   <PropertyGroup>

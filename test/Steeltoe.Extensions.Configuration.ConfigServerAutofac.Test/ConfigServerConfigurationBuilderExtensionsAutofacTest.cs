@@ -34,10 +34,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddConfigServer("foo", "bar");
 
-            ConfigServerConfigurationProvider provider = null;
+            ConfigServerConfigurationSource provider = null;
             foreach (IConfigurationSource source in builder.Sources)
             {
-                provider = source as ConfigServerConfigurationProvider;
+                provider = source as ConfigServerConfigurationSource;
                 if (provider != null)
                 {
                     break;
@@ -45,7 +45,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test
             }
 
             Assert.NotNull(provider);
-            var settings = provider.Settings;
+            var settings = provider.DefaultSettings;
             Assert.NotNull(settings);
             Assert.Equal("foo", settings.Environment);
             Assert.Equal("bar", settings.Name);

@@ -49,6 +49,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerBase.Test", "test\Steeltoe.Extensions.Configuration.ConfigServerBase.Test\Steeltoe.Extensions.Configuration.ConfigServerBase.Test.csproj", "{E54D6EFE-AAF4-460F-A06A-961EC66121DA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderBase", "src\Steeltoe.Extensions.Configuration.PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj", "{A82C8CEE-BF1F-4CBE-9DC7-C8E16489CD6B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderBase.Test", "test\Steeltoe.Extensions.Configuration.PlaceholderBase.Test\Steeltoe.Extensions.Configuration.PlaceholderBase.Test.csproj", "{9F52A57F-8133-434E-A42B-CB9859001042}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderCore", "src\Steeltoe.Extensions.Configuration.PlaceholderCore\Steeltoe.Extensions.Configuration.PlaceholderCore.csproj", "{D0154ED3-B274-4C3F-BB05-9EB838184BAD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderCore.Test", "test\Steeltoe.Extensions.Configuration.PlaceholderCore.Test\Steeltoe.Extensions.Configuration.PlaceholderCore.Test.csproj", "{65B05CBE-D2DD-485D-8B5B-931185F432F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +115,22 @@ Global
 		{E54D6EFE-AAF4-460F-A06A-961EC66121DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E54D6EFE-AAF4-460F-A06A-961EC66121DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E54D6EFE-AAF4-460F-A06A-961EC66121DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A82C8CEE-BF1F-4CBE-9DC7-C8E16489CD6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A82C8CEE-BF1F-4CBE-9DC7-C8E16489CD6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A82C8CEE-BF1F-4CBE-9DC7-C8E16489CD6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A82C8CEE-BF1F-4CBE-9DC7-C8E16489CD6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F52A57F-8133-434E-A42B-CB9859001042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F52A57F-8133-434E-A42B-CB9859001042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F52A57F-8133-434E-A42B-CB9859001042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F52A57F-8133-434E-A42B-CB9859001042}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0154ED3-B274-4C3F-BB05-9EB838184BAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0154ED3-B274-4C3F-BB05-9EB838184BAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0154ED3-B274-4C3F-BB05-9EB838184BAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0154ED3-B274-4C3F-BB05-9EB838184BAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65B05CBE-D2DD-485D-8B5B-931185F432F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65B05CBE-D2DD-485D-8B5B-931185F432F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65B05CBE-D2DD-485D-8B5B-931185F432F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65B05CBE-D2DD-485D-8B5B-931185F432F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +149,10 @@ Global
 		{6D3D6602-D8C1-4E81-8044-74D4A32983BC} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
 		{9B3305D7-0814-4806-B071-12933F7E5E66} = {17EC73D7-89DD-4A26-BC01-F34900140409}
 		{E54D6EFE-AAF4-460F-A06A-961EC66121DA} = {17EC73D7-89DD-4A26-BC01-F34900140409}
+		{A82C8CEE-BF1F-4CBE-9DC7-C8E16489CD6B} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
+		{9F52A57F-8133-434E-A42B-CB9859001042} = {17EC73D7-89DD-4A26-BC01-F34900140409}
+		{D0154ED3-B274-4C3F-BB05-9EB838184BAD} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
+		{65B05CBE-D2DD-485D-8B5B-931185F432F8} = {17EC73D7-89DD-4A26-BC01-F34900140409}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF622C8D-0862-46BD-806B-1624BEC226E5}

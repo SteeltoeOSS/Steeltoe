@@ -44,9 +44,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public const string TOKEN_HEADER = "X-Config-Token";
         public const string STATE_HEADER = "X-Config-State";
 
-        protected ConfigServerClientSettings _settings;
+        protected ConfigServerClientSettings _settings; // Current settings
         protected HttpClient _client;
         protected ILogger _logger;
+        protected IConfiguration _configuration;
 
         private const string ArrayPattern = @"(\[[0-9]+\])*$";
         private const string VAULT_RENEW_PATH = "vault/v1/auth/token/renew-self";
@@ -77,6 +78,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _client = null;
+            _configuration = new ConfigurationBuilder().Build();
         }
 
         /// <summary>
@@ -85,11 +87,24 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
         /// <param name="httpClient">a HttpClient the provider uses to make requests of the server.</param>
         /// <param name="logFactory">optional logging factory</param>
-        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
+            public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _client = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
+            _configuration = new ConfigurationBuilder().Build();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>
+        /// </summary>
+        /// <param name="source">the <see cref="ConfigServerConfigurationSource"/> the provider uses when accessing the server.</param>
+        public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source)
+            : this(source.DefaultSettings, source.LogFactory)
+        {
+            var root = source.Configuration as IConfigurationRoot;
+            _configuration = WrapWithPlaceholderResolver(source.Configuration);
+            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
         }
 
         /// <summary>
@@ -107,6 +122,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public override void Load()
         {
+            // Refresh settings with latest configuration values
+            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
+
             // Adds client settings (e.g spring:cloud:config:uri, etc) to the Data dictionary
             AddConfigServerClientSettings();
 
@@ -147,6 +165,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
         }
 
+        [Obsolete("Will be removed in next release, use the ConfigServerConfigurationSource")]
         public virtual IConfigurationProvider Build(IConfigurationBuilder builder)
         {
             ConfigurationBuilder config = new ConfigurationBuilder();
@@ -160,8 +179,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 config.Add(s);
             }
 
-            IConfiguration existing = config.Build();
-            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, existing);
+            _configuration = WrapWithPlaceholderResolver(config.Build());
+            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
             return this;
         }
 
@@ -558,6 +577,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         protected static HttpClient GetHttpClient(ConfigServerClientSettings settings)
         {
             return HttpClientHelper.GetHttpClient(settings.ValidateCertificates, settings.Timeout);
+        }
+
+        private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration)
+        {
+            var root = configuration as IConfigurationRoot;
+            return new ConfigurationRoot(new List<IConfigurationProvider>() { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers)) });
         }
     }
 }

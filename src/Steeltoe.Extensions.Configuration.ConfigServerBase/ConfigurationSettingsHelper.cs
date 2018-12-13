@@ -43,165 +43,156 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             var clientConfigsection = config.GetSection(configPrefix);
 
             settings.Name = GetApplicationName(clientConfigsection, config, settings.Name);
-            settings.Environment = GetEnvironment(clientConfigsection, config, settings.Environment);
-            settings.Label = GetLabel(clientConfigsection, config);
-            settings.Username = GetUsername(clientConfigsection, config);
-            settings.Password = GetPassword(clientConfigsection, config);
-            settings.Uri = GetUri(clientConfigsection, config, settings.Uri);
-            settings.Enabled = GetEnabled(clientConfigsection, config, settings.Enabled);
-            settings.FailFast = GetFailFast(clientConfigsection, config, settings.FailFast);
-            settings.ValidateCertificates = GetCertificateValidation(clientConfigsection, config, settings.ValidateCertificates);
-            settings.RetryEnabled = GetRetryEnabled(clientConfigsection, config, settings.RetryEnabled);
-            settings.RetryInitialInterval = GetRetryInitialInterval(clientConfigsection, config, settings.RetryInitialInterval);
-            settings.RetryMaxInterval = GetRetryMaxInterval(clientConfigsection, config, settings.RetryMaxInterval);
-            settings.RetryMultiplier = GetRetryMultiplier(clientConfigsection, config, settings.RetryMultiplier);
-            settings.RetryAttempts = GetRetryMaxAttempts(clientConfigsection, config, settings.RetryAttempts);
-            settings.Token = GetToken(clientConfigsection, config);
-            settings.Timeout = GetTimeout(clientConfigsection, config, settings.Timeout);
+            settings.Environment = GetEnvironment(clientConfigsection, settings.Environment);
+            settings.Label = GetLabel(clientConfigsection);
+            settings.Username = GetUsername(clientConfigsection);
+            settings.Password = GetPassword(clientConfigsection);
+            settings.Uri = GetUri(clientConfigsection, settings.Uri);
+            settings.Enabled = GetEnabled(clientConfigsection, settings.Enabled);
+            settings.FailFast = GetFailFast(clientConfigsection, settings.FailFast);
+            settings.ValidateCertificates = GetCertificateValidation(clientConfigsection, settings.ValidateCertificates);
+            settings.RetryEnabled = GetRetryEnabled(clientConfigsection, settings.RetryEnabled);
+            settings.RetryInitialInterval = GetRetryInitialInterval(clientConfigsection, settings.RetryInitialInterval);
+            settings.RetryMaxInterval = GetRetryMaxInterval(clientConfigsection, settings.RetryMaxInterval);
+            settings.RetryMultiplier = GetRetryMultiplier(clientConfigsection, settings.RetryMultiplier);
+            settings.RetryAttempts = GetRetryMaxAttempts(clientConfigsection, settings.RetryAttempts);
+            settings.Token = GetToken(clientConfigsection);
+            settings.Timeout = GetTimeout(clientConfigsection, settings.Timeout);
             settings.AccessTokenUri = GetAccessTokenUri(clientConfigsection, config);
             settings.ClientId = GetClientId(clientConfigsection, config);
             settings.ClientSecret = GetClientSecret(clientConfigsection, config);
-            settings.TokenRenewRate = GetTokenRenewRate(clientConfigsection, config);
-            settings.TokenTtl = GetTokenTtl(clientConfigsection, config);
+            settings.TokenRenewRate = GetTokenRenewRate(clientConfigsection);
+            settings.TokenTtl = GetTokenTtl(clientConfigsection);
 
             // Override Config server URI
             settings.Uri = GetCloudFoundryUri(clientConfigsection, config, settings.Uri);
         }
 
-        private static int GetRetryMaxAttempts(IConfigurationSection clientConfigsection, IConfiguration resolve, int def)
+        private static int GetRetryMaxAttempts(IConfigurationSection clientConfigsection, int def)
         {
-            return ConfigurationValuesHelper.GetInt("retry:maxAttempts", clientConfigsection, resolve, def);
+            return clientConfigsection.GetValue("retry:maxAttempts", def);
         }
 
-        private static double GetRetryMultiplier(IConfigurationSection clientConfigsection, IConfiguration resolve, double def)
+        private static double GetRetryMultiplier(IConfigurationSection clientConfigsection, double def)
         {
-            return ConfigurationValuesHelper.GetDouble("retry:multiplier", clientConfigsection, resolve, def);
+            return clientConfigsection.GetValue("retry:multiplier", def);
         }
 
-        private static int GetRetryMaxInterval(IConfigurationSection clientConfigsection, IConfiguration resolve, int def)
+        private static int GetRetryMaxInterval(IConfigurationSection clientConfigsection, int def)
         {
-            return ConfigurationValuesHelper.GetInt("retry:maxInterval", clientConfigsection, resolve, def);
+            return clientConfigsection.GetValue("retry:maxInterval", def);
         }
 
-        private static int GetRetryInitialInterval(IConfigurationSection clientConfigsection, IConfiguration resolve, int def)
+        private static int GetRetryInitialInterval(IConfigurationSection clientConfigsection, int def)
         {
-            return ConfigurationValuesHelper.GetInt("retry:initialInterval", clientConfigsection, resolve, def);
+            return clientConfigsection.GetValue("retry:initialInterval", def);
         }
 
-        private static bool GetRetryEnabled(IConfigurationSection clientConfigsection, IConfiguration resolve, bool def)
+        private static bool GetRetryEnabled(IConfigurationSection clientConfigsection, bool def)
         {
-            return ConfigurationValuesHelper.GetBoolean("retry:enabled", clientConfigsection, resolve, def);
+            return clientConfigsection.GetValue("retry:enabled", def);
         }
 
-        private static bool GetFailFast(IConfigurationSection clientConfigsection, IConfiguration resolve, bool def)
+        private static bool GetFailFast(IConfigurationSection clientConfigsection, bool def)
         {
-            return ConfigurationValuesHelper.GetBoolean("failFast", clientConfigsection, resolve, def);
+            return clientConfigsection.GetValue("failFast", def);
         }
 
-        private static bool GetEnabled(IConfigurationSection clientConfigsection, IConfiguration resolve, bool def)
+        private static bool GetEnabled(IConfigurationSection clientConfigsection, bool def)
         {
-            return ConfigurationValuesHelper.GetBoolean("enabled", clientConfigsection, resolve, def);
+            return clientConfigsection.GetValue("enabled", def);
         }
 
-        private static string GetToken(IConfigurationSection clientConfigsection, IConfiguration resolve)
+        private static string GetToken(IConfigurationSection clientConfigsection)
         {
-            return ConfigurationValuesHelper.GetString("token", clientConfigsection, resolve, null);
+            return clientConfigsection.GetValue<string>("token");
         }
 
-        private static int GetTimeout(IConfigurationSection clientConfigsection, IConfiguration resolve, int def)
+        private static int GetTimeout(IConfigurationSection clientConfigsection, int def)
         {
-            return ConfigurationValuesHelper.GetInt("timeout", clientConfigsection, resolve, def);
+            return clientConfigsection.GetValue("timeout", def);
         }
 
-        private static string GetUri(IConfigurationSection clientConfigsection, IConfiguration resolve, string def)
+        private static string GetUri(IConfigurationSection clientConfigsection, string def)
         {
-            return ConfigurationValuesHelper.GetString("uri", clientConfigsection, resolve, def);
+            return clientConfigsection.GetValue("uri", def);
         }
 
-        private static string GetPassword(IConfigurationSection clientConfigsection, IConfiguration resolve)
+        private static string GetPassword(IConfigurationSection clientConfigsection)
         {
-            return ConfigurationValuesHelper.GetString("password", clientConfigsection, resolve, null);
+            return clientConfigsection.GetValue<string>("password");
         }
 
-        private static string GetUsername(IConfigurationSection clientConfigsection, IConfiguration resolve)
+        private static string GetUsername(IConfigurationSection clientConfigsection)
         {
-            return ConfigurationValuesHelper.GetString("username", clientConfigsection, resolve, null);
+            return clientConfigsection.GetValue<string>("username");
         }
 
-        private static string GetLabel(IConfigurationSection clientConfigsection, IConfiguration resolve)
+        private static string GetLabel(IConfigurationSection clientConfigsection)
         {
-            return ConfigurationValuesHelper.GetString("label", clientConfigsection, resolve, null);
+            return clientConfigsection.GetValue<string>("label");
         }
 
-        private static string GetApplicationName(IConfigurationSection primary, IConfiguration config, string defName)
+        private static string GetEnvironment(IConfigurationSection section, string def)
         {
-            var secondary = config.GetSection(SPRING_APPLICATION_PREFIX);
-            return ConfigurationValuesHelper.GetSetting("name", primary, secondary, config, defName);
+            return section.GetValue("env", string.IsNullOrEmpty(def) ? ConfigServerClientSettings.DEFAULT_ENVIRONMENT : def);
         }
 
-        private static string GetEnvironment(IConfigurationSection section, IConfiguration resolve, string def)
+        private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, bool def)
         {
-            if (string.IsNullOrEmpty(def))
-            {
-                def = "Production";
-            }
-
-            return ConfigurationValuesHelper.GetString("env", section, resolve, def);
+            return clientConfigsection.GetValue("validateCertificates", def) && clientConfigsection.GetValue("validate_certificates", def);
         }
 
-        private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, IConfiguration resolve, bool def)
+        private static int GetTokenRenewRate(IConfigurationSection configServerSection)
         {
-            return ConfigurationValuesHelper.GetBoolean("validateCertificates", clientConfigsection, resolve, def) &&
-                ConfigurationValuesHelper.GetBoolean("validate_certificates", clientConfigsection, resolve, def);
+            return configServerSection.GetValue("tokenRenewRate", ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_RENEW_RATE);
+        }
+
+        private static int GetTokenTtl(IConfigurationSection configServerSection)
+        {
+            return configServerSection.GetValue("tokenTtl", ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL);
         }
 
         private static string GetClientSecret(IConfigurationSection configServerSection, IConfiguration config)
         {
-            var vcapConfigServerSection = config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
-            return ConfigurationValuesHelper.GetSetting(
-                "credentials:client_secret",
-                vcapConfigServerSection,
-                configServerSection,
-                config,
-                ConfigServerClientSettings.DEFAULT_CLIENT_SECRET);
+            return GetSetting("credentials:client_secret", config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX), configServerSection, ConfigServerClientSettings.DEFAULT_CLIENT_SECRET);
         }
 
         private static string GetClientId(IConfigurationSection configServerSection, IConfiguration config)
         {
-            var vcapConfigServerSection = config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
-            return ConfigurationValuesHelper.GetSetting(
-                "credentials:client_id",
-                vcapConfigServerSection,
-                configServerSection,
-                config,
-                ConfigServerClientSettings.DEFAULT_CLIENT_ID);
+            return GetSetting("credentials:client_id", config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX), configServerSection, ConfigServerClientSettings.DEFAULT_CLIENT_ID);
         }
 
         private static string GetAccessTokenUri(IConfigurationSection configServerSection, IConfiguration config)
         {
-            var vcapConfigServerSection = config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
-            return ConfigurationValuesHelper.GetSetting(
-                "credentials:access_token_uri",
-                vcapConfigServerSection,
-                configServerSection,
-                config,
-                ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI);
+            return GetSetting("credentials:access_token_uri", config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX), configServerSection, ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI);
         }
 
-        private static int GetTokenRenewRate(IConfigurationSection configServerSection, IConfiguration resolve)
+        private static string GetApplicationName(IConfigurationSection primary, IConfiguration config, string defName)
         {
-            return ConfigurationValuesHelper.GetInt("tokenRenewRate", configServerSection, resolve, ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_RENEW_RATE);
-        }
-
-        private static int GetTokenTtl(IConfigurationSection configServerSection, IConfiguration resolve)
-        {
-            return ConfigurationValuesHelper.GetInt("tokenTtl", configServerSection, resolve, ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL);
+            return GetSetting("name", primary, config.GetSection(SPRING_APPLICATION_PREFIX), defName);
         }
 
         private static string GetCloudFoundryUri(IConfiguration configServerSection, IConfiguration config, string def)
         {
-            var vcapConfigServerSection = config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX);
-            return ConfigurationValuesHelper.GetSetting("credentials:uri", vcapConfigServerSection, configServerSection, config, def);
+            return GetSetting("credentials:uri", config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX), configServerSection, def);
+        }
+
+        private static string GetSetting(string key, IConfiguration primary, IConfiguration secondary, string def)
+        {
+            var result = primary.GetValue<string>(key);
+            if (!string.IsNullOrEmpty(result))
+            {
+                return result;
+            }
+
+            result = secondary.GetValue<string>(key);
+            if (!string.IsNullOrEmpty(result))
+            {
+                return result;
+            }
+
+            return def;
         }
     }
 }
