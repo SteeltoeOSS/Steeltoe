@@ -192,7 +192,10 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.Equal("myName", val);
 
             File.WriteAllText(path, appsettings2);
-            Thread.Sleep(1000);  // There is a 250ms delay
+
+            // There is a 250ms delay to detect change
+            // ASP.NET Core tests use 2000 Sleep for this kind of test
+            Thread.Sleep(2000);
 
             Assert.True(token.HasChanged);
             Assert.True(holder.TryGet("spring:cloud:config:name", out val));
