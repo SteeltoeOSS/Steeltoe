@@ -2,7 +2,7 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <SteeltoeConnectorVersion>2.2.0-dev-00313</SteeltoeConnectorVersion>
+    <SteeltoeConnectorVersion>2.2.0-dev-00314</SteeltoeConnectorVersion>
     <SteeltoeCommonVersion>2.2.0-dev-00086</SteeltoeCommonVersion>
     <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <ExtensionsVersion>2.0.0</ExtensionsVersion>
