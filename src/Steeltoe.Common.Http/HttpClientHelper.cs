@@ -72,7 +72,7 @@ namespace Steeltoe.Common.Http
             return client;
         }
 
-        public static void ConfigureCertificateValidatation(
+        public static void ConfigureCertificateValidation(
             bool validateCertificates,
             out SecurityProtocolType protocolType,
             out RemoteCertificateValidationCallback prevValidator)
@@ -90,6 +90,15 @@ namespace Steeltoe.Common.Http
                     ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
                 }
             }
+        }
+
+        [Obsolete("This method has a spelling error and will be removed, use 'ConfigureCertificateValidation'")]
+        public static void ConfigureCertificateValidatation(
+            bool validateCertificates,
+            out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator)
+        {
+            ConfigureCertificateValidation(validateCertificates, out protocolType, out prevValidator);
         }
 
         public static void RestoreCertificateValidation(
@@ -191,7 +200,7 @@ namespace Steeltoe.Common.Http
             HttpClient client = GetHttpClient(validateCertificates, timeout);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidatation(validateCertificates, out SecurityProtocolType prevProtocols, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(validateCertificates, out SecurityProtocolType prevProtocols, out RemoteCertificateValidationCallback prevValidator);
 
             AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
             request.Headers.Authorization = auth;

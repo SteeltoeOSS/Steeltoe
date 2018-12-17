@@ -31,15 +31,12 @@ namespace Steeltoe.Common.Http.Test
         }
 
         [Fact]
-        public void ConfigureCertificateValidatation_ValidateFalse()
+        public void ConfigureCertificateValidation_ValidateFalse()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
             ServicePointManager.ServerCertificateValidationCallback = null;
 
-            RemoteCertificateValidationCallback prevValidator;
-            SecurityProtocolType protocolType;
-
-            HttpClientHelper.ConfigureCertificateValidatation(false, out protocolType, out prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(false, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
 
             if (Platform.IsNetCore)
             {
@@ -55,15 +52,12 @@ namespace Steeltoe.Common.Http.Test
         }
 
         [Fact]
-        public void ConfigureCertificateValidatation_ValidateTrue()
+        public void ConfigureCertificateValidation_ValidateTrue()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
             ServicePointManager.ServerCertificateValidationCallback = null;
 
-            RemoteCertificateValidationCallback prevValidator;
-            SecurityProtocolType protocolType;
-
-            HttpClientHelper.ConfigureCertificateValidatation(true, out protocolType, out prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(true, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
 
             if (Platform.IsNetCore)
             {
