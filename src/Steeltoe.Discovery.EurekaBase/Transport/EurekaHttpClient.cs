@@ -96,7 +96,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             // If certificate validation is disabled, inject a callback to handle properly
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Config.ValidateCertificates,
                 out prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
@@ -170,7 +170,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             // If certificate validation is disabled, inject a callback to handle properly
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Config.ValidateCertificates,
                 out prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
@@ -254,7 +254,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             // If certificate validation is disabled, inject a callback to handle properly
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Config.ValidateCertificates,
                 out prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
@@ -338,7 +338,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             // If certificate validation is disabled, inject a callback to handle properly
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Config.ValidateCertificates,
                 out prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
@@ -395,7 +395,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             // If certificate validation is disabled, inject a callback to handle properly
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Config.ValidateCertificates,
                 out prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
@@ -452,7 +452,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             // If certificate validation is disabled, inject a callback to handle properly
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Config.ValidateCertificates,
                 out prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
@@ -574,7 +574,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             // If certificate validation is disabled, inject a callback to handle properly
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Config.ValidateCertificates,
                 out prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
@@ -632,7 +632,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             // If certificate validation is disabled, inject a callback to handle properly
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Config.ValidateCertificates,
                 out prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);

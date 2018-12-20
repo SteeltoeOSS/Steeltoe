@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Eureka
     {
         private InstanceInfo _info;
 
-        internal EurekaServiceInstance(InstanceInfo info)
+        public EurekaServiceInstance(InstanceInfo info)
         {
             this._info = info;
         }
