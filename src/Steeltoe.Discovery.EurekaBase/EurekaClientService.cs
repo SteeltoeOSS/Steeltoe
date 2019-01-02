@@ -17,12 +17,13 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Steeltoe.Discovery.Eureka
 {
     public static class EurekaClientService
     {
-        public static IList<IServiceInstance> GetInstances(string eurekaServerUri, string serviceId, ILoggerFactory logFactory = null)
+        public static IList<IServiceInstance> GetInstances(string eurekaServerUri, string serviceId, HttpClient httpClient = null, ILoggerFactory logFactory = null)
         {
             EurekaClientConfig config = new EurekaClientConfig()
             {
@@ -30,11 +31,11 @@ namespace Steeltoe.Discovery.Eureka
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = eurekaServerUri
             };
-            var client = new LookupClient(config, null, logFactory);
+            LookupClient client = GetLookupClient(config, httpClient, logFactory);
             return client.GetInstances(serviceId);
         }
 
-        public static IList<string> GetServices(string eurekaServerUri, ILoggerFactory logFactory = null)
+        public static IList<string> GetServices(string eurekaServerUri, HttpClient httpClient = null, ILoggerFactory logFactory = null)
         {
             EurekaClientConfig config = new EurekaClientConfig()
             {
@@ -42,8 +43,21 @@ namespace Steeltoe.Discovery.Eureka
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = eurekaServerUri
             };
-            var client = new LookupClient(config, null, logFactory);
+            var client = GetLookupClient(config, httpClient, logFactory);
             return client.GetServices();
+        }
+
+        private static LookupClient GetLookupClient(EurekaClientConfig config, HttpClient httpClient, ILoggerFactory logFactory)
+        {
+            if (httpClient == null)
+            {
+                return new LookupClient(config, null, logFactory);
+            }
+            else
+            {
+                var eurekaHttpClient = new EurekaHttpClient(config, httpClient, logFactory);
+                return new LookupClient(config, eurekaHttpClient, logFactory);
+            }
         }
 
         internal class LookupClient : DiscoveryClient
