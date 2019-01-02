@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.EndpointBase;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web;
@@ -24,12 +25,12 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class HeapDumpHandler : ActuatorHandler<HeapDumpEndpoint, string>
     {
-        public HeapDumpHandler(HeapDumpEndpoint endpoint, ISecurityService securityService, ILogger<HeapDumpHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+        public HeapDumpHandler(HeapDumpEndpoint endpoint, List<ISecurityService> securityServices, ILogger<HeapDumpHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             var filename = _endpoint.Invoke();
             _logger?.LogDebug("Returning: {0}", filename);

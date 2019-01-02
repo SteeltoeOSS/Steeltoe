@@ -24,12 +24,12 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class CloudFoundryHandler : ActuatorHandler<CloudFoundryEndpoint, Links, string>
     {
-        public CloudFoundryHandler(CloudFoundryEndpoint endpoint, ISecurityService securityService, ILogger<CloudFoundryHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+        public CloudFoundryHandler(CloudFoundryEndpoint endpoint, List<ISecurityService> securityServices, ILogger<CloudFoundryHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(CloudFoundryEndpoint));
             if (context.Request.HttpMethod == "GET")
@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             }
         }
 
-        protected internal string GetRequestUri(HttpRequest request)
+        protected internal string GetRequestUri(HttpRequestBase request)
         {
             string scheme = request.IsSecureConnection ? "https" : "http";
             string headerScheme = request.Headers.Get("X-Forwarded-Proto");

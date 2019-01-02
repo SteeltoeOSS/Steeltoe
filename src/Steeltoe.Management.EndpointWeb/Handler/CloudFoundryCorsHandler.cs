@@ -28,8 +28,8 @@ namespace Steeltoe.Management.Endpoint.Handler
     {
         private CloudFoundryOptions _options;
 
-        public CloudFoundryCorsHandler(CloudFoundryOptions options, ISecurityService securityService, ILogger<CloudFoundryCorsHandler> logger = null)
-            : base(securityService, new List<HttpMethod> { HttpMethod.Options }, false, logger)
+        public CloudFoundryCorsHandler(CloudFoundryOptions options, List<ISecurityService> securityServices, ILogger<CloudFoundryCorsHandler> logger = null)
+            : base(securityServices, new List<HttpMethod> { HttpMethod.Options }, false, logger)
         {
             _options = options;
         }
@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             return requestPath.StartsWith(_options.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(CloudFoundryCorsHandler));
             if (context.Request.HttpMethod == "OPTIONS")
@@ -57,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             }
         }
 
-        public override Task<bool> IsAccessAllowed(HttpContext context)
+        public override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
             return Task.FromResult(true);
         }

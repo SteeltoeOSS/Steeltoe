@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
         {
-            _logger.LogDebug("Invoke({0})", request);
+            _logger?.LogDebug("Invoke({0})", request);
 
             return DoInvoke(_cloudFoundryLoggerProvider, request);
         }

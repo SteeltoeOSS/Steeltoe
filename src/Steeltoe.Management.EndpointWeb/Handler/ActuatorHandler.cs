@@ -31,25 +31,25 @@ namespace Steeltoe.Management.Endpoint.Handler
         protected ILogger _logger;
         protected IEnumerable<HttpMethod> _allowedMethods;
         protected bool _exactRequestPathMatching;
-        protected ISecurityService _securityService;
+        protected IEnumerable<ISecurityService> _securityServices;
 
-        public ActuatorHandler(ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+        public ActuatorHandler(IEnumerable<ISecurityService> securityChecks, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
         {
             _logger = logger;
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
             _exactRequestPathMatching = exactRequestPathMatching;
-            _securityService = securityService;
+            _securityServices = securityChecks;
         }
 
         public virtual void Dispose()
         {
         }
 
-        public virtual void HandleRequest(HttpContext context)
+        public virtual void HandleRequest(HttpContextBase context)
         {
         }
 
-        public virtual Task<bool> IsAccessAllowed(HttpContext context)
+        public virtual Task<bool> IsAccessAllowed(HttpContextBase context)
         {
             return Task.FromResult(false);
         }
@@ -87,18 +87,18 @@ namespace Steeltoe.Management.Endpoint.Handler
     {
         protected IEndpoint<TResult> _endpoint;
 
-        public ActuatorHandler(ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
-            : base(securityService, allowedMethods, exactRequestPathMatching, logger)
+        public ActuatorHandler(List<ISecurityService> securityServices, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(securityServices, allowedMethods, exactRequestPathMatching, logger)
         {
         }
 
-        public ActuatorHandler(IEndpoint<TResult> endpoint, ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
-            : base(securityService, allowedMethods, exactRequestPathMatching, logger)
+        public ActuatorHandler(IEndpoint<TResult> endpoint, List<ISecurityService> securityServices, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(securityServices, allowedMethods, exactRequestPathMatching, logger)
         {
             _endpoint = endpoint ?? throw new NullReferenceException(nameof(endpoint));
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(TEndpoint));
             var result = _endpoint.Invoke();
@@ -108,6 +108,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
+            _logger?.LogInformation("httpMethod {0} requstPath {1} {2} {3} ", httpMethod, requestPath, true, _allowedMethods.Any(m => m.Method.Equals(httpMethod)));
             return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
                 && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
@@ -119,9 +120,9 @@ namespace Steeltoe.Management.Endpoint.Handler
                 : endpointPaths.Any(ep => requestPath.StartsWith(ep));
         }
 
-        public async override Task<bool> IsAccessAllowed(HttpContext context)
+        public async override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await _securityService?.IsAccessAllowed(context, _endpoint.Options);
+            return await _securityServices?.IsAccessAllowed(context, _endpoint.Options);
         }
     }
 
@@ -131,8 +132,8 @@ namespace Steeltoe.Management.Endpoint.Handler
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
-        public ActuatorHandler(IEndpoint<TResult, TRequest> endpoint, ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
-            : base(securityService, allowedMethods, exactRequestPathMatching, logger)
+        public ActuatorHandler(IEndpoint<TResult, TRequest> endpoint, List<ISecurityService> securityServices, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(securityServices, allowedMethods, exactRequestPathMatching, logger)
         {
             _endpoint = endpoint ?? throw new NullReferenceException(nameof(endpoint));
         }
@@ -145,13 +146,16 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
-                && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            _logger?.LogInformation("{0} {1}", httpMethod, requestPath);
+
+            bool pathMatches = PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath);
+            bool allowed = _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            return pathMatches && allowed;
         }
 
-        public async override Task<bool> IsAccessAllowed(HttpContext context)
+        public async override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await _securityService?.IsAccessAllowed(context, _endpoint.Options);
+            return await _securityServices.IsAccessAllowed(context, _endpoint.Options);
         }
     }
 }

@@ -35,8 +35,8 @@ namespace Steeltoe.Management.Endpoint.Handler
         protected MappingsOptions _options;
         protected IApiExplorer _apiExplorer;
 
-        public MappingsHandler(MappingsOptions options, ISecurityService securityService, IApiExplorer apiExplorer, ILogger<MappingsHandler> logger = null)
-            : base(securityService, null, true, logger)
+        public MappingsHandler(MappingsOptions options, List<ISecurityService> securityServices, IApiExplorer apiExplorer, ILogger<MappingsHandler> logger = null)
+            : base(securityServices, null, true, logger)
         {
             _options = options;
             _apiExplorer = apiExplorer;
@@ -48,12 +48,12 @@ namespace Steeltoe.Management.Endpoint.Handler
             return requestPath.Equals(_options.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
-        public async override Task<bool> IsAccessAllowed(HttpContext context)
+        public async override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await _securityService?.IsAccessAllowed(context, _options);
+            return await _securityServices.IsAccessAllowed(context, _options);
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(MappingsHandler));
 

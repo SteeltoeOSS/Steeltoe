@@ -169,6 +169,6 @@ namespace Steeltoe.Management.Endpoint
 
         protected virtual bool DefaultEnabled { get; } = true;
 
-        protected virtual bool DefaultSensitive { get; } = false;
+        protected virtual bool DefaultSensitive { get; } = true;
     }
 }

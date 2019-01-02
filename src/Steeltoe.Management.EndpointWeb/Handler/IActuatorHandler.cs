@@ -19,10 +19,10 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public interface IActuatorHandler
     {
-        void HandleRequest(HttpContext context);
+        void HandleRequest(HttpContextBase context);
 
         bool RequestVerbAndPathMatch(string httpMethod, string requestPath);
 
-        Task<bool> IsAccessAllowed(HttpContext context);
+        Task<bool> IsAccessAllowed(HttpContextBase context);
     }
 }

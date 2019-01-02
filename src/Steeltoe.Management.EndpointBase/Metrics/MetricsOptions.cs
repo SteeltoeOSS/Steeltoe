@@ -52,7 +52,5 @@ namespace Steeltoe.Management.Endpoint.Metrics
         public string IngressIgnorePattern { get; set; }
 
         public string EgressIgnorePattern { get; set; }
-
-        protected override bool DefaultSensitive => true;
     }
 }

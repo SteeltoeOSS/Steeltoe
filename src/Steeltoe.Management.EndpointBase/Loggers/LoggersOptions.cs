@@ -34,7 +34,5 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 Id = "loggers";
             }
         }
-
-        protected override bool DefaultSensitive => true;
     }
 }

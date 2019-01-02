@@ -23,6 +23,6 @@ namespace Steeltoe.Management.Endpoint.Security
 {
     public interface ISecurityService
     {
-        Task<bool> IsAccessAllowed(HttpContext context, IEndpointOptions target);
+        Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target);
     }
 }

@@ -20,6 +20,10 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
+    /// <summary>
+    /// CloudFoundry endpoint provides hypermedia: a “discovery page” is added with links to all the endpoints that are enabled.
+    /// When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware"/> is added.
+    /// </summary>
     public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     {
         private ICloudFoundryOptions _options;

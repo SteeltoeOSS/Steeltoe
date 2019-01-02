@@ -16,18 +16,19 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Security;
+using System.Collections.Generic;
 using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
     public class HealthHandler : ActuatorHandler<HealthEndpoint, HealthCheckResult>
     {
-        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, ISecurityService securityService, ILogger<HealthHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, List<ISecurityService> securityServices, ILogger<HealthHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(HealthHandler));
             var result = _endpoint.Invoke();

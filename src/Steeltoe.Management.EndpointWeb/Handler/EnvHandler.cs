@@ -15,13 +15,14 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Security;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
     public class EnvHandler : ActuatorHandler<EnvEndpoint, EnvironmentDescriptor>
     {
-        public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, ISecurityService securityService, ILogger<EnvHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+        public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, List<ISecurityService> securityServices, ILogger<EnvHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
     }

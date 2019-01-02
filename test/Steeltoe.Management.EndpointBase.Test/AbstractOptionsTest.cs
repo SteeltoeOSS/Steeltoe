@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             TestOptions2 opts = new TestOptions2();
             Assert.True(opts.Enabled);
-            Assert.False(opts.Sensitive);
+            Assert.True(opts.Sensitive);
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled.HasValue);
             Assert.False(opts.Global.Sensitive.HasValue);

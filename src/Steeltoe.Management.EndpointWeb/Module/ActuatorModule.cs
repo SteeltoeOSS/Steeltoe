@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Handler;
-using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -55,13 +54,11 @@ namespace Steeltoe.Management.Endpoint.Module
             }
 
             EventHandlerTaskAsyncHelper asyncHelper = new EventHandlerTaskAsyncHelper(FilterAndPreProcessRequest);
-            context.AddOnBeginRequestAsync(asyncHelper.BeginEventHandler, asyncHelper.EndEventHandler);
+            context.AddOnPostAuthorizeRequestAsync(asyncHelper.BeginEventHandler, asyncHelper.EndEventHandler);
         }
 
-        protected async virtual Task FilterAndPreProcessRequest(object sender, EventArgs e)
+        public virtual async Task FilterAndPreProcessRequest(HttpContextBase context, Action completeRequest)
         {
-            HttpApplication application = (HttpApplication)sender;
-            HttpContext context = application.Context;
             if (_handlers == null)
             {
                 return;
@@ -76,9 +73,16 @@ namespace Steeltoe.Management.Endpoint.Module
                         handler.HandleRequest(context);
                     }
 
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    completeRequest();
                 }
             }
         }
+
+        protected virtual async Task FilterAndPreProcessRequest(object sender, EventArgs e)
+        {
+            HttpApplication application = (HttpApplication)sender;
+            var contextWrapper = new HttpContextWrapper(application.Context);
+            await FilterAndPreProcessRequest(contextWrapper, HttpContext.Current.ApplicationInstance.CompleteRequest);
+         }
     }
 }

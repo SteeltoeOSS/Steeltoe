@@ -25,12 +25,12 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class MetricsHandler : ActuatorHandler<MetricsEndpoint, IMetricsResponse, MetricsRequest>
     {
-        public MetricsHandler(MetricsEndpoint endpoint, ISecurityService securityService, ILogger<MetricsHandler> logger = null)
-            : base(endpoint, securityService, null, false, logger)
+        public MetricsHandler(MetricsEndpoint endpoint, List<ISecurityService> securityServices, ILogger<MetricsHandler> logger = null)
+            : base(endpoint, securityServices, null, false, logger)
         {
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             var request = context.Request;
             var response = context.Response;
@@ -66,7 +66,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             }
         }
 
-        protected internal string GetMetricName(HttpRequest request)
+        protected internal string GetMetricName(HttpRequestBase request)
         {
             foreach (string epPath in _endpoint.Paths)
             {

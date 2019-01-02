@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Security
             _base = new SecurityBase(options, logger);
         }
 
-        public async Task<bool> IsAccessAllowed(HttpContext context, IEndpointOptions target)
+        public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
         {
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && _options.IsEnabled)
@@ -86,13 +86,13 @@ namespace Steeltoe.Management.Endpoint.Security
             return true;
         }
 
-        internal async Task<SecurityResult> GetPermissions(HttpContext context)
+        internal async Task<SecurityResult> GetPermissions(HttpContextBase context)
         {
             string token = GetAccessToken(context.Request);
             return await _base.GetPermissionsAsync(token);
         }
 
-        internal string GetAccessToken(HttpRequest request)
+        internal string GetAccessToken(HttpRequestBase request)
         {
             string[] headerVals = request.Headers.GetValues(_base.AUTHORIZATION_HEADER);
             if (headerVals != null && headerVals.Length > 0)
@@ -107,7 +107,7 @@ namespace Steeltoe.Management.Endpoint.Security
             return null;
         }
 
-        private async Task ReturnError(HttpContext context, SecurityResult error)
+        private async Task ReturnError(HttpContextBase context, SecurityResult error)
         {
             LogError(context, error);
             context.Response.Headers.Set("Content-Type",  "application/json;charset=UTF-8");
@@ -115,7 +115,7 @@ namespace Steeltoe.Management.Endpoint.Security
             await context.Response.Output.WriteAsync(_base.Serialize(error));
         }
 
-        private void LogError(HttpContext context, SecurityResult error)
+        private void LogError(HttpContextBase context, SecurityResult error)
         {
             _logger?.LogError("Actuator Security Error: {ErrorCode} - {ErrorMessage}", error.Code, error.Message);
             if (_logger?.IsEnabled(LogLevel.Trace) == true)

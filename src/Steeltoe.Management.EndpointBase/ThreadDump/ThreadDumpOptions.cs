@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             : base()
         {
             Id = "threaddump";
-            AltIds = new List<string> { "dump" }; ;
+            AltIds = new List<string> { "dump" };
         }
 
         public ThreadDumpOptions(IConfiguration config)
@@ -36,12 +36,10 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 Id = "threaddump";
             }
 
-            if(AltIds == null)
+            if (AltIds == null)
             {
                 AltIds = new List<string> { "dump" };
             }
         }
-
-        protected override bool DefaultSensitive => true;
     }
 }

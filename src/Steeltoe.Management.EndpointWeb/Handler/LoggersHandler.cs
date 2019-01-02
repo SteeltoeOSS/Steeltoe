@@ -24,12 +24,12 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class LoggersHandler : ActuatorHandler<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
     {
-        public LoggersHandler(LoggersEndpoint endpoint, ISecurityService securityService, ILogger<LoggersHandler> logger = null)
-            : base(endpoint, securityService, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
+        public LoggersHandler(LoggersEndpoint endpoint, List<ISecurityService> securityServices, ILogger<LoggersHandler> logger = null)
+            : base(endpoint, securityServices, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(LoggersEndpoint).Name);
             if (context.Request.HttpMethod == "GET")

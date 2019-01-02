@@ -21,8 +21,8 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class TraceHandler : ActuatorHandler<TraceEndpoint, List<TraceResult>>
     {
-        public TraceHandler(TraceEndpoint endpoint, ISecurityService securityService, ILogger<TraceHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+        public TraceHandler(TraceEndpoint endpoint, List<ISecurityService> securityServices, ILogger<TraceHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
     }

@@ -41,7 +41,5 @@ namespace Steeltoe.Management.Endpoint.Refresh
                 RequiredPermissions = Permissions.RESTRICTED;
             }
         }
-
-        protected override bool DefaultSensitive => true;
     }
 }
