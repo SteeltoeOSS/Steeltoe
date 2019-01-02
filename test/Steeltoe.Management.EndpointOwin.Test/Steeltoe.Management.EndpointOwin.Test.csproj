@@ -6,7 +6,9 @@
     <Description>Unit test project for Steeltoe.Management.EndpointOwin</Description>
     <TargetFrameworks>net461</TargetFrameworks>
   </PropertyGroup>
-    
+
+  <Import Project="..\..\targetframework.props" />
+  
   <ItemGroup>
     <None Update="empty.git.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

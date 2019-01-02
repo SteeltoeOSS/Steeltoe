@@ -12,7 +12,8 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <RootNamespace>Steeltoe.Management.Census</RootNamespace>
   </PropertyGroup>
-  
+
+  <Import Project="..\..\targetframework.props" />
   
   <ItemGroup>
     <None Update="xunit.runner.json">

@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Assert.Equal(provider.GetType().Name, name);
 
             builder = new ConfigurationBuilder();
-            builder.AddJsonFile("c:\\foobar", true);
+            builder.AddJsonFile("foobar", true);
             config = builder.Build();
 
             ep = new EnvEndpoint(opts, config, new TestHosting());

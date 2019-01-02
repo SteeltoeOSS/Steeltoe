@@ -12,7 +12,8 @@
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
- 
+
+  <Import Project="..\..\targetframework.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Steeltoe.Management.ExporterCore\Steeltoe.Management.ExporterCore.csproj" />

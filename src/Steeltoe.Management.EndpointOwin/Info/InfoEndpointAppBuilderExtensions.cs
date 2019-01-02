@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 
 namespace Steeltoe.Management.EndpointOwin.Info
@@ -79,9 +80,10 @@ namespace Steeltoe.Management.EndpointOwin.Info
 
         private static IList<IInfoContributor> GetDefaultInfoContributors(IConfiguration config, ILoggerFactory loggerFactory = null)
         {
+            var gitInfoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "git.properties");
             return new List<IInfoContributor>
                 {
-                    new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "\\git.properties", loggerFactory?.CreateLogger<GitInfoContributor>()),
+                    new GitInfoContributor(gitInfoPath, loggerFactory?.CreateLogger<GitInfoContributor>()),
                     new AppSettingsInfoContributor(config)
                 };
         }

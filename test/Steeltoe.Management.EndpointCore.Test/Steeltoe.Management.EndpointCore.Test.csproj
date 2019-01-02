@@ -11,7 +11,8 @@
     <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
-  
+
+  <Import Project="..\..\targetframework.props" />
   
   <ItemGroup>
     <None Update="empty.git.properties">
