@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -23,41 +24,53 @@ namespace Steeltoe.Discovery.Eureka
 {
     public static class EurekaClientService
     {
-        public static IList<IServiceInstance> GetInstances(string eurekaServerUri, string serviceId, HttpClient httpClient = null, ILoggerFactory logFactory = null)
+        /// <summary>
+        /// Using the Eureka configuration values provided in <paramref name="configuration"/> contact the Eureka server and
+        /// return all the service instances for the provided <paramref name="serviceId"/>. The Eureka client is shutdown after contacting the server.
+        /// </summary>
+        /// <param name="configuration">configuration values used for configuring the Eureka client</param>
+        /// <param name="serviceId">the Eureka service id to look up all instances of</param>
+        /// <param name="logFactory">optional log factory to use for logging</param>
+        /// <returns>service instances</returns>
+        public static IList<IServiceInstance> GetInstances(IConfiguration configuration, string serviceId, ILoggerFactory logFactory = null)
         {
-            EurekaClientConfig config = new EurekaClientConfig()
-            {
-                ShouldFetchRegistry = true,
-                ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = eurekaServerUri
-            };
-            LookupClient client = GetLookupClient(config, httpClient, logFactory);
-            return client.GetInstances(serviceId);
+            EurekaClientOptions config = ConfigureClientOptions(configuration);
+            LookupClient client = GetLookupClient(config, logFactory);
+            var result = client.GetInstances(serviceId);
+            client.ShutdownAsync().Wait();
+            return result;
         }
 
-        public static IList<string> GetServices(string eurekaServerUri, HttpClient httpClient = null, ILoggerFactory logFactory = null)
+        /// <summary>
+        /// Using the Eureka configuration values provided in <paramref name="configuration"/> contact the Eureka server and
+        /// return all the registered services. The Eureka client is shutdown after contacting the server.
+        /// </summary>
+        /// <param name="configuration">configuration values used for configuring the Eureka client</param>
+        /// <param name="logFactory">optional log factory to use for logging</param>
+        /// <returns>all registered services</returns>
+        public static IList<string> GetServices(IConfiguration configuration, ILoggerFactory logFactory = null)
         {
-            EurekaClientConfig config = new EurekaClientConfig()
-            {
-                ShouldFetchRegistry = true,
-                ShouldRegisterWithEureka = false,
-                EurekaServerServiceUrls = eurekaServerUri
-            };
-            var client = GetLookupClient(config, httpClient, logFactory);
-            return client.GetServices();
+            EurekaClientOptions config = ConfigureClientOptions(configuration);
+            var client = GetLookupClient(config, logFactory);
+            var result = client.GetServices();
+            client.ShutdownAsync().Wait();
+            return result;
         }
 
-        private static LookupClient GetLookupClient(EurekaClientConfig config, HttpClient httpClient, ILoggerFactory logFactory)
+        internal static LookupClient GetLookupClient(EurekaClientOptions config, ILoggerFactory logFactory)
         {
-            if (httpClient == null)
-            {
-                return new LookupClient(config, null, logFactory);
-            }
-            else
-            {
-                var eurekaHttpClient = new EurekaHttpClient(config, httpClient, logFactory);
-                return new LookupClient(config, eurekaHttpClient, logFactory);
-            }
+            return new LookupClient(config, null, logFactory);
+        }
+
+        internal static EurekaClientOptions ConfigureClientOptions(IConfiguration configuration)
+        {
+            var clientConfigsection = configuration.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+
+            var clientOptions = new EurekaClientOptions();
+            configuration.Bind(clientOptions);
+            clientOptions.ShouldFetchRegistry = true;
+            clientOptions.ShouldRegisterWithEureka = false;
+            return clientOptions;
         }
 
         internal class LookupClient : DiscoveryClient
