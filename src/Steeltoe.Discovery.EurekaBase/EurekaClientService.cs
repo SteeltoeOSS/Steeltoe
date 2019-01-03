@@ -67,7 +67,7 @@ namespace Steeltoe.Discovery.Eureka
             var clientConfigsection = configuration.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
 
             var clientOptions = new EurekaClientOptions();
-            configuration.Bind(clientOptions);
+            clientConfigsection.Bind(clientOptions);
             clientOptions.ShouldFetchRegistry = true;
             clientOptions.ShouldRegisterWithEureka = false;
             return clientOptions;

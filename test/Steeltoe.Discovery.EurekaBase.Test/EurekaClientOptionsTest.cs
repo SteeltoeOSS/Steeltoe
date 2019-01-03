@@ -68,7 +68,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         'shouldRegisterWithEureka': true,
         'registryFetchIntervalSeconds': 100,
         'instanceInfoReplicationIntervalSeconds': 100,
-        'serviceUrl': 'http://localhost:8761/eureka/'
+        'serviceUrl': 'http://foo.bar:8761/eureka/'
     },
     'instance': {
         'registrationMethod' : 'foobar',
@@ -120,7 +120,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.True(co.AllowRedirects);
             Assert.Equal(100, co.InstanceInfoReplicationIntervalSeconds);
             Assert.Equal(100, co.EurekaServerConnectTimeoutSeconds);
-            Assert.Equal("http://localhost:8761/eureka/", co.EurekaServerServiceUrls);
+            Assert.Equal("http://foo.bar:8761/eureka/", co.EurekaServerServiceUrls);
             Assert.Equal(100, co.RegistryFetchIntervalSeconds);
             Assert.Equal("registryRefreshSingleVipAddress", co.RegistryRefreshSingleVipAddress);
             Assert.True(co.ShouldDisableDelta);
