@@ -57,6 +57,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Equal(ConfigServerClientSettings.DEFAULT_TIMEOUT_MILLISECONDS, options.Timeout);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_RENEW_RATE, options.TokenRenewRate);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL, options.TokenTtl);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_DISCOVERY_ENABLED, options.DiscoveryEnabled);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID, options.DiscoveryServiceId);
             Assert.Null(options.Name);
             Assert.Null(options.Label);
             Assert.Null(options.Username);

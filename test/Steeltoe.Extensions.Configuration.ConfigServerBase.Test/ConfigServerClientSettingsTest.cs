@@ -29,23 +29,34 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public void GetRawUri_GoodWithUserPass()
+        public void GetRawUris_GoodWithUserPass()
         {
             // Arrange
             ConfigServerClientSettings settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/" };
 
             // Act and Assert
-            Assert.Equal("https://localhost:8888/", settings.RawUri);
+            Assert.Equal("https://localhost:8888/", settings.RawUris[0]);
         }
 
         [Fact]
-        public void GetRawUri_Bad()
+        public void GetRawUris_MultipleUris_GoodWithUserPass()
+        {
+            // Arrange
+            ConfigServerClientSettings settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/, https://user:pass@localhost:9999/" };
+
+            // Act and Assert
+            Assert.Equal("https://localhost:8888/", settings.RawUris[0]);
+            Assert.Equal("https://localhost:9999/", settings.RawUris[1]);
+        }
+
+        [Fact]
+        public void GetRawUris_Bad()
         {
             // Arrange
             ConfigServerClientSettings settings = new ConfigServerClientSettings() { Uri = "blahblah" };
 
             // Act and Assert
-            Assert.Equal("blahblah", settings.RawUri);
+            Assert.Empty(settings.RawUris);
         }
 
         [Fact]
@@ -59,6 +70,30 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
+        public void GetUserName_MultipleUrisWithUserPass_ReturnsNull()
+        {
+            // Arrange
+            ConfigServerClientSettings settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/" };
+
+            // Act and Assert
+            Assert.Null(settings.Username);
+        }
+
+        [Fact]
+        public void GetUserName_MultipleUrisWithUserPass_ReturnsUserNameSetting()
+        {
+            // Arrange
+            ConfigServerClientSettings settings = new ConfigServerClientSettings()
+            {
+                Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/",
+                Username = "user"
+            };
+
+            // Act and Assert
+            Assert.Equal("user", settings.Username);
+        }
+
+        [Fact]
         public void GetPassword_GoodWithUserPassOnUri()
         {
             // Arrange
@@ -66,6 +101,30 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             Assert.Equal("pass", settings.Password);
+        }
+
+        [Fact]
+        public void GetPassword_MultipleUrisWithUserPass_ReturnsNull()
+        {
+            // Arrange
+            ConfigServerClientSettings settings = new ConfigServerClientSettings() { Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/" };
+
+            // Act and Assert
+            Assert.Null(settings.Password);
+        }
+
+        [Fact]
+        public void GetPassword_MultipleUrisWithUserPass_ReturnsPasswordSetting()
+        {
+            // Arrange
+            ConfigServerClientSettings settings = new ConfigServerClientSettings()
+            {
+                Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/",
+                Password = "password"
+            };
+
+            // Act and Assert
+            Assert.Equal("password", settings.Password);
         }
 
         [Fact]
@@ -88,6 +147,36 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             Assert.Equal("explicitOverrides", settings.Password);
             Assert.Equal("user", settings.Username);
+        }
+
+        [Fact]
+        public void GetUserName_MultipleUrisWithUserPass_SettingsUsed()
+        {
+            // Arrange
+            ConfigServerClientSettings settings = new ConfigServerClientSettings()
+            {
+                Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/",
+                Username = "explicitOverrides"
+            };
+
+            // Act and Assert
+            Assert.Equal("explicitOverrides", settings.Username);
+            Assert.Null(settings.Password);
+        }
+
+        [Fact]
+        public void GetPassword_MultipleUrisWithUserPass_SettingsOverrides()
+        {
+            // Arrange
+            ConfigServerClientSettings settings = new ConfigServerClientSettings()
+            {
+                Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/",
+                Password = "explicitOverrides"
+            };
+
+            // Act and Assert
+            Assert.Equal("explicitOverrides", settings.Password);
+            Assert.Null(settings.Username);
         }
     }
 }

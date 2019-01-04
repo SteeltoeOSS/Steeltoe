@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -47,6 +49,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         protected ConfigServerClientSettings _settings; // Current settings
         protected HttpClient _client;
         protected ILogger _logger;
+        protected ILoggerFactory _loggerFactory;
         protected IConfiguration _configuration;
 
         private const string ArrayPattern = @"(\[[0-9]+\])*$";
@@ -75,6 +78,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="logFactory">optional logging factory</param>
         public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
         {
+            _loggerFactory = logFactory;
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _client = null;
@@ -92,6 +96,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _client = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
+            _loggerFactory = logFactory;
             _configuration = new ConfigurationBuilder().Build();
         }
 
@@ -102,6 +107,20 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source)
             : this(source.DefaultSettings, source.LogFactory)
         {
+            var root = source.Configuration as IConfigurationRoot;
+            _configuration = WrapWithPlaceholderResolver(source.Configuration);
+            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>
+        /// </summary>
+        /// <param name="source">the <see cref="ConfigServerConfigurationSource"/> the provider uses when accessing the server.</param>
+        /// <param name="httpClient">the httpClient to use</param>
+        public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, HttpClient httpClient)
+            : this(source.DefaultSettings, source.LogFactory)
+        {
+            _client = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             var root = source.Configuration as IConfigurationRoot;
             _configuration = WrapWithPlaceholderResolver(source.Configuration);
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
@@ -124,6 +143,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             // Refresh settings with latest configuration values
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
+
+            if (IsDiscoveryFirstEnabled())
+            {
+                var discoveryService = new ConfigServerDiscoveryService(_configuration, _settings, _loggerFactory);
+                DiscoverServerInstances(discoveryService);
+            }
 
             // Adds client settings (e.g spring:cloud:config:uri, etc) to the Data dictionary
             AddConfigServerClientSettings();
@@ -187,22 +212,51 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         internal void DoLoad()
         {
             Exception error = null;
+
+            // Get arrays of config server uris to check
+            var uris = _settings.GetUris();
+
             try
             {
                 foreach (string label in GetLabels())
                 {
-                    // Make Config Server URI from settings
-                    var path = GetConfigServerUri(label);
+                    Task<ConfigEnvironment> task = null;
 
-                    // Invoke config server, and wait for results
-                    Task<ConfigEnvironment> task = RemoteLoadAsync(path);
+                    if (uris.Length > 1)
+                    {
+                        _logger?.LogInformation("Multiple Config Server Uris listed.");
+
+                        // Invoke config servers
+                        task = RemoteLoadAsync(uris, label);
+                    }
+                    else
+                    {
+                        // Single, server make Config Server URI from settings
+                        var path = GetConfigServerUri(label);
+
+                        // Invoke config server
+                        task = RemoteLoadAsync(path);
+                    }
+
+                    // Wait for results from server
                     task.Wait();
                     ConfigEnvironment env = task.Result;
 
                     // Update config Data dictionary with any results
                     if (env != null)
                     {
-                        _logger?.LogInformation("Located environment: {0}, {1}, {2}, {3}", env.Name, env.Profiles, env.Label, env.Version);
+                        _logger?.LogInformation(
+                            "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
+                        if (!string.IsNullOrEmpty(env.State))
+                        {
+                            Data["spring:cloud:config:client:state"] = env.State;
+                        }
+
+                        if (!string.IsNullOrEmpty(env.Version))
+                        {
+                            Data["spring:cloud:config:client:version"] = env.Version;
+                        }
+
                         var sources = env.PropertySources;
                         if (sources != null)
                         {
@@ -240,30 +294,98 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return _settings.Label.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        internal void DiscoverServerInstances(ConfigServerDiscoveryService discoveryService)
+        {
+            IList<IServiceInstance> instances = discoveryService.GetConfigServerInstances();
+            if (instances == null || instances.Count == 0)
+            {
+                if (_settings.FailFast)
+                {
+                    throw new ConfigServerException("Could not locate config server via discovery, are you missing a Discovery service assembly?");
+                }
+
+                return;
+            }
+
+            UpdateSettingsFromDiscovery(instances, _settings);
+        }
+
+        internal void UpdateSettingsFromDiscovery(IList<IServiceInstance> instances, ConfigServerClientSettings settings)
+        {
+            StringBuilder endpoints = new StringBuilder();
+            foreach (var instance in instances)
+            {
+                var uri = instance.Uri.ToString();
+                var metaData = instance.Metadata;
+                if (metaData != null)
+                {
+                    if (metaData.TryGetValue("password", out string password))
+                    {
+                        metaData.TryGetValue("user", out string username);
+                        username = username ?? "user";
+                        settings.Username = username;
+                        settings.Password = password;
+                    }
+
+                    if (metaData.TryGetValue("configPath", out string path))
+                    {
+                        if (uri.EndsWith("/") && path.StartsWith("/"))
+                        {
+                            uri = uri.Substring(0, uri.Length - 1);
+                        }
+
+                        uri = uri + path;
+                    }
+                }
+
+                endpoints.Append(uri);
+                endpoints.Append(',');
+            }
+
+            if (endpoints.Length > 0)
+            {
+                var uris = endpoints.ToString(0, endpoints.Length - 1);
+                settings.Uri = uris;
+            }
+        }
+
         /// <summary>
         /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server
         /// </summary>
         /// <param name="requestUri">the Uri used when accessing the server</param>
+        /// <param name="username">username to use if required</param>
+        /// <param name="password">password to use if required</param>
         /// <returns>The HttpRequestMessage built from the path</returns>
-        protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri)
+        protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri, string username, string password)
         {
             HttpRequestMessage request = null;
             if (string.IsNullOrEmpty(_settings.AccessTokenUri))
             {
-                request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, _settings.Username, _settings.Password);
+                request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, username, password);
             }
             else
             {
                 request = HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, FetchAccessToken);
             }
 
-            if (!string.IsNullOrEmpty(_settings.Token))
+            if (!string.IsNullOrEmpty(_settings.Token) && !ConfigServerClientSettings.IsMultiServerConfig(_settings.Uri))
             {
                 RenewToken(_settings.Token);
                 request.Headers.Add(TOKEN_HEADER, _settings.Token);
             }
 
             return request;
+        }
+
+        /// <summary>
+        /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server
+        /// </summary>
+        /// <param name="requestUri">the Uri used when accessing the server</param>
+        /// <returns>The HttpRequestMessage built from the path</returns>
+        [Obsolete("Will be removed in next release. See GetRequestMessage(string, string, string)")]
+        protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri)
+        {
+            return GetRequestMessage(requestUri, _settings.Username, _settings.Password);
         }
 
         /// <summary>
@@ -293,6 +415,95 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             Data["spring:cloud:config:client_id"] = _settings.ClientId;
             Data["spring:cloud:config:tokenTtl"] = _settings.TokenTtl.ToString();
             Data["spring:cloud:config:tokenRenewRate"] = _settings.TokenRenewRate.ToString();
+
+            Data["spring:cloud:config:discovery:enabled"] = _settings.DiscoveryEnabled.ToString();
+            Data["spring:cloud:config:discovery:serviceId"] = _settings.DiscoveryServiceId.ToString();
+        }
+
+        protected internal async Task<ConfigEnvironment> RemoteLoadAsync(string[] requestUris, string label)
+        {
+            // Get client if not already set
+            if (_client == null)
+            {
+                _client = GetHttpClient(_settings);
+            }
+
+            Exception error = null;
+            foreach (var requestUri in requestUris)
+            {
+                error = null;
+
+                // Get a config server uri and username passwords to use
+                var trimUri = requestUri.Trim();
+                var serverUri = _settings.GetRawUri(trimUri);
+                string username = _settings.GetUserName(trimUri);
+                string password = _settings.GetPassword(trimUri);
+
+                // Make Config Server URI from settings
+                var path = GetConfigServerUri(serverUri, label);
+
+                // Get the request message
+                var request = GetRequestMessage(path, username, password);
+
+                // If certificate validation is disabled, inject a callback to handle properly
+                SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
+                HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out prevProtocols, out RemoteCertificateValidationCallback prevValidator);
+
+                // Invoke config server
+                try
+                {
+                    using (HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false))
+                    {
+                        // Log status
+                        var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
+                        _logger?.LogInformation(message);
+
+                        if (response.StatusCode != HttpStatusCode.OK)
+                        {
+                            if (response.StatusCode == HttpStatusCode.NotFound)
+                            {
+                                return null;
+                            }
+
+                            // Throw if status >= 400
+                            if (response.StatusCode >= HttpStatusCode.BadRequest)
+                            {
+                                // HttpClientErrorException
+                                throw new HttpRequestException(message);
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }
+
+                        Stream stream = await response.Content.ReadAsStreamAsync();
+                        return Deserialize(stream);
+                    }
+                }
+                catch (Exception e)
+                {
+                    error = e;
+                    _logger?.LogError(e, "Config Server exception, path: {requestUri}", requestUri);
+                    if (IsContinueExceptionType(e))
+                    {
+                        continue;
+                    }
+
+                    throw;
+                }
+                finally
+                {
+                    HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
+                }
+            }
+
+            if (error != null)
+            {
+                throw error;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -301,6 +512,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         /// <param name="requestUri">the Uri used in accessing the Spring Cloud Configuration Server</param>
         /// <returns>The task object representing the asynchronous operation</returns>
+        [Obsolete("Will be removed in next release. See RemoteLoadAsync(string[], string)")]
         protected internal virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
         {
             // Get client if not already set
@@ -313,9 +525,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             var request = GetRequestMessage(requestUri);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            RemoteCertificateValidationCallback prevValidator = null;
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(_settings.ValidateCertificates, out prevProtocols, out prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out prevProtocols, out RemoteCertificateValidationCallback prevValidator);
 
             // Invoke config server
             try
@@ -374,22 +585,45 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <summary>
         /// Create the Uri that will be used in accessing the Configuration Server
         /// </summary>
+        /// <param name="baseRawUri">base server uri to use</param>
         /// <param name="label">a label to add</param>
         /// <returns>The request URI for the Configuration Server</returns>
-        protected internal virtual string GetConfigServerUri(string label)
+        protected internal virtual string GetConfigServerUri(string baseRawUri, string label)
         {
+            if (string.IsNullOrEmpty(baseRawUri))
+            {
+                throw new ArgumentException(nameof(baseRawUri));
+            }
+
             var path = _settings.Name + "/" + _settings.Environment;
             if (!string.IsNullOrWhiteSpace(label))
             {
-                path = path + "/" + label;
+                // If label contains slash, replace it
+                if (label.Contains("/"))
+                {
+                    label = label.Replace("/", "(_)");
+                }
+
+                path = path + "/" + label.Trim();
             }
 
-            if (!_settings.RawUri.EndsWith("/"))
+            if (!baseRawUri.EndsWith("/"))
             {
                 path = "/" + path;
             }
 
-            return _settings.RawUri + path;
+            return baseRawUri + path;
+        }
+
+        /// <summary>
+        /// Create the Uri that will be used in accessing the Configuration Server
+        /// </summary>
+        /// <param name="label">a label to add</param>
+        /// <returns>The request URI for the Configuration Server</returns>
+        [Obsolete("Will be removed in next release. See GetConfigServerUri(string, string)")]
+        protected internal virtual string GetConfigServerUri(string label)
+        {
+            return GetConfigServerUri(_settings.RawUri, label);
         }
 
         /// <summary>
@@ -506,7 +740,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             // If certificate validation is disabled, inject a callback to handle properly
             SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 _settings.ValidateCertificates,
                 out prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
@@ -542,7 +776,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         protected internal virtual string GetVaultRenewUri()
         {
-            var rawUri = Settings.RawUri;
+            var rawUri = Settings.RawUris[0];
             if (!rawUri.EndsWith("/"))
             {
                 rawUri = rawUri + "/";
@@ -551,7 +785,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return rawUri + VAULT_RENEW_PATH;
         }
 
-        protected internal virtual HttpRequestMessage GetValutRenewMessage(string requestUri)
+        protected internal virtual HttpRequestMessage GetVaultRenewMessage(string requestUri)
         {
             var request = HttpClientHelper.GetRequestMessage(HttpMethod.Post, requestUri, FetchAccessToken);
 
@@ -566,6 +800,18 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
             request.Content = content;
             return request;
+        }
+
+        [Obsolete("Will be removed in next release. See GetVaultRenewMessage(string)")]
+        protected internal virtual HttpRequestMessage GetValutRenewMessage(string requestUri)
+        {
+            return GetVaultRenewMessage(requestUri);
+        }
+
+        protected internal bool IsDiscoveryFirstEnabled()
+        {
+            var clientConfigsection = _configuration.GetSection(PREFIX);
+            return clientConfigsection.GetValue("discovery:enabled", _settings.DiscoveryEnabled);
         }
 
         /// <summary>
@@ -583,6 +829,24 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             var root = configuration as IConfigurationRoot;
             return new ConfigurationRoot(new List<IConfigurationProvider>() { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers)) });
+        }
+
+        private bool IsContinueExceptionType(Exception e)
+        {
+            if (e is TaskCanceledException)
+            {
+                return true;
+            }
+
+            if (e is HttpRequestException)
+            {
+                if (e.InnerException is SocketException)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

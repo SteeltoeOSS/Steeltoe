@@ -12,23 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
-    /// <summary>
-    /// Exception thrown by Config Server client when problems occur
-    /// </summary>
-    public class ConfigServerException : Exception
+    public class SpringCloudConfigDiscovery
     {
-        public ConfigServerException(string message, Exception error)
-            : base(message, error)
-        {
-        }
+        public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_DISCOVERY_ENABLED;
 
-        public ConfigServerException(string message)
-            : base(message)
-        {
-        }
+        public string ServiceId { get; set; } = ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID;
     }
 }

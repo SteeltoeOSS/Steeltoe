@@ -25,6 +25,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Steeltoe.Discovery.EurekaBase" Version="$(SteeltoeEurekaVersion)" />
     <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>

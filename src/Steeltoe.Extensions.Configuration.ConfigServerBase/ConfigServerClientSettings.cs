@@ -102,7 +102,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public const string DEFAULT_CLIENT_SECRET = null;
 
+        /// <summary>
+        /// Default discovery first enabled setting
+        /// </summary>
+        public const bool DEFAULT_DISCOVERY_ENABLED = false;
+
+        /// <summary>
+        /// Default discovery first service id setting
+        /// </summary>
+        public const string DEFAULT_CONFIGSERVER_SERVICEID = "configserver";
+
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
+        private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
+
         private string username;
         private string password;
 
@@ -124,6 +136,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             RetryAttempts = DEFAULT_MAX_RETRY_ATTEMPTS;
             RetryMultiplier = DEFAULT_RETRY_MULTIPLIER;
             Timeout = DEFAULT_TIMEOUT_MILLISECONDS;
+            DiscoveryEnabled = DEFAULT_DISCOVERY_ENABLED;
+            DiscoveryServiceId = DEFAULT_CONFIGSERVER_SERVICEID;
         }
 
         /// <summary>
@@ -205,11 +219,30 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual int RetryAttempts { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether discovery first behavior is enabled
+        /// </summary>
+        public virtual bool DiscoveryEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value of the service id used during discovery first behavior
+        /// </summary>
+        public virtual string DiscoveryServiceId { get; set; }
+
+        /// <summary>
         /// Gets returns the HttpRequestUrl, unescaped
         /// </summary>
+        [Obsolete("Will be removed, use RawUris instead")]
         public virtual string RawUri
         {
             get { return GetRawUri(); }
+        }
+
+        /// <summary>
+        /// Gets returns HttpRequestUrls, unescaped
+        /// </summary>
+        public virtual string[] RawUris
+        {
+            get { return GetRawUris(); }
         }
 
         /// <summary>
@@ -247,6 +280,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public virtual int TokenRenewRate { get; set; } = DEFAULT_VAULT_TOKEN_RENEW_RATE;
 
+        internal static bool IsMultiServerConfig(string uris)
+        {
+            return uris.Contains(",");
+        }
+
+        [Obsolete("Will be removed, use GetRawUris() instead")]
         internal string GetRawUri()
         {
             try
@@ -264,34 +303,90 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return Uri;
         }
 
+        internal string GetRawUri(string uri)
+        {
+            try
+            {
+                System.Uri ri = new System.Uri(uri);
+                return ri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+            }
+            catch (UriFormatException)
+            {
+            }
+
+            return null;
+        }
+
+        internal string[] GetRawUris()
+        {
+            if (!string.IsNullOrEmpty(Uri))
+            {
+                string[] uris = Uri.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < uris.Length; i++)
+                {
+                    string uri = GetRawUri(uris[i]);
+                    if (string.IsNullOrEmpty(uri))
+                    {
+                        return Array.Empty<string>();
+                    }
+
+                    uris[i] = uri;
+                }
+
+                return uris;
+            }
+
+            return Array.Empty<string>();
+        }
+
+        internal string[] GetUris()
+        {
+            if (!string.IsNullOrEmpty(Uri))
+            {
+                return Uri.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            return Array.Empty<string>();
+        }
+
         internal string GetPassword()
+        {
+            return GetPassword(Uri);
+        }
+
+        internal string GetPassword(string uri)
         {
             if (!string.IsNullOrEmpty(password))
             {
                 return password;
             }
 
-            return GetUserPassElement(1);
+            return GetUserPassElement(uri, 1);
         }
 
         internal string GetUserName()
+        {
+            return GetUserName(Uri);
+        }
+
+        internal string GetUserName(string uri)
         {
             if (!string.IsNullOrEmpty(username))
             {
                 return username;
             }
 
-            return GetUserPassElement(0);
+            return GetUserPassElement(uri, 0);
         }
 
-        private string GetUserInfo()
+        private static string GetUserInfo(string uri)
         {
             try
             {
-                if (!string.IsNullOrEmpty(Uri))
+                if (!string.IsNullOrEmpty(uri))
                 {
-                    System.Uri uri = new System.Uri(Uri);
-                    return uri.UserInfo;
+                    System.Uri u = new System.Uri(uri);
+                    return u.UserInfo;
                 }
             }
             catch (UriFormatException)
@@ -303,10 +398,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return null;
         }
 
-        private string GetUserPassElement(int index)
+        private static string GetUserPassElement(string uri, int index)
         {
+            if (IsMultiServerConfig(uri))
+            {
+                return null;
+            }
+
             string result = null;
-            string userInfo = GetUserInfo();
+            string userInfo = GetUserInfo(uri);
             if (!string.IsNullOrEmpty(userInfo))
             {
                 string[] info = userInfo.Split(COLON_DELIMIT);

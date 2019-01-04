@@ -27,5 +27,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public IList<PropertySource> PropertySources { get; set; }
 
         public string Version { get; set; }
+
+        public string State { get; set; }
     }
 }
