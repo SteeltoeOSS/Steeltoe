@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using System;
@@ -34,7 +35,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     /// <summary>
     /// A Spring Cloud Config Server based <see cref="ConfigurationProvider"/>.
     /// </summary>
-    public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource
+    public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource, IHealthContributor
     {
         /// <summary>
         /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server
@@ -207,6 +208,36 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             _configuration = WrapWithPlaceholderResolver(config.Build());
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
             return this;
+        }
+
+        public HealthCheckResult Health()
+        {
+            var requestUri = GetConfigServerUri(null);
+            var request = GetRequestMessage(requestUri);
+            bool isSuccess = false;
+            var health = new HealthCheckResult();
+            try
+            {
+                var result = Task.Run(async () => await _client.SendAsync(request)).Result;
+                isSuccess = result.IsSuccessStatusCode;
+                if (isSuccess)
+                {
+                    health.Details.Add("status", HealthStatus.UP.ToString());
+                }
+                else
+                {
+                    health.Details.Add("status", "Failure to retrieve config data");
+                    health.Details.Add("server-reply", result.Content.ReadAsStringAsync().Result);
+                }
+            }
+            catch (Exception)
+            {
+                health.Details.Add("status", "DOWN");
+            }
+
+            health.Status = isSuccess ? HealthStatus.UP : HealthStatus.OUT_OF_SERVICE;
+
+            return health;
         }
 
         internal void DoLoad()
@@ -825,6 +856,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return HttpClientHelper.GetHttpClient(settings.ValidateCertificates, settings.Timeout);
         }
 
+        public string Id => "config-server";
         private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration)
         {
             var root = configuration as IConfigurationRoot;

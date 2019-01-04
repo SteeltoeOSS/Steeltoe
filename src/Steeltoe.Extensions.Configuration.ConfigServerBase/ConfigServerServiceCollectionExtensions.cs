@@ -12,37 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Autofac;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Options.Autofac;
 using System;
 using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
-    /// <summary>
-    /// Extension methods for adding services related to Spring Cloud Config Server.
-    /// </summary>
-    public static class ConfigServerContainerBuilderExtensions
+    public static class ConfigServerServiceCollectionExtensions
     {
-        public static void RegisterConfigServerClientOptions(this ContainerBuilder container, IConfiguration config)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            var section = config.GetSection(ConfigServerClientSettingsOptions.CONFIGURATION_PREFIX);
-            container.RegisterOption<ConfigServerClientSettingsOptions>(section);
-        }
-
-        public static void RegisterConfigServerHealthCheck(this ContainerBuilder services, IConfiguration configuration)
+        public static IServiceCollection AddConfigServerHealthCheck(this IServiceCollection services, IConfiguration configuration)
         {
 #pragma warning disable SA1119 // Statement must not use unnecessary parenthesis
             if (!(configuration is IConfigurationRoot root))
@@ -57,7 +37,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 throw new InvalidOperationException("Config server is not registered as one of the sources in the configuration");
             }
 
-            services.RegisterInstance(configServerSource).As<IHealthContributor>();
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), configServerSource));
+            return services;
         }
     }
 }
