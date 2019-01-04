@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using System;
@@ -35,7 +34,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     /// <summary>
     /// A Spring Cloud Config Server based <see cref="ConfigurationProvider"/>.
     /// </summary>
-    public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource, IHealthContributor
+    public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource
     {
         /// <summary>
         /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server
@@ -142,6 +141,30 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public override void Load()
         {
+            Load(true);
+        }
+
+        [Obsolete("Will be removed in next release, use the ConfigServerConfigurationSource")]
+        public virtual IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
+            ConfigurationBuilder config = new ConfigurationBuilder();
+            foreach (IConfigurationSource s in builder.Sources)
+            {
+                if (s == this)
+                {
+                    break;
+                }
+
+                config.Add(s);
+            }
+
+            _configuration = WrapWithPlaceholderResolver(config.Build());
+            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
+            return this;
+        }
+
+        internal ConfigEnvironment Load(bool updateDictionary = true)
+        {
             // Refresh settings with latest configuration values
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
 
@@ -163,8 +186,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
                     try
                     {
-                        DoLoad();
-                        return;
+                        return DoLoad(updateDictionary);
                     }
                     catch (ConfigServerException e)
                     {
@@ -187,60 +209,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             else
             {
                 _logger?.LogInformation("Fetching config from server at: {0}", _settings.Uri);
-                DoLoad();
+                return DoLoad(updateDictionary);
             }
         }
 
-        [Obsolete("Will be removed in next release, use the ConfigServerConfigurationSource")]
-        public virtual IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            ConfigurationBuilder config = new ConfigurationBuilder();
-            foreach (IConfigurationSource s in builder.Sources)
-            {
-                if (s == this)
-                {
-                    break;
-                }
-
-                config.Add(s);
-            }
-
-            _configuration = WrapWithPlaceholderResolver(config.Build());
-            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
-            return this;
-        }
-
-        public HealthCheckResult Health()
-        {
-            var requestUri = GetConfigServerUri(null);
-            var request = GetRequestMessage(requestUri);
-            bool isSuccess = false;
-            var health = new HealthCheckResult();
-            try
-            {
-                var result = Task.Run(async () => await _client.SendAsync(request)).Result;
-                isSuccess = result.IsSuccessStatusCode;
-                if (isSuccess)
-                {
-                    health.Details.Add("status", HealthStatus.UP.ToString());
-                }
-                else
-                {
-                    health.Details.Add("status", "Failure to retrieve config data");
-                    health.Details.Add("server-reply", result.Content.ReadAsStringAsync().Result);
-                }
-            }
-            catch (Exception)
-            {
-                health.Details.Add("status", "DOWN");
-            }
-
-            health.Status = isSuccess ? HealthStatus.UP : HealthStatus.OUT_OF_SERVICE;
-
-            return health;
-        }
-
-        internal void DoLoad()
+        internal ConfigEnvironment DoLoad(bool updateDictionary = true)
         {
             Exception error = null;
 
@@ -278,27 +251,30 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     {
                         _logger?.LogInformation(
                             "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
-                        if (!string.IsNullOrEmpty(env.State))
+                        if (updateDictionary)
                         {
-                            Data["spring:cloud:config:client:state"] = env.State;
-                        }
-
-                        if (!string.IsNullOrEmpty(env.Version))
-                        {
-                            Data["spring:cloud:config:client:version"] = env.Version;
-                        }
-
-                        var sources = env.PropertySources;
-                        if (sources != null)
-                        {
-                            int index = sources.Count - 1;
-                            for (; index >= 0; index--)
+                            if (!string.IsNullOrEmpty(env.State))
                             {
-                                AddPropertySource(sources[index]);
+                                Data["spring:cloud:config:client:state"] = env.State;
+                            }
+
+                            if (!string.IsNullOrEmpty(env.Version))
+                            {
+                                Data["spring:cloud:config:client:version"] = env.Version;
+                            }
+
+                            var sources = env.PropertySources;
+                            if (sources != null)
+                            {
+                                int index = sources.Count - 1;
+                                for (; index >= 0; index--)
+                                {
+                                    AddPropertySource(sources[index]);
+                                }
                             }
                         }
 
-                        return;
+                        return env;
                     }
                 }
             }
@@ -313,6 +289,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 throw new ConfigServerException("Could not locate PropertySource, fail fast property is set, failing", error);
             }
+
+            return null;
         }
 
         internal string[] GetLabels()
@@ -449,6 +427,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             Data["spring:cloud:config:discovery:enabled"] = _settings.DiscoveryEnabled.ToString();
             Data["spring:cloud:config:discovery:serviceId"] = _settings.DiscoveryServiceId.ToString();
+
+            Data["spring:cloud:config:health:enabled"] = _settings.HealthEnabled.ToString();
+            Data["spring:cloud:config:health:timeToLive"] = _settings.HealthTimeToLive.ToString();
         }
 
         protected internal async Task<ConfigEnvironment> RemoteLoadAsync(string[] requestUris, string label)
@@ -856,7 +837,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return HttpClientHelper.GetHttpClient(settings.ValidateCertificates, settings.Timeout);
         }
 
-        public string Id => "config-server";
         private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration)
         {
             var root = configuration as IConfigurationRoot;

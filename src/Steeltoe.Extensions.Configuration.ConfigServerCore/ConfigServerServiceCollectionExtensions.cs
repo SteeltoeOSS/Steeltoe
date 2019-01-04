@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common.HealthChecks;
 using System;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
@@ -40,6 +41,23 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             var section = config.GetSection(ConfigServerClientSettingsOptions.CONFIGURATION_PREFIX);
             services.Configure<ConfigServerClientSettingsOptions>(section);
+
+            return services;
+        }
+
+        /// <summary>
+        /// Add the ConfigServerHealthContributor as a IHealthContributor to the service container.
+        /// </summary>
+        /// <param name="services">the service container</param>
+        /// <returns>the service collection</returns>
+        public static IServiceCollection AddConfigServerHealthContributor(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddSingleton<IHealthContributor, ConfigServerHealthContributor>();
 
             return services;
         }

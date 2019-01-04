@@ -42,22 +42,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             container.RegisterOption<ConfigServerClientSettingsOptions>(section);
         }
 
-        public static void RegisterConfigServerHealthCheck(this ContainerBuilder services, IConfiguration configuration)
+        /// <summary>
+        /// Add the ConfigServerHealthContributor as a IHealthContributor to the container.
+        /// Note: You also need to add the applications IConfiguration to the container as well.
+        /// </summary>
+        /// <param name="container">the autofac container builder</param>
+        public static void RegisterConfigServerHealthContributor(this ContainerBuilder container)
         {
-#pragma warning disable SA1119 // Statement must not use unnecessary parenthesis
-            if (!(configuration is IConfigurationRoot root))
-#pragma warning restore SA1119 // Statement must not use unnecessary parenthesis
+            if (container == null)
             {
-                throw new ArgumentException($"Configuration must be a {nameof(IConfigurationRoot)}", nameof(configuration));
+                throw new ArgumentNullException(nameof(container));
             }
 
-            var configServerSource = root.Providers.FirstOrDefault(x => x is ConfigServerConfigurationProvider);
-            if (configServerSource == null)
-            {
-                throw new InvalidOperationException("Config server is not registered as one of the sources in the configuration");
-            }
-
-            services.RegisterInstance(configServerSource).As<IHealthContributor>();
+            container.RegisterType<ConfigServerHealthContributor>().As<IHealthContributor>().SingleInstance();
         }
     }
 }

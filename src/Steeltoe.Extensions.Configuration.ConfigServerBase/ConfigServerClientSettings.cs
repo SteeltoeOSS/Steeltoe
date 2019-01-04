@@ -112,6 +112,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public const string DEFAULT_CONFIGSERVER_SERVICEID = "configserver";
 
+        /// <summary>
+        /// Default health check enabled setting
+        /// </summary>
+        public const bool DEFAULT_HEALTH_ENABLED = false;
+
+        /// <summary>
+        /// Default health check time to live in milliseconds setting
+        /// </summary>
+        public const long DEFAULT_HEALTH_TIMETOLIVE = 60 * 5 * 1000;
+
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
         private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
 
@@ -138,6 +148,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             Timeout = DEFAULT_TIMEOUT_MILLISECONDS;
             DiscoveryEnabled = DEFAULT_DISCOVERY_ENABLED;
             DiscoveryServiceId = DEFAULT_CONFIGSERVER_SERVICEID;
+            HealthEnabled = DEFAULT_HEALTH_ENABLED;
+            HealthTimeToLive = DEFAULT_HEALTH_TIMETOLIVE;
         }
 
         /// <summary>
@@ -227,6 +239,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// Gets or sets a value of the service id used during discovery first behavior
         /// </summary>
         public virtual string DiscoveryServiceId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether health check is enabled
+        /// </summary>
+        public virtual bool HealthEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value for the health check cache time to live
+        /// </summary>
+        public virtual long HealthTimeToLive { get; set; }
 
         /// <summary>
         /// Gets returns the HttpRequestUrl, unescaped

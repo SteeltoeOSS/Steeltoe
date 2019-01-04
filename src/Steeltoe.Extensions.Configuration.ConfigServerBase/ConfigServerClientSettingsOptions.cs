@@ -61,6 +61,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         public SpringCloudConfigDiscovery Discovery { get; set; }
 
+        public SpringCloudConfigHealth Health { get; set; }
+
         public bool ValidateCertificates => Validate_Certificates;
 
         public string Environment => Env;
@@ -78,6 +80,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public bool DiscoveryEnabled => Discovery != null ? Discovery.Enabled : ConfigServerClientSettings.DEFAULT_DISCOVERY_ENABLED;
 
         public string DiscoveryServiceId => Discovery != null ? Discovery.ServiceId : ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID;
+
+        public bool HealthEnabled => Health != null ? Health.Enabled : ConfigServerClientSettings.DEFAULT_HEALTH_ENABLED;
+
+        public long HealthTimeToLive => Health != null ? Health.TimeToLive : ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE;
 
         public string Access_Token_Uri { get; set; }
 
@@ -126,6 +132,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
                 settings.DiscoveryEnabled = DiscoveryEnabled;
                 settings.DiscoveryServiceId = DiscoveryServiceId;
+
+                settings.HealthEnabled = HealthEnabled;
+                settings.HealthTimeToLive = HealthTimeToLive;
 
                 return settings;
             }

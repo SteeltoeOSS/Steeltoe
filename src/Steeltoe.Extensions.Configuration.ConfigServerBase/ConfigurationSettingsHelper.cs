@@ -63,9 +63,33 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             settings.ClientSecret = GetClientSecret(clientConfigsection, config);
             settings.TokenRenewRate = GetTokenRenewRate(clientConfigsection);
             settings.TokenTtl = GetTokenTtl(clientConfigsection);
+            settings.DiscoveryEnabled = GetDiscoveryEnabled(clientConfigsection, settings.DiscoveryEnabled);
+            settings.DiscoveryServiceId = GetDiscoveryServiceId(clientConfigsection, settings.DiscoveryServiceId);
+            settings.HealthEnabled = GetHealthEnabled(clientConfigsection, settings.HealthEnabled);
+            settings.HealthTimeToLive = GetHealthTimeToLive(clientConfigsection, settings.HealthTimeToLive);
 
             // Override Config server URI
             settings.Uri = GetCloudFoundryUri(clientConfigsection, config, settings.Uri);
+        }
+
+        private static bool GetHealthEnabled(IConfigurationSection clientConfigsection, bool def)
+        {
+            return clientConfigsection.GetValue("health:enabled", def);
+        }
+
+        private static long GetHealthTimeToLive(IConfigurationSection clientConfigsection, long def)
+        {
+            return clientConfigsection.GetValue("health:timeToLive", def);
+        }
+
+        private static bool GetDiscoveryEnabled(IConfigurationSection clientConfigsection, bool def)
+        {
+            return clientConfigsection.GetValue("discovery:enabled", def);
+        }
+
+        private static string GetDiscoveryServiceId(IConfigurationSection clientConfigsection, string def)
+        {
+            return clientConfigsection.GetValue("discovery:serviceId", def);
         }
 
         private static int GetRetryMaxAttempts(IConfigurationSection clientConfigsection, int def)

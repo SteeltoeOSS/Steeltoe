@@ -65,6 +65,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal(ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL, settings.TokenTtl);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_DISCOVERY_ENABLED, settings.DiscoveryEnabled);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID, settings.DiscoveryServiceId);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_ENABLED, settings.HealthEnabled);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE, settings.HealthTimeToLive);
             Assert.Null(settings.Name);
             Assert.Null(settings.Label);
             Assert.Null(settings.Username);

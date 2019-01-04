@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
