@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Folder Include="Diagnostics\" />
+    <Folder Include="Reflection\" />
   </ItemGroup>
 
 </Project>
