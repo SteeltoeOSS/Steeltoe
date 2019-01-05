@@ -14,16 +14,21 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.HealthChecks;
+using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
     public class HomeController : Controller
     {
         private ConfigServerDataAsOptions _options;
+        private IHealthContributor _health;
 
-        public HomeController(IOptions<ConfigServerDataAsOptions> options)
+        public HomeController(IOptions<ConfigServerDataAsOptions> options, IHealthContributor health)
         {
             _options = options.Value;
+            _health = health;
         }
 
         [HttpGet]
@@ -37,6 +42,34 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             {
                 return string.Empty;
             }
+        }
+
+        [HttpGet]
+        public string Health()
+        {
+            if (_health != null)
+            {
+                var health = _health.Health();
+                health.Details.TryGetValue("propertySources", out object sourcelist);
+
+                var nameList = ToCSV(sourcelist as IList<string>);
+                return health.Status.ToString() + "," + nameList;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        private object ToCSV(IList<string> list)
+        {
+            string result = string.Empty;
+            foreach (var name in list)
+            {
+                result += name + ",";
+            }
+
+            return result;
         }
     }
 }

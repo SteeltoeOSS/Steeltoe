@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 using System.IO;
 
@@ -23,32 +24,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
     internal class TestServerStartup
     {
-        public TestServerStartup(IHostingEnvironment environment)
+        public TestServerStartup(IConfiguration configuration)
         {
-            // These settings match the default java config server
-            var appsettings = @"
-{
-    'spring': {
-      'application': {
-        'name': 'foo'
-      },
-      'cloud': {
-        'config': {
-            'uri': 'http://localhost:8888',
-            'env': 'development'
-        }
-      }
-    }
-}";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            builder.SetBasePath(directory);
-
-            builder.AddJsonFile(fileName)
-                .AddConfigServer(environment);
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; set; }
@@ -57,16 +35,22 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         {
             services.AddOptions();
             services.Configure<ConfigServerDataAsOptions>(Configuration);
-
+            services.AddConfigServerHealthContributor();
             services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app)
         {
+            var config = app.ApplicationServices.GetServices<IConfiguration>();
             app.UseMvc(routes =>
+            {
                 routes.MapRoute(
                     name: "VerifyAsInjectedOptions",
-                    template: "{controller=Home}/{action=VerifyAsInjectedOptions}"));
+                    template: "{controller=Home}/{action=VerifyAsInjectedOptions}");
+                routes.MapRoute(
+                    name: "Health",
+                    template: "{controller=Home}/{action=Health}");
+            });
         }
     }
 }
