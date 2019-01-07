@@ -600,6 +600,7 @@ namespace Steeltoe.Discovery.Eureka
             if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
             {
                 var result = RegisterAsync();
+                result.ConfigureAwait(false);
                 result.Wait();
 
                 if (result.Result)
@@ -621,6 +622,7 @@ namespace Steeltoe.Discovery.Eureka
             if (ClientConfig.ShouldFetchRegistry)
             {
                 var result = FetchRegistryAsync(true);
+                result.ConfigureAwait(false);
                 result.Wait();
 
                 var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
