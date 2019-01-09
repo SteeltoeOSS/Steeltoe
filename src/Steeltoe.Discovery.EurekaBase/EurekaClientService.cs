@@ -18,7 +18,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using System.Collections.Generic;
-using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka
 {
@@ -34,11 +34,14 @@ namespace Steeltoe.Discovery.Eureka
         /// <returns>service instances</returns>
         public static IList<IServiceInstance> GetInstances(IConfiguration configuration, string serviceId, ILoggerFactory logFactory = null)
         {
-            EurekaClientOptions config = ConfigureClientOptions(configuration);
-            LookupClient client = GetLookupClient(config, logFactory);
-            var result = client.GetInstances(serviceId);
-            client.ShutdownAsync().Wait();
-            return result;
+            return System.Threading.Tasks.Task.Run(() =>
+            {
+                EurekaClientOptions config = ConfigureClientOptions(configuration);
+                LookupClient client = GetLookupClient(config, logFactory);
+                var result = client.GetInstances(serviceId);
+                client.ShutdownAsync().Wait();
+                return result;
+            }).Result;
         }
 
         /// <summary>
@@ -50,11 +53,14 @@ namespace Steeltoe.Discovery.Eureka
         /// <returns>all registered services</returns>
         public static IList<string> GetServices(IConfiguration configuration, ILoggerFactory logFactory = null)
         {
-            EurekaClientOptions config = ConfigureClientOptions(configuration);
-            var client = GetLookupClient(config, logFactory);
-            var result = client.GetServices();
-            client.ShutdownAsync().Wait();
-            return result;
+            return System.Threading.Tasks.Task.Run(() =>
+            {
+                EurekaClientOptions config = ConfigureClientOptions(configuration);
+                var client = GetLookupClient(config, logFactory);
+                var result = client.GetServices();
+                client.ShutdownAsync().Wait();
+                return result;
+            }).Result;
         }
 
         internal static LookupClient GetLookupClient(EurekaClientOptions config, ILoggerFactory logFactory)
