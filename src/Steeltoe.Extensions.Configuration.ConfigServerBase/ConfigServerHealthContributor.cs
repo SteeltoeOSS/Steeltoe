@@ -47,6 +47,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             if (Provider == null)
             {
+                Logger?.LogDebug("No config server provider found");
                 health.Status = HealthStatus.UNKNOWN;
                 health.Details.Add("error", "No config server provider found");
                 return health;
@@ -54,6 +55,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             if (!IsEnabled())
             {
+                Logger?.LogDebug("Config server health check disabled");
                 health.Status = HealthStatus.UNKNOWN;
                 return health;
             }
@@ -61,6 +63,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             IList<PropertySource> sources = GetPropertySources();
             if (sources == null || sources.Count == 0)
             {
+                Logger?.LogDebug("No property sources found");
                 health.Status = HealthStatus.UNKNOWN;
                 health.Details.Add("error", "No property sources found");
                 return health;
@@ -72,10 +75,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal void UpdateHealth(HealthCheckResult health, IList<PropertySource> sources)
         {
+            Logger?.LogDebug("Config server health check returning UP");
+
             health.Status = HealthStatus.UP;
             List<string> names = new List<string>();
             foreach (var source in sources)
             {
+                Logger?.LogDebug("Returning property source: {propertySource}", source.Name);
                 names.Add(source.Name);
             }
 
@@ -88,6 +94,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             if (IsCacheStale(currentTime))
             {
                 LastAccess = currentTime;
+                Logger?.LogDebug("Cache stale, fetching config server health");
                 Cached = Provider.Load(false);
             }
 
