@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
@@ -40,36 +41,49 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         /// Gets IConnectionFactory from a RabbitMQ Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type IConnectionFactory
-        {
-            get
-            {
-                var type = ConnectorHelpers.FindType(Assemblies, ConnectionInterfaceTypeNames);
-                if (type == null)
-                {
-                    throw new ConnectorException("Unable to find RabbitMQ ConnectionFactory type. RabbitMQ.Client assembly may be missing");
-                }
-
-                return type;
-            }
-        }
+        public static Type IConnectionFactory => FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames);
 
         /// <summary>
         /// Gets ConnectionFactory from a RabbitMQ Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type ConnectionFactory
-        {
-            get
-            {
-                var type = ConnectorHelpers.FindType(Assemblies, ConnectionImplementationTypeNames);
-                if (type == null)
-                {
-                    throw new ConnectorException("Unable to find RabbitMQ ConnectionFactory type. RabbitMQ.Client assembly may be missing");
-                }
+        public static Type ConnectionFactory => FindTypeOrThrow(Assemblies, ConnectionImplementationTypeNames);
 
-                return type;
+        /// <summary>
+        /// Gets IConnection from RabbitMQ Library
+        /// </summary>
+        public static Type IConnection => FindTypeOrThrow(Assemblies, new string[] { "RabbitMQ.Client.IConnection" });
+
+        /// <summary>
+        /// Gets the CreateConnection method of ConnectionFactory
+        /// </summary>
+        public static MethodInfo CreateConnectionMethod => FindMethodOrThrow(ConnectionFactory, "CreateConnection", new Type[0]);
+
+        /// <summary>
+        /// Gets teh Close method for IConnection
+        /// </summary>
+        public static MethodInfo CloseConnectionMethod => FindMethodOrThrow(IConnection, "Close", new Type[0]);
+
+        private static Type FindTypeOrThrow(string[] assemblies, string[] types)
+        {
+            var type = ConnectorHelpers.FindType(assemblies, types);
+            if (type == null)
+            {
+                throw new ConnectorException("Unable to find required RabbitMQ type. RabbitMQ.Client assembly may be missing");
             }
+
+            return type;
+        }
+
+        private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
+        {
+            var returnType = ConnectorHelpers.FindMethod(type, methodName, parameters);
+            if (returnType == null)
+            {
+                throw new ConnectorException("Unable to find required RabbitMQ type, are you missing the RabbitMQ.Client Nuget package?");
+            }
+
+            return returnType;
         }
     }
 }
