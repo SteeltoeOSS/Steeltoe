@@ -22,27 +22,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     public static class ConfigServerHostBuilderExtensions
     {
         /// <summary>
-        /// Add Config Server and Cloud Foundry as application configuration sources.  Add Config Server health check
-        /// contributor to the service container.
-        /// </summary>
-        /// <param name="hostBuilder"><see cref="IWebHostBuilder"/></param>
-        /// <returns><see cref="IWebHostBuilder"/> with config server and Cloud Foundry Config Provider attached</returns>
-        public static IWebHostBuilder AddConfigServer(this IWebHostBuilder hostBuilder)
-        {
-            hostBuilder.ConfigureAppConfiguration((context, config) =>
-            {
-                config.AddConfigServer(context.HostingEnvironment);
-            });
-
-            hostBuilder.ConfigureServices((services) =>
-            {
-                services.AddConfigServerHealthContributor();
-            });
-
-            return hostBuilder;
-        }
-
-        /// <summary>
         /// Add Config Server and Cloud Foundry as application configuration sources. Add Config Server health check
         /// contributor to the service container.
         /// </summary>
