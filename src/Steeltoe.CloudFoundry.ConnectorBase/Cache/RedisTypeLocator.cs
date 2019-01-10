@@ -20,10 +20,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public static class RedisTypeLocator
     {
-        public static string[] MicrosoftAssemblies = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis" };
+        public static string[] MicrosoftAssemblies = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis", "Microsoft.Extensions.Caching.StackExchangeRedis" };
         public static string[] MicrosoftInterfaceTypeNames = new string[] { "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
-        public static string[] MicrosoftImplementationTypeNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCache" };
-        public static string[] MicrosoftOptionNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
+        public static string[] MicrosoftImplementationTypeNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCache", "Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache" };
+        public static string[] MicrosoftOptionNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCacheOptions", "Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions" };
         public static string[] StackExchangeAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName" };
         public static string[] StackExchangeInterfaceTypeNames = new string[] { "StackExchange.Redis.IConnectionMultiplexer" };
         public static string[] StackExchangeImplementationTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
