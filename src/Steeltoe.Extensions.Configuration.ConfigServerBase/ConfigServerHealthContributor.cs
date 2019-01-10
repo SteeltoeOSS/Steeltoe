@@ -22,6 +22,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     public class ConfigServerHealthContributor : IHealthContributor
     {
+        public static IHealthContributor GetHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger = null)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            return new ConfigServerHealthContributor(configuration, logger);
+        }
+
         public string Id => "config-server";
 
         internal ConfigServerConfigurationProvider Provider { get; set; }
