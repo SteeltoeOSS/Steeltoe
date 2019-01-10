@@ -57,6 +57,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 Logger?.LogDebug("Config server health check disabled");
                 health.Status = HealthStatus.UNKNOWN;
+                health.Details.Add("info", "Health check disabled");
                 return health;
             }
 
