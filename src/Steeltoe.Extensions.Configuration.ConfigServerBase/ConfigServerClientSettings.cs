@@ -115,7 +115,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <summary>
         /// Default health check enabled setting
         /// </summary>
-        public const bool DEFAULT_HEALTH_ENABLED = false;
+        public const bool DEFAULT_HEALTH_ENABLED = true;
 
         /// <summary>
         /// Default health check time to live in milliseconds setting
