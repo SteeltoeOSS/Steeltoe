@@ -86,8 +86,10 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 {
                     LoadData("vcap:application", applicationData.GetChildren());
 
-                    string vcapAppName = Data["vcap:application:name"];
-                    if (!string.IsNullOrEmpty(vcapAppName))
+                    Data.TryGetValue("vcap:application:name", out string vcapAppName);
+                    Data.TryGetValue("spring:application:name", out string springName);
+                    if (!string.IsNullOrEmpty(vcapAppName) &&
+                        string.IsNullOrEmpty(springName))
                     {
                         Data["spring:application:name"] = vcapAppName;
                     }
