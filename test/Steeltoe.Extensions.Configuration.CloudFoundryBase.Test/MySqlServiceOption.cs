@@ -12,7 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.CompilerServices;
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+{
+    public class MySqlServiceOption : AbstractServiceOptions
+    {
+        public MySqlServiceOption()
+        {
+        }
 
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.CloudFoundryBase.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.CloudFoundryCore.Test")]
+        public MySqlCredentials Credentials { get; set; }
+    }
+}
