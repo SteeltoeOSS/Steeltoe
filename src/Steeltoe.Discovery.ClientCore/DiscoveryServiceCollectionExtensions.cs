@@ -19,8 +19,10 @@ using Microsoft.Extensions.Options;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -132,7 +134,25 @@ namespace Steeltoe.Discovery.Client
             return services;
         }
 
+        public static IServiceCollection AddHealthCheckForKnownServices(this IServiceCollection services, params string[] knownServiceNames)
+        {
+            foreach (var serviceName in knownServiceNames)
+            {
+                services.AddSingleton<IHealthContributor>(ctx =>
+                    new EurekaApplicationHealthContributor(
+                        serviceName,
+                        ctx.GetRequiredService<EurekaDiscoveryClient>()));
+            }
+
+            services.AddSingleton<IHealthCheckHandler, HealthContributorHandler>();
+            services.AddTransient(ctx => new Lazy<IEnumerable<IHealthContributor>>(ctx.GetRequiredService<IEnumerable<IHealthContributor>>));
+
+            return services;
+        }
+
+
         private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
+
         {
             var clientConfigsection = config.GetSection(EUREKA_PREFIX);
             int childCount = clientConfigsection.GetChildren().Count();
@@ -160,6 +180,19 @@ namespace Steeltoe.Discovery.Client
             }
         }
 
+        public class ApplicationLifecycle : IDiscoveryLifecycle
+        {
+            public ApplicationLifecycle(IApplicationLifetime lifeCycle, IDiscoveryClient client)
+            {
+                ApplicationStopping = lifeCycle.ApplicationStopping;
+
+                // hook things up so that that things are unregistered when the application terminates
+                ApplicationStopping.Register(() => { client.ShutdownAsync().GetAwaiter().GetResult(); });
+            }
+
+            public CancellationToken ApplicationStopping { get; set; }
+        }
+
         private static void AddEurekaServices(IServiceCollection services, IDiscoveryLifecycle lifecycle)
         {
             services.AddSingleton<EurekaApplicationInfoManager>();
@@ -176,6 +209,9 @@ namespace Steeltoe.Discovery.Client
             }
 
             services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
+
+            services.AddSingleton<IHealthContributor, EurekaHealthContributor>();
+
         }
 
         private static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
@@ -228,6 +264,7 @@ namespace Steeltoe.Discovery.Client
             }
 
             public CancellationToken ApplicationStopping { get; set; }
+
         }
 
         public class OptionsMonitorWrapper<T> : IOptionsMonitor<T>
