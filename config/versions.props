@@ -15,5 +15,6 @@
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
+    <ConsulVersion>0.7.2.4</ConsulVersion>
   </PropertyGroup>
 </Project>
