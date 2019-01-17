@@ -449,7 +449,7 @@ namespace Steeltoe.Discovery.Eureka
 
             try
             {
-                RefreshInstanceInfo();
+                // HealthCheck : RefreshInstanceInfo();
                 EurekaHttpResponse<InstanceInfo> resp = await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.UNKNOWN);
                 _logger?.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 if (resp.StatusCode == HttpStatusCode.NotFound)

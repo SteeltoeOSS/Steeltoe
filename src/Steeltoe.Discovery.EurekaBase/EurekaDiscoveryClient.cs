@@ -64,7 +64,7 @@ namespace Steeltoe.Discovery.Eureka
             IEurekaHttpClient httpClient = null,
             ILoggerFactory logFactory = null,
 
-            IHealthCheckHandler healthCheckHandler = null)
+            // HealthCheck : IHealthCheckHandler healthCheckHandler = null,
 
             IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
 
@@ -73,7 +73,7 @@ namespace Steeltoe.Discovery.Eureka
             _thisInstance = new ThisServiceInstance(instConfig);
             _configOptions = clientConfig;
             _httpClient = httpClient;
-            HealthCheckHandler = healthCheckHandler;
+            // HealthCheck : HealthCheckHandler = healthCheckHandler;
             if (_httpClient == null)
             {
                 _httpClient = new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider);

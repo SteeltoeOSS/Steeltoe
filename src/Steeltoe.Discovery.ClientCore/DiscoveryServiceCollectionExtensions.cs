@@ -134,25 +134,24 @@ namespace Steeltoe.Discovery.Client
             return services;
         }
 
-        public static IServiceCollection AddHealthCheckForKnownServices(this IServiceCollection services, params string[] knownServiceNames)
-        {
-            foreach (var serviceName in knownServiceNames)
-            {
-                services.AddSingleton<IHealthContributor>(ctx =>
-                    new EurekaApplicationHealthContributor(
-                        serviceName,
-                        ctx.GetRequiredService<EurekaDiscoveryClient>()));
-            }
+        //public static IServiceCollection AddHealthCheckForKnownServices(this IServiceCollection services, params string[] knownServiceNames)
+        //{
+        //    foreach (var serviceName in knownServiceNames)
+        //    {
+        //        services.AddSingleton<IHealthContributor>(ctx =>
+        //            new EurekaApplicationHealthContributor(
+        //                serviceName,
+        //                ctx.GetRequiredService<EurekaDiscoveryClient>()));
+        //    }
 
-            services.AddSingleton<IHealthCheckHandler, HealthContributorHandler>();
-            services.AddTransient(ctx => new Lazy<IEnumerable<IHealthContributor>>(ctx.GetRequiredService<IEnumerable<IHealthContributor>>));
+        //    services.AddSingleton<IHealthCheckHandler, HealthContributorHandler>();
+        //    services.AddTransient(ctx => new Lazy<IEnumerable<IHealthContributor>>(ctx.GetRequiredService<IEnumerable<IHealthContributor>>));
 
-            return services;
-        }
+        //    return services;
+        //}
 
 
         private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
-
         {
             var clientConfigsection = config.GetSection(EUREKA_PREFIX);
             int childCount = clientConfigsection.GetChildren().Count();
@@ -210,7 +209,7 @@ namespace Steeltoe.Discovery.Client
 
             services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
 
-            services.AddSingleton<IHealthContributor, EurekaHealthContributor>();
+            //services.AddSingleton<IHealthContributor, EurekaHealthContributor>();
 
         }
 
@@ -252,21 +251,6 @@ namespace Steeltoe.Discovery.Client
         {
             return (info as EurekaServiceInfo) != null;
         }
-
-        public class ApplicationLifecycle : IDiscoveryLifecycle
-        {
-            public ApplicationLifecycle(IApplicationLifetime lifeCycle, IDiscoveryClient client)
-            {
-                ApplicationStopping = lifeCycle.ApplicationStopping;
-
-                // hook things up so that that things are unregistered when the application terminates
-                ApplicationStopping.Register(() => { client.ShutdownAsync().GetAwaiter().GetResult(); });
-            }
-
-            public CancellationToken ApplicationStopping { get; set; }
-
-        }
-
         public class OptionsMonitorWrapper<T> : IOptionsMonitor<T>
         {
             private T _option;
