@@ -13,12 +13,14 @@
 // limitations under the License.
 
 using Owin;
+using System;
 using System.Net;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     public static class OpenIDConnectExtension
     {
+        [Obsolete("Use app.UseCloudFoundryOpenIdConnect instead")]
         public static IAppBuilder UseOpenIDConnect(this IAppBuilder app, OpenIDConnectOptions options)
         {
             // In order to talk to Pivotal SSO tile, we must limit the TLS defaults used by the service

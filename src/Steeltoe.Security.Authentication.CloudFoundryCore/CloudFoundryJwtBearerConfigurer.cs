@@ -13,9 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Steeltoe.CloudFoundry.Connector.Services;
-using System.Net.Http;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
@@ -30,31 +28,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             if (si != null)
             {
-                options.JwtKeyUrl = si.AuthDomain + CloudFoundryDefaults.JwtTokenKey;
+                options.JwtKeyUrl = si.AuthDomain + CloudFoundryDefaults.JwtTokenUri;
             }
 
             jwtOptions.ClaimsIssuer = options.ClaimsIssuer;
             jwtOptions.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
-            jwtOptions.TokenValidationParameters = GetTokenValidationParameters(jwtOptions.TokenValidationParameters, options.JwtKeyUrl, jwtOptions.BackchannelHttpHandler, options.ValidateCertificates);
+            jwtOptions.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(jwtOptions.TokenValidationParameters, options.JwtKeyUrl, jwtOptions.BackchannelHttpHandler, options.ValidateCertificates);
             jwtOptions.SaveToken = options.SaveToken;
-        }
-
-        internal static TokenValidationParameters GetTokenValidationParameters(TokenValidationParameters parameters, string keyUrl, HttpMessageHandler handler, bool validateCertificates)
-        {
-            if (parameters == null)
-            {
-                parameters = new TokenValidationParameters();
-            }
-
-            parameters.ValidateAudience = false;
-            parameters.ValidateIssuer = true;
-            parameters.ValidateLifetime = true;
-            parameters.IssuerValidator = CloudFoundryTokenValidator.ValidateIssuer;
-
-            var tkr = new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates);
-            parameters.IssuerSigningKeyResolver = tkr.ResolveSigningKey;
-
-            return parameters;
         }
     }
 }

@@ -30,9 +30,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
     {
         internal static ConcurrentDictionary<string, SecurityKey> Resolved { get; set; } = new ConcurrentDictionary<string, SecurityKey>();
 
-        private string _jwtKeyUrl;
-        private HttpMessageHandler _httpHandler;
-        private bool _validateCertificates;
+        private readonly string _jwtKeyUrl;
+        private readonly HttpMessageHandler _httpHandler;
+        private readonly bool _validateCertificates;
 
         public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)
         {

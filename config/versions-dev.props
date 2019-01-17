@@ -20,6 +20,7 @@
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <MockHttp>4.0.0</MockHttp>
+    <MoqVersion>4.8.2</MoqVersion>
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>

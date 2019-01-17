@@ -34,45 +34,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
     public class CloudFoundryOAuthHandlerTest
     {
         [Fact]
-        public void GetTokenRequestParameters_ReturnsCorrectly()
-        {
-            var opts = new CloudFoundryOAuthOptions()
-            {
-                Backchannel = new HttpClient(new TestMessageHandler())
-            };
-
-            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
-
-            var parameters = testHandler.GetTokenRequestParameters("code", "redirectUri");
-            Assert.NotNull(parameters);
-
-            Assert.Equal(parameters["client_id"], opts.ClientId);
-            Assert.Equal("redirectUri", parameters["redirect_uri"]);
-            Assert.Equal(parameters["client_secret"], opts.ClientSecret);
-            Assert.Equal("code", parameters["code"]);
-            Assert.Equal("authorization_code", parameters["grant_type"]);
-        }
-
-        [Fact]
-        public void GetTokenRequestMessage_ReturnsCorrectly()
-        {
-            var opts = new CloudFoundryOAuthOptions()
-            {
-                Backchannel = new HttpClient(new TestMessageHandler())
-            };
-
-            MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
-
-            var message = testHandler.GetTokenRequestMessage("code", "redirectUri");
-            Assert.NotNull(message);
-            var content = message.Content as FormUrlEncodedContent;
-            Assert.NotNull(content);
-            Assert.Equal(HttpMethod.Post, message.Method);
-
-            message.Headers.Accept.Contains(new MediaTypeWithQualityHeaderValue("application/json"));
-        }
-
-        [Fact]
         public async void ExchangeCodeAsync_SendsTokenRequest_ReturnsValidTokenInfo()
         {
             TestMessageHandler handler = new TestMessageHandler();
@@ -121,7 +82,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
             var logger = new LoggerFactory().CreateLogger("ExchangeCodeAsync_SendsTokenRequest");
-            var resp = await testHandler.TestExchangeCodeAsync("code", "redirectUri");
+            var resp = await testHandler.TestExchangeCodeAsync("code", "http://redirectUri");
 
             Assert.NotNull(handler.LastRequest);
             Assert.Equal(HttpMethod.Post, handler.LastRequest.Method);

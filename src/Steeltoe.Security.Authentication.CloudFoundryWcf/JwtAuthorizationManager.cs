@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Net;
 using System.Security.Claims;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -36,6 +38,43 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             _options = options;
         }
 
+        internal ClaimsPrincipal GetPrincipalFromRequestHeaders(WebHeaderCollection headers)
+        {
+            // Fail if SSO Config is missing
+            if (_options?.AuthorizationUrl == null || _options?.AuthorizationUrl?.Length == 0)
+            {
+                CloudFoundryWcfTokenValidator.ThrowJwtException("SSO Configuration is missing", null);
+            }
+
+            // check if any auth header is present
+            if (string.IsNullOrEmpty(headers["Authorization"]))
+            {
+                CloudFoundryWcfTokenValidator.ThrowJwtException("No Authorization header", null);
+            }
+
+            // check if the auth header has a bearer token format
+            if (!headers["Authorization"].StartsWith("Bearer", StringComparison.InvariantCultureIgnoreCase))
+            {
+                CloudFoundryWcfTokenValidator.ThrowJwtException("Wrong Token Format", null);
+            }
+
+            // get just the token out of the header value
+            string jwt;
+            try
+            {
+                jwt = headers["Authorization"].Split(' ')[1];
+
+                // Return an identity from validated token
+                return _options.TokenValidator.ValidateToken(jwt);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                CloudFoundryWcfTokenValidator.ThrowJwtException("No Token", null);
+            }
+
+            throw new Exception("idk");
+        }
+
         protected override bool CheckAccessCore(OperationContext operationContext)
         {
             HttpRequestMessageProperty httpRequestMessage;
@@ -43,40 +82,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             if (operationContext.RequestContext.RequestMessage.Properties.TryGetValue(HttpRequestMessageProperty.Name, out object httpRequestMessageObject))
             {
                 httpRequestMessage = httpRequestMessageObject as HttpRequestMessageProperty;
-                if (string.IsNullOrEmpty(httpRequestMessage.Headers["Authorization"]))
+                var claimsPrincipal = GetPrincipalFromRequestHeaders(httpRequestMessage.Headers);
+                if (claimsPrincipal != null)
                 {
-                    CloudFoundryTokenValidator.ThrowJwtException("No Authorization header", null);
+                    // Set the Principal created from token
+                    SetPrincipal(operationContext, claimsPrincipal);
+                    return true;
                 }
-
-                // Get Bearer token
-                if (!httpRequestMessage.Headers["Authorization"].StartsWith("Bearer "))
-                {
-                    CloudFoundryTokenValidator.ThrowJwtException("No Token", null);
-                }
-
-                string jwt = httpRequestMessage.Headers["Authorization"].Split(' ')[1];
-                if (string.IsNullOrEmpty(jwt))
-                {
-                    CloudFoundryTokenValidator.ThrowJwtException("Wrong Token Format", null);
-                }
-
-                // Get SSO Config
-                if (_options?.OAuthServiceUrl == null || _options?.OAuthServiceUrl?.Length == 0)
-                {
-                    CloudFoundryTokenValidator.ThrowJwtException("SSO Configuration is missing", null);
-                }
-
-                // Validate Token
-                ClaimsPrincipal claimsPrincipal = _options.TokenValidator.ValidateToken(jwt);
-                if (claimsPrincipal == null)
-                {
-                    return false;
-                }
-
-                // Set the Principal created from token
-                SetPrincipal(operationContext, claimsPrincipal);
-
-                return true;
             }
 
             return false;

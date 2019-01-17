@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 
@@ -25,70 +22,38 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
     {
         public static void OnTokenValidatedAddClaims(ClaimsIdentity identity, JwtSecurityToken jwt)
         {
-            var identifier = GetId(identity);
-            if (!string.IsNullOrEmpty(identifier))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, identifier, ClaimValueTypes.String, jwt.Issuer));
-            }
+            AddClaimIfNotNullOrEmpty(identity, "user_id", ClaimTypes.NameIdentifier, jwt.Issuer);
+            AddClaimIfNotNullOrEmpty(identity, "given_name", ClaimTypes.GivenName, jwt.Issuer);
+            AddClaimIfNotNullOrEmpty(identity, "family_name", ClaimTypes.Surname, jwt.Issuer);
+            AddClaimIfNotNullOrEmpty(identity, "email", ClaimTypes.Email, jwt.Issuer);
 
-            var givenName = GetGivenName(identity);
-            if (!string.IsNullOrEmpty(givenName))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.GivenName, givenName, ClaimValueTypes.String, jwt.Issuer));
-            }
-
-            var familyName = GetFamilyName(identity);
-            if (!string.IsNullOrEmpty(familyName))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.Surname, familyName, ClaimValueTypes.String, jwt.Issuer));
-            }
-
-            var email = GetEmail(identity);
-            if (!string.IsNullOrEmpty(email))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.Email, email, ClaimValueTypes.String, jwt.Issuer));
-            }
-
-            var name = GetName(identity);
-            if (!string.IsNullOrEmpty(name))
-            {
-                identity.AddClaim(new Claim(ClaimTypes.Name, name, ClaimValueTypes.String, jwt.Issuer));
-            }
-            else
+            if (!AddClaimIfNotNullOrEmpty(identity, "user_name", ClaimTypes.Name, jwt.Issuer))
             {
                 identity.AddClaim(new Claim(ClaimTypes.Name, GetClientId(identity), ClaimValueTypes.String, jwt.Issuer));
             }
         }
 
-        private static string GetGivenName(IIdentity identity)
+        /// <summary>
+        /// Add a claim to the identity from another location, if found
+        /// </summary>
+        /// <param name="identity">The identity to investicate and modify</param>
+        /// <param name="claimLocator">The claim we're trying to get</param>
+        /// <param name="claimType">The claim we're trying to set</param>
+        /// <param name="jwtIssuer">Issuer of the JWT</param>
+        /// <returns>True if the claim was not null or empty (and was added)</returns>
+        private static bool AddClaimIfNotNullOrEmpty(ClaimsIdentity identity, string claimLocator, string claimType, string jwtIssuer)
         {
-            return GetClaim(identity, "given_name");
+            var claimValue = GetClaim(identity, claimLocator);
+            if (!string.IsNullOrEmpty(claimValue))
+            {
+                identity.AddClaim(new Claim(claimType, claimValue, ClaimValueTypes.String, jwtIssuer));
+                return true;
+            }
+
+            return false;
         }
 
-        private static string GetFamilyName(IIdentity identity)
-        {
-            return GetClaim(identity, "family_name");
-        }
-
-        private static string GetEmail(IIdentity identity)
-        {
-            return GetClaim(identity, "email");
-        }
-
-        private static string GetName(IIdentity identity)
-        {
-            return GetClaim(identity, "user_name");
-        }
-
-        private static string GetId(IIdentity identity)
-        {
-            return GetClaim(identity, "user_id");
-        }
-
-        private static string GetClientId(IIdentity identity)
-        {
-            return GetClaim(identity, "client_id");
-        }
+        private static string GetClientId(IIdentity identity) => GetClaim(identity, "client_id");
 
         private static string GetClaim(IIdentity identity, string claim)
         {
@@ -105,36 +70,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             }
 
             return idClaim.Value;
-        }
-
-        private static Claim[] GetClaims(IIdentity identity, string claim)
-        {
-            var claims = identity as ClaimsIdentity;
-            if (claims == null)
-            {
-                return null;
-            }
-
-            var idClaims = claims.FindAll(claim);
-            if (idClaims == null)
-            {
-                return null;
-            }
-
-            return idClaims.ToArray<Claim>();
-        }
-
-        private string GetClaimWithFallback(IEnumerable<Claim> claims, params string[] claimTypes)
-        {
-            foreach (var claimType in claimTypes)
-            {
-                if (claims.Count(c => c.Type == claimType) > 0)
-                {
-                    return claims.SingleOrDefault(c => c.Type == claimType).Value;
-                }
-            }
-
-            return null;
         }
     }
 }

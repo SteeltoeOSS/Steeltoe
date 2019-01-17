@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28315.86
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7608EFF0-BADC-4259-A760-FA312F9887CD}"
 EndProject
@@ -41,6 +41,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.CredHubBase", "src\Steeltoe.Security.DataProtection.CredHubBase\Steeltoe.Security.DataProtection.CredHubBase.csproj", "{E698B09A-4865-49B4-A132-DD91701CF1C9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.CredHubBase.Test", "test\Steeltoe.Security.DataProtection.CredHubBase.Test\Steeltoe.Security.DataProtection.CredHubBase.Test.csproj", "{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryBase", "src\Steeltoe.Security.Authentication.CloudFoundryBase\Steeltoe.Security.Authentication.CloudFoundryBase.csproj", "{F5FA179B-3731-485B-B2D3-994AE05166EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryBase.Test", "test\Steeltoe.Security.Authentication.CloudFoundryBaseTest\Steeltoe.Security.Authentication.CloudFoundryBase.Test.csproj", "{350CC18B-D550-4207-9023-E90C9B61BF6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Security.Authentication.CloudFoundryOwin.Test", "test\Steeltoe.Security.Authentication.CloudFoundryOwin.Test\Steeltoe.Security.Authentication.CloudFoundryOwin.Test.csproj", "{859C51B8-D6DF-473B-959A-4F0F1533ADD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Security.Authentication.CloudFoundryWcf.Test", "test\Steeltoe.Security.Authentication.CloudFoundryWcf.Test\Steeltoe.Security.Authentication.CloudFoundryWcf.Test.csproj", "{950B0827-634F-43F9-86C4-4E615ED36A22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +96,22 @@ Global
 		{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5FA179B-3731-485B-B2D3-994AE05166EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5FA179B-3731-485B-B2D3-994AE05166EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5FA179B-3731-485B-B2D3-994AE05166EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5FA179B-3731-485B-B2D3-994AE05166EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{350CC18B-D550-4207-9023-E90C9B61BF6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{350CC18B-D550-4207-9023-E90C9B61BF6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{350CC18B-D550-4207-9023-E90C9B61BF6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{350CC18B-D550-4207-9023-E90C9B61BF6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{859C51B8-D6DF-473B-959A-4F0F1533ADD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{859C51B8-D6DF-473B-959A-4F0F1533ADD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{859C51B8-D6DF-473B-959A-4F0F1533ADD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{859C51B8-D6DF-473B-959A-4F0F1533ADD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{950B0827-634F-43F9-86C4-4E615ED36A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{950B0827-634F-43F9-86C4-4E615ED36A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{950B0827-634F-43F9-86C4-4E615ED36A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{950B0827-634F-43F9-86C4-4E615ED36A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +127,10 @@ Global
 		{B5EDB484-9639-4F81-9E8E-639EA866ECA6} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
 		{E698B09A-4865-49B4-A132-DD91701CF1C9} = {7608EFF0-BADC-4259-A760-FA312F9887CD}
 		{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
+		{F5FA179B-3731-485B-B2D3-994AE05166EA} = {7608EFF0-BADC-4259-A760-FA312F9887CD}
+		{350CC18B-D550-4207-9023-E90C9B61BF6C} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
+		{859C51B8-D6DF-473B-959A-4F0F1533ADD2} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
+		{950B0827-634F-43F9-86C4-4E615ED36A22} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BED45957-EDAD-4686-B959-BD5DA962F7B0}

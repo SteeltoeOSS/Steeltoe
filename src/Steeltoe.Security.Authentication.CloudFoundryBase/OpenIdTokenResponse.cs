@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public class OpenIDTokenResponse
+    public class OpenIdTokenResponse
     {
         [JsonProperty(PropertyName = "id_token")]
         public string IdentityToken { get; set; }

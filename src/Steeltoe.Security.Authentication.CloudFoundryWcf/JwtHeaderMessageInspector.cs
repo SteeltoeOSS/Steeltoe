@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Net.Http;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
@@ -22,14 +23,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
     public class JwtHeaderMessageInspector : IClientMessageInspector
     {
+        private readonly HttpClient _httpClient;
+        private readonly CloudFoundryOptions _options;
         private string _token;
-        private CloudFoundryOptions _options;
         private string _userToken;
 
-        public JwtHeaderMessageInspector(CloudFoundryOptions options, string userToken)
+        public JwtHeaderMessageInspector(CloudFoundryOptions options, string userToken, HttpClient httpClient = null)
         {
             _options = options;
             _userToken = userToken;
+            _httpClient = httpClient;
         }
 
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
@@ -78,7 +81,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         private string GetAccessToken()
         {
-            CloudFoundryClientTokenResolver tokenResolver = new CloudFoundryClientTokenResolver(_options);
+            CloudFoundryClientTokenResolver tokenResolver = new CloudFoundryClientTokenResolver(_options, _httpClient);
 
             try
             {

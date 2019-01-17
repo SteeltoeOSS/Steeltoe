@@ -18,12 +18,13 @@ using Microsoft.Owin.Security.DataHandler;
 using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Security.Infrastructure;
 using Owin;
+using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
-    public class OpenIDConnectAuthenticationMiddleware : AuthenticationMiddleware<OpenIDConnectOptions>
+    public class OpenIdConnectAuthenticationMiddleware : AuthenticationMiddleware<OpenIdConnectOptions>
     {
-        public OpenIDConnectAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app, OpenIDConnectOptions options)
+        public OpenIdConnectAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app, OpenIdConnectOptions options)
                : base(next, options)
         {
             if (string.IsNullOrEmpty(Options.SignInAsAuthenticationType))
@@ -34,16 +35,27 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             if (options.StateDataFormat == null)
             {
                 var dataProtector = app.CreateDataProtector(
-                    typeof(OpenIDConnectAuthenticationMiddleware).FullName,
+                    typeof(OpenIdConnectAuthenticationMiddleware).FullName,
                     options.AuthenticationType);
 
                 options.StateDataFormat = new PropertiesDataFormat(dataProtector);
             }
         }
 
-        protected override AuthenticationHandler<OpenIDConnectOptions> CreateHandler()
+        protected override AuthenticationHandler<OpenIdConnectOptions> CreateHandler()
         {
-            return new OpenIDConnectAuthenticationHandler();
+            return new OpenIdConnectAuthenticationHandler(Options.LoggerFactory?.CreateLogger("OpenIdConnectAuthenticationHandler"));
+        }
+    }
+
+#pragma warning disable SA1402 // File may only contain a single class
+    [Obsolete("This class has been renamed OpenIdConnectAuthenticationHandler")]
+    public class OpenIDConnectAuthenticationMiddleware : OpenIdConnectAuthenticationMiddleware
+#pragma warning restore SA1402 // File may only contain a single class
+    {
+        public OpenIDConnectAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app, OpenIDConnectOptions options)
+               : base(next, app, options)
+        {
         }
     }
 }

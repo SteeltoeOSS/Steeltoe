@@ -22,7 +22,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         {
             string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
             ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
-            JwtKeyUrl = authURL + CloudFoundryDefaults.JwtTokenKey;
+            JwtKeyUrl = authURL + CloudFoundryDefaults.JwtTokenUri;
             SaveToken = true;
         }
 

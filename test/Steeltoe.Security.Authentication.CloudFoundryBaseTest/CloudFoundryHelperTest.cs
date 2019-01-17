@@ -39,6 +39,19 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
+        public void GetTokenValidationParameters_ReturnsExpected()
+        {
+            var parameters = CloudFoundryHelper.GetTokenValidationParameters(null, "http://foo.bar.com/keyurl", null, false);
+            Assert.False(parameters.ValidateAudience);
+            Assert.True(parameters.ValidateIssuer);
+            Assert.NotNull(parameters.IssuerValidator);
+
+            // Assert.Equal(cftv.ValidateIssuer, parameters.IssuerValidator);
+            Assert.True(parameters.ValidateLifetime);
+            Assert.NotNull(parameters.IssuerSigningKeyResolver);
+        }
+
+        [Fact]
         public void GetExpTime_FindsTime()
         {
             var info = TestHelpers.GetValidTokenInfoRequestResponse();

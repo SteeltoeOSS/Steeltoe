@@ -12,20 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.IdentityModel.Tokens;
+using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry
-{
-    public static class CloudFoundryTokenValidator
-    {
-        public static string ValidateIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
-        {
-            if (issuer.Contains("uaa"))
-            {
-                return issuer;
-            }
-
-            return null;
-        }
-    }
-}
+[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundryWcf.Test")]

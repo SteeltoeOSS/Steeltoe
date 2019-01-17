@@ -12,55 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using Steeltoe.Common.Http;
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
+    /// <summary>
+    /// Get JWTs for WCF Clients
+    /// </summary>
     public class CloudFoundryClientTokenResolver
     {
         public CloudFoundryOptions Options { get; internal protected set; }
 
-        public CloudFoundryClientTokenResolver(CloudFoundryOptions options)
+        private readonly ILogger<CloudFoundryClientTokenResolver> _logger;
+        private readonly TokenExchanger _tokenExchanger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CloudFoundryClientTokenResolver"/> class.
+        /// This class can be used to get access tokens from an OAuth server
+        /// </summary>
+        /// <param name="options">Con</param>
+        /// <param name="httpClient">For interacting with the OAuth server. A new instance will be created if not provided.</param>
+        public CloudFoundryClientTokenResolver(CloudFoundryOptions options, HttpClient httpClient = null)
         {
-            Options = options ?? throw new ArgumentNullException("Options are required");
+            Options = options ?? throw new ArgumentNullException(nameof(options), "Options are required");
+            _tokenExchanger = new TokenExchanger(options, httpClient, options.LoggerFactory?.CreateLogger<TokenExchanger>());
+            _logger = Options.LoggerFactory?.CreateLogger<CloudFoundryClientTokenResolver>();
         }
 
+        /// <summary>
+        /// Get an access token using the client_credentials grant and the application's oauth credentials
+        /// </summary>
+        /// <returns>An access token</returns>
         public virtual async Task<string> GetAccessToken()
         {
-            HttpRequestMessage requestMessage = GetTokenRequestMessage();
-
-            HttpClientHelper.ConfigureCertificateValidatation(Options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
-
-            HttpClient client = new HttpClient
-            {
-                BaseAddress = new Uri(Options.OAuthServiceUrl)
-            };
-
-            HttpResponseMessage response = null;
-            try
-            {
-                response = await client.SendAsync(requestMessage);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error getting access token:" + ex.Message);
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Options.ValidateCertificates, protocolType, prevValidator);
-            }
+            HttpResponseMessage response = await _tokenExchanger.GetAccessTokenWithClientCredentials(Options.AuthorizationUrl + Options.AccessTokenEndpoint);
 
             if (response.IsSuccessStatusCode)
             {
+                _logger?.LogTrace("Successfully retrieved access token");
+
                 var resp = await response.Content.ReadAsStringAsync();
                 var payload = JObject.Parse(resp);
 
@@ -68,52 +63,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             }
             else
             {
+                _logger?.LogError("Failed to retrieve access token with HTTP Status: {HttpStatus}", response.StatusCode);
+                _logger?.LogWarning("Access token retrieval failure response: {Message}", response.Content.ReadAsStringAsync());
                 var error = "OAuth token endpoint failure: " + await Display(response);
                 throw new Exception(error);
             }
-        }
-
-        protected internal virtual HttpRequestMessage GetTokenRequestMessage()
-        {
-            var tokenRequestParameters = GetTokenRequestParameters();
-
-            var requestContent = new FormUrlEncodedContent(tokenRequestParameters);
-
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, Options.AccessTokenEndpoint);
-            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", GetEncoded(Options.ClientId, Options.ClientSecret));
-            requestMessage.Content = requestContent;
-            return requestMessage;
-        }
-
-        protected internal virtual Dictionary<string, string> GetTokenRequestParameters()
-        {
-            return new Dictionary<string, string>()
-            {
-                { "client_id", Options.ClientId },
-                { "client_secret", Options.ClientSecret },
-                { "response_type", "token" },
-                { "grant_type", "client_credentials" },
-                {
-                    "scope",  Options.RequiredScopes == null ? "openid" :
-                                        string.Join(" ", Options.RequiredScopes)
-                },
-            };
-        }
-
-        protected internal string GetEncoded(string user, string password)
-        {
-            if (user == null)
-            {
-                user = string.Empty;
-            }
-
-            if (password == null)
-            {
-                password = string.Empty;
-            }
-
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
         }
 
         private static async Task<string> Display(HttpResponseMessage response)

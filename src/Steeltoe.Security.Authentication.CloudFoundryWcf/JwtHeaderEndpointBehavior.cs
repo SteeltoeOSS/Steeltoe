@@ -14,8 +14,10 @@
 
 using System;
 using System.Configuration;
+using System.ServiceModel.Channels;
 using System.ServiceModel.Configuration;
 using System.ServiceModel.Description;
+using System.ServiceModel.Dispatcher;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
@@ -50,16 +52,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             get { return typeof(JwtHeaderEndpointBehavior); }
         }
 
-        public void ApplyClientBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime)
+        public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
             clientRuntime.ClientMessageInspectors.Add(new JwtHeaderMessageInspector(_options, _userToken));
         }
 
-        public void AddBindingParameters(ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters)
+        public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
         }
 
-        public void ApplyDispatchBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.EndpointDispatcher endpointDispatcher)
+        public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
         {
         }
 
@@ -70,7 +72,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         protected override object CreateBehavior()
         {
             // Create the endpoint behavior that will insert the message inspector into the client runtime
-            return new JwtHeaderEndpointBehavior(_options);
+            return new JwtHeaderEndpointBehavior(_options, _userToken);
         }
     }
 }

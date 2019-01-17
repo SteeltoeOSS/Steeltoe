@@ -34,7 +34,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
     {
-        private ILogger<CloudFoundryOAuthHandler> _logger;
+        private readonly ILogger<CloudFoundryOAuthHandler> _logger;
 
         public CloudFoundryOAuthHandler(
              IOptionsMonitor<CloudFoundryOAuthOptions> options,
@@ -70,30 +70,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             return request;
         }
 
-        protected internal virtual Dictionary<string, string> GetTokenRequestParameters(string code, string redirectUri)
-        {
-            return new Dictionary<string, string>()
-            {
-                { "client_id", Options.ClientId },
-                { "redirect_uri", redirectUri },
-                { "client_secret", Options.ClientSecret },
-                { "code", code },
-                { "grant_type", "authorization_code" },
-            };
-        }
-
-        protected internal virtual HttpRequestMessage GetTokenRequestMessage(string code, string redirectUri)
-        {
-            var tokenRequestParameters = GetTokenRequestParameters(code, redirectUri);
-
-            var requestContent = new FormUrlEncodedContent(tokenRequestParameters);
-
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, Options.TokenEndpoint);
-            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            requestMessage.Content = requestContent;
-            return requestMessage;
-        }
-
         protected internal string GetEncoded(string user, string password)
         {
             if (user == null)
@@ -116,25 +92,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(string code, string redirectUri)
         {
-            _logger?.LogDebug("ExchangeCodeAsync({code},{redirectUri})", code, redirectUri);
+            _logger?.LogDebug("ExchangeCodeAsync({code}, {redirectUri})", code, redirectUri);
 
-            HttpRequestMessage requestMessage = GetTokenRequestMessage(code, redirectUri);
-            HttpClient client = GetHttpClient();
+            var options = Options.BaseOptions();
+            options.CallbackUrl = redirectUri;
 
-            HttpClientHelper.ConfigureCertificateValidatation(
-                Options.ValidateCertificates,
-                out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
-            HttpResponseMessage response = null;
-            try
-            {
-                response = await client.SendAsync(requestMessage, Context.RequestAborted);
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Options.ValidateCertificates, prevProtocols, prevValidator);
-            }
+            var tEx = new TokenExchanger(options, GetHttpClient());
+            HttpResponseMessage response = await tEx.ExchangeCodeForToken(code, Options.TokenEndpoint, Context.RequestAborted);
 
             if (response.IsSuccessStatusCode)
             {
@@ -210,9 +174,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             var queryStrings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                { "response_type", "code" },
-                { "client_id", Options.ClientId },
-                { "redirect_uri", redirectUri }
+                { CloudFoundryDefaults.ParamsResponseType, "code" },
+                { CloudFoundryDefaults.ParamsClientId, Options.ClientId },
+                { CloudFoundryDefaults.ParamsRedirectUri, redirectUri }
             };
 
             AddQueryString(queryStrings, properties, "scope", scope);

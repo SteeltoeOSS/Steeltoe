@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Owin;
 using Microsoft.Owin.Infrastructure;
 using System;
 
@@ -19,28 +20,30 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     internal static class UriUtility
     {
-        internal static string CalculateFullRedirectUri(OpenIDConnectOptions options)
+        /// <summary>
+        /// Determine full redirect uri to send user to auth server, include a valid return path
+        /// </summary>
+        /// <param name="options">Auth configuration</param>
+        /// <param name="request">HTTP Request information, for generating a valid return paht</param>
+        /// <returns>A URL with enough info for the auth server to identify the app and return the user to the right location after auth</returns>
+        internal static string CalculateFullRedirectUri(OpenIdConnectOptions options, IOwinRequest request)
         {
-            var uri = options.AuthDomain + "/" + Constants.EndPointOAuthAuthorize;
+            var uri = options.AuthDomain + CloudFoundryDefaults.AuthorizationUri;
 
-            var queryString = WebUtilities.AddQueryString(uri, Constants.ParamsClientID, options.ClientID);
-            queryString = WebUtilities.AddQueryString(queryString, Constants.ParamsResponseType, "code");
-            queryString = WebUtilities.AddQueryString(queryString, Constants.ParamsScope, $"{Constants.ScopeOpenID} {options.AdditionalScopes}");
-            queryString = WebUtilities.AddQueryString(queryString, Constants.ParamsRedirectUri, DetermineRedirectUri(options));
+            var queryString = WebUtilities.AddQueryString(uri, CloudFoundryDefaults.ParamsClientId, options.ClientId);
+            queryString = WebUtilities.AddQueryString(queryString, CloudFoundryDefaults.ParamsResponseType, "code");
+            queryString = WebUtilities.AddQueryString(queryString, CloudFoundryDefaults.ParamsScope, $"{Constants.ScopeOpenID} {options.AdditionalScopes}");
+            queryString = WebUtilities.AddQueryString(queryString, CloudFoundryDefaults.ParamsRedirectUri, DetermineRedirectUri(options, request));
 
             return queryString;
         }
 
-        private static string DetermineRedirectUri(OpenIDConnectOptions options)
+        private static string DetermineRedirectUri(OpenIdConnectOptions options, IOwinRequest request)
         {
-            // TODO: determine the right host name and port.
-            var uri = "https://" + options.AppHost;
-            if (options.AppPort > 0 && options.AppPort != 443)
-            {
-                uri = uri + ":" + options.AppPort.ToString();
-            }
-
-            return uri + options.CallbackPath;
+            return request.Scheme +
+                Uri.SchemeDelimiter +
+                request.Host +
+                options.CallbackPath;
         }
     }
 }

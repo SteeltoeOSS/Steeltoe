@@ -46,7 +46,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             string matchACL = Environment.GetEnvironmentVariable(Role);
             if (string.IsNullOrEmpty(matchACL))
             {
-                CloudFoundryTokenValidator.ThrowJwtException("Configuration for not provided for Role: " + Role, "insufficient_scope");
+                CloudFoundryWcfTokenValidator.ThrowJwtException("Configuration for not provided for Role: " + Role, "insufficient_scope");
             }
 
             IPrincipal principal = Thread.CurrentPrincipal;
@@ -58,7 +58,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             else
             {
                 Console.Out.WriteLine("Access denied user is not in Role: " + Role);
-                CloudFoundryTokenValidator.ThrowJwtException("Access denied user is not in Role: " + Role, "insufficient_scope");
+                CloudFoundryWcfTokenValidator.ThrowJwtException("Access denied user is not in Role: " + Role, "insufficient_scope");
                 return null;
            }
         }

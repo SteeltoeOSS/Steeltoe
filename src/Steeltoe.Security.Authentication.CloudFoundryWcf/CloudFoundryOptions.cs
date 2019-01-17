@@ -13,46 +13,46 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
+using System;
+using System.Diagnostics;
+using System.Net.Http;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
-    public class CloudFoundryOptions
+    public class CloudFoundryOptions : AuthServerOptions
     {
-        public const string AUTHENTICATION_SCHEME = "CloudFoundry";
+        public const string AUTHENTICATION_SCHEME = CloudFoundryDefaults.AuthenticationScheme;
         public const string OAUTH_AUTHENTICATION_SCHEME = "CloudFoundry.OAuth";
 
-        public string TokenInfoUrl { get; set; }
+        public string TokenInfoUrl => AuthorizationUrl + CloudFoundryDefaults.CheckTokenUri;
 
-        public bool ValidateCertificates { get; set; }
+        public bool ValidateAudience { get; set; } = true;
 
-        public bool ValidateAudience { get; set; }
+        public bool ValidateIssuer { get; set; } = true;
 
-        public bool ValidateIssuer { get; set; }
+        public bool ValidateLifetime { get; set; } = true;
 
-        public bool ValidateLifetime { get; set; }
+        [Obsolete("This property will be removed in a future release. Use AuthorizationUrl instead")]
+        public string OAuthServiceUrl { get => AuthorizationUrl; set => AuthorizationUrl = value; }
 
-        public string OAuthServiceUrl { get; set; }
+        public string AuthorizationEndpoint { get; set; } = CloudFoundryDefaults.AuthorizationUri;
 
-        public string ClientId { get; set; }
+        /// <summary>
+        /// Gets or sets '/oauth/token'
+        /// </summary>
+        public string AccessTokenEndpoint { get; set; } = CloudFoundryDefaults.AccessTokenUri;
 
-        public string ClientSecret { get; set; }
+        public string UserInformationEndpoint { get; set; } = CloudFoundryDefaults.UserInfoUri;
 
-        public string AuthorizationEndpoint { get; set; } = "oauth/authorize";
-
-        public string AccessTokenEndpoint { get; set; } = "oauth/token";
-
-        public string UserInformationEndpoint { get; set; } = "userinfo";
-
+        [Obsolete("This property will be removed in a future release. Use CloudFoundryDefaults.CheckTokenUri instead")]
         public string TokenInfoEndpoint { get; set; } = "check_token";
 
+        [Obsolete("This property will be removed in a future release. Use CloudFoundryDefaults.JwtTokenKey instead")]
         public string JwtKeyEndpoint { get; set; } = "token_key";
-
-        public string[] RequiredScopes { get; set; }
-
-        public string[] AdditionalAudiences { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use app credentials or forward users's credentials
@@ -62,73 +62,99 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public TokenValidationParameters TokenValidationParameters { get; set; }
 
-        internal CloudFoundryTokenKeyResolver TokenKeyResolver { get; set; }
+        internal Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenKeyResolver TokenKeyResolver { get; set; }
 
-        internal CloudFoundryTokenValidator TokenValidator { get; set; }
+        internal CloudFoundryWcfTokenValidator TokenValidator { get; set; }
 
-        public CloudFoundryOptions()
-           : this(System.Environment.GetEnvironmentVariable("sso_auth_domain"))
+        internal readonly LoggerFactory LoggerFactory;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CloudFoundryOptions"/> class.
+        /// </summary>
+        /// <param name="loggerFactory">For logging within the library</param>
+        public CloudFoundryOptions(LoggerFactory loggerFactory = null)
         {
-            ClientId = System.Environment.GetEnvironmentVariable("sso_client_id");
-            ClientSecret = System.Environment.GetEnvironmentVariable("sso_client_secret");
+            LoggerFactory = loggerFactory;
+            AuthorizationUrl = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+
+            // can't mark this constructor obsolete but want to make these go away
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("sso_auth_domain")) ||
+                !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("sso_client_id")) ||
+                !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("sso_client_secret")))
+            {
+                AuthorizationUrl = Environment.GetEnvironmentVariable("sso_auth_domain");
+                ClientId = Environment.GetEnvironmentVariable("sso_client_id");
+                ClientSecret = Environment.GetEnvironmentVariable("sso_client_secret");
+                Console.Error.WriteLine("sso_* variables were detected in your environment! Future releases of Steeltoe will not uses them for configuration");
+                Debug.WriteLine("sso_* variables were detected in your environment! Future releases of Steeltoe will not uses them for configuration");
+            }
+
+            TokenKeyResolver = TokenKeyResolver ??
+                new Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenKeyResolver(
+                    AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri,
+                    null,
+                    ValidateCertificates);
+            TokenValidator = TokenValidator ?? new CloudFoundryWcfTokenValidator(this, LoggerFactory?.CreateLogger<CloudFoundryWcfTokenValidator>());
         }
 
-        public CloudFoundryOptions(string authDomain, string clientId, string clientSecret)
-            : this(authDomain)
+        [Obsolete("This constructor is expected to be removed in a future release. Please reach out if this constructor is important to you!")]
+        public CloudFoundryOptions(string authDomain, string clientId, string clientSecret, LoggerFactory loggerFactory = null)
+            : this(loggerFactory)
         {
+            AuthorizationUrl = authDomain;
             ClientId = clientId;
             ClientSecret = clientSecret;
         }
 
-        public CloudFoundryOptions(string authUrl)
+        [Obsolete("This constructor is expected to be removed in a future release. Please reach out if this constructor is important to you!")]
+        public CloudFoundryOptions(string authUrl, LoggerFactory loggerFactory = null)
+            : this(loggerFactory)
         {
-            // CallbackPath = new PathString("/signin-cloudfoundry");
-            OAuthServiceUrl = authUrl;
-            ValidateCertificates = false;
-            ValidateAudience = true;
-            ValidateIssuer = true;
-            ValidateLifetime = true;
-            TokenKeyResolver = TokenKeyResolver ?? new CloudFoundryTokenKeyResolver(this);
-            TokenValidator = TokenValidator ?? new CloudFoundryTokenValidator(this);
-
-            TokenValidationParameters = GetTokenValidationParameters(this);
+            AuthorizationUrl = authUrl;
         }
 
+        [Obsolete("This constructor is expected to be removed in a future release. Please reach out if this constructor is important to you!")]
         public CloudFoundryOptions(IConfiguration config)
         {
-            // CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX
-            var securitySection = config.GetSection("security:oauth2:client");
+            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
             securitySection.Bind(this);
 
             SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
 
-            OAuthServiceUrl = info.AuthDomain;
+            AuthorizationUrl = info.AuthDomain;
             ClientId = info.ClientId;
             ClientSecret = info.ClientSecret;
-            TokenKeyResolver = TokenKeyResolver ?? new CloudFoundryTokenKeyResolver(this);
-            TokenValidator = TokenValidator ?? new CloudFoundryTokenValidator(this);
-            TokenValidationParameters = TokenValidationParameters ?? GetTokenValidationParameters(this);
+            TokenKeyResolver = TokenKeyResolver ??
+                new Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenKeyResolver(
+                    AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri,
+                    null,
+                    ValidateCertificates);
+            TokenValidator = TokenValidator ?? new CloudFoundryWcfTokenValidator(this);
+            TokenValidationParameters = TokenValidationParameters ?? GetTokenValidationParameters();
         }
 
-        internal static TokenValidationParameters GetTokenValidationParameters(CloudFoundryOptions options)
+        internal TokenValidationParameters GetTokenValidationParameters()
         {
-            if (options.TokenValidationParameters != null)
+            if (TokenValidationParameters != null)
             {
-                return options.TokenValidationParameters;
+                return TokenValidationParameters;
             }
 
             var parameters = new TokenValidationParameters();
-            options.TokenKeyResolver = options.TokenKeyResolver ?? new CloudFoundryTokenKeyResolver(options);
-            options.TokenValidator = options.TokenValidator ?? new CloudFoundryTokenValidator(options);
-            options.TokenValidationParameters = parameters;
+            TokenKeyResolver = TokenKeyResolver ??
+                new Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenKeyResolver(
+                    AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri,
+                    null,
+                    ValidateCertificates);
+            TokenValidator = TokenValidator ?? new CloudFoundryWcfTokenValidator(this, LoggerFactory?.CreateLogger<CloudFoundryWcfTokenValidator>());
+            TokenValidationParameters = parameters;
 
-            parameters.ValidateAudience = options.ValidateAudience;
-            parameters.ValidateIssuer = options.ValidateIssuer;
-            parameters.ValidateLifetime = options.ValidateLifetime;
-
-            parameters.IssuerSigningKeyResolver = options.TokenKeyResolver.ResolveSigningKey;
-            parameters.IssuerValidator = options.TokenValidator.ValidateIssuer;
-            parameters.AudienceValidator = options.TokenValidator.ValidateAudience;
+            parameters.ValidateAudience = ValidateAudience;
+            parameters.AudienceValidator = TokenValidator.ValidateAudience;
+            parameters.ValidateIssuer = ValidateIssuer;
+            parameters.IssuerSigningKeyResolver = TokenKeyResolver.ResolveSigningKey;
+            parameters.ValidateLifetime = ValidateLifetime;
+            parameters.IssuerValidator = TokenValidator.ValidateIssuer;
 
             return parameters;
         }

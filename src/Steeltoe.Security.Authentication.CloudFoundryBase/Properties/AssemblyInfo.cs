@@ -12,20 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Owin.Security.Jwt;
+using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry
-{
-    public class CloudFoundryJwtBearerAuthenticationOptions : JwtBearerAuthenticationOptions
-    {
-        public CloudFoundryJwtBearerAuthenticationOptions()
-        {
-            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
-            JwtKeyUrl = authURL + CloudFoundryDefaults.JwtTokenKey;
-        }
-
-        public string JwtKeyUrl { get; set; }
-
-        public bool ValidateCertificates { get; set; } = true;
-    }
-}
+[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundryBase.Test")]

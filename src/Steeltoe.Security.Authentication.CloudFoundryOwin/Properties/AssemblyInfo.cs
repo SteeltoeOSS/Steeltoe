@@ -12,17 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit;
+using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
-{
-    public class CloudFoundryTokenValidatorTest
-    {
-        [Fact]
-        public void ValidateIssuer_ValidatesCorrectly()
-        {
-            Assert.NotNull(CloudFoundryTokenValidator.ValidateIssuer("https://uaa.system.testcloud.com/", null, null));
-            Assert.Null(CloudFoundryTokenValidator.ValidateIssuer("https://foobar.system.testcloud.com/", null, null));
-        }
-    }
-}
+[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundryOwin.Test")]

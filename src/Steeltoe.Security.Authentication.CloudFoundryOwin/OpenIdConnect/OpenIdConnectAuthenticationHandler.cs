@@ -12,21 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Owin;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
-using System.Diagnostics;
+using System;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
-    public class OpenIDConnectAuthenticationHandler : AuthenticationHandler<OpenIDConnectOptions>
+    public class OpenIdConnectAuthenticationHandler : AuthenticationHandler<OpenIdConnectOptions>
     {
-        /*
-         * Invoked for every request. As this is passive middleware, we only want to branch off
-         * the authentication flow if the request being invoked is the callback path we gave as a redirect
-         * uri to the auth flow when invoking the IDP
-         */
+        private readonly ILogger _logger;
+
+        public OpenIdConnectAuthenticationHandler(ILogger logger = null)
+        {
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Invoked for every request.As this is passive middleware, we only want to branch off
+        /// the authentication flow if the request being invoked is the callback path we gave as a redirect
+        /// uri to the auth flow when invoking the IDP
+        /// </summary>
+        /// <returns>A bool used to determine whether or not to continue down the OWIN pipline</returns>
         public override async Task<bool> InvokeAsync()
         {
             if (Options.CallbackPath.HasValue && Options.CallbackPath == Request.Path)
@@ -48,19 +58,28 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 
         protected override async Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-            var code = Request.Query["code"];
-            Debug.WriteLine("Received an authorization code from IDP: " + code);
-            Debug.WriteLine("== exchanging for token ==");
+            if (Options.CallbackPath.HasValue && Options.CallbackPath != (Request.PathBase + Request.Path))
+            {
+                return null;
+            }
 
-            // ASP.Net Identity requires the NameIdentitifer field to be set or it won't
-            // accept the external login (AuthenticationManagerExtensions.GetExternalLoginInfo)
-            var identity = await TokenExchanger.ExchangeCodeForToken(code, Options);
+            var code = Request.Query["code"];
+            if (code == null)
+            {
+                var error = Request.Query["error"];
+                var error_description = Request.Query["error_description"];
+                _logger?.LogError("No auth code detected in SSO response. Error: {error}, Description: {error_description}", error, error_description);
+            }
+
+            _logger?.LogDebug("Received an authorization code from IDP: " + code);
+            _logger?.LogInformation("== exchanging auth code for token ==");
+
+            var exchanger = new TokenExchanger(Options.AsAuthServerOptions(HostInfoFromRequest(Request) + Options.CallbackPath), null, _logger);
+            var identity = await exchanger.ExchangeAuthCodeForClaimsIdentity(code);
 
             var properties = Options.StateDataFormat.Unprotect(Request.Query["state"]);
 
-            // return Task.FromResult(new AuthenticationTicket(identity, properties));
-            var ticket = new AuthenticationTicket(identity, properties);
-            return ticket;
+            return new AuthenticationTicket(identity, properties);
         }
 
         protected override Task InitializeCoreAsync()
@@ -85,15 +104,27 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
                         state.RedirectUri = Request.Uri.ToString();
                     }
 
-                    var stateString = Options.StateDataFormat.Protect(state);
-                    Debug.WriteLine("Challenge redirecting to IDP...");
+                    var idpRedirectUri = UriUtility.CalculateFullRedirectUri(Options, Request);
+                    _logger?.LogInformation("Redirecting to Identity Provider at {idpRedirectUri}", idpRedirectUri);
 
-                    var idpRedirectUri = UriUtility.CalculateFullRedirectUri(Options);
+                    var stateString = Options.StateDataFormat.Protect(state);
                     Response.Redirect(WebUtilities.AddQueryString(idpRedirectUri, "state", stateString));
                 }
             }
 
             return Task.FromResult<object>(null);
         }
+
+        private string HostInfoFromRequest(IOwinRequest request)
+        {
+            return request.Scheme + Uri.SchemeDelimiter + request.Host;
+        }
+    }
+
+#pragma warning disable SA1402 // File may only contain a single class
+    [Obsolete("This class has been renamed OpenIdConnectAuthenticationHandler")]
+    public class OpenIDConnectAuthenticationHandler : OpenIdConnectAuthenticationHandler
+#pragma warning restore SA1402 // File may only contain a single class
+    {
     }
 }

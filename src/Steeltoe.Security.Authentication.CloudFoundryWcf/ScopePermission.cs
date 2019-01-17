@@ -16,7 +16,6 @@ using System;
 using System.Security;
 using System.Security.Claims;
 using System.Security.Permissions;
-using System.Threading;
 using System.Web;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
@@ -43,7 +42,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             if (principal == null || !principal.HasClaim("scope", Scope))
             {
                 Console.Out.WriteLine("Access denied token is not in Scope: " + Scope);
-                CloudFoundryTokenValidator.ThrowJwtException("Access denied token does not have Scope: " + Scope, "insufficient_scope");
+                CloudFoundryWcfTokenValidator.ThrowJwtException("Access denied token does not have Scope: " + Scope, "insufficient_scope");
             }
         }
 

@@ -24,16 +24,20 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
+    [Obsolete("This class will be removed in favor of Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenKeyResolver")]
     public class CloudFoundryTokenKeyResolver
     {
+        private readonly HttpClient _httpClient;
+
         public CloudFoundryOptions Options { get; internal protected set; }
 
         public Dictionary<string, SecurityKey> Resolved { get; internal protected set; }
 
-        public CloudFoundryTokenKeyResolver(CloudFoundryOptions options)
+        public CloudFoundryTokenKeyResolver(CloudFoundryOptions options, HttpClient httpClient = null)
         {
-            Options = options ?? throw new ArgumentNullException("options null");
+            Options = options ?? throw new ArgumentNullException(nameof(options));
             Resolved = new Dictionary<string, SecurityKey>();
+            _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(options.ValidateCertificates, options.ClientTimeout);
         }
 
         public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
@@ -68,39 +72,36 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             return key;
         }
 
+        /// <summary>
+        /// Fetch the token keys used by the OAuth server
+        /// </summary>
+        /// <returns><see cref="JsonWebKeySet"/></returns>
+        /// <exception cref="ArgumentNullException">From the underlying HttpClient.SendAsync call - request is null</exception>
+        /// <exception cref="InvalidOperationException">From the underlying HttpClient.SendAsync call - request already sent</exception>
+        /// <exception cref="HttpRequestException">From the underlying HttpClient.SendAsync call - possibly network, DNS or certificate issues</exception>
         public virtual async Task<JsonWebKeySet> FetchKeySet()
         {
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, Options.JwtKeyEndpoint);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, Options.AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            using (var handler = new HttpClientHandler())
+            HttpClientHelper.ConfigureCertificateValidatation(
+                Options.ValidateCertificates,
+                out SecurityProtocolType protocolType,
+                out RemoteCertificateValidationCallback prevValidator);
+
+            HttpResponseMessage response = null;
+            try
             {
-                HttpClientHelper.ConfigureCertificateValidatation(Options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+                response = await _httpClient.SendAsync(requestMessage);
+            }
+            finally
+            {
+                HttpClientHelper.RestoreCertificateValidation(Options.ValidateCertificates, protocolType, prevValidator);
+            }
 
-                HttpClient client = new HttpClient(handler)
-                {
-                    BaseAddress = new Uri(Options.OAuthServiceUrl)
-                };
-
-                HttpResponseMessage response = null;
-                try
-                {
-                    response = await client.SendAsync(requestMessage);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Error getting  keys to validate token:" + ex.Message);
-                }
-                finally
-                {
-                    HttpClientHelper.RestoreCertificateValidation(Options.ValidateCertificates, protocolType, prevValidator);
-                }
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return GetJsonWebKeySet(result);
-                }
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsJsonAsync<JsonWebKeySet>();
             }
 
             return null;

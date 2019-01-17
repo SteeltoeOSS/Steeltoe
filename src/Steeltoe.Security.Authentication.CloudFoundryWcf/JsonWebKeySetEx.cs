@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Microsoft.IdentityModel.Tokens;
+using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
+    [Obsolete]
     public class JsonWebKeySetEx : JsonWebKeySet
     {
         public JsonWebKeySetEx(string json)

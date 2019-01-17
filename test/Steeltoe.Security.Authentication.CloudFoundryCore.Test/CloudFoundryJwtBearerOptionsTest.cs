@@ -25,7 +25,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
-            Assert.Equal(authURL + CloudFoundryDefaults.JwtTokenKey, opts.JwtKeyUrl);
+            Assert.Equal(authURL + CloudFoundryDefaults.JwtTokenUri, opts.JwtKeyUrl);
             Assert.True(opts.SaveToken);
         }
     }

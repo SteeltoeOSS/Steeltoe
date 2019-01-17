@@ -36,7 +36,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
             ClientId = CloudFoundryDefaults.ClientId;
             ClientSecret = CloudFoundryDefaults.ClientSecret;
-            CallbackPath = new PathString("/signin-cloudfoundry");
+            CallbackPath = new PathString(CloudFoundryDefaults.CallbackPath);
             AuthorizationEndpoint = authURL + CloudFoundryDefaults.AuthorizationUri;
             TokenEndpoint = authURL + CloudFoundryDefaults.AccessTokenUri;
             UserInformationEndpoint = authURL + CloudFoundryDefaults.UserInfoUri;
@@ -51,6 +51,17 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             ClaimActions.MapScopes();
 
             SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        }
+
+        internal AuthServerOptions BaseOptions()
+        {
+            return new AuthServerOptions
+            {
+                ClientId = ClientId,
+                ClientSecret = ClientSecret,
+                ValidateCertificates = ValidateCertificates,
+                AuthorizationUrl = AuthorizationEndpoint
+            };
         }
     }
 }

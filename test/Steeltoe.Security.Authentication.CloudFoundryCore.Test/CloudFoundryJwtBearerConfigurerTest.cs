@@ -43,24 +43,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             JwtBearerOptions jwtOpts = new JwtBearerOptions();
 
             CloudFoundryJwtBearerConfigurer.Configure(info, jwtOpts, opts);
-            Assert.Equal("http://domain" + CloudFoundryDefaults.JwtTokenKey, opts.JwtKeyUrl);
+            Assert.Equal("http://domain" + CloudFoundryDefaults.JwtTokenUri, opts.JwtKeyUrl);
             Assert.True(opts.ValidateCertificates);
             Assert.Equal(opts.ClaimsIssuer, jwtOpts.ClaimsIssuer);
             Assert.Null(jwtOpts.BackchannelHttpHandler);
             Assert.NotNull(jwtOpts.TokenValidationParameters);
             Assert.Equal(opts.SaveToken, jwtOpts.SaveToken);
-        }
-
-        [Fact]
-        public void GetTokenValidationParameters_ReturnsExpected()
-        {
-            var parameters = CloudFoundryJwtBearerConfigurer.GetTokenValidationParameters(null, "http://foo.bar.com/keyurl", null, false);
-            Assert.False(parameters.ValidateAudience);
-            Assert.True(parameters.ValidateIssuer);
-            Assert.NotNull(parameters.IssuerValidator);
-            Assert.Equal(CloudFoundryTokenValidator.ValidateIssuer, parameters.IssuerValidator);
-            Assert.True(parameters.ValidateLifetime);
-            Assert.NotNull(parameters.IssuerSigningKeyResolver);
         }
     }
 }

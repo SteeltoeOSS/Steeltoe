@@ -12,23 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 {
     public static class Constants
     {
         public const string DefaultAuthenticationType = "PivotalSSO";
 
-        public const string EndPointOAuthAuthorize = "oauth/authorize";
-        public const string EndPointOAuthToken = "oauth/token";
-
-        public const string ParamsClientID = "client_id";
-        public const string ParamsClientSecret = "client_secret";
-        public const string ParamsResponseType = "response_type";
-        public const string ParamsScope = "scope";
-        public const string ParamsRedirectUri = "redirect_uri";
-        public const string ParamsGrantType = "grant_type";
-        public const string ParamsTokenFormat = "token_format";
-        public const string ParamsCode = "code";
+        [Obsolete("Use CloudFoundryDefaults.AuthorizationUri instead")]
+        public const string EndPointOAuthAuthorize = CloudFoundryDefaults.AuthorizationUri;
+        [Obsolete("Use CloudFoundryDefaults.AccessTokenUri instead")]
+        public const string EndPointOAuthToken = CloudFoundryDefaults.AccessTokenUri;
+        [Obsolete("Use CloudFoundryDefaults.ParamsClientID instead")]
+        public const string ParamsClientID = CloudFoundryDefaults.ParamsClientId;
+        [Obsolete("Use CloudFoundryDefaults.ParamsClientSecret instead")]
+        public const string ParamsClientSecret = CloudFoundryDefaults.ParamsClientSecret;
+        [Obsolete("Use CloudFoundryDefaults.ParamsResponseType instead")]
+        public const string ParamsResponseType = CloudFoundryDefaults.ParamsResponseType;
+        [Obsolete("Use CloudFoundryDefaults.ParamsScope instead")]
+        public const string ParamsScope = CloudFoundryDefaults.ParamsScope;
+        [Obsolete("Use CloudFoundryDefaults.ParamsRedirectUri instead")]
+        public const string ParamsRedirectUri = CloudFoundryDefaults.ParamsRedirectUri;
+        [Obsolete("Use CloudFoundryDefaults.ParamsGrantType instead")]
+        public const string ParamsGrantType = CloudFoundryDefaults.ParamsGrantType;
+        [Obsolete("Use CloudFoundryDefaults.ParamsTokenFormat instead")]
+        public const string ParamsTokenFormat = CloudFoundryDefaults.ParamsTokenFormat;
+        [Obsolete("Use CloudFoundryDefaults.ParamsCode instead")]
+        public const string ParamsCode = CloudFoundryDefaults.ParamsCode;
 
         public const string ScopeOpenID = "openid";
         public const string GrantTypeAuthorizationCode = "authorization_code";
