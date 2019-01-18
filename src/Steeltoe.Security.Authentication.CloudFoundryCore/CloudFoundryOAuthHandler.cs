@@ -124,7 +124,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpRequestMessage request = GetTokenInfoRequestMessage(tokens);
             HttpClient client = GetHttpClient();
 
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);

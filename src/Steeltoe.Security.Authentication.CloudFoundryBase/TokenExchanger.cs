@@ -54,7 +54,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpRequestMessage requestMessage = GetTokenRequestMessage(requestParameters, targetUrl);
             _logger?.LogDebug("Exchanging code {code} for token at {accessTokenUrl}", code, targetUrl);
 
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 _options.ValidateCertificates,
                 out SecurityProtocolType protocolType,
                 out RemoteCertificateValidationCallback prevValidator);
@@ -111,7 +111,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         {
             HttpRequestMessage requestMessage = GetTokenRequestMessage(ClientCredentialsTokenRequestParameters(), targetUrl);
 
-            HttpClientHelper.ConfigureCertificateValidatation(_options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
 
             HttpResponseMessage response;
             try

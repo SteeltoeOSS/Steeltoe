@@ -84,7 +84,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, Options.AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 Options.ValidateCertificates,
                 out SecurityProtocolType protocolType,
                 out RemoteCertificateValidationCallback prevValidator);
