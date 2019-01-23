@@ -24,6 +24,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
             JwtKeyUrl = authURL + CloudFoundryDefaults.JwtTokenUri;
             SaveToken = true;
+            TokenValidationParameters.ValidateAudience = false;
+            TokenValidationParameters.ValidateIssuer = true;
+            TokenValidationParameters.ValidateLifetime = true;
         }
 
         public string JwtKeyUrl { get; set; }

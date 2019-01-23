@@ -70,6 +70,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             // http://irisclasson.com/2018/09/18/asp-net-core-openidconnect-why-is-the-claimsprincipal-name-null/
             oidcOptions.TokenValidationParameters.NameClaimType = cfOptions.TokenValidationParameters.NameClaimType;
 
+            // main objective here is to set the IssuerSigningKeyResolver to work around an issue parsing the N value of the signing key in FullFramework
+            oidcOptions.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(oidcOptions.TokenValidationParameters, oidcOptions.Authority + CloudFoundryDefaults.JwtTokenUri, oidcOptions.BackchannelHttpHandler, cfOptions.ValidateCertificates, cfOptions.BaseOptions(oidcOptions.ClientId));
+
+            oidcOptions.TokenValidationParameters.ValidateAudience = cfOptions.TokenValidationParameters.ValidateAudience;
+            oidcOptions.TokenValidationParameters.ValidateLifetime = cfOptions.TokenValidationParameters.ValidateLifetime;
+
             // the ClaimsIdentity is built off the id_token, but scopes are returned in the access_token. Copy them as claims
             oidcOptions.Events.OnTokenValidated = MapScopesToClaims;
         }

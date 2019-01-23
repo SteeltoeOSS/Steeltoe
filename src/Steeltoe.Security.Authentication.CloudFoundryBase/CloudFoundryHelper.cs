@@ -77,9 +77,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
 
             var tokenValidator = new CloudFoundryTokenValidator(options ?? new AuthServerOptions());
-            parameters.ValidateAudience = false;
-            parameters.ValidateIssuer = true;
-            parameters.ValidateLifetime = true;
             parameters.IssuerValidator = tokenValidator.ValidateIssuer;
             parameters.AudienceValidator = tokenValidator.ValidateAudience;
 

@@ -45,5 +45,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// Gets or sets a value indicating whether to validate auth server certificate
         /// </summary>
         public bool ValidateCertificates { get; set; } = true;
+
+        internal AuthServerOptions BaseOptions(string updatedClientId)
+        {
+            return new AuthServerOptions
+            {
+                ClientId = updatedClientId ?? ClientId,
+                ClientSecret = ClientSecret,
+                ValidateCertificates = ValidateCertificates,
+                AuthorizationUrl = Authority
+            };
+        }
     }
 }
