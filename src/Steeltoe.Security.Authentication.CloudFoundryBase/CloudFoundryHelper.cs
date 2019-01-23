@@ -14,7 +14,6 @@
 
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
-using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -23,7 +22,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public static class CloudFoundryHelper
     {
-        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public static List<string> GetScopes(JObject user)
         {
@@ -58,23 +57,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public static HttpMessageHandler GetBackChannelHandler(bool validateCertificates)
         {
-            if (Platform.IsFullFramework)
+            if (!validateCertificates)
             {
-                return null;
-            }
-            else
-            {
-                if (!validateCertificates)
+                var handler = new HttpClientHandler
                 {
-                    var handler = new HttpClientHandler
-                    {
-                        ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
-                    };
-                    return handler;
-                }
-
-                return null;
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                };
+                return handler;
             }
+
+            return null;
         }
 
         public static TokenValidationParameters GetTokenValidationParameters(TokenValidationParameters parameters, string keyUrl, HttpMessageHandler handler, bool validateCertificates, AuthServerOptions options = null)
@@ -131,7 +123,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         private static DateTime ToAbsoluteUTC(long secondsPastEpoch)
         {
-            return baseTime.AddSeconds(secondsPastEpoch);
+            return BaseTime.AddSeconds(secondsPastEpoch);
         }
     }
 }
