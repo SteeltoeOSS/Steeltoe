@@ -40,7 +40,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(21, oidcOptions.ClaimActions.Count());
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
             Assert.False(oidcOptions.SaveTokens);
-#if NET461
+#if !NET461
             Assert.NotNull(oidcOptions.BackchannelHttpHandler);
 #endif
         }
