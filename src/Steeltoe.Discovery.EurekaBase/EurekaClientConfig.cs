@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaClientConfig : IEurekaClientConfig
@@ -19,6 +21,7 @@ namespace Steeltoe.Discovery.Eureka
         public const int Default_RegistryFetchIntervalSeconds = 30;
         public const int Default_InstanceInfoReplicationIntervalSeconds = 40;
         public const int Default_EurekaServerConnectTimeoutSeconds = 5;
+        public const int Default_EurekaServerRetryCount = 3;
         public const string Default_ServerServiceUrl = "http://localhost:8761/eureka/";
 
         public EurekaClientConfig()
@@ -35,6 +38,7 @@ namespace Steeltoe.Discovery.Eureka
             ShouldOnDemandUpdateStatusChange = true;
             EurekaServerServiceUrls = Default_ServerServiceUrl;
             ValidateCertificates = true;
+            EurekaServerRetryCount = Default_EurekaServerRetryCount;
         }
 
         // Configuration property: eureka:client:registryFetchIntervalSeconds
@@ -47,6 +51,7 @@ namespace Steeltoe.Discovery.Eureka
         public bool ShouldRegisterWithEureka { get; set; }
 
         // Configuration property: eureka:client:allowRedirects
+        [Obsolete("Eureka client does not support this feature, will be removed in next release")]
         public bool AllowRedirects { get; set; }
 
         // Configuration property: eureka:client:shouldDisableDelta
@@ -70,6 +75,8 @@ namespace Steeltoe.Discovery.Eureka
         public string EurekaServerServiceUrls { get; set; }
 
         public int EurekaServerConnectTimeoutSeconds { get; set; }
+
+        public int EurekaServerRetryCount { get; set; }
 
         public string ProxyHost { get; set; }
 

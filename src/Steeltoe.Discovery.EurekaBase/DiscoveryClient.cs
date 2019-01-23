@@ -601,19 +601,17 @@ namespace Steeltoe.Discovery.Eureka
             if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
             {
                 var result = RegisterAsync();
-                if (result.Result)
+                if (!result.Result)
                 {
-                    _logger?.LogInformation("Starting HeartBeat");
-                    var intervalInMilli = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-                    _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, this.HeartBeatTaskAsync);
-                    if (ClientConfig.ShouldOnDemandUpdateStatusChange)
-                    {
-                        _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;
-                    }
+                    _logger?.LogInformation("Initial Registration failed.");
                 }
-                else
+
+                _logger?.LogInformation("Starting HeartBeat");
+                var intervalInMilli = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
+                _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, this.HeartBeatTaskAsync);
+                if (ClientConfig.ShouldOnDemandUpdateStatusChange)
                 {
-                    _logger?.LogInformation("Registartion fail. HeartBeat not start");
+                    _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;
                 }
             }
 

@@ -20,6 +20,8 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class TestConfigServerStartup
     {
+        public static string Host { get; set; }
+
         public static string Response { get; set; }
 
         public static int ReturnStatus { get; set; } = 200;
@@ -38,6 +40,14 @@ namespace Steeltoe.Discovery.Eureka.Test
         {
             app.Run(async context =>
             {
+                if (!string.IsNullOrEmpty(Host))
+                {
+                    if (!Host.Equals(context.Request.Host.Value))
+                    {
+                        context.Response.StatusCode = 500;
+                        return;
+                    }
+                }
                 LastRequest = context.Request;
                 LastRequest.Body.CopyTo(RequestBody);
                 RequestBody.Seek(0, SeekOrigin.Begin);

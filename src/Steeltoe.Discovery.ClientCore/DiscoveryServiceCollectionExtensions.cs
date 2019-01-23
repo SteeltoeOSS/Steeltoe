@@ -150,7 +150,6 @@ namespace Steeltoe.Discovery.Client
         //    return services;
         //}
 
-
         private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
         {
             var clientConfigsection = config.GetSection(EUREKA_PREFIX);
@@ -251,6 +250,7 @@ namespace Steeltoe.Discovery.Client
         {
             return (info as EurekaServiceInfo) != null;
         }
+
         public class OptionsMonitorWrapper<T> : IOptionsMonitor<T>
         {
             private T _option;

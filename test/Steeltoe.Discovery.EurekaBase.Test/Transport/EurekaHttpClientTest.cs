@@ -71,7 +71,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = "http://localhost:9999/"
             };
             var client = new EurekaHttpClient(config);
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => client.RegisterAsync(new InstanceInfo()));
+            EurekaTransportException ex = await Assert.ThrowsAsync<EurekaTransportException>(() => client.RegisterAsync(new InstanceInfo()));
         }
 
         [Fact]
@@ -355,6 +355,78 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
+            EurekaHttpResponse <Application> resp = await client.GetApplicationAsync("foo");
+            Assert.NotNull(resp);
+            Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+            Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/apps/foo", TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.NotNull(resp.Headers);
+            Assert.NotNull(resp.Response);
+            Assert.Equal("FOO", resp.Response.Name);
+
+            var instances = resp.Response.Instances;
+            Assert.NotNull(instances);
+            Assert.Equal(1, instances.Count);
+            foreach (var instance in instances)
+            {
+                Assert.Equal("localhost:foo", instance.InstanceId);
+                Assert.Equal("foo", instance.VipAddress);
+                Assert.Equal("localhost", instance.HostName);
+                Assert.Equal("192.168.56.1", instance.IpAddr);
+                Assert.Equal(InstanceStatus.UP, instance.Status);
+            }
+
+            Assert.Equal("http://localhost:8888/", client._serviceUrl);
+        }
+
+        [Fact]
+        public async void GetApplicationAsync__FirstServerFails_InvokesSecondServer_ReturnsExpectedApplications()
+        {
+            var json = @"{
+'application':
+    {
+    'name':'FOO',
+    'instance':[
+    {
+        'instanceId':'localhost:foo',
+        'hostName':'localhost',
+        'app':'FOO',
+        'ipAddr':'192.168.56.1',
+        'status':'UP',
+        'overriddenstatus':'UNKNOWN',
+        'port':{'$':8080,'@enabled':'true'},
+        'securePort':{'$':443,'@enabled':'false'},
+        'countryId':1,
+        'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
+        'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':1458152330783,'lastRenewalTimestamp':1458243422342,'evictionTimestamp':0,'serviceUpTimestamp':1458152330783},
+        'metadata':{'@class':'java.util.Collections$EmptyMap'},
+        'homePageUrl':'http://localhost:8080/',
+        'statusPageUrl':'http://localhost:8080/info',
+        'healthCheckUrl':'http://localhost:8080/health',
+        'vipAddress':'foo',
+        'isCoordinatingDiscoveryServer':'false',
+        'lastUpdatedTimestamp':'1458152330783',
+        'lastDirtyTimestamp':'1458152330696',
+        'actionType':'ADDED'
+    }]
+    }
+}";
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = json;
+            TestConfigServerStartup.ReturnStatus = 200;
+            TestConfigServerStartup.Host = "localhost:8888";
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
+            var uri = "http://localhost:8888/";
+            server.BaseAddress = new Uri(uri);
+
+            var cconfig = new EurekaClientConfig()
+            {
+                EurekaServerServiceUrls = "http://bad.host:9999/," + uri
+            };
+            var client = new EurekaHttpClient(cconfig, server.CreateClient());
             EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo");
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -376,6 +448,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 Assert.Equal("192.168.56.1", instance.IpAddr);
                 Assert.Equal(InstanceStatus.UP, instance.Status);
             }
+
+            Assert.Equal("http://localhost:8888/", client._serviceUrl);
         }
 
         [Fact]
@@ -465,6 +539,73 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
             Assert.Equal("192.168.0.147", resp.Response.IpAddr);
             Assert.Equal(InstanceStatus.UP, resp.Response.Status);
+
+            Assert.Equal("http://localhost:8888/", client._serviceUrl);
+        }
+
+        [Fact]
+        public async void GetInstanceAsync_FirstServerFails_InvokesSecondServer_ReturnsExpectedInstances()
+        {
+            var json = @"{ 
+'instance':
+    {
+    'instanceId':'DESKTOP-GNQ5SUT',
+    'app':'FOOBAR',
+    'appGroupName':null,
+    'ipAddr':'192.168.0.147',
+    'sid':'na',
+    'port':{'@enabled':true,'$':80},
+    'securePort':{'@enabled':false,'$':443},
+    'homePageUrl':'http://DESKTOP-GNQ5SUT:80/',
+    'statusPageUrl':'http://DESKTOP-GNQ5SUT:80/Status',
+    'healthCheckUrl':'http://DESKTOP-GNQ5SUT:80/healthcheck',
+    'secureHealthCheckUrl':null,
+    'vipAddress':'DESKTOP-GNQ5SUT:80',
+    'secureVipAddress':'DESKTOP-GNQ5SUT:443',
+    'countryId':1,
+    'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
+    'hostName':'DESKTOP-GNQ5SUT',
+    'status':'UP',
+    'overriddenstatus':'UNKNOWN',
+    'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':0,'lastRenewalTimestamp':0,'renewalTimestamp':0,'evictionTimestamp':0,'serviceUpTimestamp':0},
+    'isCoordinatingDiscoveryServer':false,
+    'metadata':{'@class':'java.util.Collections$EmptyMap','metadata':null},
+    'lastUpdatedTimestamp':1458116137663,
+    'lastDirtyTimestamp':1458116137663,
+    'actionType':'ADDED',
+    'asgName':null
+    }
+}";
+            IHostingEnvironment envir = new HostingEnvironment();
+            TestConfigServerStartup.Response = json;
+            TestConfigServerStartup.ReturnStatus = 200;
+            TestConfigServerStartup.Host = "localhost:8888";
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
+            var uri = "http://localhost:8888/";
+            server.BaseAddress = new Uri(uri);
+
+            var cconfig = new EurekaClientConfig()
+            {
+                EurekaServerServiceUrls = "http://bad.host:9999/," + uri
+            };
+            var client = new EurekaHttpClient(cconfig, server.CreateClient());
+            EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
+            Assert.NotNull(resp);
+            Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+            Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
+            Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
+            Assert.Equal("/instances/DESKTOP-GNQ5SUT", TestConfigServerStartup.LastRequest.Path.Value);
+            Assert.NotNull(resp.Headers);
+            Assert.NotNull(resp.Response);
+            Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.InstanceId);
+            Assert.Equal("DESKTOP-GNQ5SUT:80", resp.Response.VipAddress);
+            Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
+            Assert.Equal("192.168.0.147", resp.Response.IpAddr);
+            Assert.Equal(InstanceStatus.UP, resp.Response.Status);
+
+            Assert.Equal("http://localhost:8888/", client._serviceUrl);
         }
 
         [Fact]
@@ -509,6 +650,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("DELETE", TestConfigServerStartup.LastRequest.Method);
             Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
             Assert.Equal("/apps/foo/bar", TestConfigServerStartup.LastRequest.Path.Value);
+
+            Assert.Equal("http://localhost:8888/", client._serviceUrl);
         }
 
         [Fact]
@@ -565,6 +708,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
             Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Equal("?value=DOWN&lastDirtyTimestamp=" + javaTime, TestConfigServerStartup.LastRequest.QueryString.Value);
+
+            Assert.Equal("http://localhost:8888/", client._serviceUrl);
         }
 
         [Fact]
@@ -620,6 +765,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
             Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Equal("?lastDirtyTimestamp=" + javaTime, TestConfigServerStartup.LastRequest.QueryString.Value);
+
+            Assert.Equal("http://localhost:8888/", client._serviceUrl);
         }
 
         [Fact]
@@ -731,6 +878,51 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Uri result = client.GetRequestUri("http://boo:123/eureka", queryArgs);
             Assert.NotNull(result);
             Assert.Equal("http://boo:123/eureka?foo=bar&bar=foo", result.ToString());
+        }
+
+        [Fact]
+        public void GetServiceUrlCandidates_NoFailingUrls_ReturnsExpected()
+        {
+            var config = new EurekaClientConfig()
+            {
+                EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
+            };
+            var client = new EurekaHttpClient(config);
+            var result = client.GetServiceUrlCandidates();
+            Assert.Contains("http://user:pass@boo:123/eureka/", result);
+            Assert.Contains("http://user:pass@foo:123/eureka/", result);
+        }
+
+        [Fact]
+        public void GetServiceUrlCandidates_WithFailingUrls_ReturnsExpected()
+        {
+            var config = new EurekaClientConfig()
+            {
+                EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka,http://user:pass@blah:123/eureka,http://user:pass@blah.blah:123/eureka"
+            };
+            var client = new EurekaHttpClient(config);
+            client.AddToFailingServiceUrls("http://user:pass@foo:123/eureka/");
+            client.AddToFailingServiceUrls("http://user:pass@blah.blah:123/eureka/");
+
+            var result = client.GetServiceUrlCandidates();
+            Assert.Contains("http://user:pass@boo:123/eureka/", result);
+            Assert.Contains("http://user:pass@blah:123/eureka/", result);
+            Assert.Equal(2, result.Count);
+        }
+
+        [Fact]
+        public void GetServiceUrlCandidates_ThresholdHit_ReturnsExpected()
+        {
+            var config = new EurekaClientConfig()
+            {
+                EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
+            };
+            var client = new EurekaHttpClient(config);
+            client.AddToFailingServiceUrls("http://user:pass@foo:123/eureka/");
+
+            var result = client.GetServiceUrlCandidates();
+            Assert.Contains("http://user:pass@boo:123/eureka/", result);
+            Assert.Contains("http://user:pass@foo:123/eureka/", result);
         }
     }
 }
