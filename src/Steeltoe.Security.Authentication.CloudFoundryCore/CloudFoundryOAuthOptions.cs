@@ -24,10 +24,23 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
     {
         public string TokenInfoUrl { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to validate auth server certificate
+        /// </summary>
         public bool Validate_Certificates { get; set; } = true;
 
-        public bool ValidateCertificates => Validate_Certificates;
+        /// <summary>
+        /// Gets or sets a value indicating whether gets a value indicating whether to validate auth server certificate
+        /// </summary>
+        public bool ValidateCertificates
+        {
+            get { return Validate_Certificates; }
+            set { Validate_Certificates = value; }
+        }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether token issue and expiration times will be set in the auth ticket
+        /// </summary>
         public bool UseTokenLifetime { get; set; } = true;
 
         public CloudFoundryOAuthOptions()

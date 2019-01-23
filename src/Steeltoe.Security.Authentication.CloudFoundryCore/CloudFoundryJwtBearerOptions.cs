@@ -30,6 +30,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public bool Validate_Certificates { get; set; } = true;
 
-        public bool ValidateCertificates => Validate_Certificates;
+        /// <summary>
+        /// Gets or sets a value indicating whether gets a value indicating whether to validate auth server certificate
+        /// </summary>
+        public bool ValidateCertificates
+        {
+            get { return Validate_Certificates; }
+            set { Validate_Certificates = value; }
+        }
     }
 }

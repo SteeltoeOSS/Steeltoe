@@ -29,6 +29,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
         private readonly CloudFoundryOptions networkFailOptions = new CloudFoundryOptions() { AuthorizationUrl = "http://localhost:81" };
         private readonly CloudFoundryOptions serviceUnavailableOptions = new CloudFoundryOptions() { AuthorizationUrl = "http://localhost:82" };
 
+#pragma warning disable CS0618 // Type or member is obsolete
         [Fact]
         public void TokenKeyResolver_Requires_Options()
         {
@@ -130,9 +131,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
             var tkr = new CloudFoundryTokenKeyResolver(happyPathOptions);
 
             // act
-#pragma warning disable CS0618 // Type or member is obsolete
             var expected = tkr.GetJsonWebKeySet(tokenKeysJsonString);
-#pragma warning restore CS0618 // Type or member is obsolete
 
             // assert
             Assert.Contains(expected.Keys, key => key.Kid == "key-1");
@@ -158,5 +157,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
 
             return mockHttp.ToHttpClient();
         }
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }
