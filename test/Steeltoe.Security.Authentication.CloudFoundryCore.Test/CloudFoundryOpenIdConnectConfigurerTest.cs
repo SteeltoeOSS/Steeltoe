@@ -37,10 +37,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(CloudFoundryDefaults.ClientId, oidcOptions.ClientId);
             Assert.Equal(CloudFoundryDefaults.ClientSecret, oidcOptions.ClientSecret);
             Assert.Equal(new PathString("/signin-oidc"), oidcOptions.CallbackPath);
-            Assert.NotNull(oidcOptions.BackchannelHttpHandler);
             Assert.Equal(21, oidcOptions.ClaimActions.Count());
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
             Assert.False(oidcOptions.SaveTokens);
+#if NET461
+            Assert.NotNull(oidcOptions.BackchannelHttpHandler);
+#endif
         }
 
         [Fact]
