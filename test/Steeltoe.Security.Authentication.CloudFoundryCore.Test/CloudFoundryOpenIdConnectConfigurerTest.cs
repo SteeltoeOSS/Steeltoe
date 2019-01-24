@@ -36,7 +36,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, oidcOptions.ClaimsIssuer);
             Assert.Equal(CloudFoundryDefaults.ClientId, oidcOptions.ClientId);
             Assert.Equal(CloudFoundryDefaults.ClientSecret, oidcOptions.ClientSecret);
-            Assert.Equal(new PathString("/signin-oidc"), oidcOptions.CallbackPath);
+            Assert.Equal(new PathString(CloudFoundryDefaults.CallbackPath), oidcOptions.CallbackPath);
             Assert.Equal(21, oidcOptions.ClaimActions.Count());
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
             Assert.False(oidcOptions.SaveTokens);
@@ -61,7 +61,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(authURL, oidcOptions.Authority);
             Assert.Equal("clientId", oidcOptions.ClientId);
             Assert.Equal("secret", oidcOptions.ClientSecret);
-            Assert.Equal(new PathString("/signin-oidc"), oidcOptions.CallbackPath);
+            Assert.Equal(new PathString(CloudFoundryDefaults.CallbackPath), oidcOptions.CallbackPath);
             Assert.Null(oidcOptions.BackchannelHttpHandler);
             Assert.Equal(21, oidcOptions.ClaimActions.Count());
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
