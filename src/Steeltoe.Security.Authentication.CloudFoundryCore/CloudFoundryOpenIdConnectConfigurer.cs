@@ -51,8 +51,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             oidcOptions.AuthenticationMethod = cfOptions.AuthenticationMethod;
             oidcOptions.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(cfOptions.ValidateCertificates);
+            oidcOptions.CallbackPath = cfOptions.CallbackPath;
             oidcOptions.ClaimsIssuer = cfOptions.ClaimsIssuer;
-
             oidcOptions.ResponseType = cfOptions.ResponseType;
             oidcOptions.SaveTokens = cfOptions.SaveTokens;
             oidcOptions.SignInScheme = cfOptions.SignInScheme;
