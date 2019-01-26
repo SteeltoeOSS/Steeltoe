@@ -143,5 +143,14 @@ namespace Steeltoe.Discovery.Eureka
 
         // TODO: Add this breaking change during 3.0
         // int EurekaServerRetryCount { get; set; }
+
+        // TODO: Add this breaking change during 3.0
+        // bool HealthEnabled { get; set; }
+
+        // TODO: Add this breaking change during 3.0
+        // bool HealthCheck { get; set; }
+
+        // TODO: Add this breaking change during 3.0
+        // string HealthMonitoredApps { get; set; }
     }
 }

@@ -39,12 +39,15 @@ namespace Steeltoe.Discovery.Eureka
             EurekaServerServiceUrls = Default_ServerServiceUrl;
             ValidateCertificates = true;
             EurekaServerRetryCount = Default_EurekaServerRetryCount;
+            HealthCheckEnabled = true;
+            HealthContribEnabled = true;
         }
 
         // Configuration property: eureka:client:registryFetchIntervalSeconds
         public int RegistryFetchIntervalSeconds { get; set; }
 
         // Configuration property: eureka:client:instanceInfoReplicationIntervalSeconds
+        [Obsolete("Eureka client does not use this value, will be removed in next release")]
         public int InstanceInfoReplicationIntervalSeconds { get; set; }
 
         // Configuration property: eureka:client:shouldRegisterWithEureka
@@ -72,6 +75,9 @@ namespace Steeltoe.Discovery.Eureka
         // Configuration property: eureka:client:enabled
         public bool Enabled { get; set; } = true;
 
+        // Configuration property: eureka:client:healthCheckEnabled
+        public bool HealthCheckEnabled { get; set; }
+
         public string EurekaServerServiceUrls { get; set; }
 
         public int EurekaServerConnectTimeoutSeconds { get; set; }
@@ -89,5 +95,9 @@ namespace Steeltoe.Discovery.Eureka
         public bool ShouldGZipContent { get; set; }
 
         public bool ValidateCertificates { get; set; }
+
+        public bool HealthContribEnabled { get; set; }
+
+        public string HealthMonitoredApps { get; set; }
     }
 }

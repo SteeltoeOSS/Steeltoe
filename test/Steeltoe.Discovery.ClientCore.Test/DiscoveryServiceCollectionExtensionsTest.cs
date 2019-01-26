@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
@@ -177,6 +178,59 @@ namespace Steeltoe.Discovery.Client.Test
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_AddsEurekaServerHealthContributor()
+        {
+            // Arrange
+            DiscoveryOptions options = new DiscoveryOptions()
+            {
+                ClientType = DiscoveryClientType.EUREKA,
+                ClientOptions = new EurekaClientOptions()
+                {
+                    ShouldFetchRegistry = false,
+                    ShouldRegisterWithEureka = false
+                }
+            };
+
+            var services = new ServiceCollection();
+            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
+            services.AddDiscoveryClient(options);
+
+            var built = services.BuildServiceProvider();
+            var service = built.GetService<IDiscoveryClient>();
+            Assert.NotNull(service);
+            var healthContrib = built.GetService<IHealthContributor>();
+            Assert.IsType<EurekaServerHealthContributor>(healthContrib);
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WiresUp_HealthCheckerHandler()
+        {
+            // Arrange
+            DiscoveryOptions options = new DiscoveryOptions()
+            {
+                ClientType = DiscoveryClientType.EUREKA,
+                ClientOptions = new EurekaClientOptions()
+                {
+                    ShouldFetchRegistry = false,
+                    ShouldRegisterWithEureka = false
+                }
+            };
+
+            var services = new ServiceCollection();
+            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
+            services.AddDiscoveryClient(options);
+            services.AddSingleton<IHealthCheckHandler, EurekaHealthCheckHandler>();
+
+            var built = services.BuildServiceProvider();
+            var service = built.GetService<IDiscoveryClient>();
+            Assert.NotNull(service);
+            var eurekaService = service as EurekaDiscoveryClient;
+            Assert.IsType<EurekaHealthCheckHandler>(eurekaService.HealthCheckHandler);
+            EurekaHealthCheckHandler handler = eurekaService.HealthCheckHandler as EurekaHealthCheckHandler;
+            Assert.Single(handler._contributors);
         }
 
         [Fact]

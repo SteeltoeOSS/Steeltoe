@@ -355,7 +355,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
-            EurekaHttpResponse <Application> resp = await client.GetApplicationAsync("foo");
+            EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo");
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);

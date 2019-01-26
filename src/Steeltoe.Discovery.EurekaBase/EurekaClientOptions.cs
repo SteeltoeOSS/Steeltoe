@@ -68,6 +68,47 @@ namespace Steeltoe.Discovery.Eureka
         // Configuration property: eureka:client:eurekaServer
         public EurekaServerConfig EurekaServer { get; set; }
 
+        // Configuration property: eureka:client:health
+        public EurekaServerConfig Health { get; set; }
+
+        public class EurekaHealthConfig
+        {
+            private EurekaClientOptions _options;
+
+            public EurekaHealthConfig(EurekaClientOptions options)
+            {
+                _options = options;
+            }
+
+            // Configuration property: eureka:client:health:enabled
+            public bool Enabled
+            {
+                get
+                {
+                    return _options.HealthContribEnabled;
+                }
+
+                set
+                {
+                    _options.HealthContribEnabled = value;
+                }
+            }
+
+            // Configuration property: eureka:client:health:monitoredApps
+            public string MonitoredApps
+            {
+                get
+                {
+                    return _options.HealthMonitoredApps;
+                }
+
+                set
+                {
+                    _options.HealthMonitoredApps = value;
+                }
+            }
+        }
+
         public class EurekaServerConfig
         {
             private EurekaClientOptions _options;
@@ -170,6 +211,22 @@ namespace Steeltoe.Discovery.Eureka
                 set
                 {
                     _options.EurekaServerConnectTimeoutSeconds = value;
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets configuration property: eureka:client:eurekaServer:retryCount
+            /// </summary>
+            public int RetryCount
+            {
+                get
+                {
+                    return _options.EurekaServerRetryCount;
+                }
+
+                set
+                {
+                    _options.EurekaServerRetryCount = value;
                 }
             }
         }

@@ -134,22 +134,6 @@ namespace Steeltoe.Discovery.Client
             return services;
         }
 
-        //public static IServiceCollection AddHealthCheckForKnownServices(this IServiceCollection services, params string[] knownServiceNames)
-        //{
-        //    foreach (var serviceName in knownServiceNames)
-        //    {
-        //        services.AddSingleton<IHealthContributor>(ctx =>
-        //            new EurekaApplicationHealthContributor(
-        //                serviceName,
-        //                ctx.GetRequiredService<EurekaDiscoveryClient>()));
-        //    }
-
-        //    services.AddSingleton<IHealthCheckHandler, HealthContributorHandler>();
-        //    services.AddTransient(ctx => new Lazy<IEnumerable<IHealthContributor>>(ctx.GetRequiredService<IEnumerable<IHealthContributor>>));
-
-        //    return services;
-        //}
-
         private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
         {
             var clientConfigsection = config.GetSection(EUREKA_PREFIX);
@@ -206,10 +190,20 @@ namespace Steeltoe.Discovery.Client
                 services.AddSingleton(lifecycle);
             }
 
-            services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
+            services.AddSingleton<IDiscoveryClient>((p) =>
+            {
+                var eurekaService = p.GetService<EurekaDiscoveryClient>();
 
-            //services.AddSingleton<IHealthContributor, EurekaHealthContributor>();
+                // Wire in health checker if present
+                if (eurekaService != null)
+                {
+                    eurekaService.HealthCheckHandler = p.GetService<IHealthCheckHandler>();
+                }
 
+                return eurekaService;
+            });
+
+            services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
         }
 
         private static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
