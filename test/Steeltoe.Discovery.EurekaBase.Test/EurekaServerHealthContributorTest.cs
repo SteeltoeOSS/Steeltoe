@@ -67,7 +67,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             HealthCheckResult results = new HealthCheckResult();
             contrib.AddFetchStatus(null, results, 0);
             Assert.Contains("fetchStatus", results.Details.Keys);
-            Assert.Equal("UNKNOWN", results.Details["fetchStatus"]);
+            Assert.Equal("Not fetching", results.Details["fetchStatus"]);
 
             results = new HealthCheckResult();
             EurekaClientConfig config = new EurekaClientConfig()
@@ -77,24 +77,24 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             contrib.AddFetchStatus(config, results, 0);
             Assert.Contains("fetch", results.Details.Keys);
-            Assert.Contains("not yet successfully connected", (string)results.Details["fetch"]);
+            Assert.Contains("Not yet successfully connected", (string)results.Details["fetch"]);
             Assert.Contains("fetchTime", results.Details.Keys);
-            Assert.Contains("Unknown", (string)results.Details["fetchTime"]);
+            Assert.Contains("UNKNOWN", (string)results.Details["fetchTime"]);
             Assert.Contains("fetchStatus", results.Details.Keys);
-            Assert.Equal("UP", results.Details["fetchStatus"]);
+            Assert.Equal("UNKNOWN", results.Details["fetchStatus"]);
 
             results = new HealthCheckResult();
             long ticks = DateTime.UtcNow.Ticks - (TimeSpan.TicksPerSecond * config.RegistryFetchIntervalSeconds * 10);
             DateTime dateTime = new DateTime(ticks);
             contrib.AddFetchStatus(config, results, ticks);
             Assert.Contains("fetch", results.Details.Keys);
-            Assert.Contains("reporting failures", (string)results.Details["fetch"]);
+            Assert.Contains("Reporting failures", (string)results.Details["fetch"]);
             Assert.Contains("fetchTime", results.Details.Keys);
             Assert.Equal(dateTime.ToString("s"), (string)results.Details["fetchTime"]);
             Assert.Contains("fetchFailures", results.Details.Keys);
             Assert.Equal(10, (long)results.Details["fetchFailures"]);
             Assert.Contains("fetchStatus", results.Details.Keys);
-            Assert.Equal("UP", results.Details["fetchStatus"]);
+            Assert.Equal("DOWN", results.Details["fetchStatus"]);
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             HealthCheckResult results = new HealthCheckResult();
             contrib.AddHeartbeatStatus(null, null, results, 0);
             Assert.Contains("heartbeatStatus", results.Details.Keys);
-            Assert.Equal("UNKNOWN", results.Details["heartbeatStatus"]);
+            Assert.Equal("Not registering", results.Details["heartbeatStatus"]);
 
             results = new HealthCheckResult();
             EurekaClientConfig clientconfig = new EurekaClientConfig()
@@ -115,24 +115,24 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             contrib.AddHeartbeatStatus(clientconfig, instconfig, results, 0);
             Assert.Contains("heartbeat", results.Details.Keys);
-            Assert.Contains("not yet successfully connected", (string)results.Details["heartbeat"]);
+            Assert.Contains("Not yet successfully connected", (string)results.Details["heartbeat"]);
             Assert.Contains("heartbeatTime", results.Details.Keys);
-            Assert.Contains("Unknown", (string)results.Details["heartbeatTime"]);
+            Assert.Contains("UNKNOWN", (string)results.Details["heartbeatTime"]);
             Assert.Contains("heartbeatStatus", results.Details.Keys);
-            Assert.Equal("UP", results.Details["heartbeatStatus"]);
+            Assert.Equal("UNKNOWN", results.Details["heartbeatStatus"]);
 
             results = new HealthCheckResult();
             long ticks = DateTime.UtcNow.Ticks - (TimeSpan.TicksPerSecond * instconfig.LeaseRenewalIntervalInSeconds * 10);
             DateTime dateTime = new DateTime(ticks);
             contrib.AddHeartbeatStatus(clientconfig, instconfig, results, ticks);
             Assert.Contains("heartbeat", results.Details.Keys);
-            Assert.Contains("reporting failures", (string)results.Details["heartbeat"]);
+            Assert.Contains("Reporting failures", (string)results.Details["heartbeat"]);
             Assert.Contains("heartbeatTime", results.Details.Keys);
             Assert.Equal(dateTime.ToString("s"), (string)results.Details["heartbeatTime"]);
             Assert.Contains("heartbeatFailures", results.Details.Keys);
             Assert.Equal(10, (long)results.Details["heartbeatFailures"]);
             Assert.Contains("heartbeatStatus", results.Details.Keys);
-            Assert.Equal("UP", results.Details["heartbeatStatus"]);
+            Assert.Equal("DOWN", results.Details["heartbeatStatus"]);
         }
     }
 }

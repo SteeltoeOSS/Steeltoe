@@ -49,79 +49,89 @@ namespace Steeltoe.Discovery.Eureka
 
         internal void AddHealthStatus(HealthCheckResult result)
         {
-            AddRemoteInstanceStatus(_discoveryClient.LastRemoteInstanceStatus, result);
-            AddFetchStatus(_discoveryClient.ClientConfig, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
-            AddHeartbeatStatus(_discoveryClient.ClientConfig, _appInfoManager.InstanceConfig, result, _discoveryClient.LastGoodHeartbeatTimestamp);
+            var remoteStatus = AddRemoteInstanceStatus(_discoveryClient.LastRemoteInstanceStatus, result);
+            var fetchStatus = AddFetchStatus(_discoveryClient.ClientConfig, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
+            var heartBeatStatus = AddHeartbeatStatus(_discoveryClient.ClientConfig, _appInfoManager.InstanceConfig, result, _discoveryClient.LastGoodHeartbeatTimestamp);
+
+            result.Status = remoteStatus;
+            if (fetchStatus > result.Status)
+            {
+                result.Status = fetchStatus;
+            }
+
+            if (heartBeatStatus > result.Status)
+            {
+                result.Status = heartBeatStatus;
+            }
         }
 
-        internal void AddRemoteInstanceStatus(InstanceStatus lastRemoteInstanceStatus, HealthCheckResult result)
+        internal HealthStatus AddRemoteInstanceStatus(InstanceStatus lastRemoteInstanceStatus, HealthCheckResult result)
         {
-            result.Status = MakeHealthStatus(_discoveryClient.LastRemoteInstanceStatus);
-            result.Details.Add("status", result.Status.ToString());
-            result.Description = "Last remote instance status from Eureka server";
-            result.Details.Add("statusDescription", "Last remote instance status from Eureka server");
+            var remoteStatus = MakeHealthStatus(_discoveryClient.LastRemoteInstanceStatus);
+            result.Details.Add("remoteInstStatus", remoteStatus);
+            return remoteStatus;
         }
 
-        internal void AddHeartbeatStatus(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, HealthCheckResult result, long lastGoodHeartbeatTimeTicks)
+        internal HealthStatus AddHeartbeatStatus(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, HealthCheckResult result, long lastGoodHeartbeatTimeTicks)
         {
             if (clientConfig != null && clientConfig.ShouldRegisterWithEureka)
             {
                 var lastGoodHeartbeatPeriod = GetLastGoodHeartbeatTimePeriod(lastGoodHeartbeatTimeTicks);
                 if (lastGoodHeartbeatPeriod <= 0)
                 {
-                    result.Details.Add("heartbeat", "Eureka discovery client has not yet successfully connected to a Eureka server");
+                    result.Details.Add("heartbeat", "Not yet successfully connected");
+                    result.Details.Add("heartbeatStatus", HealthStatus.UNKNOWN.ToString());
+                    result.Details.Add("heartbeatTime", "UNKNOWN");
+                    return HealthStatus.UNKNOWN;
                 }
                 else if (lastGoodHeartbeatPeriod > ((instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond) * 2))
                 {
-                    result.Details.Add("heartbeat", "Eureka discovery client is reporting failures connecting to a Eureka server");
-                    result.Details.Add("heartbeatFailures", lastGoodHeartbeatPeriod / (instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond));
-                }
-
-                if (lastGoodHeartbeatTimeTicks > 0)
-                {
+                    result.Details.Add("heartbeat", "Reporting failures connecting");
+                    result.Details.Add("heartbeatStatus", HealthStatus.DOWN.ToString());
                     result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks).ToString("s"));
-                }
-                else
-                {
-                    result.Details.Add("heartbeatTime", "Unknown");
+                    result.Details.Add("heartbeatFailures", lastGoodHeartbeatPeriod / (instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond));
+                    return HealthStatus.DOWN;
                 }
 
+                result.Details.Add("heartbeat", "Successful");
                 result.Details.Add("heartbeatStatus", HealthStatus.UP.ToString());
-                return;
+                result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks).ToString("s"));
+                return HealthStatus.UP;
             }
 
-            result.Details.Add("heartbeatStatus", HealthStatus.UNKNOWN.ToString());
+            result.Details.Add("heartbeatStatus", "Not registering");
+            return HealthStatus.UNKNOWN;
         }
 
-        internal void AddFetchStatus(IEurekaClientConfig clientConfig, HealthCheckResult result, long lastGoodFetchTimeTicks)
+        internal HealthStatus AddFetchStatus(IEurekaClientConfig clientConfig, HealthCheckResult result, long lastGoodFetchTimeTicks)
         {
             if (clientConfig != null && clientConfig.ShouldFetchRegistry)
             {
                 var lastGoodFetchPeriod = GetLastGoodRegistryFetchTimePeriod(lastGoodFetchTimeTicks);
                 if (lastGoodFetchPeriod <= 0)
                 {
-                    result.Details.Add("fetch", "Eureka discovery client has not yet successfully connected to a Eureka server");
+                    result.Details.Add("fetch", "Not yet successfully connected");
+                    result.Details.Add("fetchStatus", HealthStatus.UNKNOWN.ToString());
+                    result.Details.Add("fetchTime", "UNKNOWN");
+                    return HealthStatus.UNKNOWN;
                 }
                 else if (lastGoodFetchPeriod > ((clientConfig.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond) * 2))
                 {
-                    result.Details.Add("fetch", "Eureka discovery client is reporting failures connecting to a Eureka server");
-                    result.Details.Add("fetchFailures", lastGoodFetchPeriod / (clientConfig.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond));
-                }
-
-                if (lastGoodFetchTimeTicks > 0)
-                {
+                    result.Details.Add("fetch", "Reporting failures connecting");
+                    result.Details.Add("fetchStatus", HealthStatus.DOWN.ToString());
                     result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks).ToString("s"));
-                }
-                else
-                {
-                    result.Details.Add("fetchTime", "Unknown");
+                    result.Details.Add("fetchFailures", lastGoodFetchPeriod / (clientConfig.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond));
+                    return HealthStatus.DOWN;
                 }
 
+                result.Details.Add("fetch", "Not yet successfully connected");
                 result.Details.Add("fetchStatus", HealthStatus.UP.ToString());
-                return;
+                result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks).ToString("s"));
+                return HealthStatus.UP;
             }
 
-            result.Details.Add("fetchStatus", HealthStatus.UNKNOWN.ToString());
+            result.Details.Add("fetchStatus", "Not fetching");
+            return HealthStatus.UNKNOWN;
         }
 
         internal HealthStatus MakeHealthStatus(InstanceStatus lastRemoteInstanceStatus)
