@@ -26,7 +26,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         public SqlServerServiceInfo(string id, string url, string username, string password)
             : base(
                   id,
-                  url != null ? url.Replace("jdbc:", string.Empty).Replace(';', '/') : string.Empty,
+                  url != null ? url.Replace("jdbc:", string.Empty) : string.Empty,
                   username,
                   password)
         {

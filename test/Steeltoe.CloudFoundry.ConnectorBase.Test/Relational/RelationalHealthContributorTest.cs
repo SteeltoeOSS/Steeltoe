@@ -78,6 +78,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
         {
             var appsettings = new Dictionary<string, string>()
             {
+                ["sqlserver:credentials:timeout"] = "1",
                 ["sqlserver:credentials:uid"] = "username",
                 ["sqlserver:credentials:uri"] = "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e",
                 ["sqlserver:credentials:db"] = "de5aa3a747c134b3d8780f8cc80be519e",
@@ -99,7 +100,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
             // arrange
             Type implementationType = SqlServerTypeLocator.SqlConnection;
             var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1 };
-            var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433;databaseName=invalidDatabaseName", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
+            var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=invalidDatabaseName", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
             var logrFactory = new LoggerFactory();
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());
@@ -117,8 +118,8 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Relational
         {
             // arrange
             Type implementationType = SqlServerTypeLocator.SqlConnection;
-            var sqlConfig = new SqlServerProviderConnectorOptions();
-            var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433;databaseName=master", "steeltoe", "steeltoe");
+            var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1 };
+            var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=master", "steeltoe", "steeltoe");
             var logrFactory = new LoggerFactory();
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());

@@ -170,11 +170,14 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
             var connString = service.ConnectionString;
-            Assert.Contains("f1egl8ify4", connString);                                                  // database
-            Assert.Contains("1433", connString);                                                        // port
-            Assert.Contains("fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net", connString);   // host
-            Assert.Contains("rgmm5zlri4", connString);                                                  // user
-            Assert.Contains("737mAU1pj6HcBxzw", connString);                                            // password
+            Assert.Contains("f1egl8ify4;", connString);                                                     // database
+            Assert.Contains("fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net,1433", connString);  // host:port
+            Assert.Contains("rgmm5zlri4;", connString);                                                     // user
+            Assert.Contains("737mAU1pj6HcBxzw;", connString);                                               // password
+
+            // other components of the url from the service broker should carry through to the connection string
+            Assert.Contains("encrypt=true;", connString);
+            Assert.Contains("trustServerCertificate=true", connString);
         }
 
         [Fact]
