@@ -57,6 +57,8 @@ namespace Steeltoe.Discovery.Eureka
                 result.Description = "At least one application not found or has no instances UP";
             }
 
+            result.Details.Add("status", result.Status.ToString());
+            result.Details.Add("statusDescription", result.Description);
             return result;
         }
 
@@ -111,6 +113,6 @@ namespace Steeltoe.Discovery.Eureka
             return null;
         }
 
-        public string Id { get; } = "EurekaApplications";
+        public string Id { get; } = "eurekaApplications";
     }
 }

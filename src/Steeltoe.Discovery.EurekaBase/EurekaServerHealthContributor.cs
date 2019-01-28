@@ -57,7 +57,9 @@ namespace Steeltoe.Discovery.Eureka
         internal void AddRemoteInstanceStatus(InstanceStatus lastRemoteInstanceStatus, HealthCheckResult result)
         {
             result.Status = MakeHealthStatus(_discoveryClient.LastRemoteInstanceStatus);
+            result.Details.Add("status", result.Status.ToString());
             result.Description = "Last remote instance status from Eureka server";
+            result.Details.Add("statusDescription", "Last remote instance status from Eureka server");
         }
 
         internal void AddHeartbeatStatus(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, HealthCheckResult result, long lastGoodHeartbeatTimeTicks)
@@ -158,7 +160,14 @@ namespace Steeltoe.Discovery.Eureka
                 }
             }
 
-            result.Details.Add("applications", apps);
+            if (apps.Count > 0)
+            {
+                result.Details.Add("applications", apps);
+            }
+            else
+            {
+                result.Details.Add("applications", "NONE");
+            }
         }
 
         private long GetLastGoodRegistryFetchTimePeriod(long lastGoodRegistryFetchTimestamp)
@@ -171,6 +180,6 @@ namespace Steeltoe.Discovery.Eureka
             return lastGoodHeartbeatTimestamp <= 0L ? lastGoodHeartbeatTimestamp : DateTime.UtcNow.Ticks - lastGoodHeartbeatTimestamp;
         }
 
-        public string Id => "EurekaServer";
+        public string Id => "eurekaServer";
     }
 }
