@@ -63,12 +63,14 @@ namespace Steeltoe.Discovery.Eureka
             {
                 result.Status = heartBeatStatus;
             }
+
+            result.Details.Add("status", result.Status.ToString());
         }
 
         internal HealthStatus AddRemoteInstanceStatus(InstanceStatus lastRemoteInstanceStatus, HealthCheckResult result)
         {
             var remoteStatus = MakeHealthStatus(_discoveryClient.LastRemoteInstanceStatus);
-            result.Details.Add("remoteInstStatus", remoteStatus);
+            result.Details.Add("remoteInstStatus", remoteStatus.ToString());
             return remoteStatus;
         }
 
@@ -124,7 +126,7 @@ namespace Steeltoe.Discovery.Eureka
                     return HealthStatus.DOWN;
                 }
 
-                result.Details.Add("fetch", "Not yet successfully connected");
+                result.Details.Add("fetch", "Successful");
                 result.Details.Add("fetchStatus", HealthStatus.UP.ToString());
                 result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks).ToString("s"));
                 return HealthStatus.UP;

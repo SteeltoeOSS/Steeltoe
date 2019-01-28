@@ -222,15 +222,15 @@ namespace Steeltoe.Discovery.Client.Test
             var services = new ServiceCollection();
             services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
             services.AddDiscoveryClient(options);
-            services.AddSingleton<IHealthCheckHandler, EurekaHealthCheckHandler>();
+            services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
 
             var built = services.BuildServiceProvider();
             var service = built.GetService<IDiscoveryClient>();
             Assert.NotNull(service);
             var eurekaService = service as EurekaDiscoveryClient;
-            Assert.IsType<EurekaHealthCheckHandler>(eurekaService.HealthCheckHandler);
-            EurekaHealthCheckHandler handler = eurekaService.HealthCheckHandler as EurekaHealthCheckHandler;
-            Assert.Single(handler._contributors);
+            Assert.IsType<ScopedEurekaHealthCheckHandler>(eurekaService.HealthCheckHandler);
+            ScopedEurekaHealthCheckHandler handler = eurekaService.HealthCheckHandler as ScopedEurekaHealthCheckHandler;
+            Assert.NotNull(handler._scopeFactory);
         }
 
         [Fact]

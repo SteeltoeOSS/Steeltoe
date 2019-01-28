@@ -29,13 +29,18 @@ namespace Steeltoe.Discovery.Eureka
     /// </summary>
     public class EurekaHealthCheckHandler : IHealthCheckHandler
     {
-        internal IList<IHealthContributor> _contributors;
-        private ILogger<EurekaHealthCheckHandler> _logger;
+        protected internal IList<IHealthContributor> _contributors;
+        private ILogger _logger;
+
+        public EurekaHealthCheckHandler(ILogger logger = null)
+        {
+            _logger = logger;
+        }
 
         public EurekaHealthCheckHandler(IEnumerable<IHealthContributor> contributors, ILogger<EurekaHealthCheckHandler> logger = null)
+            : this(logger)
         {
             _contributors = contributors.ToList();
-            _logger = logger;
         }
 
         // Testing
@@ -43,14 +48,14 @@ namespace Steeltoe.Discovery.Eureka
         {
         }
 
-        public InstanceStatus GetStatus(InstanceStatus currentStatus)
+        public virtual InstanceStatus GetStatus(InstanceStatus currentStatus)
         {
             List<HealthCheckResult> results = DoHealthChecks(_contributors);
             HealthStatus status = AggregateStatus(results);
             return MapToInstanceStatus(status);
         }
 
-        internal List<HealthCheckResult> DoHealthChecks(IList<IHealthContributor> contributors)
+        protected internal virtual List<HealthCheckResult> DoHealthChecks(IList<IHealthContributor> contributors)
         {
             List<HealthCheckResult> results = new List<HealthCheckResult>();
             foreach (var contributor in contributors)
@@ -68,7 +73,7 @@ namespace Steeltoe.Discovery.Eureka
             return results;
         }
 
-        internal HealthStatus AggregateStatus(List<HealthCheckResult> results)
+        protected internal virtual HealthStatus AggregateStatus(List<HealthCheckResult> results)
         {
             List<HealthStatus> considered = new List<HealthStatus>();
 
@@ -100,7 +105,7 @@ namespace Steeltoe.Discovery.Eureka
             return final;
         }
 
-        internal InstanceStatus MapToInstanceStatus(HealthStatus status)
+        protected internal virtual InstanceStatus MapToInstanceStatus(HealthStatus status)
         {
             if (status == HealthStatus.OUT_OF_SERVICE)
             {

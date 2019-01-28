@@ -21,6 +21,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -266,5 +267,6 @@ namespace Steeltoe.Discovery.Client
                 return null;
             }
         }
+
     }
 }
