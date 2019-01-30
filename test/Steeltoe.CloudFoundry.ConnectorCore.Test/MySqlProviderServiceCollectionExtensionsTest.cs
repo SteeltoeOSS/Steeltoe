@@ -140,10 +140,18 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             var service = services.BuildServiceProvider().GetService<IDbConnection>();
             Assert.NotNull(service);
             var connString = service.ConnectionString;
-            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString);
-            Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString);
-            Assert.Contains("Server=192.168.0.90;Port=3306", connString);
-            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString);
+
+            // NOTE: ignoring case here because the the property names are set to lower case by some package versions (MySql.Data 8+)
+            Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Server=192.168.0.90;Port=3306", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
+
+            // When using MySqlConnector
+            //Assert.Contains("Username=Dd6O1BPXUHdrmzbP", connString);
+
+            // When using MySql.Data
+            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.InvariantCultureIgnoreCase);
+
         }
 
         [Fact]

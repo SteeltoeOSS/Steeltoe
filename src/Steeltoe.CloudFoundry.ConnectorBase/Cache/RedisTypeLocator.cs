@@ -33,53 +33,42 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <summary>
         /// Gets IDistributedCache from a Microsoft Cache library
         /// </summary>
-        public static Type MicrosoftInterface => FindTypeOrThrow(MicrosoftAssemblies, MicrosoftInterfaceTypeNames);
+        public static Type MicrosoftInterface => ConnectorHelpers.FindTypeOrThrow(MicrosoftAssemblies, MicrosoftInterfaceTypeNames, MicrosoftInterfaceTypeNames[0], "a Microsoft Caching NuGet Reference");
 
         /// <summary>
         /// Gets RedisCache from a Microsoft Cache library
         /// </summary>
-        public static Type MicrosoftImplementation => FindTypeOrThrow(MicrosoftAssemblies, MicrosoftImplementationTypeNames);
+        public static Type MicrosoftImplementation => ConnectorHelpers.FindTypeOrThrow(MicrosoftAssemblies, MicrosoftImplementationTypeNames, "RedisCache", "a Microsoft Caching NuGet Reference");
 
         /// <summary>
         /// Gets RedisCacheOptions from a Microsoft Cache library
         /// </summary>
-        public static Type MicrosoftOptions => FindTypeOrThrow(MicrosoftAssemblies, MicrosoftOptionNames);
+        public static Type MicrosoftOptions => ConnectorHelpers.FindTypeOrThrow(MicrosoftAssemblies, MicrosoftOptionNames, MicrosoftOptionNames[0], "a Microsoft Caching NuGet Reference");
 
         /// <summary>
         /// Gets IConnectionMultiplexer from a StackExchange Redis library
         /// </summary>
-        public static Type StackExchangeInterface => FindTypeOrThrow(StackExchangeAssemblies, StackExchangeInterfaceTypeNames);
+        public static Type StackExchangeInterface => ConnectorHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeInterfaceTypeNames, StackExchangeInterfaceTypeNames[0], "a Stack Exchange Redis NuGet Reference");
 
         /// <summary>
         /// Gets ConnectionMultiplexer from a StackExchange Redis library
         /// </summary>
-        public static Type StackExchangeImplementation => FindTypeOrThrow(StackExchangeAssemblies, StackExchangeImplementationTypeNames);
+        public static Type StackExchangeImplementation => ConnectorHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeImplementationTypeNames, StackExchangeImplementationTypeNames[0], "a Stack Exchange Redis NuGet Reference");
 
         /// <summary>
         /// Gets CommandFlags from StackExchange Redis library
         /// </summary>
-        public static Type StackExchangeCommandFlagsNames => FindTypeOrThrow(StackExchangeAssemblies, StackExchangeCommandFlagsNamesValue);
+        public static Type StackExchangeCommandFlagsNames => ConnectorHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeCommandFlagsNamesValue, StackExchangeCommandFlagsNamesValue[0], "a Stack Exchange Redis NuGet Reference");
 
         /// <summary>
         /// Gets ConfigurationOptions from a StackExchange Redis library
         /// </summary>
-        public static Type StackExchangeOptions => FindTypeOrThrow(StackExchangeAssemblies, StackExchangeOptionNames);
+        public static Type StackExchangeOptions => ConnectorHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeOptionNames, StackExchangeOptionNames[0], "a Stack Exchange Redis NuGet Reference");
 
         /// <summary>
         /// Gets the Connect method from a StackExchange Redis library
         /// </summary>
         public static MethodInfo StackExchangeInitializer => FindMethodOrThrow(StackExchangeImplementation, "Connect", new Type[] { StackExchangeOptions, typeof(TextWriter) });
-
-        private static Type FindTypeOrThrow(string[] assemblies, string[] types)
-        {
-            var type = ConnectorHelpers.FindType(assemblies, types);
-            if (type == null)
-            {
-                throw new ConnectorException("Unable to find required Redis types, are you missing a Redis Nuget package?");
-            }
-
-            return type;
-        }
 
         private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
         {

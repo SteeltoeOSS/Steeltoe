@@ -14,6 +14,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.EFCore;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Reflection;
@@ -22,9 +23,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 {
     public static class PostgresDbContextOptionsExtensions
     {
-        private static string[] postgresEntityAssemblies = new string[] { "Npgsql.EntityFrameworkCore.PostgreSQL" };
-        private static string[] postgresEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions" };
-
         public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object npgsqlOptionsAction = null)
         {
             if (optionsBuilder == null)
@@ -128,15 +126,9 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
-            PostgresServiceInfo info = null;
-            if (string.IsNullOrEmpty(serviceName))
-            {
-                info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
-            }
+            PostgresServiceInfo info = string.IsNullOrEmpty(serviceName)
+                ? config.GetSingletonServiceInfo<PostgresServiceInfo>()
+                : config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
             PostgresProviderConnectorOptions postgresConfig = new PostgresProviderConnectorOptions(config);
 
@@ -146,12 +138,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 
         private static DbContextOptionsBuilder DoUseNpgsql(DbContextOptionsBuilder builder, string connection, object npgsqlOptionsAction = null)
         {
-            Type extensionType = ConnectorHelpers.FindType(postgresEntityAssemblies, postgresEntityTypeNames);
-            if (extensionType == null)
-            {
-                Console.WriteLine($"Searched in {string.Join(", ", postgresEntityAssemblies)} | for {string.Join(", ", postgresEntityTypeNames)}");
-                throw new ConnectorException("Unable to find DbContextOptionsBuilder extension, are you missing Postgres EntityFramework Core assembly");
-            }
+            Type extensionType = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
 
             MethodInfo useMethod = FindUseNpgsqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)

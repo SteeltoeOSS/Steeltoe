@@ -16,10 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.MySql;
 using Steeltoe.CloudFoundry.Connector.PostgreSql;
-using Steeltoe.CloudFoundry.Connector.Relational;
-using Steeltoe.CloudFoundry.Connector.Relational.MySql;
-using Steeltoe.CloudFoundry.Connector.Relational.PostgreSql;
-using Steeltoe.CloudFoundry.Connector.Relational.SqlServer;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
 using Steeltoe.Common.HealthChecks;
@@ -28,7 +24,7 @@ using System.Collections.Generic;
 using System.Data;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test.Relational
+namespace Steeltoe.CloudFoundry.Connector.Relational.Test
 {
     public class RelationalHealthContributorTest
     {

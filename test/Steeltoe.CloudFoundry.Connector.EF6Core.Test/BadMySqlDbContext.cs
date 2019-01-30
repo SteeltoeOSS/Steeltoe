@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MySql.Data.Entity;
+using MySql.Data.EntityFramework;
 using System.Data.Entity;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test

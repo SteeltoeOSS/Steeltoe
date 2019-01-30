@@ -14,12 +14,42 @@
 
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.Relational.SqlServer
+namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
     /// <summary>
     /// Assemblies and types used for interacting with Microsoft SQL Server
     /// </summary>
     public static class SqlServerTypeLocator
+    {
+        /// <summary>
+        /// List of supported SQL Server Client assemblies
+        /// </summary>
+        public static string[] Assemblies = new string[] { "System.Data.SqlClient" };
+
+        /// <summary>
+        /// List of SQL Server types that implement IDbConnection
+        /// </summary>
+        public static string[] ConnectionTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
+
+        /// <summary>
+        /// Gets SqlConnection from a SQL Server Library
+        /// </summary>
+        /// <exception cref="ConnectorException">When type is not found</exception>
+        public static Type SqlConnection => ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "SqlConnection", "a Microsoft SQL Server ADO.NET assembly");
+    }
+}
+
+#pragma warning disable SA1403 // File may only contain a single namespace
+namespace Steeltoe.CloudFoundry.Connector.Relational.SqlServer
+#pragma warning restore SA1403 // File may only contain a single namespace
+{
+#pragma warning disable SA1402 // File may only contain a single class
+    /// <summary>
+    /// Assemblies and types used for interacting with Microsoft SQL Server
+    /// </summary>
+    [Obsolete("The namespace of this class is changing to 'Steeltoe.CloudFoundry.Connector.SqlServer'")]
+    public static class SqlServerTypeLocator
+#pragma warning restore SA1402 // File may only contain a single class
     {
         /// <summary>
         /// List of supported SQL Server Client assemblies

@@ -24,39 +24,39 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
         /// <summary>
         /// List of supported MongoDB assemblies
         /// </summary>
-        public static readonly string[] Assemblies = new string[] { "MongoDB.Driver" };
+        public static string[] Assemblies = new string[] { "MongoDB.Driver" };
 
         /// <summary>
         /// List of supported MongoDB client interface types
         /// </summary>
-        public static readonly string[] ConnectionInterfaceTypeNames = new string[] { "MongoDB.Driver.IMongoClient" };
+        public static string[] ConnectionInterfaceTypeNames = new string[] { "MongoDB.Driver.IMongoClient" };
 
         /// <summary>
         /// List of supported MongoDB client types
         /// </summary>
-        public static readonly string[] ConnectionTypeNames = new string[] { "MongoDB.Driver.MongoClient" };
+        public static string[] ConnectionTypeNames = new string[] { "MongoDB.Driver.MongoClient" };
 
         /// <summary>
         /// Class for describing MongoDB connection information
         /// </summary>
-        public static readonly string[] MongoConnectionInfo = new string[] { "MongoDB.Driver.MongoUrl" };
+        public static string[] MongoConnectionInfo = new string[] { "MongoDB.Driver.MongoUrl" };
 
         /// <summary>
         /// Gets IMongoClient from MongoDB Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type IMongoClient { get { return ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames, "IMongoClient", "a MongoDB driver"); } }
+        public static Type IMongoClient => ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames, "IMongoClient", "a MongoDB driver");
 
         /// <summary>
         /// Gets MongoClient from MongoDB Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type MongoClient { get { return ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "MongoClient", "a MongoDB driver"); } }
+        public static Type MongoClient => ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "MongoClient", "a MongoDB driver");
 
         /// <summary>
         /// Gets MongoUrl from MongoDB Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type MongoUrl { get { return ConnectorHelpers.FindTypeOrThrow(Assemblies, MongoConnectionInfo, "MongoUrl", "a MongoDB driver"); } }
+        public static Type MongoUrl => ConnectorHelpers.FindTypeOrThrow(Assemblies, MongoConnectionInfo, "MongoUrl", "a MongoDB driver");
     }
 }

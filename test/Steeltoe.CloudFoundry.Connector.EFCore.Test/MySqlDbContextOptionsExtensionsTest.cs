@@ -173,11 +173,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
 
             var connString = con.ConnectionString;
             Assert.NotNull(connString);
-            Assert.Contains("Server=192.168.0.91", connString);
-            Assert.Contains("Port=3306", connString);
-            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd0407903550", connString);
-            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP0", connString);
-            Assert.Contains("Password=7E1LxXnlH2hhlPVt0", connString);
+            Assert.Contains("Server=192.168.0.91", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Port=3306", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd0407903550", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP0", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Password=7E1LxXnlH2hhlPVt0", connString, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Fact]
@@ -205,11 +205,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
 
             var connString = con.ConnectionString;
             Assert.NotNull(connString);
-            Assert.Contains("Server=192.168.0.90", connString);
-            Assert.Contains("Port=3306", connString);
-            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString);
-            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString);
-            Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString);
+            Assert.Contains("Server=192.168.0.90", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Port=3306", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

@@ -14,6 +14,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.EFCore;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Reflection;
@@ -22,10 +23,6 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 {
     public static class SqlServerDbContextOptionsExtensions
     {
-        private static string[] sqlServerEntityAssemblies = new string[] { "Microsoft.EntityFrameworkCore.SqlServer" };
-
-        private static string[] sqlServerEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.SqlServerDbContextOptionsExtensions" };
-
         public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object sqlServerOptionsAction = null)
         {
             if (optionsBuilder == null)
@@ -129,15 +126,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
-            SqlServerServiceInfo info = null;
-            if (string.IsNullOrEmpty(serviceName))
-            {
-                info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
-            }
+            SqlServerServiceInfo info = string.IsNullOrEmpty(serviceName)
+                ? config.GetSingletonServiceInfo<SqlServerServiceInfo>()
+                : config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
             SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);
 
@@ -148,11 +139,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 
         private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
         {
-            Type extensionType = ConnectorHelpers.FindType(sqlServerEntityAssemblies, sqlServerEntityTypeNames);
-            if (extensionType == null)
-            {
-                throw new ConnectorException("Unable to find DbContextOptionsBuilder extension, are you missing SqlServer EntityFramework Core assembly");
-            }
+            Type extensionType = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
             MethodInfo useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)

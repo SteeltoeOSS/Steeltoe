@@ -14,6 +14,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.EFCore;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Reflection;
@@ -22,10 +23,6 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 {
     public static class MySqlDbContextOptionsExtensions
     {
-        private static string[] mySqlEntityAssemblies = new string[] { "MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql" };
-
-        private static string[] mySqlEntityTypeNames = new string[] { "MySQL.Data.EntityFrameworkCore.Extensions.MySQLDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsExtensions" };
-
         public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object mySqlOptionsAction = null)
         {
             if (optionsBuilder == null)
@@ -129,15 +126,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
-            MySqlServiceInfo info = null;
-            if (string.IsNullOrEmpty(serviceName))
-            {
-                info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
-            }
-            else
-            {
-                info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
-            }
+            MySqlServiceInfo info = string.IsNullOrEmpty(serviceName)
+                ? config.GetSingletonServiceInfo<MySqlServiceInfo>()
+                : config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
             MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
 
@@ -148,11 +139,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
         private static DbContextOptionsBuilder DoUseMySql(DbContextOptionsBuilder builder, string connection, object mySqlOptionsAction = null)
         {
-            Type extensionType = ConnectorHelpers.FindType(mySqlEntityAssemblies, mySqlEntityTypeNames);
-            if (extensionType == null)
-            {
-                throw new ConnectorException("Unable to find DbContextOptionsBuilder extension, are you missing MySql EntityFramework Core assembly");
-            }
+            Type extensionType = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
             MethodInfo useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)

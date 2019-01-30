@@ -21,7 +21,9 @@
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
-    <PackageReference Include="MySql.Data.Entity" Version="$(MySqlVersion)" />
+    <PackageReference Include="MySql.Data.Entity" Version="$(MySqlV6)" />
+    <!-- Oracle changed the name + namespaces for v8. Old is above, new is below -->
+    <!--<PackageReference Include="MySql.Data.EntityFramework" Version="$(MySqlV8)" />-->
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
