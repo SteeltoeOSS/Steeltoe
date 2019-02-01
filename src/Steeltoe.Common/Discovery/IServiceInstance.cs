@@ -48,5 +48,10 @@ namespace Steeltoe.Common.Discovery
         ///  Gets the key value pair metadata associated with the service instance
         /// </summary>
         IDictionary<string, string> Metadata { get; }
+
+        // TODO: Steeltoe 3.0, add for compat with spring cloud
+        // string InstanceId { get; }
+
+        // string Scheme { get; }
     }
 }
