@@ -47,7 +47,8 @@ namespace Steeltoe.Common.Discovery
         /// </summary>
         /// <typeparam name="S">the status</typeparam>
         /// <param name="registration">the service registration to obtain status for</param>
-        /// <returns></returns>
-        S GetStatus<S>(T registration);
+        /// <returns>the returned status</returns>
+        S GetStatus<S>(T registration)
+            where S : class;
     }
 }
