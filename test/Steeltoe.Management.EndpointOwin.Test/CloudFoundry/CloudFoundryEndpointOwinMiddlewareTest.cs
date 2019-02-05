@@ -58,9 +58,10 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
                 Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
                 Assert.True(links._links.ContainsKey("info"), "Info is one of the available links");
                 Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
+                Assert.False(links._links["info"].templated);
 
                 // this test is here to prevent breaking changes in response serialization
-                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\"},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\"}}}", json);
+                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false}}}", json);
             }
         }
 

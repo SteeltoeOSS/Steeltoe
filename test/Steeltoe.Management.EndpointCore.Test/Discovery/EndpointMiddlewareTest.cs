@@ -101,7 +101,7 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
                 var json = await result.Content.ReadAsStringAsync();
 
                 // assert
-                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\"},\"self\":{\"href\":\"http://localhost/actuator\"}}}", json);
+                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}", json);
             }
         }
 
