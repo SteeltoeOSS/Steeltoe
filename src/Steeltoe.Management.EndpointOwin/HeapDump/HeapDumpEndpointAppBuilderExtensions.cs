@@ -15,8 +15,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.HeapDump;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.HeapDump
 {
@@ -30,7 +34,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         /// <param name="applicationPathOnDisk">Provide the path to the app directory if heap dumps are failing due to access restrictions</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging inside the middleware and its components</param>
         /// <returns>Your <see cref="IAppBuilder"/> with Heap Dump middleware attached</returns>
-        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
         {
             if (builder == null)
             {
@@ -42,7 +46,18 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var options = new HeapDumpOptions(config);
+            IHeapDumpOptions options = new HeapDumpEndpointOptions(config);
+            var mgmtOptions = ManagementOptions.Get(config);
+            foreach (var mgmt in mgmtOptions)
+            {
+                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
+                {
+                    continue;
+                }
+
+                mgmt.EndpointOptions.Add(options);
+            }
+
             var heapDumper = new HeapDumper(options, applicationPathOnDisk, loggerFactory?.CreateLogger<HeapDumper>());
             return builder.UseHeapDumpActuator(options, heapDumper, loggerFactory);
         }
@@ -69,7 +84,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
 
             var endpoint = new HeapDumpEndpoint(options, heapDumper, loggerFactory?.CreateLogger<HeapDumpEndpoint>());
             var logger = loggerFactory?.CreateLogger<HeapDumpEndpointOwinMiddleware>();
-            return builder.Use<HeapDumpEndpointOwinMiddleware>(endpoint, logger);
+            return builder.Use<HeapDumpEndpointOwinMiddleware>(endpoint, ManagementOptions.Get(), logger);
         }
     }
 }

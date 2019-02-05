@@ -29,7 +29,9 @@ namespace Steeltoe.Management.Endpoint.Middleware
         protected ILogger _logger;
         protected IEnumerable<HttpMethod> _allowedMethods;
         protected bool _exactRequestPathMatching;
+        protected IList<IManagementOptions> _mgmtOptions;
 
+        [Obsolete]
         public EndpointMiddleware(IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
         {
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
@@ -37,10 +39,42 @@ namespace Steeltoe.Management.Endpoint.Middleware
             _logger = logger;
         }
 
+        [Obsolete]
         public EndpointMiddleware(IEndpoint<TResult> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : this(allowedMethods, exactRequestPathMatching, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        public EndpointMiddleware(IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+        {
+            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
+            _exactRequestPathMatching = exactRequestPathMatching;
+            _logger = logger;
+
+            if (mgmtOptions == null)
+            {
+                throw new ArgumentNullException(nameof(mgmtOptions));
+            }
+
+            var mOptions = mgmtOptions.ToList();
+            _mgmtOptions = mOptions.Count > 0 ? mOptions : null;
+        }
+
+        public EndpointMiddleware(IEndpoint<TResult> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+        {
+            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
+            _exactRequestPathMatching = exactRequestPathMatching;
+            _logger = logger;
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+
+            if (mgmtOptions == null)
+            {
+                throw new ArgumentNullException(nameof(mgmtOptions));
+            }
+
+            var mOptions = mgmtOptions.ToList();
+            _mgmtOptions = mOptions.Count > 0 ? mOptions : null;
         }
 
         internal IEndpoint<TResult> Endpoint
@@ -64,16 +98,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
-                 && _endpoint.Enabled
-                 && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
-
-        public virtual bool PathMatches(bool exactMatch, List<string> endpointPaths, string requestPath)
-        {
-            return exactMatch
-                ? endpointPaths.Any(ep => requestPath.Equals(ep))
-                : endpointPaths.Any(ep => requestPath.StartsWith(ep));
+            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
         protected virtual string Serialize(TResult result)
@@ -103,8 +128,15 @@ namespace Steeltoe.Management.Endpoint.Middleware
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
+        [Obsolete]
         public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(allowedMethods, exactRequestPathMatching, logger)
+        {
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
@@ -117,9 +149,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
-                  && _endpoint.Enabled
-                  && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class

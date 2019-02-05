@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.Contains(nameof(services), ex.Message);
             var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config));
             Assert.Contains(nameof(config), ex2.Message);
-            var ex3 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config2, aggregator));
+            var ex3 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config2, false, aggregator));
             Assert.Contains(nameof(aggregator), ex3.Message);
         }
 

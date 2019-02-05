@@ -20,6 +20,8 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using System;
 using System.Linq;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -30,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         /// </summary>
         /// <param name="services">Service collection to add trace to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:trace)</param>
-        public static void AddTraceActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddTraceActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
         {
             if (services == null)
             {
@@ -47,7 +49,11 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
             services.TryAddSingleton<ITraceRepository>((p) => (ITraceRepository)p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
-            services.TryAddSingleton<ITraceOptions>(new TraceOptions(config));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+
+            var options = new TraceEndpointOptions(config);
+            services.TryAddSingleton<ITraceOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             services.TryAddSingleton<TraceEndpoint>();
         }
     }

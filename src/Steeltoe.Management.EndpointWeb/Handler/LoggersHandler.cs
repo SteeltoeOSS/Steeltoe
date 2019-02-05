@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -24,7 +25,13 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class LoggersHandler : ActuatorHandler<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
     {
-        public LoggersHandler(LoggersEndpoint endpoint, List<ISecurityService> securityServices, ILogger<LoggersHandler> logger = null)
+        public LoggersHandler(LoggersEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<LoggersHandler> logger = null)
+            : base(endpoint, securityServices, mgmtOptions, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
+        {
+        }
+
+        [Obsolete]
+        public LoggersHandler(LoggersEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<LoggersHandler> logger = null)
             : base(endpoint, securityServices, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
         }
@@ -48,33 +55,31 @@ namespace Steeltoe.Management.Endpoint.Handler
                 _logger?.LogDebug("Incoming logger path: {0}", context.Request.Path);
 
                 var psPath = context.Request.Path;
+                var epPath = _endpoint.Path;
 
-                foreach (string epPath in _endpoint.Paths)
+                if (psPath.StartsWithSegments(epPath, out string remaining))
                 {
-                    if (psPath.StartsWithSegments(epPath, out string remaining))
+                    if (!string.IsNullOrEmpty(remaining))
                     {
-                        if (!string.IsNullOrEmpty(remaining))
+                        string loggerName = remaining.TrimStart('/');
+
+                        var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.InputStream);
+
+                        change.TryGetValue("configuredLevel", out string level);
+
+                        _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
+                        if (!string.IsNullOrEmpty(loggerName))
                         {
-                            string loggerName = remaining.TrimStart('/');
-
-                            var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.InputStream);
-
-                            change.TryGetValue("configuredLevel", out string level);
-
-                            _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
-                            if (!string.IsNullOrEmpty(loggerName))
-                            {
-                                var changeReq = new LoggersChangeRequest(loggerName, level);
-                                _endpoint.Invoke(changeReq);
-                                context.Response.StatusCode = (int)HttpStatusCode.OK;
-                                return;
-                            }
+                            var changeReq = new LoggersChangeRequest(loggerName, level);
+                            _endpoint.Invoke(changeReq);
+                            context.Response.StatusCode = (int)HttpStatusCode.OK;
+                            return;
                         }
                     }
                 }
-
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             }
+
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         }
     }
 }

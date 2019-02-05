@@ -17,6 +17,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Env;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace Steeltoe.Management.EndpointOwin.Env
 {
     public static class EnvEndpointAppBuilderExtensions
     {
+
         /// <summary>
         /// Add Environment actuator endpoint to OWIN Pipeline
         /// </summary>
@@ -33,6 +35,7 @@ namespace Steeltoe.Management.EndpointOwin.Env
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring env endpoint and inclusion in response</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Env Endpoint added</returns>
+        [Obsolete]
         public static IAppBuilder UseEnvActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
@@ -63,7 +66,7 @@ namespace Steeltoe.Management.EndpointOwin.Env
         /// <param name="hostingEnvironment"><see cref="IHostingEnvironment"/> of the application</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Env Endpoint added</returns>
-        public static IAppBuilder UseEnvActuator(this IAppBuilder builder, IConfiguration config, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseEnvActuator(this IAppBuilder builder, IConfiguration config, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
         {
             if (builder == null)
             {
@@ -80,9 +83,29 @@ namespace Steeltoe.Management.EndpointOwin.Env
                 throw new ArgumentNullException(nameof(hostingEnvironment));
             }
 
-            var endpoint = new EnvEndpoint(new EnvOptions(config), config, hostingEnvironment, loggerFactory?.CreateLogger<EnvEndpoint>());
+            IEnvOptions envOptions;
+            if (mgmtOptions == null)
+            {
+                envOptions = new EnvOptions(config);
+            }
+            else
+            {
+                envOptions = new EnvEndpointOptions(config);
+                foreach (var mgmtOption in mgmtOptions)
+                {
+                    mgmtOption.EndpointOptions.Add(envOptions);
+                }
+            }
+
+            var endpoint = new EnvEndpoint(envOptions, config, hostingEnvironment, loggerFactory?.CreateLogger<EnvEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<EnvironmentDescriptor>>();
             return builder.Use<EndpointOwinMiddleware<EnvironmentDescriptor>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+        }
+
+        [Obsolete]
+        public static IAppBuilder UseEnvActuator(this IAppBuilder builder, IConfiguration config, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory = null)
+        {
+            return builder.UseEnvActuator(config, hostingEnvironment, loggerFactory, null);
         }
     }
 }

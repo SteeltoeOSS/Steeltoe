@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -26,6 +27,13 @@ namespace Steeltoe.Management.Endpoint.Metrics
     {
         private RequestDelegate _next;
 
+        public MetricsEndpointMiddleware( RequestDelegate next, MetricsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger <MetricsEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, null, false, logger)
+        {
+            _next = next;
+        }
+        
+        [Obsolete]
         public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, ILogger<MetricsEndpointMiddleware> logger = null)
             : base(endpoint, null, false, logger)
         {
@@ -88,15 +96,29 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal string GetMetricName(HttpRequest request)
         {
-            foreach (string path in _endpoint.Paths)
+            if (_mgmtOptions == null)
             {
-                PathString epPath = new PathString(path);
-                if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+                return GetMetricName(request, _endpoint.Path);
+            }
+
+            var paths = new List<string>(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}"));
+            foreach (var path in paths)
+            {
+                var metricName = GetMetricName(request, path);
+                if (metricName != null) return metricName;
+            }
+
+            return null;
+        }
+
+        private string GetMetricName(HttpRequest request, string path)
+        {
+            PathString epPath = new PathString(path);
+            if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+            {
+                if (remaining.HasValue)
                 {
-                    if (remaining.HasValue)
-                    {
-                        return remaining.Value.TrimStart('/');
-                    }
+                    return remaining.Value.TrimStart('/');
                 }
             }
 

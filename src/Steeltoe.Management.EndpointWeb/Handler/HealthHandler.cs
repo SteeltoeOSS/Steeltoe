@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 using System.Collections.Generic;
 using System.Web;
 
@@ -23,7 +24,13 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class HealthHandler : ActuatorHandler<HealthEndpoint, HealthCheckResult>
     {
-        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, List<ISecurityService> securityServices, ILogger<HealthHandler> logger = null)
+        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HealthHandler> logger = null)
+           : base(endpoint, securityServices, mgmtOptions, null, true, logger)
+        {
+        }
+
+        [Obsolete]
+        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, IEnumerable<ISecurityService> securityServices, ILogger<HealthHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {
         }
@@ -31,6 +38,7 @@ namespace Steeltoe.Management.Endpoint.Handler
         public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(HealthHandler));
+
             var result = _endpoint.Invoke();
             context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             context.Response.Write(Serialize(result));

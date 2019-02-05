@@ -26,8 +26,18 @@ namespace Steeltoe.Management.Endpoint.Security
     {
         private ILogger<CloudFoundrySecurity> _logger;
         private ICloudFoundryOptions _options;
+        private readonly IManagementOptions _managementOptions;
         private SecurityBase _base;
 
+        public CloudFoundrySecurity(ICloudFoundryOptions options, IManagementOptions managementOptions, ILogger<CloudFoundrySecurity> logger = null)
+        {
+            _options = options;
+            _managementOptions = managementOptions;
+            _logger = logger;
+            _base = new SecurityBase(options, logger);
+        }
+
+        [Obsolete]
         public CloudFoundrySecurity(ICloudFoundryOptions options, ILogger<CloudFoundrySecurity> logger = null)
         {
             _options = options;
@@ -37,8 +47,9 @@ namespace Steeltoe.Management.Endpoint.Security
 
         public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
         {
+            bool isEnabled = _managementOptions == null ? _options.IsEnabled : _options.IsEnabled(_managementOptions);
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
-            if (Platform.IsCloudFoundry && _options.IsEnabled)
+            if (Platform.IsCloudFoundry && isEnabled)
             {
                 _logger?.LogTrace("Beginning Cloud Foundry Security Processing");
 

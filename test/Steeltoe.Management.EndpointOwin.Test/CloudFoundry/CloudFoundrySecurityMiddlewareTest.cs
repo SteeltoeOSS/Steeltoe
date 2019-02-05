@@ -25,7 +25,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {
     public class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
-        private readonly SecurityBase _base = new SecurityBase(new CloudFoundryOptions());
+        private readonly SecurityBase _base = new SecurityBase(new CloudFoundryEndpointOptions(), new CloudFoundryManagementOptions());
 
         public CloudFoundrySecurityMiddlewareTest()
         {
@@ -38,7 +38,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
                 var response = await result.Content.ReadAsStringAsync();
                 Assert.Contains(_base.APPLICATION_ID_MISSING_MESSAGE, response);
@@ -48,20 +48,10 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
                 var response = await result.Content.ReadAsStringAsync();
                 Assert.Contains(_base.CLOUDFOUNDRY_API_MISSING_MESSAGE, response);
-            }
-
-            Environment.SetEnvironmentVariable("VCAP__APPLICATION__CF_API", "http://localhost:9999/foo");
-            using (var server = TestServer.Create<StartupWithSecurity>())
-            {
-                var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/barfoo");
-                Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
-                var response = await result.Content.ReadAsStringAsync();
-                Assert.Contains(_base.ENDPOINT_NOT_CONFIGURED_MESSAGE, response);
             }
         }
 
@@ -74,7 +64,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
                 var response = await result.Content.ReadAsStringAsync();
                 Assert.Contains(_base.AUTHORIZATION_HEADER_INVALID, response);
@@ -89,7 +79,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var response = await result.Content.ReadAsStringAsync();
                 var expected = "{\"git\":{\"branch\":\"924aabdad9eb1da7bfe5b075f9befa2d0b2374e8\",\"build\":{\"host\":\"DESKTOP-K6I8LTH\",\"time\":1499884839000,\"user\":{\"email\":\"dtillman@pivotal.io\",\"name\":\"Dave Tillman\"},\"version\":\"1.5.4.RELEASE\"},\"closest\":{\"tag\":{\"commit\":{\"count\":\"10772\"},\"name\":\"v2.0.0.M2\"}},\"commit\":{\"id\":\"924aabdad9eb1da7bfe5b075f9befa2d0b2374e8\",\"message\":{\"full\":\"Release version 1.5.4.RELEASE\",\"short\":\"Release version 1.5.4.RELEASE\"},\"time\":1496926022000,\"user\":{\"email\":\"buildmaster@springframework.org\",\"name\":\"Spring Buildmaster\"}},\"dirty\":\"true\",\"remote\":{\"origin\":{\"url\":\"https://github.com/spring-projects/spring-boot.git\"}},\"tags\":\"v1.5.4.RELEASE\"},\"application\":{\"date\":\"5/1/2008\",\"name\":\"foobar\",\"time\":\"8:30:52 AM\",\"version\":\"1.0.0\"},\"NET\":{\"ASPNET\":{\"type\":\"Core\",\"version\":\"2.0.0\"},\"type\":\"Core\",\"version\":\"2.0.0\"}}";

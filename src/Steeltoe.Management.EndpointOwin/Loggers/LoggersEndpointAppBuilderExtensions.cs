@@ -16,8 +16,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Loggers;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.Loggers
 {
@@ -31,7 +35,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
         /// <param name="loggerProvider">Provider of loggers to report on and configure</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Loggers Endpoint added</returns>
-        public static IAppBuilder UseLoggersActuator(this IAppBuilder builder, IConfiguration config, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseLoggersActuator(this IAppBuilder builder, IConfiguration config, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
         {
             if (builder == null)
             {
@@ -48,9 +52,23 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                 throw new ArgumentNullException(nameof(loggerProvider));
             }
 
-            var endpoint = new LoggersEndpoint(new LoggersOptions(config), loggerProvider as IDynamicLoggerProvider, loggerFactory?.CreateLogger<LoggersEndpoint>());
+            var options = new LoggersEndpointOptions(config);
+            var mgmtOptions = ManagementOptions.Get(config);
+            foreach (var mgmt in mgmtOptions)
+            {
+                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
+                {
+                    continue;
+                }
+
+                mgmt.EndpointOptions.Add(options);
+            }
+
+
+            var endpoint = new LoggersEndpoint(options, loggerProvider as IDynamicLoggerProvider, loggerFactory?.CreateLogger<LoggersEndpoint>());
             var logger = loggerFactory?.CreateLogger<LoggersEndpointOwinMiddleware>();
-            return builder.Use<LoggersEndpointOwinMiddleware>(endpoint, logger);
+            return builder.Use<LoggersEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
+
     }
 }

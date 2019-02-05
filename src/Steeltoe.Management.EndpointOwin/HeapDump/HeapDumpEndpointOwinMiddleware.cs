@@ -14,9 +14,11 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.EndpointBase;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -27,6 +29,13 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
     {
         protected new HeapDumpEndpoint _endpoint;
 
+        public HeapDumpEndpointOwinMiddleware(OwinMiddleware next, HeapDumpEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HeapDumpEndpointOwinMiddleware> logger = null)
+            : base(next, endpoint, mgmtOptions, logger: logger)
+        {
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        [Obsolete]
         public HeapDumpEndpointOwinMiddleware(OwinMiddleware next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger: logger)
         {

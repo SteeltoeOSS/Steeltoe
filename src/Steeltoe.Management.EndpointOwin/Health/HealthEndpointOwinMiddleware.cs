@@ -15,14 +15,23 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Health
 {
     public class HealthEndpointOwinMiddleware : EndpointOwinMiddleware<HealthCheckResult>
     {
+        public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HealthEndpointOwinMiddleware> logger = null)
+            : base(next, endpoint, mgmtOptions, logger: logger)
+        {
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        [Obsolete]
         public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, ILogger<HealthEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger: logger)
         {

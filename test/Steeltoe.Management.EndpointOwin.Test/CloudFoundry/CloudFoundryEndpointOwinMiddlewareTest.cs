@@ -44,6 +44,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         [Fact]
         public async void CloudFoundryHttpCall_ReturnsExpected()
         {
+            ManagementOptions.Clear();
             using (var server = TestServer.Create<Startup>())
             {
                 var client = server.HttpClient;

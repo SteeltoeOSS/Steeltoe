@@ -28,8 +28,11 @@ namespace Steeltoe.Management.EndpointWeb.Test
         {
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
             ActuatorConfigurator.ConfiguredHandlers.Clear(); // Clear setup between tests
+            ActuatorConfigurator.ClearManagementOptions();
 
             ActuatorConfigurator.UseAllActuators(configuration, null, GetHealthContributors(configuration), null, loggerFactory);
+            ActuatorConfigurator.UseDiscoveryActuators(configuration, null, GetHealthContributors(configuration), null, loggerFactory);
+
             return ActuatorConfigurator.ConfiguredHandlers;
         }
 

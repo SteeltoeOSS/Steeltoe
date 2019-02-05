@@ -21,11 +21,11 @@
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Management.EndpointBase.xml</DocumentationFile>
   </PropertyGroup>
-
+  
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Steeltoe.Management.Diagnostics\Steeltoe.Management.Diagnostics.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Management.Diagnostics" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
@@ -58,5 +58,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
-
+  
 </Project>

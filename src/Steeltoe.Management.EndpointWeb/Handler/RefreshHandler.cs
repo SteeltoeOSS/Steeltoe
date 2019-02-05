@@ -15,13 +15,21 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
     public class RefreshHandler : ActuatorHandler<RefreshEndpoint, IList<string>>
     {
-        public RefreshHandler(RefreshEndpoint endpoint, List<ISecurityService> securityServices, ILogger<RefreshHandler> logger = null)
+
+        public RefreshHandler(RefreshEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<RefreshHandler> logger = null)
+            : base(endpoint, securityServices, mgmtOptions, null, true, logger)
+        {
+        }
+
+        [Obsolete]
+        public RefreshHandler(RefreshEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<RefreshHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {
         }

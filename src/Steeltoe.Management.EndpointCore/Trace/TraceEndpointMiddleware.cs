@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
@@ -24,6 +25,13 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         private RequestDelegate _next;
 
+        public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger: logger)
+        {
+            _next = next;
+        }
+
+        [Obsolete]
         public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, ILogger<TraceEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {

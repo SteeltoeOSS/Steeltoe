@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Mappings;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,17 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
     {
         protected IMappingsOptions _options;
         protected IApiExplorer _apiExplorer;
+        protected IEnumerable<IManagementOptions> _mgmtOptions;
 
+        public MappingsEndpointOwinMiddleware(OwinMiddleware next, IMappingsOptions options, IEnumerable<IManagementOptions> mgmtOptions, IApiExplorer apiExplorer, ILogger logger = null)
+            : base(next, mgmtOptions, logger: logger)
+        {
+            _options = options;
+            _apiExplorer = apiExplorer;
+            _mgmtOptions = mgmtOptions;
+        }
+
+        [Obsolete]
         public MappingsEndpointOwinMiddleware(OwinMiddleware next, IMappingsOptions options, IApiExplorer apiExplorer, ILogger logger = null)
             : base(next, logger: logger)
         {
@@ -57,8 +68,19 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, _options.Path);
-            return requestPath.Equals(_options.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            var paths = new List<string>();
+
+            if (_mgmtOptions == null)
+            {
+                paths.Add(_options.Path);
+            }
+            else
+            {
+                paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}")); //TODO: Handle Path override
+            }
+
+            _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, string.Join(",", paths));
+            return paths.Any(p => p.Equals(requestPath)) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
         protected internal ApplicationMappings GetApplicationMappings()

@@ -67,7 +67,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             var builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
             var options = new HealthOptions(config);
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options,  new DefaultHealthAggregator(), contributors: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options, new DefaultHealthAggregator(), contributors: null));
             Assert.Equal("contributors", exception.ParamName);
         }
     }

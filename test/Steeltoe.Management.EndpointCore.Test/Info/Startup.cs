@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
 {
@@ -29,7 +30,8 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddInfoActuator(Configuration);
+            services.AddCloudFoundryActuator(Configuration);
+            services.AddInfoActuator(Configuration, true);
         }
 
         public void Configure(IApplicationBuilder app)

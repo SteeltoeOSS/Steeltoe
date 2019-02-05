@@ -15,7 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Owin;
 
-namespace Steeltoe.Management.Endpoint.Security.Test
+namespace Steeltoe.Management.EndpointOwin.Security.Test
 {
     public class SecureStartup : Startup
     {

@@ -14,9 +14,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
+    [Obsolete]
     public class InfoOptions : AbstractOptions, IInfoOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:info";

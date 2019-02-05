@@ -15,11 +15,13 @@
 using Microsoft.Extensions.Configuration;
 using Owin;
 using Steeltoe.Management.EndpointOwin.CloudFoundry;
+using Steeltoe.Management.EndpointOwin.Discovery;
 using Steeltoe.Management.EndpointOwin.Info;
+using Steeltoe.Management.EndpointOwin.Security;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Security.Test
+namespace Steeltoe.Management.EndpointOwin.Security.Test
 {
     public class Startup
     {
@@ -48,8 +50,8 @@ namespace Steeltoe.Management.Endpoint.Security.Test
             builder.AddEnvironmentVariables();
             var config = Config = builder.Build();
 
-            app.UseEndpointSecurity(config);
-            app.UseCloudFoundryActuator(config);
+            app.UseActuatorSecurityMiddleware(config);
+            app.UseDiscoveryActuator(config);
             app.UseInfoActuator(config);
         }
     }

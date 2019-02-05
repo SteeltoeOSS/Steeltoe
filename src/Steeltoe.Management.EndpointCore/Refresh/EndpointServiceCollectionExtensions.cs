@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Refresh
 {
@@ -26,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddRefreshActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddRefreshActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery=false)
         {
             if (services == null)
             {
@@ -38,7 +40,10 @@ namespace Steeltoe.Management.Endpoint.Refresh
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<IRefreshOptions>(new RefreshOptions(config));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            var options = new RefreshEndpointOptions(config);
+            services.TryAddSingleton<IRefreshOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             services.TryAddSingleton<RefreshEndpoint>();
         }
     }

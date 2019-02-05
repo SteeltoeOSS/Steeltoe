@@ -15,9 +15,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
@@ -28,9 +30,10 @@ namespace Steeltoe.Management.Endpoint.Info
         /// </summary>
         /// <param name="services">Service collection to add info to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:info)</param>
-        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config)
+        /// <param name="addToDiscovery"></param>
+        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
         {
-            services.AddInfoActuator(config, new GitInfoContributor(), new AppSettingsInfoContributor(config));
+            services.AddInfoActuator(config, addToDiscovery, new GitInfoContributor(), new AppSettingsInfoContributor(config));
         }
 
         /// <summary>
@@ -38,8 +41,9 @@ namespace Steeltoe.Management.Endpoint.Info
         /// </summary>
         /// <param name="services">Service collection to add info to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:info)</param>
+        /// <param name="addToDiscovery">Add to Discovery Actuators</param>
         /// <param name="contributors">Contributors to application information</param>
-        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, params IInfoContributor[] contributors)
+        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery, params IInfoContributor[] contributors)
         {
             if (services == null)
             {
@@ -51,7 +55,10 @@ namespace Steeltoe.Management.Endpoint.Info
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<IInfoOptions>(new InfoOptions(config));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            var options = new InfoEndpointOptions(config);
+            services.TryAddSingleton<IInfoOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             AddContributors(services, contributors);
             services.TryAddSingleton<InfoEndpoint>();
         }

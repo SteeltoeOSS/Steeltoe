@@ -31,7 +31,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(container));
             }
 
-            container.RegisterType<DiagnosticSourceOwinMiddleware>().SingleInstance();
+            container.RegisterType<DiagnosticSourceOwinMiddleware>().IfNotRegistered(typeof(DiagnosticSourceOwinMiddleware)).SingleInstance();
         }
     }
 }

@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,6 +25,13 @@ namespace Steeltoe.Management.Endpoint.Info
     {
         private RequestDelegate _next;
 
+        public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger: logger)
+        {
+            _next = next;
+        }
+
+        [Obsolete]
         public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {
@@ -32,6 +40,8 @@ namespace Steeltoe.Management.Endpoint.Info
 
         public async Task Invoke(HttpContext context)
         {
+            _logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
+
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleInfoRequestAsync(context);

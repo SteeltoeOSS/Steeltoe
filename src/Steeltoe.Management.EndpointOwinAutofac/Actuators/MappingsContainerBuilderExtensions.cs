@@ -14,9 +14,12 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.EndpointOwin.Mappings;
 using System;
+using System.Collections.Generic;
 using System.Web.Http.Description;
 
 namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
@@ -29,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="apiExplorer"><see cref="ApiExplorer"/> for iterating registered routes</param>
-        public static void RegisterMappingsActuator(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer)
+        public static void RegisterMappingsActuator(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer, bool addToDiscovery = false)
         {
             if (container == null)
             {
@@ -46,7 +49,21 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(apiExplorer));
             }
 
-            container.RegisterInstance(new MappingsOptions(config)).As<IMappingsOptions>();
+            //container.RegisterInstance(new MappingsOptions(config)).As<IMappingsOptions>();
+            container.Register(c =>
+            {
+                var options = new MappingsEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+                foreach (var mgmt in mgmtOptions)
+                {
+                    if (!(mgmt is ActuatorManagementOptions) || addToDiscovery)
+                    {
+                        mgmt.EndpointOptions.Add(options);
+                    }
+                }
+                return options;
+            }).As<IMappingsOptions>().IfNotRegistered(typeof(IMappingsOptions));
+
             container.RegisterInstance(apiExplorer);
             container.RegisterType<MappingsEndpoint>().SingleInstance();
             container.RegisterType<MappingsEndpointOwinMiddleware>().SingleInstance();

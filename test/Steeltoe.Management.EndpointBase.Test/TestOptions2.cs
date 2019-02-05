@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
+    [Obsolete]
     internal class TestOptions2 : AbstractOptions
     {
         public TestOptions2()

@@ -44,7 +44,14 @@ namespace Steeltoe.Management.EndpointOwin.Health
                 throw new ArgumentNullException(nameof(config));
             }
 
-            return builder.UseHealthActuator(new HealthOptions(config), new DefaultHealthAggregator(), loggerFactory);
+            var mgmtOptions = ManagementOptions.Get(config);
+            var options = new HealthEndpointOptions(config);
+            foreach (var mgmt in mgmtOptions)
+            {
+                mgmt.EndpointOptions.Add(options);
+            }
+
+            return builder.UseHealthActuator(options, new DefaultHealthAggregator(), loggerFactory);
         }
 
         /// <summary>
@@ -128,9 +135,18 @@ namespace Steeltoe.Management.EndpointOwin.Health
                 throw new ArgumentNullException(nameof(contributors));
             }
 
+            var mgmtOptions = ManagementOptions.Get();
+            foreach (var mgmt in mgmtOptions)
+            {
+                if (!mgmt.EndpointOptions.Contains(options))
+                {
+                    mgmt.EndpointOptions.Add(options);
+                }
+            }
+
             var endpoint = new HealthEndpoint(options, aggregator, contributors, loggerFactory?.CreateLogger<HealthEndpoint>());
             var logger = loggerFactory?.CreateLogger<HealthEndpointOwinMiddleware>();
-            return builder.Use<HealthEndpointOwinMiddleware>(endpoint, logger);
+            return builder.Use<HealthEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
 
         internal static List<IHealthContributor> GetDefaultHealthContributors()

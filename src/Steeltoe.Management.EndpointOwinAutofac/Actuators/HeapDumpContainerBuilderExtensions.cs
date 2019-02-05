@@ -14,9 +14,12 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.EndpointOwin.HeapDump;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
@@ -28,7 +31,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHeapDumpActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterHeapDumpActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false)
         {
             if (container == null)
             {
@@ -40,7 +43,22 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new HeapDumpOptions(config)).As<IHeapDumpOptions>();
+            // container.RegisterInstance(new HeapDumpOptions(config)).As<IHeapDumpOptions>();
+            container.Register(c =>
+            {
+                var options = new HeapDumpEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+                foreach (var mgmt in mgmtOptions)
+                {
+                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
+                    {
+                        continue;
+                    }
+
+                    mgmt.EndpointOptions.Add(options);
+                }
+                return options;
+            }).As<IHeapDumpOptions>().IfNotRegistered(typeof(IHeapDumpOptions));
 
             // REVIEW: is this path override necessary? Running under IIS Express, the path comes up wrong
             container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot()).SingleInstance();

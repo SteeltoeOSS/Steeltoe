@@ -14,9 +14,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
+    [Obsolete]
     public class HealthOptions : AbstractOptions, IHealthOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:health";

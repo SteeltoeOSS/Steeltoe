@@ -17,10 +17,13 @@ using Microsoft.Extensions.Configuration;
 using OpenCensus.Stats;
 using OpenCensus.Tags;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.EndpointOwin.Metrics;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
@@ -31,7 +34,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterMetricsActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterMetricsActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false)
         {
             if (container == null)
             {
@@ -46,7 +49,22 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
             container.RegisterType<CLRRuntimeSource>().As<IPolledDiagnosticSource>().SingleInstance();
 
-            container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>().SingleInstance();
+            //container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>().SingleInstance();
+            container.Register(c =>
+            {
+                var options = new MetricsEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+                foreach (var mgmt in mgmtOptions)
+                {
+                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
+                    {
+                        continue;
+                    }
+
+                    mgmt.EndpointOptions.Add(options);
+                }
+                return options;
+            }).As<IMetricsOptions>().IfNotRegistered(typeof(IMetricsOptions)).SingleInstance();
 
             container.RegisterType<OwinHostingObserver>().As<IDiagnosticObserver>().SingleInstance();
             container.RegisterType<CLRRuntimeObserver>().As<IDiagnosticObserver>().SingleInstance();

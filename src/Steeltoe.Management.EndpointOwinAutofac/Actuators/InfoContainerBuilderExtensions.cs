@@ -15,6 +15,7 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.EndpointOwin;
@@ -30,7 +31,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false)
         {
             if (container == null)
             {
@@ -42,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInfoActuator(config, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
+            container.RegisterInfoActuator(config, addToDiscovery, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
         }
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="contributors">Contributors to application information</param>
-        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config, params IInfoContributor[] contributors)
+        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery, params IInfoContributor[] contributors)
         {
             if (container == null)
             {
@@ -68,9 +69,23 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 container.RegisterInstance(c).As<IInfoContributor>().SingleInstance();
             }
 
-            container.RegisterInstance(new InfoOptions(config)).As<IInfoOptions>().SingleInstance();
-            container.RegisterType<InfoEndpoint>().As<IEndpoint<Dictionary<string, object>>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<Dictionary<string, object>>>().SingleInstance();
+            container.Register(c =>
+            {
+                var options = new InfoEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+                foreach (var mgmt in mgmtOptions)
+                {
+                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
+                    {
+                        continue;
+                    }
+
+                    mgmt.EndpointOptions.Add(options);
+                }
+                return options;
+            }).As<IInfoOptions>().IfNotRegistered(typeof(IInfoOptions)).SingleInstance();
+            container.RegisterType<InfoEndpoint>().IfNotRegistered(typeof(InfoEndpoint)).As<IEndpoint<Dictionary<string, object>>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<Dictionary<string, object>>>().IfNotRegistered(typeof(EndpointOwinMiddleware<Dictionary<string,object>>)).SingleInstance();
         }
     }
 }

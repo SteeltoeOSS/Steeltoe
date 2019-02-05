@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Threading.Tasks;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -24,6 +27,13 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         private RequestDelegate _next;
 
+        public HealthEndpointMiddleware(RequestDelegate next, HealthEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger: logger)
+        {
+            _next = next;
+        }
+        
+        [Obsolete]
         public HealthEndpointMiddleware(RequestDelegate next, ILogger<HealthEndpointMiddleware> logger = null)
             : base(logger: logger)
         {

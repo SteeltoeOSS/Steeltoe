@@ -15,7 +15,9 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web;
@@ -24,7 +26,13 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class CloudFoundryHandler : ActuatorHandler<CloudFoundryEndpoint, Links, string>
     {
-        public CloudFoundryHandler(CloudFoundryEndpoint endpoint, List<ISecurityService> securityServices, ILogger<CloudFoundryHandler> logger = null)
+        public CloudFoundryHandler(CloudFoundryEndpoint endpoint, IEnumerable< ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryHandler> logger = null)
+           : base(endpoint, securityServices, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), null, true, logger)
+        {
+        }
+
+        [Obsolete]
+        public CloudFoundryHandler(CloudFoundryEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<CloudFoundryHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {
         }

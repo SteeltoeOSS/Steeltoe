@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
 {
@@ -29,6 +30,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCloudFoundryActuator(Configuration);
             services.AddTraceActuator(Configuration);
         }
 

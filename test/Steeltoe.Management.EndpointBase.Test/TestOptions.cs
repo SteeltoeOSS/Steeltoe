@@ -35,10 +35,6 @@ namespace Steeltoe.Management.Endpoint.Test
 
         public bool IsSensitive => Sensitive.Value;
 
-        public List<string> AltIds => throw new System.NotImplementedException();
-
-        public List<string> AltPaths => throw new System.NotImplementedException();
-
         public bool IsAccessAllowed(Permissions permissions)
         {
             return false;

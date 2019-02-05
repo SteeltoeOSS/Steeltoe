@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
+    // TODO: Move this to the Discovery namespace in 3.0
+    [Obsolete]
     public class Link
     {
 #pragma warning disable SA1307 // Accessible fields must begin with upper-case letter

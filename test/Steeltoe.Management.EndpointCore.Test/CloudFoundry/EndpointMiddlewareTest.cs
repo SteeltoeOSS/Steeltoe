@@ -99,7 +99,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 var json = await result.Content.ReadAsStringAsync();
 
                 // assert
-                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\"},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\"}}}", json);
+                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\"},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\"}}}", json);
             }
         }
 

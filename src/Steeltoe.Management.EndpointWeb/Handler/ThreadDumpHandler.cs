@@ -15,13 +15,20 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.ThreadDump;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
     public class ThreadDumpHandler : ActuatorHandler<ThreadDumpEndpoint, List<ThreadInfo>>
     {
-         public ThreadDumpHandler(ThreadDumpEndpoint endpoint, List<ISecurityService> securityServices, ILogger<ThreadDumpHandler> logger = null)
+        public ThreadDumpHandler(ThreadDumpEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ThreadDumpHandler> logger = null)
+          : base(endpoint, securityServices, mgmtOptions, null, true, logger)
+        {
+        }
+
+        [Obsolete]
+         public ThreadDumpHandler(ThreadDumpEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<ThreadDumpHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {
         }

@@ -14,9 +14,12 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.EndpointOwin.CloudFoundry;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
@@ -39,7 +42,17 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new CloudFoundryOptions(config)).As<ICloudFoundryOptions>().SingleInstance();
+            container.RegisterInstance(new CloudFoundryManagementOptions())
+                .SingleInstance()
+                .As<IManagementOptions>();
+
+            container.Register(c =>
+            {
+                var options = new CloudFoundryEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>().OfType<CloudFoundryManagementOptions>().Single();
+                mgmtOptions.EndpointOptions.Add(options);
+                return options;
+            }).As<ICloudFoundryOptions>().SingleInstance();
             container.RegisterType<CloudFoundryEndpoint>().SingleInstance();
             container.RegisterType<CloudFoundryEndpointOwinMiddleware>().SingleInstance();
         }

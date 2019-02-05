@@ -18,6 +18,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Steeltoe.Common.Logging.Autofac;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.EndpointOwin.Loggers;
 using System;
@@ -34,7 +36,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="loggerProvider">Your pre-existing <see cref="DynamicLoggerProvider"/> will be created if not provided</param>
         /// <param name="loggerFactory">Your pre-existing <see cref="ILoggerFactory"/>. A new <see cref="LoggerFactory"/> will be added if not provided</param>
-        public static void RegisterLoggersActuator(this ContainerBuilder container, IConfiguration config, DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
+        public static void RegisterLoggersActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false,  DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
         {
             if (container == null)
             {
@@ -57,8 +59,22 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             }
 
             container.RegisterLogging(config);
-            container.RegisterInstance(loggerProvider).As<ILoggerProvider>();
-            container.RegisterInstance(new LoggersOptions(config)).As<ILoggersOptions>();
+            container.RegisterInstance(loggerProvider).As<IDynamicLoggerProvider>();
+            container.Register(c =>
+            {
+                var options = new LoggersEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+                foreach (var mgmt in mgmtOptions)
+                {
+                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
+                    {
+                        continue;
+                    }
+
+                    mgmt.EndpointOptions.Add(options);
+                }
+                return options;
+            }).As<ILoggersOptions>().IfNotRegistered(typeof(ILoggersOptions));
             container.RegisterType<LoggersEndpoint>().SingleInstance();
             container.RegisterType<LoggersEndpointOwinMiddleware>().SingleInstance();
         }

@@ -66,6 +66,7 @@ namespace Steeltoe.Management.Endpoint.Module
 
             foreach (var handler in _handlers)
             {
+
                 if (handler.RequestVerbAndPathMatch(context.Request.HttpMethod, context.Request.Path))
                 {
                     if (await handler.IsAccessAllowed(context))

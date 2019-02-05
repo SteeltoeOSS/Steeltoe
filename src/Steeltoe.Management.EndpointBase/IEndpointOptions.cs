@@ -13,29 +13,28 @@
 // limitations under the License.
 
 using Steeltoe.Management.Endpoint.Security;
-using System.Collections.Generic;
+using System;
 
 namespace Steeltoe.Management.Endpoint
 {
     public interface IEndpointOptions
     {
+        [Obsolete]
         bool IsEnabled { get; }
 
+        [Obsolete]
         bool IsSensitive { get; }
 
         bool? Enabled { get; }
 
         bool? Sensitive { get;  }
 
+        [Obsolete]
         IManagementOptions Global { get; }
 
         string Id { get;  }
 
-        List<string> AltIds { get; }
-
         string Path { get; }
-
-        List<string> AltPaths { get; }
 
         Permissions RequiredPermissions { get; }
 

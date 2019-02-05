@@ -22,12 +22,14 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using System;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Mappings;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
     public static class EndpointServiceCollectionExtensions
     {
-        public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
         {
             if (services == null)
             {
@@ -43,7 +45,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IPolledDiagnosticSource, CLRRuntimeSource>());
 
-            services.TryAddSingleton<IMetricsOptions>(new MetricsOptions(config));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            var options = new MetricsEndpointOptions(config);
+            services.TryAddSingleton<IMetricsOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
 

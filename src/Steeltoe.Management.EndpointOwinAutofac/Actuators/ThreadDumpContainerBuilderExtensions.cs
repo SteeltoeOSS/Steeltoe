@@ -15,6 +15,7 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.EndpointOwin;
 using System;
@@ -29,7 +30,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterThreadDumpActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterThreadDumpActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false)
         {
             if (container == null)
             {
@@ -42,7 +43,22 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             }
 
             container.RegisterType<ThreadDumper>().As<IThreadDumper>().SingleInstance();
-            container.RegisterInstance(new ThreadDumpOptions(config)).As<IThreadDumpOptions>();
+            //container.RegisterInstance(new ThreadDumpOptions(config)).As<IThreadDumpOptions>();
+            container.Register(c =>
+            {
+                var options = new ThreadDumpEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+                foreach (var mgmt in mgmtOptions)
+                {
+                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
+                    {
+                        continue;
+                    }
+
+                    mgmt.EndpointOptions.Add(options);
+                }
+                return options;
+            }).As<IThreadDumpOptions>().IfNotRegistered(typeof(IThreadDumpOptions));
             container.RegisterType<ThreadDumpEndpoint>().As<IEndpoint<List<ThreadInfo>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<List<ThreadInfo>>>().SingleInstance();
         }

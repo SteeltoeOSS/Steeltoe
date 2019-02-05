@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,6 +25,13 @@ namespace Steeltoe.Management.Endpoint.Refresh
     {
         private RequestDelegate _next;
 
+        public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<RefreshEndpointMiddleware> logger = null)
+          : base(endpoint, mgmtOptions, logger: logger)
+        {
+            _next = next;
+        }
+
+        [Obsolete]
         public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, ILogger<RefreshEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {

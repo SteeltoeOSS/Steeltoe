@@ -39,19 +39,27 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public readonly string BEARER = "bearer";
         public readonly string READ_SENSITIVE_DATA = "read_sensitive_data";
         private ICloudFoundryOptions _options;
+        private IManagementOptions _mgmtOptions;
+        private ILogger _logger;
 
-        protected ILogger Logger { get; set; }
+        public SecurityBase(ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger logger = null)
+        {
+            _options = options;
+            _mgmtOptions = mgmtOptions;
+            _logger = logger;
+        }
 
+        [Obsolete]
         public SecurityBase(ICloudFoundryOptions options, ILogger logger = null)
         {
             _options = options;
-            Logger = logger;
+            _logger = logger;
         }
 
         public bool IsCloudFoundryRequest(string requestPath)
         {
-            bool startsWith = requestPath.StartsWith(_options.Path);
-            return startsWith;
+            var contextPath = _mgmtOptions == null ? _options.Path : _mgmtOptions.Path;
+            return requestPath.StartsWith(contextPath);
         }
 
         public string Serialize(SecurityResult error)
@@ -62,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
             catch (Exception e)
             {
-                Logger?.LogError("Serialization Exception: {0}", e);
+                _logger?.LogError("Serialization Exception: {0}", e);
             }
 
             return string.Empty;
@@ -87,7 +95,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 out RemoteCertificateValidationCallback prevValidator);
             try
             {
-                Logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
+                _logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
 
                 using (var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT))
                 {
@@ -95,7 +103,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     {
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
-                            Logger?.LogInformation(
+                            _logger?.LogInformation(
                                 "Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}",
                                 response.StatusCode,
                                 checkPermissionsUri);
@@ -111,7 +119,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
             catch (Exception e)
             {
-                Logger?.LogError("Cloud Foundry returned exception: {SecurityException} while obtaining permissions from: {PermissionsUri}", e, checkPermissionsUri);
+                _logger?.LogError("Cloud Foundry returned exception: {SecurityException} while obtaining permissions from: {PermissionsUri}", e, checkPermissionsUri);
                 return new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
             }
             finally
@@ -129,7 +137,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             {
                 json = await response.Content.ReadAsStringAsync();
 
-                Logger?.LogDebug("GetPermisions returned json: {0}", json);
+                _logger?.LogDebug("GetPermisions returned json: {0}", json);
 
                 var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
@@ -141,10 +149,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
             catch (Exception e)
             {
-                Logger?.LogError("Exception {0} extracting permissions from {1}", e, json);
+                _logger?.LogError("Exception {0} extracting permissions from {1}", e, json);
             }
 
-            Logger?.LogDebug("GetPermisions returning: {0}", permissions);
+            _logger?.LogDebug("GetPermisions returning: {0}", permissions);
             return permissions;
         }
     }

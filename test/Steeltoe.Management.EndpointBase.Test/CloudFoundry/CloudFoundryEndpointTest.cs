@@ -24,7 +24,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Constructor_ThrowsOptionsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new CloudFoundryEndpoint(null));
+            Assert.Throws<ArgumentNullException>(() => new CloudFoundryEndpoint(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new CloudFoundryEndpoint(new CloudFoundryEndpointOptions(), null, null));
         }
 
         [Fact]

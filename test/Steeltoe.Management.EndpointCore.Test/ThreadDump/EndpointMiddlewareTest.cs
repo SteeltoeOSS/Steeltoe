@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -93,10 +94,13 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new ThreadDumpOptions();
+            var actOptions = new ActuatorManagementOptions() { Path = "/" };
+
+            var opts = new ThreadDumpEndpointOptions();
+            actOptions.EndpointOptions.Add(opts);
             ThreadDumper obs = new ThreadDumper(opts);
             var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new ThreadDumpEndpointMiddleware(null, ep);
+            var middle = new ThreadDumpEndpointMiddleware(null, ep, new List<IManagementOptions> { actOptions });
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/dump"));
             Assert.False(middle.RequestVerbAndPathMatch("PUT", "/dump"));

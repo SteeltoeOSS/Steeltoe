@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var result = await client.GetAsync("http://localhost/management", "OPTIONS");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication", "OPTIONS");
 
                 Assert.NotNull(result);
                 Assert.Equal(3, result.Headers.Count);
@@ -46,7 +46,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                var client = server.HttpClient;
 
-               var result = await client.GetAsync("http://localhost/management", "GET");
+               var result = await client.GetAsync("http://localhost/cloudfoundryapplication", "GET");
 
                Assert.NotNull(result);
                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -63,7 +63,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var result = await client.GetAsync("http://localhost/management/env", "GET");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/env", "GET");
 
                 Assert.NotNull(result);
                 Assert.Contains("activeProfiles", result.Content);
@@ -119,7 +119,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var response = await client.GetAsync("http://localhost/management/loggers", "GET");
+                var response = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers", "GET");
 
                 Assert.NotEmpty(response.Content);
                 Assert.Contains("loggers", response.Content);
@@ -135,7 +135,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var response = await client.GetAsync("http://localhost/management/metrics", "GET");
+                var response = await client.GetAsync("http://localhost/cloudfoundryapplication/metrics", "GET");
 
                 Assert.NotEmpty(response.Content);
                 Assert.Contains("http.server.request.count", response.Content);
@@ -151,7 +151,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var response = await client.GetAsync("http://localhost/management/dump", "GET");
+                var response = await client.GetAsync("http://localhost/cloudfoundryapplication/dump", "GET");
 
                 Assert.NotEmpty(response.Content);
                 Assert.Contains("stackTrace", response.Content);

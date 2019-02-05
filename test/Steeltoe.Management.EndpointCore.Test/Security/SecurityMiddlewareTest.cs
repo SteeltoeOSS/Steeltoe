@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/actuator/info");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
         }
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test
                 var client = server.CreateClient();
                 client.DefaultRequestHeaders.Add("X-Test-Header", "value");
 
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/actuator/info");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
         }
@@ -72,13 +72,13 @@ namespace Steeltoe.Management.Endpoint.Security.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/actuator/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
         }
 
         [Fact]
-        public async void SecurityMiddleWareCloudFoundry_ReturnsUnauthorizedWhenSensitive()
+        public async void SecurityMiddleWareActuator_ReturnsUnauthorizedWhenSensitive()
         {
             var builder = GetBuilder<Startup>(new Dictionary<string, string>()
             {
@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/actuator/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
         }
@@ -106,7 +106,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/actuator/info");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
         }
@@ -126,7 +126,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test
             {
                 var client = server.CreateClient();
                 client.DefaultRequestHeaders.Add("X-Test-Header", "value");
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/actuator/info");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
         }

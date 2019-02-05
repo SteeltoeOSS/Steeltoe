@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
+    [Obsolete]
     public class HeapDumpOptions : AbstractOptions, IHeapDumpOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:heapdump";

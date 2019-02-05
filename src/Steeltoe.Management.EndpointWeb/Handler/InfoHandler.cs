@@ -15,13 +15,20 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
     public class InfoHandler : ActuatorHandler<InfoEndpoint, Dictionary<string, object>>
     {
-        public InfoHandler(InfoEndpoint endpoint, List<ISecurityService> securityServices, ILogger<InfoHandler> logger = null)
+        public InfoHandler(InfoEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoHandler> logger = null)
+           : base(endpoint, securityServices, mgmtOptions, null, true, logger)
+        {
+        }
+
+        [Obsolete]
+        public InfoHandler(InfoEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<InfoHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {
         }

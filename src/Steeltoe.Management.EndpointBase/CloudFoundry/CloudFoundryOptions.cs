@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
+    [Obsolete]
     public class CloudFoundryOptions : AbstractOptions, ICloudFoundryOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:cloudfoundry";

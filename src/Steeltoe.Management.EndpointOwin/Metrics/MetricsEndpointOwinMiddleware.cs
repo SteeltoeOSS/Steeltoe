@@ -14,9 +14,11 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Metrics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -26,6 +28,13 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
     {
         protected new MetricsEndpoint _endpoint;
 
+        public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MetricsEndpointOwinMiddleware> logger = null)
+            : base(next, endpoint, mgmtOptions, null, false, logger)
+        {
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        [Obsolete]
         public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, ILogger<MetricsEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, null, false, logger)
         {
@@ -88,7 +97,8 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
 
         protected internal string GetMetricName(IOwinRequest request)
         {
-            foreach (string path in _endpoint.Paths)
+            var epPaths = GetEndpointPaths();
+            foreach (var path in epPaths)
             {
                 PathString epPath = new PathString(path);
                 if (request.Path.StartsWithSegments(epPath, out PathString remaining))
@@ -101,6 +111,19 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             }
 
             return null;
+        }
+
+        private IEnumerable<string> GetEndpointPaths()
+        {
+            if(_mgmtOptions == null)
+            {
+                return new List<string>() { _endpoint.Path };
+            }
+            else
+            {
+                return _mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}");
+
+            }
         }
 
         /// <summary>

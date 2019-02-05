@@ -15,6 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Loggers
@@ -26,7 +28,8 @@ namespace Steeltoe.Management.Endpoint.Loggers
         /// </summary>
         /// <param name="services">Service collection to add logging to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:loggers)</param>
-        public static void AddLoggersActuator(this IServiceCollection services, IConfiguration config)
+        /// <param name="addToDiscovery">Show in discovery actuator links</param>
+        public static void AddLoggersActuator(this IServiceCollection services, IConfiguration config,  bool addToDiscovery = false)
         {
             if (services == null)
             {
@@ -38,7 +41,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<ILoggersOptions>(new LoggersOptions(config));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+
+            var options = new LoggersEndpointOptions(config);
+            services.TryAddSingleton<ILoggersOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             services.TryAddSingleton<LoggersEndpoint>();
         }
     }

@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
             }
 
@@ -105,7 +105,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder2))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
             }
 
@@ -134,8 +134,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder3))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/barfoo");
-                Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/barfoo");
+                Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
         }
 
@@ -168,7 +168,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
         }

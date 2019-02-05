@@ -12,36 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Owin;
-using Steeltoe.Management.Endpoint.CloudFoundry;
+using Microsoft.AspNetCore.Builder;
 using System;
 
-namespace Steeltoe.Management.Endpoint.Security
+namespace Steeltoe.Management.Endpoint.Discovery
 {
-    public static class SecurityApplicationBuilderExtensions
+    public static class EndpointApplicationBuilderExtensions
     {
         /// <summary>
-        /// Add Security Middleware for protecting sensitive endpoints
+        /// Enable Basic Actuator Middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        /// <param name="config">Configuration</param>
-        /// <param name="loggerFactory">Logger Factory</param>
-        public static void UseEndpointSecurity(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static void UseDiscoveryActuator(this IApplicationBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            if (config == null)
+            builder.UseMiddleware<ActuatorDiscoveryEndpointMiddleware>();
+        }
+
+        /// <summary>
+        /// Add CloudFoundry Security Middleware
+        /// </summary>
+        /// <param name="builder">Your application builder</param>
+        public static void UseActuatorSecurity(this IApplicationBuilder builder)
+        {
+            if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(builder));
             }
 
-            var logger = loggerFactory?.CreateLogger<SecurityMiddleware>();
-            builder.Use<SecurityMiddleware>(new CloudFoundryOptions(config), logger);
+            builder.UseMiddleware<ActuatorSecurityMiddleware>();
         }
     }
 }

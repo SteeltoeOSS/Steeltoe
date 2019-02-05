@@ -15,6 +15,7 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.EndpointOwin;
 using System;
@@ -29,7 +30,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterRefreshActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterRefreshActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false)
         {
             if (container == null)
             {
@@ -41,7 +42,23 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
+            //container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
+            container.Register(c =>
+            {
+                var options = new RefreshEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+                foreach (var mgmt in mgmtOptions)
+                {
+                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
+                    {
+                        continue;
+                    }
+
+                    mgmt.EndpointOptions.Add(options);
+                }
+                return options;
+            }).As<IRefreshOptions>().IfNotRegistered(typeof(IRefreshOptions));
+
             container.RegisterType<RefreshEndpoint>().As<IEndpoint<IList<string>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<IList<string>>>().SingleInstance();
         }

@@ -16,6 +16,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using System.Linq;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Health;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
@@ -26,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddHeapDumpActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddHeapDumpActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
         {
             if (services == null)
             {
@@ -38,7 +41,13 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<IHeapDumpOptions>(new HeapDumpOptions(config));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+
+            var options = new HeapDumpEndpointOptions(config);
+            services.TryAddSingleton<IHeapDumpOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
+
+            //services.TryAddSingleton<IHeapDumpOptions>(new HeapDumpOptions(config));
             services.TryAddSingleton<IHeapDumper, HeapDumper>();
             services.TryAddSingleton<HeapDumpEndpoint>();
         }

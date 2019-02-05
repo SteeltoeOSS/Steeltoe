@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Security.Test
@@ -31,14 +32,14 @@ namespace Steeltoe.Management.Endpoint.Security.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCloudFoundryActuator(Configuration);
-            services.AddInfoActuator(Configuration);
+            services.AddDiscoveryActuator(Configuration);
+            services.AddInfoActuator(Configuration, true);
         }
 
         public virtual void Configure(IApplicationBuilder app)
         {
-            app.UseEndpointSecurity();
-            app.UseCloudFoundryActuator();
+            app.UseActuatorSecurity();
+            app.UseDiscoveryActuator();
             app.UseInfoActuator();
         }
     }

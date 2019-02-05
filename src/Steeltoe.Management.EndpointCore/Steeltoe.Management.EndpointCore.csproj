@@ -17,11 +17,17 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Security\SecurityApplicationBuilderExtensions.cs" />
+  </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsVersion)" />
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">

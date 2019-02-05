@@ -22,13 +22,15 @@ using System.Collections.Generic;
 using System.Net;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Security.Test
+namespace Steeltoe.Management.EndpointOwin.Security.Test
 {
-    public class SecurityMiddlewareTest : BaseTest
+    public class SecurityMiddlewareOwinTest : BaseTest
     {
         [Fact]
         public async void SecurityMiddleWare_ReturnsOKWhenNotSensitive()
         {
+            ManagementOptions.Clear();
+
             Environment.SetEnvironmentVariable("management__endpoints__enabled", "true");
             Environment.SetEnvironmentVariable("management__endpoints__info__sensitive", "false");
 
@@ -52,10 +54,12 @@ namespace Steeltoe.Management.Endpoint.Security.Test
         [Fact]
         public async void SecurityMiddleWare_ReturnsUnauthorizedWhenSensitive()
         {
+            ManagementOptions.Clear();
+
             Environment.SetEnvironmentVariable("management__endpoints__enabled", "true");
             Environment.SetEnvironmentVariable("management__endpoints__info__sensitive", "true");
 
-            using (var server = TestServer.Create<SecureStartup>())
+            using (var server = TestServer.Create<Startup>())
             {
                 var client = server.HttpClient;
                 var result = await client.GetAsync("http://localhost/info");

@@ -13,14 +13,37 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Discovery;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>
     {
         private ILogger<CloudFoundryEndpoint> _logger;
+        private IManagementOptions _mgmtOption;
 
+        public CloudFoundryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpoint> logger = null)
+        : base(options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            _mgmtOption = mgmtOptions?.OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+
+            if (_mgmtOption == null)
+            {
+                throw new ArgumentNullException(nameof(mgmtOptions));
+            }
+
+            _logger = logger;
+        }
+
+        [Obsolete]
         public CloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null)
             : base(options)
         {
@@ -36,39 +59,49 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public override Links Invoke(string baseUrl)
         {
-            var endpointOptions = Options.Global.EndpointOptions;
-            var links = new Links();
-
-            if (!Options.Enabled.Value)
+            if (_mgmtOption != null)
             {
+                DiscoveryService discoveryService = new DiscoveryService(_mgmtOption, options, _logger);
+                return discoveryService.Invoke(baseUrl);
+            }
+
+            // TODO: The below code will be removed in 3.0
+            else
+            {
+                var endpointOptions = Options.Global.EndpointOptions;
+                var links = new Links();
+
+                if (!Options.Enabled.Value)
+                {
+                    return links;
+                }
+
+                foreach (var opt in endpointOptions)
+                {
+                    if (!opt.Enabled.Value)
+                    {
+                        continue;
+                    }
+
+                    if (opt == Options)
+                    {
+                        links._links.Add("self", new Link(baseUrl));
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
+                        {
+                            links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Id));
+                        }
+                        else if (links._links.ContainsKey(opt.Id))
+                        {
+                            _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
+                        }
+                    }
+                }
+
                 return links;
             }
-
-            foreach (var opt in endpointOptions)
-            {
-                if (!opt.Enabled.Value)
-                {
-                    continue;
-                }
-
-                if (opt == Options)
-                {
-                    links._links.Add("self", new Link(baseUrl));
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
-                    {
-                        links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Id));
-                    }
-                    else if (links._links.ContainsKey(opt.Id))
-                    {
-                        _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
-                    }
-                }
-            }
-
-            return links;
         }
     }
 }

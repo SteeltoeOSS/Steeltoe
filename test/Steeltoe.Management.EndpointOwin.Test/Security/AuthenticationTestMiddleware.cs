@@ -20,7 +20,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Security.Test
+namespace Steeltoe.Management.EndpointOwin.Security.Test
 {
     internal class AuthenticationTestMiddleware : OwinMiddleware
     {

@@ -14,9 +14,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Env
 {
+    [Obsolete]
     public class EnvOptions : AbstractOptions, IEnvOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:env";

@@ -16,6 +16,7 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.EndpointOwin;
 using Steeltoe.Management.EndpointOwin.Trace;
@@ -31,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterTraceActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterTraceActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false)
         {
             if (container == null)
             {
@@ -43,7 +44,23 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
+            // container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
+            container.Register(c =>
+            {
+                var options = new TraceEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+                foreach (var mgmt in mgmtOptions)
+                {
+                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
+                    {
+                        continue;
+                    }
+
+                    mgmt.EndpointOptions.Add(options);
+                }
+                return options;
+            }).As<ITraceOptions>().IfNotRegistered(typeof(ITraceOptions)).SingleInstance();
+
             container.RegisterType<TraceDiagnosticObserver>().As<IDiagnosticObserver>().As<ITraceRepository>().SingleInstance();
             container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
 

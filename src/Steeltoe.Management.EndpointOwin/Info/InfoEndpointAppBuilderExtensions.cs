@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using System;
@@ -31,6 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Info
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring info endpoint</param>
+        /// <param name="mgmtOptions">Shared Management Options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Info Endpoint added</returns>
         public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
@@ -48,12 +50,14 @@ namespace Steeltoe.Management.EndpointOwin.Info
             return builder.UseInfoActuator(config, GetDefaultInfoContributors(config, loggerFactory), loggerFactory);
         }
 
+     
         /// <summary>
         /// Add Info actuator endpoint to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring info endpoint</param>
         /// <param name="contributors">IInfo Contributors to collect into from</param>
+        /// <param name="mgmtOptions">Shared Management Options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Info Endpoint added</returns>
         public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config, IList<IInfoContributor> contributors, ILoggerFactory loggerFactory = null)
@@ -73,9 +77,16 @@ namespace Steeltoe.Management.EndpointOwin.Info
                 throw new ArgumentNullException(nameof(contributors));
             }
 
-            var endpoint = new InfoEndpoint(new InfoOptions(config), contributors, loggerFactory?.CreateLogger<InfoEndpoint>());
+            var mgmtOptions = ManagementOptions.Get(config);
+            var options = new InfoEndpointOptions(config);
+            foreach (var mgmt in mgmtOptions)
+            {
+                mgmt.EndpointOptions.Add(options);
+            }
+
+            var endpoint = new InfoEndpoint(options, contributors, loggerFactory?.CreateLogger<InfoEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<Dictionary<string, object>>>();
-            return builder.Use<EndpointOwinMiddleware<Dictionary<string, object>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+            return builder.Use<EndpointOwinMiddleware<Dictionary<string, object>>>(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
 
         private static IList<IInfoContributor> GetDefaultInfoContributors(IConfiguration config, ILoggerFactory loggerFactory = null)

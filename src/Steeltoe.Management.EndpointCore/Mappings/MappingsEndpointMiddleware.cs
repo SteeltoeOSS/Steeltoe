@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -23,6 +24,8 @@ using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Mappings
@@ -34,7 +37,27 @@ namespace Steeltoe.Management.Endpoint.Mappings
         private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
         private readonly IMappingsOptions _options;
         private readonly IRouteMappings _routeMappings;
+        private readonly IEnumerable<IManagementOptions> _mgmtOptions;
 
+        public MappingsEndpointMiddleware(
+            RequestDelegate next,
+            IMappingsOptions options,
+            IEnumerable<IManagementOptions> mgmtOptions,
+            IRouteMappings routeMappings = null,
+            IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
+            IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
+            ILogger<MappingsEndpointMiddleware> logger = null)
+            : base(mgmtOptions, logger: logger)
+        {
+            _next = next;
+            _options = options;
+            _routeMappings = routeMappings;
+            _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
+            _apiDescriptionProviders = apiDescriptionProviders;
+            _mgmtOptions = mgmtOptions;
+        }
+        
+        [Obsolete]
         public MappingsEndpointMiddleware(
             RequestDelegate next,
             IMappingsOptions options,
@@ -98,8 +121,26 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 return false;
             }
 
-            PathString path = new PathString(_options.Path);
-            return context.Request.Path.Equals(path);
+            var paths = new List<string>();
+            if (_mgmtOptions != null)
+            {
+                paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}"));
+            }
+            else
+            {
+                paths.Add(_options.Path);
+            }
+
+            foreach (var path in paths)
+            {
+                PathString pathString = new PathString(path);
+                if (context.Request.Path.Equals(pathString))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
