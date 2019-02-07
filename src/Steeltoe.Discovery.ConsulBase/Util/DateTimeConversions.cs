@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Steeltoe.Discovery.Consul.Util
+namespace Steeltoe.Consul.Util
 {
     public class DateTimeConversions
     {

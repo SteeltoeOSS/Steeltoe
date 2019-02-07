@@ -13,12 +13,17 @@
 // limitations under the License.
 
 using Autofac;
+using Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Options.Autofac;
+using Steeltoe.Consul.Client;
+using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
 using System;
 using System.Linq;
@@ -29,6 +34,7 @@ namespace Steeltoe.Discovery.Client
     public static class DiscoveryContainerBuilderExtensions
     {
         public const string EUREKA_PREFIX = "eureka";
+        public const string CONSUL_PREFIX = "consul";
 
         public static void RegisterDiscoveryClient(this ContainerBuilder container, DiscoveryOptions discoveryOptions, IDiscoveryLifecycle lifecycle = null)
         {
@@ -145,31 +151,86 @@ namespace Steeltoe.Discovery.Client
             IConfiguration config,
             IDiscoveryLifecycle lifecycle)
         {
-            var clientConfigsection = config.GetSection(EUREKA_PREFIX);
-            int childCount = clientConfigsection.GetChildren().Count();
-            if (childCount > 0 || info is EurekaServiceInfo)
+            if (IsEurekaConfigured(config, info))
             {
-                EurekaServiceInfo einfo = info as EurekaServiceInfo;
-
-                var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
-                container.RegisterOption<EurekaClientOptions>(clientSection);
-                container.RegisterPostConfigure<EurekaClientOptions>((options) =>
-                {
-                    EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
-                });
-
-                var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
-                container.RegisterOption<EurekaInstanceOptions>(instSection);
-                container.RegisterPostConfigure<EurekaInstanceOptions>((options) =>
-                {
-                    EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
-                });
+                ConfigureEurekaServices(container, config, info);
                 AddEurekaServices(container, lifecycle);
+            }
+            else if (IsConsulConfigured(config, info))
+            {
+                ConfigureConsulServices(container, config, info);
+                AddConsulServices(container, config, lifecycle);
             }
             else
             {
                 throw new ArgumentException("Discovery client type UNKNOWN, check configuration");
             }
+        }
+
+        #region Consul
+        private static bool IsConsulConfigured(IConfiguration config, IServiceInfo info)
+        {
+            var clientConfigsection = config.GetSection(CONSUL_PREFIX);
+            int childCount = clientConfigsection.GetChildren().Count();
+            return childCount > 0;
+        }
+
+        private static void ConfigureConsulServices(ContainerBuilder container, IConfiguration config, IServiceInfo info)
+        {
+            var consulSection = config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX);
+            container.RegisterOption<ConsulOptions>(consulSection);
+            var consulDiscoverySection = config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX);
+            container.RegisterOption<ConsulDiscoveryOptions>(consulDiscoverySection);
+        }
+
+        private static void AddConsulServices(ContainerBuilder container, IConfiguration config, IDiscoveryLifecycle lifecycle)
+        {
+            container.Register(c =>
+            {
+                var opts = c.Resolve<IOptions<ConsulOptions>>();
+                return ConsulClientFactory.CreateClient(opts.Value);
+            }).As<IConsulClient>().SingleInstance();
+
+            container.RegisterType<TtlScheduler>().As<IScheduler>().SingleInstance();
+            container.RegisterType<ConsulServiceRegistry>().As<IConsulServiceRegistry>().SingleInstance();
+            container.Register(c =>
+            {
+                var opts = c.Resolve<IOptions<ConsulDiscoveryOptions>>();
+                return ConsulRegistration.CreateRegistration(config, opts.Value);
+            }).As<IConsulRegistration>().SingleInstance();
+
+            container.RegisterType<ConsulServiceRegistrar>().As<IConsulServiceRegistrar>().SingleInstance();
+            container.RegisterType<ConsulDiscoveryClient>().As<IDiscoveryClient>().SingleInstance();
+
+            container.RegisterType<ConsulHealthContributor>().As<IHealthContributor>().SingleInstance();
+        }
+        #endregion Consul
+
+        #region Eureka
+        private static bool IsEurekaConfigured(IConfiguration config, IServiceInfo info)
+        {
+            var clientConfigsection = config.GetSection(EUREKA_PREFIX);
+            int childCount = clientConfigsection.GetChildren().Count();
+            return childCount > 0 || info is EurekaServiceInfo;
+        }
+
+        private static void ConfigureEurekaServices(ContainerBuilder container, IConfiguration config, IServiceInfo info)
+        {
+            EurekaServiceInfo einfo = info as EurekaServiceInfo;
+
+            var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+            container.RegisterOption<EurekaClientOptions>(clientSection);
+            container.RegisterPostConfigure<EurekaClientOptions>((options) =>
+            {
+                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
+            });
+
+            var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
+            container.RegisterOption<EurekaInstanceOptions>(instSection);
+            container.RegisterPostConfigure<EurekaInstanceOptions>((options) =>
+            {
+                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
+            });
         }
 
         private static void AddEurekaServices(ContainerBuilder container, IDiscoveryLifecycle lifecycle)
@@ -187,7 +248,9 @@ namespace Steeltoe.Discovery.Client
                 container.RegisterInstance(lifecycle).SingleInstance();
             }
         }
+        #endregion Eureka
 
+        #region ServiceInfo
         private static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
         {
             var info = config.GetServiceInfo(serviceName);
@@ -226,6 +289,7 @@ namespace Steeltoe.Discovery.Client
         {
             return (info as EurekaServiceInfo) != null;
         }
+        #endregion ServiceInfo
 
         public class ApplicationLifecycle : IDiscoveryLifecycle
         {

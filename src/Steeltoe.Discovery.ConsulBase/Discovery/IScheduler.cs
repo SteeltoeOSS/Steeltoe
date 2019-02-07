@@ -12,21 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Discovery;
+using System;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Discovery.Consul.Discovery
 {
-    public static class DiscoveryApplicationBuilderExtensions
+    /// <summary>
+    /// Scheduler used for scheduling heartbeats to the Consul server
+    /// </summary>
+    public interface IScheduler : IDisposable
     {
-        public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
-        {
-            var service = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
+        /// <summary>
+        /// Adds an instances id to be checked
+        /// </summary>
+        /// <param name="instanceId">the instance id</param>
+        void Add(string instanceId);
 
-            // make sure that the lifcycle object is created
-            var lifecycle = app.ApplicationServices.GetService<IDiscoveryLifecycle>();
-            return app;
-        }
+        /// <summary>
+        /// Remove an instance id from checking
+        /// </summary>
+        /// <param name="instanceId">the instance id</param>
+        void Remove(string instanceId);
     }
 }

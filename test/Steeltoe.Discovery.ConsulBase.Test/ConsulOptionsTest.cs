@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Discovery;
+using Xunit;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Consul.Client.Test
 {
-    public static class DiscoveryApplicationBuilderExtensions
+    public class ConsulOptionsTest
     {
-        public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
+        [Fact]
+        public void Constructor_InitializesDefaults()
         {
-            var service = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
-
-            // make sure that the lifcycle object is created
-            var lifecycle = app.ApplicationServices.GetService<IDiscoveryLifecycle>();
-            return app;
+            var opts = new ConsulOptions();
+            Assert.Null(opts.Datacenter);
+            Assert.Null(opts.Password);
+            Assert.Null(opts.Username);
+            Assert.Null(opts.WaitTime);
+            Assert.Null(opts.Token);
+            Assert.Equal("localhost", opts.Host);
+            Assert.Equal("http", opts.Scheme);
+            Assert.Equal(8500, opts.Port);
         }
     }
 }

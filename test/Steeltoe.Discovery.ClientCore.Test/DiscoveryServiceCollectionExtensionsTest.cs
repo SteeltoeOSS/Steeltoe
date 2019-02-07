@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Consul;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
@@ -410,6 +413,58 @@ namespace Steeltoe.Discovery.Client.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config));
             Assert.Contains("Multiple", ex.Message);
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WithConsulConfiguration_AddsDiscoveryClient()
+        {
+            // Arrange
+            var appsettings = @"
+{
+    'spring': {
+        'application': {
+            'name': 'myName'
+        },
+    },
+    'consul': {
+        'host': 'foo.bar',
+        'discovery': {
+            'register': false,
+            'deregister': false,
+            'instanceid': 'instanceid',
+            'port': 1234
+        }
+    }
+}";
+
+            var path = TestHelpers.CreateTempFile(appsettings);
+            string directory = Path.GetDirectoryName(path);
+            string fileName = Path.GetFileName(path);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+
+            configurationBuilder.AddJsonFile(fileName);
+            var config = configurationBuilder.Build();
+
+            var services = new ServiceCollection();
+            services.AddOptions();
+            services.AddDiscoveryClient(config);
+            var provider = services.BuildServiceProvider();
+
+            var service = provider.GetService<IDiscoveryClient>();
+            Assert.NotNull(service);
+            var service1 = provider.GetService<IConsulClient>();
+            Assert.NotNull(service1);
+            var service2 = provider.GetService<IScheduler>();
+            Assert.NotNull(service2);
+            var service3 = provider.GetService<IConsulServiceRegistry>();
+            Assert.NotNull(service3);
+            var service4 = provider.GetService<IConsulRegistration>();
+            Assert.NotNull(service4);
+            var service5 = provider.GetService<IConsulServiceRegistrar>();
+            Assert.NotNull(service5);
+            var service6 = provider.GetService<IHealthContributor>();
+            Assert.NotNull(service6);
         }
 
         public class TestClientHandlerProvider : IEurekaDiscoveryClientHandlerProvider

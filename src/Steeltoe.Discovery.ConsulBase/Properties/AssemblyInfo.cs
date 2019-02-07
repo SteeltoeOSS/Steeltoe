@@ -12,21 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Discovery;
+using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Discovery.Client
-{
-    public static class DiscoveryApplicationBuilderExtensions
-    {
-        public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
-        {
-            var service = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
-
-            // make sure that the lifcycle object is created
-            var lifecycle = app.ApplicationServices.GetService<IDiscoveryLifecycle>();
-            return app;
-        }
-    }
-}
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.ConsulBase.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.ClientCore.Test")]

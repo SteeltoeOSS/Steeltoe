@@ -42,7 +42,7 @@ namespace Steeltoe.Discovery.Eureka
             var result = new HealthCheckResult();
 
             result.Status = HealthStatus.UP;
-            result.Description = "All applications have at least one instance UP";
+            result.Description = "No monitored applications";
 
             var appNames = GetMonitoredApplications(_discoveryClient.ClientConfig);
 
@@ -54,7 +54,11 @@ namespace Steeltoe.Discovery.Eureka
 
             if (result.Status != HealthStatus.UP)
             {
-                result.Description = "At least one application not found or has no instances UP";
+                result.Description = "At least one monitored application has no instances UP";
+            }
+            else
+            {
+                result.Description = "All monitored applications have at least one instance UP";
             }
 
             result.Details.Add("status", result.Status.ToString());

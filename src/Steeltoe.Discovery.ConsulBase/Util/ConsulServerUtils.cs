@@ -18,8 +18,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
-namespace Steeltoe.Discovery.Consul.Util
+namespace Steeltoe.Consul.Util
 {
     public class ConsulServerUtils
     {
@@ -43,9 +44,29 @@ namespace Steeltoe.Discovery.Consul.Util
 
         public static string FixIPv6Address(string address)
         {
-            var ip6 = Dns.GetHostAddresses(address)
-                .FirstOrDefault(i => i.AddressFamily == AddressFamily.InterNetworkV6)?.ToString();
-            return ip6 != null ? $"[{ip6}]" : address;
+            try
+            {
+                var parsed = IPAddress.Parse(address);
+                if (parsed.AddressFamily == AddressFamily.InterNetworkV6)
+                {
+                    var bytes = parsed.GetAddressBytes();
+                    StringBuilder sb = new StringBuilder("[");
+                    for (int i = 0; i < bytes.Length; i = i + 2)
+                    {
+                        ushort num = (ushort)((bytes[i] << 8) | bytes[i + 1]);
+                        sb.Append(num.ToString("x") + ":");
+                    }
+
+                    sb.Replace(':', ']', sb.Length - 1, 1);
+                    return sb.ToString();
+                }
+            }
+            catch (Exception)
+            {
+                // Log
+            }
+
+            return address;
         }
 
         public static IDictionary<string, string> GetMetadata(ServiceEntry healthService)
@@ -53,29 +74,27 @@ namespace Steeltoe.Discovery.Consul.Util
             return GetMetadata(healthService.Service.Tags);
         }
 
-        public static IDictionary<string, string> GetMetadata(string[] tags)
+        public static IDictionary<string, string> GetMetadata(IList<string> tags)
         {
             var metadata = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            if (tags == null)
+            if (tags != null)
             {
-                return metadata;
-            }
-
-            foreach (var tag in tags)
-            {
-                var index = tag.IndexOf('=');
-                string key, value;
-                if (index == -1 || Equals(index + 1, tag.Length))
+                foreach (var tag in tags)
                 {
-                    key = value = tag;
-                }
-                else
-                {
-                    key = tag.Substring(0, index);
-                    value = tag.Substring(index + 1);
-                }
+                    var index = tag.IndexOf('=');
+                    string key, value;
+                    if (index == -1 || Equals(index + 1, tag.Length))
+                    {
+                        key = value = tag;
+                    }
+                    else
+                    {
+                        key = tag.Substring(0, index);
+                        value = tag.Substring(index + 1);
+                    }
 
-                metadata[key] = value;
+                    metadata[key] = value;
+                }
             }
 
             return metadata;

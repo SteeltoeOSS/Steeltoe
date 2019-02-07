@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Consul;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -21,43 +22,104 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Consul.Discovery
 {
-    public class TtlScheduler
+    /// <summary>
+    /// The default scheduler used to issue TTL requests to the Consul server
+    /// </summary>
+    public class TtlScheduler : IScheduler
     {
-        private readonly ConcurrentDictionary<string, Timer> _serviceHeartbeats = new ConcurrentDictionary<string, Timer>(StringComparer.OrdinalIgnoreCase);
+        internal readonly ConcurrentDictionary<string, Timer> _serviceHeartbeats = new ConcurrentDictionary<string, Timer>(StringComparer.OrdinalIgnoreCase);
 
-        private readonly IOptionsMonitor<HeartbeatOptions> _heartbeatOptionsMonitor;
-        private readonly ConsulClient _client;
+        internal readonly IConsulClient _client;
 
-        private HeartbeatOptions HeartbeatOptions => _heartbeatOptionsMonitor.CurrentValue;
+        private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
+        private readonly ConsulDiscoveryOptions _options;
+        private readonly ILogger<TtlScheduler> _logger;
 
-        public TtlScheduler(IOptionsMonitor<HeartbeatOptions> heartbeatOptionsMonitor, ConsulClient client)
+        internal ConsulDiscoveryOptions Options
         {
-            _heartbeatOptionsMonitor = heartbeatOptionsMonitor;
-            _client = client;
+            get
+            {
+                if (_optionsMonitor != null)
+                {
+                    return _optionsMonitor.CurrentValue;
+                }
+
+                return _options;
+            }
         }
 
+        internal ConsulHeartbeatOptions HeartbeatOptions
+        {
+            get
+            {
+                return Options.Heartbeat;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TtlScheduler"/> class.
+        /// </summary>
+        /// <param name="optionsMonitor">configuration options</param>
+        /// <param name="client">the Consul client</param>
+        /// <param name="logger">optional logger</param>
+        public TtlScheduler(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client, ILogger<TtlScheduler> logger = null)
+        {
+            _optionsMonitor = optionsMonitor;
+            _client = client;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TtlScheduler"/> class.
+        /// </summary>
+        /// <param name="options">configuration options</param>
+        /// <param name="client">the Consul client</param>
+        /// <param name="logger">optional logger</param>
+        public TtlScheduler(ConsulDiscoveryOptions options, IConsulClient client, ILogger<TtlScheduler> logger = null)
+        {
+            _options = options;
+            _client = client;
+            _logger = logger;
+        }
+
+        /// <inheritdoc/>
         public void Add(string instanceId)
         {
             if (string.IsNullOrWhiteSpace(instanceId))
             {
-                throw new ArgumentNullException(nameof(instanceId));
+                throw new ArgumentException(nameof(instanceId));
             }
 
-            var interval = HeartbeatOptions.ComputeHearbeatInterval();
-            var timer = new Timer(async s => { await PassTtl(s.ToString()); }, instanceId, TimeSpan.Zero, interval);
-            _serviceHeartbeats.AddOrUpdate(instanceId, timer, (key, oldTimer) =>
+            _logger?.LogDebug("Add {instanceId}", instanceId);
+
+            if (HeartbeatOptions != null)
             {
-                oldTimer.Dispose();
-                return timer;
-            });
+                var interval = HeartbeatOptions.ComputeHearbeatInterval();
+
+                var checkId = instanceId;
+                if (!checkId.StartsWith("service:"))
+                {
+                    checkId = "service:" + checkId;
+                }
+
+                var timer = new Timer(async s => { await PassTtl(s.ToString()); }, checkId, TimeSpan.Zero, interval);
+                _serviceHeartbeats.AddOrUpdate(instanceId, timer, (key, oldTimer) =>
+                {
+                    oldTimer.Dispose();
+                    return timer;
+                });
+            }
         }
 
+        /// <inheritdoc/>
         public void Remove(string instanceId)
         {
             if (string.IsNullOrWhiteSpace(instanceId))
             {
-                throw new ArgumentNullException(nameof(instanceId));
+                throw new ArgumentException(nameof(instanceId));
             }
+
+            _logger?.LogDebug("Remove {instanceId}", instanceId);
 
             if (_serviceHeartbeats.TryRemove(instanceId, out var timer))
             {
@@ -65,14 +127,31 @@ namespace Steeltoe.Discovery.Consul.Discovery
             }
         }
 
+        /// <summary>
+        /// Remove all heart beats from scheduler
+        /// </summary>
+        public void Dispose()
+        {
+            foreach (var instance in _serviceHeartbeats.Keys)
+            {
+                Remove(instance);
+            }
+        }
+
         private Task PassTtl(string serviceId)
         {
-            if (!serviceId.StartsWith("service:"))
+            _logger?.LogDebug("Sending consul heartbeat for: {serviceId} ", serviceId);
+
+            try
             {
-                serviceId = "service:" + serviceId;
+                return _client.Agent.PassTTL(serviceId, "ttl");
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Exception sending consul heartbeat for: {serviceId} ", serviceId);
             }
 
-            return _client.Agent.PassTTL(serviceId, "ttl");
+            return Task.CompletedTask;
         }
     }
 }

@@ -12,33 +12,85 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+
 namespace Steeltoe.Discovery.Consul.Discovery
 {
+    /// <summary>
+    /// Configuration options for the ConsulDiscoveryClient
+    /// </summary>
     public class ConsulDiscoveryOptions
     {
+        public const string CONSUL_DISCOVERY_CONFIGURATION_PREFIX = "consul:discovery";
+
+        private string _hostName;
+        private string _hostAddress;
+        private string _scheme = "http";
+
         public ConsulDiscoveryOptions()
         {
-            Register = true;
-            Deregister = true;
-            RegisterHealthCheck = true;
-            FailFast = true;
-            HealthCheckPath = "/actuator/health";
+            _hostName = ResolveHostName();
+            _hostAddress = ResolveHostAddress(_hostName);
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether Consul Discovery client is enabled
+        /// </summary>
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets Tags to use when registering service
         /// </summary>
-        public string[] Tags { get; set; }
+        public IList<string> Tags { get; set; }
 
         /// <summary>
-        /// Gets or sets Alternate server path to invoke for health checking
+        /// Gets or sets values related to Heartbeat
         /// </summary>
-        public string HealthCheckPath { get; set; }
+        public ConsulHeartbeatOptions Heartbeat { get; set; } = new ConsulHeartbeatOptions();
+
+        /// <summary>
+        /// Gets or sets values related to Retrying requests
+        /// </summary>
+        public ConsulRetryOptions Retry { get; set; } = new ConsulRetryOptions();
+
+        /// <summary>
+        /// Gets or sets Tag to query for in service list if one is not listed in serverListQueryTags.
+        /// </summary>
+        public string DefaultQueryTag { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets Add the 'passing` parameter to
+        /// /v1/health/service/serviceName. This pushes health check passing to the server.
+        /// </summary>
+        public bool QueryPassing { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets Whether to register an http or https service
+        /// </summary>
+        public string Scheme
+        {
+            get => _scheme;
+            set => _scheme = value?.ToLower();
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets RegisterHealthCheck in consul.
+        /// Useful during development of a service.
+        /// </summary>
+        public bool RegisterHealthCheck { get; set; } = true;
 
         /// <summary>
         /// Gets or sets Custom health check url to override default
         /// </summary>
         public string HealthCheckUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets Alternate server path to invoke for health checking
+        /// </summary>
+        public string HealthCheckPath { get; set; } = "/actuator/health";
 
         /// <summary>
         /// Gets or sets How often to perform the health check (e.g. 10s), defaults to 10s.
@@ -57,31 +109,38 @@ namespace Steeltoe.Discovery.Consul.Discovery
         public string HealthCheckCriticalTimeout { get; set; } = "30m";
 
         /// <summary>
-        /// Gets or sets IP address to use when accessing service (must also set preferIpAddress to use)
+        /// Gets or sets a value indicating whether health check verifies TLS
         /// </summary>
-        public string IpAddress { get; set; }
-
-        private string _hostName;
+        public bool HealthCheckTlsSkipVerify { get; set; } = false;
 
         /// <summary>
         /// Gets or sets Hostname to use when accessing server
         /// </summary>
         public string HostName
         {
-            get => PreferIpAddress ? IpAddress : _hostName;
+            get => PreferIpAddress ? _hostAddress : _hostName;
             set => _hostName = value;
+        }
+
+        /// <summary>
+        /// Gets or sets IP address to use when accessing service (must also set preferIpAddress to use)
+        /// </summary>
+        public string IpAddress
+        {
+            get => _hostAddress;
+            set => _hostAddress = value;
         }
 
         /// <summary>
         /// Gets or sets Port to register the service under (defaults to listening port)
         /// </summary>
-        public int? Port { get; set; }
+        public int Port { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets Use ip address rather than hostname
         /// during registration
         /// </summary>
-        public bool PreferIpAddress { get; set; }
+        public bool PreferIpAddress { get; set; } = false;
 
         /// <summary>
         /// Gets or sets Service name
@@ -93,49 +152,117 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// </summary>
         public string InstanceId { get; set; }
 
-        private string _scheme = "http";
+        /// <summary>
+        /// Gets or sets a value indicating whether to use agent address or hostname
+        /// </summary>
+        public bool PreferAgentAddress { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets Whether to register an http or https service
+        /// Gets or sets the instance zone to use during registration
         /// </summary>
-        public string Scheme
-        {
-            get => _scheme;
-            set => _scheme = value?.ToLower();
-        }
+        public string InstanceZone { get; set; }
 
         /// <summary>
-        /// Gets or sets Tag to query for in service list if one is not listed in serverListQueryTags.
+        /// Gets or sets the instance groupt to use during registration
         /// </summary>
-        public string DefaultQueryTag { get; set; }
+        public string InstanceGroup { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets Add the 'passing` parameter to
-        /// /v1/health/service/serviceName. This pushes health check passing to the server.
+        /// Gets or sets the metadata tag name of the zone
         /// </summary>
-        public bool QueryPassing { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether gets or sets Register as a service in consul.
-        /// </summary>
-        public bool Register { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether gets or sets Deregister automatic de-registration
-        /// of service in consul.
-        /// </summary>
-        public bool Deregister { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether gets or sets RegisterHealthCheck in consul.
-        /// Useful during development of a service.
-        /// </summary>
-        public bool RegisterHealthCheck { get; set; }
+        public string DefaultZoneMetadataName { get; set; } = "zone";
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets FailFast Throw exceptions during
         /// service registration if true, otherwise, log warnings(defaults to true).
         /// </summary>
-        public bool FailFast { get; set; }
+        public bool FailFast { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets Register as a service in consul.
+        /// </summary>
+        public bool Register { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets Deregister automatic de-registration
+        /// of service in consul.
+        /// </summary>
+        public bool Deregister { get; set; } = true;
+
+        /// <summary>
+        /// Gets a value indicating whether heart beat is enabled
+        /// </summary>
+        public bool IsHeartBeatEnabled
+        {
+            get
+            {
+                return Heartbeat != null ? Heartbeat.Enabled : false;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether retry is enabled
+        /// </summary>
+        public bool IsRetryEnabled
+        {
+            get
+            {
+                return Retry != null ? Retry.Enabled : false;
+            }
+        }
+
+        // TODO: This code lifted from Eureka, refactor into common
+        protected virtual string ResolveHostAddress(string hostName)
+        {
+            string result = null;
+            try
+            {
+                var results = Dns.GetHostAddresses(hostName);
+                if (results != null && results.Length > 0)
+                {
+                    foreach (var addr in results)
+                    {
+                        if (addr.AddressFamily.Equals(AddressFamily.InterNetwork))
+                        {
+                            result = addr.ToString();
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+
+            return result;
+        }
+
+        protected virtual string ResolveHostName()
+        {
+            string result = null;
+            try
+            {
+                result = Dns.GetHostName();
+                if (!string.IsNullOrEmpty(result))
+                {
+                    var response = Dns.GetHostEntry(result);
+                    if (response != null)
+                    {
+                        return response.HostName;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+
+            return result;
+        }
+
+        // public int CatalogServicesWatchDelay { get; set; } = 1000;
+
+        // public int CatalogServicesWatchTimeout { get; set; } = 2;
     }
 }

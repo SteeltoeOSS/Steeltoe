@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Consul;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,10 +21,11 @@ using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Consul.Client;
+using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
-using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -32,6 +34,7 @@ namespace Steeltoe.Discovery.Client
     public static class DiscoveryServiceCollectionExtensions
     {
         public const string EUREKA_PREFIX = "eureka";
+        public const string CONSUL_PREFIX = "consul";
 
         public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, DiscoveryOptions discoveryOptions, IDiscoveryLifecycle lifecycle = null)
         {
@@ -137,25 +140,15 @@ namespace Steeltoe.Discovery.Client
 
         private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
         {
-            var clientConfigsection = config.GetSection(EUREKA_PREFIX);
-            int childCount = clientConfigsection.GetChildren().Count();
-            if (childCount > 0 || info is EurekaServiceInfo)
+            if (IsEurekaConfigured(config, info))
             {
-                EurekaServiceInfo einfo = info as EurekaServiceInfo;
-                var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
-                services.Configure<EurekaClientOptions>(clientSection);
-                services.PostConfigure<EurekaClientOptions>((options) =>
-                {
-                    EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
-                });
-
-                var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
-                services.Configure<EurekaInstanceOptions>(instSection);
-                services.PostConfigure<EurekaInstanceOptions>((options) =>
-                {
-                    EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
-                });
+                ConfigureEurekaServices(services, config, info);
                 AddEurekaServices(services, lifecycle);
+            }
+            else if (IsConsulConfigured(config, info))
+            {
+                ConfigureConsulServices(services, config, info);
+                AddConsulServices(services, config, lifecycle);
             }
             else
             {
@@ -163,17 +156,67 @@ namespace Steeltoe.Discovery.Client
             }
         }
 
-        public class ApplicationLifecycle : IDiscoveryLifecycle
+        #region Consul
+        private static bool IsConsulConfigured(IConfiguration config, IServiceInfo info)
         {
-            public ApplicationLifecycle(IApplicationLifetime lifeCycle, IDiscoveryClient client)
+            var clientConfigsection = config.GetSection(CONSUL_PREFIX);
+            int childCount = clientConfigsection.GetChildren().Count();
+            return childCount > 0;
+        }
+
+        private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, IServiceInfo info)
+        {
+            var consulSection = config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX);
+            services.Configure<ConsulOptions>(consulSection);
+            var consulDiscoverySection = config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX);
+            services.Configure<ConsulDiscoveryOptions>(consulDiscoverySection);
+        }
+
+        private static void AddConsulServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)
+        {
+            services.AddSingleton<IConsulClient>((p) =>
             {
-                ApplicationStopping = lifeCycle.ApplicationStopping;
+                var consulOptions = p.GetRequiredService<IOptions<ConsulOptions>>();
+                return ConsulClientFactory.CreateClient(consulOptions.Value);
+            });
 
-                // hook things up so that that things are unregistered when the application terminates
-                ApplicationStopping.Register(() => { client.ShutdownAsync().GetAwaiter().GetResult(); });
-            }
+            services.AddSingleton<IScheduler, TtlScheduler>();
+            services.AddSingleton<IConsulServiceRegistry, ConsulServiceRegistry>();
+            services.AddSingleton<IConsulRegistration>((p) =>
+            {
+                var opts = p.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
+                return ConsulRegistration.CreateRegistration(config, opts.Value);
+            });
+            services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();
+            services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
+            services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
+        }
+        #endregion Consul
 
-            public CancellationToken ApplicationStopping { get; set; }
+        #region Eureka
+        private static bool IsEurekaConfigured(IConfiguration config, IServiceInfo info)
+        {
+            var clientConfigsection = config.GetSection(EUREKA_PREFIX);
+            int childCount = clientConfigsection.GetChildren().Count();
+            return childCount > 0 || info is EurekaServiceInfo;
+        }
+
+        private static void ConfigureEurekaServices(IServiceCollection services, IConfiguration config, IServiceInfo info)
+        {
+            EurekaServiceInfo einfo = info as EurekaServiceInfo;
+            var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+            services.Configure<EurekaClientOptions>(clientSection);
+            services.PostConfigure<EurekaClientOptions>((options) =>
+            {
+                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
+            });
+
+            var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
+            services.Configure<EurekaInstanceOptions>(instSection);
+            services.PostConfigure<EurekaInstanceOptions>((options) =>
+            {
+                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
+            });
         }
 
         private static void AddEurekaServices(IServiceCollection services, IDiscoveryLifecycle lifecycle)
@@ -207,6 +250,9 @@ namespace Steeltoe.Discovery.Client
             services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
         }
 
+        #endregion Eureka
+
+        #region ServiceInfo
         private static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
         {
             var info = config.GetServiceInfo(serviceName);
@@ -246,6 +292,21 @@ namespace Steeltoe.Discovery.Client
             return (info as EurekaServiceInfo) != null;
         }
 
+        #endregion ServiceInfo
+
+        public class ApplicationLifecycle : IDiscoveryLifecycle
+        {
+            public ApplicationLifecycle(IApplicationLifetime lifeCycle, IDiscoveryClient client)
+            {
+                ApplicationStopping = lifeCycle.ApplicationStopping;
+
+                // hook things up so that that things are unregistered when the application terminates
+                ApplicationStopping.Register(() => { client.ShutdownAsync().GetAwaiter().GetResult(); });
+            }
+
+            public CancellationToken ApplicationStopping { get; set; }
+        }
+
         public class OptionsMonitorWrapper<T> : IOptionsMonitor<T>
         {
             private T _option;
@@ -267,6 +328,5 @@ namespace Steeltoe.Discovery.Client
                 return null;
             }
         }
-
     }
 }

@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Discovery;
+using Xunit;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Discovery.Consul.Discovery.Test
 {
-    public static class DiscoveryApplicationBuilderExtensions
+    public class ConsulRetryOptionsTest
     {
-        public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
+        [Fact]
+        public void Constructor_InitsDefaults()
         {
-            var service = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
-
-            // make sure that the lifcycle object is created
-            var lifecycle = app.ApplicationServices.GetService<IDiscoveryLifecycle>();
-            return app;
+            ConsulRetryOptions opts = new ConsulRetryOptions();
+            Assert.False(opts.Enabled);
+            Assert.Equal(ConsulRetryOptions.DEFAULT_MAX_RETRY_ATTEMPTS, opts.MaxAttempts);
+            Assert.Equal(ConsulRetryOptions.DEFAULT_INITIAL_RETRY_INTERVAL, opts.InitialInterval);
+            Assert.Equal(ConsulRetryOptions.DEFAULT_RETRY_MULTIPLIER, opts.Multiplier);
+            Assert.Equal(ConsulRetryOptions.DEFAULT_MAX_RETRY_INTERVAL, opts.MaxInterval);
         }
     }
 }

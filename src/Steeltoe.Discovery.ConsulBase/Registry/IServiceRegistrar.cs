@@ -12,21 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery.Consul.Registry;
+using System;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Discovery
 {
-    public static class DiscoveryApplicationBuilderExtensions
+    public interface IServiceRegistrar : IDisposable
     {
-        public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
-        {
-            var service = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
+        /// <summary>
+        /// Start the service registrar
+        /// </summary>
+        void Start();
 
-            // make sure that the lifcycle object is created
-            var lifecycle = app.ApplicationServices.GetService<IDiscoveryLifecycle>();
-            return app;
-        }
+        /// <summary>
+        /// Register any registrations configured
+        /// </summary>
+        void Register();
+
+        /// <summary>
+        /// Deregister any registrations configured
+        /// </summary>
+        void Deregister();
     }
 }

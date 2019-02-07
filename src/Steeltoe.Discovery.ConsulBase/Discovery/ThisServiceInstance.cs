@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery.Consul.Util;
+using Steeltoe.Discovery.Consul.Registry;
 using System;
 using System.Collections.Generic;
 
@@ -21,20 +21,19 @@ namespace Steeltoe.Discovery.Consul.Discovery
 {
     internal class ThisServiceInstance : IServiceInstance
     {
-        public ThisServiceInstance(ConsulDiscoveryOptions options)
+        public ThisServiceInstance(IConsulRegistration registration)
         {
-            ServiceId = options.ServiceName;
-            Host = options.HostName;
-            IsSecure = options.Scheme == "https";
-            Port = options.Port ?? (IsSecure ? 443 : 80);
-            var metadata = ConsulServerUtils.GetMetadata(options.Tags);
-            Metadata = metadata;
-            Uri = new Uri($"{options.Scheme}://{Host}:{Port}");
+            ServiceId = registration.Service.Name;
+            Host = registration.Service.Address;
+            IsSecure = registration.IsSecure;
+            Port = registration.Port;
+            Metadata = registration.Metadata;
+            Uri = registration.Uri;
         }
 
         #region Implementation of IServiceInstance
 
-        /// <inheritdoc/>
+            /// <inheritdoc/>
         public string ServiceId { get; }
 
         /// <inheritdoc/>
