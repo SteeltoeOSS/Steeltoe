@@ -78,7 +78,10 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal void Add(InstanceInfo info)
         {
-            _instanceMap[info.InstanceId] = info;
+            if (info.InstanceId != null)
+            {
+                _instanceMap[info.InstanceId] = info;
+            }
         }
 
         internal void Remove(InstanceInfo info)

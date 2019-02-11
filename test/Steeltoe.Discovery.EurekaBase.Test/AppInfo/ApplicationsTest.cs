@@ -57,6 +57,14 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         }
 
         [Fact]
+        public void Add__DoesNotAddAppWithNullInstanceId()
+        {
+            Application app = new Application("app");
+            app.Add(new InstanceInfo { InstanceId = null });
+            Assert.Equal(0, app.Count);
+        }
+
+        [Fact]
         public void Add_AddsTo_ApplicationMap()
         {
             Application app1 = new Application("app1");
