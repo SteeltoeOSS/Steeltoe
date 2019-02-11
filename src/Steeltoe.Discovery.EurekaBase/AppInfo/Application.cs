@@ -78,15 +78,22 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal void Add(InstanceInfo info)
         {
-            if (info.InstanceId != null)
+            if (!string.IsNullOrEmpty(info.InstanceId))
             {
                 _instanceMap[info.InstanceId] = info;
+            }
+            else if (!string.IsNullOrEmpty(info.HostName))
+            {
+                _instanceMap[info.HostName] = info;
             }
         }
 
         internal void Remove(InstanceInfo info)
         {
-            _instanceMap.TryRemove(info.InstanceId, out InstanceInfo removed);
+            if (!_instanceMap.TryRemove(info.InstanceId, out InstanceInfo removed))
+            {
+                _instanceMap.TryRemove(info.HostName, out removed);
+            }
         }
 
         internal ConcurrentDictionary<string, InstanceInfo> InstanceMap
