@@ -49,7 +49,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             {
                 section.Bind(this);
             }
-
         }
 
         internal IConfigurationSection FindServiceSection(IConfigurationSection section, string serviceName)
