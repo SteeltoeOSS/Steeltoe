@@ -12,29 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
-using System;
-
-namespace Steeltoe.Management.Endpoint.Loggers
+namespace Steeltoe.Management.Endpoint.Security
 {
-    [Obsolete]
-    public class LoggersOptions : AbstractOptions, ILoggersOptions
+    public class EndpointClaim
     {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
+        public string Type { get; set; }
 
-        public LoggersOptions()
-            : base()
-        {
-            Id = "loggers";
-        }
-
-        public LoggersOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "loggers";
-            }
-        }
+        public string Value { get; set; }
     }
 }

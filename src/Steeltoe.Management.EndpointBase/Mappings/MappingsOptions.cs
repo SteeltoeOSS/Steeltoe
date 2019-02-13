@@ -14,9 +14,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Mappings
 {
+    [Obsolete]
     public class MappingsOptions : AbstractOptions, IMappingsOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:mappings";

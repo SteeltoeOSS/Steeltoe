@@ -25,12 +25,14 @@ namespace Steeltoe.Management.EndpointOwin
     public static class ManagementOptions
     {
         private static IEnumerable<IManagementOptions> _mgmtOptions;
+
         public static IEnumerable<IManagementOptions> Get()
         {
             if (_mgmtOptions == null)
             {
                 throw new Exception("Management Options not configured");
             }
+
             return _mgmtOptions;
         }
 

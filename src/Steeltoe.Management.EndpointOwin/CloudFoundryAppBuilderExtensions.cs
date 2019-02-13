@@ -21,6 +21,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.EndpointOwin.CloudFoundry;
 using Steeltoe.Management.EndpointOwin.Diagnostics;
+using Steeltoe.Management.EndpointOwin.Env;
 using Steeltoe.Management.EndpointOwin.Health;
 using Steeltoe.Management.EndpointOwin.HeapDump;
 using Steeltoe.Management.EndpointOwin.Info;
@@ -79,7 +80,6 @@ namespace Steeltoe.Management.EndpointOwin
             app.UseDiagnosticSourceMiddleware(loggerFactory);
             app.UseCloudFoundrySecurityMiddleware(configuration, loggerFactory);
             app.UseCloudFoundryActuator(configuration, loggerFactory);
-
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 app.UseThreadDumpActuator(configuration, loggerFactory);
@@ -87,6 +87,7 @@ namespace Steeltoe.Management.EndpointOwin
             }
 
             app.UseInfoActuator(configuration, loggerFactory);
+            app.UseEnvActuator(configuration, loggerFactory);
             var healthOptions = new HealthEndpointOptions(configuration);
             app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory); 
 

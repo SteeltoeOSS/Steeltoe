@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
+    [Obsolete]
     public class MetricsOptions : AbstractOptions, IMetricsOptions
     {
         internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:metrics";

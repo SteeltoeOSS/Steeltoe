@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.Middleware;
-using System.Threading.Tasks;
 using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Security;
+using Steeltoe.Management.EndpointCore;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-    public class HealthEndpointMiddleware : EndpointMiddleware<HealthCheckResult>
+    public class HealthEndpointMiddleware : EndpointMiddleware<HealthCheckResult, ISecurityContext>
     {
         private RequestDelegate _next;
 
@@ -32,10 +34,10 @@ namespace Steeltoe.Management.Endpoint.Health
         {
             _next = next;
         }
-        
+
         [Obsolete]
         public HealthEndpointMiddleware(RequestDelegate next, ILogger<HealthEndpointMiddleware> logger = null)
-            : base(logger: logger)
+            : base(null, logger: logger)
         {
             _next = next;
         }
@@ -64,7 +66,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
         protected internal string DoRequest(HttpContext context)
         {
-            var result = _endpoint.Invoke();
+            var result = _endpoint.Invoke(new CoreSecurityContext(context));
             context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
             return Serialize(result);
         }

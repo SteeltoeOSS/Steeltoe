@@ -12,24 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Security;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointOwin.Health.Test
+namespace Steeltoe.Management.Endpoint.Health.Test
 {
-    internal class TestHealthEndpoint : HealthEndpoint
+    public class AuthStartup
     {
-        public TestHealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
-            : base(options, aggregator, contributors, logger)
+        public AuthStartup(IConfiguration configuration)
         {
+            _configuration = configuration;
         }
 
-        public override HealthCheckResult Invoke(ISecurityContext securityContext)
+        public IConfiguration _configuration;
+
+        public void ConfigureServices(IServiceCollection services)
         {
-            return new HealthCheckResult();
+            services.AddHealthActuator(_configuration);
+        }
+
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseMiddleware<AuthenticatedTestMiddleware>();
+            app.UseHealthActuator();
         }
     }
 }

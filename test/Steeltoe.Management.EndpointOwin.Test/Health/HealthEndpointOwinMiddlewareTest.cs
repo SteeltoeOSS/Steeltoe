@@ -57,8 +57,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
                 // check the default version
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
                 var health = await AssertHealthResponseAsync(HttpStatusCode.OK, HealthStatus.UP, result);
-                Assert.True(health.ContainsKey("diskSpace"));
-
+               
                 // check the down version
                 var result2 = await client.GetAsync("http://localhost/cloudfoundryapplication/down");
                 await AssertHealthResponseAsync(HttpStatusCode.ServiceUnavailable, HealthStatus.DOWN, result2);

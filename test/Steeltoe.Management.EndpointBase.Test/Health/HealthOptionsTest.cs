@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Claims;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -28,9 +29,10 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new HealthOptions();
-            Assert.True(opts.Enabled);
+            var opts = new HealthEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.Equal("health", opts.Id);
+            Assert.Equal(ShowDetails.Never, opts.ShowDetails);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }
 
@@ -47,7 +49,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:health:enabled"] = "true",
                 ["management:endpoints:health:requiredPermissions"] = "NONE",
@@ -70,6 +71,42 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.Equal("health", opts.Id);
             Assert.Equal("/cloudfoundryapplication/health", opts.Path);
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
+        }
+
+        [Fact]
+        public void Constructor_BindsClaimCorrectly()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:health:claim:type"] = "claimtype",
+                ["management:endpoints:health:claim:value"] = "claimvalue",
+                ["management:endpoints:health:role"] = "roleclaimvalue"
+            };
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            var opts = new HealthEndpointOptions(config);
+            Assert.NotNull(opts.Claim); 
+            Assert.Equal("claimtype", opts.Claim.Type);
+            Assert.Equal("claimvalue", opts.Claim.Value);
+        }
+
+        [Fact]
+        public void Constructor_BindsRoleCorrectly()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:health:role"] = "roleclaimvalue"
+            };
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            var opts = new HealthEndpointOptions(config);
+            Assert.NotNull(opts.Claim);
+            Assert.Equal(ClaimTypes.Role, opts.Claim.Type);
+            Assert.Equal("roleclaimvalue", opts.Claim.Value);
         }
     }
 }

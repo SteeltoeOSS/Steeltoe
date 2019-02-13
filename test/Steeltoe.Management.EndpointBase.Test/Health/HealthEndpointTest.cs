@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var agg = new DefaultHealthAggregator();
             var ep = new HealthEndpoint(opts, agg, contributors, GetLogger<HealthEndpoint>());
 
-            var health = ep.Invoke();
+            var health = ep.Invoke(null);
             Assert.NotNull(health);
             Assert.Equal(HealthStatus.UNKNOWN, health.Status);
         }
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contributors);
 
-            var info = ep.Invoke();
+            var info = ep.Invoke(null);
 
             foreach (var contrib in contributors)
             {
@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2", true), new TestContrib("h3") };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contributors);
 
-            var info = ep.Invoke();
+            var info = ep.Invoke(null);
 
             foreach (var contrib in contributors)
             {

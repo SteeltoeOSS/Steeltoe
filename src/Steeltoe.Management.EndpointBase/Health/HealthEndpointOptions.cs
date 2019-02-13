@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System.Security.Claims;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -40,6 +41,21 @@ namespace Steeltoe.Management.Endpoint.Health
             {
                 RequiredPermissions = Permissions.RESTRICTED;
             }
+
+            if (Claim == null && !string.IsNullOrEmpty(Role))
+            {
+                Claim = new EndpointClaim
+                {
+                    Type = ClaimTypes.Role,
+                    Value = Role
+                };
+            }
         }
+
+        public ShowDetails ShowDetails { get; set; }
+
+        public EndpointClaim Claim { get; set; }
+
+        public string Role { get; set; }
     }
 }

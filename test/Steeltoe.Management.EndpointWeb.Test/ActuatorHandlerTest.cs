@@ -109,7 +109,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
         }
 
         [Fact]
-        public async void HealthHandler_ReturnsDetails()
+        public async void HealthHandler_ReturnsDetailsd()
         {
             var settings = DefaultTestSettingsConfig.DefaultSettings;
             settings.Add("management:endpoints:health:showdetails", "always");

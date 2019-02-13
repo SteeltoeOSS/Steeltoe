@@ -14,9 +14,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Refresh
 {
+    [Obsolete]
     public class RefreshOptions : AbstractOptions, IRefreshOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:refresh";

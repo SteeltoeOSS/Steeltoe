@@ -14,13 +14,14 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-    public class HealthEndpoint : AbstractEndpoint<HealthCheckResult>
+    public class HealthEndpoint : AbstractEndpoint<HealthCheckResult, ISecurityContext>
     {
         private IHealthAggregator _aggregator;
         private IList<IHealthContributor> _contributors;
@@ -52,9 +53,10 @@ namespace Steeltoe.Management.Endpoint.Health
             }
         }
 
-        public override HealthCheckResult Invoke()
+        public override HealthCheckResult Invoke(ISecurityContext securityContext)
         {
-            return BuildHealth(_aggregator, _contributors);
+
+            return BuildHealth(_aggregator, _contributors, securityContext);
         }
 
         public int GetStatusCode(HealthCheckResult health)
@@ -64,9 +66,23 @@ namespace Steeltoe.Management.Endpoint.Health
                 : 200;
         }
 
-        protected virtual HealthCheckResult BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors)
+        protected virtual HealthCheckResult BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors, ISecurityContext securityContext)
         {
-            return _aggregator.Aggregate(contributors);
+            var result = _aggregator.Aggregate(contributors);
+            var showDetails = Options.ShowDetails;
+
+            if (showDetails == ShowDetails.Never
+                || (showDetails == ShowDetails.WhenAuthorized
+                      && !securityContext.HasClaim(Options.Claim)))
+            {
+                result = new HealthCheckResult
+                {
+                    Status = result.Status,
+                    Description = result.Description
+                };
+            }
+
+            return result;
         }
     }
 }

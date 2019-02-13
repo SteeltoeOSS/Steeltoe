@@ -17,13 +17,14 @@ using Microsoft.Owin;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Health
 {
-    public class HealthEndpointOwinMiddleware : EndpointOwinMiddleware<HealthCheckResult>
+    public class HealthEndpointOwinMiddleware : EndpointOwinMiddleware<HealthCheckResult, ISecurityContext>
     {
         public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HealthEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, mgmtOptions, logger: logger)
@@ -47,7 +48,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
             else
             {
                 _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(HealthEndpoint));
-                var result = _endpoint.Invoke();
+                var result = _endpoint.Invoke(new OwinSecurityContext(context));
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
                 context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
                 await context.Response.WriteAsync(Serialize(result));
