@@ -24,6 +24,11 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
 {
     public class ThreadDumpEndpointOwinMiddlewareTest : BaseTest
     {
+        public ThreadDumpEndpointOwinMiddlewareTest()
+        {
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public async void ThreadDumpInvoke_ReturnsExpected()
         {

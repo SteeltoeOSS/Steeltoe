@@ -47,7 +47,6 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication"
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();

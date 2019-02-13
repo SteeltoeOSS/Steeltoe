@@ -31,7 +31,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHeapDumpActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false)
+        public static void RegisterHeapDumpActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -50,11 +50,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
                 foreach (var mgmt in mgmtOptions)
                 {
-                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
-                    {
-                        continue;
-                    }
-
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;

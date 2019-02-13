@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(HealthHandler));
 
             var result = _endpoint.Invoke();
-            context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+            context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
             context.Response.Write(Serialize(result));
             context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
         }

@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false)
+        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterHealthActuator(config, addToDiscovery, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
+            container.RegisterHealthActuator(config, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
-        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery, params Type[] contributors)
+        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config, params Type[] contributors)
         {
             if (container == null)
             {
@@ -65,7 +65,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterHealthActuator(config, addToDiscovery, new DefaultHealthAggregator(), contributors);
+            container.RegisterHealthActuator(config, new DefaultHealthAggregator(), contributors);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="aggregator">Your <see cref="IHealthAggregator"/></param>
         /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
-        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery, IHealthAggregator aggregator, params Type[] contributors)
+        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
         {
             if (container == null)
             {
@@ -100,12 +100,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 
                 foreach (var mgmt in mgmtOptions)
                 {
-                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
-                    {
-                        continue;
-                    }
-
-                    mgmt.EndpointOptions.Add(options);
+                   mgmt.EndpointOptions.Add(options);
                 }
                 return options;
             }).As<IHealthOptions>().IfNotRegistered(typeof(IHealthOptions)).SingleInstance();

@@ -26,18 +26,13 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
     public static class EnvContainerBuilderExtensions
     {
-        public static void RegisterEnvActuator(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
-        {
-            RegisterEnvActuator(container, config, false, hostingEnv);
-        }
-
         /// <summary>
         /// Register the ENV endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
-        public static void RegisterEnvActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery, IHostingEnvironment hostingEnv = null)
+        public static void RegisterEnvActuator(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
         {
             if (container == null)
             {
@@ -49,18 +44,12 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            // container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
             container.Register(c =>
             {
                 var envOptions = new EnvEndpointOptions(config);
                 var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
                 foreach (var mgmt in mgmtOptions)
                 {
-                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
-                    {
-                        continue;
-                    }
-
                     mgmt.EndpointOptions.Add(envOptions);
                 }
                 return envOptions;

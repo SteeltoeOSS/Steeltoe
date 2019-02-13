@@ -15,9 +15,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using System;
 using System.Collections.Generic;
@@ -33,9 +30,8 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
-        /// <param name="addToDiscovery"></param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Thread Dump Endpoint added</returns>
-        public static IAppBuilder UseThreadDumpActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
+        public static IAppBuilder UseThreadDumpActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -51,11 +47,6 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
             var mgmtOptions = ManagementOptions.Get(config);
             foreach (var mgmt in mgmtOptions)
             {
-                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
-                {
-                    continue;
-                }
-
                 mgmt.EndpointOptions.Add(options);
             }
 
@@ -63,7 +54,6 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
             return builder.UseThreadDumpActuator(options, threadDumper, loggerFactory);
         }
 
-       
         /// <summary>
         /// Add HealthCheck actuator endpoint to OWIN Pipeline
         /// </summary>

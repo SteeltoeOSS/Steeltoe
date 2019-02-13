@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             if (context.Request.HttpMethod == "GET")
             {
                 var result = _endpoint.Invoke(GetRequestUri(context.Request));
-                context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+                context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
                 context.Response.Write(Serialize(result));
             }
         }

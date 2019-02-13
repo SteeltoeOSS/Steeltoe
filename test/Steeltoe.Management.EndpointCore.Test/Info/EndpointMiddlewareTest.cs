@@ -32,11 +32,10 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         private Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:info:enabled"] = "true",
-            ["management:endpoints:info:sensitive"] = "false",
             ["management:endpoints:info:id"] = "infomanagement",
+            ["management:endpoints:actuator:exposure:include:0"] = "*",
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0'",
             ["info:application:date"] = "5/1/2008",

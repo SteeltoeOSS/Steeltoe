@@ -34,7 +34,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         /// <param name="applicationPathOnDisk">Provide the path to the app directory if heap dumps are failing due to access restrictions</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging inside the middleware and its components</param>
         /// <returns>Your <see cref="IAppBuilder"/> with Heap Dump middleware attached</returns>
-        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
+        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -50,11 +50,6 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
             var mgmtOptions = ManagementOptions.Get(config);
             foreach (var mgmt in mgmtOptions)
             {
-                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
-                {
-                    continue;
-                }
-
                 mgmt.EndpointOptions.Add(options);
             }
 

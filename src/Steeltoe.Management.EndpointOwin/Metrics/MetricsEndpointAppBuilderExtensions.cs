@@ -35,10 +35,9 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring metrics endpoint</param>
-        /// <param name="mgmtOptions"></param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Metrics Endpoint added</returns>
-        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
+        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -50,7 +49,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 throw new ArgumentNullException(nameof(config));
             }
 
-            return builder.UseMetricsActuator(config, OpenCensusStats.Instance, OpenCensusTags.Instance, loggerFactory, addToDiscovery);
+            return builder.UseMetricsActuator(config, OpenCensusStats.Instance, OpenCensusTags.Instance, loggerFactory);
         }
 
         /// <summary>
@@ -60,10 +59,9 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring metrics endpoint</param>
         /// <param name="stats">Class for recording statistics - See also: <seealso cref="OpenCensusStats"/></param>
         /// <param name="tags">Class using for recording statistics</param>
-        /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Metrics Endpoint added</returns>
-        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IStats stats, ITags tags, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
+        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IStats stats, ITags tags, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -89,11 +87,6 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             var mgmtOptions = ManagementOptions.Get(config);
             foreach (var mgmt in mgmtOptions)
             {
-                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
-                {
-                    continue;
-                }
-
                 mgmt.EndpointOptions.Add(options);
             }
 

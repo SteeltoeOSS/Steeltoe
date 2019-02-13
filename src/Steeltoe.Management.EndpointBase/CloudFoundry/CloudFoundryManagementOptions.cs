@@ -29,10 +29,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             Path = DEFAULT_ACTUATOR_PATH;
         }
 
-        public CloudFoundryManagementOptions(IConfiguration config)
+        public CloudFoundryManagementOptions(IConfiguration config, bool isCloudFoundry = false)
             : base(config)
         {
-            Path = DEFAULT_ACTUATOR_PATH; // Ignore config path and override to /cloudfoundryapplication
+            if (isCloudFoundry)
+            {
+                Path = DEFAULT_ACTUATOR_PATH; // Ignore config path and override to /cloudfoundryapplication
+            }
         }
     }
 }

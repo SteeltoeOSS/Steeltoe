@@ -44,10 +44,7 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
             ServiceCollection services = new ServiceCollection();
             var appSettings = new Dictionary<string, string>()
             {
-                ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
-                ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false"
+                ["management:endpoints:enabled"] = "false"
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);

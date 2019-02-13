@@ -45,10 +45,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
-                ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false"
+                ["management:endpoints:info:enabled"] = "true"
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);

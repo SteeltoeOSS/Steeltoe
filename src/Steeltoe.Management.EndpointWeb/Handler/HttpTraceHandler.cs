@@ -12,12 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Management.EndpointBase.Security
-{
-    public class SensitiveClaim
-    {
-        public string Type { get; set; }
+using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Security;
+using Steeltoe.Management.Endpoint.Trace;
+using System;
+using System.Collections.Generic;
+using System.Web;
 
-        public string Value { get; set; }
+namespace Steeltoe.Management.Endpoint.Handler
+{
+    public class HttpTraceHandler : ActuatorHandler<HttpTraceEndpoint, HttpTraceResult>
+    {
+        public HttpTraceHandler(HttpTraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices,IEnumerable<IManagementOptions> mgmtOptions, ILogger<HttpTraceHandler> logger = null)
+          : base(endpoint, securityServices, mgmtOptions, null, true, logger)
+        {
+        }
     }
 }

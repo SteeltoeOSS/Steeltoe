@@ -89,7 +89,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 // GET /metrics
                 var serialInfo = this.HandleRequest(null);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
-                response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
+                response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
                 response.StatusCode = (int)HttpStatusCode.OK;
                 await context.Response.WriteAsync(serialInfo);
             }

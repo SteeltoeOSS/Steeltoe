@@ -67,6 +67,5 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         public bool AddTimeTaken { get; set; } = true;
 
-        protected override bool DefaultSensitive => true;
     }
 }

@@ -33,9 +33,8 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring refresh endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
-        /// <param name="addToDiscovery"></param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Refresh Endpoint added</returns>
-        public static IAppBuilder UseRefreshActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
+        public static IAppBuilder UseRefreshActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -51,11 +50,6 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
             var mgmtOptions = ManagementOptions.Get(config);
             foreach (var mgmt in mgmtOptions)
             {
-                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
-                {
-                    continue;
-                }
-
                 mgmt.EndpointOptions.Add(options);
             }
 

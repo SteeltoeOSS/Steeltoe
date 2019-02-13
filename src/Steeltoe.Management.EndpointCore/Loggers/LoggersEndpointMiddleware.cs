@@ -71,9 +71,9 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 }
                 else
                 {
-                    paths.AddRange(_mgmtOptions.Select( opt => $"{opt.Path}/{_endpoint.Id}"));
+                    paths.AddRange(_mgmtOptions.Select( opt => $"{opt.Path}/{_endpoint.Path}"));
                 }
-                    
+
                 foreach (var path in paths)
                 {
                     if (ChangeLoggerLevel(request, path))
@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             // GET request
             var serialInfo = this.HandleRequest(null);
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+            response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
             await context.Response.WriteAsync(serialInfo);
         }
 

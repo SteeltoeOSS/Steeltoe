@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Discovery
 {
@@ -20,9 +21,12 @@ namespace Steeltoe.Management.Endpoint.Discovery
     {
         private const string DEFAULT_ACTUATOR_PATH = "/actuator";
 
+        public Exposure Exposure { get; set; }
+
         public ActuatorManagementOptions()
         {
             Path = DEFAULT_ACTUATOR_PATH;
+            Exposure = new Exposure();
         }
 
         public ActuatorManagementOptions(IConfiguration config)
@@ -32,6 +36,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
             {
                 Path = DEFAULT_ACTUATOR_PATH;
             }
+            Exposure = new Exposure(config);
         }
     }
 }

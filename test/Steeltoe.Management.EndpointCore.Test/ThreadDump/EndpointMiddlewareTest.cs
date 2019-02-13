@@ -37,10 +37,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:dump:enabled"] = "true",
-            ["management:endpoints:dump:sensitive"] = "false",
         };
 
         [Fact]
@@ -94,7 +92,11 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var actOptions = new ActuatorManagementOptions() { Path = "/" };
+            var actOptions = new ActuatorManagementOptions()
+            {
+                Path = "/",
+                Exposure = new Exposure { Include = new List<string> { "*" } }
+            };
 
             var opts = new ThreadDumpEndpointOptions();
             actOptions.EndpointOptions.Add(opts);

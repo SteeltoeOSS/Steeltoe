@@ -36,7 +36,6 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseActuatorSecurity();
             app.UseDiscoveryActuator();
             app.UseInfoActuator();
         }

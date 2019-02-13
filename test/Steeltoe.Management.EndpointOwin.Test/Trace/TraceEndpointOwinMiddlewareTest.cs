@@ -24,6 +24,11 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
 {
     public class TraceEndpointOwinMiddlewareTest : BaseTest
     {
+        public TraceEndpointOwinMiddlewareTest()
+        {
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public async void TraceInvoke_ReturnsExpected()
         {

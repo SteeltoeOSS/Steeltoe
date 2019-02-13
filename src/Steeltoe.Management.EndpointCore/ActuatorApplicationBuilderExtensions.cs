@@ -16,10 +16,10 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="app"></param>
         public static void UseActuators(this IApplicationBuilder app)
         {
-            app.UseActuatorSecurity();
+           // app.UseActuatorSecurity();
             app.UseDiscoveryActuator();
 
-           // app.UseInfoActuator();
+          //  app.UseInfoActuator();
             //app.UseHealthActuator();
 
         }

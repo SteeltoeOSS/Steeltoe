@@ -45,10 +45,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
-                ["management:endpoints:heapdump:enabled"] = "false",
-                ["management:endpoints:heapdump:sensitive"] = "false",
+                ["management:endpoints:heapdump:enabled"] = "false"
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);

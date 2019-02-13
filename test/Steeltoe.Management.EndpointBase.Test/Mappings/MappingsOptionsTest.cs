@@ -27,7 +27,6 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         {
             var opts = new MappingsOptions();
             Assert.True(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("mappings", opts.Id);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }

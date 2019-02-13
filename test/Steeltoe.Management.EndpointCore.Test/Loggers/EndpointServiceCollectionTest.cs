@@ -47,10 +47,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
-                ["management:endpoints:loggers:enabled"] = "true",
-                ["management:endpoints:loggers:sensitive"] = "false",
+                ["management:endpoints:loggers:enabled"] = "true"
             };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();

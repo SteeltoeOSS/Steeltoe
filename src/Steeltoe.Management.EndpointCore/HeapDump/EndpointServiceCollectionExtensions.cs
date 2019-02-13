@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddHeapDumpActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
+        public static void AddHeapDumpActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
@@ -45,9 +45,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
             var options = new HeapDumpEndpointOptions(config);
             services.TryAddSingleton<IHeapDumpOptions>(options);
-            services.RegisterEndpointOptions(options, addToDiscovery);
+            services.RegisterEndpointOptions(options);
 
-            //services.TryAddSingleton<IHeapDumpOptions>(new HeapDumpOptions(config));
             services.TryAddSingleton<IHeapDumper, HeapDumper>();
             services.TryAddSingleton<HeapDumpEndpoint>();
         }

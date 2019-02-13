@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
@@ -39,7 +40,7 @@ namespace Steeltoe.Management.EndpointOwin
             {
                 _mgmtOptions = new List<IManagementOptions>
                 {
-                     new CloudFoundryManagementOptions(config),
+                     new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry),
                      new ActuatorManagementOptions(config)
                 };
             }

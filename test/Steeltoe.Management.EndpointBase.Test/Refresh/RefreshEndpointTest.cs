@@ -41,12 +41,9 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:loggers:sensitive"] = "true",
                 ["management:endpoints:heapdump:enabled"] = "true",
-                ["management:endpoints:heapdump:sensitive"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
@@ -59,7 +56,6 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             Assert.NotNull(result);
 
             Assert.Contains("management:endpoints:loggers:enabled", result);
-            Assert.Contains("management:endpoints:heapdump:sensitive", result);
             Assert.Contains("management:endpoints:cloudfoundry:enabled", result);
         }
     }

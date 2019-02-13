@@ -20,41 +20,11 @@ namespace Steeltoe.Management.Endpoint
 {
     public static class ActuatorServiceCollectionExtensions
     {
-        public static void AddDiscoveryActuators(this IServiceCollection services, IConfiguration config)
-        {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            services.AddDiscoveryActuator(config);
-            services.AddInfoActuator(config, true);
-            services.AddHealthActuator(config, true);
-        }
-
-        public static void AddAllDiscoveryActuators(this IServiceCollection services, IConfiguration config)
-        {
-            services.AddDiscoveryActuators(config);
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                services.AddThreadDumpActuator(config, true);
-                services.AddHeapDumpActuator(config, true);
-            }
-
-            services.AddLoggersActuator(config, true);
-            services.AddTraceActuator(config, true);
-            services.AddMappingsActuator(config, true);
-            services.AddEnvActuator(config, true);
-            services.AddRefreshActuator(config, true);
-            services.AddMappingsActuator(config, true);
-        }
-
-        public static void RegisterEndpointOptions(this IServiceCollection services, IEndpointOptions options, bool addToDiscovery)
+        public static void RegisterEndpointOptions(this IServiceCollection services, IEndpointOptions options)
         {
             var mgmtOptions = services.BuildServiceProvider().GetServices<IManagementOptions>();
             foreach (var mgmt in mgmtOptions)
             {
-                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
-                {
-                    continue;
-                }
-
                 mgmt.EndpointOptions.Add(options);
             }
         }

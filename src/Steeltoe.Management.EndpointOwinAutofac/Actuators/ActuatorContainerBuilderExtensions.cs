@@ -58,24 +58,5 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             container.RegisterType<ActuatorDiscoveryEndpointOwinMiddleware>().SingleInstance();
         }
 
-        /// <summary>
-        /// Add security checks on requests to OWIN middlewares
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterActuatorSecurityMiddleware(this ContainerBuilder container, IConfiguration config)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-             container.RegisterType<ActuatorSecurityOwinMiddleware>().SingleInstance();
-        }
     }
 }

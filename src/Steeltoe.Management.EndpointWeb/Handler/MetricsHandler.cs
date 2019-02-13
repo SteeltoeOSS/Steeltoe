@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Handler
                 // GET /metrics
                 var serialInfo = this.HandleRequest(null);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
-                response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+                response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
                 response.StatusCode = (int)HttpStatusCode.OK;
                 context.Response.Write(serialInfo);
             }

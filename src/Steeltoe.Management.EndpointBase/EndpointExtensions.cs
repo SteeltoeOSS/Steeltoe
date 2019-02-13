@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Management.Endpoint.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,29 +39,53 @@ namespace Steeltoe.Management.Endpoint
             return endpointOptions.DefaultEnabled;
         }
 
-        public static bool IsSensitive(this IEndpointOptions options, IManagementOptions mgmtOptions)
+        public static bool IsExposed(this IEndpointOptions options, IManagementOptions mgmtOptions)
         {
-            var endpointOptions = (AbstractEndpointOptions)options;
+            var actOptions = mgmtOptions as ActuatorManagementOptions;
 
-            if (endpointOptions.Sensitive.HasValue)
+            if (!string.IsNullOrEmpty(options.Id) && actOptions != null && actOptions.Exposure != null)
             {
-                return endpointOptions.Sensitive.Value;
+                var exclude = actOptions.Exposure.Exclude;
+                if (exclude != null && (exclude.Contains("*") || exclude.Contains(options.Id)))
+                {
+                    return false;
+                }
+
+                var include = actOptions.Exposure.Include;
+                if (include != null && (include.Contains("*") || include.Contains(options.Id)))
+                {
+                    return true;
+                }
+
+                return false;
             }
 
-            if (mgmtOptions.Sensitive.HasValue)
-            {
-                return mgmtOptions.Sensitive.Value;
-            }
-
-            return endpointOptions.DefaultSensitive;
+            return true;
         }
+
+        //public static bool IsSensitive(this IEndpointOptions options, IManagementOptions mgmtOptions)
+        //{
+        //    var endpointOptions = (AbstractEndpointOptions)options;
+
+        //    if (endpointOptions.Sensitive.HasValue)
+        //    {
+        //        return endpointOptions.Sensitive.Value;
+        //    }
+
+        //    if (mgmtOptions.Sensitive.HasValue)
+        //    {
+        //        return mgmtOptions.Sensitive.Value;
+        //    }
+
+        //    return endpointOptions.DefaultSensitive;
+        //}
 
         public static bool RequestVerbAndPathMatch(this IEndpoint endpoint, string httpMethod, string requestPath, IEnumerable<HttpMethod> allowedMethods, IEnumerable<IManagementOptions> mgmtOptions, bool exactMatch)
         {
             IManagementOptions matchingMgmtContext = null;
-            return (exactMatch ? endpoint.RequestPathMatches(requestPath, mgmtOptions, out matchingMgmtContext)
-                : endpoint.RequestPathStartsWith(requestPath, mgmtOptions, out matchingMgmtContext))
+            return endpoint.RequestPathMatches(requestPath, mgmtOptions, out matchingMgmtContext, exactMatch)
                 && endpoint.IsEnabled(matchingMgmtContext)
+                && endpoint.IsExposed(matchingMgmtContext)
                 && allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
@@ -69,65 +94,47 @@ namespace Steeltoe.Management.Endpoint
             return mgmtContext == null ? endpoint.Enabled : endpoint.Options.IsEnabled(mgmtContext);
         }
 
-        public static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions,  out IManagementOptions matchingContext)
+        public static bool IsExposed(this IEndpoint endpoint, IManagementOptions mgmtContext)
         {
-            matchingContext = null;
-
-            if (mgmtOptions == null)
-            {
-                return requestPath.Equals(endpoint.Path);
-            }
-            else
-            {
-                foreach (var context in mgmtOptions)
-                {
-                    if (context.EndpointOptions.Any(opt => opt.Id == endpoint.Id))
-                    {
-                        var contextPath = context.Path;
-                        if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpoint.Path))
-                        {
-                            contextPath += "/";
-                        }
-
-                        var fullPath = contextPath + endpoint.Path;
-                        if (requestPath.Equals(fullPath))
-                        {
-                            matchingContext = context;
-                            return true;
-                        }
-                    }
-                }
-
-                return false;
-            }
+            return mgmtContext == null ? true : endpoint.Options.IsExposed(mgmtContext);
         }
 
-        public static bool RequestPathStartsWith(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext)
+        public static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)
         {
             matchingContext = null;
+            foreach (var path in endpoint.OtherPaths)
+            {
+                if (path.Matches(exactMatch, mgmtOptions, requestPath, out matchingContext))
+                {
+                    return true;
+                }
+            }
 
+            return false;
+        }
+
+        private static bool Matches(this string endpointPath, bool exactMatch, IEnumerable<IManagementOptions> mgmtOptions, string requestPath, out IManagementOptions matchingContext)
+        {
+            matchingContext = null;
             if (mgmtOptions == null)
             {
-                return requestPath.StartsWith(endpoint.Path);
+                return exactMatch ? requestPath.Equals(endpointPath) : requestPath.StartsWith(endpointPath);
             }
             else
             {
                 foreach (var context in mgmtOptions)
                 {
-                    if (context.EndpointOptions.Any(opt => opt.Id == endpoint.Id))
+                    var contextPath = context.Path;
+                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpointPath))
                     {
-                        var contextPath = context.Path;
-                        if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpoint.Path))
-                        {
-                            contextPath += "/";
-                        }
+                        contextPath += "/";
+                    }
 
-                        var fullPath = contextPath + endpoint.Path;
-                        if (requestPath.StartsWith(fullPath))
-                        {
-                            matchingContext = context;
-                            return true;
-                        }
+                    var fullPath = contextPath + endpointPath;
+                    if (exactMatch ? requestPath.Equals(fullPath) : requestPath.StartsWith(fullPath))
+                    {
+                        matchingContext = context;
+                        return true;
                     }
                 }
 

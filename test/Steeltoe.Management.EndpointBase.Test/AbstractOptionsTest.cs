@@ -27,10 +27,8 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             TestOptions2 opts = new TestOptions2();
             Assert.True(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled.HasValue);
-            Assert.False(opts.Global.Sensitive.HasValue);
             Assert.Equal("/", opts.Global.Path);
             Assert.Equal(Permissions.UNDEFINED, opts.RequiredPermissions);
         }
@@ -49,15 +47,13 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void CanSetEnableSensitive()
+        public void CanSetEnable()
         {
             TestOptions2 opt2 = new TestOptions2()
             {
                 Enabled = false,
-                Sensitive = true
             };
             Assert.False(opt2.Enabled);
-            Assert.True(opt2.Sensitive);
         }
 
         [Fact]
@@ -66,10 +62,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "true",
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false",
                 ["management:endpoints:info:id"] = "infomanagement",
                 ["management:endpoints:info:requiredPermissions"] = "NONE"
             };
@@ -81,11 +75,9 @@ namespace Steeltoe.Management.Endpoint.Test
 
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled);
-            Assert.True(opts.Global.Sensitive);
             Assert.Equal("/management", opts.Global.Path);
 
             Assert.True(opts.Enabled);
-            Assert.False(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
             Assert.Equal("/management/infomanagement", opts.Path);
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
@@ -97,7 +89,6 @@ namespace Steeltoe.Management.Endpoint.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "true",
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:info:id"] = "infomanagement"
             };
@@ -109,11 +100,9 @@ namespace Steeltoe.Management.Endpoint.Test
 
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled);
-            Assert.True(opts.Global.Sensitive);
             Assert.Equal("/management", opts.Global.Path);
 
             Assert.False(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
             Assert.Equal("/management/infomanagement", opts.Path);
         }

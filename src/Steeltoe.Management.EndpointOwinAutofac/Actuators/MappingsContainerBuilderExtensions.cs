@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="apiExplorer"><see cref="ApiExplorer"/> for iterating registered routes</param>
-        public static void RegisterMappingsActuator(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer, bool addToDiscovery = false)
+        public static void RegisterMappingsActuator(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer)
         {
             if (container == null)
             {
@@ -56,10 +56,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
                 foreach (var mgmt in mgmtOptions)
                 {
-                    if (!(mgmt is ActuatorManagementOptions) || addToDiscovery)
-                    {
-                        mgmt.EndpointOptions.Add(options);
-                    }
+                    mgmt.EndpointOptions.Add(options);
                 }
                 return options;
             }).As<IMappingsOptions>().IfNotRegistered(typeof(IMappingsOptions));

@@ -28,7 +28,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var opts = new TraceOptions();
             Assert.True(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("trace", opts.Id);
             Assert.Equal(100, opts.Capacity);
             Assert.True(opts.AddTimeTaken);
@@ -56,12 +55,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:loggers:sensitive"] = "true",
                 ["management:endpoints:trace:enabled"] = "true",
-                ["management:endpoints:trace:sensitive"] = "true",
                 ["management:endpoints:trace:capacity"] = "1000",
                 ["management:endpoints:trace:addTimeTaken"] = "false",
                 ["management:endpoints:trace:addRequestHeaders"] = "false",
@@ -84,13 +80,11 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
 
             Assert.True(cloudOpts.Enabled);
-            Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
             Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("trace", opts.Id);
             Assert.Equal("/cloudfoundryapplication/trace", opts.Path);
             Assert.Equal(1000, opts.Capacity);

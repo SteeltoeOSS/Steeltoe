@@ -33,6 +33,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
             _threadDumper = threadDumper;
             _logger = logger;
+            OtherPaths.Add("dump");
         }
 
         public new IThreadDumpOptions Options

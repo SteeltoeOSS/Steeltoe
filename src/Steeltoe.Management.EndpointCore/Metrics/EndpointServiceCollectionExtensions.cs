@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public static class EndpointServiceCollectionExtensions
     {
-        public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
+        public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
             var options = new MetricsEndpointOptions(config);
             services.TryAddSingleton<IMetricsOptions>(options);
-            services.RegisterEndpointOptions(options, addToDiscovery);
+            services.RegisterEndpointOptions(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
 

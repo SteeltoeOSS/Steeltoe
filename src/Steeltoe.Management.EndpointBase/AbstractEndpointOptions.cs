@@ -77,6 +77,7 @@ namespace Steeltoe.Management.Endpoint
             get { return false; }
         }
 
+        [Obsolete]
         public virtual bool? Sensitive
         {
             get
@@ -121,6 +122,7 @@ namespace Steeltoe.Management.Endpoint
 
         public virtual bool DefaultEnabled { get; } = true;
 
+        [Obsolete]
         public virtual bool DefaultSensitive { get; } = true;
     }
 }

@@ -72,10 +72,8 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:loggers:sensitive"] = "true",
                 ["management:endpoints:heapdump:enabled"] = "true",
                 ["management:endpoints:heapdump:sensitive"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
@@ -92,7 +90,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Assert.Equal("MemoryConfigurationProvider", desc.Name);
             var props = desc.Properties;
             Assert.NotNull(props);
-            Assert.Equal(9, props.Count);
+            Assert.Equal(7, props.Count);
             Assert.Contains("management:endpoints:enabled", props.Keys);
             var prop = props["management:endpoints:enabled"];
             Assert.NotNull(prop);
@@ -107,12 +105,9 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:loggers:sensitive"] = "true",
                 ["management:endpoints:heapdump:enabled"] = "true",
-                ["management:endpoints:heapdump:sensitive"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
@@ -130,7 +125,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Assert.Equal("MemoryConfigurationProvider", desc.Name);
             var props = desc.Properties;
             Assert.NotNull(props);
-            Assert.Equal(9, props.Count);
+            Assert.Equal(6, props.Count);
             Assert.Contains("management:endpoints:cloudfoundry:validatecertificates", props.Keys);
             var prop = props["management:endpoints:cloudfoundry:validatecertificates"];
             Assert.NotNull(prop);
@@ -145,12 +140,9 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:loggers:sensitive"] = "true",
                 ["management:endpoints:heapdump:enabled"] = "true",
-                ["management:endpoints:heapdump:sensitive"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
@@ -170,7 +162,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Assert.Equal("MemoryConfigurationProvider", desc.Name);
             var props = desc.Properties;
             Assert.NotNull(props);
-            Assert.Equal(9, props.Count);
+            Assert.Equal(6, props.Count);
             Assert.Contains("management:endpoints:loggers:enabled", props.Keys);
             var prop = props["management:endpoints:loggers:enabled"];
             Assert.NotNull(prop);

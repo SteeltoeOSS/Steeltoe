@@ -21,9 +21,8 @@ namespace Steeltoe.Management.EndpointWeb.Test
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:info:enabled"] = "true",
-            ["management:endpoints:info:sensitive"] = "false",
-            ["management:endpoints:health:sensitive"] = "false",
             ["management:endpoints:info:id"] = "infomanagement",
+            ["management:endpoints:actuator:exposure:include:0"] = "*",
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0'",
             ["info:application:date"] = "5/1/2008",
@@ -31,9 +30,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             ["info:NET:type"] = "Core",
             ["info:NET:version"] = "2.0.0",
             ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0",
-            ["management:endpoints:sensitiveclaim:type"] = "scope",
-            ["management:endpoints:sensitiveclaim:value"] = "actuator.read",
+            ["info:NET:ASPNET:version"] = "2.0.0"
         };
     }
 }

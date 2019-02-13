@@ -30,6 +30,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         public CloudFoundrySecurityMiddlewareTest()
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
+            ManagementOptions.Clear();
         }
 
         [Fact]
@@ -60,7 +61,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         {
             Environment.SetEnvironmentVariable("VCAP__APPLICATION__APPLICATION_ID", "foobar");
             Environment.SetEnvironmentVariable("VCAP__APPLICATION__CF_API", "http://localhost:9999/foo");
-
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
@@ -75,7 +75,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         public async void SkipsSecurityCheck_WhenEnabledFalse()
         {
             Environment.SetEnvironmentVariable("management__endpoints__cloudfoundry__enabled", "false");
-
+            
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;

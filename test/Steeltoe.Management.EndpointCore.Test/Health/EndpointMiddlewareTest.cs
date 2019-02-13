@@ -33,10 +33,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         private readonly Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:health:enabled"] = "true",
-            ["management:endpoints:health:sensitive"] = "false"
+            ["management:endpoints:health:enabled"] = "true"
         };
 
         [Fact]

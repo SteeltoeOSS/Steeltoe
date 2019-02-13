@@ -44,6 +44,5 @@ namespace Steeltoe.Management.Endpoint.Env
             }
         }
 
-        protected override bool DefaultSensitive => true;
     }
 }

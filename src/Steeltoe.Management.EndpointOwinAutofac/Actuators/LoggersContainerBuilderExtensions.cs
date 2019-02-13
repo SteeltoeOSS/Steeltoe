@@ -36,7 +36,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="loggerProvider">Your pre-existing <see cref="DynamicLoggerProvider"/> will be created if not provided</param>
         /// <param name="loggerFactory">Your pre-existing <see cref="ILoggerFactory"/>. A new <see cref="LoggerFactory"/> will be added if not provided</param>
-        public static void RegisterLoggersActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false,  DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
+        public static void RegisterLoggersActuator(this ContainerBuilder container, IConfiguration config, DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
         {
             if (container == null)
             {
@@ -66,11 +66,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
                 foreach (var mgmt in mgmtOptions)
                 {
-                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
-                    {
-                        continue;
-                    }
-
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;

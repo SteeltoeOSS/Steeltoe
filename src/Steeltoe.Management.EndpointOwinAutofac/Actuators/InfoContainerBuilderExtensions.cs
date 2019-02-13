@@ -31,7 +31,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery = false)
+        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -43,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInfoActuator(config, addToDiscovery, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
+            container.RegisterInfoActuator(config, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="contributors">Contributors to application information</param>
-        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config, bool addToDiscovery, params IInfoContributor[] contributors)
+        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config, params IInfoContributor[] contributors)
         {
             if (container == null)
             {
@@ -75,11 +75,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
                 foreach (var mgmt in mgmtOptions)
                 {
-                    if (mgmt is ActuatorManagementOptions && !addToDiscovery)
-                    {
-                        continue;
-                    }
-
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;

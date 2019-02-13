@@ -28,6 +28,11 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
 {
     public class MetricsEndpointOwinMiddlewareTest : BaseTest
     {
+        public MetricsEndpointOwinMiddlewareTest()
+        {
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public void ParseTag_ReturnsExpected()
         {

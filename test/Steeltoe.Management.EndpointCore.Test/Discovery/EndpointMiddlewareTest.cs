@@ -33,9 +33,7 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
         private Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:info:enabled"] = "true",
-            ["management:endpoints:info:sensitive"] = "false",
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0",
             ["info:application:date"] = "5/1/2008",

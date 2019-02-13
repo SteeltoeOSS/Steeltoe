@@ -53,6 +53,7 @@ namespace Steeltoe.Management.CloudFoundry
             app.UseHealthActuator();
             app.UseLoggersActuator();
             app.UseTraceActuator();
+            //app.UseHttpTraceActuator(); TODO: Switch to this in 3.0
             app.UseMappingsActuator();
 
         }

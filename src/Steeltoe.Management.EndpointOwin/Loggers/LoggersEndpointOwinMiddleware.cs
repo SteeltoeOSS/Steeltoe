@@ -53,7 +53,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     // GET request
                     var endpointResponse = _endpoint.Invoke(null);
                     _logger?.LogTrace("Returning: {EndpointResponse}", endpointResponse);
-                    context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
+                    context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
                     await context.Response.WriteAsync(Serialize(endpointResponse));
                 }
                 else

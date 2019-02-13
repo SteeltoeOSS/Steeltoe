@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Discovery
 {
@@ -31,6 +32,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
         {
         }
 
+        [Obsolete]
         public override bool DefaultSensitive => false;
     }
 }

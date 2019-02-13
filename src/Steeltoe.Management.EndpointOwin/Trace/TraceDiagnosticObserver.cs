@@ -21,6 +21,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Trace
@@ -30,7 +31,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
         internal const string STOP_EVENT = "Steeltoe.Owin.Hosting.HttpRequestIn.Stop";
         internal ConcurrentQueue<TraceResult> _queue = new ConcurrentQueue<TraceResult>();
 
-        private const string OBSERVER_NAME = "TraceDiagnosticObserver";
+        private const string OBSERVER_NAME = "HttpTraceDiagnosticObserver";
         private const string DIAGNOSTIC_NAME = "Steeltoe.Owin";
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private ILogger<TraceDiagnosticObserver> _logger;

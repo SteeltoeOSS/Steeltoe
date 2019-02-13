@@ -46,10 +46,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:trace:enabled"] = "false",
-                ["management:endpoints:trace:sensitive"] = "false",
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);

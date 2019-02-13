@@ -28,7 +28,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         {
             var opts = new ThreadDumpOptions();
             Assert.True(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("dump", opts.Id);
         }
 
@@ -45,12 +44,9 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:loggers:sensitive"] = "true",
                 ["management:endpoints:dump:enabled"] = "true",
-                ["management:endpoints:dump:sensitive"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
@@ -62,13 +58,11 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
 
             Assert.True(cloudOpts.Enabled);
-            Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
             Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("dump", opts.Id);
             Assert.Equal("/cloudfoundryapplication/dump", opts.Path);
         }

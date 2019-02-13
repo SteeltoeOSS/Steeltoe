@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         /// </summary>
         /// <param name="services">Service collection to add trace to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:trace)</param>
-        public static void AddTraceActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
+        public static void AddTraceActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
@@ -48,13 +48,42 @@ namespace Steeltoe.Management.Endpoint.Trace
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
-            services.TryAddSingleton<ITraceRepository>((p) => (ITraceRepository)p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
+            services.TryAddSingleton<ITraceRepository>((p) => p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
             var options = new TraceEndpointOptions(config);
             services.TryAddSingleton<ITraceOptions>(options);
-            services.RegisterEndpointOptions(options, addToDiscovery);
+            services.RegisterEndpointOptions(options);
             services.TryAddSingleton<TraceEndpoint>();
+        }
+        /// <summary>
+        /// Adds components of the Trace actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add trace to</param>
+        /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:trace)</param>
+        public static void AddHttpTraceActuator(this IServiceCollection services, IConfiguration config)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
+           // services.TryAddSingleton<IHttpTraceRepository>((p) => p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+
+            var options = new HttpTraceEndpointOptions(config);
+            services.TryAddSingleton<ITraceOptions>(options);
+            services.RegisterEndpointOptions(options);
+            services.TryAddSingleton(p => new HttpTraceEndpoint(options, p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
         }
     }
 }

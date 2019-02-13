@@ -28,7 +28,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         {
             var opts = new CloudFoundryOptions();
             Assert.True(opts.Enabled);
-            Assert.False(opts.Sensitive);
             Assert.True(opts.ValidateCertificates);
             Assert.Equal(string.Empty, opts.Id);
         }
@@ -46,7 +45,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:info:enabled"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "false",
@@ -60,13 +58,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
 
             Assert.True(cloudOpts.Enabled);
-            Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
             Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
             Assert.False(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
-            Assert.False(opts.Sensitive);
             Assert.Equal("info", opts.Id);
             Assert.Equal("/cloudfoundryapplication/info", opts.Path);
         }

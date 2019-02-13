@@ -29,7 +29,6 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         {
             var opts = new EnvOptions();
             Assert.True(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("env", opts.Id);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }

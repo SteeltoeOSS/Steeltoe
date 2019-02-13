@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCloudFoundryActuator(Configuration);
-            services.AddInfoActuator(Configuration, true);
+            services.AddInfoActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)

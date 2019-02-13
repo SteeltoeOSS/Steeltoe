@@ -27,7 +27,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var opts = new MetricsOptions();
             Assert.True(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("metrics", opts.Id);
         }
 
@@ -44,10 +43,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:metrics:enabled"] = "false",
-                ["management:endpoints:metrics:sensitive"] = "false",
                 ["management:endpoints:metrics:id"] = "metricsmanagement",
                 ["management:endpoints:metrics:ingressIgnorePattern"] = "pattern",
                 ["management:endpoints:metrics:egressIgnorePattern"] = "pattern",
@@ -58,14 +55,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var opts = new MetricsOptions(config);
             Assert.False(opts.Enabled);
-            Assert.False(opts.Sensitive);
             Assert.Equal("metricsmanagement", opts.Id);
             Assert.Equal("pattern", opts.IngressIgnorePattern);
             Assert.Equal("pattern", opts.EgressIgnorePattern);
 
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled);
-            Assert.False(opts.Global.Sensitive);
             Assert.Equal("/management", opts.Global.Path);
         }
     }

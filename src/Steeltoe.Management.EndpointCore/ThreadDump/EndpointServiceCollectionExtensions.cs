@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery=false)
+        public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
             var options = new ThreadDumpEndpointOptions(config);
             services.TryAddSingleton<IThreadDumpOptions>(options);
-            services.RegisterEndpointOptions(options, addToDiscovery);
+            services.RegisterEndpointOptions(options);
 
             services.TryAddSingleton<IThreadDumper, ThreadDumper>();
             services.TryAddSingleton<ThreadDumpEndpoint>();

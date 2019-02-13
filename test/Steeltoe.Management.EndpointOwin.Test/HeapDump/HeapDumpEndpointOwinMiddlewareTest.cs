@@ -27,6 +27,11 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
 {
     public class HeapDumpEndpointOwinMiddlewareTest : BaseTest
     {
+        public HeapDumpEndpointOwinMiddlewareTest()
+        {
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public async void HeapDumpInvoke_ReturnsExpected()
         {

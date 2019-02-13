@@ -75,6 +75,7 @@ namespace Steeltoe.Management.Endpoint.Module
                     }
 
                     completeRequest();
+                    break;
                 }
             }
         }

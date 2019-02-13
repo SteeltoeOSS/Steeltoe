@@ -22,9 +22,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public string Id { get; set; }
 
         public bool? Enabled { get; set; }
-
-        public bool? Sensitive { get; set; }
-
+        
         public IManagementOptions Global { get; set; }
 
         public string Path { get; set; }
@@ -33,7 +31,9 @@ namespace Steeltoe.Management.Endpoint.Test
 
         public bool IsEnabled => Enabled.Value;
 
-        public bool IsSensitive => Sensitive.Value;
+        public bool IsSensitive => throw new System.NotImplementedException();
+
+        public bool? Sensitive => throw new System.NotImplementedException();
 
         public bool IsAccessAllowed(Permissions permissions)
         {

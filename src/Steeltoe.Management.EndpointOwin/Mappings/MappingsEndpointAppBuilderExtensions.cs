@@ -35,7 +35,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
         /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Refresh Endpoint added</returns>
-        public static IAppBuilder UseMappingActuator(this IAppBuilder builder, IConfiguration config, IApiExplorer apiExplorer, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
+        public static IAppBuilder UseMappingActuator(this IAppBuilder builder, IConfiguration config, IApiExplorer apiExplorer, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -52,16 +52,12 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
                 throw new ArgumentNullException(nameof(apiExplorer));
             }
 
-
             IMappingsOptions options= new MappingsEndpointOptions(config);
             var mgmtOptions = ManagementOptions.Get(config);
 
             foreach (var mgmt in mgmtOptions)
             {
-                if (!addToDiscovery && mgmt is CloudFoundryManagementOptions)
-                {
-                    mgmt.EndpointOptions.Add(options);
-                }
+                mgmt.EndpointOptions.Add(options);
             }
 
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<IList<string>>>();

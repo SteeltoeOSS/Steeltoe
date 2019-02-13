@@ -33,18 +33,5 @@ namespace Steeltoe.Management.Endpoint.Discovery
             builder.UseMiddleware<ActuatorDiscoveryEndpointMiddleware>();
         }
 
-        /// <summary>
-        /// Add CloudFoundry Security Middleware
-        /// </summary>
-        /// <param name="builder">Your application builder</param>
-        public static void UseActuatorSecurity(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.UseMiddleware<ActuatorSecurityMiddleware>();
-        }
     }
 }

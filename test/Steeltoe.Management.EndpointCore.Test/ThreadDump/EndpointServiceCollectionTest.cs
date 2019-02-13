@@ -45,10 +45,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:dump:enabled"] = "false",
-                ["management:endpoints:dump:sensitive"] = "false",
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);

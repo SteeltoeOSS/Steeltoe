@@ -44,6 +44,5 @@ namespace Steeltoe.Management.Endpoint.Health
             }
         }
 
-        protected override bool DefaultSensitive => false;
     }
 }

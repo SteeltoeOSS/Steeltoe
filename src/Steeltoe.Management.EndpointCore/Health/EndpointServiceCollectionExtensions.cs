@@ -21,7 +21,7 @@ using System;
 using System.Collections.Generic;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -32,9 +32,9 @@ namespace Steeltoe.Management.Endpoint.Health
         /// </summary>
         /// <param name="services">Service collection to add health to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
-        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config)
         {
-            services.AddHealthActuator(config, addToDiscovery, new DefaultHealthAggregator(), GetDefaultHealthContributors());
+            services.AddHealthActuator(config, new DefaultHealthAggregator(), GetDefaultHealthContributors());
         }
 
         /// <summary>
@@ -43,9 +43,9 @@ namespace Steeltoe.Management.Endpoint.Health
         /// <param name="services">Service collection to add health to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
         /// <param name="contributors">Contributors to application health</param>
-        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery, params Type[] contributors)
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, params Type[] contributors)
         {
-            services.AddHealthActuator(config, addToDiscovery, new DefaultHealthAggregator(), contributors);
+            services.AddHealthActuator(config, new DefaultHealthAggregator(), contributors);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
         /// <param name="aggregator">Custom health aggregator</param>
         /// <param name="contributors">Contributors to application health</param>
-        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery, IHealthAggregator aggregator, params Type[] contributors)
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
         {
             if (services == null)
             {
@@ -73,11 +73,11 @@ namespace Steeltoe.Management.Endpoint.Health
             }
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry)));
 
             var options = new HealthEndpointOptions(config);
             services.TryAddSingleton<IHealthOptions>(options);
-            services.RegisterEndpointOptions(options, addToDiscovery);
+            services.RegisterEndpointOptions(options);
             AddHealthContributors(services, contributors);
             services.TryAddSingleton<IHealthAggregator>(aggregator);
             services.TryAddScoped<HealthEndpoint>();

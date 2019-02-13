@@ -28,6 +28,12 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
 {
     public class LoggersEndpointOwinMiddlewareTest : BaseTest
     {
+        public LoggersEndpointOwinMiddlewareTest()
+        {
+
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public async void LoggersInvoke_ReturnsExpected()
         {

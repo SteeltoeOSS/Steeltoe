@@ -44,6 +44,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             if (mgmtOptions == null)
             {
                 mgmtOptions = ManagementOptions.Get(config);
@@ -57,7 +58,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             var logger = loggerFactory?.CreateLogger<CloudFoundryEndpointOwinMiddleware>();
             return builder.Use<CloudFoundryEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
-
 
         public static IAppBuilder UseCloudFoundryActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {

@@ -76,7 +76,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             }
             else
             {
-
                 endpointPaths.AddRange(
                     _mgmtOptions.Select(opt =>
                     {

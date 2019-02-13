@@ -36,14 +36,28 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:trace:enabled"] = "true",
-            ["management:endpoints:trace:sensitive"] = "false",
         };
 
         [Fact]
         public async void HandleTraceRequestAsync_ReturnsExpected()
+        {
+            var opts = new TraceOptions();
+
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
+            var ep = new TestTraceEndpoint(opts, obs);
+            var middle = new TraceEndpointMiddleware(null, ep);
+            var context = CreateRequest("GET", "/httptrace");
+            await middle.HandleTraceRequestAsync(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            StreamReader rdr = new StreamReader(context.Response.Body);
+            string json = await rdr.ReadToEndAsync();
+            Assert.Equal("[]", json);
+        }
+
+        [Fact]
+        public async void HandleTraceRequestAsync_OtherPathReturnsExpected()
         {
             var opts = new TraceOptions();
 

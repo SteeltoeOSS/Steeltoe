@@ -42,6 +42,5 @@ namespace Steeltoe.Management.Endpoint.Info
             }
         }
 
-        public override bool DefaultSensitive => false;
     }
 }

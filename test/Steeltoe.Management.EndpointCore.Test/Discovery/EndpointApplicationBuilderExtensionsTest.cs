@@ -28,13 +28,5 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
 
             Assert.Throws<ArgumentNullException>(() => builder.UseDiscoveryActuator());
         }
-
-        [Fact]
-        public void UseCloudFoundrySecurity_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
-
-            Assert.Throws<ArgumentNullException>(() => builder.UseActuatorSecurity());
-        }
     }
 }

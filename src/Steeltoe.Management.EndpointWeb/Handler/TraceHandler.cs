@@ -17,9 +17,11 @@ using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
+using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
+    [Obsolete]
     public class TraceHandler : ActuatorHandler<TraceEndpoint, List<TraceResult>>
     {
         public TraceHandler(TraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices,IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceHandler> logger = null)
@@ -31,6 +33,14 @@ namespace Steeltoe.Management.Endpoint.Handler
         public TraceHandler(TraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<TraceHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {
+        }
+
+        public override void HandleRequest(HttpContextBase context)
+        {
+            _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(TraceEndpoint));
+            var result = _endpoint.Invoke();
+            context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+            context.Response.Write(Serialize(result));
         }
     }
 }

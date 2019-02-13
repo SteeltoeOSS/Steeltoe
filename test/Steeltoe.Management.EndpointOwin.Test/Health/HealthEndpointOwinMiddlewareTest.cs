@@ -49,6 +49,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         [Fact]
         public async void HealthHttpCall_ReturnsExpected()
         {
+            ManagementOptions.Clear();
             using (var server = TestServer.Create<Startup>())
             {
                 var client = server.HttpClient;

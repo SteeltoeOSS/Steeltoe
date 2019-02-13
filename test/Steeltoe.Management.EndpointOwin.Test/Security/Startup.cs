@@ -50,7 +50,6 @@ namespace Steeltoe.Management.EndpointOwin.Security.Test
             builder.AddEnvironmentVariables();
             var config = Config = builder.Build();
 
-            app.UseActuatorSecurityMiddleware(config);
             app.UseDiscoveryActuator(config);
             app.UseInfoActuator(config);
         }

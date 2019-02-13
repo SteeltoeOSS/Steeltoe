@@ -37,7 +37,6 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
@@ -58,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
             var json = await reader.ReadLineAsync();
-            var expected = "[\"management\",\"management:endpoints\",\"management:endpoints:sensitive\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\"]";
+            var expected = "[\"management\",\"management:endpoints\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\"]";
             Assert.Equal(expected, json);
         }
 
@@ -81,7 +80,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/refresh");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
-                var expected = "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:sensitive\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\",\"environment\",\"applicationName\"]";
+                var expected = "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\",\"environment\",\"applicationName\"]";
                 Assert.Equal(expected, json);
             }
 

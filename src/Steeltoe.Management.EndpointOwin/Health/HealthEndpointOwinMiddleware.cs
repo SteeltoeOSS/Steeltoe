@@ -48,7 +48,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
             {
                 _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(HealthEndpoint));
                 var result = _endpoint.Invoke();
-                context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
+                context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
                 context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
                 await context.Response.WriteAsync(Serialize(result));
             }

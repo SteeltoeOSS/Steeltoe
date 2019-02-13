@@ -46,6 +46,7 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
         {
             // Note: This test pulls in from git.properties and appsettings created
             // in the Startup class
+            ManagementOptions.Clear();
             using (var server = TestServer.Create<Startup>())
             {
                 var client = server.HttpClient;

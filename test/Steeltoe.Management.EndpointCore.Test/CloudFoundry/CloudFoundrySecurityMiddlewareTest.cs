@@ -31,11 +31,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         private Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/",
             ["management:endpoints:info:enabled"] = "true",
-            ["management:endpoints:info:sensitive"] = "false",
-            ["info:application:name"] = "foobar",
+             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0",
             ["info:application:date"] = "5/1/2008",
             ["info:application:time"] = "8:30:52 AM",
@@ -56,10 +54,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false",
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
                 ["info:application:date"] = "5/1/2008",
@@ -84,10 +80,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings2 = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false",
+                
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
                 ["info:application:date"] = "5/1/2008",
@@ -112,10 +107,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings3 = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:sensitive"] = "false",
+                
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false",
+                
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
                 ["info:application:date"] = "5/1/2008",
@@ -145,10 +140,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:sensitive"] = "false",
+                
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false",
+                
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
                 ["info:application:date"] = "5/1/2008",
@@ -179,10 +174,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:sensitive"] = "false",
+                
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false",
+                
                 ["management:endpoints:cloudfoundry:enabled"] = "false",
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
@@ -215,10 +210,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false",
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
                 ["info:application:date"] = "5/1/2008",

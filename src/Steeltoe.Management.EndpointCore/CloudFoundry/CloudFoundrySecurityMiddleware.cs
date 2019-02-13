@@ -57,9 +57,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger.LogDebug("Invoke({0}) mgmt {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
             bool isEndpointEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
+            bool isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
+
 
             if (Platform.IsCloudFoundry
                 && isEndpointEnabled
+                && isEndpointExposed
                 && _base.IsCloudFoundryRequest(context.Request.Path))
             {
                 if (string.IsNullOrEmpty(_options.ApplicationId))

@@ -28,7 +28,6 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         {
             var opts = new LoggersOptions();
             Assert.True(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("loggers", opts.Id);
         }
 
@@ -45,10 +44,9 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
+                
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:loggers:sensitive"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
@@ -60,13 +58,11 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
 
             Assert.True(cloudOpts.Enabled);
-            Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
             Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.False(opts.Enabled);
-            Assert.True(opts.Sensitive);
             Assert.Equal("loggers", opts.Id);
             Assert.Equal("/cloudfoundryapplication/loggers", opts.Path);
         }

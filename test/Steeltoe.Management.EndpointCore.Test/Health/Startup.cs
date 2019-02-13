@@ -34,13 +34,13 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             switch (Configuration.GetValue<string>("HealthCheckType"))
             {
                 case "down":
-                    services.AddHealthActuator(Configuration, false, new Type[] { typeof(DownContributor) });
+                    services.AddHealthActuator(Configuration, new Type[] { typeof(DownContributor) });
                     break;
                 case "out":
-                    services.AddHealthActuator(Configuration, false, new Type[] { typeof(OutOfSserviceContributor) });
+                    services.AddHealthActuator(Configuration, new Type[] { typeof(OutOfSserviceContributor) });
                     break;
                 case "unknown":
-                    services.AddHealthActuator(Configuration, false, new Type[] { typeof(UnknownContributor) });
+                    services.AddHealthActuator(Configuration, new Type[] { typeof(UnknownContributor) });
                     break;
                 default:
                     services.AddHealthActuator(Configuration);

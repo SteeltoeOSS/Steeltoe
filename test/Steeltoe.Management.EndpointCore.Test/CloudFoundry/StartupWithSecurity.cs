@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         {
             services.AddCloudFoundryActuator(Configuration);
             services.AddDiscoveryActuator(Configuration);
-            services.AddInfoActuator(Configuration, true);
+            services.AddInfoActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)

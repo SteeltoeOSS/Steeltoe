@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Handler
                 // GET request
                 var endpointResponse = _endpoint.Invoke(null);
                 _logger?.LogTrace("Returning: {EndpointResponse}", endpointResponse);
-                context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+                context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
                 context.Response.Write(Serialize(endpointResponse));
                 context.Response.StatusCode = (int)HttpStatusCode.OK;
                 return;

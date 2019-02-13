@@ -35,7 +35,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
         /// <param name="loggerProvider">Provider of loggers to report on and configure</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Loggers Endpoint added</returns>
-        public static IAppBuilder UseLoggersActuator(this IAppBuilder builder, IConfiguration config, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
+        public static IAppBuilder UseLoggersActuator(this IAppBuilder builder, IConfiguration config, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -56,14 +56,8 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
             var mgmtOptions = ManagementOptions.Get(config);
             foreach (var mgmt in mgmtOptions)
             {
-                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
-                {
-                    continue;
-                }
-
                 mgmt.EndpointOptions.Add(options);
             }
-
 
             var endpoint = new LoggersEndpoint(options, loggerProvider as IDynamicLoggerProvider, loggerFactory?.CreateLogger<LoggersEndpoint>());
             var logger = loggerFactory?.CreateLogger<LoggersEndpointOwinMiddleware>();

@@ -26,6 +26,11 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
 {
     public class RefreshEndpointOwinMiddlewareTest : BaseTest
     {
+        public RefreshEndpointOwinMiddlewareTest()
+        {
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public async void RefreshInvoke_ReturnsExpected()
         {
@@ -39,7 +44,7 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
             var json = await middle.InvokeAndReadResponse(context);
 
             // assert
-            var expected = "[\"management\",\"management:endpoints\",\"management:endpoints:sensitive\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\"]";
+            var expected = "[\"management\",\"management:endpoints\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\"]";
             Assert.Equal(expected, json);
         }
 
@@ -58,7 +63,7 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
                 // NOTE: removed these when copied from aspnetcore test... are they ANC only?
                 // [from first position in 'expected':]\"urls\",
                 // [from the end of 'expected':] ,\"environment\",\"applicationName\"
-                var expected = "[\"management\",\"management:endpoints\",\"management:endpoints:sensitive\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\"]";
+                var expected = "[\"management\",\"management:endpoints\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\"]";
                 Assert.Equal(expected, json);
             }
 

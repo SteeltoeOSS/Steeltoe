@@ -61,6 +61,7 @@ namespace Steeltoe.Management.EndpointOwin
             app.UseHealthActuator(configuration,  loggerFactory);
             app.UseLoggersActuator(configuration, loggerProvider,  loggerFactory);
             app.UseTraceActuator(configuration, null, loggerFactory);
+           // app.UseHttpTraceActuator(configuration, null, loggerFactory); TODO: Switch to this in 3.0
             app.UseMappingActuator(configuration, apiExplorer, loggerFactory);
         }
 
@@ -75,7 +76,6 @@ namespace Steeltoe.Management.EndpointOwin
         /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
         public static void UseCloudFoundryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
-          
             app.UseDiagnosticSourceMiddleware(loggerFactory);
             app.UseCloudFoundrySecurityMiddleware(configuration, loggerFactory);
             app.UseCloudFoundryActuator(configuration, loggerFactory);
@@ -88,45 +88,12 @@ namespace Steeltoe.Management.EndpointOwin
 
             app.UseInfoActuator(configuration, loggerFactory);
             var healthOptions = new HealthEndpointOptions(configuration);
-            app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory); // put back old code
+            app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory); 
 
             app.UseLoggersActuator(configuration, loggerProvider, loggerFactory);
             app.UseTraceActuator(configuration, null, loggerFactory);
+           // app.UseHttpTraceActuator(configuration, null, loggerFactory); TODO: switch to this in 3.0
             app.UseMappingActuator(configuration, apiExplorer, loggerFactory);
         }
-
-       
-
-
-        //public static IEnumerable<IManagementOptions> UseCloudFoundryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
-        //{
-        //    if (mgmtOptions == null)
-        //    {
-        //        mgmtOptions = new List<IManagementOptions>() { new CloudFoundryManagementOptions(configuration) };
-        //    }
-
-        //    var cloudFoundryOptions = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
-
-        //    app.UseDiagnosticSourceMiddleware(loggerFactory);
-        //    app.UseCloudFoundrySecurityMiddleware(configuration, cloudFoundryOptions, loggerFactory);
-        //    app.UseCloudFoundryActuator(configuration, mgmtOptions, loggerFactory);
-
-        //    if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-        //    {
-        //        app.UseThreadDumpActuator(configuration, mgmtOptions, loggerFactory);
-        //        app.UseHeapDumpActuator(configuration, mgmtOptions, null, loggerFactory);
-        //    }
-
-        //    app.UseInfoActuator(configuration, mgmtOptions, loggerFactory);
-        //    var healthOptions = new HealthEndpointOptions(configuration);
-        //    cloudFoundryOptions.EndpointOptions.Add(healthOptions);
-        //    app.UseHealthActuator(healthOptions, mgmtOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory);
-
-        //    app.UseLoggersActuator(configuration, loggerProvider, mgmtOptions, loggerFactory);
-        //    app.UseTraceActuator(configuration, mgmtOptions, null, loggerFactory);
-        //    app.UseMappingActuator(configuration, apiExplorer, mgmtOptions, loggerFactory);
-
-        //    return mgmtOptions;
-        //}
     }
 }

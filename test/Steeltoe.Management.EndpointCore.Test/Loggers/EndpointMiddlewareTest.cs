@@ -38,10 +38,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:loggers:enabled"] = "true",
-            ["management:endpoints:loggers:sensitive"] = "false",
+            ["management:endpoints:loggers:enabled"] = "true"
         };
 
         [Fact]

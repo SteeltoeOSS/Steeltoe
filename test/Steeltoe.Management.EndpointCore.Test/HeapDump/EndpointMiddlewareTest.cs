@@ -37,10 +37,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:heapdump:enabled"] = "true",
-            ["management:endpoints:heapdump:sensitive"] = "false",
+            ["management:endpoints:heapdump:enabled"] = "true"
         };
 
         [Fact]

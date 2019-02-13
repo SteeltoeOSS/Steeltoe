@@ -41,9 +41,11 @@ namespace Steeltoe.Management.Endpoint.Discovery
                 return links;
             }
 
+            _logger?.LogTrace("Processing discovery for  {ManagementOptions} ", _mgmtOptions);
+
             foreach (var opt in endpointOptions)
             {
-                if (!opt.IsEnabled(_mgmtOptions))
+                if (!opt.IsEnabled(_mgmtOptions) || !opt.IsExposed(_mgmtOptions))
                 {
                     continue;
                 }
@@ -52,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
                 {
                     links._links.Add("self", new Link(baseUrl));
                 }
-                else
+                else 
                 {
                     if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
                     {

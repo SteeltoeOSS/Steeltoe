@@ -26,7 +26,6 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             ManagementOptions opts = ManagementOptions.GetInstance();
             Assert.False(opts.Enabled.HasValue);
-            Assert.False(opts.Sensitive.HasValue);
             Assert.Equal("/", opts.Path);
         }
 
@@ -43,10 +42,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "true",
                 ["management:endpoints:info:id"] = "/infomanagement"
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
@@ -55,7 +52,6 @@ namespace Steeltoe.Management.Endpoint.Test
 
             ManagementOptions opts = ManagementOptions.GetInstance(config);
             Assert.False(opts.Enabled);
-            Assert.False(opts.Sensitive);
             Assert.Equal("/management", opts.Path);
         }
     }

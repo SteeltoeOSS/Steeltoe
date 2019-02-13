@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.EndpointBase.Security;
 using System;
 using System.Collections.Generic;
 
@@ -23,9 +22,6 @@ namespace Steeltoe.Management.Endpoint
     {
         private const string DEFAULT_PATH = "/actuator";
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints";
-
-        private bool? _enabled;
-        private bool? _sensitive;
 
         public ManagementEndpointOptions()
         {
@@ -48,36 +44,13 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        public bool? Enabled
-        {
-            get
-            {
-                return _enabled;
-            }
+        public bool? Enabled { get; set; }
 
-            set
-            {
-                _enabled = value;
-            }
-        }
-
-        public bool? Sensitive
-        {
-            get
-            {
-                return _sensitive;
-            }
-
-            set
-            {
-                _sensitive = value;
-            }
-        }
+        public bool? Sensitive { get; set; }
 
         public string Path { get; set; }
 
         public List<IEndpointOptions> EndpointOptions { get; set; }
 
-        public SensitiveClaim SensitiveClaim { get; set; }
     }
 }

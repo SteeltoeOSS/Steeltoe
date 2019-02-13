@@ -32,10 +32,8 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:info:enabled"] = "false",
-                ["management:endpoints:info:sensitive"] = "false",
                 ["management:endpoints:info:id"] = "infomanagement"
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();

@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDiscoveryActuator(Configuration);
-            services.AddInfoActuator(Configuration, true);
+            services.AddInfoActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)

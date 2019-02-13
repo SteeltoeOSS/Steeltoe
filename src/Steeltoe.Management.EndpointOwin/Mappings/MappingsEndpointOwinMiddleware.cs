@@ -61,7 +61,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
                 ApplicationMappings result = GetApplicationMappings();
                 var serialInfo = Serialize(result);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
-                context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
+                context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
                 await context.Response.WriteAsync(Serialize(result));
             }
         }
