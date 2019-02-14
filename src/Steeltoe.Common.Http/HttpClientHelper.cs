@@ -233,7 +233,7 @@ namespace Steeltoe.Common.Http
             }
             catch (Exception e)
             {
-                logger?.LogError("GetAccessToken exception: {0} ,obtaining access token from: {1}", e, accessTokenUri);
+                logger?.LogError("GetAccessToken exception: {0} ,obtaining access token from: {1}", e, WebUtility.UrlEncode(accessTokenUri));
             }
             finally
             {
