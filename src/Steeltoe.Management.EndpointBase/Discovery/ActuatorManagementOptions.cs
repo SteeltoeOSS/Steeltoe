@@ -36,6 +36,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
             {
                 Path = DEFAULT_ACTUATOR_PATH;
             }
+
             Exposure = new Exposure(config);
         }
     }

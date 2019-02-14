@@ -14,9 +14,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Testing;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
+using System.Collections.Generic;
 using System.Net;
 using Xunit;
 
@@ -36,8 +39,12 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var config = configurationBuilder.Build();
-            var ep = new EnvEndpoint(new EnvOptions(), config, new GenericHostingEnvironment() { EnvironmentName = "EnvironmentName" });
-            var middle = new EndpointOwinMiddleware<EnvironmentDescriptor>(null, ep);
+            var ep = new EnvEndpoint(new EnvEndpointOptions(), config, new GenericHostingEnvironment() { EnvironmentName = "EnvironmentName" });
+            var mgmt = new CloudFoundryManagementOptions()
+            {
+                Path = "/"
+            };
+            var middle = new EndpointOwinMiddleware<EnvironmentDescriptor>(null, ep, new List<IManagementOptions> { mgmt });
             var context = OwinTestHelpers.CreateRequest("GET", "/env");
 
             // act
@@ -68,12 +75,16 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
         [Fact]
         public void EnvEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new EnvOptions();
+            var opts = new EnvEndpointOptions();
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             var config = configurationBuilder.Build();
             var host = new GenericHostingEnvironment() { EnvironmentName = "EnvironmentName" };
             var ep = new EnvEndpoint(opts, config, host);
-            var middle = new EndpointOwinMiddleware<EnvironmentDescriptor>(null, ep);
+            var mgmt = new CloudFoundryManagementOptions()
+            {
+                Path = "/"
+            };
+            var middle = new EndpointOwinMiddleware<EnvironmentDescriptor>(null, ep, new List<IManagementOptions> { mgmt});
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/env"));
             Assert.False(middle.RequestVerbAndPathMatch("PUT", "/env"));

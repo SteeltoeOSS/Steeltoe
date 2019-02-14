@@ -16,5 +16,6 @@ namespace Steeltoe.Management.Endpoint.Env
 {
     public interface IEnvOptions : IEndpointOptions
     {
+        string[] KeysToSanitize { get; }
     }
 }

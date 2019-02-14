@@ -44,5 +44,6 @@ namespace Steeltoe.Management.Endpoint.Env
             }
         }
 
+        public string[] KeysToSanitize => throw new NotImplementedException();
     }
 }

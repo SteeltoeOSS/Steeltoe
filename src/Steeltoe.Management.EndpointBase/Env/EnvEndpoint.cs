@@ -25,6 +25,7 @@ namespace Steeltoe.Management.Endpoint.Env
         private readonly ILogger<EnvEndpoint> _logger;
         private readonly IConfiguration _configuration;
         private IHostingEnvironment _env;
+        private Sanitizer _sanitizer;
 
         public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostingEnvironment env, ILogger<EnvEndpoint> logger = null)
             : base(options)
@@ -32,6 +33,7 @@ namespace Steeltoe.Management.Endpoint.Env
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _env = env ?? throw new ArgumentNullException(nameof(env));
             _logger = logger;
+            _sanitizer = new Sanitizer(options.KeysToSanitize);
         }
 
         public new IEnvOptions Options
@@ -81,7 +83,8 @@ namespace Steeltoe.Management.Endpoint.Env
             {
                 if (provider.TryGet(kvp.Key, out string provValue))
                 {
-                    properties.Add(kvp.Key, new PropertyValueDescriptor(kvp.Value));
+                    var sanitized = _sanitizer.Sanitize(kvp);
+                    properties.Add(sanitized.Key, new PropertyValueDescriptor(sanitized.Value));
                 }
             }
 

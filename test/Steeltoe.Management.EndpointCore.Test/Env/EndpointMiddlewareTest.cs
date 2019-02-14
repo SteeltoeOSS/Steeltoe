@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -44,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public async void HandleEnvRequestAsync_ReturnsExpected()
         {
-            var opts = new EnvOptions();
+            var opts = new EnvEndpointOptions();
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
@@ -95,13 +96,15 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void EnvEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new EnvOptions();
+            var opts = new EnvEndpointOptions();
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
             var host = new HostingEnvironment() { EnvironmentName = "EnvironmentName" };
             var ep = new EnvEndpoint(opts, config, host);
-            var middle = new EnvEndpointMiddleware(null, ep);
+            var mgmt = new CloudFoundryManagementOptions() { Path = "/" };
+            mgmt.EndpointOptions.Add(opts);
+            var middle = new EnvEndpointMiddleware(null, ep, new List<IManagementOptions> { mgmt });
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/env"));
             Assert.False(middle.RequestVerbAndPathMatch("PUT", "/env"));

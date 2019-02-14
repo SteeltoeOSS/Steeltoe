@@ -63,23 +63,6 @@ namespace Steeltoe.Management.Endpoint
             return true;
         }
 
-        //public static bool IsSensitive(this IEndpointOptions options, IManagementOptions mgmtOptions)
-        //{
-        //    var endpointOptions = (AbstractEndpointOptions)options;
-
-        //    if (endpointOptions.Sensitive.HasValue)
-        //    {
-        //        return endpointOptions.Sensitive.Value;
-        //    }
-
-        //    if (mgmtOptions.Sensitive.HasValue)
-        //    {
-        //        return mgmtOptions.Sensitive.Value;
-        //    }
-
-        //    return endpointOptions.DefaultSensitive;
-        //}
-
         public static bool RequestVerbAndPathMatch(this IEndpoint endpoint, string httpMethod, string requestPath, IEnumerable<HttpMethod> allowedMethods, IEnumerable<IManagementOptions> mgmtOptions, bool exactMatch)
         {
             IManagementOptions matchingMgmtContext = null;

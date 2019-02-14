@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void GetPropertySourceName_ReturnsExpected()
         {
-            var opts = new EnvOptions();
+            var opts = new EnvEndpointOptions();
             var builder = new ConfigurationBuilder();
             builder.AddEnvironmentVariables();
             var config = builder.Build();
@@ -68,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void GetPropertySourceDescriptor_ReturnsExpected()
         {
-            var opts = new EnvOptions();
+            var opts = new EnvEndpointOptions();
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
@@ -101,7 +101,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void GetPropertySources_ReturnsExpected()
         {
-            var opts = new EnvOptions();
+            var opts = new EnvEndpointOptions();
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
@@ -136,7 +136,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void DoInvoke_ReturnsExpected()
         {
-            var opts = new EnvOptions();
+            var opts = new EnvEndpointOptions();
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
@@ -168,6 +168,69 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Assert.NotNull(prop);
             Assert.Equal("false", prop.Value);
             Assert.Null(prop.Origin);
+        }
+
+        [Fact]
+        public void Sanitized_ReturnsExpected()
+        {
+            var opts = new EnvEndpointOptions();
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["password"] = "mysecret",
+                ["secret"] = "mysecret",
+                ["key"] = "mysecret",
+                ["token"] = "mysecret",
+                ["my_credentials"] = "mysecret",
+                ["credentials_of"] = "mysecret",
+                ["my_credentialsof"] = "mysecret",
+                ["vcap_services"] = "mysecret"
+            };
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            var ep = new EnvEndpoint(opts, config, new TestHosting());
+            var result = ep.DoInvoke(config);
+            Assert.NotNull(result);
+
+            var desc = result.PropertySources[0];
+
+            Assert.Equal("MemoryConfigurationProvider", desc.Name);
+            var props = desc.Properties;
+            Assert.NotNull(props);
+            foreach (var key in appsettings.Keys)
+            {
+                Assert.Contains(key, props.Keys);
+                Assert.NotNull(props[key]);
+                Assert.Equal("******", props[key].Value);
+                Assert.Null(props[key].Origin);
+            }
+        }
+
+        [Fact]
+        public void Sanitized_NonDefault_WhenSet()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:env:keystosanitize:0"] = "credentials",
+                ["password"] = "mysecret"
+            };
+           
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+            var opts = new EnvEndpointOptions(config);
+            var ep = new EnvEndpoint(opts, config, new TestHosting());
+            var result = ep.DoInvoke(config);
+            Assert.NotNull(result);
+
+            var desc = result.PropertySources[0];
+            Assert.Equal("MemoryConfigurationProvider", desc.Name);
+            var props = desc.Properties;
+            Assert.NotNull(props);
+            Assert.Contains("password", props.Keys);
+            Assert.NotNull(props["password"]);
+            Assert.Equal("mysecret", props["password"].Value);
         }
 
         private class TestHosting : IHostingEnvironment
