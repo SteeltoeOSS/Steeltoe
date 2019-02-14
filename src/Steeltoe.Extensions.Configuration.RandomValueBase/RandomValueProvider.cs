@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration
 {
@@ -88,7 +89,15 @@ namespace Steeltoe.Extensions.Configuration
         /// <returns>The child keys.</returns>
         public override IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
         {
-            return new List<string>();
+            if (string.IsNullOrEmpty(parentPath))
+            {
+                var list = new List<string>() { _prefix.Substring(0, _prefix.Length - 1) };
+                return list.Concat(earlierKeys)
+                    .OrderBy(k => k, ConfigurationKeyComparer.Instance);
+            }
+
+            return earlierKeys
+                 .OrderBy(k => k, ConfigurationKeyComparer.Instance);
         }
 
         internal string GetRandomValue(string type)
