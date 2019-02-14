@@ -468,7 +468,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     {
                         // Log status
                         var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-                        _logger?.LogInformation(message);
+                        _logger?.LogInformation(WebUtility.UrlEncode(message));
 
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
@@ -496,7 +496,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 catch (Exception e)
                 {
                     error = e;
-                    _logger?.LogError(e, "Config Server exception, path: {requestUri}", requestUri);
+                    _logger?.LogError(e, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
                     if (IsContinueExceptionType(e))
                     {
                         continue;
@@ -555,7 +555,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                         // Log status
                         var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
 
-                        _logger?.LogInformation(message);
+                        _logger?.LogInformation(WebUtility.UrlEncode(message));
 
                         // Throw if status >= 400
                         if (response.StatusCode >= HttpStatusCode.BadRequest)
@@ -575,7 +575,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             catch (Exception e)
             {
                 // Log and rethrow
-                _logger?.LogError("Config Server exception: {0}, path: {1}", e, requestUri);
+                _logger?.LogError("Config Server exception: {0}, path: {1}", e, WebUtility.UrlEncode(requestUri));
                 throw;
             }
             finally
