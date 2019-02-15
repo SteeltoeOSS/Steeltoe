@@ -56,6 +56,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             oidcOptions.ResponseType = cfOptions.ResponseType;
             oidcOptions.SaveTokens = cfOptions.SaveTokens;
             oidcOptions.SignInScheme = cfOptions.SignInScheme;
+
+            // remove profile scope
+            oidcOptions.Scope.Clear();
+            oidcOptions.Scope.Add("openid");
+
+            // add other scopes
             if (!string.IsNullOrEmpty(cfOptions.AdditionalScopes))
             {
                 foreach (var s in cfOptions.AdditionalScopes.Split(' '))
