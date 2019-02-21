@@ -6,8 +6,8 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public enum ShowDetails
     {
-        Never,
         Always,
+        Never,
         WhenAuthorized
     }
 }
