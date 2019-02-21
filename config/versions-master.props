@@ -3,7 +3,7 @@
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
     <SteeltoeCommonVersion>2.2.0-master-00094</SteeltoeCommonVersion>
-    <SteeltoeConnectorVersion>2.1.1-master-00293</SteeltoeConnectorVersion>
+    <SteeltoeConnectorVersion>2.2.0-master-00394</SteeltoeConnectorVersion>
     <ExtensionsVersion>2.0.0</ExtensionsVersion>
     <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
