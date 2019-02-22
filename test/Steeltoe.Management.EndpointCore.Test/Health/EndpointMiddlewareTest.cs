@@ -134,7 +134,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public async void HealthActuator_ReturnsDetails()
         {
             var settings = new Dictionary<string, string>(appSettings);
-             settings.Add("management:endpoints:health:showdetails", "always");
 
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
