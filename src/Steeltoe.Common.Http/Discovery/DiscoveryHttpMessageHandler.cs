@@ -46,7 +46,7 @@ namespace Steeltoe.Common.Http.Discovery
             var current = request.RequestUri;
             try
             {
-                request.RequestUri = _discoveryBase.LookupService(current);
+                request.RequestUri = await _discoveryBase.LookupServiceAsync(current);
                 return await base.SendAsync(request, cancellationToken);
             }
             catch (Exception e)

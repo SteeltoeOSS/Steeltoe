@@ -14,8 +14,6 @@
 
 using Steeltoe.Common.Discovery;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.Http.Test
@@ -69,6 +67,45 @@ namespace Steeltoe.Common.Http.Test
 
             // Act and Assert
             var result = handler.LookupService(uri);
+            Assert.Equal(new Uri("http://foundit:5555/test/bar/foo?test=1&test2=2"), result);
+        }
+
+        [Fact]
+        public async void LookupServiceAsync_NonDefaultPort_ReturnsOriginalURI()
+        {
+            // Arrange
+            IDiscoveryClient client = new TestDiscoveryClient();
+            DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
+            Uri uri = new Uri("http://foo:8080/test");
+
+            // Act and Assert
+            var result = await handler.LookupServiceAsync(uri);
+            Assert.Equal(uri, result);
+        }
+
+        [Fact]
+        public async void LookupServiceAsync_DoesntFindService_ReturnsOriginalURI()
+        {
+            // Arrange
+            IDiscoveryClient client = new TestDiscoveryClient();
+            DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
+            Uri uri = new Uri("http://foo/test");
+
+            // Act and Assert
+            var result = await handler.LookupServiceAsync(uri);
+            Assert.Equal(uri, result);
+        }
+
+        [Fact]
+        public async void LookupServiceAsync_FindsService_ReturnsURI()
+        {
+            // Arrange
+            IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("http://foundit:5555")));
+            DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
+            Uri uri = new Uri("http://foo/test/bar/foo?test=1&test2=2");
+
+            // Act and Assert
+            var result = await handler.LookupServiceAsync(uri);
             Assert.Equal(new Uri("http://foundit:5555/test/bar/foo?test=1&test2=2"), result);
         }
     }

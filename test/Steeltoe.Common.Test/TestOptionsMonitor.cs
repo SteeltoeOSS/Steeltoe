@@ -12,18 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using System;
 
-namespace Steeltoe.Common.Discovery
+namespace Steeltoe.Common
 {
-    public interface IDiscoveryClient : IServiceInstanceProvider
+    public class TestOptionsMonitor<T> : IOptionsMonitor<T>
     {
-        /// <summary>
-        ///  ServiceInstance with information used to register the local service
-        /// </summary>
-        /// <returns>The IServiceInstance</returns>
-        IServiceInstance GetLocalServiceInstance();
+        public TestOptionsMonitor(T currentValue)
+        {
+            CurrentValue = currentValue;
+        }
 
-        Task ShutdownAsync();
+        public T Get(string name)
+        {
+            return CurrentValue;
+        }
+
+        public IDisposable OnChange(Action<T, string> listener)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T CurrentValue { get; }
     }
 }
