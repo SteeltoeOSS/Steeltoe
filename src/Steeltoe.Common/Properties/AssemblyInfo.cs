@@ -12,18 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Common.Discovery
-{
-    public interface IDiscoveryClient : IServiceInstanceProvider
-    {
-        /// <summary>
-        ///  ServiceInstance with information used to register the local service
-        /// </summary>
-        /// <returns>The IServiceInstance</returns>
-        IServiceInstance GetLocalServiceInstance();
-
-        Task ShutdownAsync();
-    }
-}
+[assembly: InternalsVisibleTo("Steeltoe.Common.Test")]

@@ -12,18 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Common.Discovery
 {
-    public interface IDiscoveryClient : IServiceInstanceProvider
+    public class ConfigurationServiceInstance : IServiceInstance
     {
-        /// <summary>
-        ///  ServiceInstance with information used to register the local service
-        /// </summary>
-        /// <returns>The IServiceInstance</returns>
-        IServiceInstance GetLocalServiceInstance();
+        public string ServiceId { get; set; }
 
-        Task ShutdownAsync();
+        public string Host { get; set; }
+
+        public int Port { get; set; }
+
+        public bool IsSecure { get; set; }
+
+        public Uri Uri => new Uri((IsSecure ? Uri.UriSchemeHttps : Uri.UriSchemeHttp) + Uri.SchemeDelimiter + Host + ':' + Port);
+
+        public IDictionary<string, string> Metadata { get; set; }
     }
 }

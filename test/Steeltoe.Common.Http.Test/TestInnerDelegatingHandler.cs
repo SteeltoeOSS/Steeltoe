@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Common.Discovery
+namespace Steeltoe.Common.Http.Test
 {
-    public interface IDiscoveryClient : IServiceInstanceProvider
+    public class TestInnerDelegatingHandler : DelegatingHandler
     {
-        /// <summary>
-        ///  ServiceInstance with information used to register the local service
-        /// </summary>
-        /// <returns>The IServiceInstance</returns>
-        IServiceInstance GetLocalServiceInstance();
-
-        Task ShutdownAsync();
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+            responseMessage.Headers.Add("requestUri", request.RequestUri.AbsoluteUri);
+            return Task.Factory.StartNew(() => responseMessage, cancellationToken);
+        }
     }
 }
