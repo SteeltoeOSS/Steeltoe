@@ -21,9 +21,9 @@ namespace Steeltoe.Common.Net
     {
         public const string PREFIX = "spring:cloud:inet";
 
-        public string DefaultHostname => "localhost";
+        public string DefaultHostname { get; set; } = "localhost";
 
-        public string DefaultIpAddress => "127.0.0.1";
+        public string DefaultIpAddress { get; set; } = "127.0.0.1";
 
         public string IgnoredInterfaces { get; set; }
 
