@@ -23,7 +23,7 @@
   <PropertyGroup>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Portable.BouncyCastle" Version="${BouncyCastleVersion}" />
+    <PackageReference Include="Portable.BouncyCastle" Version="$(BouncyCastleVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(ExtensionsVersion)" />
