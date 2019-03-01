@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         public ThreadDumpEndpointOptions()
             : base()
         {
-            Id = "threaddump";
+            Id = "dump";
         }
 
         public ThreadDumpEndpointOptions(IConfiguration config)
@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         {
             if (string.IsNullOrEmpty(Id))
             {
-                Id = "threaddump";
+                Id = "dump";
             }
         }
     }

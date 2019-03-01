@@ -23,29 +23,27 @@ namespace Steeltoe.Management.Endpoint.Trace
         /// Enable the trace middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        [Obsolete]
         public static void UseTraceActuator(this IApplicationBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.UseMiddleware<TraceEndpointMiddleware>();
+            builder.UseTraceActuator(MediaTypeVersion.V1);
         }
 
-        /// <summary>
-        /// Enable the http trace middleware
-        /// </summary>
-        /// <param name="builder">Your application builder</param>
-        public static void UseHttpTraceActuator(this IApplicationBuilder builder)
+        public static void UseTraceActuator(this IApplicationBuilder builder, MediaTypeVersion version)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.UseMiddleware<HttpTraceEndpointMiddleware>();
+            switch (version)
+            {
+                case MediaTypeVersion.V1:
+                    builder.UseMiddleware<TraceEndpointMiddleware>();
+                    break;
+                default:
+                    builder.UseMiddleware<HttpTraceEndpointMiddleware>();
+                    break;
+            }
         }
     }
 }

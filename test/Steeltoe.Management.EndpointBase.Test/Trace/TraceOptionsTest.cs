@@ -26,8 +26,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new TraceOptions();
-            Assert.True(opts.Enabled);
+            var opts = new TraceEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.Equal("trace", opts.Id);
             Assert.Equal(100, opts.Capacity);
             Assert.True(opts.AddTimeTaken);
@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new TraceOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new TraceEndpointOptions(config));
         }
 
         [Fact]
@@ -76,17 +76,17 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var opts = new TraceOptions(config);
-            CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
+            var opts = new TraceEndpointOptions(config);
+            var cloudOpts = new CloudFoundryEndpointOptions(config);
 
             Assert.True(cloudOpts.Enabled);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Equal(string.Empty, cloudOpts.Path);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.Equal("trace", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/trace", opts.Path);
+            Assert.Equal("trace", opts.Path);
             Assert.Equal(1000, opts.Capacity);
             Assert.False(opts.AddTimeTaken);
             Assert.False(opts.AddRequestHeaders);

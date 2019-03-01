@@ -30,7 +30,30 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.UseMiddleware<ThreadDumpEndpointMiddleware>();
+            builder.UseThreadDumpActuator(MediaTypeVersion.V1);
+        }
+
+        /// <summary>
+        /// Enable the thread dump middleware
+        /// </summary>
+        /// <param name="builder">Your application builder</param>
+        /// <param name="version">MediaType version</param>
+        public static void UseThreadDumpActuator(this IApplicationBuilder builder, MediaTypeVersion version)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            switch (version)
+            {
+                case MediaTypeVersion.V1:
+                    builder.UseMiddleware<ThreadDumpEndpointMiddleware>();
+                    break;
+                default:
+                    builder.UseMiddleware<ThreadDumpEndpointMiddleware_v2>();
+                    break;
+            }
         }
     }
 }

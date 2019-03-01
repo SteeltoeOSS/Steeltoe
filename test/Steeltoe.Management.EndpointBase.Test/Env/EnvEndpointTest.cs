@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
 
             Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env));
 
-            options = new EnvOptions();
+            options = new EnvEndpointOptions();
             Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env));
 
             configuration = new ConfigurationBuilder().Build();
@@ -215,7 +215,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["management:endpoints:env:keystosanitize:0"] = "credentials",
                 ["password"] = "mysecret"
             };
-           
+
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();

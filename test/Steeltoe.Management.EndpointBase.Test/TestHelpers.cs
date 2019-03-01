@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Hypermedia;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Steeltoe.Management.Endpoint.Test
@@ -42,6 +45,15 @@ namespace Steeltoe.Management.Endpoint.Test
             var reader = new StreamReader(stream);
 
             return reader.ReadToEnd();
+        }
+
+        public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
+        {
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.AddRange(options);
+            var actuatorOptions = new ActuatorManagementOptions();
+            actuatorOptions.EndpointOptions.AddRange(options);
+            return new List<IManagementOptions>() { mgmtOptions, actuatorOptions };
         }
     }
 }

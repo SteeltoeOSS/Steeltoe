@@ -25,8 +25,8 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new MappingsOptions();
-            Assert.True(opts.Enabled);
+            var opts = new MappingsEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.Equal("mappings", opts.Id);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }
@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new MappingsOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new MappingsEndpointOptions(config));
         }
     }
 }

@@ -12,29 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointBase;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
     public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
     {
         private RequestDelegate _next;
-        
-        public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
+
+        public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
         }
-        
+
         [Obsolete]
         public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)

@@ -15,8 +15,8 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.EndpointOwin.Discovery;
+using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.EndpointOwin.Hypermedia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +26,11 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
     public static class ActuatorContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Discovery endpoint, OWIN middleware and options
+        /// Register the <see cref="ActuatorEndpoint"/>, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterDiscoveryActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterHypermediaActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -48,15 +48,14 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 
             container.Register(c =>
             {
-                var options = new ActuatorDiscoveryEndpointOptions(config);
+                var options = new HypermediaEndpointOptions(config);
                 var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>().OfType<ActuatorManagementOptions>().Single();
 
                 mgmtOptions.EndpointOptions.Add(options);
                 return options;
-            }).As<IActuatorDiscoveryOptions>().SingleInstance();
-            container.RegisterType<ActuatorDiscoveryEndpoint>().SingleInstance();
-            container.RegisterType<ActuatorDiscoveryEndpointOwinMiddleware>().SingleInstance();
+            }).As<IActuatorHypermediaOptions>().SingleInstance();
+            container.RegisterType<ActuatorEndpoint>().SingleInstance();
+            container.RegisterType<ActuatorHypermediaEndpointOwinMiddleware>().SingleInstance();
         }
-
     }
 }

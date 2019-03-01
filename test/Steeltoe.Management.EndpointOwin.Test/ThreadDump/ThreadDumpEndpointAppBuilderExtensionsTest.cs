@@ -46,7 +46,7 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
         public void UseThreadDumpActuator_ThrowsIfOptionsNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var threadDumper = new ThreadDumper(new ThreadDumpOptions());
+            var threadDumper = new ThreadDumper(new ThreadDumpEndpointOptions());
             var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpActuator(null, threadDumper));
             Assert.Equal("options", exception.ParamName);
         }
@@ -56,7 +56,7 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
         {
             IAppBuilder builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
-            var options = new ThreadDumpOptions(config);
+            var options = new ThreadDumpEndpointOptions(config);
             var exception = Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpActuator(options, null));
             Assert.Equal("threadDumper", exception.ParamName);
         }

@@ -31,11 +31,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void ParseTag_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
-            var middle = new MetricsEndpointMiddleware(null, ep);
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             Assert.Null(middle.ParseTag("foobar"));
             Assert.Equal(new KeyValuePair<string, string>("foo", "bar"), middle.ParseTag("foo:bar"));
@@ -46,30 +47,31 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void ParseTags_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
-            var middle = new MetricsEndpointMiddleware(null, ep);
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-            var context1 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "?foo=key:value");
+            var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
             var result = middle.ParseTags(context1.Request.Query);
             Assert.NotNull(result);
             Assert.Empty(result);
 
-            var context2 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "?tag=key:value");
+            var context2 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value");
             result = middle.ParseTags(context2.Request.Query);
             Assert.NotNull(result);
             Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
 
-            var context3 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key1:value1");
+            var context3 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key1:value1");
             result = middle.ParseTags(context3.Request.Query);
             Assert.NotNull(result);
             Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
             Assert.Contains(new KeyValuePair<string, string>("key1", "value1"), result);
             Assert.Equal(2, result.Count);
 
-            var context4 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key:value");
+            var context4 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key:value");
             result = middle.ParseTags(context4.Request.Query);
             Assert.NotNull(result);
             Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
@@ -79,32 +81,34 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void GetMetricName_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
-            var middle = new MetricsEndpointMiddleware(null, ep);
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-            var context1 = CreateRequest("GET", "/metrics");
+            var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
             Assert.Null(middle.GetMetricName(context1.Request));
 
-            var context2 = CreateRequest("GET", "/metrics/Foo.Bar.Class");
+            var context2 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class");
             Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
 
-            var context3 = CreateRequest("GET", "/metrics", "?tag=key:value&tag=key1:value1");
+            var context3 = CreateRequest("GET", "/cloudfoundryapplication/metrics", "?tag=key:value&tag=key1:value1");
             Assert.Null(middle.GetMetricName(context3.Request));
         }
 
         [Fact]
         public async void HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
-            var middle = new MetricsEndpointMiddleware(null, ep);
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-            var context = CreateRequest("GET", "/metrics");
+            var context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
 
             await middle.HandleMetricsRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -116,13 +120,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public async void HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
-            var middle = new MetricsEndpointMiddleware(null, ep);
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-            var context = CreateRequest("GET", "/metrics/foo.bar");
+            var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
 
             await middle.HandleMetricsRequestAsync(context);
             Assert.Equal(404, context.Response.StatusCode);
@@ -131,7 +136,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public async void HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
             var tagsComponent = new TagsComponent();
             var tagger = tagsComponent.Tagger;
@@ -139,9 +145,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             SetupTestView(stats);
 
-            var middle = new MetricsEndpointMiddleware(null, ep);
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-            var context = CreateRequest("GET", "/metrics/test.test", "?tag=a:v1");
+            var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test.test", "?tag=a:v1");
 
             await middle.HandleMetricsRequestAsync(context);
             Assert.Equal(200, context.Response.StatusCode);
@@ -155,19 +161,20 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void MetricsEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
             var ep = new MetricsEndpoint(opts, stats);
-            var middle = new MetricsEndpointMiddleware(null, ep);
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/metrics"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
-            Assert.False(middle.RequestVerbAndPathMatch("POST", "/metrics"));
-            Assert.False(middle.RequestVerbAndPathMatch("DELETE", "/metrics"));
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class"));
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics?tag=key:value&tag=key1:value1"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("DELETE", "/cloudfoundryapplication/metrics"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics?tag=key:value&tag=key1:value1"));
         }
 
         private HttpContext CreateRequest(string method, string path, string query = null)

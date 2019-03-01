@@ -30,9 +30,11 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
         public async void InfoInvoke_ReturnsExpected()
         {
             // arrange
-            var ep = new TestInfoEndpoint(new InfoOptions(), new List<IInfoContributor>() { new GitInfoContributor() });
-            var middle = new EndpointOwinMiddleware<Dictionary<string, object>>(null, ep);
-            var context = OwinTestHelpers.CreateRequest("GET", "/info");
+            var opts = new InfoEndpointOptions();
+            var ep = new TestInfoEndpoint(opts, new List<IInfoContributor>() { new GitInfoContributor() });
+            var mgmtOpts = TestHelpers.GetManagementOptions(opts);
+            var middle = new EndpointOwinMiddleware<Dictionary<string, object>>(null, ep, mgmtOpts);
+            var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/info");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -85,14 +87,16 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
         [Fact]
         public void InfoEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new InfoOptions();
+            var opts = new InfoEndpointOptions();
+            var mgmtOpts = TestHelpers.GetManagementOptions(opts);
+
             var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
             var ep = new InfoEndpoint(opts, contribs);
-            var middle = new EndpointOwinMiddleware<Dictionary<string, object>>(null, ep);
+            var middle = new EndpointOwinMiddleware<Dictionary<string, object>>(null, ep, mgmtOpts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/info"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/info"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
     }
 }

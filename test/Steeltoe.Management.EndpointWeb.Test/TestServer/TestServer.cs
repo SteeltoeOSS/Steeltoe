@@ -23,8 +23,8 @@ namespace Steeltoe.Management.EndpointWeb.Test
     [Serializable]
     public class TestServer : IDisposable
     {
-        private Settings _currentSettings;
-        private Mock<HttpContextBase> _mockContext;
+        private readonly Mock<HttpContextBase> _mockContext;
+        private readonly Settings _currentSettings;
 
         public TestServer(Settings settings = null)
         {
@@ -36,7 +36,9 @@ namespace Steeltoe.Management.EndpointWeb.Test
         {
             get
             {
+#pragma warning disable CS0612 // Type or member is obsolete
                 ManagementOptions.Reset();
+#pragma warning restore CS0612 // Type or member is obsolete
 
                 var handlers = ManagementConfig.ConfigureManagementActuators(null, _currentSettings);
                 var actuatorModule = new ActuatorModule(handlers, null);

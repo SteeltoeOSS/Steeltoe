@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-
 namespace Steeltoe.Management.Endpoint.Security.Test
 {
     /// <summary>

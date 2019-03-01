@@ -15,9 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
-using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
@@ -30,6 +29,11 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
         public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config)
         {
+            services.AddThreadDumpActuator(config, MediaTypeVersion.V1);
+        }
+
+        public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config, MediaTypeVersion version)
+        {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
@@ -41,13 +45,24 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             }
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-
             var options = new ThreadDumpEndpointOptions(config);
+            if (version == MediaTypeVersion.V1)
+            {
+                services.TryAddSingleton<ThreadDumpEndpoint>();
+            }
+            else
+            {
+                if (options.Id == "dump")
+                {
+                    options.Id = "threaddump";
+                }
+
+                services.TryAddSingleton<ThreadDumpEndpoint_v2>();
+            }
+
             services.TryAddSingleton<IThreadDumpOptions>(options);
             services.RegisterEndpointOptions(options);
-
             services.TryAddSingleton<IThreadDumper, ThreadDumper>();
-            services.TryAddSingleton<ThreadDumpEndpoint>();
         }
     }
 }

@@ -26,8 +26,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new ThreadDumpOptions();
-            Assert.True(opts.Enabled);
+            var opts = new ThreadDumpEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.Equal("dump", opts.Id);
         }
 
@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new ThreadDumpOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpointOptions(config));
         }
 
         [Fact]
@@ -44,7 +44,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
                 ["management:endpoints:dump:enabled"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
@@ -54,17 +53,18 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var opts = new ThreadDumpOptions(config);
-            CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
+            var opts = new ThreadDumpEndpointOptions(config);
+            var cloudOpts = new CloudFoundryEndpointOptions(config);
+            var ep = new ThreadDumpEndpoint(opts, new ThreadDumper(opts));
 
             Assert.True(cloudOpts.Enabled);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Equal(string.Empty, cloudOpts.Path);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.Equal("dump", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/dump", opts.Path);
+            Assert.Equal("dump", opts.Path);
         }
     }
 }

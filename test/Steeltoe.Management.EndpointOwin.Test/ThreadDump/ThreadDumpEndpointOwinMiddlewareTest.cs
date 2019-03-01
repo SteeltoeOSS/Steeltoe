@@ -33,9 +33,10 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
         public async void ThreadDumpInvoke_ReturnsExpected()
         {
             // arrange
-            var opts = new ThreadDumpOptions();
-            var middle = new EndpointOwinMiddleware<List<ThreadInfo>>(null, new ThreadDumpEndpoint(opts, new ThreadDumper(opts)));
-            var context = OwinTestHelpers.CreateRequest("GET", "/dump");
+            var opts = new ThreadDumpEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var middle = new EndpointOwinMiddleware<List<ThreadInfo>>(null, new ThreadDumpEndpoint(opts, new ThreadDumper(opts)), mgmtOptions);
+            var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/dump");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -76,14 +77,15 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
         [Fact]
         public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new ThreadDumpOptions();
+            var opts = new ThreadDumpEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
             ThreadDumper obs = new ThreadDumper(opts);
             var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new EndpointOwinMiddleware<List<ThreadInfo>>(null, ep);
+            var middle = new EndpointOwinMiddleware<List<ThreadInfo>>(null, ep, mgmtOptions);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/dump"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/dump"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
     }
 }

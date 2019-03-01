@@ -37,8 +37,10 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
             // arrange
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
-            var middle = new EndpointOwinMiddleware<IList<string>>(null, new RefreshEndpoint(new RefreshOptions(), configurationBuilder.Build()));
-            var context = OwinTestHelpers.CreateRequest("GET", "/refresh");
+            var opts = new RefreshEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
+            var middle = new EndpointOwinMiddleware<IList<string>>(null, new RefreshEndpoint(opts, configurationBuilder.Build()), mopts);
+            var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/refresh");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -73,16 +75,17 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
         [Fact]
         public void RefreshEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new RefreshOptions();
+            var opts = new RefreshEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var config = configurationBuilder.Build();
             var ep = new RefreshEndpoint(opts, config);
-            var middle = new EndpointOwinMiddleware<IList<string>>(null, ep);
+            var middle = new EndpointOwinMiddleware<IList<string>>(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/refresh"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/refresh"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetSessionId_NoSession_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetSessionId_WithSession_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -72,7 +72,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetUserPrincipal_NotAuthenticated_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -83,7 +83,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetUserPrincipal_Authenticated_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -96,7 +96,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetRemoteAddress_NoConnection_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -107,7 +107,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetPathInfo_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -119,7 +119,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetRequestUri_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -130,7 +130,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetRequestParameters_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -149,7 +149,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetTimeTaken_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -162,7 +162,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetHeaders_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -183,7 +183,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetProperty_NoProperties_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
 
@@ -194,7 +194,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetProperty_WithProperties_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             var expectedContext = CreateRequest();
@@ -206,7 +206,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void MakeTrace_ReturnsExpected()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             HttpContext context = CreateRequest();
@@ -234,7 +234,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void ProcessEvent_IgnoresUnprocessableEvents()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
 
@@ -261,7 +261,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public void Subscribe_Listener_StopActivity_AddsToQueue()
         {
             DiagnosticListener listener = new DiagnosticListener("Microsoft.AspNetCore");
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             obs.Subscribe(listener);
@@ -302,7 +302,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void ProcessEvent_AddsToQueue()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
 
@@ -338,7 +338,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void ProcessEvent_HonorsCapacity()
         {
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             Activity current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
@@ -357,7 +357,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public void GetTraces_ReturnsTraces()
         {
             DiagnosticListener listener = new DiagnosticListener("test");
-            TraceOptions option = new TraceOptions();
+            var option = new TraceEndpointOptions();
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
             Activity current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
@@ -379,8 +379,10 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
         private HttpContext CreateRequest()
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = "GET";
             context.Request.Path = new PathString("/myPath");

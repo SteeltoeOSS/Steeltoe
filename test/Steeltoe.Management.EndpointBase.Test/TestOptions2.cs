@@ -17,8 +17,9 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
-    [Obsolete]
+#pragma warning disable CS0612 // Type or member is obsolete
     internal class TestOptions2 : AbstractOptions
+#pragma warning restore CS0612 // Type or member is obsolete
     {
         public TestOptions2()
             : base()

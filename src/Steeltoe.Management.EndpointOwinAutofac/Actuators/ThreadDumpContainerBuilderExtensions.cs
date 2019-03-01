@@ -15,7 +15,6 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.EndpointOwin;
 using System;
@@ -32,6 +31,11 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         public static void RegisterThreadDumpActuator(this ContainerBuilder container, IConfiguration config)
         {
+            container.RegisterThreadDumpActuator(config, MediaTypeVersion.V1);
+        }
+
+        public static void RegisterThreadDumpActuator(this ContainerBuilder container, IConfiguration config, MediaTypeVersion version)
+        {
             if (container == null)
             {
                 throw new ArgumentNullException(nameof(container));
@@ -43,10 +47,13 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             }
 
             container.RegisterType<ThreadDumper>().As<IThreadDumper>().SingleInstance();
-            //container.RegisterInstance(new ThreadDumpOptions(config)).As<IThreadDumpOptions>();
             container.Register(c =>
             {
                 var options = new ThreadDumpEndpointOptions(config);
+                if (options.Id == "dump" && version == MediaTypeVersion.V2)
+                {
+                    options.Id = "threaddump";
+                }
                 var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
                 foreach (var mgmt in mgmtOptions)
                 {
@@ -54,8 +61,19 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 }
                 return options;
             }).As<IThreadDumpOptions>().IfNotRegistered(typeof(IThreadDumpOptions));
-            container.RegisterType<ThreadDumpEndpoint>().As<IEndpoint<List<ThreadInfo>>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<List<ThreadInfo>>>().SingleInstance();
+
+            if (version == MediaTypeVersion.V1)
+            {
+                container.RegisterType<ThreadDumpEndpoint>().As<IEndpoint<List<ThreadInfo>>>().SingleInstance();
+
+                container.RegisterType<EndpointOwinMiddleware<List<ThreadInfo>>>().SingleInstance();
+            }
+            else
+            {
+                container.RegisterType<ThreadDumpEndpoint_v2>().As<IEndpoint<ThreadDumpResult>>().SingleInstance();
+
+                container.RegisterType<EndpointOwinMiddleware<ThreadDumpResult>>().SingleInstance();
+            }
         }
     }
 }

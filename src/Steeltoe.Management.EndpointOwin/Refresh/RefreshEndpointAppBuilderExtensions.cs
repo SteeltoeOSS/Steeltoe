@@ -15,9 +15,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Refresh;
 using System;
 using System.Collections.Generic;

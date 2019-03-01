@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.EndpointOwinAutofac.Actuators;
+using Steeltoe.Management.Hypermedia;
 using System;
 using System.Web.Http.Description;
 
@@ -33,39 +34,18 @@ namespace Steeltoe.Management.EndpointOwinAutofac
         /// <param name="apiExplorer">An <see cref="ApiExplorer" /> that has access to your HttpConfiguration.<para />If not provided, mappings actuator will not be registered</param>
         public static void RegisterCloudFoundryActuators(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer = null)
         {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            container.RegisterDiagnosticSourceMiddleware();
-            container.RegisterCloudFoundrySecurityMiddleware(config);
-            container.RegisterCloudFoundryActuator(config);
-            container.RegisterHealthActuator(config);
-            container.RegisterHeapDumpActuator(config);
-            container.RegisterInfoActuator(config);
-            container.RegisterLoggersActuator(config);
-            if (apiExplorer != null)
-            {
-                container.RegisterMappingsActuator(config, apiExplorer);
-            }
-
-            container.RegisterThreadDumpActuator(config);
-            container.RegisterTraceActuator(config);
+            container.RegisterCloudFoundryActuators(config, apiExplorer, MediaTypeVersion.V1, ActuatorContext.CloudFoundry);
         }
 
         /// <summary>
-        /// Add all actuator OWIN Middlewares, configure CORS and Cloud Foundry request security
+        /// Add all cloudfoundry actuator OWIN Middlewares, configure CORS and Cloud Foundry request security
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="apiExplorer">An <see cref="ApiExplorer" /> that has access to your HttpConfiguration.<para />If not provided, mappings actuator will not be registered</param>
-        public static void RegisterDiscoveryActuators(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer = null)
+        /// <param name="version">MediaType version for response</param>
+        /// <param name="context">Actuator Context for endpoints</param>
+        public static void RegisterCloudFoundryActuators(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer, MediaTypeVersion version,  ActuatorContext context)
         {
             if (container == null)
             {
@@ -78,10 +58,29 @@ namespace Steeltoe.Management.EndpointOwinAutofac
             }
 
             container.RegisterDiagnosticSourceMiddleware();
-            container.RegisterDiscoveryActuator(config);
-            container.RegisterHealthActuator(config);
-            container.RegisterInfoActuator(config);
+            if (context != ActuatorContext.Actuator)
+            {
+                container.RegisterCloudFoundrySecurityMiddleware(config);
+                container.RegisterCloudFoundryActuator(config);
+            }
 
+            if (context != ActuatorContext.CloudFoundry)
+            {
+                container.RegisterDiagnosticSourceMiddleware();
+                container.RegisterHypermediaActuator(config);
+            }
+
+            container.RegisterHealthActuator(config);
+            container.RegisterHeapDumpActuator(config);
+            container.RegisterInfoActuator(config);
+            container.RegisterLoggersActuator(config);
+            if (apiExplorer != null)
+            {
+                container.RegisterMappingsActuator(config, apiExplorer);
+            }
+
+            container.RegisterThreadDumpActuator(config, version);
+            container.RegisterTraceActuator(config, version);
         }
 
         /// <summary>

@@ -18,15 +18,15 @@ using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class CloudFoundryHandler : ActuatorHandler<CloudFoundryEndpoint, Links, string>
+#pragma warning restore CS0612 // Type or member is obsolete
     {
-        public CloudFoundryHandler(CloudFoundryEndpoint endpoint, IEnumerable< ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryHandler> logger = null)
+        public CloudFoundryHandler(CloudFoundryEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryHandler> logger = null)
            : base(endpoint, securityServices, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), null, true, logger)
         {
         }

@@ -60,7 +60,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             Timestamp = timestamp;
             Principal = principal;
             Session = session;
-            TimeTaken = (long) timeTaken;
+            TimeTaken = (long)timeTaken;
         }
     }
 
@@ -83,7 +83,6 @@ namespace Steeltoe.Management.Endpoint.Trace
             Headers = headers;
             RemoteAddress = remoteAddress;
         }
-
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

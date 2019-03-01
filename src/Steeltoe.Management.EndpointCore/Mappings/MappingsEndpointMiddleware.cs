@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -23,6 +22,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +37,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
         private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
         private readonly IMappingsOptions _options;
         private readonly IRouteMappings _routeMappings;
-        private readonly IEnumerable<IManagementOptions> _mgmtOptions;
 
         public MappingsEndpointMiddleware(
             RequestDelegate next,
@@ -54,9 +53,8 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _routeMappings = routeMappings;
             _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
             _apiDescriptionProviders = apiDescriptionProviders;
-            _mgmtOptions = mgmtOptions;
         }
-        
+
         [Obsolete]
         public MappingsEndpointMiddleware(
             RequestDelegate next,
@@ -167,9 +165,10 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
         protected internal IRouteDetails GetRouteDetails(ApiDescription desc)
         {
-            var routeDetails = new AspNetCoreRouteDetails();
-
-            routeDetails.HttpMethods = GetHttpMethods(desc);
+            var routeDetails = new AspNetCoreRouteDetails
+            {
+                HttpMethods = GetHttpMethods(desc)
+            };
 
             if (desc.ActionDescriptor.AttributeRouteInfo?.Template != null)
             {
@@ -212,8 +211,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
             foreach (var router in routeMappings.Routers)
             {
-                var route = router as Route;
-                if (route != null)
+                if (router is Route route)
                 {
                     var details = GetRouteDetails(route);
                     desc.TryGetValue("CoreRouteHandler", out IList<MappingDescription> mapList);
@@ -232,10 +230,11 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
         protected internal IRouteDetails GetRouteDetails(Route route)
         {
-            var routeDetails = new AspNetCoreRouteDetails();
-
-            routeDetails.HttpMethods = GetHttpMethods(route);
-            routeDetails.RouteTemplate = route.RouteTemplate;
+            var routeDetails = new AspNetCoreRouteDetails
+            {
+                HttpMethods = GetHttpMethods(route),
+                RouteTemplate = route.RouteTemplate
+            };
 
             return routeDetails;
         }
@@ -255,8 +254,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             var constraints = route.Constraints;
             if (constraints.TryGetValue("httpMethod", out IRouteConstraint routeConstraint))
             {
-                var methodConstraint = routeConstraint as HttpMethodRouteConstraint;
-                if (methodConstraint != null)
+                if (routeConstraint is HttpMethodRouteConstraint methodConstraint)
                 {
                     return methodConstraint.AllowedMethods;
                 }

@@ -29,8 +29,6 @@ namespace Steeltoe.Management.Endpoint
         IEndpointOptions Options { get; }
 
         string Path { get; }
-
-        List<string> OtherPaths { get; }
     }
 
     public interface IEndpoint<TResult> : IEndpoint

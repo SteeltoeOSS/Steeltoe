@@ -15,6 +15,7 @@
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -31,10 +32,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Invoke_ReturnsExpectedLinks()
         {
-            var infoOpts = new InfoOptions();
-            var cloudOpts = new CloudFoundryOptions();
+            var infoOpts = new InfoEndpointOptions();
+            var cloudOpts = new CloudFoundryEndpointOptions();
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(infoOpts);
+            mgmtOptions.EndpointOptions.Add(cloudOpts);
 
-            var ep = new CloudFoundryEndpoint(cloudOpts, null);
+            var ep = new CloudFoundryEndpoint(cloudOpts, new List<IManagementOptions> { mgmtOptions }, null);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);
@@ -49,9 +53,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
         {
-            var cloudOpts = new CloudFoundryOptions();
-
-            var ep = new CloudFoundryEndpoint(cloudOpts);
+            var cloudOpts = new CloudFoundryEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(cloudOpts);
+            var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);
@@ -64,10 +68,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
         {
-            var infoOpts = new InfoOptions { Enabled = false };
-            var cloudOpts = new CloudFoundryOptions();
+            var infoOpts = new InfoEndpointOptions { Enabled = false };
+            var cloudOpts = new CloudFoundryEndpointOptions();
 
-            var ep = new CloudFoundryEndpoint(cloudOpts);
+            var mgmtOptions = TestHelpers.GetManagementOptions(infoOpts, cloudOpts);
+            var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);
@@ -81,10 +86,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
         {
-            var infoOpts = new InfoOptions { Enabled = true };
-            var cloudOpts = new CloudFoundryOptions { Enabled = false };
-
-            var ep = new CloudFoundryEndpoint(cloudOpts);
+            var infoOpts = new InfoEndpointOptions { Enabled = true };
+            var cloudOpts = new CloudFoundryEndpointOptions { Enabled = false };
+            var mgmtOptions = TestHelpers.GetManagementOptions(infoOpts, cloudOpts);
+            var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);

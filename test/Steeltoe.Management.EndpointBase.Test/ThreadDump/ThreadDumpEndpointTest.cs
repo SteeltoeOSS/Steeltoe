@@ -23,14 +23,14 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public void Constructor_ThrowsIfNullRepo()
         {
-            Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpoint(new ThreadDumpOptions(), null));
+            Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpoint(new ThreadDumpEndpointOptions(), null));
         }
 
         [Fact]
         public void Invoke_CallsDumpThreads()
         {
             var dumper = new TestThreadDumper();
-            var ep = new ThreadDumpEndpoint(new ThreadDumpOptions(), dumper);
+            var ep = new ThreadDumpEndpoint(new ThreadDumpEndpointOptions(), dumper);
             var result = ep.Invoke();
             Assert.NotNull(result);
             Assert.True(dumper.DumpThreadsCalled);

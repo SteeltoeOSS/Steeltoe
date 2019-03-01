@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
-    public static class TestHelpers
+ /*   public static class TestHelpers
     {
         public static string CreateTempFile(string contents)
         {
@@ -43,5 +45,12 @@ namespace Steeltoe.Management.Endpoint.Test
 
             return reader.ReadToEnd();
         }
-    }
+
+        public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
+        {
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.AddRange(options);
+            return new List<IManagementOptions>() { mgmtOptions };
+        }
+    }*/
 }

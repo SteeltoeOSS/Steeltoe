@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public void Constructor_ThrowsIfNullRepo()
         {
-            Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(new HeapDumpOptions(), null));
+            Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(new HeapDumpEndpointOptions(), null));
         }
 
         [Fact]
@@ -38,8 +38,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 var logger1 = loggerFactory.CreateLogger<HeapDumper>();
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
 
-                var dumper = new HeapDumper(new HeapDumpOptions(), logger: logger1);
-                var ep = new HeapDumpEndpoint(new HeapDumpOptions(), dumper, logger2);
+                var dumper = new HeapDumper(new HeapDumpEndpointOptions(), logger: logger1);
+                var ep = new HeapDumpEndpoint(new HeapDumpEndpointOptions(), dumper, logger2);
 
                 var result = ep.Invoke();
                 Assert.NotNull(result);

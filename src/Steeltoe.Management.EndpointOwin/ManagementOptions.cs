@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 using System.Collections.Generic;
 

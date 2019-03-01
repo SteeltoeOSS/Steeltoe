@@ -43,14 +43,15 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         [Fact]
         public async void HandleRefreshRequestAsync_ReturnsExpected()
         {
-            var opts = new RefreshOptions();
+            var opts = new RefreshEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
 
             var ep = new RefreshEndpoint(opts, config);
-            var middle = new RefreshEndpointMiddleware(null, ep);
+            var middle = new RefreshEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/refresh");
             await middle.HandleRefreshRequestAsync(context);
@@ -90,22 +91,25 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         [Fact]
         public void RefreshEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new RefreshOptions();
+            var opts = new RefreshEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
             var ep = new RefreshEndpoint(opts, config);
-            var middle = new RefreshEndpointMiddleware(null, ep);
+            var middle = new RefreshEndpointMiddleware(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/refresh"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/refresh"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

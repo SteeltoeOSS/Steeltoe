@@ -63,6 +63,5 @@ namespace Steeltoe.Management.Endpoint.Trace
         public bool AddSessionId { get; set; } = false;
 
         public bool AddTimeTaken { get; set; } = true;
-
     }
 }

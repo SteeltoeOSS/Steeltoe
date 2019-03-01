@@ -53,7 +53,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         public override async Task Invoke(IOwinContext context)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             bool isEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
+#pragma warning restore CS0612 // Type or member is obsolete
 
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && isEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
@@ -142,7 +144,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             // Remove in 3.0
             if (_mgmtOptions == null)
             {
+#pragma warning disable CS0612 // Type or member is obsolete
                 configEndpoints = _options.Global.EndpointOptions;
+#pragma warning restore CS0612 // Type or member is obsolete
                 foreach (var ep in configEndpoints)
                 {
                     PathString epPath = new PathString(ep.Path);

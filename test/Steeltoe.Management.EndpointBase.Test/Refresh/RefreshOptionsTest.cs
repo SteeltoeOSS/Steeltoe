@@ -27,8 +27,8 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new RefreshOptions();
-            Assert.True(opts.Enabled);
+            var opts = new RefreshEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.Equal("refresh", opts.Id);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }
@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new RefreshOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new RefreshEndpointOptions(config));
         }
     }
 }

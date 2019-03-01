@@ -15,8 +15,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Security.Test
@@ -32,13 +31,13 @@ namespace Steeltoe.Management.Endpoint.Security.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDiscoveryActuator(Configuration);
+            services.AddHypermediaActuator(Configuration);
             services.AddInfoActuator(Configuration);
         }
 
         public virtual void Configure(IApplicationBuilder app)
         {
-            app.UseDiscoveryActuator();
+            app.UseHypermediaActuator();
             app.UseInfoActuator();
         }
     }

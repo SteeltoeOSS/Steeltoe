@@ -30,9 +30,11 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-            var traceRepo = new TraceDiagnosticObserver(new TraceOptions(config));
+            var traceRepo = new TraceDiagnosticObserver(new TraceEndpointOptions(config));
 
+#pragma warning disable CS0612 // Type or member is obsolete
             var exception = Assert.Throws<ArgumentNullException>(() => builder.UseTraceActuator(config, traceRepo));
+#pragma warning restore CS0612 // Type or member is obsolete
             Assert.Equal("builder", exception.ParamName);
         }
 
@@ -40,9 +42,11 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
         public void UseTraceActuator_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var traceRepo = new TraceDiagnosticObserver(new TraceOptions());
+            var traceRepo = new TraceDiagnosticObserver(new TraceEndpointOptions());
 
+#pragma warning disable CS0612 // Type or member is obsolete
             var exception = Assert.Throws<ArgumentNullException>(() => builder.UseTraceActuator(null, traceRepo));
+#pragma warning restore CS0612 // Type or member is obsolete
             Assert.Equal("config", exception.ParamName);
         }
     }

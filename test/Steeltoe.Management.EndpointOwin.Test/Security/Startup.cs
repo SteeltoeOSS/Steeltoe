@@ -14,10 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Owin;
-using Steeltoe.Management.EndpointOwin.CloudFoundry;
-using Steeltoe.Management.EndpointOwin.Discovery;
+using Steeltoe.Management.EndpointOwin.Hypermedia;
 using Steeltoe.Management.EndpointOwin.Info;
-using Steeltoe.Management.EndpointOwin.Security;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
 
@@ -50,7 +48,7 @@ namespace Steeltoe.Management.EndpointOwin.Security.Test
             builder.AddEnvironmentVariables();
             var config = Config = builder.Build();
 
-            app.UseDiscoveryActuator(config);
+            app.UseHypermediaActuator(config);
             app.UseInfoActuator(config);
         }
     }

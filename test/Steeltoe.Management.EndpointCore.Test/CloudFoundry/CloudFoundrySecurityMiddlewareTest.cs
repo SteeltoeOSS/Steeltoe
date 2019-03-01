@@ -82,7 +82,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
                 ["info:application:date"] = "5/1/2008",
@@ -107,10 +106,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings3 = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
                 ["info:application:date"] = "5/1/2008",
@@ -140,10 +137,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                
+
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                
+
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
                 ["info:application:date"] = "5/1/2008",
@@ -174,10 +171,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
-                
+
                 ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
-                
+
                 ["management:endpoints:cloudfoundry:enabled"] = "false",
                 ["info:application:name"] = "foobar",
                 ["info:application:version"] = "1.0.0",
@@ -243,8 +240,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void GetAccessToken_ReturnsExpected()
         {
-            var opts = new CloudFoundryOptions();
-            var middle = new CloudFoundrySecurityMiddleware(null, opts, null);
+            var opts = new CloudFoundryEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions, null);
             var context = CreateRequest("GET", "/");
             var token = middle.GetAccessToken(context.Request);
             Assert.Null(token);
@@ -258,8 +256,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public async void GetPermissions_ReturnsExpected()
         {
-            var opts = new CloudFoundryOptions();
-            var middle = new CloudFoundrySecurityMiddleware(null, opts, null);
+            var opts = new CloudFoundryEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions, null);
             var context = CreateRequest("GET", "/");
             var result = await middle.GetPermissions(context);
             Assert.NotNull(result);
@@ -276,8 +275,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

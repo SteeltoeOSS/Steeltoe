@@ -16,7 +16,6 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.EndpointOwin;
 using System;

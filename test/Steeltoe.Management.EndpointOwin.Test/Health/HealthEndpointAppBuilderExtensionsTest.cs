@@ -17,7 +17,6 @@ using Microsoft.Owin.Builder;
 using Owin;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using Xunit;
 
@@ -56,7 +55,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         {
             var builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
-            var options = new HealthOptions(config);
+            var options = new HealthEndpointOptions(config);
             var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options, aggregator: null));
             Assert.Equal("aggregator", exception.ParamName);
         }
@@ -66,7 +65,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         {
             var builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
-            var options = new HealthOptions(config);
+            var options = new HealthEndpointOptions(config);
             var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options, new DefaultHealthAggregator(), contributors: null));
             Assert.Equal("contributors", exception.ParamName);
         }

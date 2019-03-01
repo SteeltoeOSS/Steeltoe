@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseTraceActuator());
+            Assert.Throws<ArgumentNullException>(testCode: () => builder.UseTraceActuator());
         }
     }
 }

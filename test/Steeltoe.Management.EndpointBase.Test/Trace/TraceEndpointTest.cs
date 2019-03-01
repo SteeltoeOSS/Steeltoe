@@ -23,14 +23,14 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void Constructor_ThrowsIfNullRepo()
         {
-            Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(new TraceOptions(), null));
+            Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(new TraceEndpointOptions(), null));
         }
 
         [Fact]
         public void DoInvoke_CallsTraceRepo()
         {
             var repo = new TestTraceRepo();
-            var ep = new TraceEndpoint(new TraceOptions(), repo);
+            var ep = new TraceEndpoint(new TraceEndpointOptions(), repo);
             var result = ep.DoInvoke(repo);
             Assert.NotNull(result);
             Assert.True(repo.GetTracesCalled);

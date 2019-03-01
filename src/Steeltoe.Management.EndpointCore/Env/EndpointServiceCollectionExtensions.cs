@@ -16,9 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
-using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Env
 {

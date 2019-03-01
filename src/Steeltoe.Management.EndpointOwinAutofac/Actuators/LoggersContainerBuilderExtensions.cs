@@ -19,7 +19,6 @@ using Microsoft.Extensions.Logging.Console;
 using Steeltoe.Common.Logging.Autofac;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.EndpointOwin.Loggers;
 using System;

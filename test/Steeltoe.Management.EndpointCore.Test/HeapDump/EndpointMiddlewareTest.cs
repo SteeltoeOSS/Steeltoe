@@ -46,7 +46,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                var opts = new HeapDumpOptions();
+                var opts = new HeapDumpEndpointOptions();
+                var mopts = TestHelpers.GetManagementOptions(opts);
                 LoggerFactory loggerFactory = new LoggerFactory();
                 loggerFactory.AddConsole(minLevel: LogLevel.Debug);
                 var logger1 = loggerFactory.CreateLogger<HeapDumper>();
@@ -55,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
 
                 HeapDumper obs = new HeapDumper(opts, logger: logger1);
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
-                var middle = new HeapDumpEndpointMiddleware(null, ep, logger3);
+                var middle = new HeapDumpEndpointMiddleware(null, ep, mopts, logger3);
                 var context = CreateRequest("GET", "/heapdump");
                 await middle.HandleHeapDumpRequestAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -106,20 +107,23 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public void HeapDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new HeapDumpOptions();
+            var opts = new HeapDumpEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             HeapDumper obs = new HeapDumper(opts);
             var ep = new HeapDumpEndpoint(opts, obs);
-            var middle = new HeapDumpEndpointMiddleware(null, ep);
+            var middle = new HeapDumpEndpointMiddleware(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/heapdump"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/heapdump"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

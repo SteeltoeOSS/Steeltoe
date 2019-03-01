@@ -75,7 +75,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         public async void SkipsSecurityCheck_WhenEnabledFalse()
         {
             Environment.SetEnvironmentVariable("management__endpoints__cloudfoundry__enabled", "false");
-            
+
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
@@ -90,8 +90,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         [Fact]
         public void GetAccessToken_ReturnsExpected()
         {
-            var opts = new CloudFoundryOptions();
-            var middle = new CloudFoundrySecurityOwinMiddleware(null, opts, null);
+            var opts = new CloudFoundryEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var middle = new CloudFoundrySecurityOwinMiddleware(null, opts,  mgmtOptions, null);
             var context = OwinTestHelpers.CreateRequest("GET", "/");
             var token = middle.GetAccessToken(context.Request);
             Assert.Null(token);
@@ -105,8 +106,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         [Fact]
         public async void GetPermissions_ReturnsExpected()
         {
-            var opts = new CloudFoundryOptions();
-            var middle = new CloudFoundrySecurityOwinMiddleware(null, opts, null);
+            var opts = new CloudFoundryEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var middle = new CloudFoundrySecurityOwinMiddleware(null, opts, mgmtOptions, null);
             var context = OwinTestHelpers.CreateRequest("GET", "/");
             var result = await middle.GetPermissions(context);
             Assert.NotNull(result);

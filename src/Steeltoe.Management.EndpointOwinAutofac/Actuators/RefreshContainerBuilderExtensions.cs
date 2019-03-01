@@ -15,7 +15,6 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.EndpointOwin;
 using System;
@@ -42,7 +41,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            //container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
             container.Register(c =>
             {
                 var options = new RefreshEndpointOptions(config);

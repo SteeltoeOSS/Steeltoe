@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using OpenCensus.Stats;
 using OpenCensus.Tags;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -27,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var withTags = viewData.AggregationMap.WithTags(tagValues);
             return StatsExtensions.Sum(withTags, viewData.View);
         }
- 
+
         private static IDictionary<TagValues, IAggregationData> WithTags(this IDictionary<TagValues, IAggregationData> aggMap, IList<ITagValue> values)
         {
             Dictionary<TagValues, IAggregationData> results = new Dictionary<TagValues, IAggregationData>();

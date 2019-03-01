@@ -33,10 +33,11 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
         public async void TraceInvoke_ReturnsExpected()
         {
             // arrange
-            var opts = new TraceOptions();
+            var opts = new TraceEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
             var ep = new TestTraceEndpoint(opts, new TraceDiagnosticObserver(opts));
-            var middle = new EndpointOwinMiddleware<List<TraceResult>>(null, ep);
-            var context = OwinTestHelpers.CreateRequest("GET", "/trace");
+            var middle = new EndpointOwinMiddleware<List<TraceResult>>(null, ep, mgmtOptions);
+            var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/trace");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -72,14 +73,15 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
         [Fact]
         public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new TraceOptions();
+            var opts = new TraceEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var obs = new TraceDiagnosticObserver(opts);
             var ep = new TraceEndpoint(opts, obs);
-            var middle = new EndpointOwinMiddleware<List<TraceResult>>(null, ep);
+            var middle = new EndpointOwinMiddleware<List<TraceResult>>(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
     }
 }

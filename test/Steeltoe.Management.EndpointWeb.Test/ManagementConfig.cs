@@ -31,7 +31,6 @@ namespace Steeltoe.Management.EndpointWeb.Test
             ActuatorConfigurator.ClearManagementOptions();
 
             ActuatorConfigurator.UseAllActuators(configuration, null, GetHealthContributors(configuration), null, loggerFactory);
-            ActuatorConfigurator.UseDiscoveryActuators(configuration, null, GetHealthContributors(configuration), null, loggerFactory);
 
             return ActuatorConfigurator.ConfiguredHandlers;
         }

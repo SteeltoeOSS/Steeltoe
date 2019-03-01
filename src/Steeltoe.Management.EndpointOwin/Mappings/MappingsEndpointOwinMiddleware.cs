@@ -31,14 +31,12 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
     {
         protected IMappingsOptions _options;
         protected IApiExplorer _apiExplorer;
-        protected IEnumerable<IManagementOptions> _mgmtOptions;
 
         public MappingsEndpointOwinMiddleware(OwinMiddleware next, IMappingsOptions options, IEnumerable<IManagementOptions> mgmtOptions, IApiExplorer apiExplorer, ILogger logger = null)
             : base(next, mgmtOptions, logger: logger)
         {
             _options = options;
             _apiExplorer = apiExplorer;
-            _mgmtOptions = mgmtOptions;
         }
 
         [Obsolete]
@@ -76,7 +74,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
             }
             else
             {
-                paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}")); //TODO: Handle Path override
+                paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}")); // TODO: Handle Path override
             }
 
             _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, string.Join(",", paths));
@@ -122,9 +120,10 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
 
         protected internal IRouteDetails GetRouteDetails(ApiDescription desc)
         {
-            var routeDetails = new AspNetRouteDetails();
-
-            routeDetails.HttpMethods = GetHttpMethods(desc);
+            var routeDetails = new AspNetRouteDetails
+            {
+                HttpMethods = GetHttpMethods(desc)
+            };
             if (desc.Route?.RouteTemplate != null)
             {
                 routeDetails.RouteTemplate = "/" + desc.Route?.RouteTemplate;

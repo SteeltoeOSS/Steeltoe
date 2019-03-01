@@ -38,21 +38,6 @@ namespace Steeltoe.Management.Endpoint
         public virtual IEndpointOptions Options => options;
 
         public string Path => options.Path;
-
-        private List<string> _otherPaths;
-
-        public List<string> OtherPaths
-        {
-            get
-            {
-                if (_otherPaths == null)
-                {
-                    _otherPaths = new List<string> { Path };
-                }
-
-                return _otherPaths;
-            }
-        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

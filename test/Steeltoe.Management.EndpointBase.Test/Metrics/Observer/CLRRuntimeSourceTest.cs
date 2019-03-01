@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var source = new CLRRuntimeSource();
             var listener = source.Source as DiagnosticListener;
 
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var observer = new TestObserver(options, stats, tags, null);

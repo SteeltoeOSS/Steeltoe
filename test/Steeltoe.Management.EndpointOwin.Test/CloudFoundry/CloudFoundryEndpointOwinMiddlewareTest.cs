@@ -31,8 +31,10 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         public async void CloudFoundryInvoke_ReturnsExpected()
         {
             // arrange
-            var middle = new CloudFoundryEndpointOwinMiddleware(null, new TestCloudFoundryEndpoint(new CloudFoundryOptions()));
-            var context = OwinTestHelpers.CreateRequest("GET", "/");
+            var opts = new CloudFoundryEndpointOptions();
+            var mgmtOpts = TestHelpers.GetManagementOptions(opts);
+            var middle = new CloudFoundryEndpointOwinMiddleware(null, new TestCloudFoundryEndpoint(opts, mgmtOpts), mgmtOpts);
+            var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -52,7 +54,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 Assert.NotNull(json);
+#pragma warning disable CS0612 // Type or member is obsolete
                 var links = JsonConvert.DeserializeObject<Links>(json);
+#pragma warning restore CS0612 // Type or member is obsolete
                 Assert.NotNull(links);
                 Assert.True(links._links.ContainsKey("self"), "Self is one of the available links");
                 Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
@@ -68,13 +72,14 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         [Fact]
         public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new CloudFoundryOptions();
-            var ep = new CloudFoundryEndpoint(opts);
-            var middle = new CloudFoundryEndpointOwinMiddleware(null, ep);
+            var opts = new CloudFoundryEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var ep = new CloudFoundryEndpoint(opts, mgmtOptions);
+            var middle = new CloudFoundryEndpointOwinMiddleware(null, ep, mgmtOptions);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
     }
 }

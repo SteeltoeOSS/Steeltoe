@@ -22,7 +22,6 @@ using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using System;
@@ -104,6 +103,5 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             var logger = loggerFactory?.CreateLogger<MetricsEndpointOwinMiddleware>();
             return builder.Use<MetricsEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
-
     }
 }

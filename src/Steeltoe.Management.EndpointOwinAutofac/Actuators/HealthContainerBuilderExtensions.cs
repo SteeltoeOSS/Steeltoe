@@ -16,7 +16,6 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.EndpointOwin.Health;
@@ -92,7 +91,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 aggregator = new DefaultHealthAggregator();
             }
 
-            //container.RegisterInstance(new HealthOptions(config)).As<IHealthOptions>().SingleInstance();
             container.Register(c =>
             {
                 var options = new HealthEndpointOptions(config);

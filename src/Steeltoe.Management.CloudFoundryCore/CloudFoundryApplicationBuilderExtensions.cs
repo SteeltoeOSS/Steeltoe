@@ -13,14 +13,17 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Hypermedia;
 using System;
 
 namespace Steeltoe.Management.CloudFoundry
@@ -33,29 +36,46 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="app">AppBuilder needing actuators added</param>
         public static void UseCloudFoundryActuators(this IApplicationBuilder app)
         {
-            app.UseCors(builder =>
-            {
-                builder.AllowAnyOrigin()
-                .WithMethods("GET", "POST")
-                .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
-            });
+            app.UseCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.CloudFoundry);
+        }
 
-            app.UseCloudFoundrySecurity();
-            app.UseCloudFoundryActuator();
+        /// <summary>
+        /// Add all CloudFoundry Actuators (Info, Health, Loggers, Trace) and configure CORS
+        /// </summary>
+        /// <param name="app">AppBuilder needing actuators added</param>
+        /// <param name="version">Mediatype version of the response</param>
+        /// <param name="context">Actuator context for endpoints</param>
+        public static void UseCloudFoundryActuators(this IApplicationBuilder app, MediaTypeVersion version, ActuatorContext context)
+        {
+            if (context != ActuatorContext.Actuator)
+            {
+                app.UseCors(builder =>
+                {
+                    builder.AllowAnyOrigin()
+                    .WithMethods("GET", "POST")
+                    .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
+                });
+
+                app.UseCloudFoundrySecurity();
+                app.UseCloudFoundryActuator();
+            }
+
+            if (context != ActuatorContext.CloudFoundry)
+            {
+                app.UseHypermediaActuator();
+            }
 
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                app.UseThreadDumpActuator();
+                app.UseThreadDumpActuator(version);
                 app.UseHeapDumpActuator();
             }
 
             app.UseInfoActuator();
             app.UseHealthActuator();
             app.UseLoggersActuator();
-            app.UseTraceActuator();
-            //app.UseHttpTraceActuator(); TODO: Switch to this in 3.0
+            app.UseTraceActuator(version);
             app.UseMappingsActuator();
-
         }
     }
 }

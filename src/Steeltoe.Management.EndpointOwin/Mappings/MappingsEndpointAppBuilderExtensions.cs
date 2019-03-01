@@ -32,7 +32,6 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring refresh endpoint</param>
         /// <param name="apiExplorer">An <see cref="ApiExplorer"/> for iterating routes and their metadata</param>
-        /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Refresh Endpoint added</returns>
         public static IAppBuilder UseMappingActuator(this IAppBuilder builder, IConfiguration config, IApiExplorer apiExplorer, ILoggerFactory loggerFactory = null)
@@ -52,7 +51,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
                 throw new ArgumentNullException(nameof(apiExplorer));
             }
 
-            IMappingsOptions options= new MappingsEndpointOptions(config);
+            IMappingsOptions options = new MappingsEndpointOptions(config);
             var mgmtOptions = ManagementOptions.Get(config);
 
             foreach (var mgmt in mgmtOptions)
@@ -63,6 +62,5 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<IList<string>>>();
             return builder.Use<MappingsEndpointOwinMiddleware>(options, mgmtOptions, apiExplorer, loggerFactory?.CreateLogger<MappingsEndpointOwinMiddleware>());
         }
-
     }
 }

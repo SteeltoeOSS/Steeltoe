@@ -20,18 +20,35 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Hypermedia;
 using System;
 
 namespace Steeltoe.Management.CloudFoundry
 {
     public static class CloudFoundryServiceCollectionExtensions
     {
+        /// <summary>
+        /// Add Actuators to Microsoft DI
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <param name="config">Application Configuration</param>
         public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddCloudFoundryActuators(config, MediaTypeVersion.V1, ActuatorContext.CloudFoundry);
+        }
+
+        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version, ActuatorContext context)
         {
             if (services == null)
             {
@@ -43,23 +60,30 @@ namespace Steeltoe.Management.CloudFoundry
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var managmentOptions = new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry);
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managmentOptions));
+            if (context != ActuatorContext.Actuator)
+            {
+                var managmentOptions = new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry);
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managmentOptions));
 
-            services.AddCors();
-            services.AddCloudFoundryActuator(config);
+                services.AddCors();
+                services.AddCloudFoundryActuator(config);
+            }
+
+            if (context != ActuatorContext.CloudFoundry)
+            {
+                services.AddHypermediaActuator(config);
+            }
 
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                services.AddThreadDumpActuator(config);
+                services.AddThreadDumpActuator(config, version);
                 services.AddHeapDumpActuator(config);
             }
 
             services.AddInfoActuator(config);
             services.AddHealthActuator(config);
             services.AddLoggersActuator(config);
-            services.AddTraceActuator(config);
-            //services.AddHttpTraceActuator(config); TODO: Switch to this in 3.0
+            services.AddTraceActuator(config, version);
             services.AddMappingsActuator(config);
         }
     }

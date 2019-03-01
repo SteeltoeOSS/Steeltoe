@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var opts = new EnvEndpointOptions();
             Assert.Equal("env", opts.Id);
 
-            Assert.Equal(new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services"} , opts.KeysToSanitize);
+            Assert.Equal(new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services" }, opts.KeysToSanitize);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }
 
@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new EnvOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new EnvEndpointOptions(config));
         }
     }
 }

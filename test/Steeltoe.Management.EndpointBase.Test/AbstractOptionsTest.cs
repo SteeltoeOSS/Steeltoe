@@ -73,10 +73,6 @@ namespace Steeltoe.Management.Endpoint.Test
 
             TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
 
-            Assert.NotNull(opts.Global);
-            Assert.False(opts.Global.Enabled);
-            Assert.Equal("/management", opts.Global.Path);
-
             Assert.True(opts.Enabled);
             Assert.Equal("infomanagement", opts.Id);
             Assert.Equal("/management/infomanagement", opts.Path);

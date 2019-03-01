@@ -15,11 +15,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Info
 {

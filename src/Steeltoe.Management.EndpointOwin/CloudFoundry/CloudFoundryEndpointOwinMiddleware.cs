@@ -23,7 +23,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class CloudFoundryEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
+#pragma warning restore CS0612 // Type or member is obsolete
     {
         public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)
@@ -40,7 +42,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         public override async Task Invoke(IOwinContext context)
         {
-
             if (!IsCloudFoundryRequest(context))
             {
                 await Next.Invoke(context);
@@ -86,8 +87,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                         }
                         var fullPath = contextPath + _endpoint.Path;
                         return fullPath;
-                    })
-                );
+                    }));
             }
 
             var pathMatch = endpointPaths.Any(p => context.Request.Path.Value.Equals(p));

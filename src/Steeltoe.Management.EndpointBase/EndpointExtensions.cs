@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.Discovery;
-using System;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -82,23 +81,11 @@ namespace Steeltoe.Management.Endpoint
             return mgmtContext == null ? true : endpoint.Options.IsExposed(mgmtContext);
         }
 
-        public static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)
+        private static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)
         {
             matchingContext = null;
-            foreach (var path in endpoint.OtherPaths)
-            {
-                if (path.Matches(exactMatch, mgmtOptions, requestPath, out matchingContext))
-                {
-                    return true;
-                }
-            }
+            var endpointPath = endpoint.Path;
 
-            return false;
-        }
-
-        private static bool Matches(this string endpointPath, bool exactMatch, IEnumerable<IManagementOptions> mgmtOptions, string requestPath, out IManagementOptions matchingContext)
-        {
-            matchingContext = null;
             if (mgmtOptions == null)
             {
                 return exactMatch ? requestPath.Equals(endpointPath) : requestPath.StartsWith(endpointPath);

@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> APP_SETTINGS = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -43,12 +43,13 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public async void HandleTraceRequestAsync_ReturnsExpected()
         {
-            var opts = new TraceOptions();
+            var opts = new TraceEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
-            var middle = new TraceEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/httptrace");
+            var middle = new TraceEndpointMiddleware(null, ep, mopts);
+            var context = CreateRequest("GET", "/cloudfoundryapplication/httptrace");
             await middle.HandleTraceRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             StreamReader rdr = new StreamReader(context.Response.Body);
@@ -59,12 +60,13 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public async void HandleTraceRequestAsync_OtherPathReturnsExpected()
         {
-            var opts = new TraceOptions();
+            var opts = new TraceEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
-            var middle = new TraceEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/trace");
+            var middle = new TraceEndpointMiddleware(null, ep, mopts);
+            var context = CreateRequest("GET", "/cloudfoundryapplication/trace");
             await middle.HandleTraceRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             StreamReader rdr = new StreamReader(context.Response.Body);
@@ -77,7 +79,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(APP_SETTINGS))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -97,20 +99,23 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new TraceOptions();
+            var opts = new TraceEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TraceEndpoint(opts, obs);
-            var middle = new TraceEndpointMiddleware(null, ep);
+            var middle = new TraceEndpointMiddleware(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

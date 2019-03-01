@@ -13,20 +13,24 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {
     internal class TestCloudFoundryEndpoint : CloudFoundryEndpoint
     {
-        public TestCloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null)
-            : base(options, logger)
+        public TestCloudFoundryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpoint> logger = null)
+            : base(options, mgmtOptions, logger)
         {
         }
 
+#pragma warning disable CS0612 // Type or member is obsolete
         public override Links Invoke(string baseUrl)
         {
             return new Links();
         }
+#pragma warning restore CS0612 // Type or member is obsolete
     }
 }

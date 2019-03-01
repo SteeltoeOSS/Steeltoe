@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new HealthOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpointOptions(config));
         }
 
         [Fact]
@@ -59,17 +59,17 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var opts = new HealthOptions(config);
-            CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
+            var opts = new HealthEndpointOptions(config);
+            var cloudOpts = new CloudFoundryEndpointOptions(config);
 
             Assert.True(cloudOpts.Enabled);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Equal(string.Empty, cloudOpts.Path);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.Equal("health", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/health", opts.Path);
+            Assert.Equal("health", opts.Path);
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
         }
 
@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var config = configurationBuilder.Build();
 
             var opts = new HealthEndpointOptions(config);
-            Assert.NotNull(opts.Claim); 
+            Assert.NotNull(opts.Claim);
             Assert.Equal("claimtype", opts.Claim.Type);
             Assert.Equal("claimvalue", opts.Claim.Value);
         }

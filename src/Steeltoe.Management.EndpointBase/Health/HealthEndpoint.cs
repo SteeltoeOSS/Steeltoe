@@ -55,7 +55,6 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public override HealthCheckResult Invoke(ISecurityContext securityContext)
         {
-
             return BuildHealth(_aggregator, _contributors, securityContext);
         }
 

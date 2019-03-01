@@ -15,8 +15,8 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.HeapDump;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.EndpointOwin.HeapDump;
 using System;
 using System.Collections.Generic;

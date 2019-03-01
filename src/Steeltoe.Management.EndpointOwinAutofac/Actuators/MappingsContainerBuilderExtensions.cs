@@ -15,7 +15,6 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.EndpointOwin.Mappings;
 using System;
@@ -49,7 +48,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(apiExplorer));
             }
 
-            //container.RegisterInstance(new MappingsOptions(config)).As<IMappingsOptions>();
             container.Register(c =>
             {
                 var options = new MappingsEndpointOptions(config);

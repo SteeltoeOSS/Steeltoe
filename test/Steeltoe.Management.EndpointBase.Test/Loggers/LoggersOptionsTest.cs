@@ -26,8 +26,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new LoggersOptions();
-            Assert.True(opts.Enabled);
+            var opts = new LoggersEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.Equal("loggers", opts.Id);
         }
 
@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new LoggersOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new LoggersEndpointOptions(config));
         }
 
         [Fact]
@@ -44,8 +44,6 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                
-                ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
@@ -54,17 +52,17 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var opts = new LoggersOptions(config);
-            CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
+            var opts = new LoggersEndpointOptions(config);
+            CloudFoundryEndpointOptions cloudOpts = new CloudFoundryEndpointOptions(config);
 
             Assert.True(cloudOpts.Enabled);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Equal(string.Empty, cloudOpts.Path);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.False(opts.Enabled);
             Assert.Equal("loggers", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/loggers", opts.Path);
+            Assert.Equal("loggers", opts.Path);
         }
     }
 }

@@ -27,14 +27,14 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void Constructor_ThrowsOptionsNull()
         {
             Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthOptions(), null, null));
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthOptions(), new DefaultHealthAggregator(), null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), new DefaultHealthAggregator(), null));
         }
 
         [Fact]
         public void Invoke_NoContributors_ReturnsExpectedHealth()
         {
-            var opts = new HealthOptions();
+            var opts = new HealthEndpointOptions();
             var contributors = new List<IHealthContributor>();
             var agg = new DefaultHealthAggregator();
             var ep = new HealthEndpoint(opts, agg, contributors, GetLogger<HealthEndpoint>());
@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Invoke_CallsAllContributors()
         {
-            var opts = new HealthOptions();
+            var opts = new HealthEndpointOptions();
             var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contributors);
 
@@ -63,7 +63,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Invoke_HandlesExceptions_ReturnsExpectedHealth()
         {
-            var opts = new HealthOptions();
+            var opts = new HealthEndpointOptions();
             var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2", true), new TestContrib("h3") };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contributors);
 
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void GetStatusCode_ReturnsExpected()
         {
-            var opts = new HealthOptions();
+            var opts = new HealthEndpointOptions();
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
 

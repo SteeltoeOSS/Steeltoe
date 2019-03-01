@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -27,13 +27,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
     public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
     {
         private RequestDelegate _next;
-        private IEnumerable<IManagementOptions> _mgmtOptions;
 
         public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<LoggersEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
             _next = next;
-            _mgmtOptions = mgmtOptions;
         }
 
         [Obsolete]
@@ -71,17 +69,18 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 }
                 else
                 {
-                    paths.AddRange(_mgmtOptions.Select( opt => $"{opt.Path}/{_endpoint.Path}"));
+                    paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Path}"));
                 }
 
                 foreach (var path in paths)
                 {
                     if (ChangeLoggerLevel(request, path))
                     {
-                        response.StatusCode = (int) HttpStatusCode.OK;
+                        response.StatusCode = (int)HttpStatusCode.OK;
                         return;
                     }
                 }
+
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return;
             }
@@ -102,7 +101,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 {
                     string loggerName = remaining.Value.TrimStart('/');
 
-                    var change = ((LoggersEndpoint) _endpoint).DeserializeRequest(request.Body);
+                    var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
 
                     change.TryGetValue("configuredLevel", out string level);
 
@@ -119,5 +118,4 @@ namespace Steeltoe.Management.Endpoint.Loggers
             return false;
         }
     }
-
 }

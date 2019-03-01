@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class HttpTraceHandler : ActuatorHandler<HttpTraceEndpoint, HttpTraceResult>
     {
-        public HttpTraceHandler(HttpTraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices,IEnumerable<IManagementOptions> mgmtOptions, ILogger<HttpTraceHandler> logger = null)
+        public HttpTraceHandler(HttpTraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HttpTraceHandler> logger = null)
           : base(endpoint, securityServices, mgmtOptions, null, true, logger)
         {
         }

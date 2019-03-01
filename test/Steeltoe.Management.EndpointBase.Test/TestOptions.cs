@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public string Id { get; set; }
 
         public bool? Enabled { get; set; }
-        
+
         public IManagementOptions Global { get; set; }
 
         public string Path { get; set; }

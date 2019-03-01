@@ -26,14 +26,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         public ThreadDumpEndpoint(IThreadDumpOptions options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint> logger = null)
             : base(options)
         {
-            if (threadDumper == null)
-            {
-                throw new ArgumentNullException(nameof(threadDumper));
-            }
-
-            _threadDumper = threadDumper;
+            _threadDumper = threadDumper ?? throw new ArgumentNullException(nameof(threadDumper));
             _logger = logger;
-            OtherPaths.Add("dump");
         }
 
         public new IThreadDumpOptions Options

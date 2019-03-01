@@ -21,10 +21,9 @@ using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
-    [Obsolete]
     public class TraceHandler : ActuatorHandler<TraceEndpoint, List<TraceResult>>
     {
-        public TraceHandler(TraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices,IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceHandler> logger = null)
+        public TraceHandler(TraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceHandler> logger = null)
           : base(endpoint, securityServices, mgmtOptions, null, true, logger)
         {
         }

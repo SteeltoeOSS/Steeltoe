@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -46,9 +47,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
         {
-            var opts = new CloudFoundryOptions();
-            var ep = new TestCloudFoundryEndpoint(opts);
-            var middle = new CloudFoundryEndpointMiddleware(null, ep);
+            var opts = new CloudFoundryEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var ep = new TestCloudFoundryEndpoint(opts, mgmtOptions);
+
+            var middle = new CloudFoundryEndpointMiddleware(null, ep, mgmtOptions);
+
             var context = CreateRequest("GET", "/");
             await middle.HandleCloudFoundryRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -71,7 +75,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 Assert.NotNull(json);
+#pragma warning disable CS0612 // Type or member is obsolete
                 var links = JsonConvert.DeserializeObject<Links>(json);
+#pragma warning restore CS0612 // Type or member is obsolete
                 Assert.NotNull(links);
                 Assert.True(links._links.ContainsKey("self"));
                 Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
@@ -104,19 +110,35 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new CloudFoundryOptions();
-            var ep = new CloudFoundryEndpoint(opts);
-            var middle = new CloudFoundryEndpointMiddleware(null, ep);
+            var opts = new CloudFoundryEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var ep = new CloudFoundryEndpoint(opts, mgmtOptions);
+            var middle = new CloudFoundryEndpointMiddleware(null, ep, mgmtOptions);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
+        }
+
+        [Fact]
+        public void HypermediaEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new HypermediaEndpointOptions();
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var ep = new ActuatorEndpoint(opts, mgmtOptions);
+            var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, mgmtOptions);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

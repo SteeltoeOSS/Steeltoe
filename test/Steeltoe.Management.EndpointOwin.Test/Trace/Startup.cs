@@ -35,7 +35,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
             var config = builder.Build();
 
             app.UseDiagnosticSourceMiddleware();
+#pragma warning disable CS0612 // Type or member is obsolete
             app.UseTraceActuator(config);
+#pragma warning restore CS0612 // Type or member is obsolete
 
             DiagnosticsManager.Instance.Start();
         }

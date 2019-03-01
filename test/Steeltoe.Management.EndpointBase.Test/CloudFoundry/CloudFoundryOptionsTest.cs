@@ -26,8 +26,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new CloudFoundryOptions();
-            Assert.True(opts.Enabled);
+            var opts = new CloudFoundryEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.True(opts.ValidateCertificates);
             Assert.Equal(string.Empty, opts.Id);
         }
@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new CloudFoundryOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new CloudFoundryEndpointOptions(config));
         }
 
         [Fact]
@@ -54,17 +54,17 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            InfoOptions opts = new InfoOptions(config);
-            CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
+            var opts = new InfoEndpointOptions(config);
+            var cloudOpts = new CloudFoundryEndpointOptions(config);
 
             Assert.True(cloudOpts.Enabled);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Equal(string.Empty, cloudOpts.Path);
             Assert.False(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.Equal("info", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/info", opts.Path);
+            Assert.Equal("info", opts.Path);
         }
     }
 }

@@ -27,12 +27,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
     {
         private RequestDelegate _next;
 
-        public MetricsEndpointMiddleware( RequestDelegate next, MetricsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger <MetricsEndpointMiddleware> logger = null)
+        public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MetricsEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, null, false, logger)
         {
             _next = next;
         }
-        
+
         [Obsolete]
         public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, ILogger<MetricsEndpointMiddleware> logger = null)
             : base(endpoint, null, false, logger)
@@ -105,20 +105,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
             foreach (var path in paths)
             {
                 var metricName = GetMetricName(request, path);
-                if (metricName != null) return metricName;
-            }
-
-            return null;
-        }
-
-        private string GetMetricName(HttpRequest request, string path)
-        {
-            PathString epPath = new PathString(path);
-            if (request.Path.StartsWithSegments(epPath, out PathString remaining))
-            {
-                if (remaining.HasValue)
+                if (metricName != null)
                 {
-                    return remaining.Value.TrimStart('/');
+                    return metricName;
                 }
             }
 
@@ -160,6 +149,20 @@ namespace Steeltoe.Management.Endpoint.Metrics
             if (str != null && str.Length == 2)
             {
                 return new KeyValuePair<string, string>(str[0], str[1]);
+            }
+
+            return null;
+        }
+
+        private string GetMetricName(HttpRequest request, string path)
+        {
+            PathString epPath = new PathString(path);
+            if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+            {
+                if (remaining.HasValue)
+                {
+                    return remaining.Value.TrimStart('/');
+                }
             }
 
             return null;

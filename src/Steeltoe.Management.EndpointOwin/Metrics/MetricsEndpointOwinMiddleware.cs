@@ -113,19 +113,6 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             return null;
         }
 
-        private IEnumerable<string> GetEndpointPaths()
-        {
-            if(_mgmtOptions == null)
-            {
-                return new List<string>() { _endpoint.Path };
-            }
-            else
-            {
-                return _mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}");
-
-            }
-        }
-
         /// <summary>
         /// Turn a querystring into a dictionary
         /// </summary>
@@ -174,6 +161,18 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             }
 
             return null;
+        }
+
+        private IEnumerable<string> GetEndpointPaths()
+        {
+            if (_mgmtOptions == null)
+            {
+                return new List<string>() { _endpoint.Path };
+            }
+            else
+            {
+                return _mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}");
+            }
         }
     }
 }

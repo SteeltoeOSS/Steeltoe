@@ -22,7 +22,6 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class RefreshHandler : ActuatorHandler<RefreshEndpoint, IList<string>>
     {
-
         public RefreshHandler(RefreshEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<RefreshHandler> logger = null)
             : base(endpoint, securityServices, mgmtOptions, null, true, logger)
         {

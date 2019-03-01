@@ -30,16 +30,17 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
     {
         public LoggersEndpointOwinMiddlewareTest()
         {
-
             ManagementOptions.Clear();
         }
 
         [Fact]
         public async void LoggersInvoke_ReturnsExpected()
         {
-            var ep = new TestLoggersEndpoint(new LoggersOptions());
-            var middle = new LoggersEndpointOwinMiddleware(null, ep);
-            var context = OwinTestHelpers.CreateRequest("GET", "/loggers");
+            var opts = new LoggersEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
+            var ep = new TestLoggersEndpoint(opts);
+            var middle = new LoggersEndpointOwinMiddleware(null, ep, mopts);
+            var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/loggers");
             await middle.Invoke(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             StreamReader rdr = new StreamReader(context.Response.Body);
@@ -113,17 +114,18 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
         [Fact]
         public void LoggersEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new LoggersOptions();
+            var opts = new LoggersEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var ep = new LoggersEndpoint(opts, (IDynamicLoggerProvider)null);
-            var middle = new LoggersEndpointOwinMiddleware(null, ep);
+            var middle = new LoggersEndpointOwinMiddleware(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/loggers"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/loggers"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
-            Assert.True(middle.RequestVerbAndPathMatch("POST", "/loggers"));
-            Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath"));
-            Assert.True(middle.RequestVerbAndPathMatch("POST", "/loggers/Foo.Bar.Class"));
-            Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath/Foo.Bar.Class"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/loggers/Foo.Bar.Class"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/badpath/Foo.Bar.Class"));
         }
     }
 }

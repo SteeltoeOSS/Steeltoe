@@ -28,7 +28,6 @@ namespace Steeltoe.Management.Endpoint.Trace
         {
             _traceRepo = traceRepository ?? throw new ArgumentNullException(nameof(traceRepository));
             _logger = logger;
-          //  OtherPaths.Add("trace");
         }
 
         public new ITraceOptions Options

@@ -30,14 +30,14 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
 
             Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration));
 
-            options = new RefreshOptions();
+            options = new RefreshEndpointOptions();
             Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration));
         }
 
         [Fact]
         public void DoInvoke_ReturnsExpected()
         {
-            var opts = new RefreshOptions();
+            var opts = new RefreshEndpointOptions();
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",

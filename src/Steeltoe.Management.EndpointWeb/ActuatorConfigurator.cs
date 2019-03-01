@@ -25,12 +25,12 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Handler;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.HeapDump;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
@@ -43,6 +43,7 @@ using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Trace.Observer;
+using Steeltoe.Management.Hypermedia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,28 +60,38 @@ namespace Steeltoe.Management.Endpoint
 
         public static void UseCloudFoundryActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
         {
-            UseCloudFoundrySecurity(configuration, null, loggerFactory);
-            UseCloudFoundryActuator(configuration, loggerFactory);
-            UseHealthActuator(configuration, null, healthContributors, loggerFactory);
-            UseHeapDumpActuator(configuration, null, loggerFactory);
-            UseThreadDumpActuator(configuration, null, loggerFactory);
-            UseInfoActuator(configuration, null, loggerFactory);
-            UseLoggerActuator(configuration, dynamicLogger, loggerFactory);
-            UseTraceActuator(configuration, null, loggerFactory);
-            //UseHttpTraceActuator(configuration, null, loggerFactory); // Todo: Switch to this in 3.0
-            UseMappingsActuator(configuration, apiExplorer, loggerFactory);
+            UseCloudFoundryActuators(configuration, dynamicLogger, MediaTypeVersion.V1, ActuatorContext.ActuatorAndCloudFoundry, healthContributors, apiExplorer);
         }
 
-        public static void UseDiscoveryActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
+        public static void UseCloudFoundryActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, MediaTypeVersion version, ActuatorContext context, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
         {
-            UseDiscoveryActuator(configuration, loggerFactory);
+            if (context != ActuatorContext.Actuator)
+            {
+                UseCloudFoundrySecurity(configuration, null, loggerFactory);
+                UseCloudFoundryActuator(configuration, loggerFactory);
+            }
+            else
+            {
+                UseHypermediaActuator(configuration, loggerFactory);
+            }
+
             UseHealthActuator(configuration, null, healthContributors, loggerFactory);
+            UseHeapDumpActuator(configuration, null, loggerFactory);
+            UseThreadDumpActuator(configuration, version, null, loggerFactory);
             UseInfoActuator(configuration, null, loggerFactory);
+            UseLoggerActuator(configuration, dynamicLogger, loggerFactory);
+            UseTraceActuator(configuration, version, null, loggerFactory);
+            UseMappingsActuator(configuration, apiExplorer, loggerFactory);
         }
 
         public static void UseAllActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
         {
-            UseCloudFoundryActuators(configuration, dynamicLogger, healthContributors, apiExplorer, loggerFactory);
+            UseAllActuators(configuration, dynamicLogger, MediaTypeVersion.V1, ActuatorContext.CloudFoundry, healthContributors, apiExplorer, loggerFactory);
+        }
+
+        public static void UseAllActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, MediaTypeVersion version, ActuatorContext context, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
+        {
+            UseCloudFoundryActuators(configuration, dynamicLogger, version, context, healthContributors, apiExplorer, loggerFactory);
             UseEnvActuator(configuration, null, loggerFactory);
             UseRefreshActuator(configuration, loggerFactory);
             UseMetricsActuator(configuration, loggerFactory);
@@ -117,16 +128,16 @@ namespace Steeltoe.Management.Endpoint
             }
 
             managementOptions.EndpointOptions.Add(options);
-            var ep = new CloudFoundryEndpoint(options ,_mgmtOptions, CreateLogger<CloudFoundryEndpoint>(loggerFactory));
+            var ep = new CloudFoundryEndpoint(options, _mgmtOptions, CreateLogger<CloudFoundryEndpoint>(loggerFactory));
             var handler = new CloudFoundryHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<CloudFoundryHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
-            var handler2 = new CloudFoundryCorsHandler(options, SecurityServices,_mgmtOptions, CreateLogger<CloudFoundryCorsHandler>(loggerFactory));
+            var handler2 = new CloudFoundryCorsHandler(options, SecurityServices, _mgmtOptions, CreateLogger<CloudFoundryCorsHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler2);
         }
 
-        public static void UseDiscoveryActuator(IConfiguration configuration, ILoggerFactory loggerFactory = null)
+        public static void UseHypermediaActuator(IConfiguration configuration, ILoggerFactory loggerFactory = null)
         {
-            var options = new ActuatorDiscoveryEndpointOptions(configuration);
+            var options = new HypermediaEndpointOptions(configuration);
             var managementOptions = _mgmtOptions.OfType<ActuatorManagementOptions>().SingleOrDefault();
 
             if (managementOptions == null)
@@ -137,8 +148,8 @@ namespace Steeltoe.Management.Endpoint
 
             managementOptions.EndpointOptions.Add(options);
 
-            var ep = new ActuatorDiscoveryEndpoint(options, _mgmtOptions, CreateLogger<ActuatorDiscoveryEndpoint>(loggerFactory));
-            var handler = new ActuatorDiscoveryHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<ActuatorDiscoveryHandler>(loggerFactory));
+            var ep = new ActuatorEndpoint(options, _mgmtOptions, CreateLogger<ActuatorEndpoint>(loggerFactory));
+            var handler = new ActuatorHypermediaHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<ActuatorHypermediaHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
 
             if (ConfiguredHandlers.OfType<CloudFoundryCorsHandler>().Any())
@@ -205,25 +216,52 @@ namespace Steeltoe.Management.Endpoint
 
         public static void UseThreadDumpActuator(IConfiguration configuration, IThreadDumper threadDumper = null, ILoggerFactory loggerFactory = null)
         {
+            UseThreadDumpActuator(configuration, MediaTypeVersion.V1, threadDumper, loggerFactory);
+        }
 
+        public static void UseThreadDumpActuator(IConfiguration configuration, MediaTypeVersion version, IThreadDumper threadDumper = null, ILoggerFactory loggerFactory = null)
+        {
             var options = new ThreadDumpEndpointOptions(configuration);
+            if (version == MediaTypeVersion.V2 && options.Id == "dump")
+            {
+                options.Id = "threaddump";
+            }
+
             _mgmtOptions.RegisterEndpointOptions(configuration, options);
             threadDumper = threadDumper ?? new ThreadDumper(options);
-            var ep = new ThreadDumpEndpoint(options, threadDumper, CreateLogger<ThreadDumpEndpoint>(loggerFactory));
-            var handler = new ThreadDumpHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<ThreadDumpHandler>(loggerFactory));
+            IActuatorHandler handler;
+
+            switch (version)
+            {
+                case MediaTypeVersion.V1:
+                    var ep = new ThreadDumpEndpoint(options, threadDumper, CreateLogger<ThreadDumpEndpoint>(loggerFactory));
+                    handler = new ThreadDumpHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<ThreadDumpHandler>(loggerFactory));
+                    break;
+                default:
+                    var ep2 = new ThreadDumpEndpoint_v2(options, threadDumper, CreateLogger<ThreadDumpEndpoint_v2>(loggerFactory));
+                    handler = new ThreadDumpHandler_v2(ep2, SecurityServices, _mgmtOptions, CreateLogger<ThreadDumpHandler_v2>(loggerFactory));
+                    break;
+            }
+
             ConfiguredHandlers.Add(handler);
         }
 
-        [Obsolete]
         public static void UseTraceActuator(IConfiguration configuration, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
         {
-            var options = new TraceEndpointOptions(configuration);
-            _mgmtOptions.RegisterEndpointOptions(configuration, options);
-            traceRepository = traceRepository ?? new TraceDiagnosticObserver(options, CreateLogger<TraceDiagnosticObserver>(loggerFactory));
-            DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
-            var ep = new TraceEndpoint(options, traceRepository, CreateLogger<TraceEndpoint>(loggerFactory));
-            var handler = new TraceHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<TraceHandler>(loggerFactory));
-            ConfiguredHandlers.Add(handler);
+            UseTraceActuator(configuration, MediaTypeVersion.V1, traceRepository, loggerFactory);
+        }
+
+        public static void UseTraceActuator(IConfiguration configuration, MediaTypeVersion version, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
+        {
+            switch (version)
+            {
+                case MediaTypeVersion.V1:
+                    UseTraceActuatorComponents(configuration, traceRepository, loggerFactory);
+                    break;
+                default:
+                    UseHttpTraceActuator(configuration, null, loggerFactory);
+                    break;
+            }
         }
 
         public static void UseHttpTraceActuator(IConfiguration configuration, IHttpTraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
@@ -277,7 +315,8 @@ namespace Steeltoe.Management.Endpoint
         {
             var options = new MappingsEndpointOptions(configuration);
             _mgmtOptions.RegisterEndpointOptions(configuration, options);
-            var handler = new MappingsHandler(options, SecurityServices, apiExplorer, _mgmtOptions, CreateLogger<MappingsHandler>(loggerFactory));
+            var ep = new MappingsEndpoint(options, CreateLogger<MappingsEndpoint>(loggerFactory));
+            var handler = new MappingsHandler(ep, SecurityServices, apiExplorer, _mgmtOptions, CreateLogger<MappingsHandler>(loggerFactory));
 
             ConfiguredHandlers.Add(handler);
         }
@@ -308,12 +347,22 @@ namespace Steeltoe.Management.Endpoint
 
             foreach (var mgmt in mgmtOptions)
             {
-
                 if (!mgmt.EndpointOptions.Contains(options))
                 {
                     mgmt.EndpointOptions.Add(options);
                 }
             }
+        }
+
+        private static void UseTraceActuatorComponents(IConfiguration configuration, ITraceRepository traceRepository, ILoggerFactory loggerFactory)
+        {
+            var options = new TraceEndpointOptions(configuration);
+            _mgmtOptions.RegisterEndpointOptions(configuration, options);
+            traceRepository = traceRepository ?? new TraceDiagnosticObserver(options, CreateLogger<TraceDiagnosticObserver>(loggerFactory));
+            DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
+            var ep = new TraceEndpoint(options, traceRepository, CreateLogger<TraceEndpoint>(loggerFactory));
+            var handler = new TraceHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<TraceHandler>(loggerFactory));
+            ConfiguredHandlers.Add(handler);
         }
 
         public class DefaultHostingEnvironment : IHostingEnvironment

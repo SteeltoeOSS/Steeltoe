@@ -25,8 +25,8 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            InfoOptions opts = new InfoOptions();
-            Assert.True(opts.Enabled);
+            var opts = new InfoEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.Equal("info", opts.Id);
         }
 
@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new InfoOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new InfoEndpointOptions(config));
         }
 
         [Fact]
@@ -51,13 +51,9 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            InfoOptions opts = new InfoOptions(config);
+            var opts = new InfoEndpointOptions(config);
             Assert.False(opts.Enabled);
             Assert.Equal("infomanagement", opts.Id);
-
-            Assert.NotNull(opts.Global);
-            Assert.False(opts.Global.Enabled);
-            Assert.Equal("/management", opts.Global.Path);
         }
     }
 }

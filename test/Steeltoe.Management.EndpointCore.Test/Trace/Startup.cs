@@ -31,12 +31,16 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCloudFoundryActuator(Configuration);
+#pragma warning disable CS0612 // Type or member is obsolete
             services.AddTraceActuator(Configuration);
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
         public void Configure(IApplicationBuilder app)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             app.UseTraceActuator();
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -46,11 +46,12 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                var opts = new ThreadDumpOptions();
+                var opts = new ThreadDumpEndpointOptions();
+                var mopts = TestHelpers.GetManagementOptions(opts);
 
                 ThreadDumper obs = new ThreadDumper(opts);
                 var ep = new ThreadDumpEndpoint(opts, obs);
-                var middle = new ThreadDumpEndpointMiddleware(null, ep);
+                var middle = new ThreadDumpEndpointMiddleware(null, ep, mopts);
                 var context = CreateRequest("GET", "/dump");
                 await middle.HandleThreadDumpRequestAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -111,8 +112,10 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

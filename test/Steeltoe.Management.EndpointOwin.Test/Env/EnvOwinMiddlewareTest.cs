@@ -84,7 +84,7 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
             {
                 Path = "/"
             };
-            var middle = new EndpointOwinMiddleware<EnvironmentDescriptor>(null, ep, new List<IManagementOptions> { mgmt});
+            var middle = new EndpointOwinMiddleware<EnvironmentDescriptor>(null, ep, new List<IManagementOptions> { mgmt });
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/env"));
             Assert.False(middle.RequestVerbAndPathMatch("PUT", "/env"));

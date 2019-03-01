@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Env
@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Env
         private RequestDelegate _next;
 
         public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<EnvEndpointMiddleware> logger = null)
-            : base(endpoint,mgmtOptions, logger: logger)
+            : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
         }

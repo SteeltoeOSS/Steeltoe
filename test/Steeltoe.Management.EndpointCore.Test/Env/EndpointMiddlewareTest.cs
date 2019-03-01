@@ -54,8 +54,9 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             {
                 EnvironmentName = "EnvironmentName"
             };
+            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
             var ep = new EnvEndpoint(opts, config, host);
-            var middle = new EnvEndpointMiddleware(null, ep);
+            var middle = new EnvEndpointMiddleware(null, ep, mgmtOptions);
 
             var context = CreateRequest("GET", "/env");
             await middle.HandleEnvRequestAsync(context);
@@ -113,8 +114,10 @@ namespace Steeltoe.Management.Endpoint.Env.Test
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

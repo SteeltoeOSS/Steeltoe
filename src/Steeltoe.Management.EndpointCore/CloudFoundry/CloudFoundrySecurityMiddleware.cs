@@ -54,11 +54,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public async Task Invoke(HttpContext context)
         {
-            _logger.LogDebug("Invoke({0}) mgmt {1}", context.Request.Path.Value, _mgmtOptions.Path);
+            _logger.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
+#pragma warning disable CS0612 // Type or member is obsolete
             bool isEndpointEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
+#pragma warning restore CS0612 // Type or member is obsolete
             bool isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
-
 
             if (Platform.IsCloudFoundry
                 && isEndpointEnabled
@@ -129,7 +130,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             // Remove in 3.0
             if (_mgmtOptions == null)
             {
+#pragma warning disable CS0612 // Type or member is obsolete
                 configEndpoints = this._options.Global.EndpointOptions;
+#pragma warning restore CS0612 // Type or member is obsolete
                 foreach (var ep in configEndpoints)
                 {
                     PathString epPath = new PathString(ep.Path);

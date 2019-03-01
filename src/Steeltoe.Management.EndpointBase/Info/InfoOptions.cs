@@ -43,6 +43,5 @@ namespace Steeltoe.Management.Endpoint.Info
                 RequiredPermissions = Permissions.RESTRICTED;
             }
         }
-
     }
 }

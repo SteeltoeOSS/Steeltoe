@@ -29,15 +29,21 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
 {
     public class HealthEndpointOwinMiddlewareTest : BaseTest
     {
+        public HealthEndpointOwinMiddlewareTest()
+        {
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public async void HealthInvoke_ReturnsExpected()
         {
             // arrange
-            var opts = new HealthOptions();
+            var opts = new HealthEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var middle = new HealthEndpointOwinMiddleware(null, ep);
-            var context = OwinTestHelpers.CreateRequest("GET", "/health");
+            var middle = new HealthEndpointOwinMiddleware(null, ep, mopts);
+            var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/health");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -49,7 +55,6 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         [Fact]
         public async void HealthHttpCall_ReturnsExpected()
         {
-            ManagementOptions.Clear();
             using (var server = TestServer.Create<Startup>())
             {
                 var client = server.HttpClient;
@@ -57,7 +62,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
                 // check the default version
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
                 var health = await AssertHealthResponseAsync(HttpStatusCode.OK, HealthStatus.UP, result);
-               
+
                 // check the down version
                 var result2 = await client.GetAsync("http://localhost/cloudfoundryapplication/down");
                 await AssertHealthResponseAsync(HttpStatusCode.ServiceUnavailable, HealthStatus.DOWN, result2);
@@ -75,14 +80,15 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         [Fact]
         public void HealthEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new HealthOptions();
+            var opts = new HealthEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var middle = new HealthEndpointOwinMiddleware(null, ep);
+            var middle = new HealthEndpointOwinMiddleware(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/health"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/health"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/health"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/health"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
 
         private async Task<Dictionary<string, object>> AssertHealthResponseAsync(HttpStatusCode expectedHttpStatus, HealthStatus expectedHealthStatus, HttpResponseMessage response)

@@ -16,7 +16,6 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.EndpointOwin;
 using Steeltoe.Management.EndpointOwin.Trace;
@@ -34,6 +33,11 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         public static void RegisterTraceActuator(this ContainerBuilder container, IConfiguration config)
         {
+            container.RegisterTraceActuator(config, MediaTypeVersion.V1);
+        }
+
+        public static void RegisterTraceActuator(this ContainerBuilder container, IConfiguration config, MediaTypeVersion version)
+        {
             if (container == null)
             {
                 throw new ArgumentNullException(nameof(container));
@@ -44,7 +48,19 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            // container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
+            switch (version)
+            {
+                case MediaTypeVersion.V1:
+                    container.RegisterTraceActuatorComponents(config);
+                    break;
+                default:
+                    container.RegisterHttpTraceActuatorComponents(config);
+                    break;
+            }
+        }
+
+        private static void RegisterTraceActuatorComponents(this ContainerBuilder container, IConfiguration config)
+        {
             container.Register(c =>
             {
                 var options = new TraceEndpointOptions(config);
@@ -61,6 +77,26 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 
             container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<List<TraceResult>>>().SingleInstance();
+        }
+
+        private static void RegisterHttpTraceActuatorComponents(this ContainerBuilder container, IConfiguration config)
+        {
+            container.Register(c =>
+            {
+                var options = new HttpTraceEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(options);
+                }
+                return options;
+            }).As<ITraceOptions>().IfNotRegistered(typeof(ITraceOptions)).SingleInstance();
+
+            container.RegisterType<HttpTraceDiagnosticObserver>().As<IDiagnosticObserver>().As<IHttpTraceRepository>().SingleInstance();
+            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
+
+            container.RegisterType<HttpTraceEndpoint>().As<IEndpoint<HttpTraceResult>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<HttpTraceResult>>().SingleInstance();
         }
     }
 }

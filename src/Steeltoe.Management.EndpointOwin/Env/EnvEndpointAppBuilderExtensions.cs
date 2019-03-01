@@ -27,7 +27,6 @@ namespace Steeltoe.Management.EndpointOwin.Env
 {
     public static class EnvEndpointAppBuilderExtensions
     {
-
         /// <summary>
         /// Add Environment actuator endpoint to OWIN Pipeline
         /// </summary>

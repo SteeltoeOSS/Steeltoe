@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Env
         private string[] _keysToSanitize;
         private List<Regex> _matchers = new List<Regex>();
 
-        public Sanitizer(string [] keysToSanitize)
+        public Sanitizer(string[] keysToSanitize)
         {
             _keysToSanitize = keysToSanitize;
 
@@ -36,9 +36,9 @@ namespace Steeltoe.Management.Endpoint.Env
             }
         }
 
-        public KeyValuePair<string, string> Sanitize(KeyValuePair<string,string> kvp)
+        public KeyValuePair<string, string> Sanitize(KeyValuePair<string, string> kvp)
         {
-            if (kvp.Value != null && _matchers.Any( m => m.IsMatch(kvp.Key)))
+            if (kvp.Value != null && _matchers.Any(m => m.IsMatch(kvp.Key)))
             {
                 return new KeyValuePair<string, string>(kvp.Key, "******");
             }

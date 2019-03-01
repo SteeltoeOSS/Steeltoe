@@ -26,8 +26,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new HeapDumpOptions();
-            Assert.True(opts.Enabled);
+            var opts = new HeapDumpEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.Equal("heapdump", opts.Id);
         }
 
@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         public void Contstructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new HeapDumpOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpointOptions(config));
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                
+
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:loggers:enabled"] = "false",
                 ["management:endpoints:heapdump:enabled"] = "true",
@@ -55,17 +55,17 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var opts = new HeapDumpOptions(config);
-            CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
+            var opts = new HeapDumpEndpointOptions(config);
+            var cloudOpts = new CloudFoundryEndpointOptions(config);
 
             Assert.True(cloudOpts.Enabled);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Equal(string.Empty, cloudOpts.Path);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.Equal("heapdump", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/heapdump", opts.Path);
+            Assert.Equal("heapdump", opts.Path);
         }
     }
 }

@@ -13,13 +13,14 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>
     {
         private ILogger<CloudFoundryEndpoint> _logger;
@@ -61,8 +62,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             if (_mgmtOption != null)
             {
-                DiscoveryService discoveryService = new DiscoveryService(_mgmtOption, options, _logger);
-                return discoveryService.Invoke(baseUrl);
+                HypermediaService hypermediaService = new HypermediaService(_mgmtOption, options, _logger);
+                return hypermediaService.Invoke(baseUrl);
             }
 
             // TODO: The below code will be removed in 3.0
@@ -105,3 +106,4 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         }
     }
 }
+#pragma warning restore CS0612 // Type or member is obsolete

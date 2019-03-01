@@ -49,10 +49,11 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         [Fact]
         public async void HandleInfoRequestAsync_ReturnsExpected()
         {
-            var opts = new InfoOptions();
+            var opts = new InfoEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
             var ep = new TestInfoEndpoint(opts, contribs);
-            var middle = new InfoEndpointMiddleware(null, ep);
+            var middle = new InfoEndpointMiddleware(null, ep, mopts);
             var context = CreateRequest("GET", "/loggers");
             await middle.HandleInfoRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -108,20 +109,23 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         [Fact]
         public void InfoEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new InfoOptions();
+            var opts = new InfoEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
             var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
             var ep = new InfoEndpoint(opts, contribs);
-            var middle = new InfoEndpointMiddleware(null, ep);
+            var middle = new InfoEndpointMiddleware(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/info"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/info"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

@@ -29,7 +29,6 @@ namespace Steeltoe.Management.EndpointOwin.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 

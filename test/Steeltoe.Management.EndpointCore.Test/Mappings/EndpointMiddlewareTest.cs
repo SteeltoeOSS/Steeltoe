@@ -44,7 +44,8 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         [Fact]
         public void IsMappingsRequest_ReturnsExpected()
         {
-            var opts = new MappingsOptions();
+            var opts = new MappingsEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
@@ -53,20 +54,21 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
             {
                 EnvironmentName = "EnvironmentName"
             };
-            var middle = new MappingsEndpointMiddleware(null, opts);
+            var middle = new MappingsEndpointMiddleware(null, opts, mopts);
 
-            var context = CreateRequest("GET", "/mappings");
+            var context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
             Assert.True(middle.IsMappingsRequest(context));
-            var context2 = CreateRequest("PUT", "/mappings");
+            var context2 = CreateRequest("PUT", "/cloudfoundryapplication/mappings");
             Assert.False(middle.IsMappingsRequest(context2));
-            var context3 = CreateRequest("GET", "/badpath");
+            var context3 = CreateRequest("GET", "/cloudfoundryapplication/badpath");
             Assert.False(middle.IsMappingsRequest(context3));
         }
 
         [Fact]
         public async void HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
         {
-            var opts = new MappingsOptions();
+            var opts = new MappingsEndpointOptions();
+            var mopts = TestHelpers.GetManagementOptions(opts);
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
@@ -75,9 +77,9 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
             {
                 EnvironmentName = "EnvironmentName"
             };
-            var middle = new MappingsEndpointMiddleware(null, opts);
+            var middle = new MappingsEndpointMiddleware(null, opts, mopts);
 
-            var context = CreateRequest("GET", "/mappings");
+            var context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
             await middle.HandleMappingsRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
@@ -110,8 +112,10 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

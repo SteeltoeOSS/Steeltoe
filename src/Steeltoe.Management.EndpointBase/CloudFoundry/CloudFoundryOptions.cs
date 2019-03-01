@@ -44,6 +44,5 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public string ApplicationId { get; set; }
 
         public string CloudFoundryApi { get; set; }
-
     }
 }

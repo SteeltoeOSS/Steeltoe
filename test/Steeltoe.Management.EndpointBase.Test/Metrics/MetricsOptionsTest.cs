@@ -25,8 +25,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new MetricsOptions();
-            Assert.True(opts.Enabled);
+            var opts = new MetricsEndpointOptions();
+            Assert.Null(opts.Enabled);
             Assert.Equal("metrics", opts.Id);
         }
 
@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new MetricsOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new MetricsEndpointOptions(config));
         }
 
         [Fact]
@@ -53,15 +53,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var opts = new MetricsOptions(config);
+            var opts = new MetricsEndpointOptions(config);
             Assert.False(opts.Enabled);
             Assert.Equal("metricsmanagement", opts.Id);
             Assert.Equal("pattern", opts.IngressIgnorePattern);
             Assert.Equal("pattern", opts.EgressIgnorePattern);
-
-            Assert.NotNull(opts.Global);
-            Assert.False(opts.Global.Enabled);
-            Assert.Equal("/management", opts.Global.Path);
         }
     }
 }
