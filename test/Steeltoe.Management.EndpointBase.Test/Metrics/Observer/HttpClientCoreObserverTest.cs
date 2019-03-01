@@ -15,6 +15,8 @@
 using OpenCensus.Stats;
 using OpenCensus.Stats.Aggregations;
 using OpenCensus.Tags;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Diagnostics;
@@ -134,12 +136,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
 
             var reqData = stats.ViewManager.GetView(ViewName.Create("http.client.request.time"));
-            var aggData1 = reqData.SumWithTags() as IDistributionData;
+            var aggData1 = MetricsHelpers.SumWithTags(reqData) as IDistributionData;
             Assert.True(aggData1.Mean >= 1000.00);
             Assert.True(aggData1.Max >= 1000.00);
 
             reqData = stats.ViewManager.GetView(ViewName.Create("http.client.request.count"));
-            var aggData2 = reqData.SumWithTags() as ISumDataLong;
+            var aggData2 = MetricsHelpers.SumWithTags(reqData) as ISumDataLong;
             Assert.Equal(2, aggData2.Sum);
 
             act.Stop();
@@ -165,12 +167,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleExceptionEvent(act, req);
 
             var reqData = stats.ViewManager.GetView(ViewName.Create("http.client.request.time"));
-            var aggData1 = reqData.SumWithTags() as IDistributionData;
+            var aggData1 = MetricsHelpers.SumWithTags(reqData) as IDistributionData;
             Assert.InRange(aggData1.Mean, 995.0, 1005.0);
             Assert.InRange(aggData1.Max, 995.0, 1005.0);
 
             reqData = stats.ViewManager.GetView(ViewName.Create("http.client.request.count"));
-            var aggData2 = reqData.SumWithTags() as ISumDataLong;
+            var aggData2 = MetricsHelpers.SumWithTags(reqData) as ISumDataLong;
             Assert.Equal(2, aggData2.Sum);
 
             act.Stop();

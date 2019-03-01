@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
+using System;
 
 namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class ZipkinEndpoint
     {
         [JsonProperty("serviceName")]

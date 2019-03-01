@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OpenCensus.Stats;
 using Steeltoe.Common.Http;
+using Steeltoe.Management.Census.Stats;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -110,7 +111,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         protected internal async void DoPost(HttpClient client, HttpRequestMessage request)
         {
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);

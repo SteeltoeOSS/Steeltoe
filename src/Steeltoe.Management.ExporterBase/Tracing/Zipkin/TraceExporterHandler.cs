@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class TraceExporterHandler : IHandler
     {
         private const string STATUS_CODE = "census.status_code";
@@ -48,7 +49,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
             _localEndpoint = GetLocalZipkinEndpoint();
         }
 
-        public void Export(IList<ISpanData> spanDataList)
+        public void Export(IEnumerable<ISpanData> spanDataList)
         {
             List<ZipkinSpan> zipkinSpans = new List<ZipkinSpan>();
             foreach (var data in spanDataList)
@@ -124,6 +125,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 (arg) => { return arg; },
                 (arg) => { return arg.ToString(); },
                 (arg) => { return arg.ToString(); },
+                (arg) => { return arg.ToString(); },
                 (arg) => { return null; });
         }
 
@@ -145,70 +147,12 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         private ZipkinSpanKind ToSpanKind(ISpanData spanData)
         {
-            foreach (var label in spanData.Attributes.AttributeMap)
-            {
-               if (label.Key.Equals(SpanAttributeConstants.SpanKindKey))
-                {
-                    if (IsClientSpanKind(label.Value))
-                    {
-                        return ZipkinSpanKind.CLIENT;
-                    }
-
-                    if (IsServerSpanKind(label.Value))
-                    {
-                        return ZipkinSpanKind.SERVER;
-                    }
-                }
-            }
-
-            if (spanData.HasRemoteParent.HasValue && spanData.HasRemoteParent.Value)
+            if (spanData.Kind == SpanKind.Server)
             {
                 return ZipkinSpanKind.SERVER;
             }
 
             return ZipkinSpanKind.CLIENT;
-        }
-
-        private bool IsClientSpanKind(IAttributeValue value)
-        {
-            return value.Match(
-            (arg) =>
-            {
-                return arg.Equals(SpanAttributeConstants.ClientSpanKind);
-            },
-            (arg) =>
-            {
-                return false;
-            },
-            (arg) =>
-            {
-                return false;
-            },
-            (arg) =>
-            {
-                return false;
-            });
-        }
-
-        private bool IsServerSpanKind(IAttributeValue value)
-        {
-            return value.Match(
-            (arg) =>
-            {
-                return arg.Equals(SpanAttributeConstants.ServerSpanKind);
-            },
-            (arg) =>
-            {
-                return false;
-            },
-            (arg) =>
-            {
-                return false;
-            },
-            (arg) =>
-            {
-                return false;
-            });
         }
 
         private async void SendSpansAsync(List<ZipkinSpan> spans)
@@ -230,7 +174,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         private async Task DoPost(HttpClient client, HttpRequestMessage request)
         {
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 _options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);

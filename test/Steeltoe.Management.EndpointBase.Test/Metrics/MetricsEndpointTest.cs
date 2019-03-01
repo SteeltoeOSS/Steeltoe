@@ -16,6 +16,7 @@ using OpenCensus.Stats;
 using OpenCensus.Stats.Aggregations;
 using OpenCensus.Stats.Measures;
 using OpenCensus.Tags;
+using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;

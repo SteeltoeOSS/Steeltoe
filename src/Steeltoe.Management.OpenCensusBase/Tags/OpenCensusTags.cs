@@ -16,7 +16,7 @@ using OpenCensus.Tags;
 using OpenCensus.Tags.Propagation;
 using System;
 
-namespace Steeltoe.Management.Endpoint.Metrics
+namespace Steeltoe.Management.Census.Tags
 {
     public class OpenCensusTags : ITags
     {

@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using OpenCensus.Stats;
 using OpenCensus.Stats.Measures;
 using OpenCensus.Tags;
+using Steeltoe.Management.Census.Stats;
 using System;
 using System.Collections.Generic;
 

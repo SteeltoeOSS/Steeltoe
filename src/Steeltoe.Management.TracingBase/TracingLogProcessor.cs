@@ -14,6 +14,7 @@
 
 using OpenCensus.Trace;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Census.Trace;
 using System.Text;
 
 namespace Steeltoe.Management.Tracing
@@ -31,7 +32,7 @@ namespace Steeltoe.Management.Tracing
 
         public string Process(string inputLogMessage)
         {
-            Span currentSpan = tracing.Tracer?.CurrentSpan as Span;
+            Span currentSpan = GetCurrentSpan();
             if (currentSpan != null)
             {
                 var context = currentSpan.Context;
@@ -60,7 +61,7 @@ namespace Steeltoe.Management.Tracing
 
                     sb.Append(",");
 
-                    if (currentSpan.Options.HasFlag(SpanOptions.RECORD_EVENTS))
+                    if (currentSpan.Options.HasFlag(SpanOptions.RecordEvents))
                     {
                         sb.Append("true");
                     }
@@ -75,6 +76,17 @@ namespace Steeltoe.Management.Tracing
             }
 
             return inputLogMessage;
+        }
+
+        protected internal Span GetCurrentSpan()
+        {
+            var span = tracing.Tracer?.CurrentSpan;
+            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
+            {
+                return null;
+            }
+
+            return span as Span;
         }
     }
 }

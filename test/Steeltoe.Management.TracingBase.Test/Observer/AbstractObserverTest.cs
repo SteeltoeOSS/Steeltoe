@@ -12,28 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Management.Tracing
+using OpenCensus.Trace;
+
+namespace Steeltoe.Management.Tracing.Observer.Test
 {
-    public interface ITracingOptions
+    public abstract class AbstractObserverTest
     {
-        string Name { get; }
+        protected Span GetCurrentSpan(ITracer tracer)
+        {
+            var span = tracer.CurrentSpan;
+            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
+            {
+                return null;
+            }
 
-        string IngressIgnorePattern { get; }
-
-        string EgressIgnorePattern { get; }
-
-        int MaxNumberOfAttributes { get; }
-
-        int MaxNumberOfAnnotations { get; }
-
-        int MaxNumberOfMessageEvents { get; }
-
-        int MaxNumberOfLinks { get; }
-
-        bool AlwaysSample { get; }
-
-        bool NeverSample { get;  }
-
-        bool UseShortTraceIds { get; }
+            return span as Span;
+        }
     }
 }

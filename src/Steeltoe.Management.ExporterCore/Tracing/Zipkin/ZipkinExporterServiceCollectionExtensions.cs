@@ -16,8 +16,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenCensus.Exporter.Zipkin;
+using Steeltoe.Management.Census.Trace;
 using Steeltoe.Management.Exporter.Tracing.Zipkin;
 using System;
+using System.Net.Http;
 
 namespace Steeltoe.Management.Exporter.Tracing
 {
@@ -35,13 +38,38 @@ namespace Steeltoe.Management.Exporter.Tracing
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<ITraceExporterOptions>((p) =>
+            services.TryAddSingleton<ZipkinTraceExporter>((p) =>
             {
-                var h = p.GetRequiredService<IHostingEnvironment>();
-                return new TraceExporterOptions(h.ApplicationName, config);
+                return CreateExporter(p, config);
             });
+        }
 
-            services.TryAddSingleton<ITraceExporter, TraceExporter>();
+        private static ZipkinTraceExporter CreateExporter(IServiceProvider p, IConfiguration config)
+        {
+            var h = p.GetRequiredService<IHostingEnvironment>();
+            var opts = new TraceExporterOptions(h.ApplicationName, config);
+            var censusOpts = new ZipkinTraceExporterOptions()
+            {
+                Endpoint = new Uri(opts.Endpoint),
+                TimeoutSeconds = TimeSpan.FromSeconds(opts.TimeoutSeconds),
+                ServiceName = opts.ServiceName,
+                UseShortTraceIds = opts.UseShortTraceIds
+            };
+
+            var tracing = p.GetRequiredService<ITracing>();
+            if (!opts.ValidateCertificates)
+            {
+                var client = new HttpClient(
+                    new HttpClientHandler()
+                    {
+                        ServerCertificateCustomValidationCallback = (mesg, cert, chain, errors) => { return true; }
+                    });
+                return new ZipkinTraceExporter(censusOpts, tracing.ExportComponent, client);
+            }
+            else
+            {
+                return new ZipkinTraceExporter(censusOpts, tracing.ExportComponent);
+            }
         }
     }
 }

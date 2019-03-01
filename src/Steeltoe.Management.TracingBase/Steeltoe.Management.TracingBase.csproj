@@ -21,7 +21,15 @@
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Management.TracingBase.xml</DocumentationFile>
   </PropertyGroup>
+  
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.Management.OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
+  </ItemGroup>
 
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
     <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeConfigVersion)" />

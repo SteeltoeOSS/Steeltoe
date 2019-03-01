@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Management.Census.Trace;
 using System;
 
 namespace Steeltoe.Management.Tracing

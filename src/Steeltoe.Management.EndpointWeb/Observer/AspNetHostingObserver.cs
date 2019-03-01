@@ -18,6 +18,8 @@ using OpenCensus.Stats.Aggregations;
 using OpenCensus.Stats.Measures;
 using OpenCensus.Tags;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

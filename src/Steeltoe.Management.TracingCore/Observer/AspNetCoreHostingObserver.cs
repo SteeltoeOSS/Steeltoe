@@ -16,10 +16,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using OpenCensus.Common;
 using OpenCensus.Trace;
 using OpenCensus.Trace.Propagation;
-using OpenCensus.Trace.Unsafe;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Census.Trace;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,8 +39,6 @@ namespace Steeltoe.Management.Tracing.Observer
         private const string OBSERVER_NAME = "AspNetCoreHostingDiagnosticObserver";
 
         private static AsyncLocal<SpanContext> active = new AsyncLocal<SpanContext>();
-
-        private readonly HeaderDictionaryGetter headerGetter = new HeaderDictionaryGetter();
 
         public AspNetCoreHostingObserver(ITracingOptions options, ITracing tracing, ILogger<AspNetCoreHostingObserver> logger = null)
             : base(OBSERVER_NAME, options, tracing, logger)
@@ -143,31 +142,31 @@ namespace Steeltoe.Management.Tracing.Observer
             string spanName = ExtractSpanName(context);
 
             ISpan span;
+            IScope scope;
             if (traceContext != null)
             {
                 Logger?.LogDebug("HandleStartEvent: Found parent span {parent}", traceContext.ToString());
-                span = Tracer.SpanBuilderWithRemoteParent(spanName, traceContext)
-                    .StartSpan();
+                scope = Tracer.SpanBuilderWithRemoteParent(spanName, traceContext)
+                    .StartScopedSpan(out span);
             }
             else
             {
-                span = Tracer.SpanBuilder(spanName)
-                    .StartSpan();
+                 scope = Tracer.SpanBuilder(spanName)
+                    .StartScopedSpan(out span);
             }
 
             span.PutServerSpanKindAttribute()
-                .PutHttpUrlAttribute(context.Request.GetDisplayUrl())
+                .PutHttpRawUrlAttribute(context.Request.GetDisplayUrl())
                 .PutHttpMethodAttribute(context.Request.Method.ToString())
                 .PutHttpPathAttribute(context.Request.Path.ToString())
-                .PutHttpHostAttribute(context.Request.Host.ToString());
+                .PutHttpHostAttribute(context.Request.Host.Host, context.Request.Host.Port ?? 80);
 
             if (context.Request.Headers != null)
             {
                 span.PutHttpRequestHeadersAttribute(AsList(context.Request.Headers));
             }
 
-            active.Value = new SpanContext(span, AsyncLocalContext.CurrentSpan);
-            AsyncLocalContext.CurrentSpan = span;
+            active.Value = new SpanContext(span, scope);
         }
 
         protected internal void HandleStopEvent(HttpContext context)
@@ -180,6 +179,8 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             ISpan span = spanContext.Active;
+            IScope scope = spanContext.ActiveScope;
+
             span.PutHttpStatusCodeAttribute(context.Response.StatusCode);
 
             if (context.Response.Headers != null)
@@ -199,9 +200,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 span.PutHttpResponseSizeAttribute(respSize.Value);
             }
 
-            span.End();
-
-            AsyncLocalContext.CurrentSpan = spanContext.Previous;
+            scope.Dispose();
             active.Value = null;
         }
 
@@ -215,7 +214,11 @@ namespace Steeltoe.Management.Tracing.Observer
             var request = context.Request;
             try
             {
-                return Propagation.Extract(request.Headers, headerGetter);
+                return Propagation.Extract(request.Headers, (d, k) =>
+                {
+                    d.TryGetValue(k, out StringValues result);
+                    return result;
+                });
             }
             catch (SpanContextParseException)
             {
@@ -267,15 +270,6 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             return results;
-        }
-
-        public class HeaderDictionaryGetter : IGetter<IHeaderDictionary>
-        {
-            public string Get(IHeaderDictionary carrier, string key)
-            {
-                carrier.TryGetValue(key, out StringValues result);
-                return result;
-            }
         }
     }
 }

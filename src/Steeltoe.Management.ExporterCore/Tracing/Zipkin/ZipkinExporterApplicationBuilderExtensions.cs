@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using OpenCensus.Exporter.Zipkin;
 using System;
 
 namespace Steeltoe.Management.Exporter.Tracing
@@ -28,7 +29,7 @@ namespace Steeltoe.Management.Exporter.Tracing
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var service = builder.ApplicationServices.GetRequiredService<ITraceExporter>();
+            var service = builder.ApplicationServices.GetRequiredService<ZipkinTraceExporter>();
             var lifetime = builder.ApplicationServices.GetRequiredService<IApplicationLifetime>();
 
             lifetime.ApplicationStopping.Register(() => service.Stop());

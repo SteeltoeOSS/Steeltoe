@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using OpenCensus.Trace;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Tracing.Test
@@ -37,6 +38,17 @@ namespace Steeltoe.Management.Tracing.Test
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(settings);
             return builder.Build();
+        }
+
+        protected Span GetCurrentSpan(ITracer tracer)
+        {
+            var span = tracer.CurrentSpan;
+            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
+            {
+                return null;
+            }
+
+            return span as Span;
         }
     }
 }

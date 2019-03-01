@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using OpenCensus.Trace;
 using OpenCensus.Trace.Sampler;
+using Steeltoe.Management.Census.Trace;
 using System.Collections.Generic;
 using Xunit;
 
@@ -121,7 +122,7 @@ namespace Steeltoe.Management.Tracing.Test
         {
             public string Description => throw new System.NotImplementedException();
 
-            public bool ShouldSample(ISpanContext parentContext, bool hasRemoteParent, ITraceId traceId, ISpanId spanId, string name, IList<ISpan> parentLinks)
+            public bool ShouldSample(ISpanContext parentContext, bool hasRemoteParent, ITraceId traceId, ISpanId spanId, string name, IEnumerable<ISpan> parentLinks)
             {
                 throw new System.NotImplementedException();
             }

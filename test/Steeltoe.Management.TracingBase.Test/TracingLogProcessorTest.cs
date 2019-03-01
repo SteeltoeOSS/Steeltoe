@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using OpenCensus.Trace.Unsafe;
+using OpenCensus.Trace;
+using Steeltoe.Management.Census.Trace;
 using System.Collections.Generic;
 using Xunit;
 
@@ -70,8 +71,7 @@ namespace Steeltoe.Management.Tracing.Test
             TracingOptions opts = new TracingOptions(null, builder.Build());
 
             OpenCensusTracing tracing = new OpenCensusTracing(opts);
-            var span = tracing.Tracer.SpanBuilder("spanName").StartSpan();
-            AsyncLocalContext.CurrentSpan = span;
+            tracing.Tracer.SpanBuilder("spanName").StartScopedSpan(out ISpan span);
 
             var processor = new TracingLogProcessor(opts, tracing);
             var result = processor.Process("InputLogMessage");
@@ -83,8 +83,7 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Contains(span.Context.SpanId.ToLowerBase16(), result);
             Assert.Contains("foobar", result);
 
-            var childSpan = tracing.Tracer.SpanBuilderWithExplicitParent("spanName2", span).StartSpan();
-            AsyncLocalContext.CurrentSpan = childSpan;
+            tracing.Tracer.SpanBuilderWithExplicitParent("spanName2", span).StartScopedSpan(out ISpan childSpan);
 
             result = processor.Process("InputLogMessage2");
 
@@ -119,8 +118,7 @@ namespace Steeltoe.Management.Tracing.Test
             TracingOptions opts = new TracingOptions(null, builder.Build());
 
             OpenCensusTracing tracing = new OpenCensusTracing(opts);
-            var span = tracing.Tracer.SpanBuilder("spanName").StartSpan();
-            AsyncLocalContext.CurrentSpan = span;
+            tracing.Tracer.SpanBuilder("spanName").StartScopedSpan(out ISpan span);
 
             var processor = new TracingLogProcessor(opts, tracing);
             var result = processor.Process("InputLogMessage");

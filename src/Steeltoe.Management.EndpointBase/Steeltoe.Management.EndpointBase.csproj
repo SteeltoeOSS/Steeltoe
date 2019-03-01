@@ -24,10 +24,12 @@
   
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Steeltoe.Management.Diagnostics\Steeltoe.Management.Diagnostics.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Management.Diagnostics" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <ItemGroup>

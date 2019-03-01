@@ -13,11 +13,13 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using OpenCensus.Trace;
 using OpenCensus.Trace.Export;
+using Steeltoe.Management.Census.Trace;
+using System;
 
 namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 {
+    [Obsolete("Use OpenCensus project packages")]
     public class TraceExporter : ITraceExporter
     {
         private const string EXPORTER_NAME = "ZipkinTraceExporter";

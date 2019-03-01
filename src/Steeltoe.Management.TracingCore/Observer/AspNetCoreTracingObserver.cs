@@ -14,9 +14,11 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using OpenCensus.Common;
 using OpenCensus.Trace;
 using OpenCensus.Trace.Propagation;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Census.Trace;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -73,17 +75,28 @@ namespace Steeltoe.Management.Tracing.Observer
             return string.Empty;
         }
 
+        protected internal ISpan GetCurrentSpan()
+        {
+            var span = Tracer.CurrentSpan;
+            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
+            {
+                return null;
+            }
+
+            return span;
+        }
+
         public class SpanContext
         {
-            public SpanContext(ISpan active, ISpan previous)
+            public SpanContext(ISpan active, IScope activeScope)
             {
                 Active = active;
-                Previous = previous;
+                ActiveScope = activeScope;
             }
 
             public ISpan Active { get; }
 
-            public ISpan Previous { get; }
+            public IScope ActiveScope { get; }
         }
     }
 }

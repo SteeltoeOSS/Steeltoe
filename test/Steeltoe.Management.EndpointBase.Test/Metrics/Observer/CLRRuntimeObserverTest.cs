@@ -15,6 +15,8 @@
 using OpenCensus.Stats;
 using OpenCensus.Stats.Aggregations;
 using OpenCensus.Tags;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Test;
 using System.Collections.Generic;
 using Xunit;
@@ -62,44 +64,44 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleHeapEvent(metrics);
 
             var memUsedViewData = stats.ViewManager.GetView(ViewName.Create("clr.memory.used"));
-            var aggData = memUsedViewData.SumWithTags() as IMeanData;
+            var aggData = MetricsHelpers.SumWithTags(memUsedViewData) as IMeanData;
             Assert.Equal(1000, aggData.Mean);
             Assert.Equal(1000, aggData.Max);
             Assert.Equal(1000, aggData.Min);
 
             var gcViewData = stats.ViewManager.GetView(ViewName.Create("clr.gc.collections"));
-            var aggData2 = gcViewData.SumWithTags() as ISumDataLong;
+            var aggData2 = MetricsHelpers.SumWithTags(gcViewData) as ISumDataLong;
             Assert.Equal(60, aggData2.Sum);
 
-            aggData2 = gcViewData.SumWithTags(new List<ITagValue>() { TagValue.Create("gen0") }) as ISumDataLong;
+            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen0") }) as ISumDataLong;
             Assert.Equal(10, aggData2.Sum);
 
-            aggData2 = gcViewData.SumWithTags(new List<ITagValue>() { TagValue.Create("gen1") }) as ISumDataLong;
+            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen1") }) as ISumDataLong;
             Assert.Equal(20, aggData2.Sum);
 
-            aggData2 = gcViewData.SumWithTags(new List<ITagValue>() { TagValue.Create("gen2") }) as ISumDataLong;
+            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen2") }) as ISumDataLong;
             Assert.Equal(30, aggData2.Sum);
 
             metrics = new CLRRuntimeSource.HeapMetrics(5000, new List<long>() { 15, 25, 30 });
             observer.HandleHeapEvent(metrics);
 
             memUsedViewData = stats.ViewManager.GetView(ViewName.Create("clr.memory.used"));
-            aggData = memUsedViewData.SumWithTags() as IMeanData;
+            aggData = MetricsHelpers.SumWithTags(memUsedViewData) as IMeanData;
             Assert.Equal((5000 + 1000) / 2, aggData.Mean);
             Assert.Equal(5000, aggData.Max);
             Assert.Equal(1000, aggData.Min);
 
             gcViewData = stats.ViewManager.GetView(ViewName.Create("clr.gc.collections"));
-            aggData2 = gcViewData.SumWithTags() as ISumDataLong;
+            aggData2 = MetricsHelpers.SumWithTags(gcViewData) as ISumDataLong;
             Assert.Equal(70, aggData2.Sum);
 
-            aggData2 = gcViewData.SumWithTags(new List<ITagValue>() { TagValue.Create("gen0") }) as ISumDataLong;
+            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen0") }) as ISumDataLong;
             Assert.Equal(15, aggData2.Sum);
 
-            aggData2 = gcViewData.SumWithTags(new List<ITagValue>() { TagValue.Create("gen1") }) as ISumDataLong;
+            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen1") }) as ISumDataLong;
             Assert.Equal(25, aggData2.Sum);
 
-            aggData2 = gcViewData.SumWithTags(new List<ITagValue>() { TagValue.Create("gen2") }) as ISumDataLong;
+            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen2") }) as ISumDataLong;
             Assert.Equal(30, aggData2.Sum);
         }
 
@@ -115,33 +117,33 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleThreadsEvent(metrics);
 
             var live = stats.ViewManager.GetView(ViewName.Create("clr.threadpool.active"));
-            var aggData = live.SumWithTags() as IMeanData;
+            var aggData = MetricsHelpers.SumWithTags(live) as IMeanData;
             Assert.Equal(100, aggData.Mean);
             Assert.Equal(100, aggData.Min);
             Assert.Equal(100, aggData.Max);
 
-            aggData = live.SumWithTags(new List<ITagValue>() { TagValue.Create("worker") }) as IMeanData;
+            aggData = MetricsHelpers.SumWithTags(live, new List<ITagValue>() { TagValue.Create("worker") }) as IMeanData;
             Assert.Equal(100, aggData.Mean);
             Assert.Equal(100, aggData.Min);
             Assert.Equal(100, aggData.Max);
 
-            aggData = live.SumWithTags(new List<ITagValue>() { TagValue.Create("completionPort") }) as IMeanData;
+            aggData = MetricsHelpers.SumWithTags(live, new List<ITagValue>() { TagValue.Create("completionPort") }) as IMeanData;
             Assert.Equal(100, aggData.Mean);
             Assert.Equal(100, aggData.Min);
             Assert.Equal(100, aggData.Max);
 
             var avail = stats.ViewManager.GetView(ViewName.Create("clr.threadpool.avail"));
-            aggData = avail.SumWithTags() as IMeanData;
+            aggData = MetricsHelpers.SumWithTags(avail) as IMeanData;
             Assert.Equal(100, aggData.Mean);
             Assert.Equal(100, aggData.Min);
             Assert.Equal(100, aggData.Max);
 
-            aggData = avail.SumWithTags(new List<ITagValue>() { TagValue.Create("worker") }) as IMeanData;
+            aggData = MetricsHelpers.SumWithTags(avail, new List<ITagValue>() { TagValue.Create("worker") }) as IMeanData;
             Assert.Equal(100, aggData.Mean);
             Assert.Equal(100, aggData.Min);
             Assert.Equal(100, aggData.Max);
 
-            aggData = avail.SumWithTags(new List<ITagValue>() { TagValue.Create("completionPort") }) as IMeanData;
+            aggData = MetricsHelpers.SumWithTags(avail, new List<ITagValue>() { TagValue.Create("completionPort") }) as IMeanData;
             Assert.Equal(100, aggData.Mean);
             Assert.Equal(100, aggData.Min);
             Assert.Equal(100, aggData.Max);

@@ -16,10 +16,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using OpenCensus.Exporter.Zipkin;
 using OpenCensus.Trace;
 using OpenCensus.Trace.Config;
 using OpenCensus.Trace.Export;
 using OpenCensus.Trace.Propagation;
+using Steeltoe.Management.Census.Trace;
 using Steeltoe.Management.Exporter.Tracing.Zipkin;
 using System;
 using System.Collections.Generic;
@@ -58,9 +60,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Test
 
             var serviceProvider = services.BuildServiceProvider();
 
-            var opts = serviceProvider.GetService<ITraceExporterOptions>();
-            Assert.NotNull(opts);
-            var tracing = serviceProvider.GetService<ITraceExporter>();
+            var tracing = serviceProvider.GetService<ZipkinTraceExporter>();
             Assert.NotNull(tracing);
         }
 

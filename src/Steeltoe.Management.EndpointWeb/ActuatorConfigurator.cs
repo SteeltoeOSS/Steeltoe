@@ -22,6 +22,8 @@ using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Env;

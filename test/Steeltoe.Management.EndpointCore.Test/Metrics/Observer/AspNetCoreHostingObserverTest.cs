@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Http;
 using OpenCensus.Stats;
 using OpenCensus.Stats.Aggregations;
 using OpenCensus.Tags;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Diagnostics;

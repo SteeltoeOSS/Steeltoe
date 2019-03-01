@@ -15,16 +15,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using OpenCensus.Common;
 using OpenCensus.Trace;
-using OpenCensus.Trace.Propagation;
-using OpenCensus.Trace.Unsafe;
 using Steeltoe.Common.Diagnostics;
-using System;
+using Steeltoe.Management.Census.Trace;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Tracing.Observer
 {
@@ -95,7 +91,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            var current = AsyncLocalContext.CurrentSpan;
+            var current = GetCurrentSpan();
             if (current == null)
             {
                 Logger?.LogDebug("HandleBeforeActionEvent: No CurrentSpan!");
@@ -103,14 +99,13 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             string spanName = ExtractSpanName(descriptor);
-            ISpan span = Tracer.SpanBuilder(spanName).StartSpan();
+            IScope scope = Tracer.SpanBuilder(spanName).StartScopedSpan(out ISpan span);
 
             span.PutMvcControllerClass(ExtractControllerName(descriptor))
                 .PutServerSpanKindAttribute()
                 .PutMvcControllerAction(ExtractActionName(descriptor));
 
-            active.Value = new SpanContext(span, current);
-            AsyncLocalContext.CurrentSpan = span;
+            active.Value = new SpanContext(span, scope);
         }
 
         protected internal virtual void HandleAfterActionEvent()
@@ -122,13 +117,12 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            ISpan span = spanContext.Active;
-            if (span != null)
+            IScope scope = spanContext.ActiveScope;
+            if (scope != null)
             {
-                span.End();
+                scope.Dispose();
             }
 
-            AsyncLocalContext.CurrentSpan = spanContext.Previous;
             active.Value = null;
         }
 

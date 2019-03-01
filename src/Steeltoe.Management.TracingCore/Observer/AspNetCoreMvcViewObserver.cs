@@ -15,9 +15,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using OpenCensus.Common;
 using OpenCensus.Trace;
-using OpenCensus.Trace.Unsafe;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Census.Trace;
 using System.Threading;
 
 namespace Steeltoe.Management.Tracing.Observer
@@ -88,7 +89,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            var current = AsyncLocalContext.CurrentSpan;
+            var current = GetCurrentSpan();
             if (current == null)
             {
                 Logger?.LogDebug("HandleBeforeActionEvent: No CurrentSpan!");
@@ -96,14 +97,12 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             string spanName = ExtractSpanName(viewContext);
-            ISpan span = Tracer.SpanBuilder(spanName).StartSpan();
+            IScope scope = Tracer.SpanBuilder(spanName).StartScopedSpan(out ISpan span);
 
             span.PutMvcViewExecutingFilePath(ExtractViewPath(viewContext))
                 .PutServerSpanKindAttribute();
 
-            active.Value = new SpanContext(span, current);
-
-            AsyncLocalContext.CurrentSpan = span;
+            active.Value = new SpanContext(span, scope);
         }
 
         protected internal virtual void HandleAfterViewEvent()
@@ -115,13 +114,12 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            ISpan span = spanContext.Active;
-            if (span != null)
+            IScope scope = spanContext.ActiveScope;
+            if (scope != null)
             {
-                span.End();
+                scope.Dispose();
             }
 
-            AsyncLocalContext.CurrentSpan = spanContext.Previous;
             active.Value = null;
         }
 

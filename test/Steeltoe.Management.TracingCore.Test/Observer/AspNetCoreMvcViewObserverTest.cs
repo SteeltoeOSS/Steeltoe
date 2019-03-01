@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using OpenCensus.Trace;
-using OpenCensus.Trace.Unsafe;
+using Steeltoe.Management.Census.Trace;
 using Steeltoe.Management.Tracing.Test;
 using System;
 using System.IO;
@@ -79,7 +79,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var obs = new AspNetCoreMvcViewObserver(opts, tracing);
             var ctx = GetViewContext();
             obs.ProcessEvent(AspNetCoreMvcViewObserver.MVC_BEFOREVIEW_EVENT, new { });
-            Span span = AsyncLocalContext.CurrentSpan as Span;
+            Span span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
             Assert.Null(obs.Active);
         }
@@ -93,7 +93,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var ctx = GetViewContext();
             obs.ProcessEvent(AspNetCoreMvcViewObserver.MVC_BEFOREVIEW_EVENT, new { viewContext = ctx });
 
-            Span span = AsyncLocalContext.CurrentSpan as Span;
+            Span span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
 
             var spanContext = obs.Active;
@@ -109,32 +109,29 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var request = GetHttpRequestMessage();
             hostobs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_START_EVENT, new { HttpContext = request });
 
-            Span hostSpan = AsyncLocalContext.CurrentSpan as Span;
+            Span hostSpan = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(hostSpan);
             var hostSpanContext = hostobs.Active;
             Assert.NotNull(hostSpanContext);
             Assert.Equal(hostSpan, hostSpanContext.Active);
-            Assert.Null(hostSpanContext.Previous);
 
             var actionobs = new AspNetCoreMvcActionObserver(opts, tracing);
             var descriptor = GetActionDescriptor();
             actionobs.ProcessEvent(AspNetCoreMvcActionObserver.MVC_BEFOREACTION_EVENT, new { httpContext = request, actionDescriptor = descriptor });
 
-            Span actionSpan = AsyncLocalContext.CurrentSpan as Span;
+            Span actionSpan = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(actionSpan);
             Assert.NotEqual(hostSpan, actionSpan);
             var actionContext = actionobs.Active;
             Assert.NotNull(actionContext);
             Assert.Equal(actionSpan, actionContext.Active);
             Assert.Equal(actionSpan.ParentSpanId, hostSpan.Context.SpanId);
-            Assert.NotNull(actionContext.Previous);
-            Assert.Equal(hostSpan, actionContext.Previous);
 
             Assert.Equal("action:" + descriptor.ControllerName + "/" + descriptor.ActionName, actionSpan.Name);
 
             var actionSpanData = actionSpan.ToSpanData();
             var actionAttributes = actionSpanData.Attributes.AttributeMap;
-            Assert.Equal(AttributeValue.StringAttributeValue(SpanAttributeConstants.ServerSpanKind), actionAttributes[SpanAttributeConstants.SpanKindKey]);
+            Assert.Equal(SpanKind.Server, actionSpan.Kind);
             Assert.Equal(AttributeValue.StringAttributeValue(descriptor.ControllerTypeInfo.FullName), actionAttributes[SpanAttributeConstants.MvcControllerClass]);
             Assert.Equal(AttributeValue.StringAttributeValue(descriptor.MethodInfo.ToString()), actionAttributes[SpanAttributeConstants.MvcControllerMethod]);
 
@@ -142,7 +139,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var ctx = GetViewContext();
             viewobs.ProcessEvent(AspNetCoreMvcViewObserver.MVC_BEFOREVIEW_EVENT, new { viewContext = ctx });
 
-            Span viewSpan = AsyncLocalContext.CurrentSpan as Span;
+            Span viewSpan = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(viewSpan);
             Assert.NotEqual(hostSpan, viewSpan);
             Assert.NotEqual(actionSpan, viewSpan);
@@ -150,14 +147,12 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.NotNull(viewSpanContext);
             Assert.Equal(viewSpan, viewSpanContext.Active);
             Assert.Equal(actionSpan.Context.SpanId, viewSpan.ParentSpanId);
-            Assert.NotNull(viewSpanContext.Previous);
-            Assert.Equal(actionSpan, viewSpanContext.Previous);
 
             Assert.Equal("view:" + ctx.View.Path, viewSpan.Name);
 
             var viewSpanData = viewSpan.ToSpanData();
             var viewAttributes = viewSpanData.Attributes.AttributeMap;
-            Assert.Equal(AttributeValue.StringAttributeValue(SpanAttributeConstants.ServerSpanKind), viewAttributes[SpanAttributeConstants.SpanKindKey]);
+            Assert.Equal(SpanKind.Server, viewSpan.Kind);
             Assert.Equal(AttributeValue.StringAttributeValue(ctx.View.Path), viewAttributes[SpanAttributeConstants.MvcViewFilePath]);
         }
 
@@ -169,7 +164,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var obs = new AspNetCoreMvcViewObserver(opts, tracing);
             obs.ProcessEvent(AspNetCoreMvcViewObserver.MVC_AFTERVIEW_EVENT, new { });
 
-            Span span = AsyncLocalContext.CurrentSpan as Span;
+            Span span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
 
             var spanContext = obs.Active;
@@ -185,26 +180,23 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var request = GetHttpRequestMessage();
             hostobs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_START_EVENT, new { HttpContext = request });
 
-            Span hostSpan = AsyncLocalContext.CurrentSpan as Span;
+            Span hostSpan = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(hostSpan);
             var hostspanContext = hostobs.Active;
             Assert.NotNull(hostspanContext);
             Assert.Equal(hostSpan, hostspanContext.Active);
-            Assert.Null(hostspanContext.Previous);
 
             var actionobs = new AspNetCoreMvcActionObserver(opts, tracing);
             var descriptor = GetActionDescriptor();
             actionobs.ProcessEvent(AspNetCoreMvcActionObserver.MVC_BEFOREACTION_EVENT, new { httpContext = request, actionDescriptor = descriptor });
 
-            Span actionSpan = AsyncLocalContext.CurrentSpan as Span;
+            Span actionSpan = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(actionSpan);
             Assert.NotEqual(hostSpan, actionSpan);
             var actionspanContext = actionobs.Active;
             Assert.NotNull(actionspanContext);
             Assert.Equal(actionSpan, actionspanContext.Active);
             Assert.Equal(actionSpan.ParentSpanId, hostSpan.Context.SpanId);
-            Assert.NotNull(actionspanContext.Previous);
-            Assert.Equal(hostSpan, actionspanContext.Previous);
 
             Assert.Equal("action:" + descriptor.ControllerName + "/" + descriptor.ActionName, actionSpan.Name);
 
@@ -212,7 +204,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var ctx = GetViewContext();
             viewobs.ProcessEvent(AspNetCoreMvcViewObserver.MVC_BEFOREVIEW_EVENT, new { viewContext = ctx });
 
-            Span viewSpan = AsyncLocalContext.CurrentSpan as Span;
+            Span viewSpan = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(viewSpan);
             Assert.NotEqual(hostSpan, viewSpan);
             Assert.NotEqual(actionSpan, viewSpan);
@@ -220,25 +212,23 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.NotNull(viewSpanContext);
             Assert.Equal(viewSpan, viewSpanContext.Active);
             Assert.Equal(actionSpan.Context.SpanId, viewSpan.ParentSpanId);
-            Assert.NotNull(viewSpanContext.Previous);
-            Assert.Equal(actionSpan, viewSpanContext.Previous);
 
             Assert.Equal("view:" + ctx.View.Path, viewSpan.Name);
 
             viewobs.ProcessEvent(AspNetCoreMvcViewObserver.MVC_AFTERVIEW_EVENT, new { });
 
             Assert.True(viewSpan.HasEnded);
-            Assert.NotNull(AsyncLocalContext.CurrentSpan);
+            Assert.NotNull(GetCurrentSpan(tracing.Tracer));
             Assert.Null(viewobs.Active);
 
             var viewSpanData = viewSpan.ToSpanData();
             var viewAttributes = viewSpanData.Attributes.AttributeMap;
-            Assert.Equal(AttributeValue.StringAttributeValue(SpanAttributeConstants.ServerSpanKind), viewAttributes[SpanAttributeConstants.SpanKindKey]);
+            Assert.Equal(SpanKind.Server, viewSpan.Kind);
             Assert.Equal(AttributeValue.StringAttributeValue(ctx.View.Path), viewAttributes[SpanAttributeConstants.MvcViewFilePath]);
 
             actionobs.ProcessEvent(AspNetCoreMvcActionObserver.MVC_AFTERACTION_EVENT, new { httpContext = request });
 
-            Span spanAfter = AsyncLocalContext.CurrentSpan as Span;
+            Span spanAfter = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(spanAfter);
             Assert.Equal(hostSpan, spanAfter);
 
@@ -248,19 +238,19 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             var actionSpanData = actionSpan.ToSpanData();
             var actionAttributes = actionSpanData.Attributes.AttributeMap;
-            Assert.Equal(AttributeValue.StringAttributeValue(SpanAttributeConstants.ServerSpanKind), actionAttributes[SpanAttributeConstants.SpanKindKey]);
+            Assert.Equal(SpanKind.Server, actionSpan.Kind);
             Assert.Equal(AttributeValue.StringAttributeValue(descriptor.ControllerTypeInfo.FullName), actionAttributes[SpanAttributeConstants.MvcControllerClass]);
             Assert.Equal(AttributeValue.StringAttributeValue(descriptor.MethodInfo.ToString()), actionAttributes[SpanAttributeConstants.MvcControllerMethod]);
 
             hostobs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_STOP_EVENT, new { HttpContext = request });
 
             Assert.True(hostSpan.HasEnded);
-            Assert.Null(AsyncLocalContext.CurrentSpan);
+            Assert.Null(GetCurrentSpan(tracing.Tracer));
             Assert.Null(hostobs.Active);
 
             var hostSpanData = hostSpan.ToSpanData();
             var hostAttributes = hostSpanData.Attributes.AttributeMap;
-            Assert.Equal(AttributeValue.StringAttributeValue(SpanAttributeConstants.ServerSpanKind), hostAttributes[SpanAttributeConstants.SpanKindKey]);
+            Assert.Equal(SpanKind.Server, hostSpan.Kind);
             Assert.Equal(AttributeValue.StringAttributeValue("http://localhost:5555/"), hostAttributes[SpanAttributeConstants.HttpUrlKey]);
             Assert.Equal(AttributeValue.StringAttributeValue(HttpMethod.Get.ToString()), hostAttributes[SpanAttributeConstants.HttpMethodKey]);
             Assert.Equal(AttributeValue.StringAttributeValue("localhost:5555"), hostAttributes[SpanAttributeConstants.HttpHostKey]);

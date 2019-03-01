@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using OpenCensus.Stats;
+using Steeltoe.Management.Census.Stats;
 
 namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
 {

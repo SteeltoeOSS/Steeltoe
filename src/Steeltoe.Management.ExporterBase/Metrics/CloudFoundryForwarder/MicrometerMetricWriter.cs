@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using OpenCensus.Stats;
 using OpenCensus.Tags;
+using Steeltoe.Management.Census.Stats;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder

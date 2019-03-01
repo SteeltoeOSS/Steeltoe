@@ -15,9 +15,9 @@
 using Microsoft.Extensions.Logging;
 using OpenCensus.Common;
 using OpenCensus.Trace;
-using OpenCensus.Trace.Propagation;
-using OpenCensus.Trace.Unsafe;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.Census.Trace.Propagation;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -37,8 +37,6 @@ namespace Steeltoe.Management.Tracing.Observer
         internal const string EXCEPTION_EVENT = "System.Net.Http.Exception";
 
         internal const string SPANCONTEXT_KEY = "Steeltoe.SpanContext";
-
-        private HeaderDictionarySetter headerSetter = new HeaderDictionarySetter();
 
         public HttpClientCoreObserver(ITracingOptions options, ITracing tracing, ILogger<HttpClientCoreObserver> logger = null)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, tracing, logger)
@@ -127,29 +125,29 @@ namespace Steeltoe.Management.Tracing.Observer
 
             string spanName = ExtractSpanName(request);
 
-            var parentSpan = AsyncLocalContext.CurrentSpan;
+            var parentSpan = GetCurrentSpan();
             ISpan started;
+            IScope scope;
             if (parentSpan != null)
             {
-                started = Tracer.SpanBuilderWithExplicitParent(spanName, parentSpan)
-                    .StartSpan();
+                scope = Tracer.SpanBuilderWithExplicitParent(spanName, parentSpan)
+                    .StartScopedSpan(out started);
             }
             else
             {
-                started = Tracer.SpanBuilder(spanName)
-                    .StartSpan();
+                scope = Tracer.SpanBuilder(spanName)
+                   .StartScopedSpan(out started);
             }
 
-            request.Properties.Add(SPANCONTEXT_KEY, new SpanContext(started, parentSpan));
+            request.Properties.Add(SPANCONTEXT_KEY, new SpanContext(started, scope));
 
             started.PutClientSpanKindAttribute()
-                .PutHttpUrlAttribute(request.RequestUri.ToString())
+                .PutHttpRawUrlAttribute(request.RequestUri.ToString())
                 .PutHttpMethodAttribute(request.Method.ToString())
-                .PutHttpHostAttribute(request.RequestUri.Host)
+                .PutHttpHostAttribute(request.RequestUri.Host, request.RequestUri.Port)
                 .PutHttpPathAttribute(request.RequestUri.AbsolutePath)
                 .PutHttpRequestHeadersAttribute(request.Headers.ToList());
 
-            AsyncLocalContext.CurrentSpan = started;
             InjectTraceContext(request, parentSpan);
         }
 
@@ -166,6 +164,8 @@ namespace Steeltoe.Management.Tracing.Observer
             if (spanContext != null)
             {
                 ISpan span = spanContext.Active;
+                IScope scope = spanContext.ActiveScope;
+
                 if (response != null)
                 {
                     span.PutHttpStatusCodeAttribute((int)response.StatusCode)
@@ -184,47 +184,36 @@ namespace Steeltoe.Management.Tracing.Observer
                         .Status = Status.Cancelled;
                 }
 
-                span.End();
+                scope.Dispose();  // Calls span.End(); and replaces CurrentSpan with previous span
 
-                AsyncLocalContext.CurrentSpan = spanContext.Previous;
                 request.Properties.Remove(SPANCONTEXT_KEY);
             }
         }
 
         protected internal void InjectTraceContext(HttpRequestMessage message, ISpan parentSpan)
         {
+            // Expects the currentspan to be the span to inject into
             var headers = message.Headers;
-
-            var traceId = Tracer.CurrentSpan.Context.TraceId.ToLowerBase16();
-            if (traceId.Length > 16 && Options.UseShortTraceIds)
+            Propagation.Inject(Tracer.CurrentSpan.Context, headers,  (c, k, v) =>
             {
-                traceId = traceId.Substring(traceId.Length - 16, 16);
-            }
-
-            headerSetter.Put(headers, B3Format.XB3TraceId, traceId);
-            headerSetter.Put(headers, B3Format.XB3SpanId, Tracer.CurrentSpan.Context.SpanId.ToLowerBase16());
-            if (Tracer.CurrentSpan.Context.TraceOptions.IsSampled)
-            {
-                headerSetter.Put(headers, B3Format.XB3Sampled, "1");
-            }
-
+                if (k == B3Constants.XB3TraceId)
+                {
+                    if (v.Length > 16 && Options.UseShortTraceIds)
+                    {
+                        v = v.Substring(v.Length - 16, 16);
+                    }
+                }
+                c.Add(k, v);
+            });
             if (parentSpan != null)
             {
-                headerSetter.Put(headers, B3Format.XB3ParentSpanId, parentSpan.Context.SpanId.ToLowerBase16());
+                headers.Add(B3Constants.XB3ParentSpanId, parentSpan.Context.SpanId.ToLowerBase16());
             }
         }
 
         private string ExtractSpanName(HttpRequestMessage message)
         {
             return "httpclient:" + message.RequestUri.AbsolutePath;
-        }
-
-        public class HeaderDictionarySetter : ISetter<HttpRequestHeaders>
-        {
-            public void Put(HttpRequestHeaders carrier, string key, string value)
-            {
-                carrier.Add(key, value);
-            }
         }
     }
 }

@@ -14,8 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using OpenCensus.Trace;
-using OpenCensus.Trace.Propagation;
-using OpenCensus.Trace.Unsafe;
+using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.Census.Trace.Propagation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Observer.Test
 {
-    public class HttpClientCoreObserverTest
+    public class HttpClientCoreObserverTest : AbstractObserverTest
     {
         [Fact]
         public void ProcessEvent_IgnoresNulls()
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var obs = new HttpClientCoreObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request });
-            Span span = AsyncLocalContext.CurrentSpan as Span;
+            Span span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
             Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
         }
@@ -92,12 +92,12 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             // No Exception
             obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, new { Request = request });
-            Span span = AsyncLocalContext.CurrentSpan as Span;
+            Span span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
             Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
 
             obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, new { Request = request, Exception = new Exception() });
-            span = AsyncLocalContext.CurrentSpan as Span;
+            span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
             Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out context));
         }
@@ -111,13 +111,13 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(HttpClientCoreObserver.START_EVENT, new { Request = request });
 
-            Span span = AsyncLocalContext.CurrentSpan as Span;
+            Span span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
             Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
             HttpClientTracingObserver.SpanContext spanContext = context as HttpClientTracingObserver.SpanContext;
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
-            Assert.Null(spanContext.Previous);
+            Assert.NotNull(spanContext.ActiveScope);
             Assert.Equal("httpclient:/", span.Name);
 
             var exception = new Exception("Help");
@@ -126,15 +126,14 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var response = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request, Response = response, RequestTaskStatus = TaskStatus.RanToCompletion });
             Assert.True(span.HasEnded);
-            Assert.Null(AsyncLocalContext.CurrentSpan);
             Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object ctx));
 
             var spanData = span.ToSpanData();
             var attributes = spanData.Attributes.AttributeMap;
-            Assert.Equal(AttributeValue.StringAttributeValue(SpanAttributeConstants.ClientSpanKind), attributes[SpanAttributeConstants.SpanKindKey]);
+            Assert.Equal(SpanKind.Client, span.Kind);
             Assert.Equal(AttributeValue.StringAttributeValue("http://localhost:5555/"), attributes[SpanAttributeConstants.HttpUrlKey]);
             Assert.Equal(AttributeValue.StringAttributeValue(HttpMethod.Get.ToString()), attributes[SpanAttributeConstants.HttpMethodKey]);
-            Assert.Equal(AttributeValue.StringAttributeValue("localhost"), attributes[SpanAttributeConstants.HttpHostKey]);
+            Assert.Equal(AttributeValue.StringAttributeValue("localhost:5555"), attributes[SpanAttributeConstants.HttpHostKey]);
             Assert.Equal(AttributeValue.StringAttributeValue("/"), attributes[SpanAttributeConstants.HttpPathKey]);
             Assert.Equal(AttributeValue.StringAttributeValue("Header"), attributes["http.request.TEST"]);
             Assert.Equal(AttributeValue.StringAttributeValue("Header"), attributes["http.response.TEST"]);
@@ -152,27 +151,26 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(HttpClientCoreObserver.START_EVENT, new { Request = request });
 
-            Span span = AsyncLocalContext.CurrentSpan as Span;
+            Span span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
             Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
             HttpClientTracingObserver.SpanContext spanContext = context as HttpClientTracingObserver.SpanContext;
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
-            Assert.Null(spanContext.Previous);
+            Assert.NotNull(spanContext.ActiveScope);
             Assert.Equal("httpclient:/", span.Name);
 
             var response = GetHttpResponseMessage(HttpStatusCode.OK);
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request, Response = response, RequestTaskStatus = TaskStatus.RanToCompletion });
             Assert.True(span.HasEnded);
-            Assert.Null(AsyncLocalContext.CurrentSpan);
             Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object ctx));
 
             var spanData = span.ToSpanData();
             var attributes = spanData.Attributes.AttributeMap;
-            Assert.Equal(AttributeValue.StringAttributeValue(SpanAttributeConstants.ClientSpanKind), attributes[SpanAttributeConstants.SpanKindKey]);
+            Assert.Equal(SpanKind.Client, span.Kind);
             Assert.Equal(AttributeValue.StringAttributeValue("http://localhost:5555/"), attributes[SpanAttributeConstants.HttpUrlKey]);
             Assert.Equal(AttributeValue.StringAttributeValue(HttpMethod.Get.ToString()), attributes[SpanAttributeConstants.HttpMethodKey]);
-            Assert.Equal(AttributeValue.StringAttributeValue("localhost"), attributes[SpanAttributeConstants.HttpHostKey]);
+            Assert.Equal(AttributeValue.StringAttributeValue("localhost:5555"), attributes[SpanAttributeConstants.HttpHostKey]);
             Assert.Equal(AttributeValue.StringAttributeValue("/"), attributes[SpanAttributeConstants.HttpPathKey]);
             Assert.Equal(AttributeValue.StringAttributeValue("Header"), attributes["http.request.TEST"]);
             Assert.Equal(AttributeValue.StringAttributeValue("Header"), attributes["http.response.TEST"]);
@@ -188,39 +186,39 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(HttpClientCoreObserver.START_EVENT, new { Request = request });
 
-            Span span = AsyncLocalContext.CurrentSpan as Span;
+            Span span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
             Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
             HttpClientTracingObserver.SpanContext spanContext = context as HttpClientTracingObserver.SpanContext;
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
-            Assert.Null(spanContext.Previous);
+            Assert.NotNull(spanContext.ActiveScope);
             Assert.Equal("httpclient:/", span.Name);
 
-            Assert.True(request.Headers.Contains(B3Format.XB3TraceId));
-            Assert.True(request.Headers.Contains(B3Format.XB3SpanId));
-            Assert.False(request.Headers.Contains(B3Format.XB3ParentSpanId));
+            Assert.True(request.Headers.Contains(B3Constants.XB3TraceId));
+            Assert.True(request.Headers.Contains(B3Constants.XB3SpanId));
+            Assert.False(request.Headers.Contains(B3Constants.XB3ParentSpanId));
 
-            var spanId = request.Headers.GetValues(B3Format.XB3SpanId).Single();
+            var spanId = request.Headers.GetValues(B3Constants.XB3SpanId).Single();
             Assert.Equal(span.Context.SpanId.ToLowerBase16(), spanId);
 
-            var traceId = request.Headers.GetValues(B3Format.XB3TraceId).Single();
+            var traceId = request.Headers.GetValues(B3Constants.XB3TraceId).Single();
             var expected = GetTraceId(opts, span.Context);
             Assert.Equal(expected, traceId);
 
             if (span.Context.TraceOptions.IsSampled)
             {
-                Assert.True(request.Headers.Contains(B3Format.XB3Sampled));
+                Assert.True(request.Headers.Contains(B3Constants.XB3Sampled));
             }
 
             Assert.False(span.HasEnded);
 
             var spanData = span.ToSpanData();
             var attributes = spanData.Attributes.AttributeMap;
-            Assert.Equal(AttributeValue.StringAttributeValue(SpanAttributeConstants.ClientSpanKind), attributes[SpanAttributeConstants.SpanKindKey]);
+            Assert.Equal(SpanKind.Client, span.Kind);
             Assert.Equal(AttributeValue.StringAttributeValue("http://localhost:5555/"), attributes[SpanAttributeConstants.HttpUrlKey]);
             Assert.Equal(AttributeValue.StringAttributeValue(HttpMethod.Get.ToString()), attributes[SpanAttributeConstants.HttpMethodKey]);
-            Assert.Equal(AttributeValue.StringAttributeValue("localhost"), attributes[SpanAttributeConstants.HttpHostKey]);
+            Assert.Equal(AttributeValue.StringAttributeValue("localhost:5555"), attributes[SpanAttributeConstants.HttpHostKey]);
             Assert.Equal(AttributeValue.StringAttributeValue("/"), attributes[SpanAttributeConstants.HttpPathKey]);
             Assert.Equal(AttributeValue.StringAttributeValue("Header"), attributes["http.request.TEST"]);
         }
@@ -233,25 +231,24 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var obs = new HttpClientCoreObserver(opts, tracing);
             var request = GetHttpRequestMessage();
 
-            var span = tracing.Tracer.SpanBuilder("MySpan").StartSpan() as Span;
-            AsyncLocalContext.CurrentSpan = span;
+            tracing.Tracer.SpanBuilder("MySpan").StartScopedSpan(out ISpan span);
 
             obs.InjectTraceContext(request, null);
 
-            Assert.True(request.Headers.Contains(B3Format.XB3TraceId));
-            Assert.True(request.Headers.Contains(B3Format.XB3SpanId));
-            Assert.False(request.Headers.Contains(B3Format.XB3ParentSpanId));
+            Assert.True(request.Headers.Contains(B3Constants.XB3TraceId));
+            Assert.True(request.Headers.Contains(B3Constants.XB3SpanId));
+            Assert.False(request.Headers.Contains(B3Constants.XB3ParentSpanId));
 
-            var spanId = request.Headers.GetValues(B3Format.XB3SpanId).Single();
+            var spanId = request.Headers.GetValues(B3Constants.XB3SpanId).Single();
             Assert.Equal(span.Context.SpanId.ToLowerBase16(), spanId);
 
-            var traceId = request.Headers.GetValues(B3Format.XB3TraceId).Single();
+            var traceId = request.Headers.GetValues(B3Constants.XB3TraceId).Single();
             var expected = GetTraceId(opts, span.Context);
             Assert.Equal(expected, traceId);
 
             if (span.Context.TraceOptions.IsSampled)
             {
-                Assert.True(request.Headers.Contains(B3Format.XB3Sampled));
+                Assert.True(request.Headers.Contains(B3Constants.XB3Sampled));
             }
         }
 

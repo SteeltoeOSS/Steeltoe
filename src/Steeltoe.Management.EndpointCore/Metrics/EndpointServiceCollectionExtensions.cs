@@ -24,6 +24,8 @@ using Steeltoe.Management.Endpoint.Metrics.Observer;
 using System;
 using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {

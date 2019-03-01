@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal enum ZipkinSpanKind
     {
         CLIENT,

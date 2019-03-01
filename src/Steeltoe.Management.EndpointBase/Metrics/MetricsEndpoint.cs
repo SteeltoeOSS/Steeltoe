@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using OpenCensus.Stats;
 using OpenCensus.Tags;
+using Steeltoe.Management.Census.Stats;
 using System;
 using System.Collections.Generic;
 
@@ -111,7 +112,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 return new List<MetricSample>();
             }
 
-            IAggregationData agg = viewData.SumWithTags(tagValues);
+            IAggregationData agg = MetricsHelpers.SumWithTags(viewData, tagValues);
             return GetMetricSamples(agg, viewData);
         }
 

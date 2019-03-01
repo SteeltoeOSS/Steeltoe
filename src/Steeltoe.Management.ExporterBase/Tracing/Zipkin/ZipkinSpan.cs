@@ -20,6 +20,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 {
+    [Obsolete("Use OpenCensus project packages")]
     internal class ZipkinSpan
     {
         internal const int FLAG_DEBUG = 1 << 1;

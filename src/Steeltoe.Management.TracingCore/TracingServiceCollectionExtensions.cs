@@ -20,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using OpenCensus.Trace;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Census.Trace;
 using Steeltoe.Management.Tracing.Observer;
 using System;
 

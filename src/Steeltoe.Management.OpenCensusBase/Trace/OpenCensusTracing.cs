@@ -17,17 +17,18 @@ using OpenCensus.Trace.Config;
 using OpenCensus.Trace.Export;
 using OpenCensus.Trace.Propagation;
 using OpenCensus.Trace.Sampler;
+using Steeltoe.Management.Census.Trace.Propagation;
 
-namespace Steeltoe.Management.Tracing
+namespace Steeltoe.Management.Census.Trace
 {
-    public class OpenCensusTracing : ITracing
+    public class OpenCensusTracing  : ITracing
     {
-        private ITracingOptions options;
+        private readonly ITracingOptions options;
 
         public OpenCensusTracing(ITracingOptions options, ISampler sampler = null)
         {
             this.options = options;
-            var builder = TraceParams.DEFAULT.ToBuilder();
+            var builder = TraceParams.Default.ToBuilder();
 
             if (sampler != null)
             {
@@ -75,11 +76,13 @@ namespace Steeltoe.Management.Tracing
             }
         }
 
+        private IPropagationComponent propagation = new B3PropagationComponent();
+
         public IPropagationComponent PropagationComponent
         {
             get
             {
-                return traceComponent.PropagationComponent;
+                return propagation;
             }
         }
 

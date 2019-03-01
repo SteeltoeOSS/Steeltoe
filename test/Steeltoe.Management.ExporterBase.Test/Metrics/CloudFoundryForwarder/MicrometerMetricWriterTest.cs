@@ -16,6 +16,7 @@ using OpenCensus.Stats;
 using OpenCensus.Stats.Aggregations;
 using OpenCensus.Stats.Measures;
 using OpenCensus.Tags;
+using Steeltoe.Management.Census.Stats;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
