@@ -81,7 +81,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 scheme = headerScheme.ToString();
             }
 
-            return scheme + "://" + request.Host.ToString() + request.Path.ToString();
+            return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
         }
     }
 }
