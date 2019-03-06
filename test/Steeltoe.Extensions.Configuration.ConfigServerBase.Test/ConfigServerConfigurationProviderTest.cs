@@ -358,6 +358,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
+        public void ConvertKey_WithEscapedDot()
+        {
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+            string result = provider.ConvertKey(@"a.b\.foobar");
+            Assert.Equal("a:b.foobar", result);
+        }
+
+        [Fact]
         public async void RemoteLoadAsync_InvalidUri()
         {
             // Arrange

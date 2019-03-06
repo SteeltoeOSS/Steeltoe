@@ -55,6 +55,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         private const string ArrayPattern = @"(\[[0-9]+\])*$";
         private const string VAULT_RENEW_PATH = "vault/v1/auth/token/renew-self";
         private const string VAULT_TOKEN_HEADER = "X-Vault-Token";
+        private const string DELIMITER_STRING = ".";
+        private const char DELIMITER_CHAR = '.';
+        private const char ESCAPE_CHAR = '\\';
+        private const string ESCAPE_STRING = "\\";
 
         private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
         private static readonly string[] EMPTY_LABELS = new string[] { string.Empty };
@@ -672,7 +676,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return key;
             }
 
-            string[] split = key.Split('.');
+            string[] split = Split(key);
             StringBuilder sb = new StringBuilder();
             foreach (var part in split)
             {
@@ -682,6 +686,42 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
 
             return sb.ToString(0, sb.Length - 1);
+        }
+
+        protected internal virtual string[] Split(string source)
+        {
+            var result = new List<string>();
+
+            int segmentStart = 0;
+            for (int i = 0; i < source.Length; i++)
+            {
+                bool readEscapeChar = false;
+                if (source[i] == ESCAPE_CHAR)
+                {
+                    readEscapeChar = true;
+                    i++;
+                }
+
+                if (!readEscapeChar && source[i] == DELIMITER_CHAR)
+                {
+                    result.Add(UnEscapeString(
+                      source.Substring(segmentStart, i - segmentStart)));
+                    segmentStart = i + 1;
+                }
+
+                if (i == source.Length - 1)
+                {
+                    result.Add(UnEscapeString(source.Substring(segmentStart)));
+                }
+            }
+
+            return result.ToArray();
+
+            string UnEscapeString(string src)
+            {
+                return src.Replace(ESCAPE_STRING + DELIMITER_STRING, DELIMITER_STRING)
+                  .Replace(ESCAPE_STRING + ESCAPE_STRING, ESCAPE_STRING);
+            }
         }
 
         protected internal virtual string ConvertArrayKey(string key)
