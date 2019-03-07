@@ -26,6 +26,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             InstanceInfoReplicationIntervalSeconds = Default_InstanceInfoReplicationIntervalSeconds;
             EurekaServer = new EurekaServerConfig(this);
+            Health = new EurekaHealthConfig(this);
         }
 
         // Configuration property: eureka:client:accessTokenUri
@@ -105,6 +106,20 @@ namespace Steeltoe.Discovery.Eureka
                 set
                 {
                     _options.HealthMonitoredApps = value;
+                }
+            }
+
+            // Configuration property: eureka:client:health:checkEnabled
+            public bool CheckEnabled
+            {
+                get
+                {
+                    return _options.HealthCheckEnabled;
+                }
+
+                set
+                {
+                    _options.HealthCheckEnabled = value;
                 }
             }
         }

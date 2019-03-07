@@ -41,6 +41,10 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Null(opts.RegistryRefreshSingleVipAddress);
             Assert.True(opts.ShouldOnDemandUpdateStatusChange);
             Assert.Equal(EurekaClientOptions.Default_ServerServiceUrl, opts.EurekaServerServiceUrls);
+            Assert.NotNull(opts.Health);
+            Assert.True(opts.Health.Enabled); // Health contrib enabled
+            Assert.True(opts.Health.CheckEnabled); // Health check enabled
+            Assert.Null(opts.Health.MonitoredApps);
         }
 
         [Fact]
@@ -129,6 +133,10 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.True(co.ShouldGZipContent);
             Assert.True(co.ShouldOnDemandUpdateStatusChange);
             Assert.True(co.ShouldRegisterWithEureka);
+            Assert.NotNull(co.Health);
+            Assert.True(co.Health.Enabled); // Health contrib enabled
+            Assert.True(co.Health.CheckEnabled); // Health check enabled
+            Assert.Null(co.Health.MonitoredApps);
         }
     }
 }
