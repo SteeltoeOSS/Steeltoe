@@ -69,7 +69,7 @@ namespace Steeltoe.Discovery.Eureka
         public EurekaServerConfig EurekaServer { get; set; }
 
         // Configuration property: eureka:client:health
-        public EurekaServerConfig Health { get; set; }
+        public EurekaHealthConfig Health { get; set; }
 
         public class EurekaHealthConfig
         {
