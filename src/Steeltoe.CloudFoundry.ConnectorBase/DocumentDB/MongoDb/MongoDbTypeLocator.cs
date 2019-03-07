@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System;
+using System.Reflection;
+using System.Threading;
 
 namespace Steeltoe.CloudFoundry.Connector.MongoDb
 {
@@ -58,5 +60,21 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
         public static Type MongoUrl => ConnectorHelpers.FindTypeOrThrow(Assemblies, MongoConnectionInfo, "MongoUrl", "a MongoDB driver");
+
+        /// <summary>
+        /// Gets a method that lists databases available in a MongoClient
+        /// </summary>
+        public static MethodInfo ListDatabasesMethod => FindMethodOrThrow(MongoClient, "ListDatabases", new Type[] { typeof(CancellationToken) });
+
+        private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
+        {
+            var returnType = ConnectorHelpers.FindMethod(type, methodName, parameters);
+            if (returnType == null)
+            {
+                throw new ConnectorException("Unable to find required MongoDb type or method, are you missing a MongoDb Nuget package?");
+            }
+
+            return returnType;
+        }
     }
 }

@@ -264,7 +264,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP);
             var appsettings = new Dictionary<string, string>()
             {
-                ["redis:client:AbortOnConnectFail"] = "false"
+                ["redis:client:AbortOnConnectFail"] = "false",
+                ["redis:client:connectTimeout"] = "1"
             };
             IServiceCollection services = new ServiceCollection();
             ConfigurationBuilder builder = new ConfigurationBuilder();

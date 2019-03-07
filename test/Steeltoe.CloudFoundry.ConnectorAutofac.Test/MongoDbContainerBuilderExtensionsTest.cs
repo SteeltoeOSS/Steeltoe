@@ -15,6 +15,8 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
+using Steeltoe.CloudFoundry.Connector.MongoDb;
+using Steeltoe.Common.HealthChecks;
 using System;
 using Xunit;
 
@@ -63,6 +65,23 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
             Assert.Equal(typeof(MongoClient).FullName, mongoClient.GetType().FullName);
             Assert.Equal(typeof(MongoClient).FullName, iMongoClient.GetType().FullName);
             Assert.Equal(typeof(MongoUrl).FullName, mongoUrl.GetType().FullName);
+        }
+
+        [Fact]
+        public void RegisterMongoClient_AddsHealthContributorToContainer()
+        {
+            // arrange
+            ContainerBuilder container = new ContainerBuilder();
+            IConfiguration config = new ConfigurationBuilder().Build();
+
+            // act
+            container.RegisterMongoDbConnection(config);
+            var services = container.Build();
+            var healthContributor = services.Resolve<IHealthContributor>();
+
+            // assert
+            Assert.NotNull(healthContributor);
+            Assert.IsType<MongoDbHealthContributor>(healthContributor);
         }
     }
 }

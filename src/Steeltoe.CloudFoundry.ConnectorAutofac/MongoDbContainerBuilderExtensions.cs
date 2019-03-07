@@ -15,9 +15,11 @@
 using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.MongoDb;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
 
 namespace Steeltoe.CloudFoundry.ConnectorAutofac
@@ -52,6 +54,8 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
             var urlFactory = new MongoDbConnectorFactory(info, mongoOptions, MongoDbTypeLocator.MongoUrl);
 
             container.Register(c => urlFactory.Create(null)).As(MongoDbTypeLocator.MongoUrl);
+            container.Register(c => new MongoDbHealthContributor(clientFactory, c.ResolveOptional<ILogger<MongoDbHealthContributor>>())).As<IHealthContributor>();
+
             return container.Register(c => clientFactory.Create(null)).As(MongoDbTypeLocator.IMongoClient, MongoDbTypeLocator.MongoClient);
         }
     }
