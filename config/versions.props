@@ -17,5 +17,6 @@
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
+    <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
   </PropertyGroup>
 </Project>
