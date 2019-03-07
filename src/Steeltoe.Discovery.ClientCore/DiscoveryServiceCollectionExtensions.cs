@@ -16,11 +16,13 @@ using Consul;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Consul.Client;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
@@ -74,6 +76,7 @@ namespace Steeltoe.Discovery.Client
                 throw new ArgumentException("Client type UNKNOWN");
             }
 
+            services.TryAddTransient<DiscoveryHttpMessageHandler>();
             return services;
         }
 
@@ -92,7 +95,7 @@ namespace Steeltoe.Discovery.Client
             var options = new DiscoveryOptions();
             setupOptions(options);
 
-            return services.AddDiscoveryClient(options);
+            return services.AddDiscoveryClient(options, lifecycle);
         }
 
         public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null)
@@ -154,6 +157,8 @@ namespace Steeltoe.Discovery.Client
             {
                 throw new ArgumentException("Discovery client type UNKNOWN, check configuration");
             }
+
+            services.TryAddTransient<DiscoveryHttpMessageHandler>();
         }
 
         #region Consul
