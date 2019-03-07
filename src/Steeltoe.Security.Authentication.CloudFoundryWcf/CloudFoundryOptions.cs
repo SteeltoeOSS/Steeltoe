@@ -19,7 +19,6 @@ using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using System.Diagnostics;
-using System.Net.Http;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
@@ -30,22 +29,37 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public string TokenInfoUrl => AuthorizationUrl + CloudFoundryDefaults.CheckTokenUri;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the token's audience should be validated
+        /// </summary>
         public bool ValidateAudience { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the token's issuer should be validated
+        /// </summary>
         public bool ValidateIssuer { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the token's lifetime should be validated
+        /// </summary>
         public bool ValidateLifetime { get; set; } = true;
 
         [Obsolete("This property will be removed in a future release. Use AuthorizationUrl instead")]
         public string OAuthServiceUrl { get => AuthorizationUrl; set => AuthorizationUrl = value; }
 
+        /// <summary>
+        /// Gets or sets the authorization endpoint. Default value is /oauth/authorize
+        /// </summary>
         public string AuthorizationEndpoint { get; set; } = CloudFoundryDefaults.AuthorizationUri;
 
         /// <summary>
-        /// Gets or sets '/oauth/token'
+        /// Gets or sets the Access Token URI. Default value is /oauth/token
         /// </summary>
         public string AccessTokenEndpoint { get; set; } = CloudFoundryDefaults.AccessTokenUri;
 
+        /// <summary>
+        /// Gets or sets the User Information Endpoint. Default value is /userinfo
+        /// </summary>
         public string UserInformationEndpoint { get; set; } = CloudFoundryDefaults.UserInfoUri;
 
         [Obsolete("This property will be removed in a future release. Use CloudFoundryDefaults.CheckTokenUri instead")]
@@ -62,7 +76,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public TokenValidationParameters TokenValidationParameters { get; set; }
 
-        internal Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenKeyResolver TokenKeyResolver { get; set; }
+        internal CloudFoundry.CloudFoundryTokenKeyResolver TokenKeyResolver { get; set; }
 
         internal CloudFoundryWcfTokenValidator TokenValidator { get; set; }
 
@@ -90,7 +104,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             }
 
             TokenKeyResolver = TokenKeyResolver ??
-                new Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenKeyResolver(
+                new CloudFoundry.CloudFoundryTokenKeyResolver(
                     AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri,
                     null,
                     ValidateCertificates);
@@ -125,7 +139,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             ClientId = info.ClientId;
             ClientSecret = info.ClientSecret;
             TokenKeyResolver = TokenKeyResolver ??
-                new Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenKeyResolver(
+                new CloudFoundry.CloudFoundryTokenKeyResolver(
                     AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri,
                     null,
                     ValidateCertificates);

@@ -24,7 +24,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
     public static class CloudFoundryExtensions
     {
         /// <summary>
-        /// Configures and adds <see cref="OpenIdConnectAuthenticationMiddleware" /> to the OWIN request pipeline />
+        /// Configures and adds <see cref="OpenIdConnectAuthenticationMiddleware" /> to the OWIN request pipeline <para />
+        /// Also adds a middleware to make use of X-Forwarded-Proto to maintain HTTPS redirects when operating behind a reverse proxy
         /// </summary>
         /// <param name="appBuilder">Your OWIN AppBuilder</param>
         /// <param name="configuration">Your application configuration</param>
@@ -54,6 +55,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             SsoServiceInfo info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
             OpenIdConnectConfigurer.Configure(info, cloudFoundryOptions);
 
+            appBuilder.Use<ForwardedProtocolMiddleware>();
             return appBuilder.Use(typeof(OpenIdConnectAuthenticationMiddleware), appBuilder, cloudFoundryOptions);
         }
     }
