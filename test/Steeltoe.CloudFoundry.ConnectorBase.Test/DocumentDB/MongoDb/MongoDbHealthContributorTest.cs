@@ -33,7 +33,6 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             {
                 ["mongodb:client:server"] = "localhost",
                 ["mongodb:client:port"] = "27018",
-                //["mongodb:client:options:0:timeout"] = "1"
             };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();

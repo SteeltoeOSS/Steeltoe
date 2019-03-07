@@ -57,6 +57,11 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                     configuration.Password = si.Password;
                 }
             }
+
+            if (si.Scheme == RedisServiceInfo.REDIS_SECURE_SCHEME)
+            {
+                configuration.Ssl = true;
+            }
         }
     }
 }

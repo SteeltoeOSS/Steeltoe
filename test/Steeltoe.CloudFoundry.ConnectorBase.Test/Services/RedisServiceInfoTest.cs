@@ -43,5 +43,29 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             Assert.Equal(string.Empty, r2.Path);
             Assert.Null(r2.Query);
         }
+
+        [Fact]
+        public void Constructor_CreatesExpected_withSecure()
+        {
+            string uri = "rediss://:joes_password@localhost:6380/";
+            RedisServiceInfo r1 = new RedisServiceInfo("myId", "localhost", 1527, "joes_password");
+            RedisServiceInfo r2 = new RedisServiceInfo("myId", uri);
+
+            Assert.Equal("myId", r1.Id);
+            Assert.Equal("redis", r1.Scheme);
+            Assert.Equal("localhost", r1.Host);
+            Assert.Equal(1527, r1.Port);
+            Assert.Equal("joes_password", r1.Password);
+            Assert.Null(r1.Path);
+            Assert.Null(r1.Query);
+
+            Assert.Equal("myId", r2.Id);
+            Assert.Equal("rediss", r2.Scheme);
+            Assert.Equal("localhost", r2.Host);
+            Assert.Equal(6380, r2.Port);
+            Assert.Equal("joes_password", r2.Password);
+            Assert.Equal(string.Empty, r2.Path);
+            Assert.Null(r2.Query);
+        }
     }
 }

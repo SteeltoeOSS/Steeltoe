@@ -19,7 +19,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     public class RedisServiceInfoFactory : ServiceInfoFactory
     {
         public RedisServiceInfoFactory()
-            : base(new Tags("redis"), RedisServiceInfo.REDIS_SCHEME)
+            : base(new Tags("redis"), new string[] { RedisServiceInfo.REDIS_SCHEME, RedisServiceInfo.REDIS_SECURE_SCHEME })
         {
         }
 

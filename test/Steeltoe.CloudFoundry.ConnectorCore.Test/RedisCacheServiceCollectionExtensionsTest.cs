@@ -315,6 +315,36 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         }
 
         [Fact]
+        public void AddRedisConnectionMultiplexer_WithSecureAzureVCAPs_AddsRedisConnectionMultiplexer()
+        {
+            // Arrange
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP_AzureBrokerSecure);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["redis:client:AbortOnConnectFail"] = "false",
+                ["redis:client:urlEncodedCredentials"] = "true"
+            };
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            builder.AddInMemoryCollection(appsettings);
+            var config = builder.Build();
+
+            // Act
+            RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
+            var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
+
+            // Assert
+            Assert.NotNull(service);
+            Assert.IsType<ConnectionMultiplexer>(service);
+            Assert.Contains("9b67c347-03b8-4956-aa2a-858ac30aced5.redis.cache.windows.net", service.Configuration);
+            Assert.Contains(":6380", service.Configuration);
+            Assert.Contains("password=mAG0+CdozukoUTOIEAo6wTKHdMoqg4+Jfno8docw3Zg=", service.Configuration);
+            Assert.Contains("ssl=True", service.Configuration);
+        }
+
+        [Fact]
         public void AddRedisConnectionMultiplexer_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
             // Arrange

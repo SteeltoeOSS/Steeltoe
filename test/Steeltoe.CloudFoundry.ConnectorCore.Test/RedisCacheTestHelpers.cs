@@ -65,6 +65,34 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
     }
       ]
     }";
+        public static string SingleServerVCAP_AzureBrokerSecure = @"
+{
+      'azure-rediscache': [
+        {
+          'name': 'redis',
+          'instance_name': 'redis',
+          'binding_name': null,
+          'credentials': {
+            'host': '9b67c347-03b8-4956-aa2a-858ac30aced5.redis.cache.windows.net',
+            'port': 6380,
+            'password': 'mAG0+CdozukoUTOIEAo6wTKHdMoqg4+Jfno8docw3Zg=',
+            'uri': 'rediss://:mAG0%2BCdozukoUTOIEAo6wTKHdMoqg4%2BJfno8docw3Zg%3D@9b67c347-03b8-4956-aa2a-858ac30aced5.redis.cache.windows.net:6380'
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'azure-rediscache',
+          'provider': null,
+          'plan': 'basic',
+          'tags': [
+            'Azure',
+            'Redis',
+            'Cache',
+            'Database'
+          ]
+    }
+      ]
+    }";
+
         public static string TwoServerVCAP = @"
 {
       'p-redis': [
