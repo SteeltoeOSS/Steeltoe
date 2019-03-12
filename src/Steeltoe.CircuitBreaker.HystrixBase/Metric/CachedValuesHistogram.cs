@@ -53,7 +53,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public static LongHistogram GetNewHistogram()
         {
-            LongHistogram histo = new LongHistogram(1, long.MaxValue, NUMBER_SIGNIFICANT_DIGITS);
+            LongHistogram histo = new LongHistogram(1, 2, NUMBER_SIGNIFICANT_DIGITS);
             histo.Reset();
             return histo;
         }
