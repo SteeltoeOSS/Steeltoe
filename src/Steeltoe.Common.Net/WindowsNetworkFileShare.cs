@@ -89,11 +89,6 @@ namespace Steeltoe.Common.Net
         /// <param name="mpr">A class that handles calls to mpr.dll or performs same operations</param>
         public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMPR mpr = null)
         {
-            if (!Platform.IsWindows)
-            {
-                throw new PlatformNotSupportedException("WindowsNetworkFileShare only works on Windows");
-            }
-
             _mpr = mpr ?? new MPR();
 
             _networkName = networkName;

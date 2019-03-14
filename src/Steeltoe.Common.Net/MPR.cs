@@ -21,6 +21,14 @@ namespace Steeltoe.Common.Net
 {
     internal class MPR : IMPR
     {
+        public MPR()
+        {
+            if (!Platform.IsWindows)
+            {
+                throw new PlatformNotSupportedException("Sorry, this functionality only works on Windows");
+            }
+        }
+
         public int AddConnection(NetResource netResource, string password, string username, int flags)
         {
             return WNetAddConnection2(netResource, password, username, flags);
