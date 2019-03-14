@@ -8,6 +8,7 @@
     <ThreadPoolMinThreads>50</ThreadPoolMinThreads>
     <ThreadPoolMaxThreads>1250</ThreadPoolMaxThreads>
   </PropertyGroup>
+  <Import Project="..\..\targetframework.props" />
   
   <ItemGroup>
     <None Update="xunit.runner.json">
