@@ -79,18 +79,22 @@ namespace Steeltoe.Common.Net
         };
 
         private readonly string _networkName;
+        private IMPR _mpr;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsNetworkFileShare"/> class.
         /// </summary>
         /// <param name="networkName">Address of the file share</param>
         /// <param name="credentials">Username and password for accessing the file share</param>
-        public WindowsNetworkFileShare(string networkName, NetworkCredential credentials)
+        /// <param name="mpr">A class that handles calls to mpr.dll or performs same operations</param>
+        public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMPR mpr = null)
         {
             if (!Platform.IsWindows)
             {
                 throw new PlatformNotSupportedException("WindowsNetworkFileShare only works on Windows");
             }
+
+            _mpr = mpr ?? new MPR();
 
             _networkName = networkName;
 
@@ -106,11 +110,11 @@ namespace Steeltoe.Common.Net
                 ? credentials.UserName
                 : string.Format(@"{0}\{1}", credentials.Domain, credentials.UserName);
 
-            var result = WNetUseConnection(IntPtr.Zero, netResource, credentials.Password, userName, 0, null, null, null);
+            var result = _mpr.UseConnection(IntPtr.Zero, netResource, credentials.Password, userName, 0, null, null, null);
 
             if (result != 0)
             {
-                throw new Exception("Error connecting to remote share " + result + " " + GetErrorForNumber(result));
+                throw new Exception("Error connecting to remote share - Code: " + result + ", " + GetErrorForNumber(result));
             }
         }
 
@@ -174,6 +178,7 @@ namespace Steeltoe.Common.Net
         /// <param name="nameBuf">String variable to receive the network provider raising the error</param>
         /// <param name="nameBufSize">Size of name buffer</param>
         /// <returns>If the function succeeds, and it obtains the last error that the network provider reported, the return value is NO_ERROR.<para/>If the caller supplies an invalid buffer, the return value is ERROR_INVALID_ADDRESS.</returns>
+        [Obsolete("Use GetLastError instead. This direct call to mpr.dll will be removed in a future release")]
         [DllImport("mpr.dll", CharSet = CharSet.Auto)]
         public static extern int WNetGetLastError(
             out int error,
@@ -181,6 +186,26 @@ namespace Steeltoe.Common.Net
             int errorBufSize,
             out StringBuilder nameBuf,
             int nameBufSize);
+
+        /// <summary>
+        /// Retrieves the most recent extended error code set by a WNet function
+        /// <para/>Wraps an underlying P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>
+        /// </summary>
+        /// <param name="error">The error code reported by the network provider.</param>
+        /// <param name="errorBuf">String variable to receive the description of the error</param>
+        /// <param name="errorBufSize">Size of error buffer</param>
+        /// <param name="nameBuf">String variable to receive the network provider raising the error</param>
+        /// <param name="nameBufSize">Size of name buffer</param>
+        /// <returns>If the function succeeds, and it obtains the last error that the network provider reported, the return value is NO_ERROR.<para/>If the caller supplies an invalid buffer, the return value is ERROR_INVALID_ADDRESS.</returns>
+        public int GetLastError(
+            out int error,
+            out StringBuilder errorBuf,
+            int errorBufSize,
+            out StringBuilder nameBuf,
+            int nameBufSize)
+        {
+            return _mpr.GetLastError(out error, out errorBuf, errorBufSize, out nameBuf, nameBufSize);
+        }
 
         /// <inheritdoc />
         public void Dispose()
@@ -212,65 +237,8 @@ namespace Steeltoe.Common.Net
         /// <param name="disposing">Not used</param>
         protected virtual void Dispose(bool disposing)
         {
-            WNetCancelConnection2(_networkName, 0, true);
+            _mpr.CancelConnection(_networkName, 0, true);
         }
-
-        /// <summary>
-        /// Makes a connection to a network resource and can redirect a local device to the network resource.
-        /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetaddconnection2a"/>
-        /// </summary>
-        /// <param name="netResource">Network resource to interact with</param>
-        /// <param name="password">Password for making the network connection</param>
-        /// <param name="username">Username for making the network connection</param>
-        /// <param name="flags">A set of connection options - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetaddconnection2a#parameters"/></param>
-        /// <returns>An integer representing the result - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetaddconnection2a#return-value"/></returns>
-        [DllImport("mpr.dll")]
-        private static extern int WNetAddConnection2(
-            NetResource netResource,
-            string password,
-            string username,
-            int flags);
-
-        /// <summary>
-        /// Cancels an existing network connection, removes remembered network connections that are not currently connected.
-        /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetcancelconnection2a"/>
-        /// </summary>
-        /// <param name="name">
-        /// Pointer to a constant null-terminated string that specifies the name of either the redirected local device or the remote network resource to disconnect from.<para/>
-        /// If this parameter specifies a redirected local device, the function cancels only the specified device redirection. If the parameter specifies a remote network resource, all connections without devices are canceled.
-        /// </param>
-        /// <param name="flags">Connection type - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetcancelconnection2a#parameters"/></param>
-        /// <param name="force">Specifies whether the disconnection should occur if there are open files or jobs on the connection. If this parameter is FALSE, the function fails if there are open files or jobs.</param>
-        /// <returns>An integer representing the result - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetcancelconnection2a#return-value"/></returns>
-        [DllImport("mpr.dll")]
-        private static extern int WNetCancelConnection2(
-            string name,
-            int flags,
-            bool force);
-
-        /// <summary>
-        /// Makes a connection to a network resource. Can redirect a local device to a network resource.
-        /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetuseconnectiona"/>
-        /// </summary>
-        /// <param name="hwndOwner">Handle to a window that the provider of network resources can use as an owner window for dialog boxes</param>
-        /// <param name="netResource">Network resource to interact with</param>
-        /// <param name="password">A null-terminated string that specifies a password to be used in making the network connection</param>
-        /// <param name="username">A null-terminated string that specifies a user name for making the connection</param>
-        /// <param name="flags">Set of bit flags describing the connection</param>
-        /// <param name="lpAccessName">Pointer to a buffer that receives system requests on the connection</param>
-        /// <param name="lpBufferSize">Pointer to a variable that specifies the size of the lpAccessName buffer, in characters.<para />If the call fails because the buffer is not large enough, the function returns the required buffer size in this location</param>
-        /// <param name="lpResult">Pointer to a variable that receives additional information about the connection</param>
-        /// <returns>An integer representing the result - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetuseconnectiona#return-value"/></returns>
-        [DllImport("mpr.dll")]
-        private static extern int WNetUseConnection(
-            IntPtr hwndOwner,
-            NetResource netResource,
-            string password,
-            string username,
-            int flags,
-            string lpAccessName,
-            string lpBufferSize,
-            string lpResult);
 
         private struct ErrorClass
         {

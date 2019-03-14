@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Net;
 using Xunit;
 
 namespace Steeltoe.Common.Net.Test
@@ -29,6 +31,49 @@ namespace Steeltoe.Common.Net.Test
         public void GetErrorForUnknownNumber_ReturnsUnKnownError()
         {
             Assert.Equal("Error: Unknown, 9999", WindowsNetworkFileShare.GetErrorForNumber(9999));
+        }
+
+        [Fact]
+        public void WindowsNetworkFileShare_Constructor_SetsValuesOn_ConnectSuccess()
+        {
+            // arrange
+            var fakeMPR = new FakeMPR();
+
+            // act
+            var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), fakeMPR);
+
+            // assert
+            Assert.Equal("user", fakeMPR._username);
+            Assert.Equal("password", fakeMPR._password);
+            Assert.Equal(@"\\server\path", fakeMPR._networkpath);
+        }
+
+        [Fact]
+        public void WindowsNetworkFileShare_Constructor_ConcatsUserAndDomain()
+        {
+            // arrange
+            var fakeMPR = new FakeMPR();
+
+            // act
+            var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), fakeMPR);
+
+            // assert
+            Assert.Equal(@"domain\user", fakeMPR._username);
+            Assert.Equal("password", fakeMPR._password);
+            Assert.Equal(@"\\server\path", fakeMPR._networkpath);
+        }
+
+        [Fact]
+        public void WindowsNetworkFileShare_Constructor_ThrowsOn_ConnectFail()
+        {
+            // arrange
+            var fakeMPR = new FakeMPR(false);
+
+            // act
+            var exception = Assert.Throws<Exception>(() => new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMPR));
+
+            // assert
+            Assert.Equal("Error connecting to remote share - Code: 1200, Error: Bad Device", exception.Message);
         }
     }
 }

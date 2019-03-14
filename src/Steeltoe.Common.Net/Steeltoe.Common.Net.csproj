@@ -19,6 +19,13 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Common.Net.xml</DocumentationFile>
     <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
