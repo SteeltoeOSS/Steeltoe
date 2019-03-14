@@ -24,5 +24,6 @@
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
+    <SourceLinkGitHubVersion>1.0.0-beta2-18618-05</SourceLinkGitHubVersion>
   </PropertyGroup>
 </Project>

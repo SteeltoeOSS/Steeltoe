@@ -4,6 +4,7 @@
     <TargetFramework>net461</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <Import Project="..\..\targetframework.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />

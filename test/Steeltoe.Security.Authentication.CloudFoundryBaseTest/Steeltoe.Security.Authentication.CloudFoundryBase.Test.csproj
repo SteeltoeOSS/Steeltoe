@@ -4,6 +4,7 @@
     <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <Import Project="..\..\targetframework.props" />
   <ItemGroup>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
