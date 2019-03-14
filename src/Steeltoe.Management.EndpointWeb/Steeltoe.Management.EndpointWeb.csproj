@@ -13,6 +13,9 @@
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -26,6 +29,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="$(AspNetVersion)" />
     <PackageReference Include="Microsoft.AspNet.TelemetryCorrelation" Version="$(TelemetryCorrelationVersion)" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="$(AspNetVersion)" />

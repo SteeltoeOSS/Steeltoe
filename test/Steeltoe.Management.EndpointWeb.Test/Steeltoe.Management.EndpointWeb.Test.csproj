@@ -3,13 +3,9 @@
   <Import Project="..\..\versions.props" />
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <ApplicationIcon />
-
     <OutputType>Library</OutputType>
-
     <StartupObject />
   </PropertyGroup>
 
