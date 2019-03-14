@@ -38,6 +38,38 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
                             ]
                         }";
 
+        public static string SingleServerAzureVCAP = @"
+                        {
+'azure-sqldb': [
+        {
+          'label': 'azure-sqldb',
+          'provider': null,
+          'plan': 'basic',
+          'name': 'my-azure-db',
+          'tags': [],
+          'instance_name': 'my-azure-db',
+          'binding_name': null,
+          'credentials': {
+            'sqldbName': 'u9e44b3e8e31',
+            'sqlServerName': 'ud6893c77875',
+            'sqlServerFullyQualifiedDomainName': 'ud6893c77875.database.windows.net',
+            'databaseLogin': 'ud61c2c9ed2a',
+            'databaseLoginPassword': 'yNOaMnbsjGT3qk5eW6BXcbHE6b2Da8sLcao7SdIFFqA2q345jQ9RSw==',
+            'jdbcUrl': 'jdbc:sqlserver://ud6893c77875.database.windows.net:1433;database=u9e44b3e8e31;user=ud61c2c9ed2a;password=yNOaMnbsjGT3qk5eW6BXcbHE6b2Da8sLcao7SdIFFqA2q345jQ9RSw==;Encrypt=true;TrustServerCertificate=false;HostNameInCertificate=*.database.windows.net;loginTimeout=30;',
+            'jdbcUrlForAuditingEnabled': 'jdbc:sqlserver://ud6893c77875.database.secure.windows.net:1433;database=u9e44b3e8e31;user=ud61c2c9ed2a;password=yNOaMnbsjGT3qk5eW6BXcbHE6b2Da8sLcao7SdIFFqA2q345jQ9RSw==;Encrypt=true;TrustServerCertificate=false;HostNameInCertificate=*.database.secure.windows.net;loginTimeout=30;',
+            'hostname': 'ud6893c77875.database.windows.net',
+            'port': 1433,
+            'name': 'u9e44b3e8e31',
+            'username': 'ud61c2c9ed2a',
+            'password': 'yNOaMnbsjGT3qk5eW6BXcbHE6b2Da8sLcao7SdIFFqA2q345jQ9RSw==',
+            'uri': 'mssql://ud61c2c9ed2a:yNOaMnbsjGT3qk5eW6BXcbHE6b2Da8sLcao7SdIFFqA2q345jQ9RSw%3D%3D@ud6893c77875.database.windows.net:1433/u9e44b3e8e31?encrypt=true&TrustServerCertificate=false&HostNameInCertificate=%2A.database.windows.net'
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': []
+    }
+      ]
+                        }";
+
         public static string TwoServerVCAP = @"
 {
     'SqlServer': [

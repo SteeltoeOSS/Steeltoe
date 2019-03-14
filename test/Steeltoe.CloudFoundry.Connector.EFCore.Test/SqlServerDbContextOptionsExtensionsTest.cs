@@ -176,5 +176,37 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
             Assert.Contains("User Id=uf33b2b30783a4087948c30f6c3b0c90f", connString);
             Assert.Contains("Password=Pefbb929c1e0945b5bab5b8f0d110c503", connString);
         }
+
+        [Fact]
+        public void AddDbContexts_WithAzureVCAPs_AddsDbContexts()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVCAP);
+
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act and Assert
+            services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
+
+            var built = services.BuildServiceProvider();
+            var service = built.GetService<GoodDbContext>();
+            Assert.NotNull(service);
+
+            var con = service.Database.GetDbConnection();
+            Assert.NotNull(con);
+            Assert.IsType<SqlConnection>(con);
+
+            var connString = con.ConnectionString;
+            Assert.NotNull(connString);
+            Assert.Contains("Initial Catalog=u9e44b3e8e31", connString);
+            Assert.Contains("Data Source=ud6893c77875.database.windows.net", connString);
+            Assert.Contains("User Id=ud61c2c9ed2a", connString);
+            Assert.Contains("Password=yNOaMnbsjGT3qk5eW6BXcbHE6b2Da8sLcao7SdIFFqA2q345jQ9RSw==", connString);
+        }
     }
 }
