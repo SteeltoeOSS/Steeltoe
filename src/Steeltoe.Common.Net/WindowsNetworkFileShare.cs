@@ -13,15 +13,19 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Steeltoe.Common.Net
 {
+    /// <summary>
+    /// For interacting with SMB network file shares on Windows
+    /// </summary>
     public class WindowsNetworkFileShare : IDisposable
     {
-        private const int NO_ERROR = 0;
+        // private const int NO_ERROR = 0;
         private const int ERROR_ACCESS_DENIED = 5;
         private const int ERROR_ALREADY_ASSIGNED = 85;
         private const int ERROR_PATH_NOT_FOUND = 53;
@@ -47,7 +51,7 @@ namespace Steeltoe.Common.Net
 
         // Created with excel formula:
         // ="new ErrorClass("&A1&", """&PROPER(SUBSTITUTE(MID(A1,7,LEN(A1)-6), "_", " "))&"""), "
-        private static ErrorClass[] error_list = new ErrorClass[]
+        private static readonly ErrorClass[] Error_list = new ErrorClass[]
         {
             new ErrorClass(ERROR_ACCESS_DENIED, "Error: Access Denied"),
             new ErrorClass(ERROR_ALREADY_ASSIGNED, "Error: Already Assigned"),
@@ -59,6 +63,7 @@ namespace Steeltoe.Common.Net
             new ErrorClass(ERROR_INVALID_ADDRESS, "Error: Invalid Address"),
             new ErrorClass(ERROR_INVALID_PARAMETER, "Error: Invalid Parameter"),
             new ErrorClass(ERROR_INVALID_PASSWORD, "Error: Invalid Password"),
+            new ErrorClass(ERROR_INVALID_PASSWORDNAME, "Error: Invalid Password Format"),
             new ErrorClass(ERROR_MORE_DATA, "Error: More Data"),
             new ErrorClass(ERROR_NO_MORE_ITEMS, "Error: No More Items"),
             new ErrorClass(ERROR_NO_NET_OR_BAD_PATH, "Error: No Net Or Bad Path"),
@@ -75,8 +80,18 @@ namespace Steeltoe.Common.Net
 
         private readonly string _networkName;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowsNetworkFileShare"/> class.
+        /// </summary>
+        /// <param name="networkName">Address of the file share</param>
+        /// <param name="credentials">Username and password for accessing the file share</param>
         public WindowsNetworkFileShare(string networkName, NetworkCredential credentials)
         {
+            if (!Platform.IsWindows)
+            {
+                throw new PlatformNotSupportedException("WindowsNetworkFileShare only works on Windows");
+            }
+
             _networkName = networkName;
 
             var netResource = new NetResource
@@ -99,11 +114,17 @@ namespace Steeltoe.Common.Net
             }
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="WindowsNetworkFileShare"/> class.
+        /// </summary>
         ~WindowsNetworkFileShare()
         {
             Dispose(false);
         }
 
+        /// <summary>
+        /// Scope of the file share
+        /// </summary>
         public enum ResourceScope : int
         {
             Connected = 1,
@@ -113,6 +134,9 @@ namespace Steeltoe.Common.Net
             Context
         }
 
+        /// <summary>
+        /// Type of network resource
+        /// </summary>
         public enum ResourceType : int
         {
             Any = 0,
@@ -121,6 +145,9 @@ namespace Steeltoe.Common.Net
             Reserved = 8,
         }
 
+        /// <summary>
+        /// The display options for the network object in a network browsing user interface
+        /// </summary>
         public enum ResourceDisplaytype : int
         {
             Generic = 0x0,
@@ -137,6 +164,16 @@ namespace Steeltoe.Common.Net
             Ndscontainer = 0x0b
         }
 
+        /// <summary>
+        /// Retrieves the most recent extended error code set by a WNet function
+        /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>
+        /// </summary>
+        /// <param name="error">The error code reported by the network provider.</param>
+        /// <param name="errorBuf">String variable to receive the description of the error</param>
+        /// <param name="errorBufSize">Size of error buffer</param>
+        /// <param name="nameBuf">String variable to receive the network provider raising the error</param>
+        /// <param name="nameBufSize">Size of name buffer</param>
+        /// <returns>If the function succeeds, and it obtains the last error that the network provider reported, the return value is NO_ERROR.<para/>If the caller supplies an invalid buffer, the return value is ERROR_INVALID_ADDRESS.</returns>
         [DllImport("mpr.dll", CharSet = CharSet.Auto)]
         public static extern int WNetGetLastError(
             out int error,
@@ -145,17 +182,48 @@ namespace Steeltoe.Common.Net
             out StringBuilder nameBuf,
             int nameBufSize);
 
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Get a description for an error returned by a P/Invoke call
+        /// </summary>
+        /// <param name="errNum">Error code</param>
+        /// <returns>An error message</returns>
+        internal static string GetErrorForNumber(int errNum)
+        {
+            if (!Error_list.Any(e => e.Num == errNum))
+            {
+                return "Error: Unknown, " + errNum;
+            }
+            else
+            {
+                return Error_list.First(e => e.Num == errNum).Message;
+            }
+        }
+
+        /// <summary>
+        /// Disposes the object, cancels connection with file share
+        /// </summary>
+        /// <param name="disposing">Not used</param>
         protected virtual void Dispose(bool disposing)
         {
             WNetCancelConnection2(_networkName, 0, true);
         }
 
+        /// <summary>
+        /// Makes a connection to a network resource and can redirect a local device to the network resource.
+        /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetaddconnection2a"/>
+        /// </summary>
+        /// <param name="netResource">Network resource to interact with</param>
+        /// <param name="password">Password for making the network connection</param>
+        /// <param name="username">Username for making the network connection</param>
+        /// <param name="flags">A set of connection options - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetaddconnection2a#parameters"/></param>
+        /// <returns>An integer representing the result - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetaddconnection2a#return-value"/></returns>
         [DllImport("mpr.dll")]
         private static extern int WNetAddConnection2(
             NetResource netResource,
@@ -163,12 +231,36 @@ namespace Steeltoe.Common.Net
             string username,
             int flags);
 
+        /// <summary>
+        /// Cancels an existing network connection, removes remembered network connections that are not currently connected.
+        /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetcancelconnection2a"/>
+        /// </summary>
+        /// <param name="name">
+        /// Pointer to a constant null-terminated string that specifies the name of either the redirected local device or the remote network resource to disconnect from.<para/>
+        /// If this parameter specifies a redirected local device, the function cancels only the specified device redirection. If the parameter specifies a remote network resource, all connections without devices are canceled.
+        /// </param>
+        /// <param name="flags">Connection type - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetcancelconnection2a#parameters"/></param>
+        /// <param name="force">Specifies whether the disconnection should occur if there are open files or jobs on the connection. If this parameter is FALSE, the function fails if there are open files or jobs.</param>
+        /// <returns>An integer representing the result - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetcancelconnection2a#return-value"/></returns>
         [DllImport("mpr.dll")]
         private static extern int WNetCancelConnection2(
             string name,
             int flags,
             bool force);
 
+        /// <summary>
+        /// Makes a connection to a network resource. Can redirect a local device to a network resource.
+        /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetuseconnectiona"/>
+        /// </summary>
+        /// <param name="hwndOwner">Handle to a window that the provider of network resources can use as an owner window for dialog boxes</param>
+        /// <param name="netResource">Network resource to interact with</param>
+        /// <param name="password">A null-terminated string that specifies a password to be used in making the network connection</param>
+        /// <param name="username">A null-terminated string that specifies a user name for making the connection</param>
+        /// <param name="flags">Set of bit flags describing the connection</param>
+        /// <param name="lpAccessName">Pointer to a buffer that receives system requests on the connection</param>
+        /// <param name="lpBufferSize">Pointer to a variable that specifies the size of the lpAccessName buffer, in characters.<para />If the call fails because the buffer is not large enough, the function returns the required buffer size in this location</param>
+        /// <param name="lpResult">Pointer to a variable that receives additional information about the connection</param>
+        /// <returns>An integer representing the result - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetuseconnectiona#return-value"/></returns>
         [DllImport("mpr.dll")]
         private static extern int WNetUseConnection(
             IntPtr hwndOwner,
@@ -180,28 +272,6 @@ namespace Steeltoe.Common.Net
             string lpBufferSize,
             string lpResult);
 
-        private static string GetErrorForNumber(int errNum)
-        {
-            foreach (ErrorClass er in error_list)
-            {
-                if (er.Num == errNum)
-                {
-                    return er.Message;
-                }
-            }
-
-            return "Error: Unknown, " + errNum;
-        }
-
-        private static string GetLastError(int result)
-        {
-            StringBuilder sbErrorBuf = new StringBuilder(500);
-            StringBuilder sbNameBuf = new StringBuilder(500);
-            int resultref = result;
-            int res = WNetGetLastError(out resultref, out sbErrorBuf, sbErrorBuf.Capacity, out sbNameBuf, sbNameBuf.Capacity);
-            return sbErrorBuf.ToString();
-        }
-
         private struct ErrorClass
         {
             public int Num;
@@ -209,11 +279,15 @@ namespace Steeltoe.Common.Net
 
             public ErrorClass(int num, string message)
             {
-                this.Num = num;
-                this.Message = message;
+                Num = num;
+                Message = message;
             }
         }
 
+        /// <summary>
+        /// The NETRESOURCE structure contains information about a network resource.
+        /// More info on NetResource: <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba"/>
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public class NetResource
         {

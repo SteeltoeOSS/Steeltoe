@@ -27,6 +27,8 @@ namespace Steeltoe.Common
 
         public static bool IsNetCore => RuntimeInformation.FrameworkDescription.StartsWith(NET_CORE);
 
+        public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
         public static bool IsCloudFoundry => Environment.GetEnvironmentVariable(VCAP_APPLICATION) != null;
     }
 }

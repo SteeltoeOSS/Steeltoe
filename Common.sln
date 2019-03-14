@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28705.295
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D9798FDE-76F4-4848-8AE0-95249C0101F0}"
 EndProject
@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		nuget.config = nuget.config
 		README.md = README.md
 		stylecop.json = stylecop.json
+		targetframework.props = targetframework.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "src\Steeltoe.Common\Steeltoe.Common.csproj", "{4AEA9704-3B99-4317-A959-7D6E4CDD4811}"
@@ -40,6 +41,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security", "src\Steeltoe.Common.Security\Steeltoe.Common.Security.csproj", "{8D322AD5-ED49-4D40-952C-B38FD97D21EF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security.Test", "test\Steeltoe.Common.Security.Test\Steeltoe.Common.Security.Test.csproj", "{6E2CBAC4-3FF1-4DC9-9B9B-D0ADFE80218D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net.Test", "test\Steeltoe.Common.Net.Test\Steeltoe.Common.Net.Test.csproj", "{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +86,10 @@ Global
 		{6E2CBAC4-3FF1-4DC9-9B9B-D0ADFE80218D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E2CBAC4-3FF1-4DC9-9B9B-D0ADFE80218D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E2CBAC4-3FF1-4DC9-9B9B-D0ADFE80218D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,6 +104,7 @@ Global
 		{5C2D53DB-2980-4393-BCA1-B4C51004E4F7} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
 		{8D322AD5-ED49-4D40-952C-B38FD97D21EF} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
 		{6E2CBAC4-3FF1-4DC9-9B9B-D0ADFE80218D} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
+		{1DE7FECF-6A0A-4221-A3C1-165B5DB83506} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4A85F9DA-2C2D-48E9-A28C-9B35C473C150}
