@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
   </PropertyGroup>
+  <Import Project="..\..\targetframework.props" />
 
   <ItemGroup>
     <None Update="xunit.runner.json">
