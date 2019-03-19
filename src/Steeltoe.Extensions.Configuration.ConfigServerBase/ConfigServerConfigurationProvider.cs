@@ -172,6 +172,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             // Refresh settings with latest configuration values
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
 
+            if (!_settings.Enabled)
+            {
+                _logger?.LogInformation("Config Server client disabled, did not fetch configuration!");
+                return null;
+            }
+
             if (IsDiscoveryFirstEnabled())
             {
                 var discoveryService = new ConfigServerDiscoveryService(_configuration, _settings, _loggerFactory);
