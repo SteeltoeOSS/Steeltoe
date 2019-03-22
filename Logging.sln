@@ -27,6 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.SerilogDynamicLogger", "src\Steeltoe.Extensions.Logging.SerilogDynamicLogger\Steeltoe.Extensions.Logging.SerilogDynamicLogger.csproj", "{C4F8B0B3-86C8-45AA-88EB-A18570B2754E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test", "test\Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test\Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test.csproj", "{DF66D833-EAC4-4C84-A80F-74CFBD2BF78F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +45,14 @@ Global
 		{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4F8B0B3-86C8-45AA-88EB-A18570B2754E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4F8B0B3-86C8-45AA-88EB-A18570B2754E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4F8B0B3-86C8-45AA-88EB-A18570B2754E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4F8B0B3-86C8-45AA-88EB-A18570B2754E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF66D833-EAC4-4C84-A80F-74CFBD2BF78F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF66D833-EAC4-4C84-A80F-74CFBD2BF78F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF66D833-EAC4-4C84-A80F-74CFBD2BF78F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF66D833-EAC4-4C84-A80F-74CFBD2BF78F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +60,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{BCF90E1F-ADD2-42A2-8601-AB7A5C9FAFC4} = {26E1A61B-FA79-41BF-9C3B-5A04299F356A}
 		{CBD7C37D-6CDC-4058-9B68-68EDC87837FD} = {EEF15943-96DB-44B5-BA4A-1D11171AD74F}
+		{C4F8B0B3-86C8-45AA-88EB-A18570B2754E} = {26E1A61B-FA79-41BF-9C3B-5A04299F356A}
+		{DF66D833-EAC4-4C84-A80F-74CFBD2BF78F} = {EEF15943-96DB-44B5-BA4A-1D11171AD74F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F03D9805-6C7E-411E-A8D5-191ABE8D2F66}
