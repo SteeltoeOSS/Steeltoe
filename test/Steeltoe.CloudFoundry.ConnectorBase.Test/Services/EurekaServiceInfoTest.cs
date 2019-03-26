@@ -24,11 +24,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             string uri = "https://username:password@hostname:1111/";
             string clientId = "clientId";
             string clientSecret = "clientSecret";
-            string accessTokeUri = "https://p-spring-cloud-services.uaa.my-cf.com/oauth/token";
-            EurekaServiceInfo r1 = new EurekaServiceInfo("myId", uri, clientId, clientSecret, accessTokeUri);
+            string accessTokenUri = "https://p-spring-cloud-services.uaa.my-cf.com/oauth/token";
+            EurekaServiceInfo r1 = new EurekaServiceInfo("myId", uri, clientId, clientSecret, accessTokenUri);
 
             Assert.Equal("myId", r1.Id);
-            Assert.Equal("http", r1.Scheme);
+            Assert.Equal("https", r1.Scheme);
             Assert.Equal("hostname", r1.Host);
             Assert.Equal(1111, r1.Port);
             Assert.Equal("password", r1.Password);
