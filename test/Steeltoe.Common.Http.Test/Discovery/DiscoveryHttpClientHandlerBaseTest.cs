@@ -37,7 +37,7 @@ namespace Steeltoe.Common.Http.Test
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
             DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
-            Uri uri = new Uri("http://foo:8080/test");
+            Uri uri = new Uri("https://foo:8080/test");
 
             // Act and Assert
             var result = handler.LookupService(uri);
@@ -50,7 +50,7 @@ namespace Steeltoe.Common.Http.Test
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
             DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
-            Uri uri = new Uri("http://foo/test");
+            Uri uri = new Uri("https://foo/test");
 
             // Act and Assert
             var result = handler.LookupService(uri);
@@ -61,13 +61,13 @@ namespace Steeltoe.Common.Http.Test
         public void LookupService_FindsService_ReturnsURI()
         {
             // Arrange
-            IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("http://foundit:5555")));
+            IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("https://foundit:5555")));
             DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
-            Uri uri = new Uri("http://foo/test/bar/foo?test=1&test2=2");
+            Uri uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
             // Act and Assert
             var result = handler.LookupService(uri);
-            Assert.Equal(new Uri("http://foundit:5555/test/bar/foo?test=1&test2=2"), result);
+            Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace Steeltoe.Common.Http.Test
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
             DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
-            Uri uri = new Uri("http://foo:8080/test");
+            Uri uri = new Uri("https://foo:8080/test");
 
             // Act and Assert
             var result = await handler.LookupServiceAsync(uri);
@@ -89,7 +89,7 @@ namespace Steeltoe.Common.Http.Test
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
             DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
-            Uri uri = new Uri("http://foo/test");
+            Uri uri = new Uri("https://foo/test");
 
             // Act and Assert
             var result = await handler.LookupServiceAsync(uri);
@@ -100,13 +100,13 @@ namespace Steeltoe.Common.Http.Test
         public async void LookupServiceAsync_FindsService_ReturnsURI()
         {
             // Arrange
-            IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("http://foundit:5555")));
+            IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("https://foundit:5555")));
             DiscoveryHttpClientHandlerBase handler = new DiscoveryHttpClientHandlerBase(client);
-            Uri uri = new Uri("http://foo/test/bar/foo?test=1&test2=2");
+            Uri uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
             // Act and Assert
             var result = await handler.LookupServiceAsync(uri);
-            Assert.Equal(new Uri("http://foundit:5555/test/bar/foo?test=1&test2=2"), result);
+            Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
         }
     }
 }

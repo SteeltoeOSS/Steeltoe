@@ -35,7 +35,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         public async void ResolvesUri_TracksStats_WithProvidedLoadBalancer()
         {
             // arrange
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "http://replaceme/api");
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
             var loadBalancer = new FakeLoadBalancer();
             var handler = new LoadBalancerDelegatingHandler(loadBalancer) { InnerHandler = new TestInnerDelegatingHandler() };
             var invoker = new HttpMessageInvoker(handler);
@@ -44,7 +44,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
             var result = await invoker.SendAsync(httpRequestMessage, default(CancellationToken));
 
             // assert
-            Assert.Equal("http://someresolvedhost/api", result.Headers.GetValues("requestUri").First());
+            Assert.Equal("https://someresolvedhost/api", result.Headers.GetValues("requestUri").First());
             Assert.Single(loadBalancer.Stats);
         }
 
@@ -52,7 +52,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         public async void DoesntTrackStats_WhenResolutionFails_WithProvidedLoadBalancer()
         {
             // arrange
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "http://replaceme/api");
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
             var loadBalancer = new BrokenLoadBalancer();
             var handler = new LoadBalancerDelegatingHandler(loadBalancer) { InnerHandler = new TestInnerDelegatingHandler() };
             var invoker = new HttpMessageInvoker(handler);
@@ -68,7 +68,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         public async void TracksStats_WhenRequestsGoWrong_WithProvidedLoadBalancer()
         {
             // arrange
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "http://replaceme/api");
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
             var loadBalancer = new FakeLoadBalancer();
             var handler = new LoadBalancerDelegatingHandler(loadBalancer) { InnerHandler = new TestInnerDelegatingHandlerBrokenServer() };
             var invoker = new HttpMessageInvoker(handler);
@@ -79,7 +79,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
             // assert
             Assert.Single(loadBalancer.Stats);
             Assert.Equal(HttpStatusCode.InternalServerError, result.StatusCode);
-            Assert.Equal("http://someresolvedhost/api", result.Headers.GetValues("requestUri").First());
+            Assert.Equal("https://someresolvedhost/api", result.Headers.GetValues("requestUri").First());
         }
     }
 }
