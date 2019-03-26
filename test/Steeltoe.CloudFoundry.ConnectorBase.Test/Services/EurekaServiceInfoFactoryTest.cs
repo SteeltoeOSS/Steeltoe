@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "client_id", new Credential("clientId") },
                     { "client_secret", new Credential("clientSecret") },
                     { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token") },
-                    { "uri", new Credential("http://username:password@192.168.0.90:1111/") },
+                    { "uri", new Credential("https://username:password@192.168.0.90:1111/") },
                     }
             };
             EurekaServiceInfoFactory factory = new EurekaServiceInfoFactory();
@@ -78,7 +78,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "client_id", new Credential("clientId") },
                     { "client_secret", new Credential("clientSecret") },
                     { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token") },
-                    { "uri", new Credential("http://username:password@192.168.0.90:1111/") },
+                    { "uri", new Credential("https://username:password@192.168.0.90:1111/") },
                     }
             };
             EurekaServiceInfoFactory factory = new EurekaServiceInfoFactory();
@@ -92,7 +92,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("clientId", info.ClientId);
             Assert.Equal("clientSecret", info.ClientSecret);
             Assert.Equal("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token", info.TokenUri);
-            Assert.Equal("http://username:password@192.168.0.90:1111/", info.Uri);
+            Assert.Equal("https://username:password@192.168.0.90:1111/", info.Uri);
         }
     }
 }

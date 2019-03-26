@@ -22,7 +22,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         [Fact]
         public void Create_ReturnsOAuthOptions()
         {
-            SsoServiceInfo si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "http://foo.bar");
+            SsoServiceInfo si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
             OAuthConnectorOptions config = new OAuthConnectorOptions();
 
             var factory = new OAuthConnectorFactory(si, config);
@@ -32,13 +32,13 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             var opts = result.Value;
             Assert.NotNull(opts);
 
-            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
+            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
             Assert.Equal("myClientId", opts.ClientId);
             Assert.Equal("myClientSecret", opts.ClientSecret);
-            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_JwtTokenKey, opts.JwtKeyUrl);
-            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_CheckTokenUri, opts.TokenInfoUrl);
-            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_AuthorizationUri, opts.UserAuthorizationUrl);
-            Assert.Equal("http://foo.bar" + OAuthConnectorDefaults.Default_UserInfoUri, opts.UserInfoUrl);
+            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_JwtTokenKey, opts.JwtKeyUrl);
+            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_CheckTokenUri, opts.TokenInfoUrl);
+            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_AuthorizationUri, opts.UserAuthorizationUrl);
+            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_UserInfoUri, opts.UserInfoUrl);
             Assert.NotNull(opts.Scope);
             Assert.Equal(0, opts.Scope.Count);
         }

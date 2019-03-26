@@ -37,7 +37,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         {
             var appsettings = new Dictionary<string, string>()
             {
-                ["security:oauth2:client:oauthServiceUrl"] = "http://foo.bar",
+                ["security:oauth2:client:oauthServiceUrl"] = "https://foo.bar",
                 ["security:oauth2:client:clientid"] = "clientid",
                 ["security:oauth2:client:clientSecret"] = "clientsecret",
                 ["security:oauth2:client:userAuthorizationUri"] = "userauthorizationuri",
@@ -58,7 +58,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             Assert.Equal("clientid", sconfig.ClientId);
             Assert.Equal("clientsecret", sconfig.ClientSecret);
             Assert.Equal("jwtkeyuri", sconfig.JwtKeyUri);
-            Assert.Equal("http://foo.bar", sconfig.OAuthServiceUrl);
+            Assert.Equal("https://foo.bar", sconfig.OAuthServiceUrl);
             Assert.Equal("tokeninfouri", sconfig.TokenInfoUri);
             Assert.Equal("userauthorizationuri", sconfig.UserAuthorizationUri);
             Assert.Equal("userinfouri", sconfig.UserInfoUri);

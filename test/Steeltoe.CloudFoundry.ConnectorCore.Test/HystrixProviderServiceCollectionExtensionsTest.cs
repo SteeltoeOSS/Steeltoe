@@ -155,9 +155,9 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
                   'username': 'a0f39f25-28a2-438e-a0e7-6c09d6d34dbd',
                   'port': 15672,
                   'host': '192.168.1.55',
-                  'uri': 'http://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/',
+                  'uri': 'https://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/',
                   'uris': [
-                    'http://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/'
+                    'https://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/'
                   ]
                 }
               },
@@ -223,9 +223,9 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
                   'username': 'a0f39f25-28a2-438e-a0e7-6c09d6d34dbd',
                   'port': 15672,
                   'host': '192.168.1.55',
-                  'uri': 'http://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/',
+                  'uri': 'https://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/',
                   'uris': [
-                    'http://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/'
+                    'https://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/'
                   ]
                 }
               },
@@ -319,9 +319,9 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
                   'username': 'a0f39f25-28a2-438e-a0e7-6c09d6d34dbd',
                   'port': 15672,
                   'host': '192.168.1.55',
-                  'uri': 'http://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/',
+                  'uri': 'https://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/',
                   'uris': [
-                    'http://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/'
+                    'https://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55:15672/api/'
                   ]
                 }
               },

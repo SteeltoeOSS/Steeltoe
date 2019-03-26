@@ -155,9 +155,9 @@ namespace Steeltoe.CloudFoundry.Connector.Test
                 'username': '03c7a684-6ff1-4bd0-ad45-d10374ffb2af',
                 'port': 15672,
                 'host': '192.168.0.81',
-                'uri': 'http://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/',
+                'uri': 'https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/',
                 'uris': [
-                  'http://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/'
+                  'https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/'
                 ]
 },
               'amqp': {
