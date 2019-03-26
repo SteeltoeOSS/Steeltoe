@@ -239,21 +239,21 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         {
             var credentials = new Dictionary<string, Credential>()
             {
-                { "uri", new Credential("http://boo:222") }
+                { "uri", new Credential("https://boo:222") }
             };
             Tags tags = new Tags(new string[] { "foo", "bar" });
             string scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var uri = sif.GetUriFromCredentials(credentials);
-            Assert.Equal("http://boo:222", uri);
+            Assert.Equal("https://boo:222", uri);
 
             credentials = new Dictionary<string, Credential>()
             {
-                { "url", new Credential("http://boo:222") }
+                { "url", new Credential("https://boo:222") }
             };
             uri = sif.GetUriFromCredentials(credentials);
-            Assert.Equal("http://boo:222", uri);
+            Assert.Equal("https://boo:222", uri);
 
             credentials = new Dictionary<string, Credential>()
             {
@@ -270,8 +270,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 {
                     "uris", new Credential()
                         {
-                            { "0", new Credential("http://foo:11") },
-                            { "1", new Credential("http://bar:11") }
+                            { "0", new Credential("https://foo:11") },
+                            { "1", new Credential("https://bar:11") }
                         }
                 }
             };
@@ -282,8 +282,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             var list = sif.GetListFromCredentials(credentials, "uris");
             Assert.NotNull(list);
             Assert.Equal(2, list.Count);
-            Assert.True(list[0].Equals("http://foo:11") || list[0].Equals("http://bar:11"));
-            Assert.True(list[1].Equals("http://foo:11") || list[1].Equals("http://bar:11"));
+            Assert.True(list[0].Equals("https://foo:11") || list[0].Equals("https://bar:11"));
+            Assert.True(list[1].Equals("https://foo:11") || list[1].Equals("https://bar:11"));
         }
 
         [Fact]

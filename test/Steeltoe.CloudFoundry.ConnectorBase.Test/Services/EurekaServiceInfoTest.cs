@@ -21,7 +21,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_CreatesExpected()
         {
-            string uri = "http://username:password@hostname:1111/";
+            string uri = "https://username:password@hostname:1111/";
             string clientId = "clientId";
             string clientSecret = "clientSecret";
             string accessTokeUri = "https://p-spring-cloud-services.uaa.my-cf.com/oauth/token";
@@ -36,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("clientId", r1.ClientId);
             Assert.Equal("clientSecret", r1.ClientSecret);
             Assert.Equal("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token", r1.TokenUri);
-            Assert.Equal("http://username:password@hostname:1111/", r1.Uri);
+            Assert.Equal("https://username:password@hostname:1111/", r1.Uri);
         }
     }
 }
