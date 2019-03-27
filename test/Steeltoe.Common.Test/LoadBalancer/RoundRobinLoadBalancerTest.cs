@@ -50,9 +50,9 @@ namespace Steeltoe.Common.LoadBalancer.Test
             // act
             Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "fruitService"]);
             Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "vegetableService"]);
-            var fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("http://fruitservice/api"));
-            await loadBalancer.ResolveServiceInstanceAsync(new Uri("http://vegetableservice/api"));
-            var vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("http://vegetableservice/api"));
+            var fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
+            await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
+            var vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
 
             // assert
             Assert.Equal(1, loadBalancer.NextIndexForService[loadBalancer.IndexKeyPrefix + "fruitservice"]);
@@ -79,9 +79,9 @@ namespace Steeltoe.Common.LoadBalancer.Test
             var loadBalancer = new RoundRobinLoadBalancer(provider, GetCache());
 
             // act
-            var fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("http://fruitservice/api"));
-            await loadBalancer.ResolveServiceInstanceAsync(new Uri("http://vegetableservice/api"));
-            var vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("http://vegetableservice/api"));
+            var fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
+            await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
+            var vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
 
             // assert
             Assert.Equal(8000, fruitResult.Port);

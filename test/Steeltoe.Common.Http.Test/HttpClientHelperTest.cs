@@ -150,20 +150,20 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public void GetRequestMessage_CreatesCorrectMessage()
         {
-            var message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "http://localhost/foobar", null, null);
+            var message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "https://localhost/foobar", null, null);
             Assert.NotNull(message);
             Assert.Equal(HttpMethod.Put, message.Method);
-            Assert.Equal("http://localhost/foobar", message.RequestUri.ToString());
+            Assert.Equal("https://localhost/foobar", message.RequestUri.ToString());
             Assert.Null(message.Headers.Authorization);
         }
 
         [Fact]
         public void GetRequestMessage_CreatesCorrectMessage_WithBasicAuth()
         {
-            var message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "http://localhost/foobar", "foo", "bar");
+            var message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "https://localhost/foobar", "foo", "bar");
             Assert.NotNull(message);
             Assert.Equal(HttpMethod.Put, message.Method);
-            Assert.Equal("http://localhost/foobar", message.RequestUri.ToString());
+            Assert.Equal("https://localhost/foobar", message.RequestUri.ToString());
             Assert.NotNull(message.Headers.Authorization);
             var bytes = Convert.ToBase64String(Encoding.ASCII.GetBytes("foo" + ":" + "bar"));
             Assert.Equal("Basic", message.Headers.Authorization.Scheme);
@@ -174,8 +174,8 @@ namespace Steeltoe.Common.Http.Test
         public void GetAccessToken_ThrowsNulls()
         {
             Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken(null, null, null));
-            Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("http://foo/bar", null, null));
-            Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("http://foo/bar", "clientid", null));
+            Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("https://foo/bar", null, null));
+            Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("https://foo/bar", "clientid", null));
         }
 
         [Fact]
