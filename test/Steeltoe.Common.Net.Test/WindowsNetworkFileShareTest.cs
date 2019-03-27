@@ -40,7 +40,7 @@ namespace Steeltoe.Common.Net.Test
             var fakeMPR = new FakeMPR();
 
             // act
-            var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), fakeMPR);
+            _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), fakeMPR);
 
             // assert
             Assert.Equal("user", fakeMPR._username);
@@ -55,7 +55,7 @@ namespace Steeltoe.Common.Net.Test
             var fakeMPR = new FakeMPR();
 
             // act
-            var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), fakeMPR);
+            _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), fakeMPR);
 
             // assert
             Assert.Equal(@"domain\user", fakeMPR._username);
