@@ -81,7 +81,6 @@ namespace Steeltoe.Discovery.Eureka
 
         public string Host => GetHost();
 
-
         public string InstanceId => _info.InstanceId;
     }
 }
