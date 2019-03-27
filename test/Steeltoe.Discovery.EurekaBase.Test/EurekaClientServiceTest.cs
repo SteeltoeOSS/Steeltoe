@@ -25,14 +25,14 @@ namespace Steeltoe.Discovery.Eureka.Test
         {
             var values = new Dictionary<string, string>()
             {
-                { "eureka:client:serviceUrl", "http://foo.bar:8761/eureka/" }
+                { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
             var config = builder.Build();
 
             var options = EurekaClientService.ConfigureClientOptions(config);
-            Assert.Equal("http://foo.bar:8761/eureka/", options.EurekaServerServiceUrls);
+            Assert.Equal("https://foo.bar:8761/eureka/", options.EurekaServerServiceUrls);
             Assert.True(options.ShouldFetchRegistry);
             Assert.False(options.ShouldRegisterWithEureka);
         }
@@ -42,7 +42,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         {
             var values = new Dictionary<string, string>()
             {
-                { "eureka:client:serviceUrl", "http://foo.bar:8761/eureka/" }
+                { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -52,7 +52,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var lookupClient = EurekaClientService.GetLookupClient(options, null);
             Assert.NotNull(lookupClient);
             Assert.NotNull(lookupClient.ClientConfig);
-            Assert.Equal("http://foo.bar:8761/eureka/", lookupClient.ClientConfig.EurekaServerServiceUrls);
+            Assert.Equal("https://foo.bar:8761/eureka/", lookupClient.ClientConfig.EurekaServerServiceUrls);
             Assert.True(lookupClient.ClientConfig.ShouldFetchRegistry);
             Assert.False(lookupClient.ClientConfig.ShouldRegisterWithEureka);
             Assert.Null(lookupClient.HeartBeatTimer);
@@ -65,7 +65,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         {
             var values = new Dictionary<string, string>()
             {
-                { "eureka:client:serviceUrl", "http://foo.bar:8761/eureka/" }
+                { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -80,7 +80,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         {
             var values = new Dictionary<string, string>()
             {
-                { "eureka:client:serviceUrl", "http://foo.bar:8761/eureka/" }
+                { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);

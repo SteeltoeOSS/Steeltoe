@@ -424,7 +424,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var cconfig = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://bad.host:9999/," + uri
+                EurekaServerServiceUrls = "https://bad.host:9999/," + uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo");
@@ -588,7 +588,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var cconfig = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://bad.host:9999/," + uri
+                EurekaServerServiceUrls = "https://bad.host:9999/," + uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
@@ -898,11 +898,11 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         {
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka,http://user:pass@blah:123/eureka,http://user:pass@blah.blah:123/eureka"
+                EurekaServerServiceUrls = "https://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka,http://user:pass@blah:123/eureka,http://user:pass@blah.blah:123/eureka"
             };
             var client = new EurekaHttpClient(config);
             client.AddToFailingServiceUrls("http://user:pass@foo:123/eureka/");
-            client.AddToFailingServiceUrls("http://user:pass@blah.blah:123/eureka/");
+            client.AddToFailingServiceUrls("https://user:pass@blah.blah:123/eureka/");
 
             var result = client.GetServiceUrlCandidates();
             Assert.Contains("http://user:pass@boo:123/eureka/", result);
