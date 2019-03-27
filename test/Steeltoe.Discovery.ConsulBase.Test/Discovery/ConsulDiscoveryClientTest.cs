@@ -98,7 +98,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             Assert.Contains("secure", inst.Metadata.Keys);
             Assert.Contains("foo", inst.Metadata.Values);
             Assert.Contains("false", inst.Metadata.Values);
-            Assert.Equal(new Uri("https://foo1.bar1.com:5678"), inst.Uri);
+            Assert.Equal(new Uri("http://foo1.bar1.com:5678"), inst.Uri);
         }
 
         [Fact]
@@ -231,7 +231,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             Assert.Contains("secure", inst.Metadata.Keys);
             Assert.Contains("foo", inst.Metadata.Values);
             Assert.Contains("false", inst.Metadata.Values);
-            Assert.Equal(new Uri("https://foo1.bar1.com:5678"), inst.Uri);
+            Assert.Equal(new Uri("http://foo1.bar1.com:5678"), inst.Uri);
         }
     }
 }

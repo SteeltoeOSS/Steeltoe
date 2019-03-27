@@ -898,15 +898,15 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         {
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "https://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka,http://user:pass@blah:123/eureka,http://user:pass@blah.blah:123/eureka"
+                EurekaServerServiceUrls = "https://user:pass@boo:123/eureka/,https://user:pass@foo:123/eureka,https://user:pass@blah:123/eureka,https://user:pass@blah.blah:123/eureka"
             };
             var client = new EurekaHttpClient(config);
-            client.AddToFailingServiceUrls("http://user:pass@foo:123/eureka/");
+            client.AddToFailingServiceUrls("https://user:pass@foo:123/eureka/");
             client.AddToFailingServiceUrls("https://user:pass@blah.blah:123/eureka/");
 
             var result = client.GetServiceUrlCandidates();
-            Assert.Contains("http://user:pass@boo:123/eureka/", result);
-            Assert.Contains("http://user:pass@blah:123/eureka/", result);
+            Assert.Contains("https://user:pass@boo:123/eureka/", result);
+            Assert.Contains("https://user:pass@blah:123/eureka/", result);
             Assert.Equal(2, result.Count);
         }
 
