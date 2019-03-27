@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Tasks;
+using System.Linq;
 
 namespace Steeltoe.CloudFoundry.Connector.EFCore
 {
-    public class MigrateDbContextTask<T> : IApplicationTask where T : DbContext
+    public class MigrateDbContextTask<T> : IApplicationTask
+        where T : DbContext
     {
         private readonly T _db;
         private readonly ILogger _logger;
@@ -31,6 +32,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         }
 
         public string Name => "migrate";
+
         public void Run()
         {
             var migrations = _db.Database.GetPendingMigrations().ToList();
