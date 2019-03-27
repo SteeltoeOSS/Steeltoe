@@ -1041,7 +1041,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             provider.UpdateSettingsFromDiscovery(instances, settings);
             Assert.Equal("secondUser", settings.Username);
             Assert.Equal("secondPassword", settings.Password);
-            Assert.Equal("https://foo.bar:8888/,http://foo.bar.baz:9999/configPath", settings.Uri);
+            Assert.Equal("https://foo.bar:8888/,https://foo.bar.baz:9999/configPath", settings.Uri);
         }
 
         [Fact]
