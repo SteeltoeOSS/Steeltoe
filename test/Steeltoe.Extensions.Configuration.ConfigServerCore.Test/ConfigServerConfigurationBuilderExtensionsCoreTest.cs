@@ -95,7 +95,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
     },
       'cloud': {
         'config': {
-            'uri': 'http://user:password@foo.com:9999',
+            'uri': 'https://user:password@foo.com:9999',
             'enabled': false,
             'failFast': false,
             'label': 'myLabel',
@@ -136,7 +136,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
-            Assert.Equal("http://user:password@foo.com:9999", settings.Uri);
+            Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("myName", settings.Name);
             Assert.Equal("myLabel", settings.Label);
@@ -235,7 +235,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
     <spring>
       <cloud>
         <config>
-            <uri>http://foo.com:9999</uri>
+            <uri>https://foo.com:9999</uri>
             <enabled>false</enabled>
             <failFast>false</failFast>
             <label>myLabel</label>
@@ -265,7 +265,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
-            Assert.Equal("http://foo.com:9999", settings.Uri);
+            Assert.Equal("https://foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("myName", settings.Name);
             Assert.Equal("myLabel", settings.Label);
@@ -282,7 +282,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             // Arrange
             var appsettings = @"
 [spring:cloud:config]
-    uri=http://foo.com:9999
+    uri=https://foo.com:9999
     enabled=false
     failFast=false
     label=myLabel
@@ -310,7 +310,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             // Act and Assert
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
-            Assert.Equal("http://foo.com:9999", settings.Uri);
+            Assert.Equal("https://foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("myName", settings.Name);
             Assert.Equal("myLabel", settings.Label);
@@ -329,7 +329,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                 {
                     "spring:cloud:config:enabled=false",
                     "--spring:cloud:config:failFast=false",
-                    "/spring:cloud:config:uri=http://foo.com:9999",
+                    "/spring:cloud:config:uri=https://foo.com:9999",
                     "--spring:cloud:config:name", "myName",
                     "/spring:cloud:config:label", "myLabel",
                     "--spring:cloud:config:username", "myUsername",
@@ -351,7 +351,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
-            Assert.Equal("http://foo.com:9999", settings.Uri);
+            Assert.Equal("https://foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("myName", settings.Name);
             Assert.Equal("myLabel", settings.Label);
@@ -379,7 +379,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         },
       'cloud': {
         'config': {
-            'uri': 'http://user:password@foo.com:9999',
+            'uri': 'https://user:password@foo.com:9999',
             'enabled': false,
             'failFast': false,
             'name': '${foo:bar:name?foobar}',
@@ -411,7 +411,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
-            Assert.Equal("http://user:password@foo.com:9999", settings.Uri);
+            Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("testName", settings.Name);
             Assert.Equal("myLabel", settings.Label);

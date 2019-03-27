@@ -374,7 +374,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
       },
       'cloud': {
         'config': {
-            'uri': 'http://foo.bar:8888',
+            'uri': 'https://foo.bar:8888',
             'env': 'development',
             'discovery': {
                 'enabled': true

@@ -60,7 +60,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var values = new Dictionary<string, string>()
             {
-                { "eureka:client:serviceUrl", "http://foo.bar:8761/eureka/" }
+                { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
