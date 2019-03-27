@@ -41,7 +41,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void GetTokenValidationParameters_ReturnsExpected()
         {
-            var parameters = CloudFoundryHelper.GetTokenValidationParameters(null, "http://foo.bar.com/keyurl", null, false);
+            var parameters = CloudFoundryHelper.GetTokenValidationParameters(null, "https://foo.bar.com/keyurl", null, false);
             Assert.True(parameters.ValidateAudience);
             Assert.True(parameters.ValidateIssuer);
             Assert.NotNull(parameters.IssuerValidator);
