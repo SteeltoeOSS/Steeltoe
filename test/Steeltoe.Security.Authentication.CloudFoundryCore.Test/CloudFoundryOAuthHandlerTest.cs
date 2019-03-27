@@ -115,7 +115,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             AuthenticationProperties props = new AuthenticationProperties();
             string result = testHandler.TestBuildChallengeUrl(props, "https://foo.bar/redirect");
-            Assert.Equal("https://Default_OAuthServiceUrl/oauth/authorize?response_type=code&client_id=Default_ClientId&redirect_uri=http%3A%2F%2Ffoo.bar%2Fredirect&scope=", result);
+            Assert.Equal("http://Default_OAuthServiceUrl/oauth/authorize?response_type=code&client_id=Default_ClientId&redirect_uri=https%3A%2F%2Ffoo.bar%2Fredirect&scope=", result);
         }
 
         [Fact]
