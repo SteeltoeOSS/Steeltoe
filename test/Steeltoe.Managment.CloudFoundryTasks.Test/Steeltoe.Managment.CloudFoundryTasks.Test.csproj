@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\..\versions.props" />
+    <PropertyGroup>
+        <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;</TargetFrameworks>
+
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+        <PackageReference Include="xunit" Version="$(XunitVersion)" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
+        <PackageReference Include="Microsoft.AspNetCore" Version="$(AspNetCoreVersion)" />
+        <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
+        <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Steeltoe.Management.CloudFoundryTasks\Steeltoe.Management.CloudFoundryTasks.csproj" />
+    </ItemGroup>
+
+</Project>
