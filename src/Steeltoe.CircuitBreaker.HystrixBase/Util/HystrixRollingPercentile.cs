@@ -166,7 +166,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
              * The following needs to be synchronized/locked even with a synchronized/thread-safe data structure such as LinkedBlockingDeque because
              * the logic involves multiple steps to check existence, create an object then insert the object. The 'check' or 'insertion' themselves
              * are thread-safe by themselves but not the aggregate algorithm, thus we put this entire block of logic inside synchronized.
-             * I am using a tryLock if/then (http://download.oracle.com/javase/6/docs/api/java/util/concurrent/locks/Lock.html#tryLock())
+             * I am using a tryLock if/then (https://download.oracle.com/javase/6/docs/api/java/util/concurrent/locks/Lock.html#tryLock())
              * so that a single thread will get the lock and as soon as one thread gets the lock all others will go the 'else' block
              * and just return the currentBucket until the newBucket is created. This should allow the throughput to be far higher
              * and only slow down 1 thread instead of blocking all of them in each cycle of creating a new bucket based on some testing
@@ -402,7 +402,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     return data[length - 1];
                 }
 
-                // ranking (http://en.wikipedia.org/wiki/Percentile#Alternative_methods)
+                // ranking (https://en.wikipedia.org/wiki/Percentile#Alternative_methods)
                 double rank = (percent / 100.0) * length;
 
                 // linear interpolation between closest ranks
