@@ -128,6 +128,19 @@ namespace Steeltoe.Management.Endpoint.Middleware
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
+        internal new IEndpoint<TResult, TRequest> Endpoint
+        {
+            get
+            {
+                return _endpoint;
+            }
+
+            set
+            {
+                _endpoint = value;
+            }
+        }
+
         [Obsolete]
         public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(allowedMethods, exactRequestPathMatching, logger)
@@ -139,6 +152,11 @@ namespace Steeltoe.Management.Endpoint.Middleware
             : base(mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        public EndpointMiddleware(IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+          : base(mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
+        {
         }
 
         public virtual string HandleRequest(TRequest arg)

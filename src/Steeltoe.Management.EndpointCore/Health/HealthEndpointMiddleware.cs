@@ -29,15 +29,15 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         private RequestDelegate _next;
 
-        public HealthEndpointMiddleware(RequestDelegate next, HealthEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, logger: logger)
+        public HealthEndpointMiddleware(RequestDelegate next, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
+            : base(mgmtOptions: mgmtOptions, logger: logger)
         {
             _next = next;
         }
 
         [Obsolete]
         public HealthEndpointMiddleware(RequestDelegate next, ILogger<HealthEndpointMiddleware> logger = null)
-            : base(null, logger: logger)
+            : base(mgmtOptions: null, logger: logger)
         {
             _next = next;
         }
