@@ -777,7 +777,7 @@ namespace Microsoft.Diagnostics.Runtime.Utilities
             if (dataLen <= 0x5c)
                 return;
 
-            // See http://msdn.microsoft.com/en-us/library/ms647001(v=VS.85).aspx
+            // See https://msdn.microsoft.com/en-us/library/ms647001(v=VS.85).aspx
             byte* stringInfoPtr = data + 0x5c;   // Gets to first StringInfo
 
             // TODO search for FileVersion string ... 

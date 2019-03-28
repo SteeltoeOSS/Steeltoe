@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 ["management:tracing:exporter:zipkin:validateCertificates"] = "false",
                 ["management:tracing:exporter:zipkin:timeoutSeconds"] = "100",
                 ["management:tracing:exporter:zipkin:useShortTraceIds"] = "true",
-                ["management:tracing:exporter:zipkin:endpoint"] = "http://foo.com/api/v2/spans"
+                ["management:tracing:exporter:zipkin:endpoint"] = "https://foo.com/api/v2/spans"
             };
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -61,7 +61,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             Assert.False(opts.ValidateCertificates);
             Assert.Equal(100, opts.TimeoutSeconds);
             Assert.True(opts.UseShortTraceIds);
-            Assert.Equal("http://foo.com/api/v2/spans", opts.Endpoint);
+            Assert.Equal("https://foo.com/api/v2/spans", opts.Endpoint);
         }
 
         [Fact]

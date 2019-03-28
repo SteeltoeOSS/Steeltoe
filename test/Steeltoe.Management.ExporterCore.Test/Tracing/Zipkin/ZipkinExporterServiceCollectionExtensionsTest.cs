@@ -72,7 +72,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Test
                 ["management:tracing:exporter:zipkin:validateCertificates"] = "false",
                 ["management:tracing:exporter:zipkin:timeoutSeconds"] = "100",
                 ["management:tracing:exporter:zipkin:useShortTraceIds"] = "true",
-                ["management:tracing:exporter:zipkin:endpoint"] = "http://foo.com/api/v2/spans"
+                ["management:tracing:exporter:zipkin:endpoint"] = "https://foo.com/api/v2/spans"
             };
 
             ConfigurationBuilder builder = new ConfigurationBuilder();

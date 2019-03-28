@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
         {
             var appsettings = new Dictionary<string, string>()
             {
-                ["management:metrics:exporter:cloudfoundry:endpoint"] = "http://foo.bar/foo",
+                ["management:metrics:exporter:cloudfoundry:endpoint"] = "https://foo.bar/foo",
                 ["management:metrics:exporter:cloudfoundry:accessToken"] = "token",
                 ["management:metrics:exporter:cloudfoundry:rateMilli"] = "1000",
                 ["management:metrics:exporter:cloudfoundry:validateCertificates"] = "false",
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             Assert.Equal(1000, opts.RateMilli);
             Assert.False(opts.ValidateCertificates);
             Assert.Equal(5, opts.TimeoutSeconds);
-            Assert.Equal("http://foo.bar/foo", opts.Endpoint);
+            Assert.Equal("https://foo.bar/foo", opts.Endpoint);
             Assert.Equal("token", opts.AccessToken);
             Assert.Equal("applicationId", opts.ApplicationId);
             Assert.Equal("instanceId", opts.InstanceId);
