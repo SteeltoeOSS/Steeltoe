@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.CloudFoundryTasks;
-
+using System;
 using Xunit;
 
 namespace Steeltoe.Managment.CloudFoundryTasks.Test
 {
     public class CloudFoundryTaskRunTest
     {
-        
         [Fact]
         public void DelegatingTask_ExecutesRun()
         {
-            var args = new[]{"runtask=test"};
+            var args = new[] { "runtask=test" };
 
             Assert.Throws<PassException>(() =>
                 WebHost.CreateDefaultBuilder(args)
@@ -54,12 +52,11 @@ namespace Steeltoe.Managment.CloudFoundryTasks.Test
 
             public void ConfigureServices(IServiceCollection services)
             {
-                services.AddTask("test",_ => throw new PassException());
+                services.AddTask("test", _ => throw new PassException());
             }
 
             public void Configure(IApplicationBuilder app)
             {
-                
             }
         }
     }

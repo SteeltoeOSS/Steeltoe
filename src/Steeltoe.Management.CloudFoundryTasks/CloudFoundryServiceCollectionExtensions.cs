@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Tasks;
+using System;
 
 namespace Steeltoe.Management.CloudFoundryTasks
 {
@@ -26,7 +26,8 @@ namespace Steeltoe.Management.CloudFoundryTasks
         /// <param name="services">Service container</param>
         /// <param name="lifetime">Task lifetime</param>
         /// <typeparam name="T">Task implementation</typeparam>
-        public static void AddTask<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton) where T : class, IApplicationTask
+        public static void AddTask<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+            where T : class, IApplicationTask
         {
             services.Add(new ServiceDescriptor(typeof(IApplicationTask), typeof(T), lifetime));
         }
