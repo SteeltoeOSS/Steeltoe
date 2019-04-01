@@ -14,6 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer
@@ -59,6 +61,11 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         public string Server { get; set; } = Default_Server;
 
+        public string InstanceName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the port SQL Server is listening on. To exclude from connection string, use a value less than 0
+        /// </summary>
         public int Port { get; set; } = Default_Port;
 
         public string Username { get; set; }
@@ -83,6 +90,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         /// <remarks>Default value is 15</remarks>
         public int? Timeout { get; set; }
 
+        internal Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
+
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
@@ -91,14 +100,41 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             }
 
             StringBuilder sb = new StringBuilder();
-            AddKeyValue(sb, "Data Source", $"{Server},{Port}");
+            AddDataSource(sb);
             AddKeyValue(sb, "Initial Catalog", Database);
             AddKeyValue(sb, "User Id", Username);
             AddKeyValue(sb, "Password", Password);
             AddKeyValue(sb, "Integrated Security", IntegratedSecurity);
             AddKeyValue(sb, nameof(Timeout), Timeout);
 
+            if (Options != null && Options.Any())
+            {
+                foreach (var o in Options)
+                {
+                    AddKeyValue(sb, o.Key, o.Value);
+                }
+            }
+
             return sb.ToString();
+        }
+
+        private void AddDataSource(StringBuilder sb)
+        {
+            sb.Append("Data Source");
+            sb.Append(Default_Separator);
+            sb.Append(Server);
+
+            if (InstanceName != null)
+            {
+                sb.Append($"\\{InstanceName}");
+            }
+
+            if (Port > 0)
+            {
+                sb.Append($",{Port}");
+            }
+
+            sb.Append(Default_Terminator);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal(1433, r1.Port);
             Assert.Equal("7E1LxXnlH2hhlPVt", r1.Password);
             Assert.Equal("Dd6O1BPXUHdrmzbP", r1.UserName);
-            Assert.Equal("databaseName=de5aa3a747c134b3d8780f8cc80be519e", r1.Path);
+            Assert.Equal("de5aa3a747c134b3d8780f8cc80be519e", r1.Path);
         }
     }
 }

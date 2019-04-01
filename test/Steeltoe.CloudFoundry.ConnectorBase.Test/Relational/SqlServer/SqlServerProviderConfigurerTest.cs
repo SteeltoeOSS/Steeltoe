@@ -116,5 +116,22 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Assert.Contains("User Id=Dd6O1BPXUHdrmzbP;", opts);
             Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts);
         }
+
+        [Fact]
+        public void Configure_With_ServiceInfo_NamedInstance_Overrides_Config()
+        {
+            SqlServerProviderConfigurer configurer = new SqlServerProviderConfigurer();
+
+            // override provided by environment
+            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername/databaseName=de5aa3a747c134b3d8780f8cc80be519e;instanceName=someInstance;integratedSecurity=true");
+
+            // apply override
+            var opts = configurer.Configure(si, config);
+
+            // resulting options should contain values parsed from environment
+            Assert.Contains("Data Source=servername\\someInstance", opts);
+            Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e;", opts);
+            Assert.Contains("integratedSecurity=true;", opts);
+        }
     }
 }

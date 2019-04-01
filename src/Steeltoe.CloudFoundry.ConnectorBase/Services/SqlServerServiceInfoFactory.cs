@@ -63,11 +63,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             }
             else
             {
-                if (url.Contains(";databaseName="))
-                {
-                    url = url.Replace(";databaseName", "/databaseName");
-                }
-
                 return new SqlServerServiceInfo(id, url, username, password);
             }
         }

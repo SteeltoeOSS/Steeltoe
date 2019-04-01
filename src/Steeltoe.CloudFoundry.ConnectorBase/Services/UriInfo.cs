@@ -40,8 +40,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public UriInfo(string uristring, bool urlEncodedCredentials = false)
         {
-            this.UriString = uristring;
-
             Uri uri = MakeUri(uristring);
             if (uri != null)
             {
@@ -68,12 +66,12 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     Password = userinfo[1];
                 }
             }
+
+            this.UriString = uristring;
         }
 
         public UriInfo(string uristring, string username, string password)
         {
-            this.UriString = uristring;
-
             Uri uri = MakeUri(uristring);
             if (uri != null)
             {
@@ -90,6 +88,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
             this.UserName = username;
             this.Password = password;
+            this.UriString = uristring;
         }
 
         public string Scheme { get; internal protected set; }
@@ -158,6 +157,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             try
             {
+                if (uriString.StartsWith("jdbc") || uriString.Contains(";"))
+                {
+                    ConvertJdbcToUri(ref uriString);
+                }
+
                 return new Uri(uriString);
             }
             catch (Exception)
@@ -166,7 +170,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 if (uriString.Contains(","))
                 {
                     // Slide past the protocol
-                    var splitUri = UriString.Split('/');
+                    var splitUri = uriString.Split('/');
 
                     // get the host list (and maybe credentials)
                     // -- pre-emptively set it as the Host property rather than a local variable
@@ -184,6 +188,35 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 }
 
                 return null;
+            }
+        }
+
+        protected internal void ConvertJdbcToUri(ref string uriString)
+        {
+            uriString = uriString.Replace("jdbc:", string.Empty).Replace(";", "&");
+            if (!uriString.Contains("?"))
+            {
+                var firstAmp = uriString.IndexOf("&");
+
+                // If there is an equals sign before any ampersands, it is likely a key was included for the db name.
+                // Make the database name part of the path rather than query string if possible
+                var firstEquals = uriString.IndexOf("=");
+                if (firstEquals > 0 && (firstEquals < firstAmp || firstAmp == -1))
+                {
+                    var dbnameindex = uriString.IndexOf("databasename=", StringComparison.InvariantCultureIgnoreCase);
+                    if (dbnameindex > 0)
+                    {
+                        uriString = uriString.Remove(dbnameindex, 13);
+
+                        // recalculate the location of the first '&'
+                        firstAmp = uriString.IndexOf("&");
+                    }
+                }
+
+                if (firstAmp > 0)
+                {
+                    uriString = uriString.Substring(0, firstAmp) + questionMark[0] + uriString.Substring(firstAmp + 1, uriString.Length - firstAmp - 1);
+                }
             }
         }
 

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CloudFoundry.Connector.Services;
+using System;
 using System.Net;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer
@@ -36,7 +37,35 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             {
                 configuration.Port = si.Port;
                 configuration.Server = si.Host;
-                configuration.Database = si.Path.Replace("databaseName=", string.Empty);
+                if (!string.IsNullOrEmpty(si.Path))
+                {
+                    configuration.Database = si.Path;
+                }
+
+                if (si.Query != null)
+                {
+                    foreach (var piece in si.Query.Split('&'))
+                    {
+                        var kvp = piece.Split('=');
+                        if (kvp[0].EndsWith("database", StringComparison.InvariantCultureIgnoreCase) || kvp[0].EndsWith("databaseName", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            configuration.Database = kvp[1];
+                        }
+                        else if (kvp[0].EndsWith("instancename", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            configuration.InstanceName = kvp[1];
+                        }
+                        else if (kvp[0].StartsWith("hostnameincertificate", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            // adding this key could result in "System.ArgumentException : Keyword not supported: 'hostnameincertificate'" later
+                        }
+                        else
+                        {
+                            configuration.Options.Add(kvp[0], kvp[1]);
+                        }
+                    }
+                }
+
                 if (configuration.UrlEncodedCredentials)
                 {
                     configuration.Username = WebUtility.UrlDecode(si.UserName);
