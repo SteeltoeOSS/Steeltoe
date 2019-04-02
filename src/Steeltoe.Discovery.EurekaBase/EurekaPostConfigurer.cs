@@ -160,7 +160,11 @@ namespace Steeltoe.Discovery.Eureka
             UpdateWithDefaults(si, instOptions);
             instOptions.NonSecurePort = DEFAULT_NONSECUREPORT;
             instOptions.SecurePort = DEFAULT_SECUREPORT;
-            instOptions.InstanceId = si.ApplicationInfo.ApplicationUris[0] + ":" + si.ApplicationInfo.InstanceId;
+
+            if (si.ApplicationInfo.ApplicationUris?.Length > 0)
+            {
+                instOptions.InstanceId = si.ApplicationInfo.ApplicationUris[0] + ":" + si.ApplicationInfo.InstanceId;
+            }
         }
 
         private static void UpdateWithDefaults(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
