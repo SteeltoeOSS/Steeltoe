@@ -78,12 +78,14 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["management:endpoints:heapdump:sensitive"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true",
-                ["common"] = "appsettings"
+                ["common"] = "appsettings",
+                ["CharSize"] = "should not duplicate"
             };
 
             var otherAppsettings = new Dictionary<string, string>()
             {
-                ["common"] = "otherAppsettings"
+                ["common"] = "otherAppsettings",
+                ["charSize"] = "should not duplicate"
             };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
@@ -102,7 +104,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Assert.Equal("MemoryConfigurationProvider", appsettingsDesc.Name);
             var props = appsettingsDesc.Properties;
             Assert.NotNull(props);
-            Assert.Equal(8, props.Count);
+            Assert.Equal(9, props.Count);
             Assert.Contains("management:endpoints:enabled", props.Keys);
             var prop = props["management:endpoints:enabled"];
             Assert.NotNull(prop);
