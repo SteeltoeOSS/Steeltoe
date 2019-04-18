@@ -92,27 +92,6 @@ namespace Steeltoe.Management.Endpoint.Env
             return new PropertySourceDescriptor(sourceName, properties);
         }
 
-        private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string rootKey, HashSet<string> initialKeys)
-        {
-            foreach (var key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
-            {
-                string surrogateKey = key;
-                if (rootKey != null)
-                {
-                    surrogateKey = rootKey + ":" + key;
-                }
-
-                GetFullKeyNames(provider, surrogateKey, initialKeys);
-
-                if (!initialKeys.Any(k => k.StartsWith(surrogateKey)))
-                {
-                    initialKeys.Add(surrogateKey);
-                }
-            }
-
-            return initialKeys;
-        }
-
         public virtual string GetPropertySourceName(IConfigurationProvider provider)
         {
             return provider is FileConfigurationProvider fileProvider
@@ -122,7 +101,7 @@ namespace Steeltoe.Management.Endpoint.Env
 
         private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string rootKey, HashSet<string> initialKeys)
         {
-            foreach (var key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey))
+            foreach (var key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
             {
                 string surrogateKey = key;
                 if (rootKey != null)
