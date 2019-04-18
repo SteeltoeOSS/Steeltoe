@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.Health
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, HealthEndpoint endpoint)
+        public async Task Invoke(HttpContext context, HealthEndpointCore endpoint)
         {
             _endpoint = endpoint;
 

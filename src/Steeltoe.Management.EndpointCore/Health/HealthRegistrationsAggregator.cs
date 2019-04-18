@@ -12,57 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-    public class DefaultHealthAggregator : IHealthAggregator
+    public class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
     {
-        public HealthCheckResult Aggregate(IList<IHealthContributor> contributors)
+        public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider)
         {
-            if (contributors == null)
+            var result = Aggregate(contributors);
+
+            if (healthServiceOptions == null)
             {
-                return new HealthCheckResult();
+                return result;
             }
 
-            var result = new HealthCheckResult();
-            foreach (var contributor in contributors)
+            foreach (var registration in healthServiceOptions.CurrentValue.Registrations)
             {
-                HealthCheckResult h = null;
-                try
-                {
-                    h = contributor.Health();
-                }
-                catch (Exception)
-                {
-                    h = new HealthCheckResult();
-                }
+                HealthCheckResult h = registration.HealthCheck(serviceProvider).Result;
 
                 if (h.Status > result.Status)
                 {
                     result.Status = h.Status;
                 }
 
-                string key = GetKey(result, contributor.Id);
-                result.Details.Add(key, h.Details);
+                var key = GetKey(result, registration.Name);
+                result.Details.Add(key, h);
             }
 
             return result;
-        }
-
-        protected static string GetKey(HealthCheckResult result, string key)
-        {
-            // add the contribtor with a -n appended to the id
-            if (result.Details.ContainsKey(key))
-            {
-                return string.Concat(key, "-", result.Details.Count(k => k.Key == key));
-            }
-
-            return key;
         }
     }
 }

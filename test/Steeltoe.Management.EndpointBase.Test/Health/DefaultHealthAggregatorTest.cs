@@ -63,6 +63,21 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
+        public void Aggregate_DuplicateContributor_ReturnsExpectedHealth()
+        {
+            List<IHealthContributor> contribs = new List<IHealthContributor>()
+            {
+                new UpContributor(),
+                new UpContributor()
+            };
+            var agg = new DefaultHealthAggregator();
+            var result = agg.Aggregate(contribs);
+            Assert.NotNull(result);
+            Assert.Equal(HealthStatus.UP, result.Status);
+            Assert.Contains("Up-1", result.Details.Keys);
+        }
+
+        [Fact]
         public void Aggregate_MultipleContributor_OrderDoesntMatter_ReturnsExpectedHealth()
         {
             List<IHealthContributor> contribs = new List<IHealthContributor>()

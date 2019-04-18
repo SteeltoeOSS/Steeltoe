@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config)
         {
-            services.AddHealthActuator(config, new DefaultHealthAggregator(), GetDefaultHealthContributors());
+            services.AddHealthActuator(config, new HealthRegistrationsAggregator(), GetDefaultHealthContributors());
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// <param name="contributors">Contributors to application health</param>
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, params Type[] contributors)
         {
-            services.AddHealthActuator(config, new DefaultHealthAggregator(), contributors);
+            services.AddHealthActuator(config, new HealthRegistrationsAggregator(), contributors);
         }
 
         /// <summary>
@@ -79,8 +79,9 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddSingleton<IHealthOptions>(options);
             services.RegisterEndpointOptions(options);
             AddHealthContributors(services, contributors);
+
             services.TryAddSingleton<IHealthAggregator>(aggregator);
-            services.TryAddScoped<HealthEndpoint>();
+            services.TryAddScoped<HealthEndpointCore>();
         }
 
         public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)

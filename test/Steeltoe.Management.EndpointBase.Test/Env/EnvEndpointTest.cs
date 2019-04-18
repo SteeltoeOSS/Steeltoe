@@ -77,25 +77,43 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["management:endpoints:heapdump:enabled"] = "true",
                 ["management:endpoints:heapdump:sensitive"] = "true",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
-                ["management:endpoints:cloudfoundry:enabled"] = "true"
+                ["management:endpoints:cloudfoundry:enabled"] = "true",
+                ["common"] = "appsettings"
             };
+
+            var otherAppsettings = new Dictionary<string, string>()
+            {
+                ["common"] = "otherAppsettings"
+            };
+
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddInMemoryCollection(otherAppsettings);
             var config = configurationBuilder.Build();
 
             var ep = new EnvEndpoint(opts, config, new TestHosting());
-            var provider = config.Providers.Single();
-            var desc = ep.GetPropertySourceDescriptor(provider, config);
 
-            Assert.Equal("MemoryConfigurationProvider", desc.Name);
-            var props = desc.Properties;
+            var appsettingsProvider = config.Providers.ElementAt(0);
+            var appsettingsDesc = ep.GetPropertySourceDescriptor(appsettingsProvider);
+
+            var otherAppsettingsProvider = config.Providers.ElementAt(1);
+            var otherAppsettingsDesc = ep.GetPropertySourceDescriptor(otherAppsettingsProvider);
+
+            Assert.Equal("MemoryConfigurationProvider", appsettingsDesc.Name);
+            var props = appsettingsDesc.Properties;
             Assert.NotNull(props);
-            Assert.Equal(7, props.Count);
+            Assert.Equal(8, props.Count);
             Assert.Contains("management:endpoints:enabled", props.Keys);
             var prop = props["management:endpoints:enabled"];
             Assert.NotNull(prop);
             Assert.Equal("false", prop.Value);
             Assert.Null(prop.Origin);
+
+            var otherProps = otherAppsettingsDesc.Properties;
+            var appsettingsCommonProp = props["common"];
+            var otherAppsettingCommonProp = otherProps["common"];
+            Assert.Equal("appsettings", appsettingsCommonProp.Value);
+            Assert.Equal("otherAppsettings", otherAppsettingCommonProp.Value);
         }
 
         [Fact]

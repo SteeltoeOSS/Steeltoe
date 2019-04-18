@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.Health.Contributor;
 using System;
 using System.Collections.Generic;
 
@@ -41,6 +42,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                     break;
                 case "unknown":
                     services.AddHealthActuator(Configuration, new Type[] { typeof(UnknownContributor) });
+                    break;
+                case "defaultAggregator":
+                    services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
                     break;
                 default:
                     services.AddHealthActuator(Configuration);

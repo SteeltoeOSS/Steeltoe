@@ -14,7 +14,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -45,6 +48,36 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
+        public void AddHealthActuator_AddsCorrectServicesWithDefaultHealthAggregator()
+        {
+            ServiceCollection services = new ServiceCollection();
+            var appSettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:path"] = "/cloudfoundryapplication",
+                ["management:endpoints:health:enabled"] = "true"
+            };
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appSettings);
+            var config = configurationBuilder.Build();
+
+            services.AddHealthActuator(config, new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
+
+            services.Configure<HealthCheckServiceOptions>(config);
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetService<IHealthOptions>();
+            Assert.NotNull(options);
+            var ep = serviceProvider.GetService<HealthEndpointCore>();
+            Assert.NotNull(ep);
+            var agg = serviceProvider.GetService<IHealthAggregator>();
+            Assert.NotNull(agg);
+            var contribs = serviceProvider.GetServices<IHealthContributor>();
+            Assert.NotNull(contribs);
+            var contribsList = contribs.ToList();
+            Assert.Single(contribsList);
+        }
+
+        [Fact]
         public void AddHealthActuator_AddsCorrectServices()
         {
             ServiceCollection services = new ServiceCollection();
@@ -60,10 +93,11 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
             services.AddHealthActuator(config);
 
+            services.Configure<HealthCheckServiceOptions>(config);
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<IHealthOptions>();
             Assert.NotNull(options);
-            var ep = serviceProvider.GetService<HealthEndpoint>();
+            var ep = serviceProvider.GetService<HealthEndpointCore>();
             Assert.NotNull(ep);
             var agg = serviceProvider.GetService<IHealthAggregator>();
             Assert.NotNull(agg);
@@ -83,6 +117,11 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.NotNull(contribs);
             var contribsList = contribs.ToList();
             Assert.Single(contribsList);
+        }
+
+        private int IOptionsMonitor<T>()
+        {
+            throw new NotImplementedException();
         }
     }
 }

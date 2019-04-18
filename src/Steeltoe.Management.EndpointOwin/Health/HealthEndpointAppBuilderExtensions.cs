@@ -149,7 +149,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
             return builder.Use<HealthEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
 
-        internal static List<IHealthContributor> GetDefaultHealthContributors()
+            internal static List<IHealthContributor> GetDefaultHealthContributors()
         {
             return new List<IHealthContributor>
             {
