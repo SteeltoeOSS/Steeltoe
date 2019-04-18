@@ -19,6 +19,7 @@ using Steeltoe.CloudFoundry.Connector.RabbitMQ;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
 using System;
+using System.Linq;
 
 namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
@@ -31,9 +32,10 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
+        /// <param name="healthChecksBuilder">Microsoft HealthChecksBuilder</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>RabbitMQ.Client.ConnectionFactory is retrievable as both ConnectionFactory and IConnectionFactory</remarks>
-        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, IHealthChecksBuilder healthChecksBuilder = null)
         {
             if (services == null)
             {
@@ -47,7 +49,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 
             RabbitMQServiceInfo info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
 
-            DoAdd(services, info, config, contextLifetime);
+            DoAdd(services, info, config, contextLifetime, healthChecksBuilder);
             return services;
         }
 
@@ -59,9 +61,10 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
+        /// <param name="healthChecksBuilder">Microsoft HealthChecksBuilder</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>RabbitMQ.Client.ConnectionFactory is retrievable as both ConnectionFactory and IConnectionFactory</remarks>
-        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, IHealthChecksBuilder healthChecksBuilder = null)
         {
             if (services == null)
             {
@@ -80,11 +83,11 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 
             RabbitMQServiceInfo info = config.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
 
-            DoAdd(services, info, config, contextLifetime);
+            DoAdd(services, info, config, contextLifetime, healthChecksBuilder);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, RabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, RabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, IHealthChecksBuilder healthChecksBuilder)
         {
             Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
             Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
@@ -93,7 +96,15 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
             RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
             services.Add(new ServiceDescriptor(rabbitMQInterfaceType, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(rabbitMQImplementationType, factory.Create, contextLifetime));
-            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RabbitMQHealthContributor(factory, ctx.GetService<ILogger<RabbitMQHealthContributor>>()), ServiceLifetime.Singleton));
+            if (healthChecksBuilder == null)
+            {
+                services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RabbitMQHealthContributor(factory, ctx.GetService<ILogger<RabbitMQHealthContributor>>()), ServiceLifetime.Singleton));
+            }
+            else
+            {
+                var connectionString = factory.CreateConnectionString();
+                healthChecksBuilder.AddRabbitMQ(connectionString);
+            }
         }
     }
 }

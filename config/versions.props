@@ -25,7 +25,7 @@
     <PomeloEFCoreVersion>2.0.1</PomeloEFCoreVersion>
     <RabbitClientVersion>5.1.0</RabbitClientVersion>
     <SqlClientVersion>4.5.0</SqlClientVersion>
-    <StackExchangeVersion>1.2.6</StackExchangeVersion>
+    <StackExchangeVersion>2.0.0</StackExchangeVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>

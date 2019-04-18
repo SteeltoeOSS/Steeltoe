@@ -33,9 +33,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logging factory</param>
+        /// <param name="builder">Microsoft HealthChecksBuilder</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>MySqlConnection is retrievable as both MySqlConnection and IDbConnection</remarks>
-        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, IHealthChecksBuilder builder = null)
         {
             if (services == null)
             {
@@ -49,21 +50,22 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
 
-            DoAdd(services, info, config, contextLifetime);
+            DoAdd(services, info, config, contextLifetime, builder);
             return services;
         }
 
         /// <summary>
-        /// Add MySql and its IHealthContributor to a ServiceCollection
+        /// Add MySql and its IHealthContributor to a ServiceCollection.
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logging factory</param>
+        /// <param name="builder">Microsoft HealthChecksBuilder</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>MySqlConnection is retrievable as both MySqlConnection and IDbConnection</remarks>
-        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, IHealthChecksBuilder builder = null)
         {
             if (services == null)
             {
@@ -82,18 +84,25 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
-            DoAdd(services, info, config, contextLifetime);
+            DoAdd(services, info, config, contextLifetime, builder);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, IHealthChecksBuilder builder)
         {
             Type mySqlConnection = ConnectorHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
             var mySqlConfig = new MySqlProviderConnectorOptions(config);
             var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(mySqlConnection, factory.Create, contextLifetime));
-            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), ServiceLifetime.Singleton));
+            if (builder == null)
+            {
+                services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), ServiceLifetime.Singleton));
+            }
+            else
+            {
+                builder.AddMySql(factory.CreateConnectionString());
+            }
         }
     }
 }
