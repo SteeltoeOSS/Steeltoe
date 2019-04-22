@@ -1,0 +1,23 @@
+language: csharp
+dist: trusty
+env:
+  global:
+    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    - DOTNET_CLI_TELEMETRY_OPTOUT: 1
+mono: none
+dotnet: 2.0.3
+os:
+  - linux
+  - osx
+osx_image: xcode8.3
+branches:
+  only:
+    - master
+    - dev
+    - /^update[0-9]{3}/            
+script:
+  - ./scripts/travis_install.sh
+  - ./scripts/travis_build.sh
+  - ./scripts/travis_test.sh
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ulimit -n 1024; fi  
