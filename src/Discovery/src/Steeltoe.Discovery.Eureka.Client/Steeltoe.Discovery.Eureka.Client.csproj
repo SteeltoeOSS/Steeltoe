@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\versions.props" />
+
+  <PropertyGroup>
+    <Description>Neflix Eureka Client</Description>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Authors>Pivotal;dtillman</Authors>
+    <TargetFrameworks>net452;netstandard1.3</TargetFrameworks>
+    <AssemblyName>Steeltoe.Discovery.Eureka.Client</AssemblyName>
+    <PackageId>Steeltoe.Discovery.Eureka.Client</PackageId>
+    <PackageTags>Eureka, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+  </PropertyGroup>
+
+<ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
+  <PackageReference Include="System.Collections" Version="$(CoreFxVersion)" />
+  <PackageReference Include="System.Net.NameResolution" Version="$(CoreFxVersion)" />
+ </ItemGroup>
+
+<ItemGroup>
+  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
+  <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
+
+    <!-- 4.3.0 of this package has problems on net46+, by default that version gets included, so we have to force using 4.3.1+ in apps -->
+  <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" />
+</ItemGroup>
+
+</Project>
