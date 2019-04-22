@@ -1,0 +1,28 @@
+<Project>
+  <PropertyGroup>
+    <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
+    <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
+    <SteeltoeConfigVersion>2.0.0-master-00209</SteeltoeConfigVersion>
+    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
+    <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
+    <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
+    <AutofacVersion>4.6.1</AutofacVersion>
+    <CoreFxVersion>4.4.0</CoreFxVersion>
+    <StyleCopVersion>1.0.2</StyleCopVersion>
+    <EF6Version>6.1.3</EF6Version>
+    <EFCoreVersion>2.0.0</EFCoreVersion>
+    <PomeloEFCoreVersion>2.0.0</PomeloEFCoreVersion>
+    <EFCoreTestVersion>2.0.0</EFCoreTestVersion>
+    <StackExchangeVersion>1.2.6</StackExchangeVersion>
+    <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
+    <NpgsqlVersion>3.2.5</NpgsqlVersion>
+    <NpgsqlEFCoreVersion>2.0.0</NpgsqlEFCoreVersion>
+    <RabbitClientVersion>5.0.1</RabbitClientVersion>
+    <MySqlVersion>6.9.10</MySqlVersion>
+    <SqlClientVersion>4.4.2</SqlClientVersion>
+    <JsonNetVersion>10.0.3</JsonNetVersion>
+    <TestSdkVersion>15.5.0</TestSdkVersion>
+    <XunitVersion>2.3.1</XunitVersion>
+    <XunitStudioVersion>2.3.1</XunitStudioVersion>
+  </PropertyGroup>
+</Project>
