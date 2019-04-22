@@ -1,0 +1,90 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D9798FDE-76F4-4848-8AE0-95249C0101F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CC77ED1F-BC03-4B9D-A07A-186C9A13042B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{473B575D-8871-4E77-9212-C2BBA20D702E}"
+	ProjectSection(SolutionItems) = preProject
+		config\versions-dev.props = config\versions-dev.props
+		config\versions-master.props = config\versions-master.props
+		config\versions.props = config\versions.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{99524EB1-60C2-4069-B4F5-C89344678ABD}"
+	ProjectSection(SolutionItems) = preProject
+		.appveyor.yml = .appveyor.yml
+		.travis.yml = .travis.yml
+		nuget.config = nuget.config
+		README.md = README.md
+		stylecop.json = stylecop.json
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "src\Steeltoe.Common\Steeltoe.Common.csproj", "{4AEA9704-3B99-4317-A959-7D6E4CDD4811}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "src\Steeltoe.Common.Autofac\Steeltoe.Common.Autofac.csproj", "{E9C17268-1B23-4183-8F88-8FEFE95A3CAB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "src\Steeltoe.Common.Http\Steeltoe.Common.Http.csproj", "{C9CF9265-7343-4080-AD23-BFCD6E571865}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac.Test", "test\Steeltoe.Common.Autofac.Test\Steeltoe.Common.Autofac.Test.csproj", "{A2C46127-6D02-46FA-9AFC-9C27A11F1FB6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http.Test", "test\Steeltoe.Common.Http.Test\Steeltoe.Common.Http.Test.csproj", "{7FF75564-423A-4EE6-B7AD-9D35C428757F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Test", "test\Steeltoe.Common.Test\Steeltoe.Common.Test.csproj", "{101DF01E-FDE9-4B97-9666-C3777CC308D0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net", "src\Steeltoe.Common.Net\Steeltoe.Common.Net.csproj", "{5C2D53DB-2980-4393-BCA1-B4C51004E4F7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4AEA9704-3B99-4317-A959-7D6E4CDD4811}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AEA9704-3B99-4317-A959-7D6E4CDD4811}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AEA9704-3B99-4317-A959-7D6E4CDD4811}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AEA9704-3B99-4317-A959-7D6E4CDD4811}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9C17268-1B23-4183-8F88-8FEFE95A3CAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9C17268-1B23-4183-8F88-8FEFE95A3CAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9C17268-1B23-4183-8F88-8FEFE95A3CAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9C17268-1B23-4183-8F88-8FEFE95A3CAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9CF9265-7343-4080-AD23-BFCD6E571865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9CF9265-7343-4080-AD23-BFCD6E571865}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9CF9265-7343-4080-AD23-BFCD6E571865}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9CF9265-7343-4080-AD23-BFCD6E571865}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2C46127-6D02-46FA-9AFC-9C27A11F1FB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2C46127-6D02-46FA-9AFC-9C27A11F1FB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2C46127-6D02-46FA-9AFC-9C27A11F1FB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2C46127-6D02-46FA-9AFC-9C27A11F1FB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FF75564-423A-4EE6-B7AD-9D35C428757F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FF75564-423A-4EE6-B7AD-9D35C428757F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FF75564-423A-4EE6-B7AD-9D35C428757F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FF75564-423A-4EE6-B7AD-9D35C428757F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{101DF01E-FDE9-4B97-9666-C3777CC308D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{101DF01E-FDE9-4B97-9666-C3777CC308D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{101DF01E-FDE9-4B97-9666-C3777CC308D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{101DF01E-FDE9-4B97-9666-C3777CC308D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C2D53DB-2980-4393-BCA1-B4C51004E4F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C2D53DB-2980-4393-BCA1-B4C51004E4F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C2D53DB-2980-4393-BCA1-B4C51004E4F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C2D53DB-2980-4393-BCA1-B4C51004E4F7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4AEA9704-3B99-4317-A959-7D6E4CDD4811} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
+		{E9C17268-1B23-4183-8F88-8FEFE95A3CAB} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
+		{C9CF9265-7343-4080-AD23-BFCD6E571865} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
+		{A2C46127-6D02-46FA-9AFC-9C27A11F1FB6} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
+		{7FF75564-423A-4EE6-B7AD-9D35C428757F} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
+		{101DF01E-FDE9-4B97-9666-C3777CC308D0} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
+		{5C2D53DB-2980-4393-BCA1-B4C51004E4F7} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A85F9DA-2C2D-48E9-A28C-9B35C473C150}
+	EndGlobalSection
+EndGlobal
