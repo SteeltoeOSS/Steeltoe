@@ -1,0 +1,71 @@
+version: '2.0.0-{branch}-{build}'
+init:
+  - git config --global core.autocrlf true
+image: Visual Studio 2017    
+branches:
+  only:
+    - master
+    - dev
+    - /^update[0-9]{3}/           
+install:
+  - scripts\appveyor_install.cmd
+test_script:
+  - scripts\appveyor_tests.cmd
+build_script:
+  - scripts\appveyor_build.cmd
+artifacts:
+- path: 'src\Steeltoe.Common\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Common.Http\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Common.Net\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Common.Autofac\bin\Release\*.nupkg'
+- path: 'src\Steeltoe.Common\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Common.Http\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Common.Net\bin\Debug\*.nupkg'
+- path: 'src\Steeltoe.Common.Autofac\bin\Debug\*.nupkg'
+deploy:
+- provider: NuGet
+  skip_symbols: false
+  artifact: /.*\.nupkg/
+  server: https://www.myget.org/F/steeltoemaster/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoemaster/symbols/api/v2/package  
+  api_key:
+    secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
+  on:
+    branch: master
+    appveyor_repo_tag: false
+- provider: NuGet
+  skip_symbols: false
+  artifact: /.*\.nupkg/
+  server: https://www.myget.org/F/steeltoedev/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoedev/symbols/api/v2/package  
+  api_key:
+    secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
+  on:
+    branch: dev
+    appveyor_repo_tag: false
+- provider: NuGet
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  api_key:
+    secure: RGkpu8xIMDC75IAd1qPRdueeTaYj+ddW2bNEw8S7e81940ELu+WV04uWAzqV34/C
+  on:
+    branch: master
+    appveyor_repo_tag: true
+- provider: NuGet
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  server: https://www.myget.org/F/steeltoeupdates/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoeupdates/symbols/api/v2/package
+  api_key:
+    secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
+  on:
+    branch: /^update[0-9]{3}/
+    appveyor_repo_tag: false
+- provider: NuGet
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  api_key:
+    secure: RGkpu8xIMDC75IAd1qPRdueeTaYj+ddW2bNEw8S7e81940ELu+WV04uWAzqV34/C
+  on:
+    branch:  /^update[0-9]{3}/
+    appveyor_repo_tag: true    
