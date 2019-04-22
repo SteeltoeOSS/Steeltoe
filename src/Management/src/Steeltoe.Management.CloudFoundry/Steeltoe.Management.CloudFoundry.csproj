@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <Import Project="..\..\versions.props" />
+  
+  <PropertyGroup>
+    <Description>Steeltoe Management Endpoints for Cloud Foundry</Description>
+    <Authors>Pivotal;dtillman</Authors>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+    <AssemblyName>Steeltoe.Management.CloudFoundry</AssemblyName>
+    <PackageId>Steeltoe.Management.CloudFoundry</PackageId>
+    <PackageTags>Spring Cloud;Actuator;Management;Monitoring;CloudFoundry</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.Management.Endpoint\Steeltoe.Management.Endpoint.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.Endpoint.CloudFoundry\Steeltoe.Management.Endpoint.CloudFoundry.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.Endpoint.Health\Steeltoe.Management.Endpoint.Health.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.Endpoint.Info\Steeltoe.Management.Endpoint.Info.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.Endpoint.Loggers\Steeltoe.Management.Endpoint.Loggers.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.Endpoint.Trace\Steeltoe.Management.Endpoint.Trace.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Management.Endpoint.CloudFoundry" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.Endpoint.Health" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.Endpoint.Info" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.Endpoint.Loggers" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.Endpoint.Trace" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.Endpoint" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\versions.props" />
+  
+  <PropertyGroup>
+      <Description>Steeltoe Loggers Management Endpoint</Description>
+      <Authors>Pivotal;dtillman</Authors>
+      <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+      <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+      <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+      <AssemblyName>Steeltoe.Management.Endpoint.Loggers</AssemblyName>
+      <PackageId>Steeltoe.Management.Endpoint.Loggers</PackageId>
+      <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
+      <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+      <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+      <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+      <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+      <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+      <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.Management.Endpoint\Steeltoe.Management.Endpoint.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Management.Endpoint" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+  
+
+</Project>
