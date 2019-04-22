@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+ <Import Project="..\..\versions.props" />
+
+  <PropertyGroup>
+    <Description>Steeltoe Neflix Hystrix Metrics Event Stream</Description>
+    <Authors>Pivotal,dtillman</Authors>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsEvents</AssemblyName>
+    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsEvents</PackageId>
+    <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
+    <PackageIconUrl>http://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+      <ProjectReference Include="..\Steeltoe.CircuitBreaker.Hystrix.Core\Steeltoe.CircuitBreaker.Hystrix.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+      <PackageReference Include="Steeltoe.CircuitBreaker.Hystrix.Core" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
+    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
+  </ItemGroup>
+  
+  <!-- <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup> -->
+  
+</Project>
