@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{26E1A61B-FA79-41BF-9C3B-5A04299F356A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EEF15943-96DB-44B5-BA4A-1D11171AD74F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "src\Steeltoe.Extensions.Logging.DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{BCF90E1F-ADD2-42A2-8601-AB7A5C9FAFC4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger.Test", "test\Steeltoe.Extensions.Logging.DynamicLogger.Test\Steeltoe.Extensions.Logging.DynamicLogger.Test.csproj", "{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2BFFFBDB-66EE-4F9C-9ABE-DB2A9EE49F12}"
+	ProjectSection(SolutionItems) = preProject
+		config\versions-dev.props = config\versions-dev.props
+		config\versions-master.props = config\versions-master.props
+		config\versions.props = config\versions.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A1B0D5C-681B-4A1B-8C28-E8AB1936736E}"
+	ProjectSection(SolutionItems) = preProject
+		.appveyor.yml = .appveyor.yml
+		.travis.yml = .travis.yml
+		nuget.config = nuget.config
+		README.md = README.md
+		stylecop.json = stylecop.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BCF90E1F-ADD2-42A2-8601-AB7A5C9FAFC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCF90E1F-ADD2-42A2-8601-AB7A5C9FAFC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCF90E1F-ADD2-42A2-8601-AB7A5C9FAFC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCF90E1F-ADD2-42A2-8601-AB7A5C9FAFC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BCF90E1F-ADD2-42A2-8601-AB7A5C9FAFC4} = {26E1A61B-FA79-41BF-9C3B-5A04299F356A}
+		{CBD7C37D-6CDC-4058-9B68-68EDC87837FD} = {EEF15943-96DB-44B5-BA4A-1D11171AD74F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F03D9805-6C7E-411E-A8D5-191ABE8D2F66}
+	EndGlobalSection
+EndGlobal
