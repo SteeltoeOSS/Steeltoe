@@ -1,0 +1,225 @@
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Microsoft.Owin;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Stats.Aggregations;
+using Steeltoe.Management.Census.Stats.Measures;
+using Steeltoe.Management.Census.Tags;
+using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointOwin.Test;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Xunit;
+
+namespace Steeltoe.Management.EndpointOwin.Metrics.Test
+{
+    public class MetricsEndpointOwinMiddlewareTest : BaseTest
+    {
+        [Fact]
+        public void ParseTag_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+
+            var ep = new MetricsEndpoint(opts, stats);
+            var middle = new MetricsEndpointOwinMiddleware(null, ep);
+
+            Assert.Null(middle.ParseTag("foobar"));
+            Assert.Equal(new KeyValuePair<string, string>("foo", "bar"), middle.ParseTag("foo:bar"));
+            Assert.Equal(new KeyValuePair<string, string>("foo", "bar:bar"), middle.ParseTag("foo:bar:bar"));
+            Assert.Null(middle.ParseTag("foo,bar"));
+        }
+
+        [Fact]
+        public void ParseTags_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+
+            var ep = new MetricsEndpoint(opts, stats);
+            var middle = new MetricsEndpointOwinMiddleware(null, ep);
+
+            var context1 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "foo=key:value");
+            var result = middle.ParseTags(context1.Request.Query);
+            Assert.NotNull(result);
+            Assert.Empty(result);
+
+            var context2 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "tag=key:value");
+            result = middle.ParseTags(context2.Request.Query);
+            Assert.NotNull(result);
+            Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
+
+            var context3 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "tag=key:value&foo=key:value&tag=key1:value1");
+            result = middle.ParseTags(context3.Request.Query);
+            Assert.NotNull(result);
+            Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
+            Assert.Contains(new KeyValuePair<string, string>("key1", "value1"), result);
+            Assert.Equal(2, result.Count);
+
+            var context4 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "tag=key:value&foo=key:value&tag=key:value");
+            result = middle.ParseTags(context4.Request.Query);
+            Assert.NotNull(result);
+            Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public void GetMetricName_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+
+            var ep = new MetricsEndpoint(opts, stats);
+            var middle = new MetricsEndpointOwinMiddleware(null, ep);
+
+            var context1 = CreateRequest("GET", "/metrics");
+            Assert.Null(middle.GetMetricName(context1.Request));
+
+            var context2 = CreateRequest("GET", "/metrics/Foo.Bar.Class");
+            Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
+
+            var context3 = CreateRequest("GET", "/metrics", "tag=key:value&tag=key1:value1");
+            Assert.Null(middle.GetMetricName(context3.Request));
+        }
+
+        [Fact]
+        public async void HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+
+            var ep = new MetricsEndpoint(opts, stats);
+            var middle = new MetricsEndpointOwinMiddleware(null, ep);
+
+            var context = CreateRequest("GET", "/metrics");
+
+            await middle.HandleMetricsRequestAsync(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            StreamReader rdr = new StreamReader(context.Response.Body);
+            string json = await rdr.ReadToEndAsync();
+            Assert.Equal("{\"names\":[]}", json);
+        }
+
+        [Fact]
+        public async void HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+
+            var ep = new MetricsEndpoint(opts, stats);
+            var middle = new MetricsEndpointOwinMiddleware(null, ep);
+
+            var context = CreateRequest("GET", "/metrics/foo.bar");
+
+            await middle.HandleMetricsRequestAsync(context);
+            Assert.Equal(404, context.Response.StatusCode);
+        }
+
+        [Fact]
+        public async void HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+            var tagsComponent = new TagsComponent();
+            var tagger = tagsComponent.Tagger;
+            var ep = new MetricsEndpoint(opts, stats);
+
+            SetupTestView(stats);
+
+            var middle = new MetricsEndpointOwinMiddleware(null, ep);
+
+            var context = CreateRequest("GET", "/metrics/test.test", "?tag=a:v1");
+
+            await middle.HandleMetricsRequestAsync(context);
+            Assert.Equal(200, context.Response.StatusCode);
+
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            StreamReader rdr = new StreamReader(context.Response.Body);
+            string json = await rdr.ReadToEndAsync();
+            Assert.Equal("{\"name\":\"test.test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45.0}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
+        }
+
+        [Fact]
+        public void MetricsEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+            var ep = new MetricsEndpoint(opts, stats);
+            var middle = new MetricsEndpointOwinMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("DELETE", "/metrics"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics?tag=key:value&tag=key1:value1"));
+        }
+
+        private IOwinContext CreateRequest(string method, string path, string query = null)
+        {
+            OwinContext context = new OwinContext();
+            context.Response.Body = new MemoryStream();
+            context.Request.Method = method;
+            context.Request.Path = new PathString(path);
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("localhost");
+            if (!string.IsNullOrEmpty(query))
+            {
+                context.Request.QueryString = new QueryString(query);
+            }
+
+            return context;
+        }
+
+        private void SetupTestView(OpenCensusStats stats)
+        {
+            var tagsComponent = new TagsComponent();
+            var tagger = tagsComponent.Tagger;
+
+            ITagKey aKey = TagKey.Create("a");
+            ITagKey bKey = TagKey.Create("b");
+            ITagKey cKey = TagKey.Create("c");
+
+            string viewName = "test.test";
+            IMeasureDouble measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.Bytes);
+
+            IViewName testViewName = ViewName.Create(viewName);
+            IView testView = View.Create(
+                                        testViewName,
+                                        "test",
+                                        measure,
+                                        Sum.Create(),
+                                        new List<ITagKey>() { aKey, bKey, cKey });
+
+            stats.ViewManager.RegisterView(testView);
+
+            ITagContext context1 = tagger
+                .EmptyBuilder
+                .Put(TagKey.Create("a"), TagValue.Create("v1"))
+                .Put(TagKey.Create("b"), TagValue.Create("v1"))
+                .Put(TagKey.Create("c"), TagValue.Create("v1"))
+                .Build();
+
+            for (int i = 0; i < 10; i++)
+            {
+                stats.StatsRecorder.NewMeasureMap().Put(measure, i).Record(context1);
+            }
+        }
+    }
+}
