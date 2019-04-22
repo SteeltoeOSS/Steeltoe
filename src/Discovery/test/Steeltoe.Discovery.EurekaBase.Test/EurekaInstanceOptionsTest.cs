@@ -48,6 +48,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Null(opts.HealthCheckUrl);
             Assert.Null(opts.SecureHealthCheckUrl);
             Assert.Equal(DataCenterName.MyOwn, opts.DataCenterInfo.Name);
+            Assert.NotNull(opts.IpAddress);
             Assert.Equal(opts.GetHostAddress(false), opts.IpAddress);
             Assert.Null(opts.DefaultAddressResolutionOrder);
             Assert.Null(opts.RegistrationMethod);

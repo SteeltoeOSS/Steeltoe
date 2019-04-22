@@ -2,14 +2,14 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <SteeltoeCommonVersion>2.0.0-xxxxx-00004</SteeltoeCommonVersion>
-    <AspNetCoreVersion>1.1.0</AspNetCoreVersion>
-    <AspNetCoreTestVersion>1.1.2</AspNetCoreTestVersion>
-    <AspNetCoreMvcTestVersion>1.1.3</AspNetCoreMvcTestVersion>
-    <AspNetCoreDepTestVersion>1.1.1</AspNetCoreDepTestVersion>    
-    <CoreFxVersion>4.3.0</CoreFxVersion>
+    <SteeltoeCommonVersion>2.0.0</SteeltoeCommonVersion>
+    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
+    <AspNetCoreTestVersion>2.0.0</AspNetCoreTestVersion>
+    <AspNetCoreMvcTestVersion>2.0.0</AspNetCoreMvcTestVersion>
+    <AspNetCoreDepTestVersion>2.0.0</AspNetCoreDepTestVersion>
+    <CoreFxVersion>4.4.0</CoreFxVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
-    <JsonNetVersion>9.0.1</JsonNetVersion>
+    <JsonNetVersion>10.0.3</JsonNetVersion>
     <TestSdkVersion>15.5.0</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
