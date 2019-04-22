@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\versions.props" />
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
+  </PropertyGroup>
+  <Import Project="..\..\targetframework.props" />
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Steeltoe.CloudFoundry.ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryCore" Version="$(SteeltoeConfigVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
+    <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
+    
+    <!--<PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />-->
+    <!--<PackageReference Include="MySql.Data" Version="$(MySqlV8)" /> -->
+    <PackageReference Include="MySql.Data" Version="$(MySqlV6)" />
+    
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
+    <PackageReference Include="StackExchange.Redis.StrongName" Version="$(StackExchangeVersion)" />
+    <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreTestVersion)" />
+    
+    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
+
+</Project>

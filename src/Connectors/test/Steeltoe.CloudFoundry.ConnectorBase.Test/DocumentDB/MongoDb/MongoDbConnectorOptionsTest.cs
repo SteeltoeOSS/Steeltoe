@@ -1,0 +1,184 @@
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System;
+using System.Collections.Generic;
+using Xunit;
+
+namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
+{
+    public class MongoDbConnectorOptionsTest
+    {
+        [Fact]
+        public void Constructor_ThrowsIfConfigNull()
+        {
+            // Arrange
+            IConfiguration config = null;
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorOptions(config));
+            Assert.Contains(nameof(config), ex.Message);
+        }
+
+        [Fact]
+        public void Constructor_BindsValues()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["mongodb:client:server"] = "localhost",
+                ["mongodb:client:port"] = "1234",
+                ["mongodb:client:password"] = "password",
+                ["mongodb:client:username"] = "username"
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            var sconfig = new MongoDbConnectorOptions(config);
+            Assert.Equal("localhost", sconfig.Server);
+            Assert.Equal(1234, sconfig.Port);
+            Assert.Equal("password", sconfig.Password);
+            Assert.Equal("username", sconfig.Username);
+            Assert.Null(sconfig.ConnectionString);
+        }
+
+        [Fact]
+        public void Constructor_BindsOptions()
+        {
+            // arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["mongodb:client:options:someKey"] = "someValue",
+                ["mongodb:client:options:someOtherKey"] = "someOtherValue",
+                ["mongodb:client:options:stillAnotherKey"] = "stillAnotherValue",
+                ["mongodb:client:options:yetOneMoreKey"] = "yetOneMoreValue"
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new MongoDbConnectorOptions(config);
+
+            // assert
+            Assert.Equal("someValue", sconfig.Options["someKey"]);
+            Assert.Equal("someOtherValue", sconfig.Options["someOtherKey"]);
+            Assert.Equal("stillAnotherValue", sconfig.Options["stillAnotherKey"]);
+            Assert.Equal("yetOneMoreValue", sconfig.Options["yetOneMoreKey"]);
+        }
+
+        [Fact]
+        public void Options_Included_InConnectionString()
+        {
+            // arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["mongodb:client:options:someKey"] = "someValue",
+                ["mongodb:client:options:someOtherKey"] = "someOtherValue"
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new MongoDbConnectorOptions(config);
+
+            // assert
+            Assert.Equal("mongodb://localhost:27017?someKey=someValue&someOtherKey=someOtherValue", sconfig.ToString());
+        }
+
+        [Fact]
+        public void ConnectionString_Returned_AsConfigured()
+        {
+            // arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
+            };
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new MongoDbConnectorOptions(config);
+
+            // assert
+            Assert.Equal(appsettings["mongodb:client:ConnectionString"], sconfig.ToString());
+        }
+
+        [Fact]
+        public void ConnectionString_Overridden_By_A9sinCloudFoundryConfig()
+        {
+            // arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
+            };
+
+            // add environment variables as Cloud Foundry would
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_a9s_SingleServer_VCAP);
+
+            // add settings to config
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddEnvironmentVariables();
+            configurationBuilder.AddCloudFoundry();
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new MongoDbConnectorOptions(config);
+
+            // assert
+            Assert.NotEqual(appsettings["mongodb:client:ConnectionString"], sconfig.ToString());
+        }
+
+        [Fact]
+        public void ConnectionString_Overridden_By_EnterpriseMongoInCloudFoundryConfig()
+        {
+            // arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
+            };
+
+            // add environment variables as Cloud Foundry would
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleServer_Enterprise_VCAP);
+
+            // add settings to config
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddEnvironmentVariables();
+            configurationBuilder.AddCloudFoundry();
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new MongoDbConnectorOptions(config);
+
+            // assert
+            Assert.NotEqual(appsettings["mongodb:client:ConnectionString"], sconfig.ToString());
+
+            // NOTE: for this test, we don't expect VCAP_SERVICES to be parsed,
+            //          this test is only here to demonstrate that when a binding is present,
+            //          a pre-supplied connectionString is not returned
+        }
+    }
+}

@@ -1,0 +1,34 @@
+<Project>
+  <PropertyGroup>
+    <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
+    <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
+    <SteeltoeConfigVersion>2.2.0-dev-00343</SteeltoeConfigVersion>
+    <ExtensionsVersion>2.0.0</ExtensionsVersion>
+    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
+    <AspNetCoreTestVersion>2.1.1</AspNetCoreTestVersion>
+    <AspNetCoreMvcTestVersion>2.1.0</AspNetCoreMvcTestVersion>
+    <MicrosoftLoggingVersion>2.1.0</MicrosoftLoggingVersion>
+    <AutofacVersion>4.6.1</AutofacVersion>
+    <CoreFxVersion>4.4.0</CoreFxVersion>
+    <EF6Version>6.2.0</EF6Version>
+    <EFCoreVersion>2.0.0</EFCoreVersion>
+    <EFCoreTestVersion>2.1.2</EFCoreTestVersion>
+    <JsonNetVersion>11.0.2</JsonNetVersion>
+    <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
+    <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
+    <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
+    <MySqlV6>6.10.7</MySqlV6>
+    <MySqlV8>8.0.14</MySqlV8>
+    <NpgsqlVersion>4.0.0</NpgsqlVersion>
+    <NpgsqlEFCoreVersion>2.1.0</NpgsqlEFCoreVersion>
+    <PomeloEFCoreVersion>2.0.1</PomeloEFCoreVersion>
+    <RabbitClientVersion>5.1.0</RabbitClientVersion>
+    <SqlClientVersion>4.5.0</SqlClientVersion>
+    <StackExchangeVersion>1.2.6</StackExchangeVersion>
+    <StyleCopVersion>1.0.2</StyleCopVersion>
+    <TestSdkVersion>15.7.2</TestSdkVersion>
+    <XunitVersion>2.3.1</XunitVersion>
+    <XunitStudioVersion>2.3.1</XunitStudioVersion>
+    <SourceLinkGitHubVersion>1.0.0-beta2-18618-05</SourceLinkGitHubVersion>
+  </PropertyGroup>
+</Project>
