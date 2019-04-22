@@ -1,0 +1,63 @@
+version: '2.1.0-{branch}-{build}'
+init:
+  - git config --global core.autocrlf true
+image: Visual Studio 2017
+branches:
+  only:
+    - master
+    - dev
+    - /^update[0-9]{2}x/          
+install:
+  - ps: dotnet --info
+  - git clone https://github.com/SteeltoeOSS/steeltoe-ci.git -v
+  - ps: steeltoe-ci\scripts\appveyor_install.ps1
+test_script:
+  - ps: steeltoe-ci\scripts\appveyor_tests.ps1
+build_script:
+  - ps: steeltoe-ci\scripts\appveyor_build.ps1
+artifacts:
+  - path: '**\*.nupkg'
+environment:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  ProjectList: Steeltoe.Discovery.EurekaBase Steeltoe.Discovery.ClientCore Steeltoe.Discovery.ClientAutofac
+  PackageReferencesToUpdate: SteeltoeEurekaVersion
+  github_access_token:
+    secure: ko4J3M/czguVI9AbVdkv5qZuj3Wuzts5nkz/6cypneFkQGWJXDs8Akg7xOEMu8qU
+deploy:
+- provider: NuGet
+  skip_symbols: false
+  artifact: /.*\.nupkg/
+  server: https://www.myget.org/F/steeltoedev/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoedev/symbols/api/v2/package
+  api_key:
+    secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
+  on:
+    branch: dev
+    appveyor_repo_tag: false
+- provider: NuGet
+  skip_symbols: false
+  artifact: /.*\.nupkg/
+  server: https://www.myget.org/F/steeltoemaster/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoemaster/symbols/api/v2/package
+  api_key:
+    secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
+  on:
+    branch: master
+    appveyor_repo_tag: false
+- provider: NuGet
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  server: https://www.myget.org/F/steeltoestaging/api/v2/package
+  symbol_server: https://www.myget.org/F/steeltoestaging/symbols/api/v2/package
+  api_key:
+    secure: 246ApObnMYYvzDo9Ki72CxxuKfuoqYbrbUK2HLevGIGHXYY6f0OkAdE3EWCwNJ7g
+  on:
+    branch: /^update[0-9]{2}x/
+    appveyor_repo_tag: false
+after_deploy:
+  - git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
+  - git config --global user.email "steeltoe@pivotal.io"
+  - git config --global user.name "SteeltoeCI"
+  - ps: steeltoe-ci\scripts\update_downstream_props.ps1
