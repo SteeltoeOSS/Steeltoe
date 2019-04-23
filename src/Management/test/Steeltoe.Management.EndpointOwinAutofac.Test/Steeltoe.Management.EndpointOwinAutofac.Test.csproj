@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\versions.props" />
+
+  <PropertyGroup>
+    <Description>Unit test project for Steeltoe.Management.EndpointAutofac</Description>
+    <TargetFrameworks>net461</TargetFrameworks>
+    <AssemblyName>Steeltoe.Management.EndpointAutofac.Test</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="! $(OS.Contains('win')) AND '$(TargetFramework)'== 'net461'">
+    <FrameworkPathOverride>$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.6.1/1.0.1/lib/net461/</FrameworkPathOverride>
+    <RestoreAdditionalProjectSources>https://dotnet.myget.org/F/dotnet-core/api/v3/index.json</RestoreAdditionalProjectSources>
+  </PropertyGroup>
+  <ItemGroup Condition="! $(OS.Contains('win')) AND '$(TargetFramework)'== 'net461'">
+    <PackageReference Include="Microsoft.TargetingPack.NETFramework.v4.6.1"  Version="1.0.1" ExcludeAssets="All" PrivateAssets="All" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointOwinAutofac\Steeltoe.Management.EndpointOwinAutofac.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+
+  <PropertyGroup>
+    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json">
+      <Link>stylecop.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web" />
+  </ItemGroup>
+</Project>
