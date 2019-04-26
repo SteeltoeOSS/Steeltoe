@@ -87,7 +87,7 @@ namespace Steeltoe.Extensions.Logging
 
         public void Dispose()
         {
-            _delegate.Dispose();
+            _delegate?.Dispose();
             _delegate = null;
             _settings = null;
             _loggers = null;

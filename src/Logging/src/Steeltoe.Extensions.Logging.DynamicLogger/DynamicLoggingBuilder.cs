@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Logging
 {
@@ -36,6 +37,7 @@ namespace Steeltoe.Extensions.Logging
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicLoggerProvider>());
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ConsoleLoggerOptions>, ConsoleLoggerOptionsSetup>());
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<ConsoleLoggerOptions>, LoggerProviderOptionsChangeTokenSource<ConsoleLoggerOptions, ConsoleLoggerProvider>>());
+            builder.Services.AddSingleton<IDynamicLoggerProvider>((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
             return builder;
         }
 
@@ -47,8 +49,10 @@ namespace Steeltoe.Extensions.Logging
             }
 
             var settings = new ConsoleLoggerSettings().FromConfiguration(configuration);
+            var provider = new DynamicLoggerProvider(settings);
             builder.AddFilter<DynamicLoggerProvider>(null, LogLevel.Trace);
-            builder.AddProvider(new DynamicLoggerProvider(settings));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicLoggerProvider>((p) => provider));
+            builder.Services.AddSingleton<IDynamicLoggerProvider>((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
             return builder;
         }
 

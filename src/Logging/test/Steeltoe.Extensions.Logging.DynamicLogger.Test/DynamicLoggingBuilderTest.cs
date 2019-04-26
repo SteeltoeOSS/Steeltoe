@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.Test
@@ -235,7 +235,6 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.True(processor.ProcessCalled);
         }
 
-
         [Fact]
         public void DynamicLevelSetting_ParmLessAddDynamic_AddsConsoleOptions()
         {
@@ -256,6 +255,72 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.NotNull(options);
             Assert.NotNull(options.CurrentValue);
             Assert.True(options.CurrentValue.DisableColors);
+        }
+
+        [Fact]
+        public void AddDynamicConsole_AddsAllLoggerProviders()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole();
+                }).BuildServiceProvider();
+
+            // act
+            var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+            var logProviders = services.GetServices<ILoggerProvider>();
+
+            // assert
+            Assert.NotNull(dlogProvider);
+            Assert.NotEmpty(logProviders);
+            Assert.Single(logProviders);
+            Assert.IsType<DynamicLoggerProvider>(logProviders.SingleOrDefault());
+        }
+
+        [Fact]
+        public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole();
+                }).BuildServiceProvider();
+
+            // act
+            var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+            var logProviders = services.GetServices<ILoggerProvider>();
+
+            // assert
+            services.Dispose();
+            dlogProvider.Dispose();
+        }
+
+        [Fact]
+        public void AddDynamicConsole_WithConfigurationParam_AddsServices()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder => builder.AddDynamicConsole(configuration))
+                .BuildServiceProvider();
+
+            // act
+            var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+            var logProviders = services.GetServices<ILoggerProvider>();
+
+            // assert
+            Assert.NotNull(dlogProvider);
+            Assert.NotEmpty(logProviders);
+            Assert.Single(logProviders);
+            Assert.IsType<DynamicLoggerProvider>(logProviders.SingleOrDefault());
         }
     }
 }
