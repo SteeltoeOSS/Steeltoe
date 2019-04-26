@@ -37,10 +37,11 @@ namespace Steeltoe.Discovery.Eureka
                 }
             }
 
-            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null)
+            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
             {
                 _config = null;
                 _configOptions = config ?? throw new ArgumentNullException(nameof(config));
+                _handlerProvider = handlerProvider;
                 Initialize(new Dictionary<string, string>(), logFactory);
             }
         }
@@ -61,7 +62,8 @@ namespace Steeltoe.Discovery.Eureka
             IOptionsMonitor<EurekaInstanceOptions> instConfig,
             EurekaApplicationInfoManager appInfoManager,
             IEurekaHttpClient httpClient = null,
-            ILoggerFactory logFactory = null)
+            ILoggerFactory logFactory = null,
+            IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
             : base(appInfoManager, logFactory)
         {
             _thisInstance = new ThisServiceInstance(instConfig);
@@ -70,7 +72,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (_httpClient == null)
             {
-                _httpClient = new EurekaHttpClientInternal(clientConfig, logFactory);
+                _httpClient = new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider);
             }
 
             Initialize();
@@ -121,7 +123,7 @@ namespace Steeltoe.Discovery.Eureka
             List<IServiceInstance> instances = new List<IServiceInstance>();
             foreach (InstanceInfo info in infos)
             {
-                _logger?.LogDebug("GetInstances returning: {0}", info.ToString());
+                _logger?.LogDebug($"GetInstances returning: {info}");
                 instances.Add(new EurekaServiceInstance(info));
             }
 

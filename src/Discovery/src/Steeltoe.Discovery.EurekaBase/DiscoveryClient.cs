@@ -317,7 +317,7 @@ namespace Steeltoe.Discovery.Eureka
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError("Instance_StatusChangedEvent Exception: {0}", e);
+                        _logger?.LogError(e, "Instance_StatusChangedEvent Failed");
                     }
                 }
             }
@@ -364,7 +364,7 @@ namespace Steeltoe.Discovery.Eureka
             catch (Exception e)
             {
                 // Log
-                _logger?.LogError("FetchRegistry failed, Exception: {0}", e);
+                _logger?.LogError(e, "FetchRegistry Failed");
                 return false;
             }
 
@@ -398,12 +398,12 @@ namespace Steeltoe.Discovery.Eureka
             try
             {
                 EurekaHttpResponse resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId);
-                _logger?.LogDebug("Unregister {0}/{1} returned: {2}", inst.AppName, inst.InstanceId, resp.StatusCode);
+                _logger?.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 return resp.StatusCode == HttpStatusCode.OK;
             }
             catch (Exception e)
             {
-                _logger?.LogError("Unregister failed, Exception:", e);
+                _logger?.LogError(e, "Unregister Failed");
             }
 
             _logger?.LogDebug("Unregister failed");
@@ -422,7 +422,7 @@ namespace Steeltoe.Discovery.Eureka
             {
                 EurekaHttpResponse resp = await HttpClient.RegisterAsync(inst);
                 var result = resp.StatusCode == HttpStatusCode.NoContent;
-                _logger?.LogDebug("Register {0}/{1} returned: {2}", inst.AppName, inst.InstanceId, resp.StatusCode);
+                _logger?.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 if (result)
                 {
                     LastGoodRegisterTimestamp = System.DateTime.UtcNow.Ticks;
@@ -432,7 +432,7 @@ namespace Steeltoe.Discovery.Eureka
             }
             catch (Exception e)
             {
-                _logger?.LogError("Register failed, Exception: {0}", e);
+                _logger?.LogError(e, "Register Failed");
             }
 
             _logger?.LogDebug("Register failed");
@@ -450,7 +450,7 @@ namespace Steeltoe.Discovery.Eureka
             try
             {
                 EurekaHttpResponse<InstanceInfo> resp = await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.UNKNOWN);
-                _logger?.LogDebug("Renew {0}/{1} returned: {2}", inst.AppName, inst.InstanceId, resp.StatusCode);
+                _logger?.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 if (resp.StatusCode == HttpStatusCode.NotFound)
                 {
                     return await RegisterAsync();
@@ -466,7 +466,7 @@ namespace Steeltoe.Discovery.Eureka
             }
             catch (Exception e)
             {
-                _logger?.LogError("Renew failed, Exception: {0}", e);
+                _logger?.LogError(e, "Renew Failed");
             }
 
             _logger?.LogDebug("Renew failed");
@@ -489,7 +489,7 @@ namespace Steeltoe.Discovery.Eureka
             }
 
             _logger?.LogDebug(
-                "FetchFullRegistry returned: {0}, {1}",
+                "FetchFullRegistry returned: {StatusCode}, {Response}",
                 resp.StatusCode,
                 (resp.Response != null) ? resp.Response.ToString() : "null");
             if (resp.StatusCode == HttpStatusCode.OK)
@@ -518,7 +518,7 @@ namespace Steeltoe.Discovery.Eureka
             Applications delta = null;
 
             EurekaHttpResponse<Applications> resp = await HttpClient.GetDeltaAsync();
-            _logger?.LogDebug("FetchRegistryDelta returned: {0}", resp.StatusCode);
+            _logger?.LogDebug("FetchRegistryDelta returned: {StatusCode}", resp.StatusCode);
             if (resp.StatusCode == HttpStatusCode.OK)
             {
                 delta = resp.Response;
@@ -536,7 +536,7 @@ namespace Steeltoe.Discovery.Eureka
                 string hashCode = _localRegionApps.ComputeHashCode();
                 if (!hashCode.Equals(delta.AppsHashCode))
                 {
-                    _logger?.LogWarning("FetchRegistryDelta discarding delta, hashcodes mismatch: {0}!={1}", hashCode, delta.AppsHashCode);
+                    _logger?.LogWarning($"FetchRegistryDelta discarding delta, hashcodes mismatch: {hashCode}!={delta.AppsHashCode}");
                     return await FetchFullRegistryAsync();
                 }
                 else
@@ -571,8 +571,8 @@ namespace Steeltoe.Discovery.Eureka
                 catch (Exception e)
                 {
                     _logger?.LogError(
-                        "RefreshInstanceInfo HealthCheck handler exception: {0}, App: {1}, Instance: {2} marked DOWN",
                         e,
+                        "RefreshInstanceInfo HealthCheck handler. App: {Application}, Instance: {Instance} marked DOWN",
                         info.AppName,
                         info.InstanceId);
                     status = InstanceStatus.DOWN;
