@@ -42,11 +42,15 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 
         private readonly RabbitMQProviderConnectorFactory _factory;
         private readonly ILogger<RabbitMQHealthContributor> _logger;
+        private object _connFactory;
+        private MethodInfo _createConnectionMethod;
 
         public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
         {
             _factory = factory;
             _logger = logger;
+            _connFactory = _factory.Create(null);
+            _createConnectionMethod = ConnectorHelpers.FindMethod(_connFactory.GetType(), "CreateConnection", new Type[0]);
         }
 
         public string Id => "RabbitMQ";
@@ -57,9 +61,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
             var result = new HealthCheckResult();
             try
             {
-                var connFactory = _factory.Create(null);
-                var createConnectionMethod = ConnectorHelpers.FindMethod(connFactory.GetType(), "CreateConnection", new Type[0]);
-                var connection = ConnectorHelpers.Invoke(createConnectionMethod, connFactory, null);
+                var connection = ConnectorHelpers.Invoke(_createConnectionMethod, _connFactory, null);
 
                 if (connection == null)
                 {

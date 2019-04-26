@@ -72,37 +72,73 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 
         public static string SingleServerVCAP_Crunchy = @"
             {
-                'postgresql-9.5-odb': 
-                [
-                    {
-                        'credentials': {
-                            'db_host': '10.194.59.205',
-                            'db_name': 'steeltoe',
-                            'db_port': 5432,
-                            'jdbc_read_uri': 'jdbc:postgresql://10.194.59.205:5433/steeltoe',
-                            'jdbc_uri': 'jdbc:postgresql://10.194.59.205:5432/steeltoe',
-                            'password': 'Qp!1mB1$Zk2T!$!D85_E',
-                            'read_host': '10.194.59.205',
-                            'read_port': 5433,
-                            'read_uri': 'postgresql://testrolee93ccf859894dc60dcd53218492b37b4:Qp!1mB1$Zk2T!$!D85_E@10.194.59.205:5433/steeltoe',
-                            'service_id': 'service-instance_1eb741c0-dcf7-41ab-97c3-d5eeb5bbf559',
-                            'uri': 'postgresql://testrolee93ccf859894dc60dcd53218492b37b4:Qp!1mB1$Zk2T!$!D85_E@10.194.59.205:5432/steeltoe',
-                            'username': 'testrolee93ccf859894dc60dcd53218492b37b4'
-                        },
-                        'syslog_drain_url': null,
-                        'volume_mounts': [],
-                        'label': 'postgresql-9.5-odb',
-                        'provider': null,
-                        'plan': 'small',
-                        'name': 'myPostgres',
-                        'tags': [
-                            'crunchy',
-                            'postgresql',
-                            'postgresql-9.5',
-                            'on-demand'
-                        ]
-                    }
-                ]
+      'postgresql-10-odb': [
+        {
+          'name': 'myPostgres',
+          'instance_name': 'myPostgres',
+          'binding_name': null,
+          'credentials': {
+            'db_host': '10.194.45.174',
+            'db_name': 'postgresample',
+            'db_port': 5432,
+            'jdbc_read_uri': 'jdbc:postgresql://10.194.45.174:5432/postgresample',
+            'jdbc_uri': 'jdbc:postgresql://10.194.45.174:5432/postgresample',
+            'password': '!DQ4Wm!r4omt$h1929!$',
+            'read_host': '10.194.45.174',
+            'read_port': 5432,
+            'read_uri': 'postgresql://steeltoe7b59f5b8a34bce2a3cf873061cfb5815:%21DQ4Wm%21r4omt%24h1929%21%24@10.194.45.174:5432/postgresample',
+            'service_id': 'service-instance_9d294ea3-4745-4115-8ef2-0ee28f42bc78',
+            'service_role': 'steeltoe',
+            'uri': 'postgresql://steeltoe7b59f5b8a34bce2a3cf873061cfb5815:%21DQ4Wm%21r4omt%24h1929%21%24@10.194.45.174:5432/postgresample',
+            'username': 'steeltoe7b59f5b8a34bce2a3cf873061cfb5815'
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'postgresql-10-odb',
+          'provider': null,
+          'plan': 'standalone',
+          'tags': [
+            'crunchy',
+            'postgresql',
+            'postgresql-10',
+            'on-demand'
+          ]
+    }
+      ]
             }";
+
+        public static string SingleServerVCAP_Azure = @"{
+      'azure-postgresql-9-6': [
+        {
+          'name': 'azure-beetmssql',
+          'instance_name': 'azure-beetmssql',
+          'binding_name': null,
+          'credentials': {
+            'host': '2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com',
+            'port': 5432,
+            'database': 'g01w0qnrb7',
+            'username': 'c2cdhwt4nd@2980cfbe-e198-46fd-8f81-966584bb4678',
+            'password': 'Dko4PGJAsQyEj5gj',
+            'uri': 'postgresql://c2cdhwt4nd%402980cfbe-e198-46fd-8f81-966584bb4678:Dko4PGJAsQyEj5gj@2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com:5432/g01w0qnrb7?&sslmode=require',
+            'sslRequired': true,
+            'tags': [
+              'postgresql'
+            ]
+    },
+          'syslog_drain_url': null,
+          'volume_mounts': [],
+          'label': 'azure-postgresql-9-6',
+          'provider': null,
+          'plan': 'basic',
+          'tags': [
+            'Azure',
+            'PostgreSQL',
+            'DBMS',
+            'Server',
+            'Database'
+          ]
+}
+      ]
+    }";
     }
 }

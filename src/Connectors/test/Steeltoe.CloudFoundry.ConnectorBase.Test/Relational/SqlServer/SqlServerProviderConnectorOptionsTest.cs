@@ -105,6 +105,52 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         }
 
         [Fact]
+        public void CloudFoundryConfig_Found_By_Name()
+        {
+            // arrange
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPNoTag);
+
+            // add settings to config
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddEnvironmentVariables();
+            configurationBuilder.AddCloudFoundry();
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new SqlServerProviderConnectorOptions(config);
+
+            // assert
+            Assert.NotEqual("192.168.0.80", sconfig.Server);
+            Assert.NotEqual("de5aa3a747c134b3d8780f8cc80be519e", sconfig.Database);
+            Assert.NotEqual("uf33b2b30783a4087948c30f6c3b0c90f", sconfig.Username);
+            Assert.NotEqual("Pefbb929c1e0945b5bab5b8f0d110c503", sconfig.Password);
+        }
+
+        [Fact]
+        public void CloudFoundryConfig_Found_By_Tag()
+        {
+            // arrange
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPIgnoreName);
+
+            // add settings to config
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddEnvironmentVariables();
+            configurationBuilder.AddCloudFoundry();
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new SqlServerProviderConnectorOptions(config);
+
+            // assert
+            Assert.NotEqual("192.168.0.80", sconfig.Server);
+            Assert.NotEqual("de5aa3a747c134b3d8780f8cc80be519e", sconfig.Database);
+            Assert.NotEqual("uf33b2b30783a4087948c30f6c3b0c90f", sconfig.Username);
+            Assert.NotEqual("Pefbb929c1e0945b5bab5b8f0d110c503", sconfig.Password);
+        }
+
+        [Fact]
         public void ConnectionString_Overridden_By_CloudFoundryConfig_CredsInUrl()
         {
             // arrange

@@ -47,7 +47,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         }
 
         [Fact]
-        public void AddOAuthServiceOptions_ThrowsIfConfigurtionNull()
+        public void AddOAuthServiceOptions_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();

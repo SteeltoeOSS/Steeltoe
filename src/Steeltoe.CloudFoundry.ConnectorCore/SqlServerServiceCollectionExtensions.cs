@@ -15,23 +15,26 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.CloudFoundry.Connector.Relational.SqlServer;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
+using System.Data;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
+namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
-    public static class SqlServerDbContextServiceCollectionExtensions
+    public static class SqlServerServiceCollectionExtensions
     {
         /// <summary>
-        /// Add a Microsoft SQL Server-backed DbContext and SQL Server health contributor to the Service Collection
+        /// Add an IHealthContributor to a ServiceCollection for SqlServer
         /// </summary>
-        /// <typeparam name="TContext">Type of DbContext to add</typeparam>
-        /// <param name="services">Service Collection</param>
-        /// <param name="config">Application Configuration</param>
+        /// <param name="services">Service collection to add to</param>
+        /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">Logging factory</param>
+        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -44,22 +47,21 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
             }
 
             SqlServerServiceInfo info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
-            DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
         /// <summary>
-        /// Add a Microsoft SQL Server-backed DbContext to the Service Collection
+        /// Add an IHealthContributor to a ServiceCollection for SqlServer
         /// </summary>
-        /// <typeparam name="TContext">Type of DbContext to add</typeparam>
-        /// <param name="services">Service Collection</param>
-        /// <param name="config">Application Configuration</param>
-        /// <param name="serviceName">Name of service binding in Cloud Foundry</param>
+        /// <param name="services">Service collection to add to</param>
+        /// <param name="config">App configuration</param>
+        /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">Logging factory</param>
+        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -77,17 +79,16 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
             }
 
             SqlServerServiceInfo info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
-            DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
+            DoAdd(services, info, config, contextLifetime);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, IConfiguration config, SqlServerServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);
-
-            SqlServerDbContextConnectorFactory factory = new SqlServerDbContextConnectorFactory(info, sqlServerConfig, dbContextType);
-            services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
+            var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
+            var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, SqlServerTypeLocator.SqlConnection);
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), contextLifetime));
         }
     }
 }

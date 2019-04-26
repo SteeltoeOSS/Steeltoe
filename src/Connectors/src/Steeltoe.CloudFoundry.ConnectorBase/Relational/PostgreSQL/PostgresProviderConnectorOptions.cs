@@ -55,12 +55,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
         public string Database { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether your service broker UrlEncodes service credentials
-        /// </summary>
-        /// <remarks>Added for CrunchyPostgres</remarks>
-        public bool UrlEncodedCredentials { get; set; } = false;
-
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)

@@ -56,7 +56,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
         }
 
         [Fact]
-        public void UseNpgsql_ThrowsIfConfigurtionNull()
+        public void UseNpgsql_ThrowsIfConfigurationNull()
         {
             // Arrange
             DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();

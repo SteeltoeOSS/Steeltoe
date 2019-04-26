@@ -19,6 +19,7 @@ using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using Xunit;
 
@@ -48,7 +49,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         }
 
         [Fact]
-        public void AddSqlServerConnection_ThrowsIfConfigurtionNull()
+        public void AddSqlServerConnection_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -142,6 +143,35 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Assert.Contains("192.168.0.80", connString);
             Assert.Contains("uf33b2b30783a4087948c30f6c3b0c90f", connString);
             Assert.Contains("Pefbb929c1e0945b5bab5b8f0d110c503", connString);
+        }
+
+        [Fact]
+        public void AddSqlServerConnection_WithAzureBrokerVCAPs_AddsSqlServerConnection()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVCAP);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["sqlserver:client:urlEncodedCredentials"] = "true"
+            };
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            builder.AddInMemoryCollection(appsettings);
+            var config = builder.Build();
+
+            // Act and Assert
+            SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
+
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
+            Assert.NotNull(service);
+            var connString = service.ConnectionString;
+            Assert.Contains("f1egl8ify4", connString);                                                  // database
+            Assert.Contains("1433", connString);                                                        // port
+            Assert.Contains("fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net", connString);   // host
+            Assert.Contains("rgmm5zlri4", connString);                                                  // user
+            Assert.Contains("737mAU1pj6HcBxzw", connString);                                            // password
         }
 
         [Fact]

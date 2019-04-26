@@ -146,8 +146,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             try
             {
-                var builder = new UriBuilder(uriString);
-                return builder.Uri;
+                return new Uri(uriString);
             }
             catch (Exception)
             {

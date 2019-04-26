@@ -24,18 +24,17 @@ using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
-    public static class PostgresProviderServiceCollectionExtensions
+    public static class PostgresServiceCollectionExtensions
     {
         /// <summary>
-        /// Add NpgsqlConnection and its IHealthContributor to a ServiceCollection
+        /// Add an IHealthContributor to a ServiceCollection for PostgreSQL
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        /// <remarks>NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection</remarks>
-        public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -54,7 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         }
 
         /// <summary>
-        /// Add NpgsqlConnection and its IHealthContributor to a ServiceCollection
+        /// Add an IHealthContributor to a ServiceCollection for PostgreSQL
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
@@ -62,8 +61,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        /// <remarks>NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection</remarks>
-        public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -88,12 +86,9 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
         private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
         {
-            Type postgresConnection = ConnectorHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
             var postgresConfig = new PostgresProviderConnectorOptions(config);
-            var factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
-            services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
-            services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
-            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), ServiceLifetime.Singleton));
+            var factory = new PostgresProviderConnectorFactory(info, postgresConfig, PostgreSqlTypeLocator.NpgsqlConnection);
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), contextLifetime));
         }
     }
 }

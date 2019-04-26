@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CloudFoundry.Connector.Services;
+using System.Net;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
@@ -36,8 +37,16 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
                 configuration.Port = si.Port;
                 configuration.Server = si.Host;
                 configuration.Database = si.Path.Replace("databaseName=", string.Empty);
-                configuration.Username = si.UserName;
-                configuration.Password = si.Password;
+                if (configuration.UrlEncodedCredentials)
+                {
+                    configuration.Username = WebUtility.UrlDecode(si.UserName);
+                    configuration.Password = WebUtility.UrlDecode(si.Password);
+                }
+                else
+                {
+                    configuration.Username = si.UserName;
+                    configuration.Password = si.Password;
+                }
             }
         }
     }

@@ -55,7 +55,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
         }
 
         [Fact]
-        public void UseSqlServer_ThrowsIfConfigurtionNull()
+        public void UseSqlServer_ThrowsIfConfigurationNull()
         {
             // Arrange
             DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
