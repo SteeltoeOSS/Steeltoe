@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             Assert.Equal("Unknown", opts.ServiceName);
             Assert.True(opts.ValidateCertificates);
             Assert.Equal(TraceExporterOptions.DEFAULT_TIMEOUT, opts.TimeoutSeconds);
-            Assert.False(opts.UseShortTraceIds);
+            Assert.True(opts.UseShortTraceIds);
             Assert.Equal(TraceExporterOptions.DEFAULT_ENDPOINT, opts.Endpoint);
         }
 

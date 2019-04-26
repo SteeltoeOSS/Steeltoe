@@ -22,7 +22,7 @@ using Steeltoe.Management.EndpointOwin;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
     public class EnvContainerBuilderExtensionsTest : BaseTest
     {

@@ -14,18 +14,20 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.Metrics;
+using Steeltoe.Management.EndpointOwin;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
+namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
 {
-    public class MetricsContainerBuilderExtensionsTest : BaseTest
+    public class RefreshContainerBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void RegisterMetricsMiddleware_ThrowsOnNulls()
+        public void RegisterRefreshMiddleware_ThrowsOnNulls()
         {
             // Arrange
             ContainerBuilder containerNull = null;
@@ -34,8 +36,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => MetricsContainerBuilderExtensions.RegisterMetricsActuator(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => MetricsContainerBuilderExtensions.RegisterMetricsActuator(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => RefreshContainerBuilderExtensions.RegisterRefreshActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => RefreshContainerBuilderExtensions.RegisterRefreshActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -43,20 +45,20 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
         }
 
         [Fact]
-        public void RegisterMetricsMiddleware_RegistersComponents()
+        public void RegisterRefreshMiddleware_RegistersComponents()
         {
             // Arrange
             ContainerBuilder containerBuilder = new ContainerBuilder();
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            MetricsContainerBuilderExtensions.RegisterMetricsActuator(containerBuilder, config);
+            RefreshContainerBuilderExtensions.RegisterRefreshActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
-            Assert.True(container.IsRegistered<IMetricsOptions>(), "Metrics options are registered");
-            Assert.True(container.IsRegistered<MetricsEndpoint>(), "Metrics endpoint is registered");
-            Assert.True(container.IsRegistered<MetricsEndpointOwinMiddleware>(), "Metrics endpoint middleware is registered");
+            Assert.True(container.IsRegistered<IRefreshOptions>(), "Refresh options are registered");
+            Assert.True(container.IsRegistered<IEndpoint<IList<string>>>(), "Refresh endpoint is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<IList<string>>>(), "Refresh endpoint middleware is registered");
         }
     }
 }

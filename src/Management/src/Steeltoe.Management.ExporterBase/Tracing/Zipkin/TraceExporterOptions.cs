@@ -59,7 +59,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         public string ServiceName { get; set; }
 
-        public bool UseShortTraceIds { get; set; }
+        public bool UseShortTraceIds { get; set; } = true;
 
         internal string GetApplicationName(string defaultName, IConfiguration config)
         {
