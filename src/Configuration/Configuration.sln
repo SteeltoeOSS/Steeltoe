@@ -9,24 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{17EC73D7-8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2D89EFD8-0718-443C-B615-AF6C4D6DFB8D}"
 	ProjectSection(SolutionItems) = preProject
-		config\nuget-dev.config = config\nuget-dev.config
-		config\nuget-master.config = config\nuget-master.config
-		config\nuget-update.config = config\nuget-update.config
-		config\nuget.config = config\nuget.config
 		config\versions-dev.props = config\versions-dev.props
 		config\versions-master.props = config\versions-master.props
-		config\versions-update.props = config\versions-update.props
 		config\versions.props = config\versions.props
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{A2BB79F8-B551-4385-9280-9396064C82C2}"
-	ProjectSection(SolutionItems) = preProject
-		scripts\appveyor_build.cmd = scripts\appveyor_build.cmd
-		scripts\appveyor_install.cmd = scripts\appveyor_install.cmd
-		scripts\appveyor_tests.cmd = scripts\appveyor_tests.cmd
-		scripts\travis_build.sh = scripts\travis_build.sh
-		scripts\travis_install.sh = scripts\travis_install.sh
-		scripts\travis_test.sh = scripts\travis_test.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryAutofac", "src\Steeltoe.Extensions.Configuration.CloudFoundryAutofac\Steeltoe.Extensions.Configuration.CloudFoundryAutofac.csproj", "{B5189734-AA9B-4B98-ADBE-16EF97F0C12D}"
@@ -45,8 +30,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCAA7882-AB30-4C61-9C14-989D77A69E33}"
 	ProjectSection(SolutionItems) = preProject
+		.appveyor.yml = .appveyor.yml
 		.travis.yml = .travis.yml
-		appveyor.yml = appveyor.yml
+		nuget.config = nuget.config
+		README.md = README.md
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject

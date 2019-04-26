@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test
             ContainerBuilder container = new ContainerBuilder();
             var dict = new Dictionary<string, string>()
             {
-                { "spring:cloud:config:uri", "http://foo.bar/foo" },
+                { "spring:cloud:config:uri", "https://foo.bar/foo" },
                 { "spring:cloud:config:env", "env" },
                 { "spring:cloud:config:label", "label" },
                 { "spring:cloud:config:name", "name" },
@@ -57,7 +57,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test
             var service = built.Resolve<IOptions<ConfigServerClientSettingsOptions>>();
             Assert.NotNull(service);
             Assert.NotNull(service.Value);
-            Assert.Equal("http://foo.bar/foo", service.Value.Uri);
+            Assert.Equal("https://foo.bar/foo", service.Value.Uri);
             Assert.Equal("env", service.Value.Env);
             Assert.Equal("label", service.Value.Label);
             Assert.Equal("name", service.Value.Name);

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -572,7 +572,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             settings.Label = "label";
             settings.Name = "name";
             settings.Password = "password";
-            settings.Uri = "http://foo.bar/";
+            settings.Uri = "https://foo.bar/";
             settings.Username = "username";
             settings.ValidateCertificates = false;
             settings.Token = "vaulttoken";
@@ -592,7 +592,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.True(provider.TryGet("spring:cloud:config:password", out value));
             Assert.Equal("password", value);
             Assert.True(provider.TryGet("spring:cloud:config:uri", out value));
-            Assert.Equal("http://foo.bar/", value);
+            Assert.Equal("https://foo.bar/", value);
             Assert.True(provider.TryGet("spring:cloud:config:username", out value));
             Assert.Equal("username", value);
 

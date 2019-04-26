@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test
             ContainerBuilder container = new ContainerBuilder();
             var dict = new Dictionary<string, string>()
             {
-                { "vcap:application:cf_api", "http://foo.bar/foo" },
+                { "vcap:application:cf_api", "https://foo.bar/foo" },
                 { "vcap:application:application_id", "application_id" },
                 { "vcap:application:application_name", "application_name" },
                 { "vcap:services:p-config-server:0:name", "myConfigServer" },
@@ -57,7 +57,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test
             var service = built.Resolve<IOptions<CloudFoundryApplicationOptions>>();
             Assert.NotNull(service);
             Assert.NotNull(service.Value);
-            Assert.Equal("http://foo.bar/foo", service.Value.CF_Api);
+            Assert.Equal("https://foo.bar/foo", service.Value.CF_Api);
             Assert.Equal("application_name", service.Value.ApplicationName);
             Assert.Equal("application_id", service.Value.ApplicationId);
 
