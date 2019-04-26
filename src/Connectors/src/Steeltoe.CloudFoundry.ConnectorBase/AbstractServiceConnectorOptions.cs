@@ -62,6 +62,12 @@ namespace Steeltoe.CloudFoundry.Connector
             AddKeyValue(sb, key, value?.ToString().ToLowerInvariant());
         }
 
+        /// <summary>
+        /// Add a Key/Value pair to a <see cref="StringBuilder"/> if the value isn't null or empty
+        /// </summary>
+        /// <param name="sb">Your stringbuilder</param>
+        /// <param name="key">Identifier for the value to be added</param>
+        /// <param name="value">Value to be added</param>
         protected internal void AddKeyValue(StringBuilder sb, string key, string value)
         {
             if (!string.IsNullOrEmpty(value))
@@ -70,6 +76,29 @@ namespace Steeltoe.CloudFoundry.Connector
                 sb.Append(_keyValueSep);
                 sb.Append(value);
                 sb.Append(_keyValueTerm);
+            }
+        }
+
+        /// <summary>
+        /// Add colon delimited pairs like user:password or host:port to a <see cref="StringBuilder"/>
+        /// </summary>
+        /// <param name="sb">Your stringbuilder</param>
+        /// <param name="part1">First item in the pair</param>
+        /// <param name="part2">Second item in the pair</param>
+        /// <param name="terminator">Character to denote the end of the pair</param>
+        /// <remarks>Only adds colon if second item is NOT null or empty</remarks>
+        protected internal void AddColonDelimitedPair(StringBuilder sb, string part1, string part2, char? terminator = null)
+        {
+            sb.Append(part1);
+            if (!string.IsNullOrEmpty(part2))
+            {
+                sb.Append(":");
+                sb.Append(part2);
+            }
+
+            if (part1 != null && part2 != null && terminator != null)
+            {
+                sb.Append(terminator);
             }
         }
     }

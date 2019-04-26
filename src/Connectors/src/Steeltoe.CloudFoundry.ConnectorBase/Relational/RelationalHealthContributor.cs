@@ -133,7 +133,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational
                     break;
             }
 
-            return result;
+            return string.Concat(result, "-", connection.Database);
         }
     }
 }

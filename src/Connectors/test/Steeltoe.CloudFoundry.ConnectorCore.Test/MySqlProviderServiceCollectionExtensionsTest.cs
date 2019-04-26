@@ -25,6 +25,9 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 {
+    /// <summary>
+    /// Tests for the extension method that adds both the DbConnection and the health check
+    /// </summary>
     public class MySqlProviderServiceCollectionExtensionsTest
     {
         public MySqlProviderServiceCollectionExtensionsTest()
@@ -118,6 +121,29 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config));
             Assert.Contains("Multiple", ex.Message);
+        }
+
+        [Fact]
+        public void AddMySqlConnection_WithServiceName_AndVCAPS_AddsMySqlConnection()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act and Assert
+            services.AddMySqlConnection(config, "spring-cloud-broker-db");
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
+            Assert.NotNull(service);
+            var connString = service.ConnectionString;
+            Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString);
+            Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString);
+            Assert.Contains("Server=192.168.0.90;Port=3306", connString);
+            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString);
         }
 
         [Fact]

@@ -30,16 +30,6 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         }
 
         [Fact]
-        public void Constructor_Uri_Unsupported_Format_Returns_Expected()
-        {
-            string uri = "mongodb://foo:bar@10.66.105.42:28000,10.66.105.45:28000,10.66.105.41:28000/data?authSource=admin";
-            UriInfo result = new UriInfo(uri);
-
-            AssertUriInfoEquals(result, null, 0, null, null, null, null);
-            Assert.Equal(uri, result.UriString);
-        }
-
-        [Fact]
         public void Constructor_WithQuery()
         {
             string uri = "mysql://joe:joes_password@localhost:1527/big_db?p1=v1&p2=v2";
