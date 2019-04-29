@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\versions.props" />
+  <Import Project="..\..\..\..\versions.props" />
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.Census</RootNamespace>
   </PropertyGroup>
 
-  <Import Project="..\..\targetframework.props" />
+  <Import Project="..\..\..\..\targetframework.props" />
   
   <ItemGroup>
     <None Update="xunit.runner.json">
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Management.OpenCensus\Steeltoe.Management.OpenCensus.csproj" />
+    <ProjectReference Include="..\..\src\OpenCensus\Steeltoe.Management.OpenCensus.csproj" />
   </ItemGroup>
 
   <ItemGroup>

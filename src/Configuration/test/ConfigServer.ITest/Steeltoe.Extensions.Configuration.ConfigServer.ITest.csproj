@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\versions.props" />
+  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
   </PropertyGroup>
-  <Import Project="..\..\targetframework.props" />
+  <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
     <None Update="xunit.runner.json">
@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Configuration.ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj" />
-    <ProjectReference Include="..\..\test\Steeltoe.Extensions.Configuration.ConfigServerBase.Test\Steeltoe.Extensions.Configuration.ConfigServerBase.Test.csproj" />
+    <ProjectReference Include="..\..\src\ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj" />
+    <ProjectReference Include="..\..\test\ConfigServerBase.Test\Steeltoe.Extensions.Configuration.ConfigServerBase.Test.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,7 +40,7 @@
     <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json">
+    <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>

@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\versions.props" />
+  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>.NET Core CloudFoundry Connector Extensions</Description>
     <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
@@ -11,7 +11,7 @@
     <PackageTags>CloudFoundry;ASPNET Core;Connectors</PackageTags>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -30,8 +30,6 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryCore" Version="$(SteeltoeConfigVersion)" />
-
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
@@ -46,14 +44,16 @@
   </PropertyGroup>
   
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\Steeltoe.CloudFoundry.ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj" />
+    <ProjectReference Include="..\..\..\..\src\configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj" />
+    <ProjectReference Include="..\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryCore" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.CloudFoundry.ConnectorBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
   
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json">
+    <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>

@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\versions.props" />
+  <Import Project="..\..\..\..\versions.props" />
   
   <PropertyGroup>
     <Description>Steeltoe Management ExporterBase - Base Package</Description>
@@ -12,7 +12,7 @@
     <PackageTags>Management;Monitoring;Metrics;Distributed Trace</PackageTags>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -26,18 +26,20 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\Steeltoe.Management.OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
+    <ProjectReference Include="..\..\..\..\src\common\src\Common.Http\Steeltoe.Common.Http.csproj" />
+    <ProjectReference Include="..\..\..\..\src\configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
+    <ProjectReference Include="..\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
-    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeConfigVersion)" />
-    <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
@@ -48,7 +50,7 @@
     <RootNamespace>Steeltoe.Management.Exporter</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json">
+    <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>

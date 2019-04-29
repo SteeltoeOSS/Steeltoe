@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\versions.props" />
+  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <Import Project="..\..\targetframework.props" />
+  <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
-    <PackageReference Include="RichardSzalay.MockHttp" Version="$(MockHttp)" />
+    <PackageReference Include="RichardSzalay.MockHttp" Version="$(MockHttpVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
@@ -25,13 +25,13 @@
     <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json">
+    <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Security.Authentication.CloudFoundryWcf\Steeltoe.Security.Authentication.CloudFoundryWcf.csproj" />
+    <ProjectReference Include="..\..\src\Authentication.CloudFoundryWcf\Steeltoe.Security.Authentication.CloudFoundryWcf.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.ServiceModel" />

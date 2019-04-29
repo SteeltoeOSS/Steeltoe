@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\versions.props" />
+  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
   </PropertyGroup>
-  <Import Project="..\..\targetframework.props" />
+  <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
     <None Update="xunit.runner.json">
@@ -28,12 +28,12 @@
     <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json">
+    <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Extensions.Logging.DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
+    <ProjectReference Include="..\..\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
   </ItemGroup>
 </Project>

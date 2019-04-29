@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\versions.props" />
+  <Import Project="..\..\..\..\versions.props" />
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
   </PropertyGroup>
 
-  <Import Project="..\..\targetframework.props" />
+  <Import Project="..\..\..\..\targetframework.props" />
   
   <ItemGroup>
     <None Update="empty.git.properties">
@@ -33,8 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Management.EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
-    <ProjectReference Include="..\Steeltoe.Management.EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj" />
+    <ProjectReference Include="..\..\src\EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
+    <ProjectReference Include="..\EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,7 +59,7 @@
     <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json">
+    <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>

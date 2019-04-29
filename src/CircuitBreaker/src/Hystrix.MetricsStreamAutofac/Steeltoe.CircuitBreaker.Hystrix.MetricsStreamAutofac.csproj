@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
- <Import Project="..\..\versions.props" />
+ <Import Project="..\..\..\..\versions.props" />
 
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Metrics Event Stream Autofac</Description>
@@ -13,7 +13,7 @@
     <PackageTags>ASPNET;Autofac;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -23,19 +23,20 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-      <ProjectReference Include="..\Steeltoe.CircuitBreaker.HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
+    <ProjectReference Include="..\..\..\..\src\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj" />
+    <ProjectReference Include="..\..\..\..\src\connectors\src\ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj" />
+    <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-      <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorAutofac" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
-    <!--<PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />-->
-    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorAutofac" Version="$(SteeltoeConnectorVersion)" />
-    <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
@@ -44,7 +45,7 @@
     <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json">
+    <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>

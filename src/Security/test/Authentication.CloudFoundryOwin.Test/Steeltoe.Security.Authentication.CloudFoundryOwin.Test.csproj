@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\versions.props" />
+  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <Import Project="..\..\targetframework.props" />
+  <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
@@ -25,13 +25,13 @@
     <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry.Owin.Test</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json">
+    <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Steeltoe.Security.Authentication.CloudFoundryOwin\Steeltoe.Security.Authentication.CloudFoundryOwin.csproj" />
+    <ProjectReference Include="..\..\src\Authentication.CloudFoundryOwin\Steeltoe.Security.Authentication.CloudFoundryOwin.csproj" />
   </ItemGroup>
 
 </Project>
