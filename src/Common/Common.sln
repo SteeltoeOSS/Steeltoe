@@ -9,9 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CC77ED1F-B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{473B575D-8871-4E77-9212-C2BBA20D702E}"
 	ProjectSection(SolutionItems) = preProject
-		config\versions-dev.props = config\versions-dev.props
-		config\versions-master.props = config\versions-master.props
-		config\versions.props = config\versions.props
+		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{99524EB1-60C2-4069-B4F5-C89344678ABD}"
@@ -24,25 +22,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		targetframework.props = targetframework.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "src\Steeltoe.Common\Steeltoe.Common.csproj", "{4AEA9704-3B99-4317-A959-7D6E4CDD4811}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "src\Common\Steeltoe.Common.csproj", "{4AEA9704-3B99-4317-A959-7D6E4CDD4811}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "src\Steeltoe.Common.Autofac\Steeltoe.Common.Autofac.csproj", "{E9C17268-1B23-4183-8F88-8FEFE95A3CAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{E9C17268-1B23-4183-8F88-8FEFE95A3CAB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "src\Steeltoe.Common.Http\Steeltoe.Common.Http.csproj", "{C9CF9265-7343-4080-AD23-BFCD6E571865}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "src\Common.Http\Steeltoe.Common.Http.csproj", "{C9CF9265-7343-4080-AD23-BFCD6E571865}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac.Test", "test\Steeltoe.Common.Autofac.Test\Steeltoe.Common.Autofac.Test.csproj", "{A2C46127-6D02-46FA-9AFC-9C27A11F1FB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac.Test", "test\Common.Autofac.Test\Steeltoe.Common.Autofac.Test.csproj", "{A2C46127-6D02-46FA-9AFC-9C27A11F1FB6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http.Test", "test\Steeltoe.Common.Http.Test\Steeltoe.Common.Http.Test.csproj", "{7FF75564-423A-4EE6-B7AD-9D35C428757F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http.Test", "test\Common.Http.Test\Steeltoe.Common.Http.Test.csproj", "{7FF75564-423A-4EE6-B7AD-9D35C428757F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Test", "test\Steeltoe.Common.Test\Steeltoe.Common.Test.csproj", "{101DF01E-FDE9-4B97-9666-C3777CC308D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Test", "test\Common.Test\Steeltoe.Common.Test.csproj", "{101DF01E-FDE9-4B97-9666-C3777CC308D0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net", "src\Steeltoe.Common.Net\Steeltoe.Common.Net.csproj", "{5C2D53DB-2980-4393-BCA1-B4C51004E4F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net", "src\Common.Net\Steeltoe.Common.Net.csproj", "{5C2D53DB-2980-4393-BCA1-B4C51004E4F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security", "src\Steeltoe.Common.Security\Steeltoe.Common.Security.csproj", "{8D322AD5-ED49-4D40-952C-B38FD97D21EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security", "src\Common.Security\Steeltoe.Common.Security.csproj", "{8D322AD5-ED49-4D40-952C-B38FD97D21EF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security.Test", "test\Steeltoe.Common.Security.Test\Steeltoe.Common.Security.Test.csproj", "{6E2CBAC4-3FF1-4DC9-9B9B-D0ADFE80218D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security.Test", "test\Common.Security.Test\Steeltoe.Common.Security.Test.csproj", "{6E2CBAC4-3FF1-4DC9-9B9B-D0ADFE80218D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net.Test", "test\Steeltoe.Common.Net.Test\Steeltoe.Common.Net.Test.csproj", "{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net.Test", "test\Common.Net.Test\Steeltoe.Common.Net.Test.csproj", "{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

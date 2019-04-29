@@ -1,35 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{26E1A61B-FA79-41BF-9C3B-5A04299F356A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EEF15943-96DB-44B5-BA4A-1D11171AD74F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "src\Steeltoe.Extensions.Logging.DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{BCF90E1F-ADD2-42A2-8601-AB7A5C9FAFC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{BCF90E1F-ADD2-42A2-8601-AB7A5C9FAFC4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger.Test", "test\Steeltoe.Extensions.Logging.DynamicLogger.Test\Steeltoe.Extensions.Logging.DynamicLogger.Test.csproj", "{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger.Test", "test\DynamicLogger.Test\Steeltoe.Extensions.Logging.DynamicLogger.Test.csproj", "{CBD7C37D-6CDC-4058-9B68-68EDC87837FD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2BFFFBDB-66EE-4F9C-9ABE-DB2A9EE49F12}"
 	ProjectSection(SolutionItems) = preProject
-		config\versions-dev.props = config\versions-dev.props
-		config\versions-master.props = config\versions-master.props
-		config\versions.props = config\versions.props
+		..\versions.props = ..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A1B0D5C-681B-4A1B-8C28-E8AB1936736E}"
 	ProjectSection(SolutionItems) = preProject
-		.appveyor.yml = .appveyor.yml
-		.travis.yml = .travis.yml
-		nuget.config = nuget.config
+		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.SerilogDynamicLogger", "src\Steeltoe.Extensions.Logging.SerilogDynamicLogger\Steeltoe.Extensions.Logging.SerilogDynamicLogger.csproj", "{C4F8B0B3-86C8-45AA-88EB-A18570B2754E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.SerilogDynamicLogger", "src\SerilogDynamicLogger\Steeltoe.Extensions.Logging.SerilogDynamicLogger.csproj", "{C4F8B0B3-86C8-45AA-88EB-A18570B2754E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test", "test\Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test\Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test.csproj", "{DF66D833-EAC4-4C84-A80F-74CFBD2BF78F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test", "test\SerilogDynamicLogger.Test\Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test.csproj", "{DF66D833-EAC4-4C84-A80F-74CFBD2BF78F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

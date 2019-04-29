@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B86A4082-6F42-4BFC-A1F2-83CC422AD493}"
 EndProject
@@ -9,70 +9,77 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8B4CE682-9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{9764636B-4C42-4F38-8074-99C086B8FB74}"
 	ProjectSection(SolutionItems) = preProject
-		config\versions-dev.props = config\versions-dev.props
-		config\versions-master.props = config\versions-master.props
-		config\versions.props = config\versions.props
+		..\versions.props = ..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2D0A3F62-46FA-4317-BDEB-BE9433B9EBBE}"
 	ProjectSection(SolutionItems) = preProject
-		.appveyor.yml = .appveyor.yml
-		.travis.yml = .travis.yml
-		nuget.config = nuget.config
-		stylecop.json = stylecop.json
+		..\..\nuget.config = ..\..\nuget.config
+		README.md = README.md
+		..\stylecop.json = ..\stylecop.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore", "src\Steeltoe.Management.EndpointCore\Steeltoe.Management.EndpointCore.csproj", "{D544C805-F83B-46D8-9F64-AA783F924DB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore", "src\EndpointCore\Steeltoe.Management.EndpointCore.csproj", "{D544C805-F83B-46D8-9F64-AA783F924DB5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundryCore", "src\Steeltoe.Management.CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj", "{B886C97F-548C-4FEF-8E95-950A3EBFE901}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundryCore", "src\CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj", "{B886C97F-548C-4FEF-8E95-950A3EBFE901}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundryCore.Test", "test\Steeltoe.Management.CloudFoundryCore.Test\Steeltoe.Management.CloudFoundryCore.Test.csproj", "{B94F21CC-3A87-4D9A-8F9F-39BC4B7447D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundryCore.Test", "test\CloudFoundryCore.Test\Steeltoe.Management.CloudFoundryCore.Test.csproj", "{B94F21CC-3A87-4D9A-8F9F-39BC4B7447D1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore.Test", "test\Steeltoe.Management.EndpointCore.Test\Steeltoe.Management.EndpointCore.Test.csproj", "{D1E2C1E0-8DF9-403B-A8C8-81C2A259B563}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore.Test", "test\EndpointCore.Test\Steeltoe.Management.EndpointCore.Test.csproj", "{D1E2C1E0-8DF9-403B-A8C8-81C2A259B563}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointBase", "src\Steeltoe.Management.EndpointBase\Steeltoe.Management.EndpointBase.csproj", "{6560432C-FF23-4E24-BA2F-08EA22C9D1E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointBase", "src\EndpointBase\Steeltoe.Management.EndpointBase.csproj", "{6560432C-FF23-4E24-BA2F-08EA22C9D1E1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointBase.Test", "test\Steeltoe.Management.EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj", "{E18FE0C4-04F0-46CB-B96A-E9B2210314D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointBase.Test", "test\EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj", "{E18FE0C4-04F0-46CB-B96A-E9B2210314D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Diagnostics", "src\Steeltoe.Management.Diagnostics\Steeltoe.Management.Diagnostics.csproj", "{90C54C3B-488B-4449-826F-940A48992522}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Diagnostics", "src\Diagnostics\Steeltoe.Management.Diagnostics.csproj", "{90C54C3B-488B-4449-826F-940A48992522}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus", "src\Steeltoe.Management.OpenCensus\Steeltoe.Management.OpenCensus.csproj", "{3E70DA3F-91DD-4190-9917-B6A11F54236D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus", "src\OpenCensus\Steeltoe.Management.OpenCensus.csproj", "{3E70DA3F-91DD-4190-9917-B6A11F54236D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus.Test", "test\Steeltoe.Management.OpenCensus.Test\Steeltoe.Management.OpenCensus.Test.csproj", "{4BB15641-2496-468C-BF90-97305801D141}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus.Test", "test\OpenCensus.Test\Steeltoe.Management.OpenCensus.Test.csproj", "{4BB15641-2496-468C-BF90-97305801D141}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterBase", "src\Steeltoe.Management.ExporterBase\Steeltoe.Management.ExporterBase.csproj", "{E102760A-037A-4B5F-AB38-29572C955A0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterBase", "src\ExporterBase\Steeltoe.Management.ExporterBase.csproj", "{E102760A-037A-4B5F-AB38-29572C955A0D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterCore", "src\Steeltoe.Management.ExporterCore\Steeltoe.Management.ExporterCore.csproj", "{A8C4206F-5CB4-4AAD-A5DA-CAB75FB9944C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterCore", "src\ExporterCore\Steeltoe.Management.ExporterCore.csproj", "{A8C4206F-5CB4-4AAD-A5DA-CAB75FB9944C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingBase", "src\Steeltoe.Management.TracingBase\Steeltoe.Management.TracingBase.csproj", "{0DAEE9B6-CE18-4C10-8292-F5F58B4242E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingBase", "src\TracingBase\Steeltoe.Management.TracingBase.csproj", "{0DAEE9B6-CE18-4C10-8292-F5F58B4242E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingCore", "src\Steeltoe.Management.TracingCore\Steeltoe.Management.TracingCore.csproj", "{1753EE33-0754-43B2-8A79-CAE080233F65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingCore", "src\TracingCore\Steeltoe.Management.TracingCore.csproj", "{1753EE33-0754-43B2-8A79-CAE080233F65}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingBase.Test", "test\Steeltoe.Management.TracingBase.Test\Steeltoe.Management.TracingBase.Test.csproj", "{5CE3FD57-74C9-4026-82CB-C0B65AEC7DCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingBase.Test", "test\TracingBase.Test\Steeltoe.Management.TracingBase.Test.csproj", "{5CE3FD57-74C9-4026-82CB-C0B65AEC7DCC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingCore.Test", "test\Steeltoe.Management.TracingCore.Test\Steeltoe.Management.TracingCore.Test.csproj", "{A48BB975-39EB-43E1-9B22-AE1798F8D22E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingCore.Test", "test\TracingCore.Test\Steeltoe.Management.TracingCore.Test.csproj", "{A48BB975-39EB-43E1-9B22-AE1798F8D22E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterBase.Test", "test\Steeltoe.Management.ExporterBase.Test\Steeltoe.Management.ExporterBase.Test.csproj", "{2697ECCD-004F-4FEE-A8CC-7C08819141D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterBase.Test", "test\ExporterBase.Test\Steeltoe.Management.ExporterBase.Test.csproj", "{2697ECCD-004F-4FEE-A8CC-7C08819141D2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterCore.Test", "test\Steeltoe.Management.ExporterCore.Test\Steeltoe.Management.ExporterCore.Test.csproj", "{796DADE8-EB76-4EE3-B5F2-375D69BFCB84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterCore.Test", "test\ExporterCore.Test\Steeltoe.Management.ExporterCore.Test.csproj", "{796DADE8-EB76-4EE3-B5F2-375D69BFCB84}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin", "src\Steeltoe.Management.EndpointOwin\Steeltoe.Management.EndpointOwin.csproj", "{15EA9784-0887-4CA9-8FC4-B9E7C5D2F95A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin", "src\EndpointOwin\Steeltoe.Management.EndpointOwin.csproj", "{15EA9784-0887-4CA9-8FC4-B9E7C5D2F95A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac", "src\Steeltoe.Management.EndpointOwinAutofac\Steeltoe.Management.EndpointOwinAutofac.csproj", "{FCF5A911-989B-4DCD-9165-D00A66F9F11B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac", "src\EndpointOwinAutofac\Steeltoe.Management.EndpointOwinAutofac.csproj", "{FCF5A911-989B-4DCD-9165-D00A66F9F11B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin.Test", "test\Steeltoe.Management.EndpointOwin.Test\Steeltoe.Management.EndpointOwin.Test.csproj", "{D2236310-69D7-4623-B76E-615C2BA5322E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin.Test", "test\EndpointOwin.Test\Steeltoe.Management.EndpointOwin.Test.csproj", "{D2236310-69D7-4623-B76E-615C2BA5322E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac.Test", "test\Steeltoe.Management.EndpointOwinAutofac.Test\Steeltoe.Management.EndpointOwinAutofac.Test.csproj", "{C23A188B-ECD2-4730-85EA-BE3930DD4786}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac.Test", "test\EndpointOwinAutofac.Test\Steeltoe.Management.EndpointOwinAutofac.Test.csproj", "{C23A188B-ECD2-4730-85EA-BE3930DD4786}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb", "src\Steeltoe.Management.EndpointWeb\Steeltoe.Management.EndpointWeb.csproj", "{80CA3842-F0DC-4245-A10F-2C027E4B82F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb", "src\EndpointWeb\Steeltoe.Management.EndpointWeb.csproj", "{80CA3842-F0DC-4245-A10F-2C027E4B82F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb.Test", "test\Steeltoe.Management.EndpointWeb.Test\Steeltoe.Management.EndpointWeb.Test.csproj", "{D7BD7AE1-5435-4DC5-B2CB-FC9E5F830884}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb.Test", "test\EndpointWeb.Test\Steeltoe.Management.EndpointWeb.Test.csproj", "{D7BD7AE1-5435-4DC5-B2CB-FC9E5F830884}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensusBase", "src\Steeltoe.Management.OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj", "{2AB1AA07-0B80-4929-A35B-473C174DE67F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensusBase", "src\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj", "{2AB1AA07-0B80-4929-A35B-473C174DE67F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Management.CloudFoundryTasks", "src\Steeltoe.Management.CloudFoundryTasks\Steeltoe.Management.CloudFoundryTasks.csproj", "{7FEBDFA0-170C-454F-B42E-360FA0A90DD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundryTasks", "src\CloudFoundryTasks\Steeltoe.Management.CloudFoundryTasks.csproj", "{7FEBDFA0-170C-454F-B42E-360FA0A90DD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Managment.CloudFoundryTasks.Test", "test\Steeltoe.Managment.CloudFoundryTasks.Test\Steeltoe.Managment.CloudFoundryTasks.Test.csproj", "{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Managment.CloudFoundryTasks.Test", "test\CloudFoundryTasks.Test\Steeltoe.Managment.CloudFoundryTasks.Test.csproj", "{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{402D8CB5-C3C3-47E0-BEB3-63D0975E5109}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\common\src\Common.Http\Steeltoe.Common.Http.csproj", "{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "..\logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{34EAED24-C851-4F13-819D-EAE88E24B98F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{8E13D7F7-FF49-41C8-A458-CF8795C93718}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E18EE9BB-7195-4E20-9733-064319D2F60C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -184,6 +191,22 @@ Global
 		{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34EAED24-C851-4F13-819D-EAE88E24B98F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34EAED24-C851-4F13-819D-EAE88E24B98F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34EAED24-C851-4F13-819D-EAE88E24B98F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34EAED24-C851-4F13-819D-EAE88E24B98F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E13D7F7-FF49-41C8-A458-CF8795C93718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E13D7F7-FF49-41C8-A458-CF8795C93718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E13D7F7-FF49-41C8-A458-CF8795C93718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E13D7F7-FF49-41C8-A458-CF8795C93718}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -215,6 +238,10 @@ Global
 		{2AB1AA07-0B80-4929-A35B-473C174DE67F} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{7FEBDFA0-170C-454F-B42E-360FA0A90DD7} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
+		{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
+		{34EAED24-C851-4F13-819D-EAE88E24B98F} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
+		{8E13D7F7-FF49-41C8-A458-CF8795C93718} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
+		{E18EE9BB-7195-4E20-9733-064319D2F60C} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7949396C-4BFF-4834-9BC2-F3A345E9CCE5}

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C687B093-C2A5-4600-99A7-853C581FBBC0}"
 EndProject
@@ -9,43 +9,55 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{100AA6E3-E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4F262F8F-A478-4C8C-AA23-48B1103E5B8B}"
 	ProjectSection(SolutionItems) = preProject
-		.appveyor.yml = .appveyor.yml
-		.travis.yml = .travis.yml
-		nuget.config = nuget.config
+		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
-		stylecop.json = stylecop.json
+		..\stylecop.json = ..\stylecop.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{545DB4B8-9BA8-41B4-9C59-3DEFC0B1017A}"
 	ProjectSection(SolutionItems) = preProject
-		config\versions-dev.props = config\versions-dev.props
-		config\versions-master.props = config\versions-master.props
-		config\versions.props = config\versions.props
+		..\versions.props = ..\versions.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixCore", "src\Steeltoe.CircuitBreaker.HystrixCore\Steeltoe.CircuitBreaker.HystrixCore.csproj", "{1662B8D3-9E41-4A94-9759-52975E62CA34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixCore", "src\HystrixCore\Steeltoe.CircuitBreaker.HystrixCore.csproj", "{1662B8D3-9E41-4A94-9759-52975E62CA34}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.csproj", "{488AF4E6-5843-49F4-9141-1247D0601055}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore", "src\Hystrix.MetricsStreamCore\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.csproj", "{488AF4E6-5843-49F4-9141-1247D0601055}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.csproj", "{87A66E60-712C-42A2-AC6A-CBE3CF77A83C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore", "src\Hystrix.MetricsEventsCore\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.csproj", "{87A66E60-712C-42A2-AC6A-CBE3CF77A83C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.csproj", "{84885CB3-FAA5-45D3-AF10-5AC89059D2FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test", "test\Hystrix.MetricsEventsCore.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.csproj", "{84885CB3-FAA5-45D3-AF10-5AC89059D2FE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test.csproj", "{096BAA83-F1C2-43D9-8358-4A1A46BFB3B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test", "test\Hystrix.MetricsStreamCore.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.Test.csproj", "{096BAA83-F1C2-43D9-8358-4A1A46BFB3B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixCore.Test", "test\Steeltoe.CircuitBreaker.HystrixCore.Test\Steeltoe.CircuitBreaker.HystrixCore.Test.csproj", "{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixCore.Test", "test\HystrixCore.Test\Steeltoe.CircuitBreaker.HystrixCore.Test.csproj", "{7E63E0A9-5ED7-4D67-A4C1-6A8E5909922A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac", "src\Steeltoe.CircuitBreaker.HystrixAutofac\Steeltoe.CircuitBreaker.HystrixAutofac.csproj", "{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac", "src\HystrixAutofac\Steeltoe.CircuitBreaker.HystrixAutofac.csproj", "{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac.Test", "test\Steeltoe.CircuitBreaker.HystrixAutofac.Test\Steeltoe.CircuitBreaker.HystrixAutofac.Test.csproj", "{FB2330AF-37FA-4794-B16C-7AC1046DE307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac.Test", "test\HystrixAutofac.Test\Steeltoe.CircuitBreaker.HystrixAutofac.Test.csproj", "{FB2330AF-37FA-4794-B16C-7AC1046DE307}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac", "src\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.csproj", "{4BC245DD-2067-4938-8C09-AB938FFF8BCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac", "src\Hystrix.MetricsStreamAutofac\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.csproj", "{4BC245DD-2067-4938-8C09-AB938FFF8BCD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test", "test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test.csproj", "{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test", "test\Hystrix.MetricsStreamAutofac.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test.csproj", "{52E3AE73-56C6-41B1-8C79-C1960F5C58F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixBase", "src\Steeltoe.CircuitBreaker.HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj", "{BE323306-CFF2-4FCA-8EA6-C994861A2E8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixBase", "src\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj", "{BE323306-CFF2-4FCA-8EA6-C994861A2E8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixBase.Test", "test\Steeltoe.CircuitBreaker.HystrixBase.Test\Steeltoe.CircuitBreaker.HystrixBase.Test.csproj", "{703E56B4-6467-4E94-9A41-44F7FBD8A701}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixBase.Test", "test\HystrixBase.Test\Steeltoe.CircuitBreaker.HystrixBase.Test.csproj", "{703E56B4-6467-4E94-9A41-44F7FBD8A701}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{EC6EA876-8354-44BE-8D5A-BA70E835985F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\common\src\Common\Steeltoe.Common.csproj", "{EDC79B8F-477F-41FC-9600-F973EF5644E8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore", "..\connectors\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj", "{7E083187-C198-4D64-BD9A-6596E7F9057C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorAutofac", "..\connectors\src\ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj", "{F53CD093-6E04-43BC-901C-615F1412135C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{482282FA-92E3-4A0E-A419-CD72DC98CB02}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "..\configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{30C580C7-F5E6-476D-8830-A45894FFB63F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E2BA42D0-8144-4045-AC97-3B9C28F46AD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +113,34 @@ Global
 		{703E56B4-6467-4E94-9A41-44F7FBD8A701}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{703E56B4-6467-4E94-9A41-44F7FBD8A701}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{703E56B4-6467-4E94-9A41-44F7FBD8A701}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDC79B8F-477F-41FC-9600-F973EF5644E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDC79B8F-477F-41FC-9600-F973EF5644E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDC79B8F-477F-41FC-9600-F973EF5644E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDC79B8F-477F-41FC-9600-F973EF5644E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E083187-C198-4D64-BD9A-6596E7F9057C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E083187-C198-4D64-BD9A-6596E7F9057C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E083187-C198-4D64-BD9A-6596E7F9057C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E083187-C198-4D64-BD9A-6596E7F9057C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F53CD093-6E04-43BC-901C-615F1412135C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F53CD093-6E04-43BC-901C-615F1412135C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F53CD093-6E04-43BC-901C-615F1412135C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F53CD093-6E04-43BC-901C-615F1412135C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{482282FA-92E3-4A0E-A419-CD72DC98CB02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{482282FA-92E3-4A0E-A419-CD72DC98CB02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{482282FA-92E3-4A0E-A419-CD72DC98CB02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{482282FA-92E3-4A0E-A419-CD72DC98CB02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30C580C7-F5E6-476D-8830-A45894FFB63F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30C580C7-F5E6-476D-8830-A45894FFB63F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30C580C7-F5E6-476D-8830-A45894FFB63F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30C580C7-F5E6-476D-8830-A45894FFB63F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2BA42D0-8144-4045-AC97-3B9C28F46AD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2BA42D0-8144-4045-AC97-3B9C28F46AD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2BA42D0-8144-4045-AC97-3B9C28F46AD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2BA42D0-8144-4045-AC97-3B9C28F46AD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,6 +158,13 @@ Global
 		{52E3AE73-56C6-41B1-8C79-C1960F5C58F6} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
 		{BE323306-CFF2-4FCA-8EA6-C994861A2E8E} = {C687B093-C2A5-4600-99A7-853C581FBBC0}
 		{703E56B4-6467-4E94-9A41-44F7FBD8A701} = {100AA6E3-E1C8-41D0-A6AF-64AF3E5A2F7C}
+		{EDC79B8F-477F-41FC-9600-F973EF5644E8} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
+		{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
+		{7E083187-C198-4D64-BD9A-6596E7F9057C} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
+		{F53CD093-6E04-43BC-901C-615F1412135C} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
+		{482282FA-92E3-4A0E-A419-CD72DC98CB02} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
+		{30C580C7-F5E6-476D-8830-A45894FFB63F} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
+		{E2BA42D0-8144-4045-AC97-3B9C28F46AD0} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58720A8A-389C-477F-BD36-2DB217BAF674}

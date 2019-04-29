@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}"
 EndProject
@@ -9,57 +9,65 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{17EC73D7-8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2D89EFD8-0718-443C-B615-AF6C4D6DFB8D}"
 	ProjectSection(SolutionItems) = preProject
-		config\versions-dev.props = config\versions-dev.props
-		config\versions-master.props = config\versions-master.props
-		config\versions.props = config\versions.props
+		..\versions.props = ..\versions.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryAutofac", "src\Steeltoe.Extensions.Configuration.CloudFoundryAutofac\Steeltoe.Extensions.Configuration.CloudFoundryAutofac.csproj", "{B5189734-AA9B-4B98-ADBE-16EF97F0C12D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryAutofac", "src\CloudFoundryAutofac\Steeltoe.Extensions.Configuration.CloudFoundryAutofac.csproj", "{B5189734-AA9B-4B98-ADBE-16EF97F0C12D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "src\Steeltoe.Extensions.Configuration.CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{E65847A5-6D5C-4510-AFF6-D12FD3146555}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{E65847A5-6D5C-4510-AFF6-D12FD3146555}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore.Test", "test\Steeltoe.Extensions.Configuration.CloudFoundryCore.Test\Steeltoe.Extensions.Configuration.CloudFoundryCore.Test.csproj", "{30130916-223A-444F-B321-5FF023F5B73A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore.Test", "test\CloudFoundryCore.Test\Steeltoe.Extensions.Configuration.CloudFoundryCore.Test.csproj", "{30130916-223A-444F-B321-5FF023F5B73A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServer.ITest", "test\Steeltoe.Extensions.Configuration.ConfigServer.ITest\Steeltoe.Extensions.Configuration.ConfigServer.ITest.csproj", "{CDFBDF7F-A64D-4B2C-A06C-1BF62B449918}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServer.ITest", "test\ConfigServer.ITest\Steeltoe.Extensions.Configuration.ConfigServer.ITest.csproj", "{CDFBDF7F-A64D-4B2C-A06C-1BF62B449918}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerCore", "src\Steeltoe.Extensions.Configuration.ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj", "{FBC24547-609E-4FEE-A21E-E91C1E931BEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerCore", "src\ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj", "{FBC24547-609E-4FEE-A21E-E91C1E931BEC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerCore.Test", "test\Steeltoe.Extensions.Configuration.ConfigServerCore.Test\Steeltoe.Extensions.Configuration.ConfigServerCore.Test.csproj", "{03343080-05E7-4EF1-9262-3F5DD98C7F94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerCore.Test", "test\ConfigServerCore.Test\Steeltoe.Extensions.Configuration.ConfigServerCore.Test.csproj", "{03343080-05E7-4EF1-9262-3F5DD98C7F94}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerAutofac", "src\Steeltoe.Extensions.Configuration.ConfigServerAutofac\Steeltoe.Extensions.Configuration.ConfigServerAutofac.csproj", "{4FEF04FD-CB3E-4313-9A94-FC0DC06F364B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerAutofac", "src\ConfigServerAutofac\Steeltoe.Extensions.Configuration.ConfigServerAutofac.csproj", "{4FEF04FD-CB3E-4313-9A94-FC0DC06F364B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCAA7882-AB30-4C61-9C14-989D77A69E33}"
 	ProjectSection(SolutionItems) = preProject
-		.appveyor.yml = .appveyor.yml
-		.travis.yml = .travis.yml
-		nuget.config = nuget.config
+		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test", "test\Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test\Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test.csproj", "{25EDCCCB-769D-47A5-840D-743536783C0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test", "test\CloudFoundryAutofac.Test\Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test.csproj", "{25EDCCCB-769D-47A5-840D-743536783C0C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test", "test\Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test\Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test.csproj", "{EDA41CA7-59FA-410C-B830-93822BE6A201}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test", "test\ConfigServerAutofac.Test\Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test.csproj", "{EDA41CA7-59FA-410C-B830-93822BE6A201}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "src\Steeltoe.Extensions.Configuration.CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{BC8D2130-282B-4360-ACBE-866A8D59E841}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{BC8D2130-282B-4360-ACBE-866A8D59E841}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerBase", "src\Steeltoe.Extensions.Configuration.ConfigServerBase\Steeltoe.Extensions.Configuration.ConfigServerBase.csproj", "{6D3D6602-D8C1-4E81-8044-74D4A32983BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerBase", "src\ConfigServerBase\Steeltoe.Extensions.Configuration.ConfigServerBase.csproj", "{6D3D6602-D8C1-4E81-8044-74D4A32983BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase.Test", "test\Steeltoe.Extensions.Configuration.CloudFoundryBase.Test\Steeltoe.Extensions.Configuration.CloudFoundryBase.Test.csproj", "{9B3305D7-0814-4806-B071-12933F7E5E66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase.Test", "test\CloudFoundryBase.Test\Steeltoe.Extensions.Configuration.CloudFoundryBase.Test.csproj", "{9B3305D7-0814-4806-B071-12933F7E5E66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerBase.Test", "test\Steeltoe.Extensions.Configuration.ConfigServerBase.Test\Steeltoe.Extensions.Configuration.ConfigServerBase.Test.csproj", "{E54D6EFE-AAF4-460F-A06A-961EC66121DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerBase.Test", "test\ConfigServerBase.Test\Steeltoe.Extensions.Configuration.ConfigServerBase.Test.csproj", "{E54D6EFE-AAF4-460F-A06A-961EC66121DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderBase", "src\Steeltoe.Extensions.Configuration.PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj", "{A82C8CEE-BF1F-4CBE-9DC7-C8E16489CD6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderBase", "src\PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj", "{A82C8CEE-BF1F-4CBE-9DC7-C8E16489CD6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderBase.Test", "test\Steeltoe.Extensions.Configuration.PlaceholderBase.Test\Steeltoe.Extensions.Configuration.PlaceholderBase.Test.csproj", "{9F52A57F-8133-434E-A42B-CB9859001042}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderBase.Test", "test\PlaceholderBase.Test\Steeltoe.Extensions.Configuration.PlaceholderBase.Test.csproj", "{9F52A57F-8133-434E-A42B-CB9859001042}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderCore", "src\Steeltoe.Extensions.Configuration.PlaceholderCore\Steeltoe.Extensions.Configuration.PlaceholderCore.csproj", "{D0154ED3-B274-4C3F-BB05-9EB838184BAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderCore", "src\PlaceholderCore\Steeltoe.Extensions.Configuration.PlaceholderCore.csproj", "{D0154ED3-B274-4C3F-BB05-9EB838184BAD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderCore.Test", "test\Steeltoe.Extensions.Configuration.PlaceholderCore.Test\Steeltoe.Extensions.Configuration.PlaceholderCore.Test.csproj", "{65B05CBE-D2DD-485D-8B5B-931185F432F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderCore.Test", "test\PlaceholderCore.Test\Steeltoe.Extensions.Configuration.PlaceholderCore.Test.csproj", "{65B05CBE-D2DD-485D-8B5B-931185F432F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.RandomValueBase", "src\Steeltoe.Extensions.Configuration.RandomValueBase\Steeltoe.Extensions.Configuration.RandomValueBase.csproj", "{A512025B-72F4-4D72-8504-0FDCB2EEE4AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.RandomValueBase", "src\RandomValueBase\Steeltoe.Extensions.Configuration.RandomValueBase.csproj", "{A512025B-72F4-4D72-8504-0FDCB2EEE4AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.RandomValueBase.Test", "test\Steeltoe.Extensions.Configuration.RandomValuesBase.Test\Steeltoe.Extensions.Configuration.RandomValueBase.Test.csproj", "{CF0D5CE0-ADAF-44B7-9AF9-C1C5644FC0B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.RandomValueBase.Test", "test\RandomValuesBase.Test\Steeltoe.Extensions.Configuration.RandomValueBase.Test.csproj", "{CF0D5CE0-ADAF-44B7-9AF9-C1C5644FC0B3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{DA72FD0C-6B60-455A-9A07-7CA9D9064402}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\common\src\Common\Steeltoe.Common.csproj", "{03570766-26F8-4C25-AABB-A83FAC007CD8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\common\src\Common.Http\Steeltoe.Common.Http.csproj", "{6B3A7468-43CB-46B0-B286-BB78EA855776}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{9F03157F-31DA-4A71-A14E-791860470C9A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.EurekaBase", "..\discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj", "{734B6B26-188E-4008-A10F-46821D31ED61}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{FB365A0A-B38E-4858-B04B-BA7E5271E79C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,6 +151,26 @@ Global
 		{CF0D5CE0-ADAF-44B7-9AF9-C1C5644FC0B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF0D5CE0-ADAF-44B7-9AF9-C1C5644FC0B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF0D5CE0-ADAF-44B7-9AF9-C1C5644FC0B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03570766-26F8-4C25-AABB-A83FAC007CD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03570766-26F8-4C25-AABB-A83FAC007CD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03570766-26F8-4C25-AABB-A83FAC007CD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03570766-26F8-4C25-AABB-A83FAC007CD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B3A7468-43CB-46B0-B286-BB78EA855776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B3A7468-43CB-46B0-B286-BB78EA855776}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B3A7468-43CB-46B0-B286-BB78EA855776}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B3A7468-43CB-46B0-B286-BB78EA855776}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F03157F-31DA-4A71-A14E-791860470C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F03157F-31DA-4A71-A14E-791860470C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F03157F-31DA-4A71-A14E-791860470C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F03157F-31DA-4A71-A14E-791860470C9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{734B6B26-188E-4008-A10F-46821D31ED61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{734B6B26-188E-4008-A10F-46821D31ED61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{734B6B26-188E-4008-A10F-46821D31ED61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{734B6B26-188E-4008-A10F-46821D31ED61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB365A0A-B38E-4858-B04B-BA7E5271E79C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB365A0A-B38E-4858-B04B-BA7E5271E79C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB365A0A-B38E-4858-B04B-BA7E5271E79C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB365A0A-B38E-4858-B04B-BA7E5271E79C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -167,6 +195,11 @@ Global
 		{65B05CBE-D2DD-485D-8B5B-931185F432F8} = {17EC73D7-89DD-4A26-BC01-F34900140409}
 		{A512025B-72F4-4D72-8504-0FDCB2EEE4AD} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
 		{CF0D5CE0-ADAF-44B7-9AF9-C1C5644FC0B3} = {17EC73D7-89DD-4A26-BC01-F34900140409}
+		{03570766-26F8-4C25-AABB-A83FAC007CD8} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
+		{6B3A7468-43CB-46B0-B286-BB78EA855776} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
+		{9F03157F-31DA-4A71-A14E-791860470C9A} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
+		{734B6B26-188E-4008-A10F-46821D31ED61} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
+		{FB365A0A-B38E-4858-B04B-BA7E5271E79C} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF622C8D-0862-46BD-806B-1624BEC226E5}

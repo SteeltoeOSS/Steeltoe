@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9BB0395E-B595-4B95-89ED-F55AF12B4EE7}"
 EndProject
@@ -8,43 +8,47 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{1CEE3AF7-D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{3EDCF15E-882C-4AF9-91C6-9A28F2506ACC}"
 	ProjectSection(SolutionItems) = preProject
-		config\versions-dev.props = config\versions-dev.props
-		config\versions-master.props = config\versions-master.props
-		config\versions.props = config\versions.props
+		..\versions.props = ..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D692D991-D48C-4D23-B373-796D425C7D4B}"
 	ProjectSection(SolutionItems) = preProject
-		.appveyor.yml = .appveyor.yml
-		.travis.yml = .travis.yml
-		nuget.config = nuget.config
+		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EFCore", "src\Steeltoe.CloudFoundry.Connector.EFCore\Steeltoe.CloudFoundry.Connector.EFCore.csproj", "{1130C00D-CE87-43A2-8723-C930D9C8891D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EFCore", "src\Connector.EFCore\Steeltoe.CloudFoundry.Connector.EFCore.csproj", "{1130C00D-CE87-43A2-8723-C930D9C8891D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EFCore.Test", "test\Steeltoe.CloudFoundry.Connector.EFCore.Test\Steeltoe.CloudFoundry.Connector.EFCore.Test.csproj", "{D7BAC24F-1FCC-4941-9016-079C0C5AD25B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EFCore.Test", "test\Connector.EFCore.Test\Steeltoe.CloudFoundry.Connector.EFCore.Test.csproj", "{D7BAC24F-1FCC-4941-9016-079C0C5AD25B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore", "src\Steeltoe.CloudFoundry.ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj", "{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore", "src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj", "{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore.Test", "test\Steeltoe.CloudFoundry.ConnectorCore.Test\Steeltoe.CloudFoundry.ConnectorCore.Test.csproj", "{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore.Test", "test\ConnectorCore.Test\Steeltoe.CloudFoundry.ConnectorCore.Test.csproj", "{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core", "src\Steeltoe.CloudFoundry.Connector.EF6Core\Steeltoe.CloudFoundry.Connector.EF6Core.csproj", "{43012B18-D80D-4581-A85A-80F69DBD0431}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core", "src\Connector.EF6Core\Steeltoe.CloudFoundry.Connector.EF6Core.csproj", "{43012B18-D80D-4581-A85A-80F69DBD0431}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core.Test", "test\Steeltoe.CloudFoundry.Connector.EF6Core.Test\Steeltoe.CloudFoundry.Connector.EF6Core.Test.csproj", "{D7296042-50AA-4570-BD5F-15DEAD416EDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core.Test", "test\Connector.EF6Core.Test\Steeltoe.CloudFoundry.Connector.EF6Core.Test.csproj", "{D7296042-50AA-4570-BD5F-15DEAD416EDF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "src\Steeltoe.CloudFoundry.ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{F9A2807C-292F-49EB-B23A-FBB04527BA5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{F9A2807C-292F-49EB-B23A-FBB04527BA5C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase.Test", "test\Steeltoe.CloudFoundry.ConnectorBase.Test\Steeltoe.CloudFoundry.ConnectorBase.Test.csproj", "{B40DE919-FBC0-4CC6-B36F-98364FCA4203}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase.Test", "test\ConnectorBase.Test\Steeltoe.CloudFoundry.ConnectorBase.Test.csproj", "{B40DE919-FBC0-4CC6-B36F-98364FCA4203}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorAutofac", "src\Steeltoe.CloudFoundry.ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj", "{73EEC113-97AC-4F74-8099-2C0EDEAA9596}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorAutofac", "src\ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj", "{73EEC113-97AC-4F74-8099-2C0EDEAA9596}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorAutofac.Test", "test\Steeltoe.CloudFoundry.ConnectorAutofac.Test\Steeltoe.CloudFoundry.ConnectorAutofac.Test.csproj", "{59F8BEF1-D25D-4B18-A060-97E4C5B37600}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorAutofac.Test", "test\ConnectorAutofac.Test\Steeltoe.CloudFoundry.ConnectorAutofac.Test.csproj", "{59F8BEF1-D25D-4B18-A060-97E4C5B37600}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.CloudFoundry.Connector.EF6Autofac", "src\Steeltoe.CloudFoundry.Connector.EF6Autofac\Steeltoe.CloudFoundry.Connector.EF6Autofac.csproj", "{58BA19D1-5AA9-4AEC-8D5C-08834A9622A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Autofac", "src\Connector.EF6Autofac\Steeltoe.CloudFoundry.Connector.EF6Autofac.csproj", "{58BA19D1-5AA9-4AEC-8D5C-08834A9622A7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Autofac.Test", "test\Steeltoe.CloudFoundry.Connector.EF6Autofac.Test\Steeltoe.CloudFoundry.Connector.EF6Autofac.Test.csproj", "{B1CCD2A8-856E-4582-9261-47F537A81B44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Autofac.Test", "test\Connector.EF6Autofac.Test\Steeltoe.CloudFoundry.Connector.EF6Autofac.Test.csproj", "{B1CCD2A8-856E-4582-9261-47F537A81B44}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{4F6282E5-97B9-4655-8E67-7DF32320FE0C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "..\configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{6FB46EFB-B870-4383-B52A-39579E31688F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\common\src\Common\Steeltoe.Common.csproj", "{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -200,6 +204,42 @@ Global
 		{B1CCD2A8-856E-4582-9261-47F537A81B44}.Release|x64.Build.0 = Release|Any CPU
 		{B1CCD2A8-856E-4582-9261-47F537A81B44}.Release|x86.ActiveCfg = Release|Any CPU
 		{B1CCD2A8-856E-4582-9261-47F537A81B44}.Release|x86.Build.0 = Release|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|x64.Build.0 = Debug|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|x86.Build.0 = Debug|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|x64.ActiveCfg = Release|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|x64.Build.0 = Release|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|x86.ActiveCfg = Release|Any CPU
+		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|x86.Build.0 = Release|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Debug|x64.Build.0 = Debug|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Debug|x86.Build.0 = Debug|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Release|x64.ActiveCfg = Release|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Release|x64.Build.0 = Release|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Release|x86.ActiveCfg = Release|Any CPU
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Release|x86.Build.0 = Release|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Debug|x64.Build.0 = Debug|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Debug|x86.Build.0 = Debug|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Release|x64.ActiveCfg = Release|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Release|x64.Build.0 = Release|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Release|x86.ActiveCfg = Release|Any CPU
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -217,6 +257,9 @@ Global
 		{59F8BEF1-D25D-4B18-A060-97E4C5B37600} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
 		{58BA19D1-5AA9-4AEC-8D5C-08834A9622A7} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
 		{B1CCD2A8-856E-4582-9261-47F537A81B44} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
+		{6FB46EFB-B870-4383-B52A-39579E31688F} = {4F6282E5-97B9-4655-8E67-7DF32320FE0C}
+		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE} = {4F6282E5-97B9-4655-8E67-7DF32320FE0C}
+		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D} = {4F6282E5-97B9-4655-8E67-7DF32320FE0C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {112EBBFA-82B9-483E-B258-8611B70B3A3A}
