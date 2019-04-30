@@ -6,20 +6,51 @@
 trigger:
 - devops
 
-pool:
-  vmImage: 'Ubuntu-16.04'
-
 variables:
   buildConfiguration: 'Release'
+jobs:
+- job: Linux Build and Test
+  pool:
+    vmImage: 'Ubuntu-16.04'
 
-steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: build
-    projects: '**/*.sln'
-    arguments: '--configuration $(buildConfiguration)'
-- task: DotNetCoreCLI@2
-  inputs:
-    command: test
-    projects: '**/*.sln'
-    arguments: '--configuration $(buildConfiguration)'
+  steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: build
+      projects: '**/*.sln'
+      arguments: '--configuration $(buildConfiguration)'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*.sln'
+      arguments: '--configuration $(buildConfiguration)'
+- job: MacOS Build and Test
+  pool:
+    vmImage: 'macOS-10.14'
+
+  steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: build
+      projects: '**/*.sln'
+      arguments: '--configuration $(buildConfiguration)'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*.sln'
+      arguments: '--configuration $(buildConfiguration)'
+- job: Windows Build, Test and Package
+  pool:
+    vmImage: 'windows-2019'
+
+  steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: build
+      projects: '**/*.sln'
+      arguments: '--configuration $(buildConfiguration)'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*.sln'
+      arguments: '--configuration $(buildConfiguration)'
