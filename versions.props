@@ -9,6 +9,7 @@
     <AspNetCoreDepTestVersion>2.1.0</AspNetCoreDepTestVersion>
     <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
     <AspNetCoreMvcTestVersion>2.1.0</AspNetCoreMvcTestVersion>
+    <AspNetCoreHealthChecksVersion>2.2.0</AspNetCoreHealthChecksVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
     <DiagnosticSourceVersion>4.4.1</DiagnosticSourceVersion>

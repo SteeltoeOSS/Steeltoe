@@ -15,7 +15,6 @@
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreTestVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreDepTestVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
     
@@ -40,7 +39,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Hystrix.MetricsStreamCore\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.csproj" />
-    <ProjectReference Include="..\..\src\HystrixCore\Steeltoe.CircuitBreaker.HystrixCore.csproj" />
   </ItemGroup>
 
 
