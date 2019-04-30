@@ -29,7 +29,7 @@
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
-    <ProjectReference Include="..\PlaceHolderBase\Steeltoe.Extensions.Configuration.PlaceHolderBase.csproj" />
+    <ProjectReference Include="..\PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceHolderBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
