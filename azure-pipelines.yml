@@ -16,10 +16,10 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: build
-    projects: '**/*.csproj'
+    projects: '**/*.sln'
     arguments: '--configuration $(buildConfiguration)'
 - task: DotNetCoreCLI@2
   inputs:
     command: test
-    projects: '**/*Tests/*.csproj'
+    projects: '**/*.sln'
     arguments: '--configuration $(buildConfiguration)'
