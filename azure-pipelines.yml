@@ -9,7 +9,7 @@ trigger:
 variables:
   buildConfiguration: 'Release'
 jobs:
-- job: Linux Build and Test
+- job: Linux_Build_and_Test
   pool:
     vmImage: 'Ubuntu-16.04'
 
@@ -24,7 +24,7 @@ jobs:
       command: test
       projects: '**/*.sln'
       arguments: '--configuration $(buildConfiguration)'
-- job: MacOS Build and Test
+- job: MacOS_Build_and_Test
   pool:
     vmImage: 'macOS-10.14'
 
@@ -39,7 +39,7 @@ jobs:
       command: test
       projects: '**/*.sln'
       arguments: '--configuration $(buildConfiguration)'
-- job: Windows Build, Test and Package
+- job: Windows_Build_Test_and_Package
   pool:
     vmImage: 'windows-2019'
 
