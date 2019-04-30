@@ -59,15 +59,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{DA72FD0C-6B60-455A-9A07-7CA9D9064402}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\common\src\Common\Steeltoe.Common.csproj", "{03570766-26F8-4C25-AABB-A83FAC007CD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{03570766-26F8-4C25-AABB-A83FAC007CD8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\common\src\Common.Http\Steeltoe.Common.Http.csproj", "{6B3A7468-43CB-46B0-B286-BB78EA855776}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\Common\src\Common.Http\Steeltoe.Common.Http.csproj", "{6B3A7468-43CB-46B0-B286-BB78EA855776}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{9F03157F-31DA-4A71-A14E-791860470C9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{9F03157F-31DA-4A71-A14E-791860470C9A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.EurekaBase", "..\discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj", "{734B6B26-188E-4008-A10F-46821D31ED61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.EurekaBase", "..\Discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj", "{734B6B26-188E-4008-A10F-46821D31ED61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{FB365A0A-B38E-4858-B04B-BA7E5271E79C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{FB365A0A-B38E-4858-B04B-BA7E5271E79C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

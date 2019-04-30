@@ -73,13 +73,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Managment.CloudFou
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{402D8CB5-C3C3-47E0-BEB3-63D0975E5109}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\common\src\Common.Http\Steeltoe.Common.Http.csproj", "{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\Common\src\Common.Http\Steeltoe.Common.Http.csproj", "{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "..\logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{34EAED24-C851-4F13-819D-EAE88E24B98F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{34EAED24-C851-4F13-819D-EAE88E24B98F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{8E13D7F7-FF49-41C8-A458-CF8795C93718}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{8E13D7F7-FF49-41C8-A458-CF8795C93718}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E18EE9BB-7195-4E20-9733-064319D2F60C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E18EE9BB-7195-4E20-9733-064319D2F60C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

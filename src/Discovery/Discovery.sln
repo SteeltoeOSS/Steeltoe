@@ -37,9 +37,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ConsulBa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{26A62999-E553-40B7-B393-2195557F6D8B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\common\src\Common\Steeltoe.Common.csproj", "{66C44707-B7E2-4E26-995E-A421386432D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{66C44707-B7E2-4E26-995E-A421386432D4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{B8C82398-D6A3-496C-9950-A30CA50884C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{B8C82398-D6A3-496C-9950-A30CA50884C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

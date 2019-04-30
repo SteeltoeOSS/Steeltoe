@@ -48,9 +48,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{2FE6A5FE-4512-41A9-9994-90C12DF1C409}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{9E65D8C3-5BCE-43D2-952A-C0A6C4477401}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{9E65D8C3-5BCE-43D2-952A-C0A6C4477401}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\common\src\Common.Http\Steeltoe.Common.Http.csproj", "{495C7871-EE98-4B53-ABAE-26294046DDDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\Common\src\Common.Http\Steeltoe.Common.Http.csproj", "{495C7871-EE98-4B53-ABAE-26294046DDDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

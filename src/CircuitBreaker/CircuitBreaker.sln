@@ -45,19 +45,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hys
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{EC6EA876-8354-44BE-8D5A-BA70E835985F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\common\src\Common\Steeltoe.Common.csproj", "{EDC79B8F-477F-41FC-9600-F973EF5644E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{EDC79B8F-477F-41FC-9600-F973EF5644E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore", "..\connectors\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj", "{7E083187-C198-4D64-BD9A-6596E7F9057C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore", "..\Connectors\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj", "{7E083187-C198-4D64-BD9A-6596E7F9057C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorAutofac", "..\connectors\src\ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj", "{F53CD093-6E04-43BC-901C-615F1412135C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorAutofac", "..\Connectors\src\ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj", "{F53CD093-6E04-43BC-901C-615F1412135C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{482282FA-92E3-4A0E-A419-CD72DC98CB02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{482282FA-92E3-4A0E-A419-CD72DC98CB02}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "..\configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{30C580C7-F5E6-476D-8830-A45894FFB63F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{30C580C7-F5E6-476D-8830-A45894FFB63F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E2BA42D0-8144-4045-AC97-3B9C28F46AD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E2BA42D0-8144-4045-AC97-3B9C28F46AD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
