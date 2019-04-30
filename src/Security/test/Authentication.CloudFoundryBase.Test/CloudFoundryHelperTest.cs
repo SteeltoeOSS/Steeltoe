@@ -25,14 +25,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetBackChannelHandler_ReturnsExpected()
         {
             var result1 = CloudFoundryHelper.GetBackChannelHandler(false);
-            if (Platform.IsFullFramework)
-            {
-                Assert.Null(result1);
-            }
-            else
-            {
-                Assert.NotNull(result1);
-            }
+            Assert.NotNull(result1);
 
             var result2 = CloudFoundryHelper.GetBackChannelHandler(true);
             Assert.Null(result2);
