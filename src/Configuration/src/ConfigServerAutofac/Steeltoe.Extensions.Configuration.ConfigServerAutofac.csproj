@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\..\..\..\src\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj" />
     <ProjectReference Include="..\ConfigServerBase\Steeltoe.Extensions.Configuration.ConfigServerBase.csproj" />
   </ItemGroup>
 

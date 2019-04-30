@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
     <ProjectReference Include="..\..\src\ConfigServerBase\Steeltoe.Extensions.Configuration.ConfigServerBase.csproj" />
     <ProjectReference Include="..\..\src\PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj" />
   </ItemGroup>
