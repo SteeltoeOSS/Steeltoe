@@ -7,7 +7,7 @@ trigger:
 - devops
 
 variables:
-  buildConfiguration: 'Release'
+  buildConfiguration: 'Debug'
 jobs:
 - job: Linux_Build_and_Test
   pool:
