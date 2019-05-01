@@ -23,11 +23,8 @@ jobs:
           function Is-Numeric ($Value) {
               return $Value -match "^[\d\.]+$"
           }
-          Write-Host "Original build name:" $env:Build_BuildNumber
-          Write-Host "Source branch name:" $env:SourceBranchName
           if (!Is-Numeric $env:SourceBranchName){
-            ##vso[task.setvariable variable=build_updatebuildnumber;]$env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback)
-            Write-Host "Source branch name does not look like a version, using $env:buildVersionFallback instead"
+            ##vso[build.updatebuildnumber]$env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback)
           }'
 
 #- job: Linux_Build_and_Test
