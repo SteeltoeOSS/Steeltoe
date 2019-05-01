@@ -16,15 +16,12 @@ variables:
 jobs:
 - job: SetBuildNumber
   steps:
-    - task: PowerShell@2
-      inputs:
-        targetType: 'inline'
-        script: |
-          if ($env:SourceBranchName -notMatch "^[\d\.]+$")
-          {
-            $newBuildNumber = $env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback);
-            ##vso[build.updatebuildnumber]$newBuildNumber;
-          }
+    - pwsh: |
+        if ($env:SourceBranchName -notMatch "^[\d\.]+$")
+        {
+          $newBuildNumber = $env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback);
+          ##vso[build.updatebuildnumber]$newBuildNumber;
+        }
 
 #- job: Linux_Build_and_Test
 #  dependsOn: SetBuildNumber
