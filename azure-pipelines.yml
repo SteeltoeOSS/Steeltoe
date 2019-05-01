@@ -19,21 +19,21 @@ jobs:
       command: build
       projects: '**/*.sln'
       arguments: '--configuration $(buildConfiguration)'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.0'
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: test
+#      projects: '**/*.Test/*.csproj'
+#      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.0'
   - task: DotNetCoreCLI@2
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
       arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.1'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: test
+#      projects: '**/*.Test/*.csproj'
+#      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
 - job: MacOS_Build_and_Test
   pool:
     vmImage: 'macOS-10.14'
@@ -44,21 +44,21 @@ jobs:
       command: build
       projects: '**/*.sln'
       arguments: '--configuration $(buildConfiguration)'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.0'
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: test
+#      projects: '**/*.Test/*.csproj'
+#      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.0'
   - task: DotNetCoreCLI@2
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
       arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.1'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: test
+#      projects: '**/*.Test/*.csproj'
+#      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
 - job: Windows_Build_Test_and_Package
   pool:
     vmImage: 'windows-2019'
@@ -73,4 +73,4 @@ jobs:
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
-      arguments: '--configuration $(buildConfiguration)'
+      arguments: '--configuration $(buildConfiguration) --framework net461'
