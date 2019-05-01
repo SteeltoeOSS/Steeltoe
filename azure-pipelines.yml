@@ -24,7 +24,7 @@ jobs:
           $newBuildNumber = $Env:BuildNumber.Replace($Env:SourceBranchName, $Env:BuildVersionFallback);
           Write-Host "Non-numeric branch name detected, new build number will be" $newBuildNumber
           Write-Host "##vso[build.updatebuildnumber]$newBuildNumber"
-          Write-Host "##vso[task.setvariable variable=buildNumber]$newBuildNumber"
+          Write-Host "##vso[task.setvariable variable=buildNumber;isOutput=true]$newBuildNumber"
         }
       env:
         BuildNumber: $(buildNumber)
