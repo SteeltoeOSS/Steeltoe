@@ -2,17 +2,32 @@
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
+name: $(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
 trigger:
 - devops
 
 variables:
   buildConfiguration: 'Debug'
-  BuildVersion: 2.2.1-$[Build.BuildNumber]
+  buildVersionFallback: '2.2.0'
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
 jobs:
+- job: SetBuildNumber
+  steps:
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: '# Write your powershell commands here.
+          function Is-Numeric ($Value) {
+              return $Value -match "^[\d\.]+$"
+          }
+          if (!Is-Numeric $env:SourceBranchName){
+            $env:Build_BuildNumber = $env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback)
+          }'
+
 - job: Linux_Build_and_Test
+  dependsOn: SetBuildNumber
   pool:
     vmImage: 'Ubuntu-16.04'
 
@@ -38,6 +53,7 @@ jobs:
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
 - job: MacOS_Build_and_Test
+  dependsOn: SetBuildNumber
   pool:
     vmImage: 'macOS-10.14'
 
@@ -63,6 +79,7 @@ jobs:
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
 - job: Windows_Build_Test_and_Package
+  dependsOn: SetBuildNumber
   pool:
     vmImage: 'windows-2019'
 
@@ -82,8 +99,8 @@ jobs:
       command: 'pack'
       feedsToUse: 'select'
       packagesToPack: '**/*.sln'
-      versioningScheme: 'byEnvVar'
-      versionEnvVar: 'BuildVersion'
+      nobuild: true
+      versioningScheme: 'byBuildNumber'
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
