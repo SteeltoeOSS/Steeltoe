@@ -74,3 +74,5 @@ jobs:
       command: test
       projects: '**/*.Test/*.csproj'
       arguments: '--configuration $(buildConfiguration) --framework net461'
+  - task: WhiteSource Bolt@19
+    displayName: 'WhiteSource Bolt'
