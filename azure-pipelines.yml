@@ -17,9 +17,11 @@ jobs:
 - job: SetBuildNumber
   steps:
     - pwsh: |
-        if ($env:SourceBranchName -notMatch "^[\d\.]+$")
+        Write-Host "Branch $Env:SourceBranchName"
+        if ($Env:SourceBranchName -notMatch "^[\d\.]+$")
         {
-          $newBuildNumber = $env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback);
+          $newBuildNumber = $Env:Build_BuildNumber.Replace($Env:SourceBranchName, $Env:buildVersionFallback);
+          Write-Host "Non-numeric branch name detected, new build number will be" $newBuildNumber
           ##vso[build.updatebuildnumber]$newBuildNumber;
         }
 
