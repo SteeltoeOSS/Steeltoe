@@ -9,6 +9,7 @@ trigger:
 variables:
   buildConfiguration: 'Debug'
   buildVersionFallback: '2.2.0'
+  buildnumber: $(Build.BuildNumber)
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   System.Debug: true
@@ -20,12 +21,12 @@ jobs:
         Write-Host "Branch $Env:SourceBranchName"
         if ($Env:SourceBranchName -notMatch "^[\d\.]+$")
         {
-          $newBuildNumber = $Env:BuildNumber.Replace($Env:SourceBranchName, $Env:BuildVersionFallback);
+          $newBuildNumber = $Env:buildNumber.Replace($Env:SourceBranchName, $Env:BuildVersionFallback);
           Write-Host "Non-numeric branch name detected, new build number will be" $newBuildNumber
           Write-Host "##vso[build.updatebuildnumber]$newBuildNumber"
+          Write-Host "##vso[task.setvariable variable=buildNumber]$newBuildNumber"
         }
       env:
-        BuildNumber: $(Build.BuildNumber)
         SourceBranchName: $(Build.SourceBranchName)
         BuildVersionFallback: $(buildVersionFallback)
 
@@ -103,7 +104,8 @@ jobs:
       feedsToUse: 'select'
       packagesToPack: '**/*.sln'
       nobuild: true
-      versioningScheme: 'byBuildNumber'
+      versioningScheme: 'byEnvVar'
+      versionEnvVar: 'buildNumber'
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
