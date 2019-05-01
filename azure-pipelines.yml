@@ -24,11 +24,11 @@ jobs:
 #      command: test
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.0'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.1'
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: test
+#      projects: '**/*.Test/*.csproj'
+#      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.1'
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
@@ -49,11 +49,11 @@ jobs:
 #      command: test
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.0'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.1'
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: test
+#      projects: '**/*.Test/*.csproj'
+#      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.1'
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
@@ -69,10 +69,10 @@ jobs:
       command: build
       projects: '**/*.sln'
       arguments: '--configuration $(buildConfiguration)'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--configuration $(buildConfiguration) --framework net461'
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: test
+#      projects: '**/*.Test/*.csproj'
+#      arguments: '--configuration $(buildConfiguration) --framework net461'
   - task: WhiteSource Bolt@19
     displayName: 'WhiteSource Bolt'
