@@ -20,7 +20,8 @@ jobs:
       inputs:
         targetType: 'inline'
         script: '
-          if (!($env:SourceBranchName -match "^[\d\.]+$"){
+          if ($env:SourceBranchName -notMatch "^[\d\.]+$")
+          {
             $newBuildNumber = $env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback)
             ##vso[build.updatebuildnumber]$newBuildNumber
           }'
