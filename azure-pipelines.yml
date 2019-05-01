@@ -8,6 +8,9 @@ trigger:
 
 variables:
   buildConfiguration: 'Debug'
+  BuildVersion: 2.2.1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
 jobs:
 - job: Linux_Build_and_Test
   pool:
@@ -74,5 +77,10 @@ jobs:
 #      command: test
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework net461'
-  - task: WhiteSource Bolt@19
-    displayName: 'WhiteSource Bolt'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'pack'
+      feedsToUse: 'select'
+      packagesToPack: '**/*.sln'
+      versioningScheme: 'byEnvVar'
+      versionEnvVar: 'BuildVersion'
