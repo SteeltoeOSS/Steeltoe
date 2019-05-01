@@ -11,6 +11,7 @@ variables:
   buildVersionFallback: '2.2.0'
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  System.Debug: true
 
 jobs:
 - job: SetBuildNumber
@@ -18,28 +19,28 @@ jobs:
     - task: PowerShell@2
       inputs:
         targetType: 'inline'
-        script: '# Write your powershell commands here.
+        script: '
           function Is-Numeric ($Value) {
               return $Value -match "^[\d\.]+$"
           }
           Write-Host "Original build name:" $env:Build_BuildNumber
           Write-Host "Source branch name:" $env:SourceBranchName
           if (!Is-Numeric $env:SourceBranchName){
-            $env:Build_BuildNumber = $env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback)
-            Write-Host "Source branch name does not look like a version, using" $env:Build_BuildNumber "instead"
+            ##vso[task.setvariable variable=build_updatebuildnumber;]$env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback)
+            Write-Host "Source branch name does not look like a version, using $env:buildVersionFallback instead"
           }'
 
-- job: Linux_Build_and_Test
-  dependsOn: SetBuildNumber
-  pool:
-    vmImage: 'Ubuntu-16.04'
+#- job: Linux_Build_and_Test
+#  dependsOn: SetBuildNumber
+#  pool:
+#    vmImage: 'Ubuntu-16.04'
 
-  steps:
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: build
-      projects: '**/*.sln'
-      arguments: '--configuration $(buildConfiguration)'
+#  steps:
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: build
+#      projects: '**/*.sln'
+#      arguments: '--configuration $(buildConfiguration)'
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
@@ -55,17 +56,17 @@ jobs:
 #      command: test
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
-- job: MacOS_Build_and_Test
-  dependsOn: SetBuildNumber
-  pool:
-    vmImage: 'macOS-10.14'
+#- job: MacOS_Build_and_Test
+#  dependsOn: SetBuildNumber
+#  pool:
+#    vmImage: 'macOS-10.14'
 
-  steps:
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: build
-      projects: '**/*.sln'
-      arguments: '--configuration $(buildConfiguration)'
+#  steps:
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: build
+#      projects: '**/*.sln'
+#      arguments: '--configuration $(buildConfiguration)'
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
