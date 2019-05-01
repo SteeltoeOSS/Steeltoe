@@ -84,3 +84,9 @@ jobs:
       packagesToPack: '**/*.sln'
       versioningScheme: 'byEnvVar'
       versionEnvVar: 'BuildVersion'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: $(Build.ArtifactStagingDirectory)
+      ArtifactName: artifacts
+      publishLocation: Container
+    condition: always()
