@@ -22,7 +22,7 @@ jobs:
         {
           $newBuildNumber = $Env:BuildNumber.Replace($Env:SourceBranchName, $Env:BuildVersionFallback);
           Write-Host "Non-numeric branch name detected, new build number will be" $newBuildNumber
-          ##vso[build.updatebuildnumber]$newBuildNumber;
+          Write-Host "##vso[build.updatebuildnumber]$newBuildNumber"
         }
       env:
         BuildNumber: $(Build.BuildNumber)
