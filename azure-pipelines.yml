@@ -20,11 +20,9 @@ jobs:
       inputs:
         targetType: 'inline'
         script: '
-          function Is-Numeric ($Value) {
-              return $Value -match "^[\d\.]+$"
-          }
-          if (!Is-Numeric $env:SourceBranchName){
-            ##vso[build.updatebuildnumber]$env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback)
+          if (!($env:SourceBranchName -match "^[\d\.]+$"){
+            $newBuildNumber = $env:Build_BuildNumber.Replace($env:SourceBranchName, $env:buildVersionFallback)
+            ##vso[build.updatebuildnumber]$newBuildNumber
           }'
 
 #- job: Linux_Build_and_Test
