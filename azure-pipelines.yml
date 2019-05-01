@@ -30,7 +30,7 @@ jobs:
           Write-Host "##vso[task.setvariable variable=PackageBuildVersion;isOutput=true]$Env:BuildNumber"
         }
       env:
-        BuildNumber: $(buildNumber)
+        BuildNumber: $(Build.BuildNumber)
         SourceBranchName: $(Build.SourceBranchName)
         BuildVersionFallback: $(buildVersionFallback)
 
