@@ -7,21 +7,21 @@ trigger:
 
 variables:
   BuildConfiguration: 'Debug'
-  PackageVersion: $[join('2.2.1-', variables['Build.BuildId'])]
+  PackageVersion: $[format('2.2.1-{0}', variables['Build.BuildId'])]
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   System.Debug: true
 
 jobs:
-#- job: Linux_Build_and_Test
-#  pool:
-#    vmImage: 'Ubuntu-16.04'
-#  steps:
-#  - task: DotNetCoreCLI@2
-#    inputs:
-#      command: build
-#      projects: '**/*.sln'
-#      arguments: '--configuration $(buildConfiguration)'
+- job: Linux_Build_and_Test
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: build
+      projects: '**/*.sln'
+      arguments: '--configuration $(buildConfiguration)'
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
@@ -37,15 +37,15 @@ jobs:
 #      command: test
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
-#- job: MacOS_Build_and_Test
-#  pool:
-#    vmImage: 'macOS-10.14'
-#  steps:
-#  - task: DotNetCoreCLI@2
-#    inputs:
-#      command: build
-#      projects: '**/*.sln'
-#      arguments: '--configuration $(buildConfiguration)'
+- job: MacOS_Build_and_Test
+  pool:
+    vmImage: 'macOS-10.14'
+  steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: build
+      projects: '**/*.sln'
+      arguments: '--configuration $(buildConfiguration)'
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
