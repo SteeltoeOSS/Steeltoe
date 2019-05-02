@@ -10,7 +10,6 @@ variables:
   PackageVersion: $[format('2.2.1-{0}', variables['Build.BuildId'])]
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  System.Debug: true
 
 jobs:
 - job: Linux_Build_and_Test
@@ -81,7 +80,7 @@ jobs:
     - task: PowerShell@2
       displayName: Authenticode Sign Packages
       inputs:
-        filePath: build/Sign-Package.ps1
+        filePath: build/sign-packages.ps1
       env:
         SignClientUser: $(SignClientUser)
         SignClientSecret: $(SignClientSecret)
