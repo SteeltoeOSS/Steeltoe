@@ -2,43 +2,20 @@
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-name: $(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
 trigger:
-- devops
+- azure-pipelines
 
 variables:
-  buildConfiguration: 'Debug'
-  buildVersionFallback: '2.2.0'
+  BuildConfiguration: 'Debug'
+  PackageVersion: join('2.2.1-', $(Build.BuildId))
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   System.Debug: true
 
 jobs:
-- job: SetBuildNumber
-  steps:
-    - pwsh: |
-        Write-Host "Branch $Env:SourceBranchName"
-        if ($Env:SourceBranchName -notMatch "^[\d\.]+$")
-        {
-          $newBuildNumber = $Env:BuildNumber.Replace($Env:SourceBranchName, $Env:BuildVersionFallback);
-          Write-Host "Non-numeric branch name detected, new build number will be" $newBuildNumber
-          Write-Host "##vso[build.updatebuildnumber]$newBuildNumber"
-          Write-Host "##vso[task.setvariable variable=PackageBuildVersion;isOutput=true]$newBuildNumber"
-        }
-        else
-        {
-          Write-Host "##vso[task.setvariable variable=PackageBuildVersion;isOutput=true]$Env:BuildNumber"
-        }
-      env:
-        BuildNumber: $(Build.BuildNumber)
-        SourceBranchName: $(Build.SourceBranchName)
-        BuildVersionFallback: $(buildVersionFallback)
-
 #- job: Linux_Build_and_Test
-#  dependsOn: SetBuildNumber
 #  pool:
 #    vmImage: 'Ubuntu-16.04'
-
 #  steps:
 #  - task: DotNetCoreCLI@2
 #    inputs:
@@ -61,10 +38,8 @@ jobs:
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
 #- job: MacOS_Build_and_Test
-#  dependsOn: SetBuildNumber
 #  pool:
 #    vmImage: 'macOS-10.14'
-
 #  steps:
 #  - task: DotNetCoreCLI@2
 #    inputs:
@@ -87,30 +62,25 @@ jobs:
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework netcoreapp2.2'
 - job: Windows_Build_Test_and_Package
-  dependsOn: SetBuildNumber
   pool:
     vmImage: 'windows-2019'
-  variables:
-    PackageBuildVersion: $[ dependencies.SetBuildNumber.outputs['PackageBuildVersion'] ]
   steps:
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'pack'
-      feedsToUse: 'select'
-      arguments: '--configuration $(buildConfiguration)'
-      packagesToPack: '**/*.sln'
-      versioningScheme: 'byEnvVar'
-      versionEnvVar: PackageBuildVersion
-    env:
-      PackageBuildVersion: $(PackageBuildVersion)
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'pack'
+        feedsToUse: 'select'
+        arguments: '--configuration $(buildConfiguration)'
+        packagesToPack: '**/*.sln'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: PackageVersion
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework net461'
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: $(Build.ArtifactStagingDirectory)
-      ArtifactName: artifacts
-      publishLocation: Container
-    condition: always()
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: $(Build.ArtifactStagingDirectory)
+        ArtifactName: artifacts
+        publishLocation: Container
+      condition: always()
