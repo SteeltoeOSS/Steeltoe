@@ -90,7 +90,8 @@ jobs:
   dependsOn: SetBuildNumber
   pool:
     vmImage: 'windows-2019'
-
+  variables:
+    PackageBuildVersion: $(SetBuildNumber.PackageBuildVersion)
   steps:
   - task: DotNetCoreCLI@2
     inputs:
@@ -109,7 +110,7 @@ jobs:
       packagesToPack: '**/*.sln'
       nobuild: true
       versioningScheme: 'byEnvVar'
-      versionEnvVar: 'SetBuildNumber.PackageBuildVersion'
+      versionEnvVar: $(PackageBuildVersion)
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
