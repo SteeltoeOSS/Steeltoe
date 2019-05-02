@@ -101,6 +101,8 @@ jobs:
       packagesToPack: '**/*.sln'
       versioningScheme: 'byEnvVar'
       versionEnvVar: $(PackageBuildVersion)
+    env:
+      PackageBuildVersion: PackageBuildVersion
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
