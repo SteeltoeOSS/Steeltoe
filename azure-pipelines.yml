@@ -100,7 +100,7 @@ jobs:
       arguments: '--configuration $(buildConfiguration)'
       packagesToPack: '**/*.sln'
       versioningScheme: 'byEnvVar'
-      versionEnvVar: $(PackageBuildVersion)
+      versionEnvVar: PackageBuildVersion
     env:
       PackageBuildVersion: PackageBuildVersion
 #  - task: DotNetCoreCLI@2
