@@ -7,13 +7,15 @@
         <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)steeltoe.snk</AssemblyOriginatorKeyFile>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
         <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-        <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
+        <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591;CS8002</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <AdditionalFiles Include="..\..\..\..\stylecop.json">

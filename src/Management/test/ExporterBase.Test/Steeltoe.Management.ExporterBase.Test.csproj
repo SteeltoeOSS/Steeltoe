@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
   </PropertyGroup>
-
+  <Import Project="..\..\..\..\sharedtest.props" />
   <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
@@ -22,15 +22,5 @@
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
-  </ItemGroup>
-
-  <PropertyGroup>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
   </ItemGroup>
 </Project>

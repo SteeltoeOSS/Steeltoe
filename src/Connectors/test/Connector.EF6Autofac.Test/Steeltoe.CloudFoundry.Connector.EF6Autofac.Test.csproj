@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
   </PropertyGroup>
+  <Import Project="..\..\..\..\sharedtest.props" />
   <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
@@ -10,10 +11,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <PropertyGroup>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Connector.EF6Autofac\Steeltoe.CloudFoundry.Connector.EF6Autofac.csproj" />
@@ -32,14 +29,5 @@
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    
   </ItemGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
-  </ItemGroup>
-
-
 </Project>
