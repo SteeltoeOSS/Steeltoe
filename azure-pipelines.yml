@@ -78,6 +78,15 @@ jobs:
 #      command: test
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework net461'
+    - task: PowerShell@2
+      displayName: Authenticode Sign Packages
+      inputs:
+        filePath: build/Sign-Package.ps1
+      env:
+        SignClientUser: $(SignClientUser)
+        SignClientSecret: $(SignClientSecret)
+        ArtifactDirectory: $(Build.ArtifactStagingDirectory)
+      condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')))
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: $(Build.ArtifactStagingDirectory)
