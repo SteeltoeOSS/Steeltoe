@@ -95,22 +95,17 @@ jobs:
   steps:
   - task: DotNetCoreCLI@2
     inputs:
-      command: build
-      projects: '**/*.sln'
+      command: 'pack'
+      feedsToUse: 'select'
       arguments: '--configuration $(buildConfiguration)'
+      packagesToPack: '**/*.sln'
+      versioningScheme: 'byEnvVar'
+      versionEnvVar: $(PackageBuildVersion)
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
 #      projects: '**/*.Test/*.csproj'
 #      arguments: '--configuration $(buildConfiguration) --framework net461'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'pack'
-      feedsToUse: 'select'
-      packagesToPack: '**/*.sln'
-      nobuild: true
-      versioningScheme: 'byEnvVar'
-      versionEnvVar: $(PackageBuildVersion)
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
