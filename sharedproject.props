@@ -1,0 +1,24 @@
+<Project>
+    <PropertyGroup>
+        <Authors>Pivotal,dtillman</Authors>
+        <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+        <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+        <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+        <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <AdditionalFiles Include="..\..\..\..\stylecop.json">
+            <Link>stylecop.json</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </AdditionalFiles>
+    </ItemGroup>
+</Project>

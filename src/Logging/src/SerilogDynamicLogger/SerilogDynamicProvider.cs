@@ -26,7 +26,7 @@ using static Serilog.ConfigurationLoggerConfigurationExtensions;
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 {
     /// <summary>
-    /// A wrapper for the <see cref="Serilog.Logger"/> to dynamically set log levels
+    /// A wrapper for the <see cref="Serilog.Core.Logger"/> to dynamically set log levels
     /// </summary>
     public class SerilogDynamicProvider : IDynamicLoggerProvider
     {

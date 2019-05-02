@@ -2,23 +2,13 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>CloudFoundry Connector Extensions for Entity Framework 6 with Autofac</Description>
-    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <Authors>Pivotal;dtillman</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.CloudFoundry.Connector.EF6Autofac</AssemblyName>
     <PackageId>Steeltoe.CloudFoundry.Connector.EF6Autofac</PackageId>
     <PackageTags>CloudFoundry;ASPNET;Autofac;EntityFramework</PackageTags>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.CloudFoundry.Connector.EF6Autofac.xml</DocumentationFile>
-  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
+
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj" />
   </ItemGroup>
@@ -31,14 +21,5 @@
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.CloudFoundry.ConnectorBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-  <PropertyGroup>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
   </ItemGroup>
 </Project>

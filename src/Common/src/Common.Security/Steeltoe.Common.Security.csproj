@@ -2,26 +2,12 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Common Security Library</Description>
-    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <Authors>Pivotal;dtillman</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Common.Security</AssemblyName>
     <PackageId>Steeltoe.Common.Security</PackageId>
     <PackageTags>NET Core;NET Framework</PackageTags>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Common.Security.xml</DocumentationFile>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup>
-  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="Portable.BouncyCastle" Version="$(BouncyCastleVersion)" />
@@ -33,13 +19,6 @@
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
   </ItemGroup>
 
 </Project>

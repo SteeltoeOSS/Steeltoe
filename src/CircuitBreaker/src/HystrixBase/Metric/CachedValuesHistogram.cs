@@ -65,7 +65,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         private CachedValuesHistogram(LongHistogram underlying)
         {
-            /**
+            /*
              * Single thread calculates a variety of commonly-accessed quantities.
              * This way, all threads can access the cached values without synchronization
              * Synchronization is only required for values that are not cached

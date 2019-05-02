@@ -26,8 +26,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         private const string CONFIG_PATH = "Serilog";
 
         /// <summary>
-        /// This controls the root logger (and the "Default") and
-        /// limits the verbosity of all other overrides to this setting
+        /// Gets or sets the minimum level for the root logger (and the "Default").
+        /// Limits the verbosity of all other overrides to this setting
         /// </summary>
         public MinimumLevel MinimumLevel { get; set; }
 

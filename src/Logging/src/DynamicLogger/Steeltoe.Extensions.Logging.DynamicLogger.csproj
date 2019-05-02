@@ -3,27 +3,12 @@
   
   <PropertyGroup>
     <Description>Steeltoe Console Logger</Description>
-    <Authors>Pivotal;dtillman</Authors>
-    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Extensions.Logging.DynamicLogger</AssemblyName>
     <PackageId>Steeltoe.Extensions.Logging.DynamicLogger</PackageId>
     <PackageTags>Spring Cloud;Logging;Management</PackageTags>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
-  
-  <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Extensions.Logging.DynamicLogger.xml</DocumentationFile>
-  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(LoggingVersion)" />
@@ -41,13 +26,4 @@
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
   </ItemGroup>
 
-  <PropertyGroup>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
-  </ItemGroup>
 </Project>

@@ -4,24 +4,13 @@
 
   <PropertyGroup>
     <Description>Steeltoe Management OpenCensus</Description>
-    <Authors>Pivotal;dtillman</Authors>
-    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Management.OpenCensus</AssemblyName>
     <PackageId>Steeltoe.Management.OpenCensus</PackageId>
     <PackageTags>Tracing;OpenCensus;Management;Monitoring</PackageTags>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>Steeltoe.Management.Census</RootNamespace>
   </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>

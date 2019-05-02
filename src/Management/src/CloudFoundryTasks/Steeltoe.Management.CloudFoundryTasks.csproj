@@ -3,26 +3,12 @@
 
   <PropertyGroup>
     <Description>Steeltoe Management Extensions for Tasks in Cloud Foundry with Microsoft DI</Description>
-    <Authors>Pivotal;dtillman</Authors>
-    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Management.CloudFoundryTasks</AssemblyName>
     <PackageId>Steeltoe.Management.CloudFoundryTasks</PackageId>
     <PackageTags>Spring Cloud;Tasks;Management;Monitoring;CloudFoundry</PackageTags>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
-  <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Management.CloudFoundryCore.xml</DocumentationFile>
-  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
   
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
@@ -38,16 +24,4 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
-
-  <PropertyGroup>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
-  </ItemGroup>
-
 </Project>

@@ -3,21 +3,13 @@
   
   <PropertyGroup>
     <Description>Steeltoe Management Runtime Diagnostics</Description>
-    <Authors>Pivotal;dtillman</Authors>
-    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Management.Diagnostics</AssemblyName>
     <PackageId>Steeltoe.Management.Diagnostics</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
   
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
@@ -25,15 +17,5 @@
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-  
-  <PropertyGroup>
-    <NoWarn>1701;1702;1705;0649;SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
   </ItemGroup>
 </Project>

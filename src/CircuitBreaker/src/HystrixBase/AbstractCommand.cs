@@ -1135,7 +1135,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                     // store the command that is being run
                     _executionResult = _executionResult.SetExecutedInThread();
-                    /**
+                    /*
                      * If any of these hooks throw an exception, then it appears as if the actual execution threw an error
                      */
                     try
