@@ -109,7 +109,7 @@ jobs:
       packagesToPack: '**/*.sln'
       nobuild: true
       versioningScheme: 'byEnvVar'
-      versionEnvVar: 'PackageBuildVersion'
+      versionEnvVar: 'SetBuildNumber.PackageBuildVersion'
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
