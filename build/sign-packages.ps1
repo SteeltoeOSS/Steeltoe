@@ -13,7 +13,7 @@ dotnet tool install --tool-path . SignClient
 
 $appSettings = "$currentDirectory\appsettings.json"
 
-$nupkgs = Get-ChildItem $ArtifactDirectory\*.nupkg -recurse | Select-Object -ExpandProperty FullName
+$nupkgs = Get-ChildItem $ArtifactDirectory\Steeltoe*.nupkg -recurse | Select-Object -ExpandProperty FullName
 
 foreach ($nupkg in $nupkgs){
 	Write-Host "Submitting $nupkg for signing"
