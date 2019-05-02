@@ -90,6 +90,8 @@ jobs:
   dependsOn: SetBuildNumber
   pool:
     vmImage: 'windows-2019'
+  variables:
+    PackageBuildVersion: $[ dependencies.SetBuildNumber.outputs['PackageBuildVersion'] ]
   steps:
   - task: DotNetCoreCLI@2
     inputs:
@@ -100,7 +102,7 @@ jobs:
       versioningScheme: 'byEnvVar'
       versionEnvVar: PackageBuildVersion
     env:
-      PackageBuildVersion: $[ dependencies.SetBuildNumber.outputs['PackageBuildVersion'] ]
+      PackageBuildVersion: $(PackageBuildVersion)
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test
