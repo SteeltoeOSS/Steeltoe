@@ -2,8 +2,13 @@
 
   <Import Project="..\..\..\..\versions.props" />
 
-  <PropertyGroup>
+  <PropertyGroup Condition="! $(OS.Contains('win'))">
+    <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(OS.Contains('win'))">
     <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup>
     <RootNamespace>Steeltoe.Management.Census</RootNamespace>
     <!-- <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->
