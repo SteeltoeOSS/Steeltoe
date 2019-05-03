@@ -25,7 +25,7 @@ jobs:
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration) -f netcoreapp2.1'
+      arguments: '-c $(buildConfiguration)'
 - job: MacOS_Build_and_Test
   pool:
     vmImage: 'macOS-10.14'
@@ -39,7 +39,7 @@ jobs:
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration) -f netcoreapp2.1'
+      arguments: '-c $(buildConfiguration)'
 - job: Windows_Build_Test_and_Package
   pool:
     vmImage: 'windows-2019'
@@ -61,7 +61,7 @@ jobs:
       inputs:
         command: test
         projects: '**/*.Test/*.csproj'
-        arguments: '-c $(buildConfiguration) -f net461'
+        arguments: '-c $(buildConfiguration)'
     - task: PowerShell@2
       displayName: Authenticode Sign Packages
       inputs:

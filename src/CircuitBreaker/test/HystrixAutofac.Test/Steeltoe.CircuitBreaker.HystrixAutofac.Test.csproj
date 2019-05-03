@@ -2,6 +2,7 @@
  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <!-- <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->
   </PropertyGroup>

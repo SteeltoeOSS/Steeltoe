@@ -3,6 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry.Owin.Test</RootNamespace>
     <TargetFramework>net461</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <IsPackable>false</IsPackable>
     <!-- <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->

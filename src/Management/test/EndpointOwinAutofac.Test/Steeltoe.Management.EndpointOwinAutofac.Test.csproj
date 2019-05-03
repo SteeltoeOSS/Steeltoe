@@ -5,6 +5,7 @@
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.Management.EndpointAutofac</Description>
     <TargetFrameworks>net461</TargetFrameworks>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <AssemblyName>Steeltoe.Management.EndpointAutofac.Test</AssemblyName>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
