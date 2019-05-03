@@ -26,7 +26,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             stopWatch.Start();
             Time.WaitUntil(() => { return false; }, 1000);
             stopWatch.Stop();
-            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - 5, 1000 + 5);
+            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - 10, 1000 + 10);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             stopWatch.Start();
             Time.Wait(1000);
             stopWatch.Stop();
-            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - 5, 1000 + 5);
+            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - 10, 1000 + 10);
         }
     }
 }
