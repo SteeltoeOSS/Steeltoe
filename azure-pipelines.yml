@@ -20,12 +20,12 @@ jobs:
     inputs:
       command: build
       projects: '**/*.sln'
-        arguments: '-c $(buildConfiguration)'
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: test
-        projects: '**/*.Test/*.csproj'
-        arguments: '-c $(buildConfiguration) -f netcoreapp2.1'
+      arguments: '-c $(buildConfiguration)'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*.Test/*.csproj'
+      arguments: '-c $(buildConfiguration) -f netcoreapp2.1'
 - job: MacOS_Build_and_Test
   pool:
     vmImage: 'macOS-10.14'
@@ -46,6 +46,7 @@ jobs:
   steps:
     - pwsh: |
         Write-Host "##vso[build.addbuildtag]$env:PackageVersion"
+        Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
       env:
         PackageVersion: $(PackageVersion)
     - task: DotNetCoreCLI@2
@@ -56,11 +57,11 @@ jobs:
         packagesToPack: '**/*.sln'
         versioningScheme: 'byEnvVar'
         versionEnvVar: PackageVersion
-     - task: DotNetCoreCLI@2
-       inputs:
-         command: test
-         projects: '**/*.Test/*.csproj'
-         arguments: '-c $(buildConfiguration) -f net461'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: test
+        projects: '**/*.Test/*.csproj'
+        arguments: '-c $(buildConfiguration) -f net461'
     - task: PowerShell@2
       displayName: Authenticode Sign Packages
       inputs:
