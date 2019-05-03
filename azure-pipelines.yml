@@ -45,7 +45,7 @@ jobs:
     vmImage: 'windows-2019'
   steps:
     - pwsh: |
-      Write-Host "##vso[build.addbuildtag]$env:PackageVersion"
+        Write-Host "##vso[build.addbuildtag]$env:PackageVersion"
       env:
         PackageVersion: $(PackageVersion)
     - task: DotNetCoreCLI@2
