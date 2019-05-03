@@ -52,11 +52,11 @@ jobs:
         packagesToPack: '**/*.sln'
         versioningScheme: 'byEnvVar'
         versionEnvVar: PackageVersion
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration) -f net461'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: test
+        projects: '**/*.Test/*.csproj'
+        arguments: '-c $(buildConfiguration) -f net461'
     - task: PowerShell@2
       displayName: Authenticode Sign Packages
       inputs:
