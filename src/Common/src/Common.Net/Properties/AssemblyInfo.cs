@@ -14,9 +14,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Common.Net.Test,PublicKey=" +
-"0024000004800000940000000602000000240000525341310004000001000100d9e7bdf78d4ed4" +
-"5ee213956597f39ad856de9f69b6cfa8b8e7578576f42fa60babb8ae2fc19e724bb67adf2aad03" +
-"0c12189b3f90164212a6b99e16cf590679df12ca1ccb4485d276ac99dc69497810727a473813c5" +
-"e39ca53ea9c1077fc02e428fab9561fd42c46ab27fc2a1a3cf8cf10dbddfe6099e2cce40d1d67e" +
-"2340fdd3")]
+[assembly: InternalsVisibleTo("Steeltoe.Common.Net.Test")]
