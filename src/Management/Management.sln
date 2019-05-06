@@ -57,9 +57,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac", "src\EndpointOwinAutofac\Steeltoe.Management.EndpointOwinAutofac.csproj", "{FCF5A911-989B-4DCD-9165-D00A66F9F11B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin.Test", "test\EndpointOwin.Test\Steeltoe.Management.EndpointOwin.Test.csproj", "{D2236310-69D7-4623-B76E-615C2BA5322E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin.Test", "test\EndpointOwin.Net4Test\Steeltoe.Management.EndpointOwin.Test.csproj", "{D2236310-69D7-4623-B76E-615C2BA5322E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac.Test", "test\EndpointOwinAutofac.Test\Steeltoe.Management.EndpointOwinAutofac.Test.csproj", "{C23A188B-ECD2-4730-85EA-BE3930DD4786}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac.Test", "test\EndpointOwinAutofac.Net4Test\Steeltoe.Management.EndpointOwinAutofac.Test.csproj", "{C23A188B-ECD2-4730-85EA-BE3930DD4786}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb", "src\EndpointWeb\Steeltoe.Management.EndpointWeb.csproj", "{80CA3842-F0DC-4245-A10F-2C027E4B82F6}"
 EndProject
@@ -164,11 +164,9 @@ Global
 		{FCF5A911-989B-4DCD-9165-D00A66F9F11B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCF5A911-989B-4DCD-9165-D00A66F9F11B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2236310-69D7-4623-B76E-615C2BA5322E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2236310-69D7-4623-B76E-615C2BA5322E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2236310-69D7-4623-B76E-615C2BA5322E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2236310-69D7-4623-B76E-615C2BA5322E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C23A188B-ECD2-4730-85EA-BE3930DD4786}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C23A188B-ECD2-4730-85EA-BE3930DD4786}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C23A188B-ECD2-4730-85EA-BE3930DD4786}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C23A188B-ECD2-4730-85EA-BE3930DD4786}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80CA3842-F0DC-4245-A10F-2C027E4B82F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
