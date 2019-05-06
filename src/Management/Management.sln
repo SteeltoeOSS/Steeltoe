@@ -63,7 +63,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb", "src\EndpointWeb\Steeltoe.Management.EndpointWeb.csproj", "{80CA3842-F0DC-4245-A10F-2C027E4B82F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb.Test", "test\EndpointWeb.Test\Steeltoe.Management.EndpointWeb.Test.csproj", "{D7BD7AE1-5435-4DC5-B2CB-FC9E5F830884}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb.Test", "test\EndpointWeb.Net4Test\Steeltoe.Management.EndpointWeb.Test.csproj", "{D7BD7AE1-5435-4DC5-B2CB-FC9E5F830884}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensusBase", "src\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj", "{2AB1AA07-0B80-4929-A35B-473C174DE67F}"
 EndProject

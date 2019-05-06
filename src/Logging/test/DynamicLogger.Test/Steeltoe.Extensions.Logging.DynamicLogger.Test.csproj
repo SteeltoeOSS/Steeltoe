@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
-  <PropertyGroup>
+  <PropertyGroup Condition="! $(OS.Contains('win'))">
+    <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(OS.Contains('win'))">
     <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
-  <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
     <None Update="xunit.runner.json">

@@ -28,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Conne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core", "src\Connector.EF6Core\Steeltoe.CloudFoundry.Connector.EF6Core.csproj", "{43012B18-D80D-4581-A85A-80F69DBD0431}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core.Test", "test\Connector.EF6Core.Test\Steeltoe.CloudFoundry.Connector.EF6Core.Test.csproj", "{D7296042-50AA-4570-BD5F-15DEAD416EDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core.Test", "test\Connector.EF6Core.Net4Test\Steeltoe.CloudFoundry.Connector.EF6Core.Test.csproj", "{D7296042-50AA-4570-BD5F-15DEAD416EDF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{F9A2807C-292F-49EB-B23A-FBB04527BA5C}"
 EndProject
@@ -40,7 +40,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Conne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Autofac", "src\Connector.EF6Autofac\Steeltoe.CloudFoundry.Connector.EF6Autofac.csproj", "{58BA19D1-5AA9-4AEC-8D5C-08834A9622A7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Autofac.Test", "test\Connector.EF6Autofac.Test\Steeltoe.CloudFoundry.Connector.EF6Autofac.Test.csproj", "{B1CCD2A8-856E-4582-9261-47F537A81B44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Autofac.Test", "test\Connector.EF6Autofac.Net4Test\Steeltoe.CloudFoundry.Connector.EF6Autofac.Test.csproj", "{B1CCD2A8-856E-4582-9261-47F537A81B44}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{4F6282E5-97B9-4655-8E67-7DF32320FE0C}"
 EndProject

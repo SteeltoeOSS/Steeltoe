@@ -42,9 +42,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryBase.Test", "test\Authentication.CloudFoundryBase.Test\Steeltoe.Security.Authentication.CloudFoundryBase.Test.csproj", "{350CC18B-D550-4207-9023-E90C9B61BF6C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryOwin.Test", "test\Authentication.CloudFoundryOwin.Test\Steeltoe.Security.Authentication.CloudFoundryOwin.Test.csproj", "{859C51B8-D6DF-473B-959A-4F0F1533ADD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryOwin.Test", "test\Authentication.CloudFoundryOwin.Net4Test\Steeltoe.Security.Authentication.CloudFoundryOwin.Test.csproj", "{859C51B8-D6DF-473B-959A-4F0F1533ADD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryWcf.Test", "test\Authentication.CloudFoundryWcf.Test\Steeltoe.Security.Authentication.CloudFoundryWcf.Test.csproj", "{950B0827-634F-43F9-86C4-4E615ED36A22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryWcf.Test", "test\Authentication.CloudFoundryWcf.Net4Test\Steeltoe.Security.Authentication.CloudFoundryWcf.Test.csproj", "{950B0827-634F-43F9-86C4-4E615ED36A22}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{2FE6A5FE-4512-41A9-9994-90C12DF1C409}"
 EndProject
