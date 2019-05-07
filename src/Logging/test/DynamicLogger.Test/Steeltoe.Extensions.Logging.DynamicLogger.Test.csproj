@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
-  <PropertyGroup Condition="! $(OS.Contains('win'))">
+  <PropertyGroup Condition="! $(OS.Contains('Win'))">
     <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
   </PropertyGroup>
-  <PropertyGroup Condition="$(OS.Contains('win'))">
+  <PropertyGroup Condition="$(OS.Contains('Win'))">
     <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
