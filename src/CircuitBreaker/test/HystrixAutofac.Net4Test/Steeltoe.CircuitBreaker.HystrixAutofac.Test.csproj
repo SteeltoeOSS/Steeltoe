@@ -1,10 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
  <Import Project="..\..\..\..\versions.props" />
-  <PropertyGroup Condition="! $(OS.Contains('win'))">
-    <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(OS.Contains('win'))">
-    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
     <!-- <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->
   </PropertyGroup>
