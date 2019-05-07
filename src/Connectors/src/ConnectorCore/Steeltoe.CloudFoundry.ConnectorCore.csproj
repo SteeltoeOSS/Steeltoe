@@ -14,7 +14,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="2.2.0" />
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="2.2.0" />
     <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="2.2.1" />
-    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="2.2.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="2.2.3" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="2.2.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(ExtensionsVersion)" />

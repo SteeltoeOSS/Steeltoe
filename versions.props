@@ -40,7 +40,8 @@
     <NpgsqlEFCoreVersion>2.1.0</NpgsqlEFCoreVersion>
     <PomeloEFCoreVersion>2.0.1</PomeloEFCoreVersion>
     <SqlClientVersion>4.5.0</SqlClientVersion>
-    <StackExchangeVersion>1.2.6</StackExchangeVersion>
+    <MicrosoftExtensionsRedisVersion>2.2.0</MicrosoftExtensionsRedisVersion>
+    <StackExchangeVersion>2.0.513</StackExchangeVersion>
 
     <AutofacVersion>4.6.1</AutofacVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>

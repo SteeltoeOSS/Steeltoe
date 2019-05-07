@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Caching.Redis;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.CloudFoundry.Connector.Services;

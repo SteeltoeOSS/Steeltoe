@@ -60,6 +60,11 @@ jobs:
     - task: DotNetCoreCLI@2
       inputs:
         command: test
+        projects: '**/*.Net4Test/*.csproj'
+        arguments: '-c $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: test
         projects: '**/*.Test/*.csproj'
         arguments: '-c $(buildConfiguration)'
     - task: PowerShell@2
