@@ -6,16 +6,9 @@
     </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
-        <PackageReference Include="xunit" Version="$(XunitVersion)" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
-        <PackageReference Include="Microsoft.AspNetCore" Version="$(AspNetCoreVersion)" />
-        <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
-        <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-          <PrivateAssets>All</PrivateAssets>
-        </PackageReference>
-        <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+  <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore" Version="$(AspNetCoreVersion)" />
+      <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
     </ItemGroup>
 
     <ItemGroup>

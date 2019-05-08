@@ -27,16 +27,10 @@
     <!--<PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />-->
     <!--<PackageReference Include="MySql.Data" Version="$(MySqlV8)" /> -->
     <PackageReference Include="MySql.Data" Version="$(MySqlV6)" />
-    
+
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
-
-    <PackageReference Include="xunit" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreTestVersion)" />
-    
-    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
   </ItemGroup>
 </Project>
