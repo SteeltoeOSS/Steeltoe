@@ -61,7 +61,7 @@ jobs:
       inputs:
         command: test
         projects: '**/*.Net4Test/*.csproj'
-        arguments: '-c $(buildConfiguration)'
+        arguments: '-c $(buildConfiguration) /p:CollectCoverage=true /p:MergeWith=$(Build.SourcesDirectory)\CodeCoverage\coverage.cobertura.xml /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
     - task: DotNetCoreCLI@2
       inputs:
         command: test
@@ -73,6 +73,7 @@ jobs:
         dotnet tool install -g dotnet-reportgenerator-globaltool
         reportgenerator -reports:$(Build.SourcesDirectory)\CodeCoverage\coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)\CodeCoverage -reporttypes:HtmlInline_AzurePipelines;Cobertura
       displayName: Create Code coverage report
+      condition: always()
     # Publish the code coverage result (summary and web site)
     # The summary allows to view the coverage percentage in the summary tab
     # The web site allows to view which lines are covered directly in Azure Pipeline
@@ -82,6 +83,7 @@ jobs:
         codeCoverageTool: Cobertura
         summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
         reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
+      condition: always()
     - task: PowerShell@2
       displayName: Authenticode Sign Packages
       inputs:
