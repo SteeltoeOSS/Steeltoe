@@ -3,10 +3,10 @@
   <Import Project="..\..\..\..\versions.props" />
   
   <PropertyGroup Condition="! $(OS.Contains('Win'))">
-    <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="$(OS.Contains('Win'))">
-    <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
     <!-- <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->
   </PropertyGroup>
