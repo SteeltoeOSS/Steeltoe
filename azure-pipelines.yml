@@ -22,6 +22,7 @@ jobs:
     inputs:
       packageType: sdk
       version: 2.2.300-preview2
+      includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DotNetCoreCLI@2
     inputs:
@@ -68,12 +69,12 @@ jobs:
       inputs:
         command: test
         projects: '**/*.Net4Test/*.csproj'
-        arguments: '-c $(buildConfiguration) /p:CollectCoverage=true /p:MergeWith=$(Build.SourcesDirectory)\CodeCoverage\coverage.cobertura.xml /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+        arguments: '-c $(buildConfiguration) /p:CollectCoverage=true /p:MergeWith=$(Build.SourcesDirectory)\CodeCoverage\coverage.cobertura.xml /p:CoverletOutput=$(Build.SourcesDirectory)\CodeCoverage\ /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
     - task: DotNetCoreCLI@2
       inputs:
         command: test
         projects: '**/*.Test/*.csproj'
-        arguments: '-c $(buildConfiguration) /p:CollectCoverage=true /p:MergeWith=$(Build.SourcesDirectory)\CodeCoverage\coverage.cobertura.xml /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+        arguments: '-c $(buildConfiguration) /p:CollectCoverage=true /p:MergeWith=$(Build.SourcesDirectory)\CodeCoverage\coverage.cobertura.xml /p:CoverletOutput=$(Build.SourcesDirectory)\CodeCoverage\ /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
     # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
     # First install the tool on the machine, then run it
     - script: |
