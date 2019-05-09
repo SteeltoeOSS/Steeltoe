@@ -17,13 +17,13 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   steps:
   # /tmp/NuGetScratch issue https://github.com/NuGet/Home/issues/7341
-  - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk'
-    inputs:
-      packageType: sdk
-      version: 2.2.300-preview2
-      includePreviewVersions: true
-      installationPath: $(Agent.ToolsDirectory)/dotnet
+  # - task: UseDotNet@2
+  #   displayName: 'Use .NET Core sdk'
+  #   inputs:
+  #     packageType: sdk
+  #     version: 2.2.300-preview2
+  #     includePreviewVersions: true
+  #     installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DotNetCoreCLI@2
     inputs:
       command: build
