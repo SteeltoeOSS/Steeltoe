@@ -1,16 +1,30 @@
-﻿using Steeltoe.Management.Census.Common;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Stats.Aggregations;
 using Steeltoe.Management.Census.Tags;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Stats.Test
 {
+    [Obsolete]
     internal static class StatsTestUtil
     {
-        static readonly ITimestamp ZERO_TIMESTAMP = Timestamp.Create(0, 0);
+        private static readonly ITimestamp ZERO_TIMESTAMP = Timestamp.Create(0, 0);
 
         internal static IAggregationData CreateAggregationData(IAggregation aggregation, IMeasure measure, params double[] values)
         {
@@ -19,15 +33,13 @@ namespace Steeltoe.Management.Census.Stats.Test
             {
                 mutableAggregation.Add(value);
             }
+
             return MutableViewData.CreateAggregationData(mutableAggregation, measure);
         }
 
         internal static IViewData CreateEmptyViewData(IView view)
         {
-            return ViewData.Create(
-                view,
-                new Dictionary<TagValues, IAggregationData>(),
-                ZERO_TIMESTAMP, ZERO_TIMESTAMP);
+            return ViewData.Create(view, new Dictionary<TagValues, IAggregationData>(), ZERO_TIMESTAMP, ZERO_TIMESTAMP);
         }
 
         internal static void AssertAggregationMapEquals(
@@ -45,6 +57,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 AssertAggregationDataEquals(exp, act, tolerance);
             }
         }
+
         internal static void AssertAggregationDataEquals(
             IAggregationData expected,
             IAggregationData actual,
@@ -58,14 +71,12 @@ namespace Steeltoe.Management.Census.Stats.Test
                     return null;
                 },
                 (arg) =>
-
                 {
                     Assert.IsType<SumDataLong>(actual);
                     Assert.InRange(((SumDataLong)actual).Sum, arg.Sum - tolerance, arg.Sum + tolerance);
                     return null;
                 },
                 (arg) =>
-
                 {
                     Assert.IsType<CountData>(actual);
                     Assert.Equal(arg.Count, ((CountData)actual).Count);
@@ -100,21 +111,21 @@ namespace Steeltoe.Management.Census.Stats.Test
                      throw new ArgumentException();
                  });
         }
+
         private static void AssertDistributionDataEquals(
             IDistributionData expected,
             IDistributionData actual,
             double tolerance)
         {
-            
             Assert.InRange(actual.Mean, expected.Mean - tolerance, expected.Mean + tolerance);
             Assert.Equal(expected.Count, actual.Count);
             Assert.InRange(actual.SumOfSquaredDeviations, expected.SumOfSquaredDeviations - tolerance, expected.SumOfSquaredDeviations + tolerance);
 
-            if (expected.Max == Double.NegativeInfinity
-                && expected.Min == Double.PositiveInfinity)
+            if (expected.Max == double.NegativeInfinity
+                && expected.Min == double.PositiveInfinity)
             {
-                Assert.True(Double.IsNegativeInfinity(actual.Max));
-                Assert.True(Double.IsPositiveInfinity(actual.Min));
+                Assert.True(double.IsNegativeInfinity(actual.Max));
+                Assert.True(double.IsPositiveInfinity(actual.Min));
             }
             else
             {
@@ -122,18 +133,19 @@ namespace Steeltoe.Management.Census.Stats.Test
                 Assert.InRange(actual.Min, expected.Min - tolerance, expected.Min + tolerance);
             }
 
-            Assert.Equal(RemoveTrailingZeros(expected.BucketCounts), RemoveTrailingZeros((actual).BucketCounts));
+            Assert.Equal(RemoveTrailingZeros(expected.BucketCounts), RemoveTrailingZeros(actual.BucketCounts));
         }
+
         private static IList<long> RemoveTrailingZeros(IList<long> longs)
         {
             if (longs == null || longs.Count == 0)
             {
                 return longs;
             }
-   
+
             List<long> truncated = new List<long>();
             int lastIndex = longs.Count - 1;
-            while(longs[lastIndex] == 0)
+            while (longs[lastIndex] == 0)
             {
                 lastIndex--;
                 if (lastIndex <= 0)
@@ -141,10 +153,13 @@ namespace Steeltoe.Management.Census.Stats.Test
                     break;
                 }
             }
-            for (int i = 0; i < lastIndex; i++) truncated.Add(longs[i]);
+
+            for (int i = 0; i < lastIndex; i++)
+            {
+                truncated.Add(longs[i]);
+            }
 
             return truncated;
-       
         }
     }
 }

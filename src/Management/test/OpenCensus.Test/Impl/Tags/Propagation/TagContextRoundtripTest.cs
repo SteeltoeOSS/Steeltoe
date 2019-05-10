@@ -1,20 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Tags.Propagation.Test
 {
+    [Obsolete]
     public class TagContextRoundtripTest
     {
-
         private static readonly ITagKey K1 = TagKey.Create("k1");
         private static readonly ITagKey K2 = TagKey.Create("k2");
         private static readonly ITagKey K3 = TagKey.Create("k3");
 
-        private static readonly ITagValue V_EMPTY = TagValue.Create("");
+        private static readonly ITagValue V_EMPTY = TagValue.Create(string.Empty);
         private static readonly ITagValue V1 = TagValue.Create("v1");
         private static readonly ITagValue V2 = TagValue.Create("v2");
         private static readonly ITagValue V3 = TagValue.Create("v3");
@@ -28,6 +38,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
             serializer = tagsComponent.TagPropagationComponent.BinarySerializer;
             tagger = tagsComponent.Tagger;
         }
+
         [Fact]
         public void TestRoundtripSerialization_NormalTagContext()
         {
@@ -45,7 +56,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
             {
                 // Each tag will be with format {key : "0123", value : "0123"}, so the length of it is 8.
                 // Add 1024 tags, the total size should just be 8192.
-                String str;
+                string str;
                 if (i < 10)
                 {
                     str = "000" + i;
@@ -60,10 +71,12 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
                 }
                 else
                 {
-                    str = "" + i;
+                    str = string.Empty + i;
                 }
+
                 builder.Put(TagKey.Create(str), TagValue.Create(str));
             }
+
             TestRoundtripSerialization(builder.Build());
         }
 

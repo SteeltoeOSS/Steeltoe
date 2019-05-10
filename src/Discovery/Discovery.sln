@@ -9,14 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{482BD4E0-A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{31067C16-6457-41D5-97B1-8003D17E08DB}"
 	ProjectSection(SolutionItems) = preProject
-		..\versions.props = ..\versions.props
+		..\..\nuget.config = ..\..\nuget.config
+		..\..\sharedproject.props = ..\..\sharedproject.props
+		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\stylecop.json = ..\..\stylecop.json
+		..\..\targetframework.props = ..\..\targetframework.props
+		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{91E84135-67DB-4759-8636-AA82E20C75AF}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
-		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ClientCore", "src\ClientCore\Steeltoe.Discovery.ClientCore.csproj", "{D9492167-CE19-44AA-9A93-E117734FCA98}"

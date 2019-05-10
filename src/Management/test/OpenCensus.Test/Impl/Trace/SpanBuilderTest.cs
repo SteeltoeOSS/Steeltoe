@@ -1,4 +1,18 @@
-﻿using Moq;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Moq;
 using Steeltoe.Management.Census.Testing.Common;
 using Steeltoe.Management.Census.Trace.Config;
 using Steeltoe.Management.Census.Trace.Export;
@@ -6,31 +20,32 @@ using Steeltoe.Management.Census.Trace.Internal;
 using Steeltoe.Management.Census.Trace.Sampler;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Trace.Test
 {
+    [Obsolete]
     public class SpanBuilderTest
     {
-        private static readonly String SPAN_NAME = "MySpanName";
+        private static readonly string SPAN_NAME = "MySpanName";
         private SpanBuilderOptions spanBuilderOptions;
         private TraceParams alwaysSampleTraceParams = TraceParams.DEFAULT.ToBuilder().SetSampler(Samplers.AlwaysSample).Build();
+#pragma warning disable SA1214 // Readonly fields must appear before non-readonly fields
         private readonly TestClock testClock = TestClock.Create();
+#pragma warning restore SA1214 // Readonly fields must appear before non-readonly fields
         private readonly IRandomGenerator randomHandler = new FakeRandomHandler();
         private IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
         private ITraceConfig traceConfig = Mock.Of<ITraceConfig>();
 
         public SpanBuilderTest()
         {
-            //MockitoAnnotations.initMocks(this);
+            // MockitoAnnotations.initMocks(this);
             spanBuilderOptions =
                 new SpanBuilderOptions(randomHandler, startEndHandler, testClock, traceConfig);
             var configMock = Mock.Get<ITraceConfig>(traceConfig);
             configMock.Setup((c) => c.ActiveTraceParams).Returns(alwaysSampleTraceParams);
-            //when(traceConfig.getActiveTraceParams()).thenReturn(alwaysSampleTraceParams);
+
+            // when(traceConfig.getActiveTraceParams()).thenReturn(alwaysSampleTraceParams);
         }
 
         [Fact]
@@ -171,6 +186,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                     .StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.True(rootSpan.Context.TraceOptions.IsSampled);
+
             // Apply given sampler before default sampler for spans with remote parent.
             ISpan childSpan =
                 SpanBuilder.CreateWithRemoteParent(SPAN_NAME, rootSpan.Context, spanBuilderOptions)
@@ -190,6 +206,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                     .StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.False(rootSpan.Context.TraceOptions.IsSampled);
+
             // Apply default sampler (always true in the tests) for spans with remote parent.
             ISpan childSpan =
                 SpanBuilder.CreateWithRemoteParent(SPAN_NAME, rootSpan.Context, spanBuilderOptions)
@@ -208,6 +225,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                     .StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.True(rootSpan.Context.TraceOptions.IsSampled);
+
             // Apply the given sampler for child spans.
             ISpan childSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, rootSpan, spanBuilderOptions)
@@ -227,6 +245,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                     .StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.False(rootSpan.Context.TraceOptions.IsSampled);
+
             // Don't apply the default sampler (always true) for child spans.
             ISpan childSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, rootSpan, spanBuilderOptions).StartSpan();
@@ -248,6 +267,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                     .SetSampler(Samplers.AlwaysSample)
                     .StartSpan();
             Assert.True(rootSpanSampled.Context.TraceOptions.IsSampled);
+
             // Sampled because the linked parent is sampled.
             ISpan childSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, rootSpanUnsampled, spanBuilderOptions)
@@ -263,19 +283,21 @@ namespace Steeltoe.Management.Census.Trace.Test
         {
             var configMock = Mock.Get<ITraceConfig>(traceConfig);
             configMock.Setup((c) => c.ActiveTraceParams).Returns(TraceParams.DEFAULT);
+
             // This traceId will not be sampled by the ProbabilitySampler because the first 8 bytes as long
             // is not less than probability * Long.MAX_VALUE;
             ITraceId traceId =
                 TraceId.FromBytes(
-                    new byte[] {
-              (byte) 0x8F,
-              (byte) 0xFF,
-              (byte) 0xFF,
-              (byte) 0xFF,
-              (byte) 0xFF,
-              (byte) 0xFF,
-              (byte) 0xFF,
-              (byte) 0xFF,
+                    new byte[]
+                    {
+              (byte)0x8F,
+              (byte)0xFF,
+              (byte)0xFF,
+              (byte)0xFF,
+              (byte)0xFF,
+              (byte)0xFF,
+              (byte)0xFF,
+              (byte)0xFF,
               0,
               0,
               0,
@@ -319,7 +341,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             childSpan.End();
         }
 
-        class FakeRandomHandler : IRandomGenerator
+        private class FakeRandomHandler : IRandomGenerator
         {
             private readonly Random random;
 
@@ -328,7 +350,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                 this.random = new Random(1234);
             }
 
-            public Random current()
+            public Random Current()
             {
                 return random;
             }
@@ -339,5 +361,4 @@ namespace Steeltoe.Management.Census.Trace.Test
             }
         }
     }
-
 }

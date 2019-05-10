@@ -1,4 +1,18 @@
-﻿using Moq;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Moq;
 using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Internal;
 using Steeltoe.Management.Census.Testing.Export;
@@ -6,18 +20,16 @@ using Steeltoe.Management.Census.Trace.Config;
 using Steeltoe.Management.Census.Trace.Internal;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Trace.Export.Test
 {
+    [Obsolete]
     public class SpanExporterTest
     {
-        private static readonly String SPAN_NAME_1 = "MySpanName/1";
-        private static readonly String SPAN_NAME_2 = "MySpanName/2";
+        private static readonly string SPAN_NAME_1 = "MySpanName/1";
+        private static readonly string SPAN_NAME_2 = "MySpanName/2";
         private readonly RandomGenerator random = new RandomGenerator(1234);
         private readonly ISpanContext sampledSpanContext;
         private readonly ISpanContext notSampledSpanContext;
@@ -25,7 +37,9 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         private readonly IRunningSpanStore runningSpanStore = new InProcessRunningSpanStore();
         private readonly IStartEndHandler startEndHandler;
         private SpanOptions recordSpanOptions = SpanOptions.RECORD_EVENTS;
+#pragma warning disable SA1214 // Readonly fields must appear before non-readonly fields
         private readonly TestHandler serviceHandler = new TestHandler();
+#pragma warning restore SA1214 // Readonly fields must appear before non-readonly fields
         private IHandler mockServiceHandler = Mock.Of<IHandler>();
 
         public SpanExporterTest()
@@ -72,7 +86,9 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         }
 
         [Fact]
+#pragma warning disable SA1202 // Elements must be ordered by access
         public void ExportDifferentSampledSpans()
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             Span span1 = CreateSampledEndedSpan(SPAN_NAME_1);
             Span span2 = CreateSampledEndedSpan(SPAN_NAME_2);
@@ -99,16 +115,15 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Assert.Contains(span4.ToSpanData(), exported);
             Assert.Contains(span5.ToSpanData(), exported);
             Assert.Contains(span6.ToSpanData(), exported);
-
         }
 
         [Fact]
         public void InterruptWorkerThreadStops()
         {
-  
             Thread serviceExporterThread = ((SpanExporter)spanExporter).ServiceExporterThread;
             spanExporter.Dispose();
-            //serviceExporterThread.Interrupt();
+
+            // serviceExporterThread.Interrupt();
             // Test that the worker thread will stop.
             serviceExporterThread.Join();
         }
@@ -118,7 +133,8 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         {
             var mockHandler = Mock.Get<IHandler>(mockServiceHandler);
             mockHandler.Setup((h) => h.Export(It.IsAny<IList<ISpanData>>())).Throws(new ArgumentException("No export for you."));
-            //doThrow(new IllegalArgumentException("No export for you."))
+
+            // doThrow(new IllegalArgumentException("No export for you."))
             //    .when(mockServiceHandler)
             //    .export(anyListOf(SpanData));
             spanExporter.RegisterHandler("mock.service", mockServiceHandler);
@@ -126,13 +142,15 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             IList<ISpanData> exported = serviceHandler.WaitForExport(1);
             Assert.Equal(1, exported.Count);
             Assert.Contains(span1.ToSpanData(), exported);
-            //assertThat(exported).containsExactly(span1.toSpanData());
+
+            // assertThat(exported).containsExactly(span1.toSpanData());
             // Continue to export after the exception was received.
             Span span2 = CreateSampledEndedSpan(SPAN_NAME_1);
             exported = serviceHandler.WaitForExport(1);
             Assert.Equal(1, exported.Count);
             Assert.Contains(span2.ToSpanData(), exported);
-            //assertThat(exported).containsExactly(span2.toSpanData());
+
+            // assertThat(exported).containsExactly(span2.toSpanData());
         }
 
         [Fact]
@@ -157,18 +175,18 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         {
             Span span1 = CreateNotSampledEndedSpan(SPAN_NAME_1);
             Span span2 = CreateSampledEndedSpan(SPAN_NAME_2);
+
             // Spans are recorded and exported in the same order as they are ended, we test that a non
             // sampled span is not exported by creating and ending a sampled span after a non sampled span
             // and checking that the first exported span is the sampled span (the non sampled did not get
             // exported).
             IList<ISpanData> exported = serviceHandler.WaitForExport(1);
+
             // Need to check this because otherwise the variable span1 is unused, other option is to not
             // have a span1 variable.
             Assert.Equal(1, exported.Count);
             Assert.DoesNotContain(span1.ToSpanData(), exported);
             Assert.Contains(span2.ToSpanData(), exported);
-
         }
     }
-
 }

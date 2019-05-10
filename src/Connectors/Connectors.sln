@@ -8,14 +8,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{1CEE3AF7-D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{3EDCF15E-882C-4AF9-91C6-9A28F2506ACC}"
 	ProjectSection(SolutionItems) = preProject
-		..\versions.props = ..\versions.props
+		..\..\nuget.config = ..\..\nuget.config
+		..\..\sharedproject.props = ..\..\sharedproject.props
+		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\stylecop.json = ..\..\stylecop.json
+		..\..\targetframework.props = ..\..\targetframework.props
+		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D692D991-D48C-4D23-B373-796D425C7D4B}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
-		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EFCore", "src\Connector.EFCore\Steeltoe.CloudFoundry.Connector.EFCore.csproj", "{1130C00D-CE87-43A2-8723-C930D9C8891D}"

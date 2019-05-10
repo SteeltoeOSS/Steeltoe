@@ -1,24 +1,35 @@
-﻿using Steeltoe.Management.Census.Trace.Internal;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Trace.Internal;
 using Steeltoe.Management.Census.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Trace.Test
 {
+    [Obsolete]
     public class LinkTest
     {
         private readonly IDictionary<string, IAttributeValue> attributesMap = new Dictionary<string, IAttributeValue>();
         private readonly IRandomGenerator random = new RandomGenerator(1234);
         private readonly ISpanContext spanContext;
-          
 
         public LinkTest()
         {
-            spanContext = SpanContext.Create(TraceId.GenerateRandomId(random), SpanId.GenerateRandomId(random), TraceOptions.DEFAULT); ;
+            spanContext = SpanContext.Create(TraceId.GenerateRandomId(random), SpanId.GenerateRandomId(random), TraceOptions.DEFAULT);
             attributesMap.Add("MyAttributeKey0", AttributeValue<string>.Create("MyStringAttribute"));
             attributesMap.Add("MyAttributeKey1", AttributeValue<long>.Create(10));
             attributesMap.Add("MyAttributeKey2", AttributeValue<bool>.Create(true));
@@ -65,8 +76,8 @@ namespace Steeltoe.Management.Census.Trace.Test
         [Fact]
         public void Link_EqualsAndHashCode()
         {
-            //EqualsTester tester = new EqualsTester();
-            //tester
+            // EqualsTester tester = new EqualsTester();
+            // tester
             //    .addEqualityGroup(
             //        Link.fromSpanContext(spanContext, Type.PARENT_LINKED_SPAN),
             //        Link.fromSpanContext(spanContext, Type.PARENT_LINKED_SPAN))
@@ -78,9 +89,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             //    .addEqualityGroup(
             //        Link.fromSpanContext(spanContext, Type.PARENT_LINKED_SPAN, attributesMap),
             //        Link.fromSpanContext(spanContext, Type.PARENT_LINKED_SPAN, attributesMap));
-            //tester.testEquals();
-
-
+            // tester.testEquals();
         }
 
         [Fact]

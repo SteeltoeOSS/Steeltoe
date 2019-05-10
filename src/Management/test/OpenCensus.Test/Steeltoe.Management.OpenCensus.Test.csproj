@@ -27,7 +27,4 @@
   <ItemGroup>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
   </ItemGroup>
-  <PropertyGroup>
-    <NoWarn>0618</NoWarn>
-  </PropertyGroup>
 </Project>

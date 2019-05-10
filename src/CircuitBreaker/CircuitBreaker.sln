@@ -9,13 +9,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{100AA6E3-E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4F262F8F-A478-4C8C-AA23-48B1103E5B8B}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
-		..\stylecop.json = ..\stylecop.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{545DB4B8-9BA8-41B4-9C59-3DEFC0B1017A}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\nuget.config = ..\..\nuget.config
+		..\..\sharedproject.props = ..\..\sharedproject.props
+		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\stylecop.json = ..\..\stylecop.json
+		..\..\targetframework.props = ..\..\targetframework.props
 		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject

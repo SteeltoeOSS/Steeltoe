@@ -8,14 +8,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{BA3B33D3-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{851768A8-7E3B-49DF-9DA2-512FAC8118C5}"
 	ProjectSection(SolutionItems) = preProject
-		..\versions.props = ..\versions.props
+		..\..\nuget.config = ..\..\nuget.config
+		..\..\sharedproject.props = ..\..\sharedproject.props
+		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\stylecop.json = ..\..\stylecop.json
+		..\..\targetframework.props = ..\..\targetframework.props
+		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6EBD5C70-1AC2-4163-90B8-BD8D76CF8B26}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
-		..\stylecop.json = ..\stylecop.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryCore", "src\Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj", "{C2EDCFE9-B3C5-466C-B1DA-C62D896C8F9E}"

@@ -9,17 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CC77ED1F-B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{473B575D-8871-4E77-9212-C2BBA20D702E}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\nuget.config = ..\..\nuget.config
+		..\..\sharedproject.props = ..\..\sharedproject.props
+		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\stylecop.json = ..\..\stylecop.json
+		..\..\targetframework.props = ..\..\targetframework.props
 		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{99524EB1-60C2-4069-B4F5-C89344678ABD}"
 	ProjectSection(SolutionItems) = preProject
-		.appveyor.yml = .appveyor.yml
-		.travis.yml = .travis.yml
-		nuget.config = nuget.config
 		README.md = README.md
-		stylecop.json = stylecop.json
-		targetframework.props = targetframework.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "src\Common\Steeltoe.Common.csproj", "{4AEA9704-3B99-4317-A959-7D6E4CDD4811}"

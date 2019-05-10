@@ -1,17 +1,28 @@
-﻿using Moq;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Moq;
 using Steeltoe.Management.Census.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Trace.Test
 {
+    [Obsolete]
     public class TracerBaseTest
     {
-        private static readonly ITracer noopTracer = TracerBase.NoopTracer;
+        private static readonly ITracer NoopTracer = TracerBase.NoopTracer;
         private static readonly string SPAN_NAME = "MySpanName";
         private TracerBase tracer = Mock.Of<TracerBase>();
         private SpanBuilderBase spanBuilder = Mock.Of<SpanBuilderBase>();
@@ -24,33 +35,34 @@ namespace Steeltoe.Management.Census.Trace.Test
         [Fact]
         public void DefaultGetCurrentSpan()
         {
-            Assert.Equal(BlankSpan.INSTANCE, noopTracer.CurrentSpan);
+            Assert.Equal(BlankSpan.INSTANCE, NoopTracer.CurrentSpan);
         }
 
         [Fact]
         public void WithSpan_NullSpan()
         {
-            Assert.Throws<ArgumentNullException>(() => noopTracer.WithSpan(null));
+            Assert.Throws<ArgumentNullException>(() => NoopTracer.WithSpan(null));
         }
 
         [Fact]
         public void GetCurrentSpan_WithSpan()
         {
-            Assert.Same(BlankSpan.INSTANCE, noopTracer.CurrentSpan);
-            IScope ws = noopTracer.WithSpan(span);
+            Assert.Same(BlankSpan.INSTANCE, NoopTracer.CurrentSpan);
+            IScope ws = NoopTracer.WithSpan(span);
             try
             {
-                Assert.Same(span, noopTracer.CurrentSpan);
+                Assert.Same(span, NoopTracer.CurrentSpan);
             }
             finally
             {
                 ws.Dispose();
             }
-            Assert.Same(BlankSpan.INSTANCE, noopTracer.CurrentSpan);
+
+            Assert.Same(BlankSpan.INSTANCE, NoopTracer.CurrentSpan);
         }
 
-        //      [Fact]
-        //public void wrapRunnable()
+        // [Fact]
+        // public void wrapRunnable()
         //      {
         //          Runnable runnable;
         //          Assert.Equal(noopTracer.getCurrentSpan()).isSameAs(BlankSpan.INSTANCE);
@@ -70,7 +82,7 @@ namespace Steeltoe.Management.Census.Trace.Test
         //      Assert.Equal(noopTracer.getCurrentSpan()).isSameAs(BlankSpan.INSTANCE);
         //  }
 
-        //   [Fact]
+        // [Fact]
         //  public void wrapCallable() throws Exception
         //    {
         //        readonly Object ret = new Object();
@@ -86,53 +98,53 @@ namespace Steeltoe.Management.Census.Trace.Test
         //        Assert.Equal(noopTracer.getCurrentSpan()).isSameAs(span);
         //                return ret;
         //    }
-        //});
+        // });
         //    // When we call the callable we will have the span in the current Context.
         //    Assert.Equal(callable.call()).isEqualTo(ret);
-        //verifyZeroInteractions(span);
-        //Assert.Equal(noopTracer.getCurrentSpan()).isSameAs(BlankSpan.INSTANCE);
-        //  }
+        // verifyZeroInteractions(span);
+        // Assert.Equal(noopTracer.getCurrentSpan()).isSameAs(BlankSpan.INSTANCE);
+        ////  }
 
         [Fact]
         public void SpanBuilderWithName_NullName()
         {
-            Assert.Throws<ArgumentNullException>(() => noopTracer.SpanBuilder(null));
+            Assert.Throws<ArgumentNullException>(() => NoopTracer.SpanBuilder(null));
         }
 
         [Fact]
         public void DefaultSpanBuilderWithName()
         {
-            Assert.Same(BlankSpan.INSTANCE, noopTracer.SpanBuilder(SPAN_NAME).StartSpan());
+            Assert.Same(BlankSpan.INSTANCE, NoopTracer.SpanBuilder(SPAN_NAME).StartSpan());
         }
 
         [Fact]
         public void SpanBuilderWithParentAndName_NullName()
         {
-            Assert.Throws<ArgumentNullException>(() => noopTracer.SpanBuilderWithExplicitParent(null, null));
+            Assert.Throws<ArgumentNullException>(() => NoopTracer.SpanBuilderWithExplicitParent(null, null));
         }
 
         [Fact]
         public void DefaultSpanBuilderWithParentAndName()
         {
-            Assert.Same(BlankSpan.INSTANCE, noopTracer.SpanBuilderWithExplicitParent(SPAN_NAME, null).StartSpan());
+            Assert.Same(BlankSpan.INSTANCE, NoopTracer.SpanBuilderWithExplicitParent(SPAN_NAME, null).StartSpan());
         }
 
         [Fact]
-        public void spanBuilderWithRemoteParent_NullName()
+        public void SpanBuilderWithRemoteParent_NullName()
         {
-            Assert.Throws<ArgumentNullException>(() => noopTracer.SpanBuilderWithRemoteParent(null, null));
+            Assert.Throws<ArgumentNullException>(() => NoopTracer.SpanBuilderWithRemoteParent(null, null));
         }
 
         [Fact]
         public void DefaultSpanBuilderWithRemoteParent_NullParent()
         {
-            Assert.Same(BlankSpan.INSTANCE, noopTracer.SpanBuilderWithRemoteParent(SPAN_NAME, null).StartSpan());
+            Assert.Same(BlankSpan.INSTANCE, NoopTracer.SpanBuilderWithRemoteParent(SPAN_NAME, null).StartSpan());
         }
 
         [Fact]
         public void DefaultSpanBuilderWithRemoteParent()
         {
-            Assert.Same(BlankSpan.INSTANCE, noopTracer.SpanBuilderWithRemoteParent(SPAN_NAME, SpanContext.INVALID).StartSpan());
+            Assert.Same(BlankSpan.INSTANCE, NoopTracer.SpanBuilderWithRemoteParent(SPAN_NAME, SpanContext.INVALID).StartSpan());
         }
 
         [Fact]
