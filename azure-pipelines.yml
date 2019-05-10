@@ -71,12 +71,12 @@ jobs:
       inputs:
         command: test
         projects: '**/*.Net4Test/*.csproj'
-        arguments: '-c $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
     - task: DotNetCoreCLI@2
       inputs:
         command: test
         projects: '**/*.Test/*.csproj'
-        arguments: '-c $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
       condition: always()
     # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
     # First install the tool on the machine, then run it

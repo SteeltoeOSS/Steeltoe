@@ -246,10 +246,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     else
                     {
                         // Single, server make Config Server URI from settings
-                        var path = GetConfigServerUri(label);
+                        var path = GetConfigServerUri(_settings.Uri, label);
 
                         // Invoke config server
-                        task = RemoteLoadAsync(path);
+                        task = RemoteLoadAsync(_settings.RawUris, path);
                     }
 
                     // Wait for results from server
@@ -809,7 +809,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 client = GetHttpClient(Settings);
 
                 var uri = GetVaultRenewUri();
-                var message = GetValutRenewMessage(uri);
+                var message = GetVaultRenewMessage(uri);
 
                 _logger?.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
 

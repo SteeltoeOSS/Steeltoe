@@ -28,8 +28,6 @@ namespace Steeltoe.Management.Census.Stats
 
         public static string Tarabyte { get; } = "terabytes";
 
-        private static string Minutes { get; } = "minutes";
-
         public static string Seconds { get; } = "seconds";
 
         public static string MicroSeconds { get; } = "microseconds";
@@ -37,6 +35,8 @@ namespace Steeltoe.Management.Census.Stats
         public static string MilliSeconds { get; } = "milliseconds";
 
         public static string NanoSeconds { get; } = "nanoseconds";
+
+        private static string Minutes { get; } = "minutes";
 
         public static bool IsTimeUnit(string unit)
         {

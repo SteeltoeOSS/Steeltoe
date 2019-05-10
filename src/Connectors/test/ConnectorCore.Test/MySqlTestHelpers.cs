@@ -41,6 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         }
       ]
 }";
+
         public static string SingleServerAzureVCAP = @"
 {
       'azure-mysql-5-7': [

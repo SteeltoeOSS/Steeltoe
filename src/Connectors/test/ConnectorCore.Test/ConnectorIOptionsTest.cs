@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         }
     }
 
+#pragma warning disable SA1402 // File may only contain a single class
     internal class MyOption
+#pragma warning restore SA1402 // File may only contain a single class
     {
         public MyOption()
         {

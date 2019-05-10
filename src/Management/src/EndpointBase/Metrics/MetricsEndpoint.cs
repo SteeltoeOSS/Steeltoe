@@ -18,6 +18,7 @@ using OpenCensus.Tags;
 using Steeltoe.Management.Census.Stats;
 using System;
 using System.Collections.Generic;
+using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -71,7 +72,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             List<MetricSample> measurements = GetMetricMeasurements(viewData, request.Tags);
             List<MetricTag> availTags = GetAvailableTags(viewData);
 
-            return new MetricsResponse(request.MetricName, measurements, availTags);
+            return new MetricsResponse(HttpUtility.HtmlEncode(request.MetricName), measurements, availTags);
         }
 
         protected internal List<MetricTag> GetAvailableTags(IViewData viewData)
