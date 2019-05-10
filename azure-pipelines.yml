@@ -8,6 +8,7 @@ trigger:
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  PackageVersion: $[format('2.2.1-{0}', variables['Build.BuildId'])]
 
 jobs:
 - job: Linux_Build_and_Test
@@ -51,9 +52,13 @@ jobs:
     vmImage: 'windows-2019'
   steps:
     - pwsh: |
+        if ($env:PackageVersionOverride){
+            $env:PackageVersion = $env:PackageVersionOverride
+        }
         Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
       env:
         PackageVersion: $(PackageVersion)
+        PackageVersionOverride: $(PackageVersionOverride)
     - task: DotNetCoreCLI@2
       inputs:
         command: 'pack'
