@@ -27,7 +27,7 @@ jobs:
     inputs:
       command: build
       projects: '**/*.sln'
-      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
+      arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
   - task: DotNetCoreCLI@2
     inputs:
       command: test
@@ -41,7 +41,7 @@ jobs:
 #    inputs:
 #      command: build
 #      projects: '**/*.sln'
-#      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
+#      arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
 #  - task: DotNetCoreCLI@2
 #    inputs:
 #      command: test

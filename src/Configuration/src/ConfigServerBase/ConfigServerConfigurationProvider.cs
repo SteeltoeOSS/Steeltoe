@@ -246,10 +246,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     else
                     {
                         // Single, server make Config Server URI from settings
-                        var path = GetConfigServerUri(_settings.Uri, label);
+#pragma warning disable CS0618 // Type or member is obsolete
+                        var path = GetConfigServerUri(label);
 
                         // Invoke config server
-                        task = RemoteLoadAsync(_settings.RawUris, path);
+                        task = RemoteLoadAsync(path);
+#pragma warning restore CS0618 // Type or member is obsolete
                     }
 
                     // Wait for results from server
