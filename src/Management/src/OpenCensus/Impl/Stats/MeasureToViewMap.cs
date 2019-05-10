@@ -1,11 +1,22 @@
-﻿using Steeltoe.Management.Census.Common;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Stats.Measurements;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Tags;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
@@ -13,7 +24,7 @@ namespace Steeltoe.Management.Census.Stats
     internal sealed class MeasureToViewMap
     {
         private object _lck = new object();
-        private readonly IDictionary<String, IList<MutableViewData>> mutableMap = new Dictionary<String, IList<MutableViewData>>();
+        private readonly IDictionary<string, IList<MutableViewData>> mutableMap = new Dictionary<string, IList<MutableViewData>>();
 
         private IDictionary<IViewName, IView> registeredViews = new Dictionary<IViewName, IView>();
 
@@ -24,7 +35,7 @@ namespace Steeltoe.Management.Census.Stats
         // unregistered.
         private volatile ISet<IView> exportedViews;
 
-        /** Returns a {@link ViewData} corresponding to the given {@link View.Name}. */
+        // Returns a {@link ViewData} corresponding to the given {@link View.Name}.
         internal IViewData GetView(IViewName viewName, IClock clock, StatsCollectionState state)
         {
             lock (_lck)
@@ -36,14 +47,17 @@ namespace Steeltoe.Management.Census.Stats
 
         internal ISet<IView> ExportedViews
         {
-            get {
+            get
+            {
                 ISet<IView> views = exportedViews;
                 if (views == null)
                 {
-                    lock (_lck) {
+                    lock (_lck)
+                    {
                         exportedViews = views = FilterExportedViews(registeredViews.Values);
                     }
                 }
+
                 return views;
             }
         }
@@ -53,8 +67,6 @@ namespace Steeltoe.Management.Census.Stats
         {
             return ImmutableHashSet.CreateRange(allViews);
         }
-
-
 
         /** Enable stats collection for the given {@link View}. */
         internal void RegisterView(IView view, IClock clock)
@@ -75,17 +87,20 @@ namespace Steeltoe.Management.Census.Stats
                         throw new ArgumentException("A different view with the same name is already registered: " + existing);
                     }
                 }
+
                 IMeasure measure = view.Measure;
                 registeredMeasures.TryGetValue(measure.Name, out IMeasure registeredMeasure);
                 if (registeredMeasure != null && !registeredMeasure.Equals(measure))
                 {
                     throw new ArgumentException("A different measure with the same name is already registered: " + registeredMeasure);
                 }
+
                 registeredViews.Add(view.Name, view);
                 if (registeredMeasure == null)
                 {
                     registeredMeasures.Add(measure.Name, measure);
                 }
+
                 AddMutableViewData(view.Measure.Name, MutableViewData.Create(view, clock.Now));
             }
         }
@@ -95,7 +110,8 @@ namespace Steeltoe.Management.Census.Stats
             if (mutableMap.ContainsKey(name))
             {
                 mutableMap[name].Add(mutableViewData);
-            } else
+            }
+            else
             {
                 mutableMap.Add(name, new List<MutableViewData>() { mutableViewData });
             }
@@ -136,8 +152,10 @@ namespace Steeltoe.Management.Census.Stats
         // Records stats with a set of tags.
         internal void Record(ITagContext tags, IList<IMeasurement> stats, ITimestamp timestamp)
         {
-            lock (_lck) {
-                foreach (var measurement in stats) {
+            lock (_lck)
+            {
+                foreach (var measurement in stats)
+                {
                     IMeasure measure = measurement.Measure;
                     registeredMeasures.TryGetValue(measure.Name, out IMeasure value);
                     if (!measure.Equals(value))
@@ -145,6 +163,7 @@ namespace Steeltoe.Management.Census.Stats
                         // unregistered measures will be ignored.
                         continue;
                     }
+
                     IList<MutableViewData> views = mutableMap[measure.Name];
                     foreach (MutableViewData view in views)
                     {
@@ -158,7 +177,6 @@ namespace Steeltoe.Management.Census.Stats
                             {
                                 view.Record(tags, arg.Value, timestamp);
                                 return null;
-
                             },
                             (arg) =>
                             {
@@ -198,6 +216,5 @@ namespace Steeltoe.Management.Census.Stats
                 }
             }
         }
-
     }
 }

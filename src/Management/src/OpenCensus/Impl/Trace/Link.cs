@@ -1,4 +1,18 @@
-﻿using Steeltoe.Management.Census.Utils;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,10 +24,12 @@ namespace Steeltoe.Management.Census.Trace
     public sealed class Link : ILink
     {
         private static readonly IDictionary<string, IAttributeValue> EMPTY_ATTRIBUTES = new Dictionary<string, IAttributeValue>();
+
         public static ILink FromSpanContext(ISpanContext context, LinkType type)
         {
             return new Link(context.TraceId, context.SpanId, type, EMPTY_ATTRIBUTES);
         }
+
         public static ILink FromSpanContext(ISpanContext context, LinkType type, IDictionary<string, IAttributeValue> attributes)
         {
             IDictionary<string, IAttributeValue> copy = new Dictionary<string, IAttributeValue>(attributes);
@@ -23,6 +39,7 @@ namespace Steeltoe.Management.Census.Trace
                 type,
                 new ReadOnlyDictionary<string, IAttributeValue>(copy));
         }
+
         public ITraceId TraceId { get; }
 
         public ISpanId SpanId { get; }
@@ -37,10 +54,12 @@ namespace Steeltoe.Management.Census.Trace
             {
                 throw new ArgumentNullException(nameof(traceId));
             }
+
             if (spanId == null)
             {
                 throw new ArgumentNullException(nameof(spanId));
             }
+
             if (attributes == null)
             {
                 throw new ArgumentNullException(nameof(attributes));
@@ -51,6 +70,7 @@ namespace Steeltoe.Management.Census.Trace
             Type = type;
             Attributes = attributes;
         }
+
         public override string ToString()
         {
             return "Link{"
@@ -67,14 +87,16 @@ namespace Steeltoe.Management.Census.Trace
             {
                 return true;
             }
+
             if (o is Link)
             {
                 Link that = (Link)o;
-                return (this.TraceId.Equals(that.TraceId))
-                     && (this.SpanId.Equals(that.SpanId))
-                     && (this.Type.Equals(that.Type))
-                     && (this.Attributes.SequenceEqual(that.Attributes));
+                return this.TraceId.Equals(that.TraceId)
+                     && this.SpanId.Equals(that.SpanId)
+                     && this.Type.Equals(that.Type)
+                     && this.Attributes.SequenceEqual(that.Attributes);
             }
+
             return false;
         }
 

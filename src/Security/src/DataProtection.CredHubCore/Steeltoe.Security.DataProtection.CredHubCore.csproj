@@ -10,11 +10,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\DataProtection.CredHubBase\Steeltoe.Security.DataProtection.CredHubBase.csproj" />

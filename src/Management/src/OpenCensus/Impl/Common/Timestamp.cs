@@ -1,7 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 
 namespace Steeltoe.Management.Census.Common
 {
@@ -14,7 +25,6 @@ namespace Steeltoe.Management.Census.Common
         const long NANOS_PER_MILLI = 1000 * 1000;
         const long NANOS_PER_SECOND = NANOS_PER_MILLI * MILLIS_PER_SECOND;
 
-
         public static ITimestamp Create(long seconds, int nanos)
         {
             // TODO:
@@ -22,10 +32,12 @@ namespace Steeltoe.Management.Census.Common
             {
                 return new Timestamp(0, 0);
             }
+
             if (nanos < 0 || nanos > MAX_NANOS)
             {
                 return new Timestamp(0, 0);
             }
+
             return new Timestamp(seconds, nanos);
         }
 
@@ -43,10 +55,8 @@ namespace Steeltoe.Management.Census.Common
         }
 
         public long Seconds { get; }
- 
 
         public int Nanos { get; }
-
 
         public ITimestamp AddDuration(IDuration duration)
         {
@@ -58,10 +68,8 @@ namespace Steeltoe.Management.Census.Common
             return Plus(0, nanosToAdd);
         }
 
-
         public IDuration SubtractTimestamp(ITimestamp timestamp)
         {
-
             long durationSeconds = Seconds - timestamp.Seconds;
             int durationNanos = Nanos - timestamp.Nanos;
             if (durationSeconds < 0 && durationNanos > 0)
@@ -74,6 +82,7 @@ namespace Steeltoe.Management.Census.Common
                 durationSeconds -= 1;
                 durationNanos = (int)(durationNanos + NANOS_PER_SECOND);
             }
+
             return Duration.Create(durationSeconds, durationNanos);
         }
 
@@ -84,12 +93,12 @@ namespace Steeltoe.Management.Census.Common
             {
                 return cmp;
             }
+
             return (Nanos < other.Nanos) ? -1 : ((Nanos > other.Nanos) ? 1 : 0);
         }
 
         private ITimestamp Plus(long secondsToAdd, long nanosToAdd)
         {
-
             if ((secondsToAdd | nanosToAdd) == 0)
             {
                 return this;
@@ -106,7 +115,7 @@ namespace Steeltoe.Management.Census.Common
         {
             long floor = (long)Math.Floor((double)nanoAdjustment / NANOS_PER_SECOND);
             long secs = seconds + floor;
-            long nos = nanoAdjustment - floor * NANOS_PER_SECOND;
+            long nos = nanoAdjustment - (floor * NANOS_PER_SECOND);
             return Create(secs, (int)nos);
         }
 
@@ -124,11 +133,14 @@ namespace Steeltoe.Management.Census.Common
             {
                 return true;
             }
-            if (o is Timestamp) {
+
+            if (o is Timestamp)
+            {
                 Timestamp that = (Timestamp)o;
                 return (this.Seconds == that.Seconds)
                      && (this.Nanos == that.Nanos);
             }
+
             return false;
         }
 

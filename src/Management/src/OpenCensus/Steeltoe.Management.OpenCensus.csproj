@@ -11,9 +11,10 @@
     <RootNamespace>Steeltoe.Management.Census</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
-
+  <PropertyGroup>
+    <NoWarn>SA1101;SA1124;SA1201;SA1202;SA1203;SA1204;SA1214;SA1306;SA1309;SA1310;SA1400;SA1401;SA1600;SA1604;SA1611;SA1652;1591;CS8002</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />

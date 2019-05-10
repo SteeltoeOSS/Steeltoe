@@ -10,7 +10,6 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="$(HttpExtensionsVersion)" />

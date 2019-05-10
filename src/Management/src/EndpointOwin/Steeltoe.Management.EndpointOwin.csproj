@@ -13,12 +13,8 @@
   <Import Project="..\..\..\..\targetframework.props" />
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.AspNet.WebApi.Owin" Version="$(AspNetVersion)" />
     <PackageReference Include="Microsoft.Owin" Version="$(OwinVersion)" />
-    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">

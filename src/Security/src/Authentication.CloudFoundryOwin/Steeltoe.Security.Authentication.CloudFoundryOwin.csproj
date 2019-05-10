@@ -14,7 +14,6 @@
 
   <Import Project="..\..\..\..\targetframework.props" />
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.CSharp" Version="$(CSharpVersion)" />
     <PackageReference Include="Microsoft.Owin.Security.Jwt" Version="$(OwinOAuthVersion)" />
     <PackageReference Include="System.Net.Http" Version="$(HttpClientVersion)" />

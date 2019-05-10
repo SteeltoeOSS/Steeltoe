@@ -1,7 +1,20 @@
-﻿using Steeltoe.Management.Census.Utils;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Utils;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Sampler
 {
@@ -13,6 +26,7 @@ namespace Steeltoe.Management.Census.Trace.Sampler
             Probability = probability;
             IdUpperBound = idUpperBound;
         }
+
         internal static ProbabilitySampler Create(double probability)
         {
             if (probability < 0.0 || probability > 1.0)
@@ -21,24 +35,27 @@ namespace Steeltoe.Management.Census.Trace.Sampler
             }
 
             long idUpperBound;
+
             // Special case the limits, to avoid any possible issues with lack of precision across
             // double/long boundaries. For probability == 0.0, we use Long.MIN_VALUE as this guarantees
             // that we will never sample a trace, even in the case where the id == Long.MIN_VALUE, since
             // Math.Abs(Long.MIN_VALUE) == Long.MIN_VALUE.
             if (probability == 0.0)
             {
-                idUpperBound = Int64.MinValue;
+                idUpperBound = long.MinValue;
             }
             else if (probability == 1.0)
             {
-                idUpperBound = Int64.MaxValue;
+                idUpperBound = long.MaxValue;
             }
             else
             {
-                idUpperBound = (long)(probability * Int64.MaxValue);
+                idUpperBound = (long)(probability * long.MaxValue);
             }
+
             return new ProbabilitySampler(probability, idUpperBound);
         }
+
         public string Description
         {
             get
@@ -54,6 +71,7 @@ namespace Steeltoe.Management.Census.Trace.Sampler
             {
                 return true;
             }
+
             if (parentLinks != null)
             {
                 // If any parent link is sampled keep the sampling decision.
@@ -65,6 +83,7 @@ namespace Steeltoe.Management.Census.Trace.Sampler
                     }
                 }
             }
+
             // Always sample if we are within probability range. This is true even for child spans (that
             // may have had a different sampling decision made) to allow for different sampling policies,
             // and dynamic increases to sampling probabilities for debugging purposes.
@@ -74,7 +93,9 @@ namespace Steeltoe.Management.Census.Trace.Sampler
             // code is executed in-line for every Span creation).
             return Math.Abs(traceId.LowerLong) < IdUpperBound;
         }
+
         public double Probability { get; }
+
         public long IdUpperBound { get; }
 
         public override string ToString()
@@ -91,11 +112,14 @@ namespace Steeltoe.Management.Census.Trace.Sampler
             {
                 return true;
             }
-            if (o is ProbabilitySampler) {
+
+            if (o is ProbabilitySampler)
+            {
                 ProbabilitySampler that = (ProbabilitySampler)o;
-                return (DoubleUtil.ToInt64(Probability) == DoubleUtil.ToInt64(that.Probability)
-                     && (this.IdUpperBound == that.IdUpperBound));
+                return DoubleUtil.ToInt64(Probability) == DoubleUtil.ToInt64(that.Probability)
+                     && (this.IdUpperBound == that.IdUpperBound);
             }
+
             return false;
         }
 

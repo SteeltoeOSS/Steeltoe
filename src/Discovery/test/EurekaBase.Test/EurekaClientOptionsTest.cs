@@ -21,6 +21,7 @@ namespace Steeltoe.Discovery.Eureka.Test
     public class EurekaClientOptionsTest : AbstractBaseTest
     {
         [Fact]
+        [System.Obsolete]
         public void Constructor_Intializes_Defaults()
         {
             EurekaClientOptions opts = new EurekaClientOptions();
@@ -48,6 +49,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void Constructor_ConfiguresEurekaDiscovery_Correctly()
         {
             // Arrange

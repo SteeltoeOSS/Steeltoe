@@ -1,6 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 
 namespace Steeltoe.Management.Census.Stats
 {
@@ -8,16 +20,22 @@ namespace Steeltoe.Management.Census.Stats
     internal sealed class MutableDistribution : MutableAggregation
     {
         private const double TOLERANCE = 1e-6;
+
         internal double Sum { get; set; } = 0.0;
+
         internal double Mean { get; set; } = 0.0;
+
         internal long Count { get; set; } = 0;
+
         internal double SumOfSquaredDeviations { get; set; } = 0.0;
 
         // Initial "impossible" values, that will get reset as soon as first value is added.
-        internal double Min { get; set; } = Double.PositiveInfinity;
-        internal double Max { get; set; } = Double.NegativeInfinity;
+        internal double Min { get; set; } = double.PositiveInfinity;
+
+        internal double Max { get; set; } = double.NegativeInfinity;
 
         internal IBucketBoundaries BucketBoundaries { get; }
+
         internal long[] BucketCounts { get; }
 
         internal MutableDistribution(IBucketBoundaries bucketBoundaries)
@@ -25,7 +43,6 @@ namespace Steeltoe.Management.Census.Stats
             this.BucketBoundaries = bucketBoundaries;
             this.BucketCounts = new long[bucketBoundaries.Boundaries.Count + 1];
         }
-
 
         internal static MutableDistribution Create(IBucketBoundaries bucketBoundaries)
         {
@@ -59,6 +76,7 @@ namespace Steeltoe.Management.Census.Stats
             {
                 Min = value;
             }
+
             if (value > Max)
             {
                 Max = value;
@@ -72,6 +90,7 @@ namespace Steeltoe.Management.Census.Stats
                     return;
                 }
             }
+
             BucketCounts[BucketCounts.Length - 1]++;
         }
 
@@ -89,11 +108,10 @@ namespace Steeltoe.Management.Census.Stats
                 return;
             }
 
-            if (!(this.BucketBoundaries.Equals(mutableDistribution.BucketBoundaries)))
+            if (!this.BucketBoundaries.Equals(mutableDistribution.BucketBoundaries))
             {
                 throw new ArgumentException("Bucket boundaries should match.");
             }
-
 
             // Algorithm for calculating the combination of sum of squared deviations:
             // https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm.
@@ -103,10 +121,10 @@ namespace Steeltoe.Management.Census.Stats
                 this.SumOfSquaredDeviations =
                     this.SumOfSquaredDeviations
                         + mutableDistribution.SumOfSquaredDeviations
-                        + Math.Pow(delta, 2)
+                        + (Math.Pow(delta, 2)
                             * this.Count
                             * mutableDistribution.Count
-                            / (this.Count + mutableDistribution.Count);
+                            / (this.Count + mutableDistribution.Count));
             }
 
             this.Count += mutableDistribution.Count;
@@ -117,6 +135,7 @@ namespace Steeltoe.Management.Census.Stats
             {
                 this.Min = mutableDistribution.Min;
             }
+
             if (mutableDistribution.Max > this.Max)
             {
                 this.Max = mutableDistribution.Max;
@@ -128,6 +147,7 @@ namespace Steeltoe.Management.Census.Stats
                 this.BucketCounts[i] += bucketCounts[i];
             }
         }
+
         internal override T Match<T>(Func<MutableSum, T> p0, Func<MutableCount, T> p1, Func<MutableMean, T> p2, Func<MutableDistribution, T> p3, Func<MutableLastValue, T> p4)
         {
             return p3.Invoke(this);

@@ -21,7 +21,7 @@ using Steeltoe.Management.Census.Trace.Propagation;
 
 namespace Steeltoe.Management.Census.Trace
 {
-    public class OpenCensusTracing  : ITracing
+    public class OpenCensusTracing : ITracing
     {
         private readonly ITracingOptions options;
 

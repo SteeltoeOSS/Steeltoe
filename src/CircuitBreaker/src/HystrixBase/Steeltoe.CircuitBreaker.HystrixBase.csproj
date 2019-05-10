@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
- <Import Project="..\..\..\..\versions.props" />
- 
+  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Client - Base Package</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,21 +10,16 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="HdrHistogram" Version="$(HdrHistogramVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>

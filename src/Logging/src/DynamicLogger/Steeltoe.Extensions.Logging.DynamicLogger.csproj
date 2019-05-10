@@ -15,9 +15,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(LoggingVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(LoggingVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(LoggingVersion)" />
-    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">

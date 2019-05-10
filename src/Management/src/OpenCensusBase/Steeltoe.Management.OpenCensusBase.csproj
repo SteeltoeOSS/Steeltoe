@@ -13,7 +13,6 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
   </ItemGroup>
 

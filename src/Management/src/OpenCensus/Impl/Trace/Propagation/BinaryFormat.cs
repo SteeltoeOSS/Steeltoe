@@ -1,15 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 
 namespace Steeltoe.Management.Census.Trace.Propagation
 {
     [Obsolete("Use OpenCensus project packages")]
     internal class BinaryFormat : BinaryFormatBase
     {
-
         private const byte VERSION_ID = 0;
         private const int VERSION_ID_OFFSET = 0;
+
         // The version_id/field_id size in bytes.
         private const byte ID_SIZE = 1;
         private const byte TRACE_ID_FIELD_ID = 0;
@@ -21,7 +33,7 @@ namespace Steeltoe.Management.Census.Trace.Propagation
         private const byte TRACE_OPTION_FIELD_ID = 2;
         private const int TRACE_OPTION_FIELD_ID_OFFSET = SPAN_ID_OFFSET + SpanId.SIZE;
         private const int TRACE_OPTIONS_OFFSET = TRACE_OPTION_FIELD_ID_OFFSET + ID_SIZE;
-        private const int FORMAT_LENGTH = 4 * ID_SIZE + TraceId.SIZE + SpanId.SIZE + TraceOptions.SIZE;
+        private const int FORMAT_LENGTH = (4 * ID_SIZE) + TraceId.SIZE + SpanId.SIZE + TraceOptions.SIZE;
 
         public override ISpanContext FromByteArray(byte[] bytes)
         {
@@ -47,15 +59,18 @@ namespace Steeltoe.Management.Census.Trace.Propagation
                     traceId = TraceId.FromBytes(bytes, pos + ID_SIZE);
                     pos += ID_SIZE + TraceId.SIZE;
                 }
+
                 if (bytes.Length > pos && bytes[pos] == SPAN_ID_FIELD_ID)
                 {
                     spanId = SpanId.FromBytes(bytes, pos + ID_SIZE);
                     pos += ID_SIZE + SpanId.SIZE;
                 }
+
                 if (bytes.Length > pos && bytes[pos] == TRACE_OPTION_FIELD_ID)
                 {
                     traceOptions = TraceOptions.FromBytes(bytes, pos + ID_SIZE);
                 }
+
                 return SpanContext.Create(traceId, spanId, traceOptions);
             }
             catch (Exception e)

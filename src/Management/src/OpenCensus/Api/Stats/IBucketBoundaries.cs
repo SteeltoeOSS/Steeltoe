@@ -13,16 +13,13 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.Census.Trace.Export
+namespace Steeltoe.Management.Census.Stats
 {
     [Obsolete("Use OpenCensus project packages")]
-    public interface ISampledSpanStoreErrorFilter
+    public interface IBucketBoundaries
     {
-        string SpanName { get; }
-
-        CanonicalCode? CanonicalCode { get; }
-
-        int MaxSpansToReturn { get; }
+        IList<double> Boundaries { get; }
     }
 }

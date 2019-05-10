@@ -1,10 +1,23 @@
-﻿using Steeltoe.Management.Census.Trace;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Trace;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
 {
@@ -30,7 +43,6 @@ namespace Steeltoe.Management.Census.Utils
                 return (ICollection<string>)_delegate.Keys;
             }
         }
-    
 
         public ICollection<IAttributeValue> Values
         {
@@ -62,13 +74,14 @@ namespace Steeltoe.Management.Census.Utils
             {
                 return (IAttributeValue)_delegate[key];
             }
+
             set
             {
                 _delegate[key] = value;
             }
         }
 
-        public AttributesWithCapacity(int capacity) 
+        public AttributesWithCapacity(int capacity)
         {
             this.capacity = capacity;
         }
@@ -141,10 +154,11 @@ namespace Steeltoe.Management.Census.Utils
         public bool Contains(KeyValuePair<string, IAttributeValue> item)
         {
             var result = TryGetValue(item.Key, out IAttributeValue value);
-            if(result)
+            if (result)
             {
                 return value.Equals(item.Value);
             }
+
             return false;
         }
 
@@ -152,8 +166,8 @@ namespace Steeltoe.Management.Census.Utils
         {
             DictionaryEntry[] entries = new DictionaryEntry[_delegate.Count];
             _delegate.CopyTo(entries, 0);
-     
-            for(int i = 0; i < entries.Length; i++)
+
+            for (int i = 0; i < entries.Length; i++)
             {
                 array[i + arrayIndex] = new KeyValuePair<string, IAttributeValue>((string)entries[i].Key, (IAttributeValue)entries[i].Value);
             }

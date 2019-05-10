@@ -24,7 +24,9 @@ namespace Steeltoe.Discovery.Eureka
 
         public EurekaClientOptions()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             InstanceInfoReplicationIntervalSeconds = Default_InstanceInfoReplicationIntervalSeconds;
+#pragma warning restore CS0618 // Type or member is obsolete
             EurekaServer = new EurekaServerConfig(this);
             Health = new EurekaHealthConfig(this);
         }

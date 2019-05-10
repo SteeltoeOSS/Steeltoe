@@ -47,7 +47,10 @@ namespace Steeltoe.Common.LoadBalancer
             var availableServiceInstances = await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache);
             if (availableServiceInstances.Count > 0)
             {
+// load balancer instance selection predictability is not likely to be a security concern
+#pragma warning disable SCS0005 // Weak random generator
                 var resolvedUri = availableServiceInstances[_random.Next(availableServiceInstances.Count)].Uri;
+#pragma warning restore SCS0005 // Weak random generator
                 _logger?.LogDebug("Resolved {url} to {service}", request.Host, resolvedUri.Host);
                 return new Uri(resolvedUri, request.PathAndQuery);
             }

@@ -1,6 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 
 namespace Steeltoe.Management.Census.Trace
 {
@@ -26,12 +38,14 @@ namespace Steeltoe.Management.Census.Trace
         public static readonly Status DATA_LOSS = new Status(CanonicalCode.DATA_LOSS);
 
         public CanonicalCode CanonicalCode { get; }
+
         public string Description { get; }
+
         public bool IsOk
         {
             get
             {
-                return CanonicalCode.OK == CanonicalCode;
+                return CanonicalCode == CanonicalCode.OK;
             }
         }
 
@@ -44,6 +58,7 @@ namespace Steeltoe.Management.Census.Trace
 
             return new Status(CanonicalCode, description);
         }
+
         public override bool Equals(object obj)
         {
             if (obj == this)
@@ -51,7 +66,8 @@ namespace Steeltoe.Management.Census.Trace
                 return true;
             }
 
-            if (!(obj is Status)) {
+            if (!(obj is Status))
+            {
                 return false;
             }
 
@@ -62,8 +78,8 @@ namespace Steeltoe.Management.Census.Trace
         public override int GetHashCode()
         {
             int result = 1;
-            result = 31 * result + CanonicalCode.GetHashCode();
-            result = 31 * result + Description.GetHashCode();
+            result = (31 * result) + CanonicalCode.GetHashCode();
+            result = (31 * result) + Description.GetHashCode();
             return result;
         }
 
@@ -71,9 +87,8 @@ namespace Steeltoe.Management.Census.Trace
         {
             return "Status{"
                     + "canonicalCode=" + CanonicalCode + ", "
-                    + "description=" + Description 
+                    + "description=" + Description
                     + "}";
-
         }
 
         internal Status(CanonicalCode canonicalCode, string description = null)

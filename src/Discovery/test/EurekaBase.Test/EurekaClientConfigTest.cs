@@ -19,6 +19,7 @@ namespace Steeltoe.Discovery.Eureka.Test
     public class EurekaClientConfigTest : AbstractBaseTest
     {
         [Fact]
+        [System.Obsolete]
         public void DefaultConstructor_InitializedWithDefaults()
         {
             EurekaClientConfig config = new EurekaClientConfig();
