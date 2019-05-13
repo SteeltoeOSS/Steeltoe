@@ -26,12 +26,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\EndpointOwin\Steeltoe.Management.EndpointOwin.csproj" />
-    <ProjectReference Include="..\EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="$(CSharpVersion)" />
     <PackageReference Include="Microsoft.Owin.Testing" Version="$(OwinVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
