@@ -95,6 +95,19 @@ jobs:
         summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
         reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
       condition: always()
+    - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-roslynanalyzers.RoslynAnalyzers@2
+      displayName: 'Run Roslyn Analyzers'
+    - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-binskim.BinSkim@3
+      displayName: 'Run BinSkim '
+      inputs:
+        AnalyzeTarget: 'Steeltoe.*.dll'
+        AnalyzeStatistics: true
+    - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-report.SdtReport@1
+      displayName: 'Create Security Analysis Report'
+      inputs:
+        BinSkim: true
+        RoslynAnalyzers: true
+        ToolLogsNotFoundAction: Warning
     - task: PowerShell@2
       displayName: Authenticode Sign Packages
       inputs:
@@ -107,6 +120,6 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: $(Build.ArtifactStagingDirectory)
-        ArtifactName: artifacts
+        ArtifactName: Packages
         publishLocation: Container
       condition: always()
