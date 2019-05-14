@@ -42,11 +42,11 @@ jobs:
       command: build
       projects: '**/*.sln'
       arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration)'
+  #- task: DotNetCoreCLI@2
+  #  inputs:
+  #    command: test
+  #    projects: '**/*.Test/*.csproj'
+  #    arguments: '-c $(buildConfiguration)'
 - job: Windows_Build_Test_and_Package
   pool:
     vmImage: 'windows-2019'
@@ -104,6 +104,8 @@ jobs:
       condition: always()
     - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-credscan.CredScan@2
       displayName: 'Run CredScan'
+      inputs:
+        verboseOutput: true
     - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-report.SdtReport@1
       displayName: 'Create Security Analysis Report'
       inputs:
