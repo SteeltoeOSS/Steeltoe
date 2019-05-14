@@ -4,6 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 trigger:
 - master
+- 2.x
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
