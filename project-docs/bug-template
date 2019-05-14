@@ -1,0 +1,17 @@
+### Title
+*Replace Title with a short description of the bug*
+
+### Issue 
+*Add a complete description of the issue here, including its impact*
+
+### Expected Result
+*Describe what you expected to happen if there wasn't an issue or bug*
+
+### Actual Result
+*Describe what is happening due to the bug*
+
+### Steps to Repro
+*Add in here the steps to reproduce the problem or issue. If possible provide a sample project that we can download to repro it*
+
+### Further Details
+*Add any additional information you think is needed, such as log output!*
