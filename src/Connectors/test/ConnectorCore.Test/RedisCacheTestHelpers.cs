@@ -65,6 +65,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
     }
       ]
     }";
+
         public static string SingleServerVCAP_AzureBrokerSecure = @"
 {
       'azure-rediscache': [

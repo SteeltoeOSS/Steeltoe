@@ -233,7 +233,9 @@ namespace Steeltoe.Discovery.Eureka
                 return null;
             }
 
+#pragma warning disable SCS0005 // Weak random generator
             var index = _random.Next() % results.Count;
+#pragma warning restore SCS0005 // Weak random generator
             return results[index];
         }
 

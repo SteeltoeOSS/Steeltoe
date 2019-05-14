@@ -4,27 +4,16 @@
 
   <PropertyGroup>
     <Description>ASP.NET 4.x External Security Provider for CloudFoundry - Owin</Description>
-    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <Authors>Pivotal;dtillman</Authors>
     <TargetFrameworks>net461</TargetFrameworks>
     <AssemblyName>Steeltoe.Security.Authentication.CloudFoundryOwin</AssemblyName>
     <PackageId>Steeltoe.Security.Authentication.CloudFoundryOwin</PackageId>
     <PackageTags>CloudFoundry;ASPNET;Security;OAuth2;SSO</PackageTags>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry.Owin</RootNamespace>
   </PropertyGroup>
-  <Import Project="..\..\..\..\targetframework.props" />
-  <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Security.Authentication.CloudFoundryOwin.xml</DocumentationFile>
-  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
 
+  <Import Project="..\..\..\..\targetframework.props" />
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.CSharp" Version="$(CSharpVersion)" />
     <PackageReference Include="Microsoft.Owin.Security.Jwt" Version="$(OwinOAuthVersion)" />
     <PackageReference Include="System.Net.Http" Version="$(HttpClientVersion)" />
@@ -33,18 +22,8 @@
     </PackageReference>    
   </ItemGroup>
 
-  <PropertyGroup>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-    <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry.Owin</RootNamespace>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
-  </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\..\..\..\src\common\src\Common.Http\Steeltoe.Common.Http.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\Authentication.CloudFoundryBase\Steeltoe.Security.Authentication.CloudFoundryBase.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">

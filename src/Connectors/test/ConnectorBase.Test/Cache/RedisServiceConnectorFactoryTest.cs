@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Caching.Redis;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.CloudFoundry.Connector.Services;
@@ -73,10 +73,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                     InstanceId = "instanceId"
                 }
             };
-            MethodInfo initializer = typeof(ConnectionMultiplexer).GetMethod("Connect", new Type[] { typeof(ConfigurationOptions), typeof(TextWriter) });
 
             // act
-            var factory = new RedisServiceConnectorFactory(si, config, typeof(ConnectionMultiplexer), typeof(ConfigurationOptions), initializer);
+            var factory = new RedisServiceConnectorFactory(si, config, typeof(ConnectionMultiplexer), typeof(ConfigurationOptions), RedisTypeLocator.StackExchangeInitializer);
             var multi = factory.Create(null);
 
             // assert

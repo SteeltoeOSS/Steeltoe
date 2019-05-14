@@ -1,18 +1,30 @@
-﻿using Steeltoe.Management.Census.Stats.Measurements;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Stats.Measurements;
 using Steeltoe.Management.Census.Stats.Measures;
 using Steeltoe.Management.Census.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Stats.Test
 {
+    [Obsolete]
     public class MeasureMapBuilderTest
     {
-
         private static readonly IMeasureDouble M1 = MakeSimpleMeasureDouble("m1");
         private static readonly IMeasureDouble M2 = MakeSimpleMeasureDouble("m2");
         private static readonly IMeasureLong M3 = MakeSimpleMeasureLong("m3");
@@ -22,7 +34,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         public void TestPutDouble()
         {
             IList<IMeasurement> metrics = MeasureMapBuilder.Builder().Put(M1, 44.4).Build();
-            AssertContains(metrics, MeasurementDouble.Create(M1, 44.4) );
+            AssertContains(metrics, MeasurementDouble.Create(M1, 44.4));
         }
 
         [Fact]
@@ -44,8 +56,10 @@ namespace Steeltoe.Management.Census.Stats.Test
                     .Build();
             AssertContains(
                 metrics,
-                 MeasurementDouble.Create(M1, 44.4), MeasurementDouble.Create(M2, 66.6),
-                MeasurementLong.Create(M3, 9999L),  MeasurementLong.Create(M4, 8888L));
+                MeasurementDouble.Create(M1, 44.4),
+                MeasurementDouble.Create(M2, 66.6),
+                MeasurementLong.Create(M3, 9999L),
+                MeasurementLong.Create(M4, 8888L));
         }
 
         [Fact]
@@ -119,12 +133,13 @@ namespace Steeltoe.Management.Census.Stats.Test
                 MeasurementDouble.Create(M2, 3.0),
                 MeasurementLong.Create(M3, 100L));
         }
-        private static IMeasureDouble MakeSimpleMeasureDouble(String measure)
+
+        private static IMeasureDouble MakeSimpleMeasureDouble(string measure)
         {
             return MeasureDouble.Create(measure, measure + " description", "1");
         }
 
-        private static IMeasureLong MakeSimpleMeasureLong(String measure)
+        private static IMeasureLong MakeSimpleMeasureLong(string measure)
         {
             return MeasureLong.Create(measure, measure + " description", "1");
         }

@@ -1,6 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 
 namespace Steeltoe.Management.Census.Trace.Config
 {
@@ -28,24 +40,29 @@ namespace Steeltoe.Management.Census.Trace.Config
             {
                 throw new ArgumentNullException("Null sampler");
             }
+
             this.sampler = sampler;
             return this;
         }
+
         public TraceParamsBuilder SetMaxNumberOfAttributes(int maxNumberOfAttributes)
         {
             this.maxNumberOfAttributes = maxNumberOfAttributes;
             return this;
         }
+
         public TraceParamsBuilder SetMaxNumberOfAnnotations(int maxNumberOfAnnotations)
         {
             this.maxNumberOfAnnotations = maxNumberOfAnnotations;
             return this;
         }
+
         public TraceParamsBuilder SetMaxNumberOfMessageEvents(int maxNumberOfMessageEvents)
         {
             this.maxNumberOfMessageEvents = maxNumberOfMessageEvents;
             return this;
         }
+
         public TraceParamsBuilder SetMaxNumberOfLinks(int maxNumberOfLinks)
         {
             this.maxNumberOfLinks = maxNumberOfLinks;
@@ -59,22 +76,27 @@ namespace Steeltoe.Management.Census.Trace.Config
             {
                 missing += " sampler";
             }
+
             if (!this.maxNumberOfAttributes.HasValue)
             {
                 missing += " maxNumberOfAttributes";
             }
+
             if (!this.maxNumberOfAnnotations.HasValue)
             {
                 missing += " maxNumberOfAnnotations";
             }
+
             if (!this.maxNumberOfMessageEvents.HasValue)
             {
                 missing += " maxNumberOfMessageEvents";
             }
+
             if (!this.maxNumberOfLinks.HasValue)
             {
                 missing += " maxNumberOfLinks";
             }
+
             if (!string.IsNullOrEmpty(missing))
             {
                 throw new ArgumentOutOfRangeException("Missing required properties:" + missing);

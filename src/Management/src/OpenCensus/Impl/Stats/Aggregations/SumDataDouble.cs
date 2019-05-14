@@ -1,7 +1,19 @@
-﻿using Steeltoe.Management.Census.Utils;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Utils;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Stats.Aggregations
 {
@@ -19,7 +31,6 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
         {
             return new SumDataDouble(sum);
         }
-
 
         public override M Match<M>(
             Func<ISumDataDouble, M> p0,
@@ -47,10 +58,13 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
             {
                 return true;
             }
-            if (o is SumDataDouble) {
+
+            if (o is SumDataDouble)
+            {
                 SumDataDouble that = (SumDataDouble)o;
-                return (DoubleUtil.ToInt64(this.Sum) == DoubleUtil.ToInt64(that.Sum));
+                return DoubleUtil.ToInt64(this.Sum) == DoubleUtil.ToInt64(that.Sum);
             }
+
             return false;
         }
 
@@ -61,6 +75,5 @@ namespace Steeltoe.Management.Census.Stats.Aggregations
             h ^= (DoubleUtil.ToInt64(this.Sum) >> 32) ^ DoubleUtil.ToInt64(this.Sum);
             return (int)h;
         }
-
     }
 }

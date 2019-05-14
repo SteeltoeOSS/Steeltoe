@@ -9,14 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{100AA6E3-E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4F262F8F-A478-4C8C-AA23-48B1103E5B8B}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
-		..\stylecop.json = ..\stylecop.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{545DB4B8-9BA8-41B4-9C59-3DEFC0B1017A}"
 	ProjectSection(SolutionItems) = preProject
-		..\versions.props = ..\versions.props
+		..\..\nuget.config = ..\..\nuget.config
+		..\..\sharedproject.props = ..\..\sharedproject.props
+		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\stylecop.json = ..\..\stylecop.json
+		..\..\targetframework.props = ..\..\targetframework.props
+		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixCore", "src\HystrixCore\Steeltoe.CircuitBreaker.HystrixCore.csproj", "{1662B8D3-9E41-4A94-9759-52975E62CA34}"
@@ -33,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hys
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac", "src\HystrixAutofac\Steeltoe.CircuitBreaker.HystrixAutofac.csproj", "{1C8BCB94-AB79-4396-9BEA-81DA97B712E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac.Test", "test\HystrixAutofac.Test\Steeltoe.CircuitBreaker.HystrixAutofac.Test.csproj", "{FB2330AF-37FA-4794-B16C-7AC1046DE307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac.Test", "test\HystrixAutofac.Net4Test\Steeltoe.CircuitBreaker.HystrixAutofac.Test.csproj", "{FB2330AF-37FA-4794-B16C-7AC1046DE307}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac", "src\Hystrix.MetricsStreamAutofac\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.csproj", "{4BC245DD-2067-4938-8C09-AB938FFF8BCD}"
 EndProject
@@ -45,19 +48,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hys
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{EC6EA876-8354-44BE-8D5A-BA70E835985F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\common\src\Common\Steeltoe.Common.csproj", "{EDC79B8F-477F-41FC-9600-F973EF5644E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{EDC79B8F-477F-41FC-9600-F973EF5644E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{B69A1EE9-9AF1-4459-B0D3-1A1207BC8C86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore", "..\connectors\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj", "{7E083187-C198-4D64-BD9A-6596E7F9057C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore", "..\Connectors\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj", "{7E083187-C198-4D64-BD9A-6596E7F9057C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorAutofac", "..\connectors\src\ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj", "{F53CD093-6E04-43BC-901C-615F1412135C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorAutofac", "..\Connectors\src\ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj", "{F53CD093-6E04-43BC-901C-615F1412135C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{482282FA-92E3-4A0E-A419-CD72DC98CB02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{482282FA-92E3-4A0E-A419-CD72DC98CB02}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "..\configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{30C580C7-F5E6-476D-8830-A45894FFB63F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{30C580C7-F5E6-476D-8830-A45894FFB63F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E2BA42D0-8144-4045-AC97-3B9C28F46AD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E2BA42D0-8144-4045-AC97-3B9C28F46AD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

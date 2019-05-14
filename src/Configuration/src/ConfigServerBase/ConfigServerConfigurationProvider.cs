@@ -246,10 +246,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     else
                     {
                         // Single, server make Config Server URI from settings
+#pragma warning disable CS0618 // Type or member is obsolete
                         var path = GetConfigServerUri(label);
 
                         // Invoke config server
                         task = RemoteLoadAsync(path);
+#pragma warning restore CS0618 // Type or member is obsolete
                     }
 
                     // Wait for results from server
@@ -809,7 +811,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 client = GetHttpClient(Settings);
 
                 var uri = GetVaultRenewUri();
-                var message = GetValutRenewMessage(uri);
+                var message = GetVaultRenewMessage(uri);
 
                 _logger?.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
 

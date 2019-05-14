@@ -65,7 +65,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// Initializes a new instance of the <see cref="ConsulHealthContributor"/> class.
         /// </summary>
         /// <param name="client">a Consul client to use for health checks</param>
-        /// <param name="options">configuration options</param>
+        /// <param name="optionsMonitor">configuration options</param>
         /// <param name="logger">optional logger</param>
         public ConsulHealthContributor(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ILogger<ConsulHealthContributor> logger = null)
         {

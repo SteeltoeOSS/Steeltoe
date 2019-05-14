@@ -1,7 +1,20 @@
-﻿using Steeltoe.Management.Census.Utils;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Utils;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
@@ -17,7 +30,8 @@ namespace Steeltoe.Management.Census.Trace.Export
 
         public override IRunningSpanStoreSummary Summary
         {
-            get {
+            get
+            {
                 ICollection<SpanBase> allRunningSpans = runningSpans.Copy();
                 Dictionary<string, int> numSpansPerName = new Dictionary<string, int>();
                 foreach (var span in allRunningSpans)
@@ -25,12 +39,15 @@ namespace Steeltoe.Management.Census.Trace.Export
                     numSpansPerName.TryGetValue(span.Name, out int prevValue);
                     numSpansPerName[span.Name] = prevValue + 1;
                 }
+
                 Dictionary<string, IRunningPerSpanNameSummary> perSpanNameSummary = new Dictionary<string, IRunningPerSpanNameSummary>();
-                foreach (var it in numSpansPerName) {
+                foreach (var it in numSpansPerName)
+                {
                     int numRunningSpans = it.Value;
                     var runningPerSpanNameSummary = RunningPerSpanNameSummary.Create(numRunningSpans);
                     perSpanNameSummary[it.Key] = runningPerSpanNameSummary;
                 }
+
                 IRunningSpanStoreSummary summary = RunningSpanStoreSummary.Create(perSpanNameSummary);
                 return summary;
             }
@@ -47,11 +64,13 @@ namespace Steeltoe.Management.Census.Trace.Export
                 {
                     break;
                 }
+
                 if (span.Name.Equals(filter.SpanName))
                 {
                     ret.Add(span.ToSpanData());
                 }
             }
+
             return ret;
         }
 

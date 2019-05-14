@@ -1,4 +1,4 @@
-﻿// Copyright 2015 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -147,11 +147,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
 
             // When using MySqlConnector
-            //Assert.Contains("Username=Dd6O1BPXUHdrmzbP", connString);
+            // Assert.Contains("Username=Dd6O1BPXUHdrmzbP", connString);
 
             // When using MySql.Data
             Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.InvariantCultureIgnoreCase);
-
         }
 
         [Fact]

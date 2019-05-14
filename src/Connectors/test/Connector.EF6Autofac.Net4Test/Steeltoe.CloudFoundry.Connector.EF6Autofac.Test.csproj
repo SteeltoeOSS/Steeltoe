@@ -2,7 +2,9 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
+  <Import Project="..\..\..\..\sharedtest.props" />
   <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
@@ -11,35 +13,15 @@
     </None>
   </ItemGroup>
 
-  <PropertyGroup>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Connector.EF6Autofac\Steeltoe.CloudFoundry.Connector.EF6Autofac.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="MySql.Data.Entity" Version="$(MySqlV6)" />
     <!-- Oracle changed the name + namespaces for v8. Old is above, new is below -->
     <!--<PackageReference Include="MySql.Data.EntityFramework" Version="$(MySqlV8)" />-->
-    <PackageReference Include="xunit" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
 
-    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    
   </ItemGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
-  </ItemGroup>
-
-
 </Project>

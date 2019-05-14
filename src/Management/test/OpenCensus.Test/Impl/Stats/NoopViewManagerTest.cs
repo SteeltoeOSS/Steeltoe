@@ -1,28 +1,42 @@
-﻿using Steeltoe.Management.Census.Common;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Stats.Aggregations;
 using Steeltoe.Management.Census.Stats.Measures;
 using Steeltoe.Management.Census.Tags;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Stats.Test
 {
+    [Obsolete]
     public class NoopViewManagerTest
     {
         private static readonly IMeasureDouble MEASURE = MeasureDouble.Create("my measure", "description", "s");
         private static readonly ITagKey KEY = TagKey.Create("KEY");
         private static readonly IViewName VIEW_NAME = ViewName.Create("my view");
-        private static readonly String VIEW_DESCRIPTION = "view description";
+        private static readonly string VIEW_DESCRIPTION = "view description";
         private static readonly ISum AGGREGATION = Sum.Create();
-        //private static readonly Cumulative CUMULATIVE = Cumulative.create();
-        private static readonly IDuration TEN_SECONDS = Duration.Create(10, 0);
-        //private static readonly Interval INTERVAL = Interval.create(TEN_SECONDS);
 
-        //@Rule public readonly ExpectedException thrown = ExpectedException.none();
+        // private static readonly Cumulative CUMULATIVE = Cumulative.create();
+        private static readonly IDuration TEN_SECONDS = Duration.Create(10, 0);
+
+        // private static readonly Interval INTERVAL = Interval.create(TEN_SECONDS);
+
+        //// @Rule public readonly ExpectedException thrown = ExpectedException.none();
 
         [Fact]
         public void NoopViewManager_RegisterView_DisallowRegisteringDifferentViewWithSameName()
@@ -38,7 +52,7 @@ namespace Steeltoe.Management.Census.Stats.Test
 
             try
             {
-                Assert.Throws<ArgumentException>(() =>viewManager.RegisterView(view2));
+                Assert.Throws<ArgumentException>(() => viewManager.RegisterView(view2));
             }
             finally
             {
@@ -85,11 +99,10 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.Empty(viewData.AggregationMap);
             Assert.Equal(Timestamp.Create(0, 0), viewData.Start);
             Assert.Equal(Timestamp.Create(0, 0), viewData.End);
-
         }
 
         [Fact]
-        public void noopViewManager_GetView_Interval()
+        public void NoopViewManager_GetView_Interval()
         {
             IView view =
                 View.Create(
@@ -102,14 +115,13 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.Empty(viewData.AggregationMap);
             Assert.Equal(Timestamp.Create(0, 0), viewData.Start);
             Assert.Equal(Timestamp.Create(0, 0), viewData.End);
-
         }
 
         [Fact]
         public void NoopViewManager_GetView_DisallowNull()
         {
             IViewManager viewManager = NoopStats.NewNoopViewManager();
-            Assert.Throws<ArgumentNullException>(() =>viewManager.GetView(null));
+            Assert.Throws<ArgumentNullException>(() => viewManager.GetView(null));
         }
 
         [Fact]
@@ -131,7 +143,6 @@ namespace Steeltoe.Management.Census.Stats.Test
                     MEASURE,
                     AGGREGATION,
                     new List<ITagKey> { KEY });
-
 
             viewManager.RegisterView(cumulativeView1);
             viewManager.RegisterView(cumulativeView2);

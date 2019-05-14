@@ -1,5 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Text;
 
 namespace Steeltoe.Management.Census.Utils
@@ -19,12 +32,10 @@ namespace Steeltoe.Management.Census.Utils
                 return false;
             }
 
-
             if (array2.Length != array1.Length)
             {
                 return false;
             }
-     
 
             for (int i = 0; i < array1.Length; i++)
             {
@@ -35,7 +46,6 @@ namespace Steeltoe.Management.Census.Utils
             }
 
             return true;
-
         }
 
         internal static int GetHashCode(byte[] array)
@@ -44,13 +54,11 @@ namespace Steeltoe.Management.Census.Utils
             {
                 return 0;
             }
-              
 
             int result = 1;
             foreach (byte b in array)
             {
-                result = 31 * result + b;
-
+                result = (31 * result) + b;
             }
 
             return result;
@@ -60,16 +68,19 @@ namespace Steeltoe.Management.Census.Utils
         {
             if ((c >= '0') && (c <= '9'))
             {
-                return (c - '0');
+                return c - '0';
             }
+
             if ((c >= 'a') && (c <= 'f'))
             {
-                return ((c - 'a') + 10);
+                return c - 'a' + 10;
             }
+
             if ((c >= 'A') && (c <= 'F'))
             {
-                return ((c - 'A') + 10);
+                return c - 'A' + 10;
             }
+
             throw new ArgumentOutOfRangeException("Invalid character: " + c);
         }
 
@@ -80,11 +91,13 @@ namespace Steeltoe.Management.Census.Utils
             char[] result = new char[2];
             if (high > 9)
             {
-                result[0] = (char) (high - 10 + 'a');
-            } else
+                result[0] = (char)(high - 10 + 'a');
+            }
+            else
             {
                 result[0] = (char)(high + '0');
             }
+
             if (low > 9)
             {
                 result[1] = (char)(low - 10 + 'a');
@@ -107,6 +120,7 @@ namespace Steeltoe.Management.Census.Utils
                 int low = HexCharToInt(src[j++]);
                 bytes[i] = (byte)(high << 4 | low);
             }
+
             return bytes;
         }
 
@@ -117,6 +131,7 @@ namespace Steeltoe.Management.Census.Utils
             {
                 sb.Append(ByteToHexCharArray(bytes[i]));
             }
+
             return sb.ToString();
         }
     }

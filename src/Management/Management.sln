@@ -9,14 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8B4CE682-9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{9764636B-4C42-4F38-8074-99C086B8FB74}"
 	ProjectSection(SolutionItems) = preProject
-		..\versions.props = ..\versions.props
+		..\..\nuget.config = ..\..\nuget.config
+		..\..\sharedproject.props = ..\..\sharedproject.props
+		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\stylecop.json = ..\..\stylecop.json
+		..\..\targetframework.props = ..\..\targetframework.props
+		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2D0A3F62-46FA-4317-BDEB-BE9433B9EBBE}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
-		..\stylecop.json = ..\stylecop.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore", "src\EndpointCore\Steeltoe.Management.EndpointCore.csproj", "{D544C805-F83B-46D8-9F64-AA783F924DB5}"
@@ -57,13 +60,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac", "src\EndpointOwinAutofac\Steeltoe.Management.EndpointOwinAutofac.csproj", "{FCF5A911-989B-4DCD-9165-D00A66F9F11B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin.Test", "test\EndpointOwin.Test\Steeltoe.Management.EndpointOwin.Test.csproj", "{D2236310-69D7-4623-B76E-615C2BA5322E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwin.Test", "test\EndpointOwin.Net4Test\Steeltoe.Management.EndpointOwin.Test.csproj", "{D2236310-69D7-4623-B76E-615C2BA5322E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac.Test", "test\EndpointOwinAutofac.Test\Steeltoe.Management.EndpointOwinAutofac.Test.csproj", "{C23A188B-ECD2-4730-85EA-BE3930DD4786}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointOwinAutofac.Test", "test\EndpointOwinAutofac.Net4Test\Steeltoe.Management.EndpointOwinAutofac.Test.csproj", "{C23A188B-ECD2-4730-85EA-BE3930DD4786}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb", "src\EndpointWeb\Steeltoe.Management.EndpointWeb.csproj", "{80CA3842-F0DC-4245-A10F-2C027E4B82F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb.Test", "test\EndpointWeb.Test\Steeltoe.Management.EndpointWeb.Test.csproj", "{D7BD7AE1-5435-4DC5-B2CB-FC9E5F830884}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb.Test", "test\EndpointWeb.Net4Test\Steeltoe.Management.EndpointWeb.Test.csproj", "{D7BD7AE1-5435-4DC5-B2CB-FC9E5F830884}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensusBase", "src\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj", "{2AB1AA07-0B80-4929-A35B-473C174DE67F}"
 EndProject
@@ -73,13 +76,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Managment.CloudFou
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{402D8CB5-C3C3-47E0-BEB3-63D0975E5109}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\common\src\Common.Http\Steeltoe.Common.Http.csproj", "{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\Common\src\Common.Http\Steeltoe.Common.Http.csproj", "{CFF0B9EA-A2E7-4981-A7C1-085EA0327FD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "..\logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{34EAED24-C851-4F13-819D-EAE88E24B98F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{34EAED24-C851-4F13-819D-EAE88E24B98F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{8E13D7F7-FF49-41C8-A458-CF8795C93718}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{8E13D7F7-FF49-41C8-A458-CF8795C93718}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E18EE9BB-7195-4E20-9733-064319D2F60C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E18EE9BB-7195-4E20-9733-064319D2F60C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -164,11 +167,9 @@ Global
 		{FCF5A911-989B-4DCD-9165-D00A66F9F11B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCF5A911-989B-4DCD-9165-D00A66F9F11B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2236310-69D7-4623-B76E-615C2BA5322E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2236310-69D7-4623-B76E-615C2BA5322E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2236310-69D7-4623-B76E-615C2BA5322E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2236310-69D7-4623-B76E-615C2BA5322E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C23A188B-ECD2-4730-85EA-BE3930DD4786}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C23A188B-ECD2-4730-85EA-BE3930DD4786}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C23A188B-ECD2-4730-85EA-BE3930DD4786}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C23A188B-ECD2-4730-85EA-BE3930DD4786}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80CA3842-F0DC-4245-A10F-2C027E4B82F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

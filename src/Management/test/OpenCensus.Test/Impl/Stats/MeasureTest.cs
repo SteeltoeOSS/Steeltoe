@@ -1,13 +1,25 @@
-﻿using Steeltoe.Management.Census.Stats.Measures;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Stats.Measures;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Stats.Test
 {
+    [Obsolete]
     public class MeasureTest
     {
         [Fact]
@@ -21,8 +33,12 @@ namespace Steeltoe.Management.Census.Stats.Test
         {
             char[] chars = new char[Measure.NAME_MAX_LENGTH + 1];
 
-            for (int i = 0; i < chars.Length; i++) chars[i] = 'a';
-            String longName = new string(chars);
+            for (int i = 0; i < chars.Length; i++)
+            {
+                chars[i] = 'a';
+            }
+
+            string longName = new string(chars);
             Assert.Throws<ArgumentOutOfRangeException>(() => MeasureDouble.Create(longName, "description", "1"));
         }
 
@@ -68,10 +84,12 @@ namespace Steeltoe.Management.Census.Stats.Test
         public void TestMatch()
         {
             List<IMeasure> measures =
-                new List<IMeasure>() {
+                new List<IMeasure>()
+                {
                     MeasureDouble.Create("measure1", "description", "1"),
-                    MeasureLong.Create("measure2", "description", "1")};
-            List<String> outputs = new List<string>();
+                    MeasureLong.Create("measure2", "description", "1")
+                };
+            List<string> outputs = new List<string>();
             foreach (IMeasure measure in measures)
             {
                 outputs.Add(

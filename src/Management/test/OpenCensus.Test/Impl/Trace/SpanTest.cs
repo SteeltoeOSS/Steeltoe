@@ -1,4 +1,18 @@
-﻿using Moq;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Moq;
 using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Internal;
 using Steeltoe.Management.Census.Testing.Common;
@@ -7,17 +21,15 @@ using Steeltoe.Management.Census.Trace.Export;
 using Steeltoe.Management.Census.Trace.Internal;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Trace.Test
 {
+    [Obsolete]
     public class SpanTest
     {
-        private static readonly String SPAN_NAME = "MySpanName";
-        private static readonly String ANNOTATION_DESCRIPTION = "MyAnnotation";
+        private static readonly string SPAN_NAME = "MySpanName";
+        private static readonly string ANNOTATION_DESCRIPTION = "MyAnnotation";
         private readonly RandomGenerator random = new RandomGenerator(1234);
         private readonly ISpanContext spanContext;
         private readonly ISpanId parentSpanId;
@@ -26,11 +38,11 @@ namespace Steeltoe.Management.Census.Trace.Test
         private readonly ITimestampConverter timestampConverter;
         private readonly SpanOptions noRecordSpanOptions = SpanOptions.NONE;
         private readonly SpanOptions recordSpanOptions = SpanOptions.RECORD_EVENTS;
-        private readonly IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
-        private readonly IDictionary<String, IAttributeValue> expectedAttributes;
+        private readonly IDictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>();
+        private readonly IDictionary<string, IAttributeValue> expectedAttributes;
         private IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
-        //@Rule public readonly ExpectedException exception = ExpectedException.none();
 
+        //// @Rule public readonly ExpectedException exception = ExpectedException.none();
 
         public SpanTest()
         {
@@ -42,10 +54,13 @@ namespace Steeltoe.Management.Census.Trace.Test
                 "MyStringAttributeKey", AttributeValue.StringAttributeValue("MyStringAttributeValue"));
             attributes.Add("MyLongAttributeKey", AttributeValue.LongAttributeValue(123L));
             attributes.Add("MyBooleanAttributeKey", AttributeValue.BooleanAttributeValue(false));
-            expectedAttributes = new Dictionary<String, IAttributeValue>(attributes);
-            expectedAttributes.Add(
-                "MySingleStringAttributeKey",
-                AttributeValue.StringAttributeValue("MySingleStringAttributeValue"));
+            expectedAttributes = new Dictionary<string, IAttributeValue>(attributes)
+            {
+                {
+                    "MySingleStringAttributeKey",
+                    AttributeValue.StringAttributeValue("MySingleStringAttributeValue")
+                }
+            };
         }
 
         [Fact]
@@ -62,6 +77,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                     startEndHandler,
                     timestampConverter,
                     testClock);
+
             // Check that adding trace events after Span#End() does not throw any exception.
             span.PutAttributes(attributes);
             span.AddAnnotation(Annotation.FromDescription(ANNOTATION_DESCRIPTION));
@@ -70,8 +86,9 @@ namespace Steeltoe.Management.Census.Trace.Test
                 MessageEvent.Builder(MessageEventType.RECEIVED, 1).SetUncompressedMessageSize(3).Build());
             span.AddLink(Link.FromSpanContext(spanContext, LinkType.CHILD_LINKED_SPAN));
             span.End();
-            //exception.expect(IllegalStateException);
-            Assert.Throws<InvalidOperationException>(() =>((Span)span).ToSpanData());
+
+            // exception.expect(IllegalStateException);
+            Assert.Throws<InvalidOperationException>(() => ((Span)span).ToSpanData());
         }
 
         [Fact]
@@ -89,6 +106,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                     timestampConverter,
                     testClock);
             span.End();
+
             // Check that adding trace events after Span#End() does not throw any exception and are not
             // recorded.
             span.PutAttributes(attributes);
@@ -110,8 +128,8 @@ namespace Steeltoe.Management.Census.Trace.Test
             Assert.Equal(timestamp, spanData.EndTimestamp);
         }
 
-        //  [Fact]
-        //public void DeprecatedAddAttributesStillWorks()
+        // [Fact]
+        // public void DeprecatedAddAttributesStillWorks()
         //  {
         //      ISpan span =
         //          Span.StartSpan(
@@ -128,7 +146,7 @@ namespace Steeltoe.Management.Census.Trace.Test
         //      span.End();
         //      SpanData spanData = ((Span)span).ToSpanData();
         //      Assert.Equal(spanData.Attributes.AttributeMap).isEqualTo(attributes);
-        //  }
+        ////  }
 
         [Fact]
         public void ToSpanData_ActiveSpan()
@@ -144,7 +162,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                     startEndHandler,
                     timestampConverter,
                     testClock);
-   
+
             span.PutAttribute(
                 "MySingleStringAttributeKey",
                 AttributeValue.StringAttributeValue("MySingleStringAttributeValue"));
@@ -166,7 +184,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             Assert.Equal(parentSpanId, spanData.ParentSpanId);
             Assert.True(spanData.HasRemoteParent);
             Assert.Equal(0, spanData.Attributes.DroppedAttributesCount);
-            Assert.Equal(expectedAttributes, spanData.Attributes.AttributeMap); 
+            Assert.Equal(expectedAttributes, spanData.Attributes.AttributeMap);
             Assert.Equal(0, spanData.Annotations.DroppedEventsCount);
             Assert.Equal(2, spanData.Annotations.Events.Count);
             Assert.Equal(timestamp.AddNanos(100), spanData.Annotations.Events[0].Timestamp);
@@ -186,7 +204,7 @@ namespace Steeltoe.Management.Census.Trace.Test
 
             var startEndMock = Mock.Get<IStartEndHandler>(startEndHandler);
             var spanBase = span as SpanBase;
-            startEndMock.Verify(s => s.OnStart(spanBase), Times.Once);  
+            startEndMock.Verify(s => s.OnStart(spanBase), Times.Once);
         }
 
         [Fact]
@@ -203,7 +221,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                     startEndHandler,
                     timestampConverter,
                     testClock);
-     
+
             span.PutAttribute(
                 "MySingleStringAttributeKey",
                 AttributeValue.StringAttributeValue("MySingleStringAttributeValue"));
@@ -220,7 +238,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             span.AddLink(link);
             testClock.AdvanceTime(Duration.Create(0, 100));
             span.End(EndSpanOptions.Builder().SetStatus(Status.CANCELLED).Build());
-          
+
             ISpanData spanData = ((Span)span).ToSpanData();
             Assert.Equal(spanContext, spanData.Context);
             Assert.Equal(SPAN_NAME, spanData.Name);
@@ -234,7 +252,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             Assert.Equal(Annotation.FromDescription(ANNOTATION_DESCRIPTION), spanData.Annotations.Events[0].Event);
             Assert.Equal(timestamp.AddNanos(200), spanData.Annotations.Events[1].Timestamp);
             Assert.Equal(Annotation.FromDescriptionAndAttributes(ANNOTATION_DESCRIPTION, attributes), spanData.Annotations.Events[1].Event);
-            Assert.Equal(0,spanData.MessageEvents.DroppedEventsCount);
+            Assert.Equal(0, spanData.MessageEvents.DroppedEventsCount);
             Assert.Equal(1, spanData.MessageEvents.Events.Count);
             Assert.Equal(timestamp.AddNanos(300), spanData.MessageEvents.Events[0].Timestamp);
             Assert.Equal(networkEvent, spanData.MessageEvents.Events[0].Event);
@@ -278,7 +296,7 @@ namespace Steeltoe.Management.Census.Trace.Test
         }
 
         [Fact]
-        public void status_ViaEndSpanOptions()
+        public void Status_ViaEndSpanOptions()
         {
             ISpan span =
                 Span.StartSpan(
@@ -322,10 +340,13 @@ namespace Steeltoe.Management.Census.Trace.Test
                     testClock);
             for (int i = 0; i < 2 * maxNumberOfAttributes; i++)
             {
-                IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
-                attributes.Add("MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i));
+                IDictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>
+                {
+                    { "MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i) }
+                };
                 span.PutAttributes(attributes);
             }
+
             ISpanData spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.DroppedAttributesCount);
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.AttributeMap.Count);
@@ -333,10 +354,9 @@ namespace Steeltoe.Management.Census.Trace.Test
             {
                 Assert.Equal(
                     AttributeValue.LongAttributeValue(i + maxNumberOfAttributes),
-                        spanData
-                            .Attributes
-                            .AttributeMap["MyStringAttributeKey" + (i + maxNumberOfAttributes)]);
+                    spanData.Attributes.AttributeMap["MyStringAttributeKey" + (i + maxNumberOfAttributes)]);
             }
+
             span.End();
             spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.DroppedAttributesCount);
@@ -345,9 +365,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             {
                 Assert.Equal(
                     AttributeValue.LongAttributeValue(i + maxNumberOfAttributes),
-                        spanData
-                            .Attributes
-                            .AttributeMap["MyStringAttributeKey" + (i + maxNumberOfAttributes)]);
+                    spanData.Attributes.AttributeMap["MyStringAttributeKey" + (i + maxNumberOfAttributes)]);
             }
         }
 
@@ -370,10 +388,13 @@ namespace Steeltoe.Management.Census.Trace.Test
                     testClock);
             for (int i = 0; i < 2 * maxNumberOfAttributes; i++)
             {
-                IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
-                attributes.Add("MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i));
+                IDictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>
+                {
+                    { "MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i) }
+                };
                 span.PutAttributes(attributes);
             }
+
             ISpanData spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.DroppedAttributesCount);
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.AttributeMap.Count);
@@ -381,28 +402,30 @@ namespace Steeltoe.Management.Census.Trace.Test
             {
                 Assert.Equal(
                     AttributeValue.LongAttributeValue(i + maxNumberOfAttributes),
-                        spanData
-                            .Attributes
-                            .AttributeMap["MyStringAttributeKey" + (i + maxNumberOfAttributes)]);
+                    spanData.Attributes.AttributeMap["MyStringAttributeKey" + (i + maxNumberOfAttributes)]);
             }
+
             for (int i = 0; i < maxNumberOfAttributes / 2; i++)
             {
-                IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
-                attributes.Add("MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i));
+                IDictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>
+                {
+                    { "MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i) }
+                };
                 span.PutAttributes(attributes);
             }
+
             spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfAttributes * 3 / 2, spanData.Attributes.DroppedAttributesCount);
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.AttributeMap.Count);
+
             // Test that we still have in the attributes map the latest maxNumberOfAttributes / 2 entries.
             for (int i = 0; i < maxNumberOfAttributes / 2; i++)
             {
                 Assert.Equal(
-                    AttributeValue.LongAttributeValue(i + maxNumberOfAttributes * 3 / 2),
-                        spanData
-                            .Attributes
-                            .AttributeMap["MyStringAttributeKey" + (i + maxNumberOfAttributes * 3 / 2)]);
+                    AttributeValue.LongAttributeValue(i + (maxNumberOfAttributes * 3 / 2)),
+                    spanData.Attributes.AttributeMap["MyStringAttributeKey" + (i + (maxNumberOfAttributes * 3 / 2))]);
             }
+
             // Test that we have the newest re-added initial entries.
             for (int i = 0; i < maxNumberOfAttributes / 2; i++)
             {
@@ -433,6 +456,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                 span.AddAnnotation(annotation);
                 testClock.AdvanceTime(Duration.Create(0, 100));
             }
+
             ISpanData spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfAnnotations, spanData.Annotations.DroppedEventsCount);
             Assert.Equal(maxNumberOfAnnotations, spanData.Annotations.Events.Count);
@@ -441,9 +465,10 @@ namespace Steeltoe.Management.Census.Trace.Test
                 Assert.Equal(timestamp.AddNanos(100 * (maxNumberOfAnnotations + i)), spanData.Annotations.Events[i].Timestamp);
                 Assert.Equal(annotation, spanData.Annotations.Events[i].Event);
             }
+
             span.End();
             spanData = ((Span)span).ToSpanData();
-            Assert.Equal(maxNumberOfAnnotations,spanData.Annotations.DroppedEventsCount);
+            Assert.Equal(maxNumberOfAnnotations, spanData.Annotations.DroppedEventsCount);
             Assert.Equal(maxNumberOfAnnotations, spanData.Annotations.Events.Count);
             for (int i = 0; i < maxNumberOfAnnotations; i++)
             {
@@ -472,13 +497,13 @@ namespace Steeltoe.Management.Census.Trace.Test
                     startEndHandler,
                     timestampConverter,
                     testClock);
-            IMessageEvent networkEvent =
-                MessageEvent.Builder(MessageEventType.RECEIVED, 1).SetUncompressedMessageSize(3).Build();
+            IMessageEvent networkEvent = MessageEvent.Builder(MessageEventType.RECEIVED, 1).SetUncompressedMessageSize(3).Build();
             for (int i = 0; i < 2 * maxNumberOfNetworkEvents; i++)
             {
                 span.AddMessageEvent(networkEvent);
                 testClock.AdvanceTime(Duration.Create(0, 100));
             }
+
             ISpanData spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfNetworkEvents, spanData.MessageEvents.DroppedEventsCount);
             Assert.Equal(maxNumberOfNetworkEvents, spanData.MessageEvents.Events.Count);
@@ -487,6 +512,7 @@ namespace Steeltoe.Management.Census.Trace.Test
                 Assert.Equal(timestamp.AddNanos(100 * (maxNumberOfNetworkEvents + i)), spanData.MessageEvents.Events[i].Timestamp);
                 Assert.Equal(networkEvent, spanData.MessageEvents.Events[i].Event);
             }
+
             span.End();
             spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfNetworkEvents, spanData.MessageEvents.DroppedEventsCount);
@@ -520,6 +546,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             {
                 span.AddLink(link);
             }
+
             ISpanData spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfLinks, spanData.Links.DroppedLinksCount);
             Assert.Equal(maxNumberOfLinks, spanData.Links.Links.Count);
@@ -527,6 +554,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             {
                 Assert.Equal(link, spanData.Links.Links[i]);
             }
+
             span.End();
             spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfLinks, spanData.Links.DroppedLinksCount);

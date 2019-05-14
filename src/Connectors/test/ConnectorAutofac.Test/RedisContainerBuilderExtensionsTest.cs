@@ -14,7 +14,7 @@
 
 using Autofac;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Redis;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.Redis;

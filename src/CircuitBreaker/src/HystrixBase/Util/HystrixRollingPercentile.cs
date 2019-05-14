@@ -147,7 +147,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             /* a shortcut to try and get the most common result of immediately finding the current bucket */
 
-            /**
+            /*
              * Retrieve the latest bucket if the given time is BEFORE the end of the bucket window, otherwise it returns NULL.
              * NOTE: This is thread-safe because it's accessing 'buckets' which is a LinkedBlockingDeque
              */
@@ -162,7 +162,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             /* if we didn't find the current bucket above, then we have to create one */
 
-            /**
+            /*
              * The following needs to be synchronized/locked even with a synchronized/thread-safe data structure such as LinkedBlockingDeque because
              * the logic involves multiple steps to check existence, create an object then insert the object. The 'check' or 'insertion' themselves
              * are thread-safe by themselves but not the aggregate algorithm, thus we put this entire block of logic inside synchronized.

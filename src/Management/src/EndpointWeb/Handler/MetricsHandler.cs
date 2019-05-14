@@ -55,7 +55,11 @@ namespace Steeltoe.Management.Endpoint.Handler
                 if (serialInfo != null)
                 {
                     response.StatusCode = (int)HttpStatusCode.OK;
-                    context.Response.Write(serialInfo);
+
+// disable warning to work around false positive in scanner
+#pragma warning disable SCS0029 // Potential XSS vulnerability
+                    context.Response.Write(HttpUtility.HtmlEncode(serialInfo));
+#pragma warning restore SCS0029 // Potential XSS vulnerability
                 }
                 else
                 {

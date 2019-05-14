@@ -1,7 +1,19 @@
-﻿using Steeltoe.Management.Census.Utils;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Utils;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
@@ -9,18 +21,20 @@ namespace Steeltoe.Management.Census.Stats
     public sealed class ViewName : IViewName
     {
         internal const int NAME_MAX_LENGTH = 255;
-        public String AsString { get; }
 
-        internal ViewName(String asString)
+        public string AsString { get; }
+
+        internal ViewName(string asString)
         {
             if (asString == null)
             {
                 throw new ArgumentNullException(nameof(asString));
             }
+
             this.AsString = asString;
         }
 
-        public static IViewName Create(String name)
+        public static IViewName Create(string name)
         {
             if (name == null)
             {
@@ -38,24 +52,26 @@ namespace Steeltoe.Management.Census.Stats
             return new ViewName(name);
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "Name{"
                 + "asString=" + AsString
                 + "}";
         }
 
-        public override bool Equals(Object o)
+        public override bool Equals(object o)
         {
             if (o == this)
             {
                 return true;
             }
+
             if (o is ViewName)
             {
                 ViewName that = (ViewName)o;
-                return (this.AsString.Equals(that.AsString));
+                return this.AsString.Equals(that.AsString);
             }
+
             return false;
         }
 

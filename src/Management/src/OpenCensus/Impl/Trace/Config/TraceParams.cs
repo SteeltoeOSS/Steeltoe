@@ -1,7 +1,19 @@
-﻿using Steeltoe.Management.Census.Trace.Sampler;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Trace.Sampler;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Config
 {
@@ -15,7 +27,7 @@ namespace Steeltoe.Management.Census.Trace.Config
         private const int DEFAULT_SPAN_MAX_NUM_MESSAGE_EVENTS = 128;
         private const int DEFAULT_SPAN_MAX_NUM_LINKS = 128;
 
-        public static readonly ITraceParams DEFAULT = 
+        public static readonly ITraceParams DEFAULT =
             new TraceParams(DEFAULT_SAMPLER, DEFAULT_SPAN_MAX_NUM_ATTRIBUTES, DEFAULT_SPAN_MAX_NUM_ANNOTATIONS, DEFAULT_SPAN_MAX_NUM_MESSAGE_EVENTS, DEFAULT_SPAN_MAX_NUM_LINKS);
 
         internal TraceParams(ISampler sampler, int maxNumberOfAttributes, int maxNumberOfAnnotations, int maxNumberOfMessageEvents, int maxNumberOfLinks)
@@ -24,22 +36,27 @@ namespace Steeltoe.Management.Census.Trace.Config
             {
                 throw new ArgumentNullException(nameof(sampler));
             }
+
             if (maxNumberOfAttributes <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(maxNumberOfAttributes));
             }
+
             if (maxNumberOfAnnotations <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(maxNumberOfAnnotations));
             }
+
             if (maxNumberOfMessageEvents <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(maxNumberOfMessageEvents));
             }
+
             if (maxNumberOfLinks <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(maxNumberOfLinks));
             }
+
             this.Sampler = sampler;
             this.MaxNumberOfAttributes = maxNumberOfAttributes;
             this.MaxNumberOfAnnotations = maxNumberOfAnnotations;
@@ -48,10 +65,15 @@ namespace Steeltoe.Management.Census.Trace.Config
         }
 
         public ISampler Sampler { get; }
+
         public int MaxNumberOfAttributes { get; }
+
         public int MaxNumberOfAnnotations { get; }
+
         public int MaxNumberOfMessageEvents { get; }
+
         public int MaxNumberOfLinks { get; }
+
         public TraceParamsBuilder ToBuilder()
         {
             return new TraceParamsBuilder(this);
@@ -68,22 +90,23 @@ namespace Steeltoe.Management.Census.Trace.Config
                 + "}";
         }
 
-
         public override bool Equals(object o)
         {
             if (o == this)
             {
                 return true;
             }
+
             if (o is TraceParams)
             {
                 TraceParams that = (TraceParams)o;
-                return (this.Sampler.Equals(that.Sampler))
+                return this.Sampler.Equals(that.Sampler)
                      && (this.MaxNumberOfAttributes == that.MaxNumberOfAttributes)
                      && (this.MaxNumberOfAnnotations == that.MaxNumberOfAnnotations)
                      && (this.MaxNumberOfMessageEvents == that.MaxNumberOfMessageEvents)
                      && (this.MaxNumberOfLinks == that.MaxNumberOfLinks);
             }
+
             return false;
         }
 

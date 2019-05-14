@@ -3,53 +3,25 @@
  
   <PropertyGroup>
     <Description>Steeltoe Management Endpoints for ASP.NET 4.x</Description>
-    <Authors>Pivotal;dtillman</Authors>
-    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <TargetFramework>net461</TargetFramework>
     <AssemblyName>Steeltoe.Management.EndpointWeb</AssemblyName>
     <PackageId>Steeltoe.Management.EndpointWeb</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring;CloudFoundry;ASP.NET 4.x</PackageTags>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
+
   <Import Project="..\..\..\..\targetframework.props" />
-  <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Management.EndpointWeb.xml</DocumentationFile>
-  </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="$(AspNetVersion)" />
     <PackageReference Include="Microsoft.AspNet.TelemetryCorrelation" Version="$(TelemetryCorrelationVersion)" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="$(AspNetVersion)" />
     <PackageReference Include="Microsoft.Web.Infrastructure" Version="$(WebInfrastructureVersion)" />
-    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EndpointBase\Steeltoe.Management.EndpointBase.csproj" />
   </ItemGroup>
-  
-  <PropertyGroup>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
-  </ItemGroup>
-
 </Project>

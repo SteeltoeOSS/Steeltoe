@@ -1,9 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
  <Import Project="..\..\..\..\versions.props" />
-  <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+  <PropertyGroup Condition="! $(OS.Contains('Win'))">
+    <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
   </PropertyGroup>
-  <Import Project="..\..\..\..\targetframework.props" />
+  <PropertyGroup Condition="$(OS.Contains('Win'))">
+    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <!-- <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->
+  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedtest.props" />
 
   <ItemGroup>
     <None Update="xunit.runner.json">
@@ -15,30 +20,10 @@
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
-    
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
-    <PackageReference Include="xunit" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitStudioVersion)" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
-    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <PropertyGroup>
-    <NoWarn>SA1101;SA1124;SA1201;SA1309;SA1310;SA1401;SA1600;SA1652;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Hystrix.MetricsStreamAutofac\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.csproj" />
     <ProjectReference Include="..\..\src\HystrixAutofac\Steeltoe.CircuitBreaker.HystrixAutofac.csproj" />
   </ItemGroup>
-
-
 </Project>

@@ -17,7 +17,7 @@ using System;
 
 namespace Steeltoe.Management.Census.Stats
 {
-    public class OpenCensusStats  : IStats
+    public class OpenCensusStats : IStats
     {
         private static readonly Lazy<OpenCensusStats> AsSingleton = new Lazy<OpenCensusStats>(() => new OpenCensusStats());
 

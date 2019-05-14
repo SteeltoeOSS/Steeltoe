@@ -8,14 +8,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{BA3B33D3-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{851768A8-7E3B-49DF-9DA2-512FAC8118C5}"
 	ProjectSection(SolutionItems) = preProject
-		..\versions.props = ..\versions.props
+		..\..\nuget.config = ..\..\nuget.config
+		..\..\sharedproject.props = ..\..\sharedproject.props
+		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\stylecop.json = ..\..\stylecop.json
+		..\..\targetframework.props = ..\..\targetframework.props
+		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6EBD5C70-1AC2-4163-90B8-BD8D76CF8B26}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\nuget.config = ..\..\nuget.config
 		README.md = README.md
-		..\stylecop.json = ..\stylecop.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryCore", "src\Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj", "{C2EDCFE9-B3C5-466C-B1DA-C62D896C8F9E}"
@@ -40,17 +43,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryBase", "src\Authentication.CloudFoundryBase\Steeltoe.Security.Authentication.CloudFoundryBase.csproj", "{F5FA179B-3731-485B-B2D3-994AE05166EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryBase.Test", "test\Authentication.CloudFoundryBaseTest\Steeltoe.Security.Authentication.CloudFoundryBase.Test.csproj", "{350CC18B-D550-4207-9023-E90C9B61BF6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryBase.Test", "test\Authentication.CloudFoundryBase.Test\Steeltoe.Security.Authentication.CloudFoundryBase.Test.csproj", "{350CC18B-D550-4207-9023-E90C9B61BF6C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryOwin.Test", "test\Authentication.CloudFoundryOwin.Test\Steeltoe.Security.Authentication.CloudFoundryOwin.Test.csproj", "{859C51B8-D6DF-473B-959A-4F0F1533ADD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryOwin.Test", "test\Authentication.CloudFoundryOwin.Net4Test\Steeltoe.Security.Authentication.CloudFoundryOwin.Test.csproj", "{859C51B8-D6DF-473B-959A-4F0F1533ADD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryWcf.Test", "test\Authentication.CloudFoundryWcf.Test\Steeltoe.Security.Authentication.CloudFoundryWcf.Test.csproj", "{950B0827-634F-43F9-86C4-4E615ED36A22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryWcf.Test", "test\Authentication.CloudFoundryWcf.Net4Test\Steeltoe.Security.Authentication.CloudFoundryWcf.Test.csproj", "{950B0827-634F-43F9-86C4-4E615ED36A22}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{2FE6A5FE-4512-41A9-9994-90C12DF1C409}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{9E65D8C3-5BCE-43D2-952A-C0A6C4477401}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{9E65D8C3-5BCE-43D2-952A-C0A6C4477401}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\common\src\Common.Http\Steeltoe.Common.Http.csproj", "{495C7871-EE98-4B53-ABAE-26294046DDDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\Common\src\Common.Http\Steeltoe.Common.Http.csproj", "{495C7871-EE98-4B53-ABAE-26294046DDDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

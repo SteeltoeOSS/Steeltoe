@@ -1,11 +1,24 @@
-﻿using Steeltoe.Management.Census.Common;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Common;
+using Steeltoe.Management.Census.Internal;
 using Steeltoe.Management.Census.Trace.Config;
 using Steeltoe.Management.Census.Trace.Export;
-using Steeltoe.Management.Census.Internal;
 using Steeltoe.Management.Census.Utils;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace Steeltoe.Management.Census.Trace
@@ -30,8 +43,8 @@ namespace Steeltoe.Management.Census.Trace
         private bool hasBeenEnded;
         private bool sampleToLocalSpanStore;
         private object _lock = new object();
-     
-       public override string Name
+
+        public override string Name
         {
             get
             {
@@ -48,23 +61,27 @@ namespace Steeltoe.Management.Census.Trace
                     return StatusWithDefault;
                 }
             }
+
             set
             {
                 if (!Options.HasFlag(SpanOptions.RECORD_EVENTS))
                 {
                     return;
                 }
+
                 lock (_lock)
                 {
                     if (hasBeenEnded)
                     {
-                        //logger.log(Level.FINE, "Calling setStatus() on an ended Span.");
+                        // logger.log(Level.FINE, "Calling setStatus() on an ended Span.");
                         return;
                     }
+
                     this.status = value;
                 }
             }
         }
+
         public override long EndNanoTime
         {
             get
@@ -73,9 +90,9 @@ namespace Steeltoe.Management.Census.Trace
                 {
                     return hasBeenEnded ? endNanoTime : clock.NowNanos;
                 }
-
             }
         }
+
         public override long LatencyNs
         {
             get
@@ -86,6 +103,7 @@ namespace Steeltoe.Management.Census.Trace
                 }
             }
         }
+
         public override bool IsSampleToLocalSpanStore
         {
             get
@@ -96,11 +114,11 @@ namespace Steeltoe.Management.Census.Trace
                     {
                         throw new InvalidOperationException("Running span does not have the SampleToLocalSpanStore set.");
                     }
+
                     return sampleToLocalSpanStore;
                 }
             }
         }
-
 
         public override void PutAttribute(string key, IAttributeValue value)
         {
@@ -113,61 +131,72 @@ namespace Steeltoe.Management.Census.Trace
             {
                 if (hasBeenEnded)
                 {
-                    //logger.log(Level.FINE, "Calling putAttributes() on an ended Span.");
+                    // logger.log(Level.FINE, "Calling putAttributes() on an ended Span.");
                     return;
                 }
+
                 InitializedAttributes.PutAttribute(key, value);
             }
         }
+
         public override void PutAttributes(IDictionary<string, IAttributeValue> attributes)
         {
             if (!Options.HasFlag(SpanOptions.RECORD_EVENTS))
             {
                 return;
             }
+
             lock (_lock)
             {
                 if (hasBeenEnded)
                 {
-                    //logger.log(Level.FINE, "Calling putAttributes() on an ended Span.");
+                    // logger.log(Level.FINE, "Calling putAttributes() on an ended Span.");
                     return;
                 }
+
                 InitializedAttributes.PutAttributes(attributes);
             }
         }
+
         public override void AddAnnotation(string description, IDictionary<string, IAttributeValue> attributes)
         {
             if (!Options.HasFlag(SpanOptions.RECORD_EVENTS))
             {
                 return;
             }
+
             lock (_lock)
             {
                 if (hasBeenEnded)
                 {
-                    //logger.log(Level.FINE, "Calling addAnnotation() on an ended Span.");
+                    // logger.log(Level.FINE, "Calling addAnnotation() on an ended Span.");
                     return;
                 }
+
                 InitializedAnnotations.AddEvent(new EventWithNanoTime<IAnnotation>(clock.NowNanos, Annotation.FromDescriptionAndAttributes(description, attributes)));
             }
         }
+
         public override void AddAnnotation(IAnnotation annotation)
         {
             if (!Options.HasFlag(SpanOptions.RECORD_EVENTS))
             {
                 return;
             }
+
             lock (_lock)
             {
                 if (hasBeenEnded)
                 {
-                    //logger.log(Level.FINE, "Calling addAnnotation() on an ended Span.");
+                    // logger.log(Level.FINE, "Calling addAnnotation() on an ended Span.");
                     return;
                 }
+
                 if (annotation == null)
                 {
                     throw new ArgumentNullException(nameof(annotation));
                 }
+
                 InitializedAnnotations.AddEvent(new EventWithNanoTime<IAnnotation>(clock.NowNanos, annotation));
             }
         }
@@ -178,37 +207,44 @@ namespace Steeltoe.Management.Census.Trace
             {
                 return;
             }
+
             lock (_lock)
             {
                 if (hasBeenEnded)
                 {
-                    //logger.log(Level.FINE, "Calling addLink() on an ended Span.");
+                    // logger.log(Level.FINE, "Calling addLink() on an ended Span.");
                     return;
                 }
+
                 if (link == null)
                 {
                     throw new ArgumentNullException(nameof(link));
                 }
+
                 InitializedLinks.AddEvent(link);
             }
         }
+
         public override void AddMessageEvent(IMessageEvent messageEvent)
         {
             if (!Options.HasFlag(SpanOptions.RECORD_EVENTS))
             {
                 return;
             }
+
             lock (_lock)
             {
                 if (hasBeenEnded)
                 {
-                    //logger.log(Level.FINE, "Calling addNetworkEvent() on an ended Span.");
+                    // logger.log(Level.FINE, "Calling addNetworkEvent() on an ended Span.");
                     return;
                 }
+
                 if (messageEvent == null)
                 {
                     throw new ArgumentNullException(nameof(messageEvent));
                 }
+
                 InitializedMessageEvents.AddEvent(new EventWithNanoTime<IMessageEvent>(clock.NowNanos, messageEvent));
             }
         }
@@ -219,21 +255,25 @@ namespace Steeltoe.Management.Census.Trace
             {
                 return;
             }
+
             lock (_lock)
             {
                 if (hasBeenEnded)
                 {
-                    //logger.log(Level.FINE, "Calling end() on an ended Span.");
+                    // logger.log(Level.FINE, "Calling end() on an ended Span.");
                     return;
                 }
+
                 if (options.Status != null)
                 {
                     status = options.Status;
                 }
+
                 sampleToLocalSpanStore = options.SampleToLocalSpanStore;
                 endNanoTime = clock.NowNanos;
                 hasBeenEnded = true;
             }
+
             startEndHandler.OnEnd(this);
         }
 
@@ -245,6 +285,7 @@ namespace Steeltoe.Management.Census.Trace
                 {
                     attributes = new AttributesWithCapacity(traceParams.MaxNumberOfAttributes);
                 }
+
                 return attributes;
             }
         }
@@ -258,9 +299,11 @@ namespace Steeltoe.Management.Census.Trace
                     annotations =
                         new TraceEvents<EventWithNanoTime<IAnnotation>>(traceParams.MaxNumberOfAnnotations);
                 }
+
                 return annotations;
             }
         }
+
         private TraceEvents<EventWithNanoTime<IMessageEvent>> InitializedMessageEvents
         {
             get
@@ -270,6 +313,7 @@ namespace Steeltoe.Management.Census.Trace
                     messageEvents =
                         new TraceEvents<EventWithNanoTime<IMessageEvent>>(traceParams.MaxNumberOfMessageEvents);
                 }
+
                 return messageEvents;
             }
         }
@@ -282,6 +326,7 @@ namespace Steeltoe.Management.Census.Trace
                 {
                     links = new TraceEvents<ILink>(traceParams.MaxNumberOfLinks);
                 }
+
                 return links;
             }
         }
@@ -320,13 +365,12 @@ namespace Steeltoe.Management.Census.Trace
 
         internal override ISpanData ToSpanData()
         {
-
             if (!Options.HasFlag(SpanOptions.RECORD_EVENTS))
             {
                 throw new InvalidOperationException("Getting SpanData for a Span without RECORD_EVENTS option.");
             }
 
-            Attributes attributesSpanData = attributes == null  ? Attributes.Create(new Dictionary<string, IAttributeValue>(), 0)
+            Attributes attributesSpanData = attributes == null ? Attributes.Create(new Dictionary<string, IAttributeValue>(), 0)
                         : Attributes.Create(attributes, attributes.NumberOfDroppedAttributes);
 
             ITimedEvents<IAnnotation> annotationsSpanData = CreateTimedEvents(InitializedAnnotations, timestampConverter);
@@ -357,8 +401,7 @@ namespace Steeltoe.Management.Census.Trace
                 ITraceParams traceParams,
                 IStartEndHandler startEndHandler,
                 ITimestampConverter timestampConverter,
-                IClock clock
-            )
+                IClock clock)
         {
             var span = new Span(
                context,
@@ -370,25 +413,25 @@ namespace Steeltoe.Management.Census.Trace
                startEndHandler,
                timestampConverter,
                clock);
+
             // Call onStart here instead of calling in the constructor to make sure the span is completely
             // initialized.
             if (span.Options.HasFlag(SpanOptions.RECORD_EVENTS))
             {
                 startEndHandler.OnStart(span);
             }
+
             return span;
         }
 
-
-
-        //public virtual void AddMessageEvent(MessageEventBase messageEvent)
-        //{
+        // public virtual void AddMessageEvent(MessageEventBase messageEvent)
+        // {
         // Default implementation by invoking addNetworkEvent() so that any existing derived classes,
         // including implementation and the mocked ones, do not need to override this method explicitly.
-        //addNetworkEvent(BaseMessageEventUtil.asNetworkEvent(messageEvent));
-        //}
+        // addNetworkEvent(BaseMessageEventUtil.asNetworkEvent(messageEvent));
+        // }
 
-        //public abstract void AddLink(LinkBase link);
+        //// public abstract void AddLink(LinkBase link);
 
         private Span(
                 ISpanContext context,
@@ -399,7 +442,7 @@ namespace Steeltoe.Management.Census.Trace
                 ITraceParams traceParams,
                 IStartEndHandler startEndHandler,
                 ITimestampConverter timestampConverter,
-                IClock clock) 
+                IClock clock)
             : base(context, options)
         {
             this.parentSpanId = parentSpanId;
@@ -412,7 +455,7 @@ namespace Steeltoe.Management.Census.Trace
             this.sampleToLocalSpanStore = false;
             if (options.HasFlag(SpanOptions.RECORD_EVENTS))
             {
-                this.timestampConverter =  timestampConverter != null ? timestampConverter : Census.Internal.TimestampConverter.Now(clock);
+                this.timestampConverter = timestampConverter != null ? timestampConverter : Census.Internal.TimestampConverter.Now(clock);
                 startNanoTime = clock.NowNanos;
             }
             else
@@ -421,6 +464,7 @@ namespace Steeltoe.Management.Census.Trace
                 this.timestampConverter = timestampConverter;
             }
         }
+
         private static ITimedEvents<T> CreateTimedEvents<T>(TraceEvents<EventWithNanoTime<T>> events, ITimestampConverter timestampConverter)
         {
             if (events == null)
@@ -428,6 +472,7 @@ namespace Steeltoe.Management.Census.Trace
                 IList<ITimedEvent<T>> empty = new List<ITimedEvent<T>>();
                 return TimedEvents<T>.Create(empty, 0);
             }
+
             IList<ITimedEvent<T>> eventsList = new List<ITimedEvent<T>>(events.Events.Count);
             foreach (EventWithNanoTime<T> networkEvent in events.Events)
             {

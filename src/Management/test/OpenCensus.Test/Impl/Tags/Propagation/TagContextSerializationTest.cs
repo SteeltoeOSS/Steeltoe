@@ -1,15 +1,29 @@
-﻿using Steeltoe.Management.Census.Internal;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Tags.Propagation.Test
 {
+    [Obsolete]
     public class TagContextSerializationTest
     {
         private static readonly ITagKey K1 = TagKey.Create("k1");
@@ -30,6 +44,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         private readonly TagsComponent tagsComponent = new TagsComponent();
         private readonly ITagContextBinarySerializer serializer;
         private readonly ITagger tagger;
+
         public TagContextSerializationTest()
         {
             serializer = tagsComponent.TagPropagationComponent.BinarySerializer;
@@ -58,9 +73,10 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestSerializeTooLargeTagContext()
         {
             ITagContextBuilder builder = tagger.EmptyBuilder;
-            for (int i = 0; i < SerializationUtils.TAGCONTEXT_SERIALIZED_SIZE_LIMIT / 8 - 1; i++) {
+            for (int i = 0; i < (SerializationUtils.TAGCONTEXT_SERIALIZED_SIZE_LIMIT / 8) - 1; i++)
+            {
                 // Each tag will be with format {key : "0123", value : "0123"}, so the length of it is 8.
-                String str;
+                string str;
                 if (i < 10)
                 {
                     str = "000" + i;
@@ -77,8 +93,10 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
                 {
                     str = i.ToString();
                 }
+
                 builder.Put(TagKey.Create(str), TagValue.Create(str));
             }
+
             // The last tag will be of size 9, so the total size of the TagContext (8193) will be one byte
             // more than limit.
             builder.Put(TagKey.Create("last"), TagValue.Create("last1"));
@@ -99,30 +117,38 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
             byte[] actual = serializer.ToByteArray(builder.Build());
             var tagsList = tags.ToList();
             var tagPermutation = Permutate(tagsList, tagsList.Count);
-            ISet<String> possibleOutPuts = new HashSet<String>();
-            foreach (List<ITag> list in tagPermutation) {
+            ISet<string> possibleOutPuts = new HashSet<string>();
+            foreach (List<ITag> list in tagPermutation)
+            {
                 MemoryStream expected = new MemoryStream();
                 expected.WriteByte(SerializationUtils.VERSION_ID);
-                foreach (ITag tag in list) {
+                foreach (ITag tag in list)
+                {
                     expected.WriteByte(SerializationUtils.TAG_FIELD_ID);
                     EncodeString(tag.Key.Name, expected);
                     EncodeString(tag.Value.AsString, expected);
                 }
+
                 var bytes = expected.ToArray();
                 possibleOutPuts.Add(Encoding.UTF8.GetString(bytes));
             }
+
             var exp = Encoding.UTF8.GetString(actual);
             Assert.Contains(exp, possibleOutPuts);
         }
 
-        private static void EncodeString(String input, MemoryStream byteArrayOutPutStream)
+#pragma warning disable SA1204 // Static elements must appear before instance elements
+        private static void EncodeString(string input, MemoryStream byteArrayOutPutStream)
+#pragma warning restore SA1204 // Static elements must appear before instance elements
         {
             VarInt.PutVarInt(input.Length, byteArrayOutPutStream);
             var inpBytes = Encoding.UTF8.GetBytes(input);
             byteArrayOutPutStream.Write(inpBytes, 0, inpBytes.Length);
         }
 
+#pragma warning disable SA1202 // Elements must be ordered by access
         internal static void RotateRight(IList sequence, int count)
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             object tmp = sequence[count - 1];
             sequence.RemoveAt(count - 1);
@@ -131,13 +157,19 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
 
         internal static IEnumerable<IList> Permutate(IList sequence, int count)
         {
-            if (count == 0) yield return sequence;
+            if (count == 0)
+            {
+                yield return sequence;
+            }
             else
             {
                 for (int i = 0; i < count; i++)
                 {
                     foreach (var perm in Permutate(sequence, count - 1))
+                    {
                         yield return perm;
+                    }
+
                     RotateRight(sequence, count);
                 }
             }

@@ -166,7 +166,7 @@ namespace Steeltoe.Discovery.Eureka
 
         /// <summary>
         /// Gets or sets gets the relative home page URL <em>Path</em> for this instance.
-        /// The home page URL is then constructed out of the <see cref="GetHostName(boolean)"/> and the type of communication - secure or
+        /// The home page URL is then constructed out of the <see cref="GetHostName(bool)"/> and the type of communication - secure or
         /// unsecure as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort"/>
         ///
         /// It is normally used for informational purposes for other services to use it as a landing page.
@@ -189,7 +189,7 @@ namespace Steeltoe.Discovery.Eureka
 
         /// <summary>
         /// Gets or sets gets the relative health check URL <em>Path</em> for this instance. The health check page URL
-        /// is then constructed out of the <see cref="GetHostName(boolean)" /> and the type of communication - secure or
+        /// is then constructed out of the <see cref="GetHostName(bool)" /> and the type of communication - secure or
         /// unsecure as specified in <see cref="SecurePort"/> and <see cref="NonSecurePort"/>
         ///
         /// It is normally used for making educated decisions based on the health of the instance - for example, it can

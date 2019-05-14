@@ -1,9 +1,22 @@
-﻿using Steeltoe.Management.Census.Internal;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Internal;
 using Steeltoe.Management.Census.Trace.Config;
 using Steeltoe.Management.Census.Trace.Internal;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
@@ -13,10 +26,15 @@ namespace Steeltoe.Management.Census.Trace
         private SpanBuilderOptions Options { get; set; }
 
         private string Name { get; set; }
+
         private ISpan Parent { get; set; }
+
         private ISpanContext RemoteParentSpanContext { get; set; }
+
         private ISampler Sampler { get; set; }
+
         private IList<ISpan> ParentLinks { get; set; } = new List<ISpan>();
+
         private bool RecordEvents { get; set; }
 
         internal static ISpanBuilder CreateWithParent(string spanName, ISpan parent, SpanBuilderOptions options)
@@ -29,7 +47,9 @@ namespace Steeltoe.Management.Census.Trace
             return new SpanBuilder(spanName, options, remoteParentSpanContext, null);
         }
 
-        internal SpanBuilder() { }
+        internal SpanBuilder()
+        {
+        }
 
         private SpanBuilder(string name, SpanBuilderOptions options, ISpanContext remoteParentSpanContext = null, ISpan parent = null)
         {
@@ -64,8 +84,9 @@ namespace Steeltoe.Management.Census.Trace
                 // New root span.
                 traceId = TraceId.GenerateRandomId(random);
                 traceOptionsBuilder = TraceOptions.Builder();
+
                 // This is a root span so no remote or local parent.
-                //hasRemoteParent = null;
+                // hasRemoteParent = null;
                 hasRemoteParent = false;
             }
             else
@@ -75,6 +96,7 @@ namespace Steeltoe.Management.Census.Trace
                 parentSpanId = parent.SpanId;
                 traceOptionsBuilder = TraceOptions.Builder(parent.TraceOptions);
             }
+
             traceOptionsBuilder.SetIsSampled(
                  MakeSamplingDecision(
                     parent,
@@ -121,10 +143,11 @@ namespace Steeltoe.Management.Census.Trace
                 if (parent != null)
                 {
                     parentContext = parent.Context;
+
                     // Pass the timestamp converter from the parent to ensure that the recorded events are in
                     // the right order. Implementation uses System.nanoTime() which is monotonically increasing.
-                    
-                    if (parent is Span) {
+                    if (parent is Span)
+                    {
                         timestampConverter = ((Span)parent).TimestampConverter;
                     }
                 }
@@ -133,6 +156,7 @@ namespace Steeltoe.Management.Census.Trace
                     hasRemoteParent = false;
                 }
             }
+
             return StartSpanInternal(
                 parentContext,
                 hasRemoteParent,
@@ -160,6 +184,7 @@ namespace Steeltoe.Management.Census.Trace
             {
                 throw new ArgumentNullException(nameof(parentLinks));
             }
+
             this.ParentLinks = parentLinks;
             return this;
         }
@@ -179,6 +204,7 @@ namespace Steeltoe.Management.Census.Trace
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -194,6 +220,7 @@ namespace Steeltoe.Management.Census.Trace
                 }
             }
         }
+
         private static bool MakeSamplingDecision(
             ISpanContext parent,
             bool hasRemoteParent,
@@ -209,6 +236,7 @@ namespace Steeltoe.Management.Census.Trace
             {
                 return sampler.ShouldSample(parent, hasRemoteParent, traceId, spanId, name, parentLinks);
             }
+
             // Use the default sampler if this is a root Span or this is an entry point Span (has remote
             // parent).
             if (hasRemoteParent || parent == null || !parent.IsValid)
@@ -217,6 +245,7 @@ namespace Steeltoe.Management.Census.Trace
                     .Sampler
                     .ShouldSample(parent, hasRemoteParent, traceId, spanId, name, parentLinks);
             }
+
             // Parent is always different than null because otherwise we use the default sampler.
             return parent.TraceOptions.IsSampled || IsAnyParentLinkSampled(parentLinks);
         }

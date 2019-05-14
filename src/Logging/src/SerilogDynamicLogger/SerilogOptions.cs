@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,8 +26,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         private const string CONFIG_PATH = "Serilog";
 
         /// <summary>
-        /// This controls the root logger (and the "Default") and
-        /// limits the verbosity of all other overrides to this setting
+        /// Gets or sets the minimum level for the root logger (and the "Default").
+        /// Limits the verbosity of all other overrides to this setting
         /// </summary>
         public MinimumLevel MinimumLevel { get; set; }
 

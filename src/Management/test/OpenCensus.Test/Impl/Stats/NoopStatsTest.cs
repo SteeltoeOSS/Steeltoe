@@ -1,22 +1,33 @@
-﻿using Steeltoe.Management.Census.Stats.Measures;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Stats.Measures;
 using Steeltoe.Management.Census.Tags;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Stats.Test
 {
+    [Obsolete]
     public class NoopStatsTest
     {
         private static readonly ITag TAG = Tag.Create(TagKey.Create("key"), TagValue.Create("value"));
-        private static readonly IMeasureDouble MEASURE =  MeasureDouble.Create("my measure", "description", "s");
+        private static readonly IMeasureDouble MEASURE = MeasureDouble.Create("my measure", "description", "s");
 
         private readonly ITagContext tagContext = new TestTagContext();
-
 
         [Fact]
         public void NoopStatsComponent()
@@ -31,32 +42,32 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.Equal(StatsCollectionState.DISABLED, NoopStats.NewNoopStatsComponent().State);
         }
 
-        //[Fact]
-        //public void NoopStatsComponent_SetState_IgnoresInput()
-        //{
+        // [Fact]
+        // public void NoopStatsComponent_SetState_IgnoresInput()
+        // {
         //    IStatsComponent noopStatsComponent = NoopStats.NewNoopStatsComponent();
         //    noopStatsComponent.State = StatsCollectionState.ENABLED;
         //    assertThat(noopStatsComponent.getState()).isEqualTo(StatsCollectionState.DISABLED);
-        //}
+        // }
 
-        //[Fact]
-        //public void NoopStatsComponent_SetState_DisallowsNull()
-        //{
+        // [Fact]
+        // public void NoopStatsComponent_SetState_DisallowsNull()
+        // {
         //    StatsComponent noopStatsComponent = NoopStats.newNoopStatsComponent();
         //    thrown.expect(NullPointerException);
         //    noopStatsComponent.setState(null);
-        //}
+        // }
 
-        //[Fact]
-        //public void NoopStatsComponent_DisallowsSetStateAfterGetState()
-        //{
+        // [Fact]
+        // public void NoopStatsComponent_DisallowsSetStateAfterGetState()
+        // {
         //    StatsComponent noopStatsComponent = NoopStats.newNoopStatsComponent();
         //    noopStatsComponent.setState(StatsCollectionState.DISABLED);
         //    noopStatsComponent.getState();
         //    thrown.expect(IllegalStateException);
         //    thrown.expectMessage("State was already read, cannot set state.");
         //    noopStatsComponent.setState(StatsCollectionState.ENABLED);
-        //}
+        // }
 
         // The NoopStatsRecorder should do nothing, so this test just checks that record doesn't throw an
         // exception.
@@ -81,11 +92,11 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.Throws<ArgumentNullException>(() => measureMap.Record(null));
         }
 
-        class TestTagContext : ITagContext
+        private class TestTagContext : ITagContext
         {
             public IEnumerator<ITag> GetEnumerator()
             {
-                var l =  new List<ITag>() { TAG };
+                var l = new List<ITag>() { TAG };
                 return l.GetEnumerator();
             }
 

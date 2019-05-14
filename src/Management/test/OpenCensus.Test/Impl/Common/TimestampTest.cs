@@ -1,24 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Common.Test
 {
+    [Obsolete]
     public class TimestampTest
     {
         [Fact]
         public void TimestampCreate()
         {
             Assert.Equal(24, Timestamp.Create(24, 42).Seconds);
-            Assert.Equal(42,Timestamp.Create(24, 42).Nanos);
-            Assert.Equal(-24,Timestamp.Create(-24, 42).Seconds);
+            Assert.Equal(42, Timestamp.Create(24, 42).Nanos);
+            Assert.Equal(-24, Timestamp.Create(-24, 42).Seconds);
             Assert.Equal(42, Timestamp.Create(-24, 42).Nanos);
-            Assert.Equal(315576000000L,Timestamp.Create(315576000000L, 999999999).Seconds);
-            Assert.Equal(999999999,Timestamp.Create(315576000000L, 999999999).Nanos);
-            Assert.Equal(-315576000000L,Timestamp.Create(-315576000000L, 999999999).Seconds);
+            Assert.Equal(315576000000L, Timestamp.Create(315576000000L, 999999999).Seconds);
+            Assert.Equal(999999999, Timestamp.Create(315576000000L, 999999999).Nanos);
+            Assert.Equal(-315576000000L, Timestamp.Create(-315576000000L, 999999999).Seconds);
             Assert.Equal(999999999, Timestamp.Create(-315576000000L, 999999999).Nanos);
         }
 
@@ -58,7 +69,7 @@ namespace Steeltoe.Management.Census.Common.Test
             Assert.Equal(Timestamp.Create(1235, 300200723), timestamp.AddNanos(1300200500));
             Assert.Equal(Timestamp.Create(1236, 0), timestamp.AddNanos(1999999777));
             Assert.Equal(Timestamp.Create(1243, 876544012), timestamp.AddNanos(9876543789L));
-            Assert.Equal(Timestamp.Create(1234L + 9223372036L, 223 + 854775807), timestamp.AddNanos(Int64.MaxValue))
+            Assert.Equal(Timestamp.Create(1234L + 9223372036L, 223 + 854775807), timestamp.AddNanos(long.MaxValue))
                 ;
         }
 
@@ -70,7 +81,7 @@ namespace Steeltoe.Management.Census.Common.Test
             Assert.Equal(Timestamp.Create(1233, 0), timestamp.AddNanos(-1000000223));
             Assert.Equal(Timestamp.Create(1232, 699799723), timestamp.AddNanos(-1300200500));
             Assert.Equal(Timestamp.Create(1229, 876544010), timestamp.AddNanos(-4123456213L));
-            Assert.Equal(Timestamp.Create(1234L - 9223372036L - 1, 223 + 145224192), timestamp.AddNanos(Int64.MinValue))
+            Assert.Equal(Timestamp.Create(1234L - 9223372036L - 1, 223 + 145224192), timestamp.AddNanos(long.MinValue))
                 ;
         }
 
@@ -139,6 +150,7 @@ namespace Steeltoe.Management.Census.Common.Test
             Assert.Equal(Timestamp.Create(0, 0), Timestamp.Create(0, 0));
             Assert.Equal(Timestamp.Create(24, 42), Timestamp.Create(24, 42));
             Assert.Equal(Timestamp.Create(-24, 42), Timestamp.Create(-24, 42));
+
             // Negative tests.
             Assert.NotEqual(Timestamp.Create(24, 42), Timestamp.Create(25, 42));
             Assert.NotEqual(Timestamp.Create(24, 42), Timestamp.Create(24, 43));

@@ -1,4 +1,18 @@
-﻿using Steeltoe.Management.Census.Common;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Internal;
 using Steeltoe.Management.Census.Stats.Aggregations;
 using Steeltoe.Management.Census.Stats.Measures;
@@ -6,40 +20,44 @@ using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Census.Testing.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Stats.Test
 {
+#pragma warning disable SA1118 // Parameter must not span multiple lines
+#pragma warning disable SA1202 // Elements must be ordered by access
+#pragma warning disable SA1204 // Static elements must appear before instance elements
+    [Obsolete]
     public class ViewManagerTest
     {
         private static readonly ITagKey KEY = TagKey.Create("KEY");
         private static readonly ITagValue VALUE = TagValue.Create("VALUE");
         private static readonly ITagValue VALUE_2 = TagValue.Create("VALUE_2");
-        private static readonly String MEASURE_NAME = "my measurement";
-        private static readonly String MEASURE_NAME_2 = "my measurement 2";
-        private static readonly String MEASURE_UNIT = "us";
-        private static readonly String MEASURE_DESCRIPTION = "measure description";
+        private static readonly string MEASURE_NAME = "my measurement";
+        private static readonly string MEASURE_NAME_2 = "my measurement 2";
+        private static readonly string MEASURE_UNIT = "us";
+        private static readonly string MEASURE_DESCRIPTION = "measure description";
         private static readonly IMeasureDouble MEASURE_DOUBLE = MeasureDouble.Create(MEASURE_NAME, MEASURE_DESCRIPTION, MEASURE_UNIT);
         private static readonly IMeasureLong MEASURE_LONG = MeasureLong.Create(MEASURE_NAME_2, MEASURE_DESCRIPTION, MEASURE_UNIT);
 
         private static readonly IViewName VIEW_NAME = ViewName.Create("my view");
         private static readonly IViewName VIEW_NAME_2 = ViewName.Create("my view 2");
 
-        private static readonly String VIEW_DESCRIPTION = "view description";
+        private static readonly string VIEW_DESCRIPTION = "view description";
 
-        //private static readonly Cumulative CUMULATIVE = Cumulative.Create();
+        //// private static readonly Cumulative CUMULATIVE = Cumulative.Create();
 
         private static readonly double EPSILON = 1e-7;
         private static readonly IDuration TEN_SECONDS = Duration.Create(10, 0);
-        //private static readonly Interval INTERVAL = Interval.Create(TEN_SECONDS);
+
+        //// private static readonly Interval INTERVAL = Interval.Create(TEN_SECONDS);
 
         private static readonly IBucketBoundaries BUCKET_BOUNDARIES =
             BucketBoundaries.Create(
-                new List<double>() {
-              0.0, 0.2, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 7.0, 10.0, 15.0, 20.0, 30.0, 40.0, 50.0});
+                new List<double>()
+                {
+              0.0, 0.2, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 7.0, 10.0, 15.0, 20.0, 30.0, 40.0, 50.0
+                });
 
         private static readonly ISum SUM = Sum.Create();
         private static readonly IMean MEAN = Mean.Create();
@@ -54,6 +72,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         private readonly ITagger tagger;
         private readonly IViewManager viewManager;
         private readonly IStatsRecorder statsRecorder;
+
         public ViewManagerTest()
         {
             clock = TestClock.Create();
@@ -65,6 +84,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             viewManager = statsComponent.ViewManager;
             statsRecorder = statsComponent.StatsRecorder;
         }
+
         private static IView CreateCumulativeView()
         {
             return CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY });
@@ -83,7 +103,8 @@ namespace Steeltoe.Management.Census.Stats.Test
             viewManager.RegisterView(view);
             Assert.Equal(view, viewManager.GetView(VIEW_NAME).View);
             Assert.Empty(viewManager.GetView(VIEW_NAME).AggregationMap);
-            //Assert.Equal(viewManager.GetView(VIEW_NAME).getWindowData()).isInstanceOf(CumulativeData);
+
+            // Assert.Equal(viewManager.GetView(VIEW_NAME).getWindowData()).isInstanceOf(CumulativeData);
         }
 
         [Fact]
@@ -96,7 +117,8 @@ namespace Steeltoe.Management.Census.Stats.Test
             IView cumulativeView2 =
                 CreateCumulativeView(
                     ViewName.Create("View 2"), MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY });
-            //View intervalView =
+
+            // View intervalView =
             //    View.Create(
             //        View.Name.Create("View 3"),
             //        VIEW_DESCRIPTION,
@@ -134,12 +156,11 @@ namespace Steeltoe.Management.Census.Stats.Test
                     DISTRIBUTION,
                    new List<ITagKey>() { KEY });
             Assert.Throws<NotSupportedException>(() => exported.Add(view2));
-
         }
 
-        //[Fact]
+        // [Fact]
         //  public void TestRegisterAndGetIntervalView()
-        //{
+        // {
         //    View intervalView =
         //        View.Create(
         //            VIEW_NAME,
@@ -152,7 +173,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         //    Assert.Equal(viewManager.GetView(VIEW_NAME).GetView()).isEqualTo(intervalView);
         //    Assert.Equal(viewManager.GetView(VIEW_NAME).AggregationMap).isEmpty();
         //    Assert.Equal(viewManager.GetView(VIEW_NAME).getWindowData()).isInstanceOf(IntervalData.class);
-        //  }
+        ////  }
 
         [Fact]
         public void AllowRegisteringSameViewTwice()
@@ -197,13 +218,15 @@ namespace Steeltoe.Management.Census.Stats.Test
             TestFailedToRegisterView(view1, view2, "A different measure with the same name is already registered");
         }
 
-        private void TestFailedToRegisterView(IView view1, IView view2, String message)
+        private void TestFailedToRegisterView(IView view1, IView view2, string message)
         {
             viewManager.RegisterView(view1);
             try
             {
                 Assert.Throws<ArgumentException>(() => viewManager.RegisterView(view2));
-            } finally {
+            }
+            finally
+            {
                 Assert.Equal(view1, viewManager.GetView(VIEW_NAME).View);
             }
         }
@@ -237,6 +260,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         {
             TestRecordCumulative(MEASURE_LONG, SUM, 1000, 2000, 3000, 4000);
         }
+
         [Fact]
         public void TestRecordDouble_Lastvalue_Cumulative()
         {
@@ -259,6 +283,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             {
                 PutToMeasureMap(statsRecorder.NewMeasureMap(), measure, val).Record(tags);
             }
+
             clock.Time = Timestamp.Create(3, 4);
             IViewData viewData = viewManager.GetView(VIEW_NAME);
             Assert.Equal(view, viewData.View);
@@ -268,11 +293,10 @@ namespace Steeltoe.Management.Census.Stats.Test
                 viewData.AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
                 {
-                    {tv,  StatsTestUtil.CreateAggregationData(aggregation, measure, values) }
+                    { tv,  StatsTestUtil.CreateAggregationData(aggregation, measure, values) }
                 },
                 EPSILON);
         }
-
 
         [Fact]
         public void GetViewDoesNotClearStats()
@@ -289,7 +313,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 viewData1.AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
                 {
-                    {tv,  StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 0.1) },
+                    { tv,  StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 0.1) },
                 },
                 EPSILON);
 
@@ -298,13 +322,13 @@ namespace Steeltoe.Management.Census.Stats.Test
             IViewData viewData2 = viewManager.GetView(VIEW_NAME);
 
             // The second view should have the same start time as the first view, and it should include both
-            // Recorded values:
+            //// Recorded values:
 
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData2.AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
                 {
-                    {tv,  StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 0.1, 0.2) },
+                    { tv,  StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 0.1, 0.2) },
                 },
                 EPSILON);
         }
@@ -333,12 +357,11 @@ namespace Steeltoe.Management.Census.Stats.Test
                 viewData.AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
                 {
-                { tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 10.0)},
-                { tv2, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 30.0, 50.0)}
+                { tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 10.0) },
+                { tv2, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 30.0, 50.0) }
                 },
             EPSILON);
         }
-
 
         // This test checks that MeasureMaper.Record(...) does not throw an exception when no views are
         // registered.
@@ -356,6 +379,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         {
             viewManager.RegisterView(
                 CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY }));
+
             // DEFAULT doesn't have tags, but the view has tag key "KEY".
             statsRecorder.NewMeasureMap().Put(MEASURE_DOUBLE, 10.0).Record(tagger.Empty);
             IViewData viewData = viewManager.GetView(VIEW_NAME);
@@ -366,13 +390,14 @@ namespace Steeltoe.Management.Census.Stats.Test
                 {
                     // Tag is missing for associated measureValues, should use default tag value
                     // "unknown/not set".
-                    { tv,
+                    {
+                        tv,
+
                     // Should Record stats with default tag value: "KEY" : "unknown/not set".
                     StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 10.0)
                     }
                 },
                 EPSILON);
-
         }
 
         [Fact]
@@ -403,7 +428,9 @@ namespace Steeltoe.Management.Census.Stats.Test
         }
 
         [Fact]
+#pragma warning disable SA1202 // Elements must be ordered by access
         public void TestRecordWithTagsThatDoNotMatchViewData()
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             viewManager.RegisterView(
                 CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY }));
@@ -420,12 +447,15 @@ namespace Steeltoe.Management.Census.Stats.Test
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData.AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
-                { 
+                {
                 // Won't Record the unregistered tag key, for missing registered keys will use default
                 // tag value : "unknown/not set".
-                { tv,
+                {
+                    tv,
+
                     // Should Record stats with default tag value: "KEY" : "unknown/not set".
-                    StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 10.0, 50.0) }
+                    StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 10.0, 50.0)
+                }
                 },
                 EPSILON);
         }
@@ -479,12 +509,12 @@ namespace Steeltoe.Management.Census.Stats.Test
             var tv3 = TagValues.Create(new List<ITagValue>() { TagValue.Create("v2"), TagValue.Create("v10") });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData.AggregationMap,
-                 new Dictionary<TagValues, IAggregationData>()
+                new Dictionary<TagValues, IAggregationData>()
                 {
-                    { tv1,  StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 1.1, 4.4) } ,
+                    { tv1,  StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 1.1, 4.4) },
                     { tv2,  StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 2.2) },
-                    { tv3,  StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 3.3)}
-                 },
+                    { tv3,  StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 3.3) }
+                },
                 EPSILON);
         }
 
@@ -512,7 +542,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 viewData1.AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
                 {
-                    {tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 5.0) }
+                    { tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 5.0) }
                 },
                 EPSILON);
 
@@ -520,7 +550,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 viewData2.AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
                 {
-                    {tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 5.0) }
+                    { tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 5.0) }
                 },
                 EPSILON);
         }
@@ -568,7 +598,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 viewData1.AggregationMap,
                  new Dictionary<TagValues, IAggregationData>()
                 {
-                    {tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, measure1, value1) }
+                    { tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, measure1, value1) }
                  },
                 EPSILON);
 
@@ -582,7 +612,9 @@ namespace Steeltoe.Management.Census.Stats.Test
         }
 
         [Fact]
+#pragma warning disable SA1202 // Elements must be ordered by access
         public void TestGetCumulativeViewDataWithEmptyBucketBoundaries()
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             IAggregation noHistogram =
                 Distribution.Create(BucketBoundaries.Create(new List<double>()));
@@ -600,7 +632,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 viewData.AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
                 {
-                    {tv, StatsTestUtil.CreateAggregationData(noHistogram, MEASURE_DOUBLE, 1.1) }
+                    { tv, StatsTestUtil.CreateAggregationData(noHistogram, MEASURE_DOUBLE, 1.1) }
                 },
                 EPSILON);
         }
@@ -609,7 +641,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         public void TestGetCumulativeViewDataWithoutBucketBoundaries()
         {
             IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
-            clock.Time = (Timestamp.Create(1, 0));
+            clock.Time = Timestamp.Create(1, 0);
             viewManager.RegisterView(view);
             statsRecorder
                 .NewMeasureMap()
@@ -622,7 +654,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 viewData.AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
                 {
-                    {tv, StatsTestUtil.CreateAggregationData(MEAN, MEASURE_DOUBLE, 1.1) }
+                    { tv, StatsTestUtil.CreateAggregationData(MEAN, MEASURE_DOUBLE, 1.1) }
                 },
                 EPSILON);
         }
@@ -664,11 +696,11 @@ namespace Steeltoe.Management.Census.Stats.Test
         [Fact]
         public void RegisterViewWithStatsDisabled_RecordAndGetViewWithStatsEnabled()
         {
-            statsComponent.State =StatsCollectionState.DISABLED;
+            statsComponent.State = StatsCollectionState.DISABLED;
             IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
             viewManager.RegisterView(view); // view will still be registered.
 
-            statsComponent.State =StatsCollectionState.ENABLED;
+            statsComponent.State = StatsCollectionState.ENABLED;
             statsRecorder
                 .NewMeasureMap()
                 .Put(MEASURE_DOUBLE, 1.1)
@@ -676,10 +708,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             TagValues tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewManager.GetView(VIEW_NAME).AggregationMap,
-                new Dictionary<TagValues, IAggregationData>()
-                {
-                    { tv, StatsTestUtil.CreateAggregationData(MEAN, MEASURE_DOUBLE, 1.1) }
-                },
+                new Dictionary<TagValues, IAggregationData>() { { tv, StatsTestUtil.CreateAggregationData(MEAN, MEASURE_DOUBLE, 1.1) } },
                 EPSILON);
         }
 
@@ -713,9 +742,9 @@ namespace Steeltoe.Management.Census.Stats.Test
             SettingStateToDisabledWillClearStats(cumulativeView);
         }
 
-        //[Fact]
-        //public void SettingStateToDisabledWillClearStats_Interval()
-        //{
+        // [Fact]
+        // public void SettingStateToDisabledWillClearStats_Interval()
+        // {
         //    View intervalView =
         //        View.Create(
         //            VIEW_NAME_2,
@@ -725,7 +754,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         //            Arrays.asList(KEY),
         //            Interval.Create(Duration.Create(60, 0)));
         //    settingStateToDisabledWillClearStats(intervalView);
-        //}
+        //// }
 
         private void SettingStateToDisabledWillClearStats(IView view)
         {
@@ -756,30 +785,39 @@ namespace Steeltoe.Management.Census.Stats.Test
 
             ITimestamp timestamp4 = Timestamp.Create(4, 0);
             clock.Time = timestamp4;
+
             // This ViewData does not have any stats, but it should not be an empty ViewData, since it has
             // non-zero TimeStamps.
             IViewData viewData = viewManager.GetView(view.Name);
             Assert.Empty(viewData.AggregationMap);
             Assert.Equal(timestamp3, viewData.Start);
             Assert.Equal(timestamp4, viewData.End);
-            //if (windowData instanceof CumulativeData) {
+
+            // if (windowData instanceof CumulativeData) {
             //    Assert.Equal(windowData).isEqualTo(CumulativeData.Create(timestamp3, timestamp4));
-            //} else {
+            // } else {
             //    Assert.Equal(windowData).isEqualTo(IntervalData.Create(timestamp4));
-            //}
+            // }
         }
 
         private static IMeasureMap PutToMeasureMap(IMeasureMap measureMap, IMeasure measure, double value)
         {
-            if (measure is MeasureDouble) {
+            if (measure is MeasureDouble)
+            {
                 return measureMap.Put((IMeasureDouble)measure, value);
-            } else if (measure is MeasureLong) {
+            }
+            else if (measure is MeasureLong)
+            {
                 return measureMap.Put((IMeasureLong)measure, (long)Math.Round(value));
-            } else {
+            }
+            else
+            {
                 // Future measures.
                 throw new Exception();
             }
         }
     }
-
 }
+#pragma warning restore SA1118 // Parameter must not span multiple lines
+#pragma warning restore SA1202 // Elements must be ordered by access
+#pragma warning restore SA1204 // Static elements must appear before instance elements

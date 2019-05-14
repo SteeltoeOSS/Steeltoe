@@ -1,8 +1,20 @@
-﻿using Steeltoe.Management.Census.Trace.Internal;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Trace.Internal;
 using Steeltoe.Management.Census.Utils;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
@@ -51,7 +63,6 @@ namespace Steeltoe.Management.Census.Trace
             byte[] bytes = new byte[SIZE];
             Buffer.BlockCopy(src, srcOffset, bytes, 0, SIZE);
             return new TraceId(bytes);
-
         }
 
         public static ITraceId FromLowerBase16(string src)
@@ -60,9 +71,9 @@ namespace Steeltoe.Management.Census.Trace
             {
                 throw new ArgumentOutOfRangeException(string.Format("Invalid size: expected {0}, got {1}", 2 * SIZE, src.Length));
             }
+
             byte[] bytes = Arrays.StringToByteArray(src);
             return new TraceId(bytes);
-
         }
 
         public static ITraceId GenerateRandomId(IRandomGenerator random)
@@ -71,7 +82,8 @@ namespace Steeltoe.Management.Census.Trace
             do
             {
                 random.NextBytes(bytes);
-            } while (Arrays.Equals(bytes, INVALID.bytes));
+            }
+            while (Arrays.Equals(bytes, INVALID.bytes));
             return new TraceId(bytes);
         }
 
@@ -95,7 +107,6 @@ namespace Steeltoe.Management.Census.Trace
             return result;
         }
 
-
         public long LowerLong
         {
             get
@@ -105,14 +116,15 @@ namespace Steeltoe.Management.Census.Trace
                 {
                     result <<= 8;
 #pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
-                    result |= (bytes[i] & 0xff);
+                    result |= bytes[i] & 0xff;
 #pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand
                 }
- 
+
                 if (result < 0)
                 {
                     return -result;
                 }
+
                 return result;
             }
         }
@@ -133,12 +145,10 @@ namespace Steeltoe.Management.Census.Trace
             return Arrays.Equals(bytes, that.bytes);
         }
 
-
         public override int GetHashCode()
         {
             return Arrays.GetHashCode(bytes);
         }
-
 
         public override string ToString()
         {
@@ -146,7 +156,6 @@ namespace Steeltoe.Management.Census.Trace
                + "bytes=" + ToLowerBase16()
                + "}";
         }
-
 
         public int CompareTo(ITraceId other)
         {
@@ -161,6 +170,7 @@ namespace Steeltoe.Management.Census.Trace
                     return b1 < b2 ? -1 : 1;
                 }
             }
+
             return 0;
         }
     }

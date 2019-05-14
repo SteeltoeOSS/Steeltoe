@@ -129,6 +129,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UpdateConfiguration_NoServiceInfo_ConfiguresEurekaDiscovery_Correctly()
         {
             // Arrange
@@ -255,6 +256,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UpdateConfiguration_WithVCAPEnvVariables_HostName_ConfiguresEurekaDiscovery_Correctly()
         {
             var vcap_application = @"
@@ -474,6 +476,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UpdateConfiguration_WithVCAPEnvVariables_Route_ConfiguresEurekaDiscovery_Correctly()
         {
             var vcap_application = @"
@@ -686,6 +689,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UpdateConfiguration_WithVCAPEnvVariables_AppName_Overrides_VCAPBinding()
         {
             var vcap_application = @"

@@ -100,6 +100,7 @@ namespace Steeltoe.Extensions.Configuration
                  .OrderBy(k => k, ConfigurationKeyComparer.Instance);
         }
 
+#pragma warning disable SCS0005 // Weak random generator
         internal string GetRandomValue(string type)
         {
             // random:int
@@ -194,5 +195,6 @@ namespace Steeltoe.Extensions.Configuration
             _random.NextBytes(bytes);
             return BitConverter.ToString(bytes).Replace("-", string.Empty);
         }
+#pragma warning restore SCS0005 // Weak random generator
     }
 }

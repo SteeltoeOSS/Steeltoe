@@ -1,5 +1,7 @@
 # Steeltoe
 
+[![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/SteeltoeOSS.steeltoe?branchName=master)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=master)
+
 * [Introduction](#introduction)
 * [Project Repositories](#project-repositories)
 * [Roadmaps](#roadmaps)
@@ -114,3 +116,4 @@ As a member of the [.NET Foundation](https://dotnetfoundation.org/), the Steelto
 ## Licenses
 
 The Steeltoe project uses the [Apache License Version 2.0](LICENSE) license for all of its code.  See the [contribution licensing](project-docs/contributing-license.md) document for more details.
+

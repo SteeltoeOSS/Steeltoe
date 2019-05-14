@@ -147,9 +147,9 @@ namespace Microsoft.Diagnostics.Runtime
             return ConstructRuntime(dac);
         }
 
-        /// <summary>
-        /// Creates a runtime from a given IXClrDataProcess interface.  Used for debugger plugins.
-        /// </summary>
+        // <summary>
+        // Creates a runtime from a given IXClrDataProcess interface.  Used for debugger plugins.
+        // </summary>
         //public ClrRuntime CreateRuntime(object clrDataProcess)
         //{
         //    DacLibrary lib = new DacLibrary(_dataTarget, (IXCLRDataProcess)clrDataProcess);
@@ -171,12 +171,12 @@ namespace Microsoft.Diagnostics.Runtime
         //    }
         //}
 
-        /// <summary>
-        /// Creates a runtime from the given Dac file on disk.
-        /// </summary>
-        /// <param name="dacFilename">A full path to the matching mscordacwks for this process.</param>
-        /// <param name="ignoreMismatch">Whether or not to ignore mismatches between </param>
-        /// <returns></returns>
+        // <summary>
+        // Creates a runtime from the given Dac file on disk.
+        // </summary>
+        // <param name="dacFilename">A full path to the matching mscordacwks for this process.</param>
+        // <param name="ignoreMismatch">Whether or not to ignore mismatches between </param>
+        // <returns></returns>
         //public ClrRuntime CreateRuntime(string dacFilename, bool ignoreMismatch = false)
         //{
         //    if (string.IsNullOrEmpty(dacFilename))
@@ -293,9 +293,9 @@ namespace Microsoft.Diagnostics.Runtime
         }
     }
 
-    /// <summary>
-    /// Specifies how to attach to a live process.
-    /// </summary>
+    // <summary>
+    // Specifies how to attach to a live process.
+    // </summary>
     //public enum AttachFlag
     //{
     //    /// <summary>
@@ -770,9 +770,9 @@ namespace Microsoft.Diagnostics.Runtime
         uint ReadDwordUnsafe(ulong addr);
     }
 
-    /// <summary>
-    /// The type of crash dump reader to use.
-    /// </summary>
+    // <summary>
+    // The type of crash dump reader to use.
+    // </summary>
     //public enum CrashDumpReader
     //{
     //    /// <summary>
@@ -795,11 +795,11 @@ namespace Microsoft.Diagnostics.Runtime
     /// </summary>
     internal abstract class DataTarget : IDisposable
     {
-        /// <summary>
-        /// Creates a DataTarget from a crash dump.
-        /// </summary>
-        /// <param name="fileName">The crash dump's filename.</param>
-        /// <returns>A DataTarget instance.</returns>
+        // <summary>
+        // Creates a DataTarget from a crash dump.
+        // </summary>
+        // <param name="fileName">The crash dump's filename.</param>
+        // <returns>A DataTarget instance.</returns>
         //public static DataTarget LoadCrashDump(string fileName)
         //{
         //    DbgEngDataReader reader = new DbgEngDataReader(fileName);
@@ -807,12 +807,12 @@ namespace Microsoft.Diagnostics.Runtime
         //}
 
 
-        /// <summary>
-        /// Creates a DataTarget from a crash dump, specifying the dump reader to use.
-        /// </summary>
-        /// <param name="fileName">The crash dump's filename.</param>
-        /// <param name="dumpReader">The type of dump reader to use.</param>
-        /// <returns>A DataTarget instance.</returns>
+        // <summary>
+        // Creates a DataTarget from a crash dump, specifying the dump reader to use.
+        // </summary>
+        // <param name="fileName">The crash dump's filename.</param>
+        // <param name="dumpReader">The type of dump reader to use.</param>
+        // <returns>A DataTarget instance.</returns>
         //public static DataTarget LoadCrashDump(string fileName, CrashDumpReader dumpReader)
         //{
         //    if (dumpReader == CrashDumpReader.DbgEng)
@@ -827,11 +827,11 @@ namespace Microsoft.Diagnostics.Runtime
         //    }
         //}
 
-        /// <summary>
-        /// Create an instance of DataTarget from a user defined DataReader
-        /// </summary>
-        /// <param name="reader">A user defined DataReader.</param>
-        /// <returns>A new DataTarget instance.</returns>
+        // <summary>
+        // Create an instance of DataTarget from a user defined DataReader
+        // </summary>
+        // <param name="reader">A user defined DataReader.</param>
+        // <returns>A new DataTarget instance.</returns>
         //public static DataTarget CreateFromDataReader(IDataReader reader)
         //{
         //    return CreateFromReader(reader, null);
@@ -845,13 +845,13 @@ namespace Microsoft.Diagnostics.Runtime
 //            return new DataTargetImpl(reader, client);
 //        }
 
-        /// <summary>
-        /// Creates a data target from an existing IDebugClient interface.  If you created and attached
-        /// a dbgeng based debugger to a process you may pass the IDebugClient RCW object to this function
-        /// to create the DataTarget.
-        /// </summary>
-        /// <param name="client">The dbgeng IDebugClient object.  We will query interface on this for IDebugClient.</param>
-        /// <returns>A DataTarget instance.</returns>
+        // <summary>
+        // Creates a data target from an existing IDebugClient interface.  If you created and attached
+        // a dbgeng based debugger to a process you may pass the IDebugClient RCW object to this function
+        // to create the DataTarget.
+        // </summary>
+        // <param name="client">The dbgeng IDebugClient object.  We will query interface on this for IDebugClient.</param>
+        // <returns>A DataTarget instance.</returns>
         //public static DataTarget CreateFromDebuggerInterface(IDebugClient client)
         //{
         //    DbgEngDataReader reader = new DbgEngDataReader(client);
@@ -860,24 +860,24 @@ namespace Microsoft.Diagnostics.Runtime
         //    return dataTarget;
         //}
 
-        /// <summary>
-        /// Invasively attaches to a live process.
-        /// </summary>
-        /// <param name="pid">The process ID of the process to attach to.</param>
-        /// <param name="msecTimeout">Timeout in milliseconds.</param>
-        /// <returns>A DataTarget instance.</returns>
+        // <summary>
+        // Invasively attaches to a live process.
+        // </summary>
+        // <param name="pid">The process ID of the process to attach to.</param>
+        // <param name="msecTimeout">Timeout in milliseconds.</param>
+        // <returns>A DataTarget instance.</returns>
         //public static DataTarget AttachToProcess(int pid, uint msecTimeout)
         //{
         //    return AttachToProcess(pid, msecTimeout, AttachFlag.Invasive);
         //}
 
-        /// <summary>
-        /// Attaches to a live process.
-        /// </summary>
-        /// <param name="pid">The process ID of the process to attach to.</param>
-        /// <param name="msecTimeout">Timeout in milliseconds.</param>
-        /// <param name="attachFlag">The type of attach requested for the target process.</param>
-        /// <returns>A DataTarget instance.</returns>
+        // <summary>
+        // Attaches to a live process.
+        // </summary>
+        // <param name="pid">The process ID of the process to attach to.</param>
+        // <param name="msecTimeout">Timeout in milliseconds.</param>
+        // <param name="attachFlag">The type of attach requested for the target process.</param>
+        // <returns>A DataTarget instance.</returns>
         //public static DataTarget AttachToProcess(int pid, uint msecTimeout, AttachFlag attachFlag)
         //{
         //    IDebugClient client = null;
@@ -916,9 +916,9 @@ namespace Microsoft.Diagnostics.Runtime
         public abstract IDataReader DataReader { get; }
 
         //private SymbolLocator _symbolLocator;
-        /// <summary>
-        /// Instance to manage the symbol path(s)
-        /// </summary>
+        // <summary>
+        // Instance to manage the symbol path(s)
+        // </summary>
         //public SymbolLocator SymbolLocator
         //{
         //    get
@@ -934,10 +934,10 @@ namespace Microsoft.Diagnostics.Runtime
         //    }
         //}
 
-        /// <summary>
-        /// A symbol provider which loads PDBs on behalf of ClrMD.  This should be set so that when ClrMD needs to
-        /// resolve names which can only come from PDBs.  If this is not set, you may have a degraded experience.
-        /// </summary>
+        // <summary>
+        // A symbol provider which loads PDBs on behalf of ClrMD.  This should be set so that when ClrMD needs to
+        // resolve names which can only come from PDBs.  If this is not set, you may have a degraded experience.
+        // </summary>
         //public ISymbolProvider SymbolProvider { get; set; }
 
         //FileLoader _fileLoader;
@@ -952,11 +952,11 @@ namespace Microsoft.Diagnostics.Runtime
         //    }
         //}
 
-        /// <summary>
-        /// Returns true if the target process is a minidump, or otherwise might have limited memory.  If IsMinidump
-        /// returns true, a greater range of functions may fail to return data due to the data not being present in
-        /// the application/crash dump you are debugging.
-        /// </summary>
+        // <summary>
+        // Returns true if the target process is a minidump, or otherwise might have limited memory.  If IsMinidump
+        // returns true, a greater range of functions may fail to return data due to the data not being present in
+        // the application/crash dump you are debugging.
+        // </summary>
         //public abstract bool IsMinidump { get; }
 
         /// <summary>
@@ -986,10 +986,10 @@ namespace Microsoft.Diagnostics.Runtime
         /// if no bytes could be read from the address.</returns>
         public abstract bool ReadProcessMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead);
 
-        /// <summary>
-        /// Returns the IDebugClient interface associated with this datatarget.  (Will return null if the
-        /// user attached passively.)
-        /// </summary>
+        // <summary>
+        // Returns the IDebugClient interface associated with this datatarget.  (Will return null if the
+        // user attached passively.)
+        // </summary>
         //public abstract IDebugClient DebuggerInterface { get; }
 
         /// <summary>

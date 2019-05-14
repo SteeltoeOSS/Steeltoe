@@ -1,15 +1,27 @@
-﻿using System;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Census.Trace.Export.Test
 {
+    [Obsolete]
     public class NoopSampledSpanStoreTest
     {
-        //@Rule public final ExpectedException thrown = ExpectedException.none();
+        // @Rule public final ExpectedException thrown = ExpectedException.none();
         private static readonly ISampledPerSpanNameSummary EMPTY_PER_SPAN_NAME_SUMMARY =
             SampledPerSpanNameSummary.Create(new Dictionary<ISampledLatencyBucketBoundaries, int>(), new Dictionary<CanonicalCode, int>());
 
@@ -30,7 +42,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Assert.Contains(summary.PerSpanNameSummary, (item) =>
             {
                 return (item.Key == "TestSpan1" || item.Key == "TestSpan2" || item.Key == "TestSpan3") &&
-                item.Value.Equals(EMPTY_PER_SPAN_NAME_SUMMARY); 
+                item.Value.Equals(EMPTY_PER_SPAN_NAME_SUMMARY);
             });
 
             // should unregister specific spanNames
@@ -41,7 +53,6 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             {
                 return (item.Key == "TestSpan2") && item.Value.Equals(EMPTY_PER_SPAN_NAME_SUMMARY);
             });
-
         }
 
         [Fact]
@@ -73,7 +84,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Assert.Equal(2, registeredSpanNames.Count);
             Assert.Contains(registeredSpanNames, (item) =>
             {
-                return (item == "TestSpan3" || item == "TestSpan4");
+                return item == "TestSpan3" || item == "TestSpan4";
             });
         }
     }

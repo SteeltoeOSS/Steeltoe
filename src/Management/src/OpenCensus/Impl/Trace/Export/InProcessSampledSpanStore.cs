@@ -1,8 +1,21 @@
-﻿using Steeltoe.Management.Census.Internal;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Internal;
 using Steeltoe.Management.Census.Utils;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
@@ -11,13 +24,14 @@ namespace Steeltoe.Management.Census.Trace.Export
     {
         private const int NUM_SAMPLES_PER_LATENCY_BUCKET = 10;
         private const int NUM_SAMPLES_PER_ERROR_BUCKET = 5;
-        private const long TIME_BETWEEN_SAMPLES = 1000000000;  //TimeUnit.SECONDS.toNanos(1);
+        private const long TIME_BETWEEN_SAMPLES = 1000000000;  // TimeUnit.SECONDS.toNanos(1);
         private static readonly int NUM_LATENCY_BUCKETS = LatencyBucketBoundaries.Values.Count;
+
         // The total number of canonical codes - 1 (the OK code).
         private const int NUM_ERROR_BUCKETS = 17 - 1; // CanonicalCode.values().length - 1;
         private readonly int MAX_PER_SPAN_NAME_SAMPLES =
-            NUM_SAMPLES_PER_LATENCY_BUCKET * NUM_LATENCY_BUCKETS
-                + NUM_SAMPLES_PER_ERROR_BUCKET * NUM_ERROR_BUCKETS;
+            (NUM_SAMPLES_PER_LATENCY_BUCKET * NUM_LATENCY_BUCKETS)
+                + (NUM_SAMPLES_PER_ERROR_BUCKET * NUM_ERROR_BUCKETS);
 
         private readonly IEventQueue eventQueue;
         private readonly Dictionary<string, PerSpanNameSamples> samples;
@@ -27,6 +41,7 @@ namespace Steeltoe.Management.Census.Trace.Export
             samples = new Dictionary<string, PerSpanNameSamples>();
             this.eventQueue = eventQueue;
         }
+
         public override ISampledSpanStoreSummary Summary
         {
             get
@@ -67,6 +82,7 @@ namespace Steeltoe.Management.Census.Trace.Export
                     {
                         samples[spanName] = new PerSpanNameSamples();
                     }
+
                     samples.TryGetValue(spanName, out PerSpanNameSamples perSpanNameSamples);
                     if (perSpanNameSamples != null)
                     {
@@ -80,19 +96,23 @@ namespace Steeltoe.Management.Census.Trace.Export
         {
             int numSpansToReturn = filter.MaxSpansToReturn == 0 ? MAX_PER_SPAN_NAME_SAMPLES : filter.MaxSpansToReturn;
             IList<SpanBase> spans = new List<SpanBase>();
+
             // Try to not keep the lock to much, do the SpanImpl -> SpanData conversion outside the lock.
-            lock(samples) {
+            lock (samples)
+            {
                 PerSpanNameSamples perSpanNameSamples = samples[filter.SpanName];
                 if (perSpanNameSamples != null)
                 {
                     spans = perSpanNameSamples.GetErrorSamples(filter.CanonicalCode, numSpansToReturn);
                 }
             }
+
             List<ISpanData> ret = new List<ISpanData>(spans.Count);
             foreach (SpanBase span in spans)
             {
                 ret.Add(span.ToSpanData());
             }
+
             return ret.AsReadOnly();
         }
 
@@ -100,19 +120,23 @@ namespace Steeltoe.Management.Census.Trace.Export
         {
             int numSpansToReturn = filter.MaxSpansToReturn == 0 ? MAX_PER_SPAN_NAME_SAMPLES : filter.MaxSpansToReturn;
             IList<SpanBase> spans = new List<SpanBase>();
+
             // Try to not keep the lock to much, do the SpanImpl -> SpanData conversion outside the lock.
-            lock(samples) {
+            lock (samples)
+            {
                 PerSpanNameSamples perSpanNameSamples = samples[filter.SpanName];
                 if (perSpanNameSamples != null)
                 {
                     spans = perSpanNameSamples.GetLatencySamples(filter.LatencyLowerNs, filter.LatencyUpperNs, numSpansToReturn);
                 }
             }
+
             List<ISpanData> ret = new List<ISpanData>(spans.Count);
             foreach (SpanBase span in spans)
             {
                 ret.Add(span.ToSpanData());
             }
+
             return ret.AsReadOnly();
         }
 
@@ -130,12 +154,13 @@ namespace Steeltoe.Management.Census.Trace.Export
         {
             lock (samples)
             {
-                foreach(string spanName in spanNames)
+                foreach (string spanName in spanNames)
                 {
                     samples.Remove(spanName);
                 }
             }
         }
+
         internal void InternaltRegisterSpanNamesForCollection(ICollection<string> spanNames)
         {
             lock (samples)
@@ -152,7 +177,6 @@ namespace Steeltoe.Management.Census.Trace.Export
 
         private sealed class Bucket
         {
-
             private readonly EvictingQueue<SpanBase> sampledSpansQueue;
             private readonly EvictingQueue<SpanBase> notSampledSpansQueue;
             private long lastSampledNanoTime;
@@ -208,6 +232,7 @@ namespace Steeltoe.Management.Census.Trace.Export
                     {
                         break;
                     }
+
                     output.Add(span);
                 }
             }
@@ -235,6 +260,7 @@ namespace Steeltoe.Management.Census.Trace.Export
                     {
                         break;
                     }
+
                     long spanLatencyNs = span.LatencyNs;
                     if (spanLatencyNs >= latencyLowerNs && spanLatencyNs < latencyUpperNs)
                     {
@@ -248,9 +274,9 @@ namespace Steeltoe.Management.Census.Trace.Export
                 return sampledSpansQueue.Count + notSampledSpansQueue.Count;
             }
         }
+
         private sealed class PerSpanNameSamples
         {
-
             private readonly Bucket[] latencyBuckets;
             private readonly Bucket[] errorBuckets;
 
@@ -261,13 +287,13 @@ namespace Steeltoe.Management.Census.Trace.Export
                 {
                     latencyBuckets[i] = new Bucket(NUM_SAMPLES_PER_LATENCY_BUCKET);
                 }
+
                 errorBuckets = new Bucket[NUM_ERROR_BUCKETS];
                 for (int i = 0; i < NUM_ERROR_BUCKETS; i++)
                 {
                     errorBuckets[i] = new Bucket(NUM_SAMPLES_PER_ERROR_BUCKET);
                 }
             }
-
 
             public Bucket GetLatencyBucket(long latencyNs)
             {
@@ -280,6 +306,7 @@ namespace Steeltoe.Management.Census.Trace.Export
                         return latencyBuckets[i];
                     }
                 }
+
                 // latencyNs is negative or Long.MAX_VALUE, so this Span can be ignored. This cannot happen
                 // in real production because System#nanoTime is monotonic.
                 return null;
@@ -293,6 +320,7 @@ namespace Steeltoe.Management.Census.Trace.Export
             public void ConsiderForSampling(SpanBase span)
             {
                 Status status = span.Status;
+
                 // Null status means running Span, this should not happen in production, but the library
                 // should not crash because of this.
                 if (status != null)
@@ -301,6 +329,7 @@ namespace Steeltoe.Management.Census.Trace.Export
                         status.IsOk
                             ? GetLatencyBucket(span.LatencyNs)
                             : GetErrorBucket(status.CanonicalCode);
+
                     // If unable to find the bucket, ignore this Span.
                     if (bucket != null)
                     {
@@ -316,6 +345,7 @@ namespace Steeltoe.Management.Census.Trace.Export
                 {
                     latencyBucketSummaries[LatencyBucketBoundaries.Values[i]] = latencyBuckets[i].GetNumSamples();
                 }
+
                 return latencyBucketSummaries;
             }
 
@@ -326,6 +356,7 @@ namespace Steeltoe.Management.Census.Trace.Export
                 {
                     errorBucketSummaries[(CanonicalCode)i + 1] = errorBuckets[i].GetNumSamples();
                 }
+
                 return errorBucketSummaries;
             }
 
@@ -343,6 +374,7 @@ namespace Steeltoe.Management.Census.Trace.Export
                         errorBuckets[i].GetSamples(maxSpansToReturn, output);
                     }
                 }
+
                 return output;
             }
 
@@ -358,9 +390,11 @@ namespace Steeltoe.Management.Census.Trace.Export
                         latencyBuckets[i].GetSamplesFilteredByLatency(latencyLowerNs, latencyUpperNs, maxSpansToReturn, output);
                     }
                 }
+
                 return output;
             }
         }
+
         private sealed class RegisterSpanNameEvent : IEventQueueEntry
         {
             private readonly InProcessSampledSpanStore sampledSpanStore;
@@ -372,12 +406,12 @@ namespace Steeltoe.Management.Census.Trace.Export
                 this.spanNames = new List<string>(spanNames);
             }
 
-
             public void Process()
             {
                 sampledSpanStore.InternaltRegisterSpanNamesForCollection(spanNames);
             }
         }
+
         private sealed class UnregisterSpanNameEvent : IEventQueueEntry
         {
             private readonly InProcessSampledSpanStore sampledSpanStore;

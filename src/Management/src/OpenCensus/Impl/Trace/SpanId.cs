@@ -1,8 +1,20 @@
-﻿using Steeltoe.Management.Census.Trace.Internal;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Trace.Internal;
 using Steeltoe.Management.Census.Utils;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Trace
 {
@@ -24,14 +36,14 @@ namespace Steeltoe.Management.Census.Trace
             }
         }
 
-        private SpanId(byte[] bytes) 
+        private SpanId(byte[] bytes)
         {
             this.bytes = bytes;
         }
 
         public static ISpanId FromBytes(byte[] buffer)
         {
-            if( buffer == null)
+            if (buffer == null)
             {
                 throw new ArgumentNullException("buffer");
             }
@@ -59,9 +71,9 @@ namespace Steeltoe.Management.Census.Trace
             {
                 throw new ArgumentOutOfRangeException(string.Format("Invalid size: expected {0}, got {1}", 2 * SIZE, src.Length));
             }
+
             byte[] bytes = Arrays.StringToByteArray(src);
             return new SpanId(bytes);
-
         }
 
         public static ISpanId GenerateRandomId(IRandomGenerator random)
@@ -70,7 +82,8 @@ namespace Steeltoe.Management.Census.Trace
             do
             {
                 random.NextBytes(bytes);
-            } while (Arrays.Equals(bytes, INVALID.bytes));
+            }
+            while (Arrays.Equals(bytes, INVALID.bytes));
             return new SpanId(bytes);
         }
 
@@ -97,14 +110,14 @@ namespace Steeltoe.Management.Census.Trace
                 return true;
             }
 
-            if (!(obj is SpanId)) {
+            if (!(obj is SpanId))
+            {
                 return false;
             }
 
             SpanId that = (SpanId)obj;
             return Arrays.Equals(bytes, that.bytes);
         }
-
 
         public override int GetHashCode()
         {
@@ -116,9 +129,7 @@ namespace Steeltoe.Management.Census.Trace
             return "SpanId{"
                 + "bytes=" + ToLowerBase16()
                 + "}";
-
         }
-
 
         public int CompareTo(ISpanId other)
         {
@@ -133,6 +144,7 @@ namespace Steeltoe.Management.Census.Trace
                     return b1 < b2 ? -1 : 1;
                 }
             }
+
             return 0;
         }
     }

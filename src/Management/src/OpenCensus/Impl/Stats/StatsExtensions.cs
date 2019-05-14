@@ -1,9 +1,20 @@
-﻿using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Stats.Aggregations;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 using Steeltoe.Management.Census.Tags;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Management.Census.Stats
 {
@@ -23,6 +34,7 @@ namespace Steeltoe.Management.Census.Stats
 
             return true;
         }
+
         public static IAggregationData SumWithTags(this IViewData viewData, IList<ITagValue> values = null)
         {
             return viewData.AggregationMap.WithTags(values).Sum(viewData.View);
@@ -34,7 +46,6 @@ namespace Steeltoe.Management.Census.Stats
 
             foreach (var kvp in aggMap)
             {
-
                 if (TagValuesMatch(kvp.Key.Values, values))
                 {
                     results.Add(kvp.Key, kvp.Value);
@@ -51,8 +62,8 @@ namespace Steeltoe.Management.Census.Stats
             {
                 Sum(sum, agData);
             }
-            return MutableViewData.CreateAggregationData(sum, view.Measure);
 
+            return MutableViewData.CreateAggregationData(sum, view.Measure);
         }
 
         private static bool TagValuesMatch(IList<ITagValue> aggValues, IList<ITagValue> values)
@@ -83,6 +94,7 @@ namespace Steeltoe.Management.Census.Stats
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -147,14 +159,14 @@ namespace Steeltoe.Management.Census.Stats
                             dist.SumOfSquaredDeviations =
                                 dist.SumOfSquaredDeviations
                                     + arg.SumOfSquaredDeviations
-                                    + Math.Pow(delta, 2)
+                                    + (Math.Pow(delta, 2)
                                         * dist.Count
                                         * arg.Count
-                                        / (dist.Count + arg.Count);
+                                        / (dist.Count + arg.Count));
                         }
 
                         dist.Count += arg.Count;
-                        dist.Sum += (arg.Mean * arg.Count);
+                        dist.Sum += arg.Mean * arg.Count;
                         dist.Mean = dist.Sum / dist.Count;
 
                         if (arg.Min < dist.Min)
@@ -179,8 +191,8 @@ namespace Steeltoe.Management.Census.Stats
                     MutableLastValue lastValue = combined as MutableLastValue;
                     if (lastValue != null)
                     {
-                        lastValue.initialized = true;
-                        if (Double.IsNaN(lastValue.LastValue))
+                        lastValue.Initialized = true;
+                        if (double.IsNaN(lastValue.LastValue))
                         {
                             lastValue.LastValue = arg.LastValue;
                         }
@@ -196,12 +208,12 @@ namespace Steeltoe.Management.Census.Stats
                     MutableLastValue lastValue = combined as MutableLastValue;
                     if (lastValue != null)
                     {
-                        lastValue.initialized = true;
-                        if (Double.IsNaN(lastValue.LastValue))
+                        lastValue.Initialized = true;
+                        if (double.IsNaN(lastValue.LastValue))
                         {
                             lastValue.LastValue = arg.LastValue;
-     
-                        } else
+                        }
+                        else
                         {
                             lastValue.LastValue += arg.LastValue;
                         }
@@ -213,6 +225,5 @@ namespace Steeltoe.Management.Census.Stats
                     throw new ArgumentException();
                 });
         }
-
     }
 }

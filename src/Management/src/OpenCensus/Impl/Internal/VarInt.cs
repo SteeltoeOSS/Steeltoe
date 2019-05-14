@@ -1,18 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.IO;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Internal
 {
     [Obsolete("Use OpenCensus project packages")]
     public static class VarInt
     {
-        /** Maximum encoded size of 32-bit positive integers (in bytes) */
+        // Maximum encoded size of 32-bit positive integers (in bytes)
         public const int MAX_VARINT_SIZE = 5;
 
-        /** maximum encoded size of 64-bit longs, and negative 32-bit ints (in bytes) */
+        // maximum encoded size of 64-bit longs, and negative 32-bit ints (in bytes)
         public const int MAX_VARLONG_SIZE = 10;
+
         public static int VarIntSize(int i)
         {
             int result = 0;
@@ -21,10 +34,10 @@ namespace Steeltoe.Management.Census.Internal
             {
                 result++;
                 ui = ui >> 7;
-            } while (ui != 0);
+            }
+            while (ui != 0);
             return result;
         }
-
 
         public static int GetVarInt(byte[] src, int offset, int[] dst)
         {
@@ -38,15 +51,16 @@ namespace Steeltoe.Management.Census.Internal
                     // Out of range
                     throw new ArgumentOutOfRangeException("varint too long");
                 }
+
                 // Get 7 bits from next byte
                 b = src[offset++];
                 result |= (b & 0x7F) << shift;
                 shift += 7;
-            } while ((b & 0x80) != 0);
+            }
+            while ((b & 0x80) != 0);
             dst[0] = result;
             return offset;
         }
-
 
         public static int PutVarInt(int v, byte[] sink, int offset)
         {
@@ -58,13 +72,13 @@ namespace Steeltoe.Management.Census.Internal
                 uv >>= 7;
                 byte b = (byte)(bits + ((uv != 0) ? 0x80 : 0));
                 sink[offset++] = b;
-            } while (uv != 0);
+            }
+            while (uv != 0);
             return offset;
         }
 
-
-        //public static int getVarInt(ByteBuffer src)
-        //{
+        // public static int getVarInt(ByteBuffer src)
+        // {
         //    int tmp;
         //    if ((tmp = src.get()) >= 0)
         //    {
@@ -104,11 +118,10 @@ namespace Steeltoe.Management.Census.Internal
         //        }
         //    }
         //    return result;
-        //}
+        // }
 
-
-        //public static void putVarInt(int v, ByteBuffer sink)
-        //{
+        // public static void putVarInt(int v, ByteBuffer sink)
+        // {
         //    while (true)
         //    {
         //        int bits = v & 0x7f;
@@ -120,13 +133,13 @@ namespace Steeltoe.Management.Census.Internal
         //        }
         //        sink.put((byte)(bits | 0x80));
         //    }
-        //}
+        // }
 
-        /**
-         * Reads a varint from the given InputStream and returns the decoded value as an int.
-         *
-         * @param inputStream the InputStream to read from
-         */
+        /// <summary>
+        /// Reads a varint from the given InputStream and returns the decoded value as an int.
+        /// </summary>
+        /// <param name="inputStream">the InputStream to read from</param>
+        /// <returns>the int in the stream</returns>
         public static int GetVarInt(Stream inputStream)
         {
             int result = 0;
@@ -139,14 +152,15 @@ namespace Steeltoe.Management.Census.Internal
                     // Out of range
                     throw new ArgumentOutOfRangeException("varint too long");
                 }
+
                 // Get 7 bits from next byte
                 b = inputStream.ReadByte();
                 result |= (b & 0x7F) << shift;
                 shift += 7;
-            } while ((b & 0x80) != 0);
+            }
+            while ((b & 0x80) != 0);
             return result;
         }
-
 
         public static void PutVarInt(int v, Stream outputStream)
         {
@@ -154,7 +168,6 @@ namespace Steeltoe.Management.Census.Internal
             PutVarInt(v, bytes, 0);
             outputStream.Write(bytes, 0, bytes.Length);
         }
-
 
         public static int VarLongSize(long v)
         {
@@ -164,13 +177,13 @@ namespace Steeltoe.Management.Census.Internal
             {
                 result++;
                 uv >>= 7;
-            } while (uv != 0);
+            }
+            while (uv != 0);
             return result;
         }
 
-
-        //public static long GetVarLong(ByteBuffer src)
-        //{
+        // public static long GetVarLong(ByteBuffer src)
+        // {
         //    long tmp;
         //    if ((tmp = src.get()) >= 0)
         //    {
@@ -243,10 +256,10 @@ namespace Steeltoe.Management.Census.Internal
         //        }
         //    }
         //    return result;
-        //}
+        // }
 
-        //public static void PutVarLong(long v, ByteBuffer sink)
-        //{
+        // public static void PutVarLong(long v, ByteBuffer sink)
+        // {
         //    while (true)
         //    {
         //        int bits = ((int)v) & 0x7f;
@@ -258,6 +271,6 @@ namespace Steeltoe.Management.Census.Internal
         //        }
         //        sink.put((byte)(bits | 0x80));
         //    }
-        //}
+        // }
     }
 }

@@ -82,7 +82,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                             existing = argumentMap.GetOrAdd(arg, collapsedRequest);
                         }
 
-                        /**
+                        /*
                          * If the argument already exists in the batch, then there are 2 options:
                          * A) If request caching is ON (the default): only keep 1 argument in the batch and let all responses
                          * be hooked up to that argument

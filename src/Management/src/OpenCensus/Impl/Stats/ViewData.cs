@@ -1,13 +1,25 @@
-﻿using Steeltoe.Management.Census.Common;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Management.Census.Common;
 using Steeltoe.Management.Census.Stats.Aggregations;
-using Steeltoe.Management.Census.Stats.Measures;
 using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Census.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
 namespace Steeltoe.Management.Census.Stats
 {
@@ -15,8 +27,11 @@ namespace Steeltoe.Management.Census.Stats
     public sealed class ViewData : IViewData
     {
         public IView View { get; }
+
         public IDictionary<TagValues, IAggregationData> AggregationMap { get; }
+
         public ITimestamp Start { get; }
+
         public ITimestamp End { get; }
 
         internal ViewData(IView view, IDictionary<TagValues, IAggregationData> aggregationMap, ITimestamp start, ITimestamp end)
@@ -25,22 +40,26 @@ namespace Steeltoe.Management.Census.Stats
             {
                 throw new ArgumentNullException(nameof(view));
             }
+
             this.View = view;
             if (aggregationMap == null)
             {
                 throw new ArgumentNullException(nameof(aggregationMap));
             }
+
             this.AggregationMap = aggregationMap;
 
             if (start == null)
             {
                 throw new ArgumentNullException(nameof(start));
             }
+
             this.Start = start;
             if (end == null)
             {
                 throw new ArgumentNullException(nameof(end));
             }
+
             this.End = end;
         }
 
@@ -52,6 +71,7 @@ namespace Steeltoe.Management.Census.Stats
                 CheckAggregation(view.Aggregation, entry.Value, view.Measure);
                 deepCopy.Add(entry.Key, entry.Value);
             }
+
             return new ViewData(
                 view,
                 new ReadOnlyDictionary<TagValues, IAggregationData>(deepCopy),
@@ -59,7 +79,7 @@ namespace Steeltoe.Management.Census.Stats
                 end);
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "ViewData{"
                 + "view=" + View + ", "
@@ -69,20 +89,22 @@ namespace Steeltoe.Management.Census.Stats
                 + "}";
         }
 
-        public override bool Equals(Object o)
+        public override bool Equals(object o)
         {
             if (o == this)
             {
                 return true;
             }
+
             if (o is ViewData)
             {
                 ViewData that = (ViewData)o;
-                return (this.View.Equals(that.View))
-                     && (this.AggregationMap.SequenceEqual(that.AggregationMap))
-                     && (this.Start.Equals(that.Start))
-                     && (this.End.Equals(that.End));
+                return this.View.Equals(that.View)
+                     && this.AggregationMap.SequenceEqual(that.AggregationMap)
+                     && this.Start.Equals(that.Start)
+                     && this.End.Equals(that.End);
             }
+
             return false;
         }
 
@@ -99,6 +121,7 @@ namespace Steeltoe.Management.Census.Stats
             h ^= this.End.GetHashCode();
             return h;
         }
+
         private static void CheckAggregation(IAggregation aggregation, IAggregationData aggregationData, IMeasure measure)
         {
             aggregation.Match<object>(
@@ -126,7 +149,7 @@ namespace Steeltoe.Management.Census.Stats
                             throw new ArgumentException();
                         });
                     return null;
-                }, 
+                },
                 (arg) =>
                 {
                     if (!(aggregationData is ICountData))
@@ -179,11 +202,10 @@ namespace Steeltoe.Management.Census.Stats
                 (arg) =>
                 {
                     throw new ArgumentException();
-                }
-                );
+                });
         }
 
-        private static String CreateErrorMessageForAggregation(IAggregation aggregation, IAggregationData aggregationData)
+        private static string CreateErrorMessageForAggregation(IAggregation aggregation, IAggregationData aggregationData)
         {
             return "Aggregation and AggregationData types mismatch. "
                 + "Aggregation: "
@@ -191,6 +213,5 @@ namespace Steeltoe.Management.Census.Stats
                 + " AggregationData: "
                 + aggregationData;
         }
-
     }
 }

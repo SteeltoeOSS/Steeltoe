@@ -1,7 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 using Steeltoe.Management.Census.Common;
+using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Census.Trace.Export
 {
@@ -26,11 +39,13 @@ namespace Steeltoe.Management.Census.Trace.Export
             {
                 throw new ArgumentNullException(nameof(messageOrNetworkEvents));
             }
+
             IList<ITimedEvent<IMessageEvent>> messageEventsList = new List<ITimedEvent<IMessageEvent>>();
             foreach (ITimedEvent<IMessageEvent> timedEvent in messageOrNetworkEvents.Events)
             {
                 messageEventsList.Add(timedEvent);
             }
+
             ITimedEvents<IMessageEvent> messageEvents = TimedEvents<IMessageEvent>.Create(messageEventsList, messageOrNetworkEvents.DroppedEventsCount);
             return new SpanData(
                 context,
@@ -46,6 +61,7 @@ namespace Steeltoe.Management.Census.Trace.Export
                 status,
                 endTimestamp);
         }
+
         internal SpanData(
             ISpanContext context,
             ISpanId parentSpanId,
@@ -64,6 +80,7 @@ namespace Steeltoe.Management.Census.Trace.Export
             {
                 throw new ArgumentNullException(nameof(context));
             }
+
             this.Context = context;
             this.ParentSpanId = parentSpanId;
             this.HasRemoteParent = hasRemoteParent;
@@ -71,36 +88,43 @@ namespace Steeltoe.Management.Census.Trace.Export
             {
                 throw new ArgumentNullException(nameof(name));
             }
+
             this.Name = name;
             if (startTimestamp == null)
             {
                 throw new ArgumentNullException(nameof(startTimestamp));
             }
+
             this.StartTimestamp = startTimestamp;
             if (attributes == null)
             {
                 throw new ArgumentNullException(nameof(attributes));
             }
+
             this.Attributes = attributes;
             if (annotations == null)
             {
                 throw new ArgumentNullException(nameof(annotations));
             }
+
             this.Annotations = annotations;
             if (messageEvents == null)
             {
                 throw new ArgumentNullException(nameof(messageEvents));
             }
+
             this.MessageEvents = messageEvents;
             if (links == null)
             {
                 throw new ArgumentNullException(nameof(links));
             }
+
             this.Links = links;
             this.ChildSpanCount = childSpanCount;
             this.Status = status;
             this.EndTimestamp = endTimestamp;
         }
+
         public ISpanContext Context { get; }
 
         public ISpanId ParentSpanId { get; }
@@ -127,7 +151,6 @@ namespace Steeltoe.Management.Census.Trace.Export
 
         public ITimestamp StartTimestamp { get; }
 
-
         public override string ToString()
         {
             return "SpanData{"
@@ -146,28 +169,30 @@ namespace Steeltoe.Management.Census.Trace.Export
                 + "}";
         }
 
-        public override bool Equals(Object o)
+        public override bool Equals(object o)
         {
             if (o == this)
             {
                 return true;
             }
+
             if (o is SpanData)
             {
                 SpanData that = (SpanData)o;
-                return (this.Context.Equals(that.Context))
+                return this.Context.Equals(that.Context)
                      && ((this.ParentSpanId == null) ? (that.ParentSpanId == null) : this.ParentSpanId.Equals(that.ParentSpanId))
-                     && (this.HasRemoteParent.Equals(that.HasRemoteParent))
-                     && (this.Name.Equals(that.Name))
-                     && (this.StartTimestamp.Equals(that.StartTimestamp))
-                     && (this.Attributes.Equals(that.Attributes))
-                     && (this.Annotations.Equals(that.Annotations))
-                     && (this.MessageEvents.Equals(that.MessageEvents))
-                     && (this.Links.Equals(that.Links))
+                     && this.HasRemoteParent.Equals(that.HasRemoteParent)
+                     && this.Name.Equals(that.Name)
+                     && this.StartTimestamp.Equals(that.StartTimestamp)
+                     && this.Attributes.Equals(that.Attributes)
+                     && this.Annotations.Equals(that.Annotations)
+                     && this.MessageEvents.Equals(that.MessageEvents)
+                     && this.Links.Equals(that.Links)
                      && ((this.ChildSpanCount == null) ? (that.ChildSpanCount == null) : this.ChildSpanCount.Equals(that.ChildSpanCount))
                      && ((this.Status == null) ? (that.Status == null) : this.Status.Equals(that.Status))
                      && ((this.EndTimestamp == null) ? (that.EndTimestamp == null) : this.EndTimestamp.Equals(that.EndTimestamp));
             }
+
             return false;
         }
 
@@ -200,6 +225,5 @@ namespace Steeltoe.Management.Census.Trace.Export
             h ^= (EndTimestamp == null) ? 0 : this.EndTimestamp.GetHashCode();
             return h;
         }
-
     }
 }
