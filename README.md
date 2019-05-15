@@ -1,5 +1,7 @@
 # .NET Logging Extensions
 
+> NOTICE: This repository has been relocated as a sub-directory under the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) repository. All issues and future development will be done under that repository.
+
 This repo contains a Logging extension that when used with the Steeltoe Management Logger Endpoint enables changing the Logging levels for a running application dynamically using the Pivotal Apps manager console.
 
 This logger is simply a wrapper around the Microsoft Console logger, but enables querying and dynamically changing the logging levels of all the currently active loggers.
