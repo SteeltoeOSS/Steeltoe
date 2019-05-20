@@ -4,6 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 trigger:
 - master
+- fxcop
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -63,7 +64,7 @@ jobs:
       inputs:
         command: 'pack'
         feedsToUse: 'select'
-        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
+        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=False'
         packagesToPack: '**/*.sln'
         versioningScheme: 'byEnvVar'
         versionEnvVar: PackageVersion
@@ -102,6 +103,8 @@ jobs:
         AnalyzeStatistics: true
         AnalyzeVerbose: true
       condition: always()
+    - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-roslynanalyzers.RoslynAnalyzers@2
+      displayName: 'Run Roslyn Analyzers'
     - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-credscan.CredScan@2
       displayName: 'Run CredScan'
       inputs:
