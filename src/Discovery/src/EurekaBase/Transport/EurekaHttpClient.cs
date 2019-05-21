@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Util;
@@ -125,7 +126,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                     using (HttpResponseMessage response = await client.SendAsync(request))
                     {
-                        _logger?.LogDebug("RegisterAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToString(), response.StatusCode, retry);
+                        _logger?.LogDebug("RegisterAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                         int statusCode = (int)response.StatusCode;
                         if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
                         {
@@ -143,7 +144,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, "RegisterAsync Failed, request was made to {requestUri}, retry: {retry}", requestUri, retry);
+                    _logger?.LogError(e, "RegisterAsync Failed, request was made to {requestUri}, retry: {retry}", requestUri.ToMaskedUri(), retry);
                 }
                 finally
                 {
@@ -224,7 +225,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                         _logger?.LogDebug(
                             "SendHeartbeatAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}, retry: {retry}",
-                            requestUri.ToString(),
+                            requestUri.ToMaskedString(),
                             response.StatusCode,
                             (infoResp != null) ? infoResp.ToString() : "null",
                             retry);
@@ -242,7 +243,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, "SendHeartBeatAsync Failed, request was made to {requestUri}", requestUri);
+                    _logger?.LogError(e, "SendHeartBeatAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
                 }
                 finally
                 {
@@ -329,7 +330,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                         _logger?.LogDebug(
                             "GetApplicationAsync {RequestUri}, status: {StatusCode}, application: {Application}, retry: {retry}",
-                            requestUri.ToString(),
+                            requestUri.ToMaskedString(),
                             response.StatusCode,
                             (appResp != null) ? appResp.ToString() : "null",
                             retry);
@@ -347,7 +348,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, "GetApplicationAsync Failed, request was made to {requestUri}", requestUri);
+                    _logger?.LogError(e, "GetApplicationAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
                 }
                 finally
                 {
@@ -423,7 +424,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 {
                     using (HttpResponseMessage response = await client.SendAsync(request))
                     {
-                        _logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToString(), response.StatusCode, retry);
+                        _logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                         Interlocked.Exchange(ref _serviceUrl, serviceUrl);
                         EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode)
                         {
@@ -434,7 +435,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, "CancelAsync Failed, request was made to {requestUri}", requestUri);
+                    _logger?.LogError(e, "CancelAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
                 }
                 finally
                 {
@@ -495,7 +496,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 {
                     using (HttpResponseMessage response = await client.SendAsync(request))
                     {
-                        _logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToString(), response.StatusCode, retry);
+                        _logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                         int statusCode = (int)response.StatusCode;
                         if (statusCode >= 200 && statusCode < 300)
                         {
@@ -510,7 +511,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, "DeleteStatusOverrideAsync Failed, request was made to {requestUri}", requestUri);
+                    _logger?.LogError(e, "DeleteStatusOverrideAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
                 }
                 finally
                 {
@@ -572,7 +573,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 {
                     using (HttpResponseMessage response = await client.SendAsync(request))
                     {
-                        _logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToString(), response.StatusCode, retry);
+                        _logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                         int statusCode = (int)response.StatusCode;
                         if (statusCode >= 200 && statusCode < 300)
                         {
@@ -587,7 +588,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, "StatusUpdateAsync Failed, request was made to {requestUri}", requestUri);
+                    _logger?.LogError(e, "StatusUpdateAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
                 }
                 finally
                 {
@@ -811,7 +812,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                         _logger?.LogDebug(
                             "DoGetInstanceAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}, retry: {retry}",
-                           requestUri.ToString(),
+                           requestUri.ToMaskedString(),
                            response.StatusCode,
                            (infoResp != null) ? infoResp.ToString() : "null",
                            retry);
@@ -829,7 +830,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, "DoGetInstanceAsync Failed, request was made to {requestUri}", requestUri);
+                    _logger?.LogError(e, "DoGetInstanceAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
                 }
                 finally
                 {
@@ -892,7 +893,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                         _logger?.LogDebug(
                             "DoGetApplicationsAsync {RequestUri}, status: {StatusCode}, applications: {Application}, retry: {retry}",
-                            requestUri.ToString(),
+                            requestUri.ToMaskedString(),
                             response.StatusCode,
                             (appsResp != null) ? appsResp.ToString() : "null",
                             retry);
@@ -910,7 +911,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri);
+                    _logger?.LogError(e, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
                 }
                 finally
                 {
