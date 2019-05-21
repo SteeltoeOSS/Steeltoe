@@ -11,9 +11,19 @@ namespace Steeltoe.Common.Extensions
                 throw new ArgumentNullException(nameof(source));
             }
 
+            return source.ToMaskedUri().ToString();
+        }
+
+        public static Uri ToMaskedUri(this Uri source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
             if (string.IsNullOrEmpty(source.UserInfo))
             {
-                return source.ToString();
+                return source;
             }
 
             var builder = new UriBuilder(source)
@@ -22,7 +32,7 @@ namespace Steeltoe.Common.Extensions
                 Password = "****"
             };
 
-            return builder.Uri.ToString();
+            return builder.Uri;
         }
     }
 }

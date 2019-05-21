@@ -7,7 +7,7 @@ namespace Steeltoe.Common.Test.Extensions
     public class UriExtensionsTest
     {
         [Fact]
-        public void MaskExistingBasicAuthentication()
+        public void MaskExistingBasicAuthenticationToString()
         {
             // Arrange
             var uri = new Uri("http://username:password@www.example.com/");
@@ -21,7 +21,21 @@ namespace Steeltoe.Common.Test.Extensions
         }
 
         [Fact]
-        public void DontMaskIfNotBasicAuthenticationExists()
+        public void MaskExistingBasicAuthentication()
+        {
+            // Arrange
+            var uri = new Uri("http://username:password@www.example.com/");
+            var expected = new Uri("http://****:****@www.example.com/");
+
+            // Act
+            var masked = uri.ToMaskedUri();
+
+            // Assert
+            Assert.Equal(expected, masked);
+        }
+
+        [Fact]
+        public void DontMaskStringIfNotBasicAuthenticationExists()
         {
             // Arrange
             var uri = new Uri("http://www.example.com/");
@@ -29,6 +43,20 @@ namespace Steeltoe.Common.Test.Extensions
 
             // Act
             var masked = uri.ToMaskedString();
+
+            // Assert
+            Assert.Equal(expected, masked);
+        }
+
+        [Fact]
+        public void DontMaskUriIfNotBasicAuthenticationExists()
+        {
+            // Arrange
+            var uri = new Uri("http://www.example.com/");
+            var expected = new Uri(uri.ToString());
+
+            // Act
+            var masked = uri.ToMaskedUri();
 
             // Assert
             Assert.Equal(expected, masked);
