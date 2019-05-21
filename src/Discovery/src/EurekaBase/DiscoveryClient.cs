@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Task;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -372,7 +373,7 @@ namespace Steeltoe.Discovery.Eureka
             catch (Exception e)
             {
                 // Log
-                _logger?.LogError(e, "FetchRegistry Failed for Eureka service urls: {EurekaServerServiceUrls}", ClientConfig.EurekaServerServiceUrls);
+                _logger?.LogError(e, "FetchRegistry Failed for Eureka service urls: {EurekaServerServiceUrls}", new Uri(ClientConfig.EurekaServerServiceUrls).ToMaskedString());
                 return false;
             }
 
