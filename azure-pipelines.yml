@@ -96,6 +96,12 @@ jobs:
         summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
         reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
       condition: always()
+    - script: |
+        curl -s https://codecov.io/bash > codecov
+        chmod +x codecov
+        ./codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $CodeCovToken
+      env:
+        CodeCovToken: $(CodeCovToken)
     - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-binskim.BinSkim@3
       displayName: 'Run BinSkim '
       inputs:
