@@ -101,6 +101,7 @@ jobs:
         ./codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $CodeCovToken
       env:
         CodeCovToken: $(CodeCovToken)
+      condition: always()
     - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-binskim.BinSkim@3
       displayName: 'Run BinSkim '
       inputs:
