@@ -11,10 +11,10 @@ variables:
   PackageVersion: $[format('3.0.0-{0}', variables['Build.BuildId'])]
 
 jobs:
-- job: Linux_Build_and_Test
-  pool:
-    vmImage: 'Ubuntu-16.04'
-  steps:
+#- job: Linux_Build_and_Test
+#  pool:
+#    vmImage: 'Ubuntu-16.04'
+#  steps:
   # /tmp/NuGetScratch issue https://github.com/NuGet/Home/issues/7341
   # - task: UseDotNet@2
   #   displayName: 'Use .NET Core sdk'
@@ -23,25 +23,25 @@ jobs:
   #     version: 2.2.300-preview2
   #     includePreviewVersions: true
   #     installationPath: $(Agent.ToolsDirectory)/dotnet
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: build
-      projects: '**/*.sln'
-      arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration)'
-- job: MacOS_Build_and_Test
-  pool:
-    vmImage: 'macOS-10.14'
-  steps:
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: build
-      projects: '**/*.sln'
-      arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: build
+#      projects: '**/*.sln'
+#      arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: test
+#      projects: '**/*.Test/*.csproj'
+#      arguments: '-c $(buildConfiguration)'
+#- job: MacOS_Build_and_Test
+#  pool:
+#    vmImage: 'macOS-10.14'
+#  steps:
+#  - task: DotNetCoreCLI@2
+#    inputs:
+#      command: build
+#      projects: '**/*.sln'
+#      arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
   #- task: DotNetCoreCLI@2
   #  inputs:
   #    command: test
@@ -72,15 +72,15 @@ jobs:
         command: test
         projects: '**/*.Net4Test/*.csproj'
         arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: test
-        projects: '**/*.Test/*.csproj'
-        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
-      condition: always()
+#    - task: DotNetCoreCLI@2
+#      inputs:
+#        command: test
+#        projects: '**/*.Test/*.csproj'
+#        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+#      condition: always()
     # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
     # First install the tool on the machine, then run it
-    - script: |
+    - pwsh: |
         dotnet tool install -g dotnet-reportgenerator-globaltool
         reportgenerator "-reports:**\coverage.cobertura.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
       displayName: Create Code coverage report
@@ -95,10 +95,9 @@ jobs:
         summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
         reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
       condition: always()
-    - script: |
-        curl -s https://codecov.io/bash > codecov
-        chmod +x codecov
-        ./codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $CodeCovToken
+    - pwsh: |
+        choco install codecov
+        .\codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $CodeCovToken
       env:
         CodeCovToken: $(CodeCovToken)
       condition: always()
