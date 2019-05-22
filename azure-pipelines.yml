@@ -97,7 +97,7 @@ jobs:
       condition: always()
     - pwsh: |
         choco install codecov
-        codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $CodeCovToken
+        codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $env:CodeCovToken
       env:
         CodeCovToken: $(CodeCovToken)
       condition: always()
