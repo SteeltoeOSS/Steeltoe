@@ -51,7 +51,7 @@ namespace Steeltoe.Common.Discovery
                 return current;
             }
 
-            return await _loadBalancer.ResolveServiceInstanceAsync(current);
+            return await _loadBalancer.ResolveServiceInstanceAsync(current).ConfigureAwait(false);
         }
     }
 }

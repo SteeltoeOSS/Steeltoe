@@ -89,9 +89,11 @@ namespace Steeltoe.Common.Http
                     prevValidator = ServicePointManager.ServerCertificateValidationCallback;
 
                     // Disabling certificate validation is a bad idea, that's why it's off by default!
+#pragma warning disable CA5359 // Certificate Validation has been disabled
 #pragma warning disable SCS0004 // Certificate Validation has been disabled
                     ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
 #pragma warning restore SCS0004 // Certificate Validation has been disabled
+#pragma warning restore CA5359 // Certificate Validation has been disabled
                 }
             }
         }
@@ -229,7 +231,7 @@ namespace Steeltoe.Common.Http
                             return null;
                         }
 
-                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                         var token = payload.Value<string>("access_token");
                         return token;
                     }

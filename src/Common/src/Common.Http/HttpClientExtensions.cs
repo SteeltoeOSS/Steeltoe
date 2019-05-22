@@ -95,7 +95,7 @@ namespace Steeltoe.Common.Http
         /// <returns>Your data, typed as your type</returns>
         public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
         {
-            var dataAsString = await content.ReadAsStringAsync();
+            var dataAsString = await content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<T>(dataAsString);
         }
 
@@ -108,7 +108,7 @@ namespace Steeltoe.Common.Http
         /// <returns>Your data, typed as your type</returns>
         public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content, JsonSerializerSettings settings)
         {
-            var dataAsString = await content.ReadAsStringAsync();
+            var dataAsString = await content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<T>(dataAsString, settings);
         }
     }

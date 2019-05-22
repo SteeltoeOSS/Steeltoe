@@ -44,7 +44,7 @@ namespace Steeltoe.Common.LoadBalancer
         public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request)
         {
             _logger?.LogTrace("ResolveServiceInstance {serviceInstance}", request.Host);
-            var availableServiceInstances = await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache);
+            var availableServiceInstances = await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache).ConfigureAwait(false);
             if (availableServiceInstances.Count > 0)
             {
 // load balancer instance selection predictability is not likely to be a security concern
