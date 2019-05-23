@@ -2,14 +2,6 @@
 
 This repository contains several management endpoints which can be used to help monitor and manage your applications.
 
-Windows Master (Stable): [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/bvv4ukorhxtx7mkk/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/management/branch/master)
-
-Windows Dev (Less Stable): [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/bvv4ukorhxtx7mkk/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/management/branch/dev)
-
-Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Management.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/Management)
-
-Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Management.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Management)
-
 ## .NET Runtime & Framework Support
 
 Like ASP.NET Core, the these endpoint packages are intended to support both .NET 4.6+ and .NET Core (CoreCLR/CoreFX) runtimes.

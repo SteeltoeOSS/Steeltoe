@@ -6,14 +6,6 @@ This new model supports access to key/value configuration data from a variety of
 
 This repository contains two custom configuration providers.  The [Steeltoe.Extensions.Configuration.ConfigServer](https://github.com/SteeltoeOSS/Configuration/tree/master/src/Steeltoe.Extensions.Configuration.ConfigServer) enables using the [Spring Cloud Config Server](https://projects.spring.io/spring-cloud/) as a provider of configuration data and the [Steeltoe.Extensions.Configuration.CloudFoundry](https://github.com/SteeltoeOSS/Configuration/tree/master/src/Steeltoe.Extensions.Configuration.CloudFoundry) provider enables [CloudFoundry environment variables](https://docs.cloudfoundry.org) to be parsed and accessed as configuration data.
 
-Windows Master (Stable):  [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/27c2hd0460aac1cs/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/Configuration)
-
-Windows Dev (Less Stable):  [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/27c2hd0460aac1cs/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/Configuration)
-
-Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Configuration.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/Configuration)
-
-Linux/OS X Dev (Less Stable): [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Configuration.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Configuration)
-
 ## .NET Runtime & Framework Support
 
 Like the ASP.NET Core configuration providers, these providers are intended to support both .NET Full framework and .NET Core (CoreCLR/CoreFX) run-times.  The providers are built and unit tested on Windows, Linux and OSX.
