@@ -6,14 +6,6 @@ There are several popular options for Service Registries. Netflix built and then
 
 This repository contains various packages for interacting with Service Registries.
 
-Windows Master:  [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/j6i5gxxwt21gys01/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/discovery/branch/master)
-
-Windows Dev:  [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/j6i5gxxwt21gys01/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/discovery/branch/dev)
-
-Linux/OS X Master: [![Travis Master](https://travis-ci.org/SteeltoeOSS/Discovery.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/Discovery)
-
-Linux/OSX Dev: [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Discovery.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Discovery)
-
 ## .NET Runtime & Framework Support
 
 The packages are intended to support both .NET 4.6.1+ and .NET Core (CoreCLR/CoreFX) run-times.  They are built and unit tested on Windows, Linux and OSX.

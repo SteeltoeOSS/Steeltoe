@@ -2,14 +2,6 @@
 
 This repository contains various security providers which simplify the process of using Security services on CloudFoundry.
 
-Windows Master (Stable): [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/w27a5c4x64pd7jyq?svg=true)](https://ci.appveyor.com/project/steeltoe/security)
-
-Windows Dev (Less Stable): [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/w27a5c4x64pd7jyq/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/security/branch/dev)
-
-Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Security.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/Security)
-
-Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Security.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Security)
-
 ## .NET Runtime & Framework Support
 
 The components are intended to support both .NET 4.6.1+ and .NET Core (CoreCLR/CoreFX).
