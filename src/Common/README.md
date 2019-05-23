@@ -2,14 +2,6 @@
 
 This repository contains several packages that are common to other Steeltoe components.
 
-Windows Master (Stable): [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/3omrdvukuvv12gig/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/common/branch/master)
-
-Windows Dev (Less Stable): [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/3omrdvukuvv12gig/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/common/branch/dev)
-
-Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Common.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/Common)
-
-Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Common.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Common)
-
 ## Nuget Feeds
 
 All new development is done on the dev branch. More stable versions of the packages can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
