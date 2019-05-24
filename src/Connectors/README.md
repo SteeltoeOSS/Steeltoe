@@ -2,14 +2,6 @@
 
 This repository contains several connectors which simplify the process of connecting to services on CloudFoundry.
 
-Windows Master (Stable): [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/ivdciaopp5kxo3cp/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/connectors/branch/master)
-
-Windows Dev (Less Stable): [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/ivdciaopp5kxo3cp/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/connectors/branch/dev)
-
-Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Connectors.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/Connectors)
-
-Linux/OS X Dev (Less Stable):  [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Connectors.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Connectors)
-
 ## .NET Runtime & Framework Support
 
 The connectors are intended to support both .NET 4.6.1+ and .NET Core (CoreCLR/CoreFX) runtimes. Note that some connectors only support .NET 4.6.1+ since the libraries they depend on do not support .NET Core.

@@ -12,14 +12,6 @@ Additionally, two additional packages are included each of which help you use th
 
 The other dashboard releated package is the [Steeltoe.CircuitBreaker.Hystrix.MetricsStream](https://github.com/SteeltoeOSS/CircuitBreaker/tree/dev/src/Steeltoe.CircuitBreaker.Hystrix.MetricsStream) package.  It enables using the Spring Cloud Services [Hystrix Dashboard](https://docs.pivotal.io/spring-cloud-services/1-3/common/circuit-breaker) on Cloud Foundry for monitoring your application. In order to use it, you include this package into your application and then bind the Spring Cloud Services Hystrix Dashboard to your app to begin streaming metrics to the dashboard.
 
-Windows Master:  [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/pfv60665u6c6ufpx/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/circuitbreaker/branch/master)
-
-Windows Dev:  [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/pfv60665u6c6ufpx/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/circuitbreaker/branch/dev)
-
-Linux/OS X Master: [![Travis Master](https://travis-ci.org/SteeltoeOSS/CircuitBreaker.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/CircuitBreaker)
-
-Linux/OSX Dev: [![Travis Dev](https://travis-ci.org/SteeltoeOSS/CircuitBreaker.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/CircuitBreaker)
-
 ## .NET Runtime & Framework Support
 
 The packages are intended to support both .NET 4.6+ and .NET Core (CoreCLR/CoreFX) runtimes.  They are built and unit tested on Windows, Linux and OSX.

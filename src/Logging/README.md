@@ -4,14 +4,6 @@ This repo contains a Logging extension that when used with the Steeltoe Manageme
 
 This logger is simply a wrapper around the Microsoft Console logger, but enables querying and dynamically changing the logging levels of all the currently active loggers.
 
-Windows Master (Stable):  [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/oj7275o04e7u2jk3/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/Logging)
-
-Windows Dev (Less Stable):  [![AppVeyor Dev](https://ci.appveyor.com/api/projects/status/oj7275o04e7u2jk3/branch/dev?svg=true)](https://ci.appveyor.com/project/steeltoe/logging)
-
-Linux/OS X Master (Stable): [![Travis Master](https://travis-ci.org/SteeltoeOSS/Logging.svg?branch=master)](https://travis-ci.org/SteeltoeOSS/Logging)
-
-Linux/OS X Dev (Less Stable): [![Travis Dev](https://travis-ci.org/SteeltoeOSS/Logging.svg?branch=dev)](https://travis-ci.org/SteeltoeOSS/Logging)
-
 ## .NET Runtime & Framework Support
 
 Like the ASP.NET Core Logging providers, these providers are intended to support both .NET 4.6+ and .NET Core (CoreCLR/CoreFX) run-times.  The providers are built and unit tested on Windows, Linux and OSX.
