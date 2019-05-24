@@ -80,7 +80,7 @@ jobs:
       condition: always()
     # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
     # First install the tool on the machine, then run it
-    - script: |
+    - pwsh: |
         dotnet tool install -g dotnet-reportgenerator-globaltool
         reportgenerator "-reports:**\coverage.cobertura.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
       displayName: Create Code coverage report
@@ -94,6 +94,12 @@ jobs:
         codeCoverageTool: Cobertura
         summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
         reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
+      condition: always()
+    - pwsh: |
+        choco install codecov
+        codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $env:CodeCovToken
+      env:
+        CodeCovToken: $(CodeCovToken)
       condition: always()
     - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-binskim.BinSkim@3
       displayName: 'Run BinSkim '
