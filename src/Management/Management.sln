@@ -80,6 +80,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E18EE9BB-7195-4E20-9733-064319D2F60C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{E1379BFB-ABE6-4265-B493-397C0A05B0D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -196,6 +198,10 @@ Global
 		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,6 +235,7 @@ Global
 		{34EAED24-C851-4F13-819D-EAE88E24B98F} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 		{8E13D7F7-FF49-41C8-A458-CF8795C93718} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 		{E18EE9BB-7195-4E20-9733-064319D2F60C} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7949396C-4BFF-4834-9BC2-F3A345E9CCE5}
