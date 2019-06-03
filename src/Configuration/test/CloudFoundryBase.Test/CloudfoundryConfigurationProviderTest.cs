@@ -67,8 +67,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("1024", dict["vcap:application:limits:disk"]);
             Assert.Equal("my-app.10.244.0.34.xip.io", dict["vcap:application:uris:0"]);
             Assert.Equal("my-app2.10.244.0.34.xip.io", dict["vcap:application:uris:1"]);
-
-            Assert.Equal("my-app", dict["spring:application:name"]);
         }
 
         [Fact]

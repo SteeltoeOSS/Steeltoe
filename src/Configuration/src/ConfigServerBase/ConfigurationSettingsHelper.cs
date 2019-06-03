@@ -21,6 +21,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     public static class ConfigurationSettingsHelper
     {
         private const string SPRING_APPLICATION_PREFIX = "spring:application";
+        private const string VCAP_APPLICATION_PREFIX = "vcap:application";
         private const string VCAP_SERVICES_CONFIGSERVER_PREFIX = "vcap:services:p-config-server:0";
 
         public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IConfiguration config)
@@ -200,7 +201,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetApplicationName(IConfigurationSection primary, IConfiguration config, string defName)
         {
-            return GetSetting("name", primary, config.GetSection(SPRING_APPLICATION_PREFIX), defName);
+            return GetSetting("name", primary, config.GetSection(SPRING_APPLICATION_PREFIX), config.GetSection(VCAP_APPLICATION_PREFIX), defName);
         }
 
         private static string GetCloudFoundryUri(IConfiguration configServerSection, IConfiguration config, string def)
@@ -217,6 +218,23 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
 
             result = secondary.GetValue<string>(key);
+            if (!string.IsNullOrEmpty(result))
+            {
+                return result;
+            }
+
+            return def;
+        }
+
+        private static string GetSetting(string key, IConfiguration primary, IConfiguration secondry, IConfiguration third, string def)
+        {
+            var result = GetSetting(key, primary, secondry, null);
+            if (!string.IsNullOrEmpty(result))
+            {
+                return result;
+            }
+
+            result = third.GetValue<string>(key);
             if (!string.IsNullOrEmpty(result))
             {
                 return result;
