@@ -88,6 +88,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public const int DEFAULT_VAULT_TOKEN_RENEW_RATE = 60000;
 
         /// <summary>
+        /// Default Disable Vault Token renewal
+        /// </summary>
+        public const bool DEFAULT_DISABLE_TOKEN_RENEWAL = false;
+
+        /// <summary>
         /// Default address used by provider to obtain a OAuth Access Token
         /// </summary>
         public const string DEFAULT_ACCESS_TOKEN_URI = null;
@@ -301,6 +306,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// Gets or sets vault token renew rate in Milliseconds
         /// </summary>
         public virtual int TokenRenewRate { get; set; } = DEFAULT_VAULT_TOKEN_RENEW_RATE;
+
+        public virtual bool DisableTokenRenewal { get; set; } = DEFAULT_DISABLE_TOKEN_RENEWAL;
 
         internal static bool IsMultiServerConfig(string uris)
         {

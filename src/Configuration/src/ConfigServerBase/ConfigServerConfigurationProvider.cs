@@ -391,7 +391,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             if (!string.IsNullOrEmpty(_settings.Token) && !ConfigServerClientSettings.IsMultiServerConfig(_settings.Uri))
             {
-                RenewToken(_settings.Token);
+                if (_settings.DisableTokenRenewal != true)
+                {
+                    RenewToken(_settings.Token);
+                }
+
                 request.Headers.Add(TOKEN_HEADER, _settings.Token);
             }
 
@@ -436,6 +440,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             Data["spring:cloud:config:client_id"] = _settings.ClientId;
             Data["spring:cloud:config:tokenTtl"] = _settings.TokenTtl.ToString();
             Data["spring:cloud:config:tokenRenewRate"] = _settings.TokenRenewRate.ToString();
+            Data["spring:cloud:config:disableTokenRenewal"] = _settings.DisableTokenRenewal.ToString();
 
             Data["spring:cloud:config:discovery:enabled"] = _settings.DiscoveryEnabled.ToString();
             Data["spring:cloud:config:discovery:serviceId"] = _settings.DiscoveryServiceId.ToString();

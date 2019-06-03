@@ -104,6 +104,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             'timeout': 10000,
             'token' : 'vaulttoken',
             'tokenRenewRate': 50000,
+            'disableTokenRenewal': true,    
             'tokenTtl': 50000,
             'retry': {
                 'enabled':'false',
@@ -153,6 +154,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Null(settings.ClientId);
             Assert.Null(settings.ClientSecret);
             Assert.Equal(50000, settings.TokenRenewRate);
+            Assert.True(settings.DisableTokenRenewal);
             Assert.Equal(50000, settings.TokenTtl);
         }
 
