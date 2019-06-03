@@ -76,6 +76,7 @@ View the [Steeltoe project list](project-docs/project-list.md) for brief descrip
 
 ## Roadmaps
 * [3.0.0](roadmaps/3.0.0.md) - In Progress
+* [2.3.0](roadmaps/2.3.0.md) - In Progress
 * [2.2.0](roadmaps/2.2.0.md) - Released
 * [2.1.0](roadmaps/2.1.0.md) - Released
 * [2.0.0](roadmaps/2.0.0.md) - Released
@@ -90,21 +91,21 @@ View the [Steeltoe project list](project-docs/project-list.md) for brief descrip
 
 ## Getting the Code
 
-All new Steeltoe development is done on the `master` branch in each of the above mentioned repositories.
+The development of the core components of Steeltoe is done out of the [steeltoe](/) repository on the `master` branch.
 
-Branches are created for each major (e.g. 2.x) and minor (2.2.x) release of the Steeltoe code.
+Maintenance branches are created after each major release (i.e. 2.x) and minor branches (i.e. 2.2.x) are created as needed for regressions, and/or security issues.
 
-All release and release candidate packages are listed under the tags section on GitHub (e.g. 2.1.0).
+All release and release candidate packages are listed under the tags section on GitHub (e.g. 2.2.0).
 
-The latest built packages from each branch can be found on [MyGet](https://www.myget.org/).
+The latest Steeltoe packages from each branch can be found on [MyGet](https://www.myget.org/).
 
 The released and release candidates can be found on [NuGet](https://www.nuget.org/).
 
 ## Contributing
 
-The Steeltoe project welcomes contributions both by filing issues and through PRs. You are also welcome to join us on [Slack](https://slack.steeltoe.io/)
+The Steeltoe project welcomes contributions on GitHub both by filing issues and through PRs. You are also welcome to join our discussions on [Slack](https://slack.steeltoe.io/)
 
-Check out the [contributing](project-docs/contributing.md) page to see how you can get involved and contribute to Steeltoe.
+Check out the [contributing guidelines](project-docs/contributing.md) page to see how you can get involved and contribute to Steeltoe.
 
 Also its worth noting, the Steeltoe project has adopted the code of conduct defined by the [Contributor Covenant](https://contributor-covenant.org/).
 If you'd like more information, see the [.NET Foundation Code of Conduct](https://www.dotnetfoundation.org/code-of-conduct) write-up.
