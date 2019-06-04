@@ -27,7 +27,7 @@ You should always send a pull request from a remote branch that you have created
 
 ## Handling Updates from Upstream
 
-While you're working away in your branch it's quite possible that the upstream `dev` branch will be updated. If this happens you should:
+While you're working away in your branch it's quite possible that the upstream branch will be updated. If this happens you should:
 
 1. [Stash](https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning) any un-committed changes you need to save
 1. `git checkout 2.x`
