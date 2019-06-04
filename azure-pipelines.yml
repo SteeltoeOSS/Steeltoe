@@ -3,12 +3,20 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 trigger:
-- master
+  branches:
+    include:
+    - master
+    - 2.x
+  paths:
+    exclude:
+    - README.md
+    - project-docs/*
+    - roadmaps/*
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  PackageVersion: $[format('3.0.0-{0}', variables['Build.BuildId'])]
+  PackageVersion: $[format('2.3.0-{0}', variables['Build.BuildId'])]
 
 jobs:
 - job: Linux_Build_and_Test
