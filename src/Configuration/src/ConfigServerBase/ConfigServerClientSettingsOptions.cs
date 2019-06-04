@@ -95,6 +95,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         public int TokenRenewRate { get; set; } = ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_RENEW_RATE;
 
+        public bool DisableTokenRenewal { get; set; } = ConfigServerClientSettings.DEFAULT_DISABLE_TOKEN_RENEWAL;
+
         public string AccessTokenUri => Access_Token_Uri;
 
         public string ClientSecret => Client_Secret;
@@ -118,6 +120,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 settings.Timeout = Timeout;
                 settings.TokenTtl = TokenTtl;
                 settings.TokenRenewRate = TokenRenewRate;
+                settings.DisableTokenRenewal = DisableTokenRenewal;
 
                 settings.Environment = Env;
                 settings.Label = Label;

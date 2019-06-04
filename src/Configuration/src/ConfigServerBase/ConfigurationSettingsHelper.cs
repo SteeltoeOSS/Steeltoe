@@ -62,6 +62,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             settings.ClientId = GetClientId(clientConfigsection, config);
             settings.ClientSecret = GetClientSecret(clientConfigsection, config);
             settings.TokenRenewRate = GetTokenRenewRate(clientConfigsection);
+            settings.DisableTokenRenewal = GetDisableTokenRenewal(clientConfigsection);
             settings.TokenTtl = GetTokenTtl(clientConfigsection);
             settings.DiscoveryEnabled = GetDiscoveryEnabled(clientConfigsection, settings.DiscoveryEnabled);
             settings.DiscoveryServiceId = GetDiscoveryServiceId(clientConfigsection, settings.DiscoveryServiceId);
@@ -170,6 +171,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         private static int GetTokenRenewRate(IConfigurationSection configServerSection)
         {
             return configServerSection.GetValue("tokenRenewRate", ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_RENEW_RATE);
+        }
+
+        private static bool GetDisableTokenRenewal(IConfigurationSection configServerSection)
+        {
+            return configServerSection.GetValue("disableTokenRenewal", ConfigServerClientSettings.DEFAULT_DISABLE_TOKEN_RENEWAL);
         }
 
         private static int GetTokenTtl(IConfigurationSection configServerSection)
