@@ -3,8 +3,15 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 trigger:
-- master
-- 2.x
+  branches:
+    include:
+    - master
+    - 2.x
+  paths:
+    exclude:
+    - README.md
+    - project-docs/*
+    - roadmaps/*
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
