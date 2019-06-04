@@ -606,7 +606,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             provider.Load();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
-            Assert.Equal(25, provider.Properties.Count);
+            Assert.Equal(26, provider.Properties.Count);
         }
 
         [Fact]
