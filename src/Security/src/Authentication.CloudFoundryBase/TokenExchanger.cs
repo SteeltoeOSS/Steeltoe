@@ -189,7 +189,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 _logger?.LogTrace(claim.Type + " : " + claim.Value);
             }
 #endif
-            var claimsId = new ClaimsIdentity(_options.SignInAsAuthenticationType);
+            var typedClaimNames = new[] { "user_name", "email", "user_id" };
+            var typedClaims = claims.Where(t => !typedClaimNames.Contains(t.Type, System.StringComparer.OrdinalIgnoreCase));
+
+            // raw dump of claims, exclude mapped typedClaimNames
+            var claimsId = new ClaimsIdentity(typedClaims, _options.SignInAsAuthenticationType);
 
             string userName = claims.First(c => c.Type == "user_name").Value;
             string email = claims.First(c => c.Type == "email").Value;

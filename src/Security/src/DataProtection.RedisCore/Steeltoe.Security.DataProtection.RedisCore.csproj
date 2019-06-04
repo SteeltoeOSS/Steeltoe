@@ -12,7 +12,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection.Redis" Version="$(AspNetCoreDataProtectionRedisVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="$(AspNetCoreDataProtectionRedisVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCoreDataProtectionRedisVersion)" />
   </ItemGroup>
 </Project>
