@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Serilog.Core;
+using System;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 {
@@ -50,12 +50,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// dynamically controlling the minimum log level via management endpoints
         /// </summary>
         /// <param name="builder">The <see cref="IWebHostBuilder"/> for configuring the WebHostBuilder  </param>
-        /// <param name="configureLogger">The delegate for configuring the <see cref="LoggerConfiguration" /> that will be used to construct a <see cref="Logger" /></param>
+        /// <param name="configureLogger">The delegate for configuring the <see cref="LoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" /></param>
         /// <param name="preserveStaticLogger">Indicates whether to preserve the value of <see cref="Serilog.Log.Logger"/>.</param>
         /// <returns>The <see cref="IWebHostBuilder"/></returns>
         public static IWebHostBuilder UseSerilogDynamicConsole(this IWebHostBuilder builder, Action<WebHostBuilderContext, Serilog.LoggerConfiguration> configureLogger, bool preserveStaticLogger = false)
         {
-            void ConfigureServices(WebHostBuilderContext context, IServiceCollection services)
+            builder.ConfigureServices((WebHostBuilderContext context, IServiceCollection services) =>
             {
                 services.AddSingleton<ISerilogOptions, SerilogOptions>();
                 var loggerConfiguration = new Serilog.LoggerConfiguration();
@@ -76,9 +76,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
                 services.AddSingleton<IDynamicLoggerProvider>(sp => new SerilogDynamicProvider(sp.GetRequiredService<IConfiguration>(), logger, levelSwitch));
                 services.AddSingleton<ILoggerFactory>(sp => new SerilogDynamicLoggerFactory(sp.GetRequiredService<IDynamicLoggerProvider>()));
-            }
-
-            builder.ConfigureServices(ConfigureServices);
+            });
 
             return builder;
         }
