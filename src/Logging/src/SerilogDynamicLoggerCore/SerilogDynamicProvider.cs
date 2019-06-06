@@ -62,6 +62,30 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                 .CreateLogger();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SerilogDynamicProvider"/> class.
+        /// Any Serilog settings can be passed in the IConfiguration as needed.
+        /// </summary>
+        /// <param name="configuration">Serilog readable <see cref="IConfiguration"/></param>
+        /// <param name="logger">Serilog logger<see cref="Serilog.Core.Logger"/></param>
+        /// <param name="loggingLevelSwitch">Serilog global log level switch<see cref="Serilog.Core.LoggingLevelSwitch"/></param>
+        /// <param name="options">Subset of Serilog options managed by wrapper<see cref="ISerilogOptions"/></param>
+        public SerilogDynamicProvider(IConfiguration configuration, Logger logger, LoggingLevelSwitch loggingLevelSwitch, ISerilogOptions options = null)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            _serilogOptions = options ?? new SerilogOptions(configuration);
+
+            // Add a level switch that controls the "Default" level at the root
+            _loggerSwitches.GetOrAdd("Default", loggingLevelSwitch);
+
+            // Add a global logger that will be the root of all other added loggers
+            _globalLogger = logger;
+        }
+
         public ILogger CreateLogger(string categoryName)
         {
             LogEventLevel eventLevel = _serilogOptions.MinimumLevel.Default;
@@ -69,9 +93,9 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             foreach (var overrideOption in _serilogOptions.MinimumLevel.Override)
             {
                if (categoryName.StartsWith(overrideOption.Key))
-                {
-                    eventLevel = overrideOption.Value;
-                }
+               {
+                   eventLevel = overrideOption.Value;
+               }
             }
 
             // Chain new loggers to the global loggers with its own switch
