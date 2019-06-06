@@ -45,6 +45,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             return builder;
         }
 
+        public static IWebHostBuilder UseServer123(this IWebHostBuilder hostBuilder)
+        {
+            return null;
+        }
+
         /// <summary>
         /// Sets Steeltoe <see cref="IDynamicLoggerProvider"/> Serilog implementation as a LoggerProvider which supports
         /// dynamically controlling the minimum log level via management endpoints
