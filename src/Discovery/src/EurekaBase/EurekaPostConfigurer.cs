@@ -119,6 +119,11 @@ namespace Steeltoe.Discovery.Eureka
                 return;
             }
 
+            if (EurekaInstanceOptions.Default_Appname.Equals(instOptions.AppName))
+            {
+                instOptions.AppName = si.ApplicationInfo.ApplicationName;
+            }
+
             if (string.IsNullOrEmpty(instOptions.RegistrationMethod) ||
                 ROUTE_REGISTRATIONMETHOD.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
             {
