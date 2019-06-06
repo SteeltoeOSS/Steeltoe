@@ -28,8 +28,8 @@ jobs:
     displayName: 'Prepare analysis on SonarCloud'
     inputs:
       SonarCloud: SonarCloud
-      organization: 'timhess-github'
-      projectKey: 'steeltoe-test'
+      organization: 'steeltoeoss'
+      projectKey: 'steeltoe'
   - task: DotNetCoreCLI@2
     inputs:
       command: build
