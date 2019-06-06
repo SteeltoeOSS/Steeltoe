@@ -30,13 +30,13 @@ jobs:
       SonarCloud: SonarCloud
       organization: 'timhess-github'
       projectKey: 'steeltoe-test'
-  - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
-    displayName: 'Run Code Analysis'
   - task: DotNetCoreCLI@2
     inputs:
       command: build
       projects: '**/*.sln'
       arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
+  - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+    displayName: 'Run Code Analysis'
   - task: DotNetCoreCLI@2
     inputs:
       command: test
