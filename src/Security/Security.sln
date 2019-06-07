@@ -55,6 +55,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Conne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\Common\src\Common.Http\Steeltoe.Common.Http.csproj", "{495C7871-EE98-4B53-ABAE-26294046DDDC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{E0BE23BB-47B5-4838-B845-254A6CE8F791}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{321350A1-20CE-4672-B901-9C58F12B43A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +129,14 @@ Global
 		{495C7871-EE98-4B53-ABAE-26294046DDDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{495C7871-EE98-4B53-ABAE-26294046DDDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{495C7871-EE98-4B53-ABAE-26294046DDDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0BE23BB-47B5-4838-B845-254A6CE8F791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0BE23BB-47B5-4838-B845-254A6CE8F791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0BE23BB-47B5-4838-B845-254A6CE8F791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0BE23BB-47B5-4838-B845-254A6CE8F791}.Release|Any CPU.Build.0 = Release|Any CPU
+		{321350A1-20CE-4672-B901-9C58F12B43A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{321350A1-20CE-4672-B901-9C58F12B43A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{321350A1-20CE-4672-B901-9C58F12B43A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{321350A1-20CE-4672-B901-9C58F12B43A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -146,6 +158,8 @@ Global
 		{950B0827-634F-43F9-86C4-4E615ED36A22} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
 		{9E65D8C3-5BCE-43D2-952A-C0A6C4477401} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{495C7871-EE98-4B53-ABAE-26294046DDDC} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
+		{E0BE23BB-47B5-4838-B845-254A6CE8F791} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
+		{321350A1-20CE-4672-B901-9C58F12B43A8} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BED45957-EDAD-4686-B959-BD5DA962F7B0}

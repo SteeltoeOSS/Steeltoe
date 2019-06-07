@@ -5,7 +5,7 @@
 
     <AspNetVersion>5.2.4</AspNetVersion>
     <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
-    <AspNetCoreDataProtectionRedisVersion>0.3.0</AspNetCoreDataProtectionRedisVersion>
+    <AspNetCoreDataProtectionRedisVersion>2.2.0</AspNetCoreDataProtectionRedisVersion>
     <AspNetCoreDepTestVersion>2.1.0</AspNetCoreDepTestVersion>
     <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
     <AspNetCoreMvcTestVersion>2.1.0</AspNetCoreMvcTestVersion>
