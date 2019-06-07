@@ -69,7 +69,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundryTasks", "src\CloudFoundryTasks\Steeltoe.Management.CloudFoundryTasks.csproj", "{7FEBDFA0-170C-454F-B42E-360FA0A90DD7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Managment.CloudFoundryTasks.Test", "test\CloudFoundryTasks.Test\Steeltoe.Managment.CloudFoundryTasks.Test.csproj", "{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Managment.CloudFoundryTasks.Test", "test\CloudFoundryTasks.Test\Steeltoe.Management.CloudFoundryTasks.Test.csproj", "{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{402D8CB5-C3C3-47E0-BEB3-63D0975E5109}"
 EndProject
