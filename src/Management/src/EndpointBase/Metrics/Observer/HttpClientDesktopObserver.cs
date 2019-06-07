@@ -17,6 +17,7 @@ using OpenCensus.Stats;
 using OpenCensus.Stats.Aggregations;
 using OpenCensus.Stats.Measures;
 using OpenCensus.Tags;
+using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Tags;
@@ -117,7 +118,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             if (ShouldIgnoreRequest(request.RequestUri.AbsolutePath))
             {
-                Logger?.LogDebug("HandleStopEvent: Ignoring path: {path}", request.RequestUri.AbsolutePath);
+                Logger?.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
                 return;
             }
 
