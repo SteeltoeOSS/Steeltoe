@@ -29,7 +29,7 @@ jobs:
     inputs:
       SonarCloud: SonarCloud
       organization: 'steeltoeoss'
-      projectKey: 'steeltoe'
+      projectKey: 'SteeltoeOSS_steeltoe'
   - task: DotNetCoreCLI@2
     inputs:
       command: build
