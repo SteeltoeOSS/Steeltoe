@@ -51,7 +51,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
         {
             if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
@@ -60,7 +60,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
                 var serialInfo = Serialize(result);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
-                await context.Response.WriteAsync(Serialize(result));
+                await context.Response.WriteAsync(Serialize(result)).ConfigureAwait(false);
             }
         }
 

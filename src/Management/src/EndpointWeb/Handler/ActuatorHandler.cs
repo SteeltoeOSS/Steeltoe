@@ -137,7 +137,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public async override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await _securityServices?.IsAccessAllowed(context, _endpoint.Options);
+            return await (_securityServices?.IsAccessAllowed(context, _endpoint.Options)).ConfigureAwait(false);
         }
     }
 
@@ -173,7 +173,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public async override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await _securityServices.IsAccessAllowed(context, _endpoint.Options);
+            return await _securityServices.IsAccessAllowed(context, _endpoint.Options).ConfigureAwait(false);
         }
     }
 }

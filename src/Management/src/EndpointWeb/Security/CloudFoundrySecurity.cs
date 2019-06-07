@@ -67,22 +67,22 @@ namespace Steeltoe.Management.Endpoint.Security
                 // identify the application so we can confirm the user making the request has permission
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE)).ConfigureAwait(false);
                     return false;
                 }
 
                 // make sure we know where to get user permissions
                 if (string.IsNullOrEmpty(_options.CloudFoundryApi))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE)).ConfigureAwait(false);
                     return false;
                 }
 
                 _logger?.LogTrace("Getting user permissions");
-                var sr = await GetPermissions(context);
+                var sr = await GetPermissions(context).ConfigureAwait(false);
                 if (sr.Code != HttpStatusCode.OK)
                 {
-                    await ReturnError(context, sr);
+                    await ReturnError(context, sr).ConfigureAwait(false);
                     return false;
                 }
 
@@ -90,7 +90,7 @@ namespace Steeltoe.Management.Endpoint.Security
                 var permissions = sr.Permissions;
                 if (!target.IsAccessAllowed(permissions))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE)).ConfigureAwait(false);
                     return false;
                 }
 
@@ -103,7 +103,7 @@ namespace Steeltoe.Management.Endpoint.Security
         internal async Task<SecurityResult> GetPermissions(HttpContextBase context)
         {
             string token = GetAccessToken(context.Request);
-            return await _base.GetPermissionsAsync(token);
+            return await _base.GetPermissionsAsync(token).ConfigureAwait(false);
         }
 
         internal string GetAccessToken(HttpRequestBase request)
@@ -126,7 +126,7 @@ namespace Steeltoe.Management.Endpoint.Security
             LogError(context, error);
             context.Response.Headers.Set("Content-Type",  "application/json;charset=UTF-8");
             context.Response.StatusCode = (int)error.Code;
-            await context.Response.Output.WriteAsync(_base.Serialize(error));
+            await context.Response.Output.WriteAsync(_base.Serialize(error)).ConfigureAwait(false);
         }
 
         private void LogError(HttpContextBase context, SecurityResult error)

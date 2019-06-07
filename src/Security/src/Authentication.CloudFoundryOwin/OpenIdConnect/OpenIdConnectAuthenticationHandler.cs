@@ -41,7 +41,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
         {
             if (Options.CallbackPath.HasValue && Options.CallbackPath == Request.Path)
             {
-                var ticket = await AuthenticateAsync();
+                var ticket = await AuthenticateAsync().ConfigureAwait(false);
                 if (ticket != null)
                 {
                     Context.Authentication.SignIn(ticket.Properties, ticket.Identity);
@@ -75,7 +75,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             _logger?.LogInformation("== exchanging auth code for token ==");
 
             var exchanger = new TokenExchanger(Options.AsAuthServerOptions(HostInfoFromRequest(Request) + Options.CallbackPath), null, _logger);
-            var identity = await exchanger.ExchangeAuthCodeForClaimsIdentity(code);
+            var identity = await exchanger.ExchangeAuthCodeForClaimsIdentity(code).ConfigureAwait(false);
 
             var properties = Options.StateDataFormat.Unprotect(Request.Query["state"]);
 

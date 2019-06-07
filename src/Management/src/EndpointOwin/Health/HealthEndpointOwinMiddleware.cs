@@ -43,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
         {
             if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
                 var result = _endpoint.Invoke(new OwinSecurityContext(context));
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json;charset-UTF-8" });
                 context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
-                await context.Response.WriteAsync(Serialize(result));
+                await context.Response.WriteAsync(Serialize(result)).ConfigureAwait(false);
             }
         }
     }

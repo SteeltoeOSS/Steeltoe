@@ -44,11 +44,11 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleHeapDumpRequestAsync(context);
+                await HandleHeapDumpRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -65,7 +65,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             }
 
             string gzFilename = filename + ".gz";
-            var result = await Utils.CompressFileAsync(filename, gzFilename);
+            var result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
 
             if (result != null)
             {
@@ -74,7 +74,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                     context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"");
                     context.Response.StatusCode = StatusCodes.Status200OK;
                     context.Response.ContentLength = result.Length;
-                    await result.CopyToAsync(context.Response.Body);
+                    await result.CopyToAsync(context.Response.Body).ConfigureAwait(false);
                 }
 
                 File.Delete(gzFilename);

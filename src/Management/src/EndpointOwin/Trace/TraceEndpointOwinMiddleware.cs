@@ -40,14 +40,14 @@ namespace Steeltoe.Management.EndpointOwin.Trace
         {
             if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
                 _logger?.LogTrace("Processing {SteeltoeEndpoint} request", _endpoint.GetType());
                 var result = _endpoint.Invoke();
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
-                await context.Response.WriteAsync(Serialize(result));
+                await context.Response.WriteAsync(Serialize(result)).ConfigureAwait(false);
             }
         }
     }

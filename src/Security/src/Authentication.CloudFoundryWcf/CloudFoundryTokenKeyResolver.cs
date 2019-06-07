@@ -92,7 +92,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             HttpResponseMessage response = null;
             try
             {
-                response = await _httpClient.SendAsync(requestMessage);
+                response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
             }
             finally
             {
@@ -101,7 +101,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsJsonAsync<JsonWebKeySet>();
+                return await response.Content.ReadAsJsonAsync<JsonWebKeySet>().ConfigureAwait(false);
             }
 
             return null;

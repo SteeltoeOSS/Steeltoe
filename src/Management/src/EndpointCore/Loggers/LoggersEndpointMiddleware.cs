@@ -45,11 +45,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleLoggersRequestAsync(context);
+                await HandleLoggersRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             var serialInfo = this.HandleRequest(null);
             _logger?.LogDebug("Returning: {0}", serialInfo);
             response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
         private bool ChangeLoggerLevel(HttpRequest request, string path)

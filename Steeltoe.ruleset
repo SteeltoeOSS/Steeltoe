@@ -71,6 +71,7 @@
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
     <Rule Id="CA1051" Action="Info" />
     <Rule Id="CA1031" Action="Info" />
+    <Rule Id="CA1040" Action="Info" />
     <Rule Id="CA1041" Action="Info" />
     <Rule Id="CA1707" Action="Hidden" />
   </Rules>

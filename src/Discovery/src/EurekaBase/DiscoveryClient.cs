@@ -271,7 +271,7 @@ namespace Steeltoe.Discovery.Eureka
                 if (info != null)
                 {
                     info.Status = InstanceStatus.DOWN;
-                    var result = await UnregisterAsync();
+                    var result = await UnregisterAsync().ConfigureAwait(false);
                     if (!result)
                     {
                         _logger?.LogWarning("Unregister failed during Shutdown");
@@ -317,7 +317,7 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     try
                     {
-                        var result = await RegisterAsync();
+                        var result = await RegisterAsync().ConfigureAwait(false);
                         if (result)
                         {
                             info.IsDirty = false;
@@ -363,11 +363,11 @@ namespace Steeltoe.Discovery.Eureka
                     ClientConfig.ShouldDisableDelta ||
                     _localRegionApps.GetRegisteredApplications().Count == 0)
                 {
-                    fetched = await FetchFullRegistryAsync();
+                    fetched = await FetchFullRegistryAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    fetched = await FetchRegistryDeltaAsync();
+                    fetched = await FetchRegistryDeltaAsync().ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -407,7 +407,7 @@ namespace Steeltoe.Discovery.Eureka
 
             try
             {
-                EurekaHttpResponse resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId);
+                EurekaHttpResponse resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId).ConfigureAwait(false);
                 _logger?.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 return resp.StatusCode == HttpStatusCode.OK;
             }
@@ -430,7 +430,7 @@ namespace Steeltoe.Discovery.Eureka
 
             try
             {
-                EurekaHttpResponse resp = await HttpClient.RegisterAsync(inst);
+                EurekaHttpResponse resp = await HttpClient.RegisterAsync(inst).ConfigureAwait(false);
                 var result = resp.StatusCode == HttpStatusCode.NoContent;
                 _logger?.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 if (result)
@@ -461,16 +461,16 @@ namespace Steeltoe.Discovery.Eureka
 
             if (inst.IsDirty)
             {
-                await RegisterDirtyInstanceInfo(inst);
+                await RegisterDirtyInstanceInfo(inst).ConfigureAwait(false);
             }
 
             try
             {
-                EurekaHttpResponse<InstanceInfo> resp = await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.UNKNOWN);
+                EurekaHttpResponse<InstanceInfo> resp = await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.UNKNOWN).ConfigureAwait(false);
                 _logger?.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 if (resp.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return await RegisterAsync();
+                    return await RegisterAsync().ConfigureAwait(false);
                 }
 
                 var result = resp.StatusCode == HttpStatusCode.OK;
@@ -498,11 +498,11 @@ namespace Steeltoe.Discovery.Eureka
 
             if (string.IsNullOrEmpty(ClientConfig.RegistryRefreshSingleVipAddress))
             {
-                resp = await HttpClient.GetApplicationsAsync();
+                resp = await HttpClient.GetApplicationsAsync().ConfigureAwait(false);
             }
             else
             {
-                resp = await HttpClient.GetVipAsync(ClientConfig.RegistryRefreshSingleVipAddress);
+                resp = await HttpClient.GetVipAsync(ClientConfig.RegistryRefreshSingleVipAddress).ConfigureAwait(false);
             }
 
             _logger?.LogDebug(
@@ -534,7 +534,7 @@ namespace Steeltoe.Discovery.Eureka
             long startingCounter = _registryFetchCounter;
             Applications delta = null;
 
-            EurekaHttpResponse<Applications> resp = await HttpClient.GetDeltaAsync();
+            EurekaHttpResponse<Applications> resp = await HttpClient.GetDeltaAsync().ConfigureAwait(false);
             _logger?.LogDebug("FetchRegistryDelta returned: {StatusCode}", resp.StatusCode);
             if (resp.StatusCode == HttpStatusCode.OK)
             {
@@ -544,7 +544,7 @@ namespace Steeltoe.Discovery.Eureka
             if (delta == null)
             {
                 // Log
-                return await FetchFullRegistryAsync();
+                return await FetchFullRegistryAsync().ConfigureAwait(false);
             }
 
             if (Interlocked.CompareExchange(ref _registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
@@ -554,7 +554,7 @@ namespace Steeltoe.Discovery.Eureka
                 if (!hashCode.Equals(delta.AppsHashCode))
                 {
                     _logger?.LogWarning($"FetchRegistryDelta discarding delta, hashcodes mismatch: {hashCode}!={delta.AppsHashCode}");
-                    return await FetchFullRegistryAsync();
+                    return await FetchFullRegistryAsync().ConfigureAwait(false);
                 }
                 else
                 {
@@ -605,7 +605,7 @@ namespace Steeltoe.Discovery.Eureka
 
         protected internal async T.Task<bool> RegisterDirtyInstanceInfo(InstanceInfo inst)
         {
-            var regResult = await RegisterAsync();
+            var regResult = await RegisterAsync().ConfigureAwait(false);
             _logger?.LogDebug("Register dirty InstanceInfo returned {status}", regResult);
             if (regResult)
             {
@@ -693,7 +693,7 @@ namespace Steeltoe.Discovery.Eureka
                 return;
             }
 
-            var result = await RenewAsync();
+            var result = await RenewAsync().ConfigureAwait(false);
             if (!result)
             {
                 _logger?.LogError("HeartBeat failed");
@@ -707,7 +707,7 @@ namespace Steeltoe.Discovery.Eureka
                 return;
             }
 
-            bool result = await FetchRegistryAsync(false);
+            bool result = await FetchRegistryAsync(false).ConfigureAwait(false);
             if (!result)
             {
                 _logger?.LogError("CacheRefresh failed");

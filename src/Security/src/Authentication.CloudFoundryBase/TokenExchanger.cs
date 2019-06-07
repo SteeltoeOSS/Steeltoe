@@ -62,7 +62,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpResponseMessage response;
             try
             {
-                response = await _httpClient.SendAsync(requestMessage, cancellationToken);
+                response = await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -79,11 +79,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns>The user's ClaimsIdentity</returns>
         public async Task<ClaimsIdentity> ExchangeAuthCodeForClaimsIdentity(string code)
         {
-            HttpResponseMessage response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default(CancellationToken));
+            HttpResponseMessage response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default(CancellationToken)).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
-                var tokens = await response.Content.ReadAsJsonAsync<OpenIdTokenResponse>();
+                var tokens = await response.Content.ReadAsJsonAsync<OpenIdTokenResponse>().ConfigureAwait(false);
 #if DEBUG
                 _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
                 _logger?.LogTrace("Access token received: {accessToken}", tokens.AccessToken);
@@ -96,7 +96,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 _logger?.LogError("Failed call to exchange code for token : " + response.StatusCode);
                 _logger?.LogWarning(response.ReasonPhrase);
-                _logger?.LogInformation(await response.Content.ReadAsStringAsync());
+                _logger?.LogInformation(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
                 return null;
             }
@@ -116,7 +116,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpResponseMessage response;
             try
             {
-                response = await _httpClient.SendAsync(requestMessage);
+                response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
             }
             finally
             {

@@ -82,8 +82,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 var uaaOverrideUrl = Environment.GetEnvironmentVariable("UAA_Server_Override");
                 if (string.IsNullOrEmpty(uaaOverrideUrl))
                 {
-                    var info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}");
-                    var infoResponse = await HandleErrorParseResponse<CredHubServerInfo>(info, "GET /info from CredHub Server");
+                    var info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}").ConfigureAwait(false);
+                    var infoResponse = await HandleErrorParseResponse<CredHubServerInfo>(info, "GET /info from CredHub Server").ConfigureAwait(false);
                     tokenUri = new Uri($"{infoResponse.AuthServer.First().Value}/oauth/token");
                     _logger?.LogInformation($"Targeted CredHub server uses UAA server at {tokenUri}");
                 }
@@ -101,14 +101,14 @@ namespace Steeltoe.Security.DataProtection.CredHub
                     new KeyValuePair<string, string>("grant_type", "client_credentials"),
                     new KeyValuePair<string, string>("response_type", "token")
                 };
-                var response = await _httpClient.PostAsync(tokenUri, new FormUrlEncodedContent(postParams));
+                var response = await _httpClient.PostAsync(tokenUri, new FormUrlEncodedContent(postParams)).ConfigureAwait(false);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    _logger?.LogTrace(await response.Content.ReadAsStringAsync());
+                    _logger?.LogTrace(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
                     // set the token
-                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", payload.Value<string>("access_token"));
 
                     return this;
@@ -116,7 +116,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 else
                 {
                     _logger?.LogCritical($"Authentication with UAA Server failed, status code: {response.StatusCode}");
-                    _logger?.LogCritical(await response.Content.ReadAsStringAsync());
+                    _logger?.LogCritical(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                     throw new AuthenticationException($"Authentication with UAA Server failed, status code: {response.StatusCode}");
                 }
             }
@@ -133,12 +133,12 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to PUT {_baseCredHubUrl}/v1/data");
-                var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, _serializerSettings);
+                var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, _serializerSettings).ConfigureAwait(false);
 
-                var dataAsString = await response.Content.ReadAsStringAsync();
+                var dataAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var s = JsonConvert.DeserializeObject<CredHubCredential<T>>(dataAsString, _serializerSettings);
 
-                return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}");
+                return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}").ConfigureAwait(false);
             }
             finally
             {
@@ -153,8 +153,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
-                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", request, _serializerSettings);
-                return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}");
+                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", request, _serializerSettings).ConfigureAwait(false);
+                return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}").ConfigureAwait(false);
             }
             finally
             {
@@ -173,8 +173,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
-                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/regenerate", new Dictionary<string, string> { { "name", name } });
-                return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Regenerate  {typeof(T).Name}");
+                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/regenerate", new Dictionary<string, string> { { "name", name } }).ConfigureAwait(false);
+                return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Regenerate  {typeof(T).Name}").ConfigureAwait(false);
             }
             finally
             {
@@ -193,8 +193,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/bulk-regenerate");
-                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/bulk-regenerate", new Dictionary<string, string> { { "signed_by", certificateAuthority } });
-                return await HandleErrorParseResponse<RegeneratedCertificates>(response, "Bulk Regenerate Credentials");
+                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/bulk-regenerate", new Dictionary<string, string> { { "signed_by", certificateAuthority } }).ConfigureAwait(false);
+                return await HandleErrorParseResponse<RegeneratedCertificates>(response, "Bulk Regenerate Credentials").ConfigureAwait(false);
             }
             finally
             {
@@ -213,8 +213,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data{id}");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data/{id}");
-                return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Get {typeof(T).Name} by Id");
+                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data/{id}").ConfigureAwait(false);
+                return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Get {typeof(T).Name} by Id").ConfigureAwait(false);
             }
             finally
             {
@@ -233,8 +233,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name={name}&current=true");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&current=true");
-                return (await HandleErrorParseResponse<CredHubResponse<T>>(response, $"Get {typeof(T).Name} by Name")).Data.First();
+                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&current=true").ConfigureAwait(false);
+                return (await HandleErrorParseResponse<CredHubResponse<T>>(response, $"Get {typeof(T).Name} by Name").ConfigureAwait(false)).Data.First();
             }
             finally
             {
@@ -253,8 +253,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name={name}&versions={entries}");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&versions={entries}");
-                return (await HandleErrorParseResponse<CredHubResponse<T>>(response, "Get credential by name with History")).Data;
+                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&versions={entries}").ConfigureAwait(false);
+                return (await HandleErrorParseResponse<CredHubResponse<T>>(response, "Get credential by name with History").ConfigureAwait(false)).Data;
             }
             finally
             {
@@ -273,8 +273,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name-like={name}");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name-like={name}");
-                return (await HandleErrorParseResponse<CredentialFindResponse>(response, "Find credential by Name")).Credentials;
+                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name-like={name}").ConfigureAwait(false);
+                return (await HandleErrorParseResponse<CredentialFindResponse>(response, "Find credential by Name").ConfigureAwait(false)).Credentials;
             }
             finally
             {
@@ -293,8 +293,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?path={path}");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?path={path}");
-                return (await HandleErrorParseResponse<CredentialFindResponse>(response, "Find by Path")).Credentials;
+                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?path={path}").ConfigureAwait(false);
+                return (await HandleErrorParseResponse<CredentialFindResponse>(response, "Find by Path").ConfigureAwait(false)).Credentials;
             }
             finally
             {
@@ -308,8 +308,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?paths=true");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?paths=true");
-                return (await HandleErrorParseResponse<CredentialPathsResponse>(response, "Find all Paths")).Paths;
+                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?paths=true").ConfigureAwait(false);
+                return (await HandleErrorParseResponse<CredentialPathsResponse>(response, "Find all Paths").ConfigureAwait(false)).Paths;
             }
             finally
             {
@@ -328,7 +328,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to DELETE {_baseCredHubUrl}/v1/data?name={name}");
-                var response = await _httpClient.DeleteAsync($"{_baseCredHubUrl}/v1/data?name={name}");
+                var response = await _httpClient.DeleteAsync($"{_baseCredHubUrl}/v1/data?name={name}").ConfigureAwait(false);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent || response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
@@ -354,8 +354,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/permissions?credential_name={name}");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/permissions?credential_name={name}");
-                return (await HandleErrorParseResponse<CredentialPermissions>(response, "Get Permissions")).Permissions;
+                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/permissions?credential_name={name}").ConfigureAwait(false);
+                return (await HandleErrorParseResponse<CredentialPermissions>(response, "Get Permissions").ConfigureAwait(false)).Permissions;
             }
             finally
             {
@@ -380,9 +380,9 @@ namespace Steeltoe.Security.DataProtection.CredHub
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/permissions");
                 var newPermissions = new CredentialPermissions { CredentialName = name, Permissions = permissions };
-                var addResponse = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/permissions", newPermissions, _serializerSettings);
+                var addResponse = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/permissions", newPermissions, _serializerSettings).ConfigureAwait(false);
 
-                return await GetPermissionsAsync(name);
+                return await GetPermissionsAsync(name).ConfigureAwait(false);
             }
             finally
             {
@@ -406,7 +406,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to DELETE {_baseCredHubUrl}/v1/permissions?credential_name={name}&actor={actor}");
-                var response = await _httpClient.DeleteAsync($"{_baseCredHubUrl}/v1/permissions?credential_name={name}&actor={actor}");
+                var response = await _httpClient.DeleteAsync($"{_baseCredHubUrl}/v1/permissions?credential_name={name}&actor={actor}").ConfigureAwait(false);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent || response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
@@ -432,11 +432,11 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/interpolate");
-                var response = await _httpClient.PostAsync($"{_baseCredHubUrl}/v1/interpolate", new StringContent(serviceData, Encoding.Default, "application/json"));
+                var response = await _httpClient.PostAsync($"{_baseCredHubUrl}/v1/interpolate", new StringContent(serviceData, Encoding.Default, "application/json")).ConfigureAwait(false);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadAsStringAsync();
+                    return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
                 else
                 {
@@ -453,12 +453,12 @@ namespace Steeltoe.Security.DataProtection.CredHub
         {
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsJsonAsync<T>();
+                return await response.Content.ReadAsJsonAsync<T>().ConfigureAwait(false);
             }
             else
             {
                 _logger?.LogCritical($"Failed to {operation}, status code: {response.StatusCode}");
-                _logger?.LogCritical(await response.Content.ReadAsStringAsync());
+                _logger?.LogCritical(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                 throw new CredHubException($"Failed to {operation}, status code: {response.StatusCode}");
             }
         }

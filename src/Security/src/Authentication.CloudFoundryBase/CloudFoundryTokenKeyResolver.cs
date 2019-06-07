@@ -97,7 +97,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpResponseMessage response = null;
             try
             {
-                response = await client.SendAsync(requestMessage);
+                response = await client.SendAsync(requestMessage).ConfigureAwait(false);
             }
             finally
             {
@@ -106,7 +106,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadAsStringAsync();
+                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return GetJsonWebKeySet(result);
             }
 

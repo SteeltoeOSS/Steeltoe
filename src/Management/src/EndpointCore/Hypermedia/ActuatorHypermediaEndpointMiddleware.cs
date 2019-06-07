@@ -41,11 +41,11 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
 
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleCloudFoundryRequestAsync(context);
+                await HandleCloudFoundryRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             var serialInfo = HandleRequest(GetRequestUri(context.Request));
             _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
         protected internal string GetRequestUri(HttpRequest request)
