@@ -52,5 +52,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
         {
             get { return commandClass;  }
         }
+
+        public HystrixRuntimeException()
+        {
+        }
+
+        public HystrixRuntimeException(string message)
+            : base(message)
+        {
+        }
+
+        public HystrixRuntimeException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
     }
 }
