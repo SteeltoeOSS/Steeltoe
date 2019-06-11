@@ -16,6 +16,7 @@ using System;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
+    [AttributeUsage(AttributeTargets.Class)]
     public class ServiceInfoFactoryAttribute : Attribute
     {
     }

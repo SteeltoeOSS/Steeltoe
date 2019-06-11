@@ -107,7 +107,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             foreach (var h in headers)
             {
                 // Add filtering
-                result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
+                result.Add(h.Key.ToUpperInvariant(), GetHeaderValue(h.Value));
             }
 
             return result;

@@ -69,10 +69,21 @@
     <Rule Id="CA2242" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
-    <Rule Id="CA1051" Action="Info" />
     <Rule Id="CA1031" Action="Info" />
     <Rule Id="CA1040" Action="Info" />
     <Rule Id="CA1041" Action="Info" />
+    <Rule Id="CA1051" Action="Info" />
+
+    <!-- Uri related -->
+    <Rule Id="CA1054" Action="Info" />
+    <Rule Id="CA1055" Action="Info" />
+    <Rule Id="CA1056" Action="Info" />
+    
+    <!-- Locale settings -->
+    <Rule Id="CA1305" Action="Info" />
+    <Rule Id="CA1307" Action="Info" />
+    
+    <!-- underscores -->
     <Rule Id="CA1707" Action="Hidden" />
   </Rules>
 </RuleSet>

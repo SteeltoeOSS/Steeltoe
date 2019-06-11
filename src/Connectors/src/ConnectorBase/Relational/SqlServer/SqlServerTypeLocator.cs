@@ -72,7 +72,9 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.SqlServer
                 var type = ConnectorHelpers.FindType(Assemblies, ConnectionTypeNames);
                 if (type == null)
                 {
+#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
                     throw new ConnectorException("Unable to find SqlConnection, are you missing a Microsoft SQL Server ADO.NET assembly?");
+#pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
                 }
 
                 return type;

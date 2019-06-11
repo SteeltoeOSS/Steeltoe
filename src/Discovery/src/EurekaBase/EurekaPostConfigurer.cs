@@ -18,7 +18,7 @@ using System;
 
 namespace Steeltoe.Discovery.Eureka
 {
-    public class EurekaPostConfigurer
+    public static class EurekaPostConfigurer
     {
         public const string SPRING_APPLICATION_NAME_KEY = "spring:application:name";
         public const string SPRING_APPLICATION_INSTANCEID_KEY = "spring:application:instance_id";
