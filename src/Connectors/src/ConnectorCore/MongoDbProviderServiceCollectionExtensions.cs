@@ -14,10 +14,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
 using System;
+using System.Linq;
 
 namespace Steeltoe.CloudFoundry.Connector.MongoDb
 {
@@ -29,9 +31,9 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="healthChecksBuilder">Microsoft HealthChecksBuilder</param>
+        /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, IHealthChecksBuilder healthChecksBuilder = null)
+        public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -45,7 +47,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
 
             MongoDbServiceInfo info = config.GetSingletonServiceInfo<MongoDbServiceInfo>();
 
-            DoAdd(services, info, config, contextLifetime, healthChecksBuilder);
+            DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
         }
 
@@ -56,9 +58,9 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="healthChecksBuilder">Microsoft HealthChecksBuilder</param>
+        /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, IHealthChecksBuilder healthChecksBuilder = null)
+        public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -77,24 +79,20 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
 
             MongoDbServiceInfo info = config.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
 
-            DoAdd(services, info, config, contextLifetime, healthChecksBuilder);
+            DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, MongoDbServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, IHealthChecksBuilder healthChecksBuilder)
+        private static void DoAdd(IServiceCollection services, MongoDbServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks = false)
         {
             Type mongoClient = MongoDbTypeLocator.MongoClient;
             var mongoOptions = new MongoDbConnectorOptions(config);
             var clientFactory = new MongoDbConnectorFactory(info, mongoOptions, mongoClient);
             services.Add(new ServiceDescriptor(MongoDbTypeLocator.IMongoClient, clientFactory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(mongoClient, clientFactory.Create, contextLifetime));
-            if (healthChecksBuilder == null)
+            if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
             {
                 services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new MongoDbHealthContributor(clientFactory, ctx.GetService<ILogger<MongoDbHealthContributor>>()), ServiceLifetime.Singleton));
-            }
-            else
-            {
-                healthChecksBuilder.AddMongoDb(clientFactory.CreateConnectionString());
             }
 
             Type mongoInfo = ConnectorHelpers.FindType(MongoDbTypeLocator.Assemblies, MongoDbTypeLocator.MongoConnectionInfo);

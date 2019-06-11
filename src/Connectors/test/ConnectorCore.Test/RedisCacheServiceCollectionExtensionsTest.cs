@@ -118,6 +118,48 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         }
 
         [Fact]
+        public void AddDistributedRedisCache_DoesntAddRedisHealthContributor_WhenCommunityHealthCheckExists()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<RedisConnectionInfo>();
+            services.AddHealthChecks().AddRedis(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
+
+            // Assert
+            Assert.Null(healthContributor);
+        }
+
+        [Fact]
+        public void AddDistributedRedisCache_AddsRedisHealthContributor_WhenCommunityHealthCheckExistsAndForced()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<RedisConnectionInfo>();
+            services.AddHealthChecks().AddRedis(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, addSteeltoeHealthChecks: true);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
+        }
+
+        [Fact]
         public void AddDistributedRedisCache_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
             // Arrange
