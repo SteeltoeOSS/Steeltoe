@@ -19,16 +19,19 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisConnectionInfo : IConnectorInfo
     {
-        public Connection Get(IConfiguration configuration)
+        public Connection Get(IConfiguration configuration, string serviceName = null)
         {
-            var info = configuration.GetSingletonServiceInfo<RedisServiceInfo>();
+            var info = serviceName == null
+                ? configuration.GetSingletonServiceInfo<RedisServiceInfo>()
+                : configuration.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
+
             var redisConfig = new RedisCacheConnectorOptions(configuration);
             var configurer = new RedisCacheConfigurer();
             var connString = configurer.Configure(info, redisConfig).ToString();
             return new Connection
             {
                 ConnectionString = connString,
-                Name = "Redis"
+                Name = "Redis" + serviceName?.Insert(0, "-")
             };
         }
     }

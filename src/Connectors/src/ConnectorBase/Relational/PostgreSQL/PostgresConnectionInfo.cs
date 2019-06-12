@@ -19,15 +19,18 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
     public class PostgresConnectionInfo : IConnectorInfo
     {
-        public Connection Get(IConfiguration configuration)
+        public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
+            var info = serviceName == null
+             ? configuration.GetSingletonServiceInfo<PostgresServiceInfo>()
+             : configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+
             var postgresConfig = new PostgresProviderConnectorOptions(configuration);
             var configurer = new PostgresProviderConfigurer();
             return new Connection
             {
                 ConnectionString = configurer.Configure(info, postgresConfig),
-                Name = "Postgres"
+                Name = "Postgres" + serviceName?.Insert(0, "-")
             };
         }
     }

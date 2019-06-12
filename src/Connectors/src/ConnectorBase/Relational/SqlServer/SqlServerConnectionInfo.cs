@@ -19,15 +19,18 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
     public class SqlServerConnectionInfo : IConnectorInfo
     {
-        public Connection Get(IConfiguration configuration)
+        public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = configuration.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            var info = serviceName == null
+            ? configuration.GetSingletonServiceInfo<SqlServerServiceInfo>()
+            : configuration.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+
             var sqlConfig = new SqlServerProviderConnectorOptions(configuration);
             var configurer = new SqlServerProviderConfigurer();
             return new Connection
             {
                 ConnectionString = configurer.Configure(info, sqlConfig),
-                Name = "SqlServer"
+                Name = "SqlServer" + serviceName?.Insert(0, "-")
             };
         }
     }

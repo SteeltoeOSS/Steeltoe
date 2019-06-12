@@ -20,7 +20,7 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public interface IConnectorInfo
     {
-        Connection Get(IConfiguration configuration);
+        Connection Get(IConfiguration configuration, string serviceName);
     }
 
     public class Connection

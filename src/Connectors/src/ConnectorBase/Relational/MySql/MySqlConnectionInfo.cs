@@ -20,16 +20,19 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public class MySqlConnectionInfo : IConnectorInfo
     {
-        public Connection Get(IConfiguration configuration)
+        public Connection Get(IConfiguration configuration, string serviceName)
         {
-            MySqlServiceInfo info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
+            var info = serviceName == null
+              ? configuration.GetSingletonServiceInfo<MySqlServiceInfo>()
+              : configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+
             var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
             var configurer = new MySqlProviderConfigurer();
             var connString = configurer.Configure(info, mySqlConfig);
             return new Connection
             {
                 ConnectionString = connString,
-                Name = "MySql"
+                Name = "MySql" + serviceName?.Insert(0, "-")
             };
         }
     }

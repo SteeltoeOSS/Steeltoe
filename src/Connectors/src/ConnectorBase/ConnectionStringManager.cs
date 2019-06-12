@@ -27,10 +27,10 @@ namespace Steeltoe.CloudFoundry.Connector
             _configuration = configuration;
         }
 
-        public Connection Get<T>()
+        public Connection Get<T>(string serviceName = null)
             where T : IConnectorInfo, new()
         {
-            return new T().Get(_configuration);
+            return new T().Get(_configuration, serviceName);
         }
     }
 }

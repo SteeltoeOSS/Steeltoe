@@ -13,10 +13,17 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.MongoDb.Test;
+using Steeltoe.CloudFoundry.Connector.MySql.Test;
 using Steeltoe.CloudFoundry.Connector.PostgreSql;
+using Steeltoe.CloudFoundry.Connector.PostgreSql.Test;
 using Steeltoe.CloudFoundry.Connector.RabbitMQ;
 using Steeltoe.CloudFoundry.Connector.Redis;
+using Steeltoe.CloudFoundry.Connector.Redis.Test;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
+using Steeltoe.CloudFoundry.Connector.SqlServer.Test;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Test
@@ -35,6 +42,19 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         }
 
         [Fact]
+        public void MysqlConnectionInfoByName()
+        {
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+            var config = new ConfigurationBuilder().AddCloudFoundry().Build();
+
+            var cm = new ConnectionStringManager(config);
+            var connInfo = cm.Get<MySqlConnectionInfo>("spring-cloud-broker-db");
+
+            Assert.NotNull(connInfo);
+            Assert.Equal("MySql-spring-cloud-broker-db", connInfo.Name);
+        }
+
+        [Fact]
         public void PostgresConnectionInfo()
         {
             var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
@@ -43,6 +63,17 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             Assert.NotNull(connInfo);
             Assert.Equal("Host=localhost;Port=5432;", connInfo.ConnectionString);
             Assert.Equal("Postgres", connInfo.Name);
+        }
+
+        [Fact]
+        public void PostgresConnectionInfoByName()
+        {
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP_EDB);
+            var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
+            var connInfo = cm.Get<PostgresConnectionInfo>("myPostgres");
+
+            Assert.NotNull(connInfo);
+            Assert.Equal("Postgres-myPostgres", connInfo.Name);
         }
 
         [Fact]
@@ -57,6 +88,18 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         }
 
         [Fact]
+        public void SqlServerConnectionInfo_ByName()
+        {
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVCAP);
+
+            var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
+            var connInfo = cm.Get<SqlServerConnectionInfo>("mySqlServerService");
+
+            Assert.NotNull(connInfo);
+            Assert.Equal("SqlServer-mySqlServerService", connInfo.Name);
+        }
+
+        [Fact]
         public void RedisConnectionInfo()
         {
             var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
@@ -65,6 +108,18 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             Assert.NotNull(connInfo);
             Assert.Equal("localhost:6379,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connInfo.ConnectionString);
             Assert.Equal("Redis", connInfo.Name);
+        }
+
+        [Fact]
+        public void RedisConnectionInfoByName()
+        {
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVCAP);
+
+            var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
+            var connInfo = cm.Get<RedisConnectionInfo>("myRedisService1");
+
+            Assert.NotNull(connInfo);
+            Assert.Equal("Redis-myRedisService1", connInfo.Name);
         }
 
         [Fact]
@@ -87,6 +142,18 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             Assert.NotNull(connInfo);
             Assert.Equal("mongodb://localhost:27017", connInfo.ConnectionString);
             Assert.Equal("MongoDb", connInfo.Name);
+        }
+
+        [Fact]
+        public void MongoDbConnectionInfoByName()
+        {
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBinding_Enterprise_VCAP);
+
+            var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
+            var connInfo = cm.Get<MongoDbConnectionInfo>("steeltoe");
+
+            Assert.NotNull(connInfo);
+            Assert.Equal("MongoDb-steeltoe", connInfo.Name);
         }
     }
 }

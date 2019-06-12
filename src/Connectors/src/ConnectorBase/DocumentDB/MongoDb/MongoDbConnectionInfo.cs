@@ -21,15 +21,18 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public class MongoDbConnectionInfo : IConnectorInfo
     {
-        public Connection Get(IConfiguration configuration)
+        public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
+            var info = serviceName == null
+               ? configuration.GetSingletonServiceInfo<MongoDbServiceInfo>()
+               : configuration.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
+
             var mongoConfig = new MongoDbConnectorOptions(configuration);
             var configurer = new MongoDbProviderConfigurer();
             return new Connection
             {
                 ConnectionString = configurer.Configure(info, mongoConfig),
-                Name = "MongoDb"
+                Name = "MongoDb" + serviceName?.Insert(0, "-")
             };
         }
     }
