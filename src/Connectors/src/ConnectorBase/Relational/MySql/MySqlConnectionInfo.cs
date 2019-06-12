@@ -18,7 +18,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector
 {
-    public class MySqlConnectionInfo : IConnectorInfo
+    public class MySqlConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {

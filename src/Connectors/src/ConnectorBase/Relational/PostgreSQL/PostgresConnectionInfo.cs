@@ -17,7 +17,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
-    public class PostgresConnectionInfo : IConnectorInfo
+    public class PostgresConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {

@@ -19,7 +19,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector
 {
-    public class MongoDbConnectionInfo : IConnectorInfo
+    public class MongoDbConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {

@@ -18,7 +18,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
-    public class RabbitMQConnectionInfo : IConnectorInfo
+    public class RabbitMQConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {

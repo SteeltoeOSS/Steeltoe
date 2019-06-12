@@ -101,9 +101,6 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             {
                 services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), ServiceLifetime.Singleton));
             }
-
-            var foo = new PostgresProviderConfigurer();
-            factory.CreateConnectionString();
         }
     }
 }

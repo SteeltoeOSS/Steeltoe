@@ -18,7 +18,7 @@ using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector
 {
-    public interface IConnectorInfo
+    public interface IConnectionInfo
     {
         Connection Get(IConfiguration configuration, string serviceName);
     }

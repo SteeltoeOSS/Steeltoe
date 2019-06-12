@@ -17,7 +17,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
-    public class RedisConnectionInfo : IConnectorInfo
+    public class RedisConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName = null)
         {

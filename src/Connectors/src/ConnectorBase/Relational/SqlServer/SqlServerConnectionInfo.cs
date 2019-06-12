@@ -17,7 +17,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer
 {
-    public class SqlServerConnectionInfo : IConnectorInfo
+    public class SqlServerConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
