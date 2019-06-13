@@ -53,7 +53,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
                     return true;
                 }
 
-                _logger?.LogDebug("Request path matched callback path, but not auth ticket was not found");
+                _logger?.LogDebug("Request path matched callback path, but no auth ticket was not found");
             }
 
             // Nothing to see here, please disperse.
