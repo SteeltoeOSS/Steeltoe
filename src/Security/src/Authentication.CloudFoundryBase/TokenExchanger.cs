@@ -83,6 +83,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             if (response.IsSuccessStatusCode)
             {
+                _logger?.LogTrace("Successfully exchanged auth code for a token");
                 var tokens = await response.Content.ReadAsJsonAsync<OpenIdTokenResponse>();
 #if DEBUG
                 _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
@@ -183,6 +184,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         internal ClaimsIdentity BuildIdentityWithClaims(IEnumerable<Claim> claims, string tokenScopes, string accessToken)
         {
+            _logger?.LogTrace("Building identity with claims from token");
 #if DEBUG
             foreach (var claim in claims)
             {
@@ -206,6 +208,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                         new Claim(ClaimTypes.Email, email),
                     });
 
+            _logger?.LogTrace("Adding scope claims from token");
             var additionalScopes = tokenScopes.Split(' ').Where(s => s != "openid");
             foreach (var scope in additionalScopes)
             {
@@ -213,6 +216,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
 
             claimsId.AddClaim(new Claim(ClaimTypes.Authentication, accessToken));
+            _logger?.LogTrace("Finished building identity with claims from token");
 
             return claimsId;
         }
