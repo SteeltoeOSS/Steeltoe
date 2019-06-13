@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Security;
 using System;
@@ -95,7 +96,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 out RemoteCertificateValidationCallback prevValidator);
             try
             {
-                _logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
+                _logger?.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
 
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
@@ -142,7 +143,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             {
                 json = await response.Content.ReadAsStringAsync();
 
-                _logger?.LogDebug("GetPermisions returned json: {0}", json);
+                _logger?.LogDebug("GetPermisions returned json: {0}", SecurityUtilities.SanitizeInput(json));
 
                 var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
@@ -154,7 +155,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
             catch (Exception e)
             {
-                _logger?.LogError("Exception {0} extracting permissions from {1}", e, json);
+                _logger?.LogError("Exception {0} extracting permissions from {1}", e, SecurityUtilities.SanitizeInput(json));
             }
 
             _logger?.LogDebug("GetPermisions returning: {0}", permissions);
