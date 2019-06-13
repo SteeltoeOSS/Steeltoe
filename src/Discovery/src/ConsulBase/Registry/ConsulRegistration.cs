@@ -242,7 +242,7 @@ namespace Steeltoe.Discovery.Consul.Registry
                 {
                     toAppend = curr;
                 }
-                else if (prev == default(char) || !(prev == SEPARATOR))
+                else if (prev == default(char) || prev != SEPARATOR)
                 {
                     toAppend = SEPARATOR;
                 }

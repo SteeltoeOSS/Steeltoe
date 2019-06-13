@@ -127,7 +127,7 @@ namespace Steeltoe.CloudFoundry.Connector
         /// <returns>Service info</returns>
         public IServiceInfo GetServiceInfo(string name)
         {
-            return _serviceInfos.Where((info) => info.Id.Equals(name)).FirstOrDefault();
+            return _serviceInfos.FirstOrDefault((info) => info.Id.Equals(name));
         }
 
         internal void BuildServiceInfoFactories()

@@ -57,12 +57,12 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         /// <summary>
         /// Gets the CreateConnection method of ConnectionFactory
         /// </summary>
-        public static MethodInfo CreateConnectionMethod => FindMethodOrThrow(ConnectionFactory, "CreateConnection", new Type[0]);
+        public static MethodInfo CreateConnectionMethod => FindMethodOrThrow(ConnectionFactory, "CreateConnection", Array.Empty<Type>());
 
         /// <summary>
         /// Gets the Close method for IConnection
         /// </summary>
-        public static MethodInfo CloseConnectionMethod => FindMethodOrThrow(IConnection, "Close", new Type[0]);
+        public static MethodInfo CloseConnectionMethod => FindMethodOrThrow(IConnection, "Close", Array.Empty<Type>());
 
         private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
         {

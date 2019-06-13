@@ -123,7 +123,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             Bucket lastBucket = GetCurrentBucket();
             if (lastBucket == null)
             {
-                return new long[0];
+                return Array.Empty<long>();
             }
 
             // get buckets as an array (which is a copy of the current state at this point in time)

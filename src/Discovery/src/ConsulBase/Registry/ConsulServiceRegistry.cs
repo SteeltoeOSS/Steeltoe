@@ -165,12 +165,9 @@ namespace Steeltoe.Discovery.Consul.Registry
 
             foreach (HealthCheck check in checks)
             {
-                if (check.ServiceID.Equals(registration.InstanceId))
+                if (check.ServiceID.Equals(registration.InstanceId) && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return OUT_OF_SERVICE;
-                    }
+                    return OUT_OF_SERVICE;
                 }
             }
 

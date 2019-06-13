@@ -57,11 +57,6 @@ namespace Steeltoe.Common.Security
             return false;
         }
 
-        public override IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
-        {
-            return base.GetChildKeys(earlierKeys, parentPath);
-        }
-
         private void NotifyCertChanged(object state)
         {
             OnReload();

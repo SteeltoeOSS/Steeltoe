@@ -102,12 +102,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             for (int i = 0; i < metrics.CollectionCounts.Count; i++)
             {
                 var count = metrics.CollectionCounts[i];
-                if (previous.CollectionCounts != null && i < previous.CollectionCounts.Count)
+                if (previous.CollectionCounts != null && i < previous.CollectionCounts.Count && previous.CollectionCounts[i] <= count)
                 {
-                    if (previous.CollectionCounts[i] <= count)
-                    {
-                        count = count - previous.CollectionCounts[i];
-                    }
+                    count -= previous.CollectionCounts[i];
                 }
 
                 var tagContext = Tagger

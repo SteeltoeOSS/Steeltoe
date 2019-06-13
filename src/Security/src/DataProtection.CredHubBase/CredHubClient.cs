@@ -147,13 +147,13 @@ namespace Steeltoe.Security.DataProtection.CredHub
         }
 #pragma warning restore SA1202 // Elements must be ordered by access
 
-        public async Task<CredHubCredential<T>> GenerateAsync<T>(CredHubGenerateRequest request)
+        public async Task<CredHubCredential<T>> GenerateAsync<T>(CredHubGenerateRequest requestParameters)
         {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
-                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", request, _serializerSettings).ConfigureAwait(false);
+                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, _serializerSettings).ConfigureAwait(false);
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}").ConfigureAwait(false);
             }
             finally

@@ -135,7 +135,6 @@ namespace Steeltoe.Discovery.Eureka
             if (HOST_REGISTRATIONMETHOD.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
             {
                 UpdateWithDefaultsForHost(si, instOptions, instOptions.HostName);
-                return;
             }
         }
 

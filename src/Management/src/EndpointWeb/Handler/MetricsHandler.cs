@@ -92,12 +92,9 @@ namespace Steeltoe.Management.Endpoint.Handler
             foreach (var epPath in epPaths)
             {
                 var psPath = request.Path;
-                if (psPath.StartsWithSegments(epPath, out string remaining))
+                if (psPath.StartsWithSegments(epPath, out string remaining) && !string.IsNullOrEmpty(remaining))
                 {
-                    if (!string.IsNullOrEmpty(remaining))
-                    {
-                        return remaining.TrimStart('/');
-                    }
+                    return remaining.TrimStart('/');
                 }
             }
 
@@ -124,12 +121,9 @@ namespace Steeltoe.Management.Endpoint.Handler
                     foreach (var kvp in query.GetValues(q))
                     {
                         var pair = ParseTag(kvp);
-                        if (pair != null)
+                        if (pair != null && !results.Contains(pair.Value))
                         {
-                            if (!results.Contains(pair.Value))
-                            {
-                                results.Add(pair.Value);
-                            }
+                            results.Add(pair.Value);
                         }
                     }
                 }

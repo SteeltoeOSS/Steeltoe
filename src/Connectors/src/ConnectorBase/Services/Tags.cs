@@ -27,7 +27,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             if (tags == null)
             {
-                Values = new string[0];
+                Values = System.Array.Empty<string>();
             }
             else
             {

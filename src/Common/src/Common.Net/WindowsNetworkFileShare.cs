@@ -124,7 +124,7 @@ namespace Steeltoe.Common.Net
         /// <summary>
         /// Scope of the file share
         /// </summary>
-        public enum ResourceScope : int
+        public enum ResourceScope
         {
             Connected = 1,
             GlobalNetwork,
@@ -136,18 +136,20 @@ namespace Steeltoe.Common.Net
         /// <summary>
         /// Type of network resource
         /// </summary>
-        public enum ResourceType : int
+        public enum ResourceType
         {
             Any = 0,
             Disk = 1,
             Print = 2,
+#pragma warning disable S4016 // Enumeration members should not be named "Reserved"
             Reserved = 8,
+#pragma warning restore S4016 // Enumeration members should not be named "Reserved"
         }
 
         /// <summary>
         /// The display options for the network object in a network browsing user interface
         /// </summary>
-        public enum ResourceDisplaytype : int
+        public enum ResourceDisplaytype
         {
             Generic = 0x0,
             Domain = 0x01,
@@ -163,6 +165,8 @@ namespace Steeltoe.Common.Net
             Ndscontainer = 0x0b
         }
 
+#pragma warning disable S4200 // Native methods should be wrapped
+#pragma warning disable S4214 // "P/Invoke" methods should not be visible
         /// <summary>
         /// Retrieves the most recent extended error code set by a WNet function
         /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>
@@ -181,6 +185,8 @@ namespace Steeltoe.Common.Net
             int errorBufSize,
             out StringBuilder nameBuf,
             int nameBufSize);
+#pragma warning restore S4214 // "P/Invoke" methods should not be visible
+#pragma warning restore S4200 // Native methods should be wrapped
 
         /// <summary>
         /// Retrieves the most recent extended error code set by a WNet function

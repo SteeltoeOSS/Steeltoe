@@ -19,7 +19,7 @@ using static Steeltoe.Common.Net.WindowsNetworkFileShare;
 
 namespace Steeltoe.Common.Net
 {
-    internal class NativeMethods
+    internal static class NativeMethods
     {
         [DllImport("mpr.dll", CharSet = CharSet.Unicode)]
         internal static extern int WNetAddConnection2(
