@@ -55,19 +55,28 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
         public string Database { get; set; }
 
+        public string SearchPath { get; set; }
+
         public override string ToString()
         {
+            StringBuilder sb;
+
             if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
             {
-                return ConnectionString;
+                sb = new StringBuilder(ConnectionString);
+            }
+            else
+            {
+                sb = new StringBuilder();
+                AddKeyValue(sb, nameof(Host), Host);
+                AddKeyValue(sb, nameof(Port), Port);
+                AddKeyValue(sb, nameof(Username), Username);
+                AddKeyValue(sb, nameof(Password), Password);
+                AddKeyValue(sb, nameof(Database), Database);
             }
 
-            StringBuilder sb = new StringBuilder();
-            AddKeyValue(sb, nameof(Host), Host);
-            AddKeyValue(sb, nameof(Port), Port);
-            AddKeyValue(sb, nameof(Username), Username);
-            AddKeyValue(sb, nameof(Password), Password);
-            AddKeyValue(sb, nameof(Database), Database);
+            AddKeyValue(sb, "Search Path", SearchPath);
+
             return sb.ToString();
         }
     }
