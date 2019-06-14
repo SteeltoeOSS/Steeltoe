@@ -48,7 +48,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         private readonly ITagKey memoryAreaKey = TagKey.Create("area");
         private readonly ITagValue heapArea = TagValue.Create("heap");
-        private readonly ITagValue nonHeapArea = TagValue.Create("nonheap");
         private readonly IMeasureLong memoryUsedMeasure;
         private readonly ITagContext memoryTagValues;
 

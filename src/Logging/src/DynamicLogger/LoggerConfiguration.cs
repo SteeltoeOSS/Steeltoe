@@ -46,6 +46,11 @@ namespace Steeltoe.Extensions.Logging
         /// </summary>
         public LogLevel EffectiveLevel { get; }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override bool Equals(object obj)
         {
             LoggerConfiguration lc = obj as LoggerConfiguration;

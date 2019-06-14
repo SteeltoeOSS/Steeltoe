@@ -115,7 +115,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections)
         {
-            if (sections == null || sections.Any())
+            if (sections == null || !sections.Any())
             {
                 return;
             }

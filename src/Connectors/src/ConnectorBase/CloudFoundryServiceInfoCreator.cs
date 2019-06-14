@@ -182,13 +182,10 @@ namespace Steeltoe.CloudFoundry.Connector
                 foreach (Service s in serviceopt.Value)
                 {
                     IServiceInfoFactory factory = FindFactory(s);
-                    if (factory != null)
+                    if (factory != null && factory.Create(s) is ServiceInfo info)
                     {
-                        if (factory.Create(s) is ServiceInfo info)
-                        {
-                            info.ApplicationInfo = appInfo;
-                            _serviceInfos.Add(info);
-                        }
+                        info.ApplicationInfo = appInfo;
+                        _serviceInfos.Add(info);
                     }
                 }
             }

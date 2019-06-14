@@ -113,12 +113,9 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                         LogLevel? configured = GetConfiguredLevel(name);
                         LogLevel effective = GetEffectiveLevel(logger.Key);
                         var config = new LoggerConfiguration(name, configured, effective);
-                        if (results.ContainsKey(name))
+                        if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
-                            if (!results[name].Equals(config))
-                            {
-                                throw new InvalidProgramException("Shouldn't happen");
-                            }
+                            throw new InvalidProgramException("Shouldn't happen");
                         }
 
                         results[name] = config;

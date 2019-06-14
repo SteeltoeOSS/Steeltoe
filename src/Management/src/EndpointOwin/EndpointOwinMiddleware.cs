@@ -39,7 +39,7 @@ namespace Steeltoe.Management.EndpointOwin
         {
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
 
-            if (_allowedMethods.Any())
+            if (!_allowedMethods.Any())
             {
                 _allowedMethods = new List<HttpMethod> { HttpMethod.Get };
             }

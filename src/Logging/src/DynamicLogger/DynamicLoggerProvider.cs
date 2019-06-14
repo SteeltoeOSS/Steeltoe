@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Logging.Console.Internal;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -26,7 +25,6 @@ namespace Steeltoe.Extensions.Logging
     [ProviderAlias("Dynamic")]
     public class DynamicLoggerProvider : IDynamicLoggerProvider
     {
-        private static readonly Func<string, LogLevel, bool> _trueFilter = (cat, level) => true;
         private static readonly Func<string, LogLevel, bool> _falseFilter = (cat, level) => false;
 
         private Func<string, LogLevel, bool> _filter = _falseFilter;
@@ -117,12 +115,9 @@ namespace Steeltoe.Extensions.Logging
                         LogLevel? configured = GetConfiguredLevel(name);
                         LogLevel effective = GetEffectiveLevel(name);
                         var config = new LoggerConfiguration(name, configured, effective);
-                        if (results.ContainsKey(name))
+                        if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
-                            if (!results[name].Equals(config))
-                            {
-                                throw new InvalidProgramException("Shouldn't happen");
-                            }
+                            throw new InvalidProgramException("Shouldn't happen");
                         }
 
                         results[name] = config;
@@ -352,12 +347,9 @@ namespace Steeltoe.Extensions.Logging
         /// <returns>Log level from default filter, value from settings or else null</returns>
         private LogLevel? GetConfiguredLevel(string name)
         {
-            if (_settings != null)
+            if (_settings != null && _settings.TryGetSwitch(name, out LogLevel level))
             {
-                if (_settings.TryGetSwitch(name, out LogLevel level))
-                {
-                    return level;
-                }
+                return level;
             }
 
             return null;

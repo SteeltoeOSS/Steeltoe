@@ -20,15 +20,15 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public static class RedisTypeLocator
     {
-        public static string[] MicrosoftAssemblies = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis", "Microsoft.Extensions.Caching.StackExchangeRedis" };
-        public static string[] MicrosoftInterfaceTypeNames = new string[] { "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
-        public static string[] MicrosoftImplementationTypeNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCache", "Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache" };
-        public static string[] MicrosoftOptionNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCacheOptions", "Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions" };
-        public static string[] StackExchangeAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName" };
-        public static string[] StackExchangeInterfaceTypeNames = new string[] { "StackExchange.Redis.IConnectionMultiplexer" };
-        public static string[] StackExchangeImplementationTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
-        public static string[] StackExchangeOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions" };
-        public static string[] StackExchangeCommandFlagsNamesValue = new string[] { "StackExchange.Redis.CommandFlags" };
+        public static readonly string[] MicrosoftAssemblies = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis", "Microsoft.Extensions.Caching.StackExchangeRedis" };
+        public static readonly string[] MicrosoftInterfaceTypeNames = new string[] { "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
+        public static readonly string[] MicrosoftImplementationTypeNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCache", "Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache" };
+        public static readonly string[] MicrosoftOptionNames = new string[] { "Microsoft.Extensions.Caching.Redis.RedisCacheOptions", "Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions" };
+        public static readonly string[] StackExchangeAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName" };
+        public static readonly string[] StackExchangeInterfaceTypeNames = new string[] { "StackExchange.Redis.IConnectionMultiplexer" };
+        public static readonly string[] StackExchangeImplementationTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer" };
+        public static readonly string[] StackExchangeOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions" };
+        public static readonly string[] StackExchangeCommandFlagsNamesValue = new string[] { "StackExchange.Redis.CommandFlags" };
 
         /// <summary>
         /// Gets IDistributedCache from a Microsoft Cache library

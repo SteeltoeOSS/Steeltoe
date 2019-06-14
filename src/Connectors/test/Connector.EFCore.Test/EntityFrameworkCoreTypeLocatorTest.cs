@@ -34,30 +34,30 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
         public void Options_Found_In_Oracle_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package
-            var mySqlAssemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[0] };
+            var removedAssembly = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[1];
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[1] = string.Empty;
 
             // act
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
             // assert
             Assert.NotNull(type);
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = mySqlAssemblies;
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[1] = removedAssembly;
         }
 
         [Fact]
         public void Options_Found_In_Pomelo_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package
-            var mySqlAssemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[1] };
+            var removedAssembly = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[0];
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[0] = string.Empty;
 
             // act
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
             // assert
             Assert.NotNull(type);
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = mySqlAssemblies;
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[0] = removedAssembly;
         }
 
         [Fact]

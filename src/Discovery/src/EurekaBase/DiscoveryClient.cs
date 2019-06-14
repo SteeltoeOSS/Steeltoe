@@ -221,22 +221,20 @@ namespace Steeltoe.Discovery.Eureka
             return result;
         }
 
-        public InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure)
+        public InstanceInfo GetNextServerFromEureka(string vipAddress, bool secure)
         {
-            if (string.IsNullOrEmpty(virtualHostname))
+            if (string.IsNullOrEmpty(vipAddress))
             {
-                throw new ArgumentException(nameof(virtualHostname));
+                throw new ArgumentException(nameof(vipAddress));
             }
 
-            var results = GetInstancesByVipAddress(virtualHostname, secure);
+            var results = GetInstancesByVipAddress(vipAddress, secure);
             if (results.Count == 0)
             {
                 return null;
             }
 
-#pragma warning disable SCS0005 // Weak random generator
             var index = _random.Next() % results.Count;
-#pragma warning restore SCS0005 // Weak random generator
             return results[index];
         }
 

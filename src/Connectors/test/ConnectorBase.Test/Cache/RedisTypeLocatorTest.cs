@@ -46,8 +46,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // arrange
             var msftAssemblies = RedisTypeLocator.MicrosoftAssemblies;
             var stackAssemblies = RedisTypeLocator.StackExchangeAssemblies;
-            RedisTypeLocator.MicrosoftAssemblies = new string[] { "something-Wrong" };
-            RedisTypeLocator.StackExchangeAssemblies = RedisTypeLocator.MicrosoftAssemblies;
+            RedisTypeLocator.MicrosoftAssemblies[0] = "something-Wrong";
+            RedisTypeLocator.StackExchangeAssemblies[0] = "something-Wrong";
 
             // act
             var msftException = Assert.Throws<ConnectorException>(() => RedisTypeLocator.MicrosoftInterface);
@@ -58,8 +58,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Equal($"Unable to find {RedisTypeLocator.StackExchangeInterfaceTypeNames[0]}, are you missing a Stack Exchange Redis NuGet Reference?", stackException.Message);
 
             // reset
-            RedisTypeLocator.MicrosoftAssemblies = msftAssemblies;
-            RedisTypeLocator.StackExchangeAssemblies = stackAssemblies;
+            RedisTypeLocator.MicrosoftAssemblies[0] = msftAssemblies[0];
+            RedisTypeLocator.StackExchangeAssemblies[0] = stackAssemblies[0];
         }
     }
 }

@@ -87,9 +87,7 @@ namespace Steeltoe.Common.Http
                 prevValidator = ServicePointManager.ServerCertificateValidationCallback;
 
                 // Disabling certificate validation is a bad idea, that's why it's off by default!
-#pragma warning disable SCS0004 // Certificate Validation has been disabled
                 ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-#pragma warning restore SCS0004 // Certificate Validation has been disabled
             }
         }
 

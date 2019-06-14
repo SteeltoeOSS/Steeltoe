@@ -26,22 +26,22 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
         /// <summary>
         /// List of supported MongoDB assemblies
         /// </summary>
-        public static string[] Assemblies = new string[] { "MongoDB.Driver" };
+        public static readonly string[] Assemblies = new string[] { "MongoDB.Driver" };
 
         /// <summary>
         /// List of supported MongoDB client interface types
         /// </summary>
-        public static string[] ConnectionInterfaceTypeNames = new string[] { "MongoDB.Driver.IMongoClient" };
+        public static readonly string[] ConnectionInterfaceTypeNames = new string[] { "MongoDB.Driver.IMongoClient" };
 
         /// <summary>
         /// List of supported MongoDB client types
         /// </summary>
-        public static string[] ConnectionTypeNames = new string[] { "MongoDB.Driver.MongoClient" };
+        public static readonly string[] ConnectionTypeNames = new string[] { "MongoDB.Driver.MongoClient" };
 
         /// <summary>
         /// Class for describing MongoDB connection information
         /// </summary>
-        public static string[] MongoConnectionInfo = new string[] { "MongoDB.Driver.MongoUrl" };
+        public static readonly string[] MongoConnectionInfo = new string[] { "MongoDB.Driver.MongoUrl" };
 
         /// <summary>
         /// Gets IMongoClient from MongoDB Library

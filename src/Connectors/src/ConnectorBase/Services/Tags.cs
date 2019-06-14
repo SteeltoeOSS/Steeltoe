@@ -43,16 +43,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public bool ContainsOne(string[] tags)
         {
-            if (tags != null)
+            if (tags != null && Values != null)
             {
-                if (Values != null)
+                foreach (string value in Values)
                 {
-                    foreach (string value in Values)
+                    if (tags.Contains(value))
                     {
-                        if (tags.Contains(value))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -72,16 +69,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public bool StartsWith(string tag)
         {
-            if (tag != null)
+            if (tag != null && Values != null)
             {
-                if (Values != null)
+                foreach (string t in Values)
                 {
-                    foreach (string t in Values)
+                    if (tag.StartsWith(t))
                     {
-                        if (tag.StartsWith(t))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
