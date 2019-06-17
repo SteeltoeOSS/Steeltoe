@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Tasks;
-using Steeltoe.Management.TaskCore;
 using System;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Steeltoe.Management.TaskCore
 {
     public static class TaskServiceCollectionExtensions
     {

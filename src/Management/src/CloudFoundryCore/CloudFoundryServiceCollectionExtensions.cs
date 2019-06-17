@@ -62,8 +62,8 @@ namespace Steeltoe.Management.CloudFoundry
 
             if (context != ActuatorContext.Actuator)
             {
-                var managmentOptions = new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry);
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managmentOptions));
+                var managementOptions = new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry);
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managementOptions));
 
                 services.AddCors();
                 services.AddCloudFoundryActuator(config);

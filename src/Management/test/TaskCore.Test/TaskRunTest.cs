@@ -20,7 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
-namespace Steeltoe.Managment.TaskCore.Test
+namespace Steeltoe.Management.TaskCore.Test
 {
     public class TaskRunTest
     {
