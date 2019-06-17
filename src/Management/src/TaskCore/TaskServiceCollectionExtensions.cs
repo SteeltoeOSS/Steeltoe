@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Tasks;
+using Steeltoe.Management.TaskCore;
 using System;
 
-namespace Steeltoe.Management.CloudFoundryTasks
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class CloudFoundryServiceCollectionExtensions
+    public static class TaskServiceCollectionExtensions
     {
         /// <summary>
         /// Register a one-off task that can be executed from command line

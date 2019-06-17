@@ -11,7 +11,7 @@
       <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\src\CloudFoundryTasks\Steeltoe.Management.CloudFoundryTasks.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TaskCore\Steeltoe.Management.TaskCore.csproj" />
+  </ItemGroup>
 </Project>

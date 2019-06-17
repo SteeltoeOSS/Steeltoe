@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,10 +19,15 @@ using Steeltoe.Common.Tasks;
 using System;
 using System.Linq;
 
-namespace Steeltoe.Management.CloudFoundryTasks
+namespace Microsoft.AspNetCore.Hosting
 {
-    public static class CloudFoundryWebHostExtensions
+    public static class TaskWebHostExtensions
     {
+        /// <summary>
+        /// Runs your application normally unless configured to run a task.<para />
+        /// To execute your task, provide a config value (or command arg) under the key "runtask" that matches your task's name
+        /// </summary>
+        /// <param name="webHost">Your <see cref="IWebHost"/></param>
         public static void RunWithTasks(this IWebHost webHost)
         {
             if (webHost == null)
