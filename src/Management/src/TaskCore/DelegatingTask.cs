@@ -15,7 +15,7 @@
 using Steeltoe.Common.Tasks;
 using System;
 
-namespace Steeltoe.Management.CloudFoundryTasks
+namespace Steeltoe.Management.TaskCore
 {
     public class DelegatingTask : IApplicationTask
     {

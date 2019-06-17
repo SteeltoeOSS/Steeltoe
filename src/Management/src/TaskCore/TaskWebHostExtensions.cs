@@ -20,10 +20,15 @@ using Steeltoe.Common.Tasks;
 using System;
 using System.Linq;
 
-namespace Steeltoe.Management.CloudFoundryTasks
+namespace Steeltoe.Management.TaskCore
 {
-    public static class CloudFoundryWebHostExtensions
+    public static class TaskWebHostExtensions
     {
+        /// <summary>
+        /// Runs your application normally unless configured to run a task.<para />
+        /// To execute your task, provide a config value (or command arg) under the key "runtask" that matches your task's name
+        /// </summary>
+        /// <param name="webHost">Your <see cref="IWebHost"/></param>
         public static void RunWithTasks(this IWebHost webHost)
         {
             if (webHost == null)
