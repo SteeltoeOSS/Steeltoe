@@ -29,10 +29,18 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             if (string.IsNullOrEmpty(uri))
             {
                 string host = GetHostFromCredentials(binding.Credentials);
-                int port = GetPortFromCredentials(binding.Credentials);
                 string password = GetPasswordFromCredentials(binding.Credentials);
+                int port = GetPortFromCredentials(binding.Credentials);
+                int tlsPort = GetTlsPortFromCredentials(binding.Credentials);
+                bool tlsEnabled = tlsPort != 0;
 
-                return new RedisServiceInfo(binding.Name, host, port, password);
+                return new RedisServiceInfo(
+                        binding.Name, 
+                        tlsEnabled ? RedisServiceInfo.REDIS_SECURE_SCHEME : RedisServiceInfo.REDIS_SCHEME,   
+                        host, 
+                        tlsEnabled ? tlsPort : port, 
+                        password
+                );
             }
             else
             {
