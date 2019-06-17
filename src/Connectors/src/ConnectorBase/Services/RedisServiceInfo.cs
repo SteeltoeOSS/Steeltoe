@@ -26,6 +26,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
         }
 
+        public RedisServiceInfo(string id, string scheme, string host, int port, string password)
+            : base(id, scheme, host, port, null, password, null)
+        {
+        }
+
         public RedisServiceInfo(string id, string uri)
             : base(id, uri)
         {
