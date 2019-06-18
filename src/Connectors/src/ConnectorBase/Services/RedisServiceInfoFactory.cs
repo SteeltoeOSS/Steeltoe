@@ -35,12 +35,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 bool tlsEnabled = tlsPort != 0;
 
                 return new RedisServiceInfo(
-                        binding.Name, 
-                        tlsEnabled ? RedisServiceInfo.REDIS_SECURE_SCHEME : RedisServiceInfo.REDIS_SCHEME,   
-                        host, 
-                        tlsEnabled ? tlsPort : port, 
-                        password
-                );
+                        binding.Name,
+                        tlsEnabled ? RedisServiceInfo.REDIS_SECURE_SCHEME : RedisServiceInfo.REDIS_SCHEME,
+                        host,
+                        tlsEnabled ? tlsPort : port,
+                        password);
             }
             else
             {

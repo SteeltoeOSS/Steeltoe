@@ -20,7 +20,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     {
         public const string REDIS_SCHEME = "redis";
         public const string REDIS_SECURE_SCHEME = "rediss";
-        
+
         public RedisServiceInfo(string id, string scheme, string host, int port, string password)
             : base(id, scheme, host, port, null, password, null)
         {
