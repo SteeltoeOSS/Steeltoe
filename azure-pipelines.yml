@@ -64,6 +64,7 @@ jobs:
             $env:PackageVersion = $env:PackageVersionOverride
         }
         Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
+        Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
       env:
         PackageVersion: $(PackageVersion)
         PackageVersionOverride: $(PackageVersionOverride)
