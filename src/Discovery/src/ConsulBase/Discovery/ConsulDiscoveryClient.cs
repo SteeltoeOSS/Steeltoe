@@ -154,6 +154,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
                 {
                     await AddInstancesToListAsync(instances, serviceId, queryOptions).ConfigureAwait(false);
                 }
+
                 return instances;
             }
         }
