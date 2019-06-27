@@ -124,7 +124,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 {
                     request.Content = GetRequestContent(new JsonInstanceInfoRoot(info.ToJsonInstance()));
 
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
                         _logger?.LogDebug("RegisterAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                         int statusCode = (int)response.StatusCode;
@@ -138,7 +138,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                             return resp;
                         }
 
-                        var jsonError = await response.Content.ReadAsStringAsync();
+                        var jsonError = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         _logger?.LogInformation("Failure during RegisterAsync: {jsonError}", jsonError);
                     }
                 }
@@ -212,9 +212,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
-                        Stream stream = await response.Content.ReadAsStreamAsync();
+                        Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                         JsonInstanceInfo jinfo = JsonInstanceInfo.Deserialize(stream);
 
                         InstanceInfo infoResp = null;
@@ -260,12 +260,12 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         public virtual async Task<EurekaHttpResponse<Applications>> GetApplicationsAsync(ISet<string> regions = null)
         {
-            return await DoGetApplicationsAsync("apps/", regions);
+            return await DoGetApplicationsAsync("apps/", regions).ConfigureAwait(false);
         }
 
         public virtual async Task<EurekaHttpResponse<Applications>> GetDeltaAsync(ISet<string> regions = null)
         {
-            return await DoGetApplicationsAsync("apps/delta", regions);
+            return await DoGetApplicationsAsync("apps/delta", regions).ConfigureAwait(false);
         }
 
         public virtual async Task<EurekaHttpResponse<Applications>> GetVipAsync(string vipAddress, ISet<string> regions = null)
@@ -275,7 +275,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 throw new ArgumentException(nameof(vipAddress));
             }
 
-            return await DoGetApplicationsAsync("vips/" + vipAddress, regions);
+            return await DoGetApplicationsAsync("vips/" + vipAddress, regions).ConfigureAwait(false);
         }
 
         public virtual async Task<EurekaHttpResponse<Applications>> GetSecureVipAsync(string secureVipAddress, ISet<string> regions = null)
@@ -285,7 +285,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 throw new ArgumentException(nameof(secureVipAddress));
             }
 
-            return await DoGetApplicationsAsync("vips/" + secureVipAddress, regions);
+            return await DoGetApplicationsAsync("vips/" + secureVipAddress, regions).ConfigureAwait(false);
         }
 
         public virtual async Task<EurekaHttpResponse<Application>> GetApplicationAsync(string appName)
@@ -317,9 +317,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
-                        Stream stream = await response.Content.ReadAsStreamAsync();
+                        Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                         JsonApplicationRoot jroot = JsonApplicationRoot.Deserialize(stream);
 
                         Application appResp = null;
@@ -370,7 +370,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 throw new ArgumentException(nameof(id));
             }
 
-            return await DoGetInstanceAsync("instances/" + id);
+            return await DoGetInstanceAsync("instances/" + id).ConfigureAwait(false);
         }
 
         public virtual async Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string appName, string id)
@@ -385,7 +385,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 throw new ArgumentException(nameof(id));
             }
 
-            return await DoGetInstanceAsync("apps/" + appName + "/" + id);
+            return await DoGetInstanceAsync("apps/" + appName + "/" + id).ConfigureAwait(false);
         }
 
         public virtual async Task<EurekaHttpResponse> CancelAsync(string appName, string id)
@@ -422,7 +422,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
                         _logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                         Interlocked.Exchange(ref _serviceUrl, serviceUrl);
@@ -494,7 +494,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
                         _logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                         int statusCode = (int)response.StatusCode;
@@ -571,7 +571,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
                         _logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                         int statusCode = (int)response.StatusCode;
@@ -799,9 +799,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
-                        Stream stream = await response.Content.ReadAsStreamAsync();
+                        Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                         JsonInstanceInfoRoot jroot = JsonInstanceInfoRoot.Deserialize(stream);
 
                         InstanceInfo infoResp = null;
@@ -877,9 +877,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
-                        Stream stream = await response.Content.ReadAsStreamAsync();
+                        Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                         JsonApplicationsRoot jroot = JsonApplicationsRoot.Deserialize(stream);
 
                         Applications appsResp = null;

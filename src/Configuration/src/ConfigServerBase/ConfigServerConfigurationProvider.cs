@@ -506,7 +506,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             }
                         }
 
-                        Stream stream = await response.Content.ReadAsStreamAsync();
+                        Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                         return Deserialize(stream);
                     }
                 }
@@ -585,7 +585,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                         }
                     }
 
-                    Stream stream = await response.Content.ReadAsStreamAsync();
+                    Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     return Deserialize(stream);
                 }
             }

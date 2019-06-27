@@ -85,7 +85,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
             try
             {
-               string accessToken = Task.Run(() => tokenResolver.GetAccessToken()).GetAwaiter().GetResult();
+               string accessToken = tokenResolver.GetAccessToken().GetAwaiter().GetResult();
 
                return accessToken;
             }

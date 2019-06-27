@@ -311,12 +311,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected virtual async Task<TResult> RunAsync()
         {
-            return await Task.FromResult(default(TResult));
+            return await Task.FromResult(default(TResult)).ConfigureAwait(false);
         }
 
         protected virtual async Task<TResult> RunFallbackAsync()
         {
-            return await Task.FromException<TResult>(new InvalidOperationException("No fallback available."));
+            return await Task.FromException<TResult>(new InvalidOperationException("No fallback available.")).ConfigureAwait(false);
         }
 
         protected override TResult DoRun()

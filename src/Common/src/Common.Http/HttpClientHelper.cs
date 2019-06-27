@@ -229,7 +229,7 @@ namespace Steeltoe.Common.Http
                             return null;
                         }
 
-                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                         var token = payload.Value<string>("access_token");
                         return token;
                     }

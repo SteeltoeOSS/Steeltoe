@@ -34,14 +34,11 @@ namespace Steeltoe.Discovery.Eureka
         /// <returns>service instances</returns>
         public static IList<IServiceInstance> GetInstances(IConfiguration configuration, string serviceId, ILoggerFactory logFactory = null)
         {
-            return System.Threading.Tasks.Task.Run(() =>
-            {
-                EurekaClientOptions config = ConfigureClientOptions(configuration);
-                LookupClient client = GetLookupClient(config, logFactory);
-                var result = client.GetInstances(serviceId);
-                client.ShutdownAsync().Wait();
-                return result;
-            }).Result;
+            EurekaClientOptions config = ConfigureClientOptions(configuration);
+            LookupClient client = GetLookupClient(config, logFactory);
+            var result = client.GetInstances(serviceId);
+            client.ShutdownAsync().GetAwaiter().GetResult();
+            return result;
         }
 
         /// <summary>
@@ -53,14 +50,11 @@ namespace Steeltoe.Discovery.Eureka
         /// <returns>all registered services</returns>
         public static IList<string> GetServices(IConfiguration configuration, ILoggerFactory logFactory = null)
         {
-            return System.Threading.Tasks.Task.Run(() =>
-            {
-                EurekaClientOptions config = ConfigureClientOptions(configuration);
-                var client = GetLookupClient(config, logFactory);
-                var result = client.GetServices();
-                client.ShutdownAsync().Wait();
-                return result;
-            }).Result;
+            EurekaClientOptions config = ConfigureClientOptions(configuration);
+            var client = GetLookupClient(config, logFactory);
+            var result = client.GetServices();
+            client.ShutdownAsync().GetAwaiter().GetResult();
+            return result;
         }
 
         internal static LookupClient GetLookupClient(EurekaClientOptions config, ILoggerFactory logFactory)

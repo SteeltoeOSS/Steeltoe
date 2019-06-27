@@ -68,39 +68,39 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             {
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(_options.CloudFoundryApi))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
                 IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
-                var sr = await GetPermissions(context);
+                var sr = await GetPermissions(context).ConfigureAwait(false);
                 if (sr.Code != HttpStatusCode.OK)
                 {
-                    await ReturnError(context, sr);
+                    await ReturnError(context, sr).ConfigureAwait(false);
                     return;
                 }
 
                 var permissions = sr.Permissions;
                 if (!target.IsAccessAllowed(permissions))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
             }
 
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
         }
 
         internal string GetAccessToken(HttpRequest request)
@@ -120,7 +120,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         internal async Task<SecurityResult> GetPermissions(HttpContext context)
         {
             string token = GetAccessToken(context.Request);
-            return await _base.GetPermissionsAsync(token);
+            return await _base.GetPermissionsAsync(token).ConfigureAwait(false);
         }
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
@@ -169,7 +169,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             LogError(context, error);
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
             context.Response.StatusCode = (int)error.Code;
-            await context.Response.WriteAsync(_base.Serialize(error));
+            await context.Response.WriteAsync(_base.Serialize(error)).ConfigureAwait(false);
         }
 
         private void LogError(HttpContext context, SecurityResult error)

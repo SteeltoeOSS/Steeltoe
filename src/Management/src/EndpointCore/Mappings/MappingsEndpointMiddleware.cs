@@ -76,11 +76,11 @@ namespace Steeltoe.Management.Endpoint.Mappings
         {
             if (IsMappingsRequest(context))
             {
-                await HandleMappingsRequestAsync(context);
+                await HandleMappingsRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -91,7 +91,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
             _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
         protected internal ApplicationMappings GetApplicationMappings(HttpContext context)

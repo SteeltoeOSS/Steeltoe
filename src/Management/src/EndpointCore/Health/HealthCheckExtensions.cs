@@ -70,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.Health
             var healthCheckResult = new HealthCheckResult();
             try
             {
-                var res = await registration.Factory(provider).CheckHealthAsync(context);
+                var res = await registration.Factory(provider).CheckHealthAsync(context).ConfigureAwait(false);
                 healthCheckResult = new HealthCheckResult()
                 {
                     Status = res.Status.ToHealthStatus(),

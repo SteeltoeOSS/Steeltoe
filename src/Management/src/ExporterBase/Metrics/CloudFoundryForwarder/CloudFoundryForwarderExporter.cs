@@ -117,7 +117,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                 out RemoteCertificateValidationCallback prevValidator);
             try
             {
-                using (HttpResponseMessage response = await client.SendAsync(request))
+                using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                 {
                     logger?.LogDebug("DoPost {0}, status: {1}", request.RequestUri, response.StatusCode);
                     if (response.StatusCode != HttpStatusCode.OK &&

@@ -53,16 +53,16 @@ namespace Steeltoe.Common.Http.LoadBalancer
             try
             {
                 // look up a service instance and update the request
-                resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri);
+                resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
                 request.RequestUri = resolvedUri;
 
                 // allow other handlers to operate and the request to continue
                 startTime = DateTime.UtcNow;
-                var response = await base.SendAsync(request, cancellationToken);
+                var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
                 endTime = DateTime.UtcNow;
 
                 // track stats
-                await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, endTime - startTime, null);
+                await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, endTime - startTime, null).ConfigureAwait(false);
                 return response;
             }
             catch (Exception exception)
@@ -75,7 +75,7 @@ namespace Steeltoe.Common.Http.LoadBalancer
                 _logger?.LogDebug(exception, "Exception during SendAsync()");
                 if (resolvedUri != null)
                 {
-                    await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, endTime - startTime, exception);
+                    await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, endTime - startTime, exception).ConfigureAwait(false);
                 }
                 else
                 {

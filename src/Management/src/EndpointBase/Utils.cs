@@ -75,7 +75,7 @@ namespace Steeltoe.Management.EndpointBase
                     {
                         using (var gzipStream = new GZipStream(output, CompressionLevel.Fastest))
                         {
-                            await input.CopyToAsync(gzipStream);
+                            await input.CopyToAsync(gzipStream).ConfigureAwait(false);
                         }
                     }
                 }

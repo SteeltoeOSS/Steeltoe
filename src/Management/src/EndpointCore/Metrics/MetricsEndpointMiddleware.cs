@@ -44,11 +44,11 @@ namespace Steeltoe.Management.Endpoint.Metrics
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleMetricsRequestAsync(context);
+                await HandleMetricsRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -76,7 +76,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 if (serialInfo != null)
                 {
                     response.StatusCode = (int)HttpStatusCode.OK;
-                    await context.Response.WriteAsync(serialInfo);
+                    await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
                 }
                 else
                 {
@@ -90,7 +90,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 _logger?.LogDebug("Returning: {0}", serialInfo);
                 response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
                 response.StatusCode = (int)HttpStatusCode.OK;
-                await context.Response.WriteAsync(serialInfo);
+                await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
             }
         }
 

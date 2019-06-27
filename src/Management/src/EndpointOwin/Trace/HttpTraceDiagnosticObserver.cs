@@ -159,7 +159,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
             if (HasFormContentType(request))
             {
-                var formData = await request.ReadFormAsync();
+                var formData = await request.ReadFormAsync().ConfigureAwait(false);
                 foreach (var p in formData)
                 {
                     parameters.Add(p.Key, p.Value);

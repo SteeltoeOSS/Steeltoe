@@ -43,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
         {
             if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
@@ -54,7 +54,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     var endpointResponse = _endpoint.Invoke(null);
                     _logger?.LogTrace("Returning: {EndpointResponse}", endpointResponse);
                     context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
-                    await context.Response.WriteAsync(Serialize(endpointResponse));
+                    await context.Response.WriteAsync(Serialize(endpointResponse)).ConfigureAwait(false);
                 }
                 else
                 {

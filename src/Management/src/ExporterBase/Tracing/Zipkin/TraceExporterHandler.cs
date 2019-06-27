@@ -164,7 +164,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 var request = GetHttpRequestMessage(HttpMethod.Post, requestUri);
                 request.Content = GetRequestContent(spans);
 
-                await DoPost(client, request);
+                await DoPost(client, request).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -180,7 +180,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 out RemoteCertificateValidationCallback prevValidator);
             try
             {
-                using (HttpResponseMessage response = await client.SendAsync(request))
+                using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                 {
                     _logger?.LogDebug("DoPost {uri}, status: {status}", request.RequestUri, response.StatusCode);
                     if (response.StatusCode != HttpStatusCode.OK &&

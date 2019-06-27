@@ -44,14 +44,14 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         {
             if (!IsCloudFoundryRequest(context))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
                 var endpointResponse = _endpoint.Invoke(GetRequestUri(context.Request));
                 _logger?.LogTrace("Returning: {EndpointResponse}", endpointResponse);
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/json;charset=UTF-8" });
-                await context.Response.WriteAsync(Serialize(endpointResponse));
+                await context.Response.WriteAsync(Serialize(endpointResponse)).ConfigureAwait(false);
             }
         }
 

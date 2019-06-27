@@ -104,7 +104,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     out prevValidator);
                 using (var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT))
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
@@ -118,7 +118,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                                 : new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
                         }
 
-                        return new SecurityResult(await GetPermissions(response));
+                        return new SecurityResult(await GetPermissions(response).ConfigureAwait(false));
                     }
                 }
             }
@@ -140,7 +140,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
             try
             {
-                json = await response.Content.ReadAsStringAsync();
+                json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 _logger?.LogDebug("GetPermisions returned json: {0}", json);
 
