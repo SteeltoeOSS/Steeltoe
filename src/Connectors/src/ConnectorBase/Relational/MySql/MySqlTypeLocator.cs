@@ -24,12 +24,12 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         /// <summary>
         /// List of supported MySQL assemblies
         /// </summary>
-        public static string[] Assemblies = new string[] { "MySql.Data", "MySqlConnector" };
+        public static readonly string[] Assemblies = new string[] { "MySql.Data", "MySqlConnector" };
 
         /// <summary>
         /// List of MySQL types that implement IDbConnection
         /// </summary>
-        public static string[] ConnectionTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
+        public static readonly string[] ConnectionTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
 
         /// <summary>
         /// Gets MySqlConnection from a MySQL Library
@@ -53,12 +53,12 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.MySql
         /// <summary>
         /// List of supported MySQL assemblies
         /// </summary>
-        public static string[] Assemblies = new string[] { "MySql.Data", "MySqlConnector" };
+        public static readonly string[] Assemblies = new string[] { "MySql.Data", "MySqlConnector" };
 
         /// <summary>
         /// List of MySQL types that implement IDbConnection
         /// </summary>
-        public static string[] ConnectionTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
+        public static readonly string[] ConnectionTypeNames = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
 
         /// <summary>
         /// Gets MySqlConnection from a MySQL Library

@@ -18,8 +18,17 @@ namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class CredHubException : Exception
     {
+        public CredHubException()
+        {
+        }
+
         public CredHubException(string message)
             : base(message)
+        {
+        }
+
+        public CredHubException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
     }

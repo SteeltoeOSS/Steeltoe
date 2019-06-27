@@ -542,13 +542,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             _commandStartTimestamp = Time.CurrentTimeMillis;
 
-            if (this.CommandOptions.RequestLogEnabled)
+            if (this.CommandOptions.RequestLogEnabled && _currentRequestLog != null)
             {
                 // log this command execution regardless of what happened
-                if (_currentRequestLog != null)
-                {
-                    _currentRequestLog.AddExecutedCommand(this);
-                }
+                _currentRequestLog.AddExecutedCommand(this);
             }
         }
 
@@ -1061,13 +1058,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void TimeoutThreadAction()
         {
-            if (!Time.WaitUntil(
-            () =>
+            if (!Time.WaitUntil(() => { return isCommandTimedOut.Value == TimedOutStatus.COMPLETED; }, options.ExecutionTimeoutInMilliseconds))
             {
-                return isCommandTimedOut.Value == TimedOutStatus.COMPLETED;
-            }, options.ExecutionTimeoutInMilliseconds))
-            {
+#pragma warning disable S1066 // Collapsible "if" statements should be merged
                 if (isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.TIMED_OUT))
+#pragma warning restore S1066 // Collapsible "if" statements should be merged
                 {
                     _timeoutTcs.Cancel();
 
@@ -1473,16 +1468,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void MarkCompleted()
         {
-            if (tcs.IsCompleted)
+            if (tcs.IsCompleted && !CommandIsScalar)
             {
-                if (!CommandIsScalar)
-                {
-                    long latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
-                    _eventNotifier.MarkCommandExecution(CommandKey, options.ExecutionIsolationStrategy, (int)latency, _executionResult.OrderedList);
-                    _eventNotifier.MarkEvent(HystrixEventType.SUCCESS, commandKey);
-                    _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.SUCCESS);
-                    _circuitBreaker.MarkSuccess();
-                }
+                long latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+                _eventNotifier.MarkCommandExecution(CommandKey, options.ExecutionIsolationStrategy, (int)latency, _executionResult.OrderedList);
+                _eventNotifier.MarkEvent(HystrixEventType.SUCCESS, commandKey);
+                _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.SUCCESS);
+                _circuitBreaker.MarkSuccess();
             }
         }
 

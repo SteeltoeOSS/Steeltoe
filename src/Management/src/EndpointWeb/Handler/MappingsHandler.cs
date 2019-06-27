@@ -210,23 +210,21 @@ namespace Steeltoe.Management.Endpoint.Handler
                     else
                     {
                         var handler = route.RouteHandler;
-                        if (handler != null)
+
+                        // Ignore WebApi handler routes as the ApiExplorer already provided those mappings
+                        if (handler != null && !(handler is HttpControllerRouteHandler))
                         {
-                            // Ignore WebApi handler routes as the ApiExplorer already provided those mappings
-                            if (!(handler is HttpControllerRouteHandler))
+                            var handlerType = handler.GetType().ToString();
+                            desc.TryGetValue(handlerType, out IList<MappingDescription> mapList);
+
+                            if (mapList == null)
                             {
-                                var handlerType = handler.GetType().ToString();
-                                desc.TryGetValue(handlerType, out IList<MappingDescription> mapList);
-
-                                if (mapList == null)
-                                {
-                                    mapList = new List<MappingDescription>();
-                                    desc.Add(handlerType, mapList);
-                                }
-
-                                var mapDesc = new MappingDescription("IHttpHandler.ProcessRequest(HttpContext context)", details);
-                                mapList.Add(mapDesc);
+                                mapList = new List<MappingDescription>();
+                                desc.Add(handlerType, mapList);
                             }
+
+                            var mapDesc = new MappingDescription("IHttpHandler.ProcessRequest(HttpContext context)", details);
+                            mapList.Add(mapDesc);
                         }
                     }
                 }

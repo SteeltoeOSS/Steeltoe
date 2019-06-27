@@ -92,42 +92,5 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
         {
             get { return this.taskScheduler.IsShutdown; }
         }
-
-        // allow us to change things via fast-properties by setting it each time
-        private void TouchConfig()
-        {
-            int dynamicCoreSize = properties.CoreSize;
-            int dynamicMaximumSize = properties.MaximumSize;
-            bool allowSizesToDiverge = properties.AllowMaximumSizeToDivergeFromCoreSize;
-            bool maxTooLow = false;
-
-            if (allowSizesToDiverge && dynamicMaximumSize < dynamicCoreSize)
-            {
-                // if user sets maximum < core (or defaults get us there), we need to maintain invariant of core <= maximum
-                dynamicMaximumSize = dynamicCoreSize;
-                maxTooLow = true;
-            }
-
-            if (!allowSizesToDiverge)
-            {
-                // if user has not opted in to allowing sizes to diverge, ensure maximum == core
-                dynamicMaximumSize = dynamicCoreSize;
-            }
-
-            if (taskScheduler.CorePoolSize != dynamicCoreSize || (allowSizesToDiverge && taskScheduler.MaximumPoolSize != dynamicMaximumSize))
-            {
-                if (maxTooLow)
-                {
-                    // logger.error("Hystrix ThreadPool configuration for : " + metrics.getThreadPoolKey().name() + " is trying to set coreSize = " +
-                    //        dynamicCoreSize + " and maximumSize = " + dynamicMaximumSize + ".  Maximum size will be set to " +
-                    //        dynamicCoreSize + ", the coreSize value, since it must be equal to or greater than the coreSize value");
-                }
-
-                taskScheduler.CorePoolSize = dynamicCoreSize;
-                taskScheduler.MaximumPoolSize = dynamicMaximumSize;
-            }
-
-            taskScheduler.KeepAliveTime = TimeSpan.FromMinutes(properties.KeepAliveTimeMinutes);
-        }
     }
 }

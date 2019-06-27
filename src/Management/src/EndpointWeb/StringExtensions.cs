@@ -22,13 +22,10 @@ namespace Steeltoe.Management.Endpoint
         {
             string value1 = incoming ?? string.Empty;
             string value2 = other ?? string.Empty;
-            if (value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase))
+            if (value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase) && (value1.Length == value2.Length || value1[value2.Length] == '/'))
             {
-                if (value1.Length == value2.Length || value1[value2.Length] == '/')
-                {
-                    remaining = value1.Substring(value2.Length);
-                    return true;
-                }
+                remaining = value1.Substring(value2.Length);
+                return true;
             }
 
             remaining = string.Empty;

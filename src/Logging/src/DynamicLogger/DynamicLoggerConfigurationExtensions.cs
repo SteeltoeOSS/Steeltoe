@@ -60,6 +60,7 @@ namespace Steeltoe.Extensions.Logging
                 }
                 catch
                 {
+                    // rather than exploding the app when bad log level config is encountered, just ignore it and move on
                 }
             }
         }

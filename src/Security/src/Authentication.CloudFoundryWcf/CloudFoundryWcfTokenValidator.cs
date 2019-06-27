@@ -100,7 +100,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 ThrowJwtException(null, "invalid_token");
             }
 
+// an exception has already been thrown if principal is null
+#pragma warning disable S2259 // Null pointers should not be dereferenced
             CloudFoundryJwt.OnTokenValidatedAddClaims((ClaimsIdentity)principal.Identity, validJwt);
+#pragma warning restore S2259 // Null pointers should not be dereferenced
 
             bool validScopes = ValidateScopes(validJwt);
             if (!validScopes)

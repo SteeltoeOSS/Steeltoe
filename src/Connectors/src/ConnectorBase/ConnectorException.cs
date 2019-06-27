@@ -18,6 +18,10 @@ namespace Steeltoe.CloudFoundry.Connector
 {
     public class ConnectorException : Exception
     {
+        public ConnectorException()
+        {
+        }
+
         public ConnectorException(string message)
             : base(message)
         {

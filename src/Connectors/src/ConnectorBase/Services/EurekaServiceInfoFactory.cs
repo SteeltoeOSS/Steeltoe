@@ -19,7 +19,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     public class EurekaServiceInfoFactory : ServiceInfoFactory
     {
         public EurekaServiceInfoFactory()
-            : base(new Tags("eureka"), new string[0])
+            : base(new Tags("eureka"), System.Array.Empty<string>())
         {
         }
 

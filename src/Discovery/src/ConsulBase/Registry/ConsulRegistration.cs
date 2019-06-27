@@ -221,9 +221,7 @@ namespace Steeltoe.Discovery.Consul.Registry
             }
 
             Random rand = new Random();
-#pragma warning disable SCS0005 // Weak random generator
             return appName + ":" + rand.Next().ToString();
-#pragma warning restore SCS0005 // Weak random generator
         }
 
         internal static string NormalizeForConsul(string s)
@@ -234,15 +232,15 @@ namespace Steeltoe.Discovery.Consul.Registry
             }
 
             StringBuilder normalized = new StringBuilder();
-            char prev = default(char);
-            foreach (char curr in s.ToCharArray())
+            char prev = default;
+            foreach (char curr in s)
             {
-                char toAppend = default(char);
+                char toAppend = default;
                 if (char.IsLetterOrDigit(curr))
                 {
                     toAppend = curr;
                 }
-                else if (prev == default(char) || !(prev == SEPARATOR))
+                else if (prev == default(char) || prev != SEPARATOR)
                 {
                     toAppend = SEPARATOR;
                 }

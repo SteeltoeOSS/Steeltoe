@@ -124,12 +124,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                         return false;
                     }
 
-                    if (other[i])
+                    if (other[i] && events[i])
                     {
-                        if (events[i])
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
 

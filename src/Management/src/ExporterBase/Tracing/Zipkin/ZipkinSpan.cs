@@ -257,7 +257,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                     missing += " id";
                 }
 
-                if (!string.Empty.Equals(missing))
+                if (!string.IsNullOrEmpty(missing))
                 {
                     throw new ArgumentException("Missing :" + missing);
                 }

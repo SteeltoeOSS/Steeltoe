@@ -78,7 +78,7 @@ namespace Steeltoe.Management.Endpoint
 
         public static bool IsExposed(this IEndpoint endpoint, IManagementOptions mgmtContext)
         {
-            return mgmtContext == null ? true : endpoint.Options.IsExposed(mgmtContext);
+            return mgmtContext == null || endpoint.Options.IsExposed(mgmtContext);
         }
 
         private static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)

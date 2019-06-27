@@ -30,5 +30,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             : base(message)
         {
         }
+
+        public ConfigServerException()
+        {
+        }
     }
 }

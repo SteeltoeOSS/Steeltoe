@@ -34,6 +34,7 @@ namespace Steeltoe.Common.Reflection
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;
@@ -82,7 +83,7 @@ namespace Steeltoe.Common.Reflection
             var type = FindType(assemblyNames, typeNames);
             if (type == null)
             {
-                throw new Exception($"Unable to find {typeName}, are you missing {assemblyShortDescription}?");
+                throw new TypeLoadException($"Unable to find {typeName}, are you missing {assemblyShortDescription}?");
             }
 
             return type;
@@ -102,6 +103,7 @@ namespace Steeltoe.Common.Reflection
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;
@@ -127,6 +129,7 @@ namespace Steeltoe.Common.Reflection
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;
@@ -147,6 +150,7 @@ namespace Steeltoe.Common.Reflection
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;
@@ -173,6 +177,7 @@ namespace Steeltoe.Common.Reflection
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;

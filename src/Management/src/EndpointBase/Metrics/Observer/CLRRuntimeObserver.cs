@@ -48,7 +48,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         private readonly ITagKey memoryAreaKey = TagKey.Create("area");
         private readonly ITagValue heapArea = TagValue.Create("heap");
-        private readonly ITagValue nonHeapArea = TagValue.Create("nonheap");
         private readonly IMeasureLong memoryUsedMeasure;
         private readonly ITagContext memoryTagValues;
 
@@ -102,12 +101,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             for (int i = 0; i < metrics.CollectionCounts.Count; i++)
             {
                 var count = metrics.CollectionCounts[i];
-                if (previous.CollectionCounts != null && i < previous.CollectionCounts.Count)
+                if (previous.CollectionCounts != null && i < previous.CollectionCounts.Count && previous.CollectionCounts[i] <= count)
                 {
-                    if (previous.CollectionCounts[i] <= count)
-                    {
-                        count = count - previous.CollectionCounts[i];
-                    }
+                    count -= previous.CollectionCounts[i];
                 }
 
                 var tagContext = Tagger

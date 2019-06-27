@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -31,6 +32,19 @@ namespace Steeltoe.Common.Http
         /// <returns>Task to be awaited</returns>
         public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, string url, T data)
         {
+            return PostAsJsonAsync(httpClient, new Uri(url), data);
+        }
+
+        /// <summary>
+        /// Convert an object to JSON and POST it
+        /// </summary>
+        /// <typeparam name="T">Type of object to serialize</typeparam>
+        /// <param name="httpClient">HttpClient doing the sending</param>
+        /// <param name="url">Url to POST to</param>
+        /// <param name="data">Object to send</param>
+        /// <returns>Task to be awaited</returns>
+        public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data)
+        {
             var dataAsString = JsonConvert.SerializeObject(data);
             var content = new StringContent(dataAsString);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -48,6 +62,20 @@ namespace Steeltoe.Common.Http
         /// <returns>Task to be awaited</returns>
         public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, string url, T data, JsonSerializerSettings settings)
         {
+            return PostAsJsonAsync(httpClient, new Uri(url), data, settings);
+        }
+
+        /// <summary>
+        /// Convert an object to JSON and POST it
+        /// </summary>
+        /// <typeparam name="T">Type of object to serialize</typeparam>
+        /// <param name="httpClient">HttpClient doing the sending</param>
+        /// <param name="url">Url to POST to</param>
+        /// <param name="data">Object to send</param>
+        /// <param name="settings">Your Serializer Settings</param>
+        /// <returns>Task to be awaited</returns>
+        public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data, JsonSerializerSettings settings)
+        {
             var dataAsString = JsonConvert.SerializeObject(data, settings);
             var content = new StringContent(dataAsString);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -63,6 +91,19 @@ namespace Steeltoe.Common.Http
         /// <param name="data">the data to put</param>
         /// <returns>Task to be awaited</returns>
         public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, string url, T data)
+        {
+            return PutAsJsonAsync(httpClient, new Uri(url), data);
+        }
+
+        /// <summary>
+        /// Convert an object to JSON and PUT it
+        /// </summary>
+        /// <typeparam name="T">the type of the data</typeparam>
+        /// <param name="httpClient">provided HttpClient</param>
+        /// <param name="url">the http endpoint to Put to</param>
+        /// <param name="data">the data to put</param>
+        /// <returns>Task to be awaited</returns>
+        public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data)
         {
             var dataAsString = JsonConvert.SerializeObject(data);
             var content = new StringContent(dataAsString);
@@ -80,6 +121,20 @@ namespace Steeltoe.Common.Http
         /// <param name="settings">the serialization setttings to use</param>
         /// <returns>Task to be awaited</returns>
         public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, string url, T data, JsonSerializerSettings settings)
+        {
+            return PutAsJsonAsync(httpClient, new Uri(url), data, settings);
+        }
+
+        /// <summary>
+        /// Convert an object to JSON and PUT it
+        /// </summary>
+        /// <typeparam name="T">the type of the data</typeparam>
+        /// <param name="httpClient">provided HttpClient</param>
+        /// <param name="url">the http endpoint to Put to</param>
+        /// <param name="data">the data to put</param>
+        /// <param name="settings">the serialization setttings to use</param>
+        /// <returns>Task to be awaited</returns>
+        public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data, JsonSerializerSettings settings)
         {
             var dataAsString = JsonConvert.SerializeObject(data, settings);
             var content = new StringContent(dataAsString);

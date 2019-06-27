@@ -63,24 +63,21 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     foreach (var path in GetPaths())
                     {
                         PathString epPath = new PathString(path);
-                        if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining))
+                        if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
                         {
-                            if (remaining.HasValue)
+                            string loggerName = remaining.Value.TrimStart('/');
+
+                            var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
+
+                            change.TryGetValue("configuredLevel", out string level);
+
+                            _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
+                            if (!string.IsNullOrEmpty(loggerName))
                             {
-                                string loggerName = remaining.Value.TrimStart('/');
-
-                                var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
-
-                                change.TryGetValue("configuredLevel", out string level);
-
-                                _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
-                                if (!string.IsNullOrEmpty(loggerName))
-                                {
-                                    var changeReq = new LoggersChangeRequest(loggerName, level);
-                                    _endpoint.Invoke(changeReq);
-                                    context.Response.StatusCode = (int)HttpStatusCode.OK;
-                                    return;
-                                }
+                                var changeReq = new LoggersChangeRequest(loggerName, level);
+                                _endpoint.Invoke(changeReq);
+                                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                return;
                             }
                         }
 

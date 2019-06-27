@@ -174,21 +174,17 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             List<LockInfo> result = new List<LockInfo>();
             foreach (var lck in allLocks)
             {
-                if (lck.Reason != BlockingReason.Monitor &&
-                    lck.Reason != BlockingReason.MonitorWait)
+                if (lck.Reason != BlockingReason.Monitor && lck.Reason != BlockingReason.MonitorWait && thread.Address == lck.Owner?.Address)
                 {
-                    if (thread.Address == lck.Owner?.Address)
+                    var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
+                    if (lockClass != null)
                     {
-                        var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
-                        if (lockClass != null)
+                        LockInfo info = new LockInfo()
                         {
-                            LockInfo info = new LockInfo()
-                            {
-                                ClassName = lockClass.Name,
-                                IdentityHashCode = (int)lck.Object
-                            };
-                            result.Add(info);
-                        }
+                            ClassName = lockClass.Name,
+                            IdentityHashCode = (int)lck.Object
+                        };
+                        result.Add(info);
                     }
                 }
             }
@@ -203,21 +199,17 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
             foreach (var lck in allLocks)
             {
-                if (lck.Reason == BlockingReason.Monitor ||
-                    lck.Reason == BlockingReason.MonitorWait)
+                if ((lck.Reason == BlockingReason.Monitor || lck.Reason == BlockingReason.MonitorWait) && thread.Address == lck.Owner?.Address)
                 {
-                    if (thread.Address == lck.Owner?.Address)
+                    var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
+                    if (lockClass != null)
                     {
-                        var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
-                        if (lockClass != null)
+                        MonitorInfo info = new MonitorInfo()
                         {
-                            MonitorInfo info = new MonitorInfo()
-                            {
-                                ClassName = lockClass.Name,
-                                IdentityHashCode = (int)lck.Object
-                            };
-                            result.Add(info);
-                        }
+                            ClassName = lockClass.Name,
+                            IdentityHashCode = (int)lck.Object
+                        };
+                        result.Add(info);
                     }
                 }
             }
@@ -327,13 +319,9 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             {
                 foreach (var lck in thread.BlockingObjects)
                 {
-                    if (lck.Taken)
+                    if (lck.Taken && (lck.Reason == BlockingReason.Monitor || lck.Reason == BlockingReason.MonitorWait))
                     {
-                        if (lck.Reason == BlockingReason.Monitor ||
-                            lck.Reason == BlockingReason.MonitorWait)
-                        {
-                            result = true;
-                        }
+                        result = true;
                     }
                 }
             }
@@ -348,13 +336,9 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             {
                 foreach (var lck in thread.BlockingObjects)
                 {
-                    if (lck.Taken)
+                    if (lck.Taken && lck.Reason != BlockingReason.Monitor && lck.Reason != BlockingReason.MonitorWait)
                     {
-                        if (lck.Reason != BlockingReason.Monitor &&
-                            lck.Reason != BlockingReason.MonitorWait)
-                        {
-                            result = true;
-                        }
+                        result = true;
                     }
                 }
             }
@@ -449,11 +433,11 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
             foreach (var point in sequences)
             {
-                int dist = (int)Math.Abs(point.Offset - ilOffset);
+                int dist = Math.Abs(point.Offset - ilOffset);
                 if (dist < distance)
                 {
                     nearest.File = Path.GetFileName(point.Document.GetName());
-                    nearest.Line = (int)point.StartLine;
+                    nearest.Line = point.StartLine;
                 }
 
                 distance = dist;

@@ -127,7 +127,7 @@ namespace Steeltoe.CloudFoundry.Connector
         /// <returns>Service info</returns>
         public IServiceInfo GetServiceInfo(string name)
         {
-            return _serviceInfos.Where((info) => info.Id.Equals(name)).FirstOrDefault();
+            return _serviceInfos.FirstOrDefault((info) => info.Id.Equals(name));
         }
 
         internal void BuildServiceInfoFactories()
@@ -182,13 +182,10 @@ namespace Steeltoe.CloudFoundry.Connector
                 foreach (Service s in serviceopt.Value)
                 {
                     IServiceInfoFactory factory = FindFactory(s);
-                    if (factory != null)
+                    if (factory != null && factory.Create(s) is ServiceInfo info)
                     {
-                        if (factory.Create(s) is ServiceInfo info)
-                        {
-                            info.ApplicationInfo = appInfo;
-                            _serviceInfos.Add(info);
-                        }
+                        info.ApplicationInfo = appInfo;
+                        _serviceInfos.Add(info);
                     }
                 }
             }
