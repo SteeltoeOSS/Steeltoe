@@ -791,7 +791,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 _settings.ClientId,
                 _settings.ClientSecret,
                 _settings.Timeout,
-                _settings.ValidateCertificates).Result;
+                _settings.ValidateCertificates).GetAwaiter().GetResult();
         }
 
         protected internal async void RefreshVaultTokenAsync(object state)

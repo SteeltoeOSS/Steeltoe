@@ -48,10 +48,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Task<string> t4 = Task.FromResult("a3");
                 cache2.PutIfAbsent("valueA", t4);
 
-                Assert.Equal("a1", cache1.Get<Task<string>>("valueA").Result);
-                Assert.Equal("b1", cache1.Get<Task<string>>("valueB").Result);
+                Assert.Equal("a1", cache1.Get<Task<string>>("valueA").GetAwaiter().GetResult());
+                Assert.Equal("b1", cache1.Get<Task<string>>("valueB").GetAwaiter().GetResult());
 
-                Assert.Equal("a3", cache2.Get<Task<string>>("valueA").Result);
+                Assert.Equal("a3", cache2.Get<Task<string>>("valueA").GetAwaiter().GetResult());
                 Assert.Null(cache2.Get<Task<string>>("valueB"));
             }
             catch (Exception e)
@@ -95,7 +95,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 HystrixRequestCache cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));
                 Task<string> t1 = Task.FromResult("a1");
                 cache1.PutIfAbsent("valueA", t1);
-                Assert.Equal("a1", cache1.Get<Task<string>>("valueA").Result);
+                Assert.Equal("a1", cache1.Get<Task<string>>("valueA").GetAwaiter().GetResult());
                 cache1.Clear("valueA");
                 Assert.Null(cache1.Get<Task<string>>("valueA"));
             }

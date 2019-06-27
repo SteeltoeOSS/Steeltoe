@@ -620,7 +620,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 config.ClientId,
                 config.ClientSecret,
                 DEFAULT_GETACCESSTOKEN_TIMEOUT,
-                config.ValidateCertificates).Result;
+                config.ValidateCertificates).GetAwaiter().GetResult();
         }
 
         internal IList<string> GetServiceUrlCandidates()
