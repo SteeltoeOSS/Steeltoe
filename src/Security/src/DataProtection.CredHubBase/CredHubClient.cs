@@ -135,9 +135,6 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 _logger?.LogTrace($"About to PUT {_baseCredHubUrl}/v1/data");
                 var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, _serializerSettings).ConfigureAwait(false);
 
-                var dataAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var s = JsonConvert.DeserializeObject<CredHubCredential<T>>(dataAsString, _serializerSettings);
-
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}").ConfigureAwait(false);
             }
             finally
@@ -145,7 +142,6 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 HttpClientHelper.RestoreCertificateValidation(_validateCertificates, protocolType, prevValidator);
             }
         }
-#pragma warning restore SA1202 // Elements must be ordered by access
 
         public async Task<CredHubCredential<T>> GenerateAsync<T>(CredHubGenerateRequest requestParameters)
         {
@@ -153,6 +149,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
+
                 var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, _serializerSettings).ConfigureAwait(false);
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}").ConfigureAwait(false);
             }
@@ -162,13 +159,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<CredHubCredential<T>> RegenerateAsync<T>(string name)
+        public Task<CredHubCredential<T>> RegenerateAsync<T>(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Name of credential to regenerate is required");
             }
 
+            return RegenerateInternalAsync<T>(name);
+        }
+
+        private async Task<CredHubCredential<T>> RegenerateInternalAsync<T>(string name)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -182,13 +184,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<RegeneratedCertificates> BulkRegenerateAsync(string certificateAuthority)
+        public Task<RegeneratedCertificates> BulkRegenerateAsync(string certificateAuthority)
         {
             if (string.IsNullOrEmpty(certificateAuthority))
             {
                 throw new ArgumentException("Certificate authority used for certificates is required");
             }
 
+            return BulkRegenerateInternalAsync(certificateAuthority);
+        }
+
+        private async Task<RegeneratedCertificates> BulkRegenerateInternalAsync(string certificateAuthority)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -202,13 +209,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<CredHubCredential<T>> GetByIdAsync<T>(Guid id)
+        public Task<CredHubCredential<T>> GetByIdAsync<T>(Guid id)
         {
             if (id == Guid.Empty)
             {
                 throw new ArgumentException("Id of credential is required");
             }
 
+            return GetByIdInternalAsync<T>(id);
+        }
+
+        private async Task<CredHubCredential<T>> GetByIdInternalAsync<T>(Guid id)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -222,13 +234,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<CredHubCredential<T>> GetByNameAsync<T>(string name)
+        public Task<CredHubCredential<T>> GetByNameAsync<T>(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Name of credential is required");
             }
 
+            return GetByNameInternalAsync<T>(name);
+        }
+
+        private async Task<CredHubCredential<T>> GetByNameInternalAsync<T>(string name)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -242,13 +259,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<List<CredHubCredential<T>>> GetByNameWithHistoryAsync<T>(string name, int entries = 10)
+        public Task<List<CredHubCredential<T>>> GetByNameWithHistoryAsync<T>(string name, int entries = 10)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Name is required");
             }
 
+            return GetByNameWithHistoryInternalAsync<T>(name, entries);
+        }
+
+        private async Task<List<CredHubCredential<T>>> GetByNameWithHistoryInternalAsync<T>(string name, int entries)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -262,13 +284,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<List<FoundCredential>> FindByNameAsync(string name)
+        public Task<List<FoundCredential>> FindByNameAsync(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Name is required");
             }
 
+            return FindByNameInternalAsync(name);
+        }
+
+        private async Task<List<FoundCredential>> FindByNameInternalAsync(string name)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -282,13 +309,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<List<FoundCredential>> FindByPathAsync(string path)
+        public Task<List<FoundCredential>> FindByPathAsync(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
                 throw new ArgumentException("Path is required");
             }
 
+            return FindByPathInternalAsync(path);
+        }
+
+        private async Task<List<FoundCredential>> FindByPathInternalAsync(string path)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -317,13 +349,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<bool> DeleteByNameAsync(string name)
+        public Task<bool> DeleteByNameAsync(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Name of credential to regenerate is required");
             }
 
+            return DeleteByNameInternalAsync(name);
+        }
+
+        public async Task<bool> DeleteByNameInternalAsync(string name)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -343,13 +380,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<List<CredentialPermission>> GetPermissionsAsync(string name)
+        public Task<List<CredentialPermission>> GetPermissionsAsync(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Name is required");
             }
 
+            return GetPermissionsInternalAsync(name);
+        }
+
+        private async Task<List<CredentialPermission>> GetPermissionsInternalAsync(string name)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -363,7 +405,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<List<CredentialPermission>> AddPermissionsAsync(string name, List<CredentialPermission> permissions)
+        public Task<List<CredentialPermission>> AddPermissionsAsync(string name, List<CredentialPermission> permissions)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -375,6 +417,11 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 throw new ArgumentException("At least one permission is required");
             }
 
+            return AddPermissionsInternalAsync(name, permissions);
+        }
+
+        private async Task<List<CredentialPermission>> AddPermissionsInternalAsync(string name, List<CredentialPermission> permissions)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -390,7 +437,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<bool> DeletePermissionAsync(string name, string actor)
+        public Task<bool> DeletePermissionAsync(string name, string actor)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -402,6 +449,11 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 throw new ArgumentException("Actor is required");
             }
 
+            return DeletePermissionInternalAsync(name, actor);
+        }
+
+        private async Task<bool> DeletePermissionInternalAsync(string name, string actor)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -421,13 +473,18 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<string> InterpolateServiceDataAsync(string serviceData)
+        public Task<string> InterpolateServiceDataAsync(string serviceData)
         {
             if (string.IsNullOrEmpty(serviceData))
             {
                 throw new ArgumentException("Service data is required");
             }
 
+            return InterpolateServiceDataInternalAsync(serviceData);
+        }
+
+        private async Task<string> InterpolateServiceDataInternalAsync(string serviceData)
+        {
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
             try
             {
@@ -463,4 +520,6 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
     }
+#pragma warning restore SA1202 // Elements must be ordered by access
+
 }

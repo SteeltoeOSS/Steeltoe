@@ -16,13 +16,11 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.CloudFoundry.Connector.Services;
-using System;
-using System.IO;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
+    [Collection("Redis")]
     public class RedisServiceConnectorFactoryTest
     {
         [Fact]

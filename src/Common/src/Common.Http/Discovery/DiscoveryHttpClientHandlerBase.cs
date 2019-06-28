@@ -40,7 +40,7 @@ namespace Steeltoe.Common.Discovery
                 return current;
             }
 
-            return Task.Run(async () => await _loadBalancer.ResolveServiceInstanceAsync(current)).Result;
+            return _loadBalancer.ResolveServiceInstanceAsync(current).GetAwaiter().GetResult();
         }
 
         public virtual async Task<Uri> LookupServiceAsync(Uri current)

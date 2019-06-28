@@ -135,9 +135,9 @@ namespace Steeltoe.Management.Endpoint.Handler
             return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
-        public async override Task<bool> IsAccessAllowed(HttpContextBase context)
+        public override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await (_securityServices?.IsAccessAllowed(context, _endpoint.Options)).ConfigureAwait(false);
+            return _securityServices?.IsAccessAllowed(context, _endpoint.Options);
         }
     }
 

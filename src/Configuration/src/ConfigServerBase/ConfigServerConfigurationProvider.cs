@@ -255,8 +255,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     }
 
                     // Wait for results from server
-                    task.Wait();
-                    ConfigEnvironment env = task.Result;
+                    ConfigEnvironment env = task.GetAwaiter().GetResult();
 
                     // Update config Data dictionary with any results
                     if (env != null)
@@ -506,7 +505,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             }
                         }
 
-                        Stream stream = await response.Content.ReadAsStreamAsync();
+                        Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                         return Deserialize(stream);
                     }
                 }
@@ -585,7 +584,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                         }
                     }
 
-                    Stream stream = await response.Content.ReadAsStreamAsync();
+                    Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     return Deserialize(stream);
                 }
             }
@@ -791,7 +790,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 _settings.ClientId,
                 _settings.ClientSecret,
                 _settings.Timeout,
-                _settings.ValidateCertificates).Result;
+                _settings.ValidateCertificates).GetAwaiter().GetResult();
         }
 
         protected internal async void RefreshVaultTokenAsync(object state)

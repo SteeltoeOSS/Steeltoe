@@ -31,7 +31,7 @@
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
     <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
-    
+
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV6>6.10.7</MySqlV6>
@@ -61,6 +61,7 @@
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.1</XunitStudioVersion>
 
+    <ConfigureAwaitCheckerVersion>4.0</ConfigureAwaitCheckerVersion>
     <SourceLinkGitHubVersion>1.0.0-beta2-18618-05</SourceLinkGitHubVersion>
   </PropertyGroup>
 </Project>

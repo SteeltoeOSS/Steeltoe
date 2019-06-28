@@ -628,7 +628,7 @@ namespace Steeltoe.Discovery.Eureka
             if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
             {
                 var result = RegisterAsync();
-                if (!result.Result)
+                if (!result.GetAwaiter().GetResult())
                 {
                     _logger?.LogInformation("Initial Registration failed.");
                 }

@@ -115,11 +115,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             try
             {
-                var task = ExecuteAsync();
-                var result = task.Result;
-                return result;
+                return ExecuteAsync().GetAwaiter().GetResult();
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is HystrixRuntimeException))
             {
                 throw DecomposeException(e);
             }
@@ -289,17 +287,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected virtual Exception DecomposeException(Exception e)
         {
-            if (e is HystrixRuntimeException)
-            {
-                return (HystrixRuntimeException)e;
-            }
-
-            // if we have an exception we know about we'll throw it directly without the wrapper exception
-            if (e.InnerException is HystrixRuntimeException)
-            {
-                return (HystrixRuntimeException)e.InnerException;
-            }
-
             string message = GetType() + " HystrixCollapser failed while executing.";
 
             // logger.debug(message, e); // debug only since we're throwing the exception and someone higher will do something with it

@@ -96,7 +96,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
             try
             {
-                await _client.Agent.ServiceRegister(registration.Service);
+                await _client.Agent.ServiceRegister(registration.Service).ConfigureAwait(false);
                 if (Options.IsHeartBeatEnabled && _scheduler != null)
                 {
                     _scheduler.Add(registration.InstanceId);
@@ -129,7 +129,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
             _logger?.LogInformation("Deregistering service with consul {instanceId} ", registration.InstanceId);
 
-            await _client.Agent.ServiceDeregister(registration.InstanceId);
+            await _client.Agent.ServiceDeregister(registration.InstanceId).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -142,11 +142,11 @@ namespace Steeltoe.Discovery.Consul.Registry
 
             if (OUT_OF_SERVICE.Equals(status, StringComparison.OrdinalIgnoreCase))
             {
-                await _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE);
+                await _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE).ConfigureAwait(false);
             }
             else if (UP.Equals(status, StringComparison.OrdinalIgnoreCase))
             {
-                await _client.Agent.DisableServiceMaintenance(registration.InstanceId);
+                await _client.Agent.DisableServiceMaintenance(registration.InstanceId).ConfigureAwait(false);
             }
             else
             {
@@ -162,7 +162,7 @@ namespace Steeltoe.Discovery.Consul.Registry
                 throw new ArgumentNullException(nameof(registration));
             }
 
-            var response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default);
+            var response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default).ConfigureAwait(false);
             var checks = response.Response;
 
             foreach (HealthCheck check in checks)
@@ -179,38 +179,26 @@ namespace Steeltoe.Discovery.Consul.Registry
         /// <inheritdoc/>
         public void Register(IConsulRegistration registration)
         {
-            Task.Run(async () =>
-            {
-                await RegisterAsync(registration);
-            }).Wait();
+            RegisterAsync(registration).GetAwaiter().GetResult();
         }
 
         /// <inheritdoc/>
         public void Deregister(IConsulRegistration registration)
         {
-            Task.Run(async () =>
-            {
-                await DeregisterAsync(registration);
-            }).Wait();
+            DeregisterAsync(registration).GetAwaiter().GetResult();
         }
 
         /// <inheritdoc/>
         public void SetStatus(IConsulRegistration registration, string status)
         {
-            Task.Run(async () =>
-            {
-                await SetStatusAsync(registration, status);
-            }).Wait();
+            SetStatusAsync(registration, status).GetAwaiter().GetResult();
         }
 
         /// <inheritdoc/>
         public S GetStatus<S>(IConsulRegistration registration)
             where S : class
         {
-            var result = Task.Run(async () =>
-            {
-                return await GetStatusAsync(registration);
-            }).Result;
+            var result = GetStatusAsync(registration).GetAwaiter().GetResult();
 
             return (S)result;
         }

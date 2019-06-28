@@ -119,10 +119,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         {
             get
             {
-                return Task.Run(async () =>
-                {
-                    return await GetServicesAsync();
-                }).Result;
+                return GetServicesAsync().GetAwaiter().GetResult();
             }
         }
 
@@ -136,10 +133,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <returns>the list of service instances</returns>
         public IList<IServiceInstance> GetInstances(string serviceId, QueryOptions queryOptions = null)
         {
-            return Task.Run(async () =>
-            {
-                return await GetInstancesAsync(serviceId, queryOptions);
-            }).Result;
+            return GetInstancesAsync(serviceId, queryOptions).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -149,17 +143,20 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <returns>the list of service instances</returns>
         public IList<IServiceInstance> GetAllInstances(QueryOptions queryOptions = null)
         {
-            return Task.Run(async () =>
+            return GetAllInstancesAsync().GetAwaiter().GetResult();
+
+            async Task<IList<IServiceInstance>> GetAllInstancesAsync()
             {
                 queryOptions = queryOptions ?? QueryOptions.Default;
                 var instances = new List<IServiceInstance>();
-                var result = await GetServicesAsync();
+                var result = await GetServicesAsync().ConfigureAwait(false);
                 foreach (var serviceId in result)
                 {
-                    await AddInstancesToListAsync(instances, serviceId, queryOptions);
+                    await AddInstancesToListAsync(instances, serviceId, queryOptions).ConfigureAwait(false);
                 }
+
                 return instances;
-            }).Result;
+            }
         }
 
         /// <summary>
@@ -169,11 +166,8 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <returns>the list of services</returns>
         public IList<string> GetServices(QueryOptions queryOptions = null)
         {
-            return Task.Run(async () =>
-            {
-                queryOptions = queryOptions ?? QueryOptions.Default;
-                return await GetServicesAsync(queryOptions);
-            }).Result;
+            queryOptions = queryOptions ?? QueryOptions.Default;
+            return GetServicesAsync(queryOptions).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -190,21 +184,21 @@ namespace Steeltoe.Discovery.Consul.Discovery
         internal async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions)
         {
             var instances = new List<IServiceInstance>();
-            await AddInstancesToListAsync(instances, serviceId, queryOptions);
+            await AddInstancesToListAsync(instances, serviceId, queryOptions).ConfigureAwait(false);
             return instances;
         }
 
         internal async Task<IList<string>> GetServicesAsync(QueryOptions queryOptions = null)
         {
             queryOptions = queryOptions ?? QueryOptions.Default;
-            var result = await _client.Catalog.Services(queryOptions);
+            var result = await _client.Catalog.Services(queryOptions).ConfigureAwait(false);
             var response = result.Response;
             return response.Keys.ToList();
         }
 
         internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions)
         {
-            var result = await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions);
+            var result = await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions).ConfigureAwait(false);
             var response = result.Response;
 
             foreach (var instance in response.Select(s => new ConsulServiceInstance(s)))

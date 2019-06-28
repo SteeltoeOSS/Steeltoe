@@ -47,7 +47,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 return new List<SecurityKey> { resolved };
             }
 
-            JsonWebKeySet keyset = Task.Run(() => FetchKeySet()).GetAwaiter().GetResult();
+            JsonWebKeySet keyset = FetchKeySet().GetAwaiter().GetResult();
             if (keyset != null)
             {
                 foreach (JsonWebKey key in keyset.Keys)
