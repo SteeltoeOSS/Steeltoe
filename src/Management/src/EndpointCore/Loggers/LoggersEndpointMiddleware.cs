@@ -95,23 +95,20 @@ namespace Steeltoe.Management.Endpoint.Loggers
         private bool ChangeLoggerLevel(HttpRequest request, string path)
         {
             PathString epPath = new PathString(path);
-            if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+            if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
             {
-                if (remaining.HasValue)
+                string loggerName = remaining.Value.TrimStart('/');
+
+                var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
+
+                change.TryGetValue("configuredLevel", out string level);
+
+                _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
+                if (!string.IsNullOrEmpty(loggerName))
                 {
-                    string loggerName = remaining.Value.TrimStart('/');
-
-                    var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
-
-                    change.TryGetValue("configuredLevel", out string level);
-
-                    _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
-                    if (!string.IsNullOrEmpty(loggerName))
-                    {
-                        var changeReq = new LoggersChangeRequest(loggerName, level);
-                        HandleRequest(changeReq);
-                        return true;
-                    }
+                    var changeReq = new LoggersChangeRequest(loggerName, level);
+                    HandleRequest(changeReq);
+                    return true;
                 }
             }
 

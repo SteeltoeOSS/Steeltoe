@@ -4,6 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 trigger:
 - master
+- fxcop
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -23,16 +24,28 @@ jobs:
   #     version: 2.2.300-preview2
   #     includePreviewVersions: true
   #     installationPath: $(Agent.ToolsDirectory)/dotnet
+  - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+    displayName: 'Prepare analysis on SonarCloud'
+    inputs:
+      SonarCloud: SonarCloud
+      organization: 'steeltoeoss'
+      projectKey: 'SteeltoeOSS_steeltoe'
   - task: DotNetCoreCLI@2
     inputs:
       command: build
-      projects: '**/*.sln'
+      projects: 'src/Steeltoe.All.sln'
       arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
   - task: DotNetCoreCLI@2
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
       arguments: '-c $(buildConfiguration)'
+  - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+    displayName: 'Run Code Analysis'
+    condition: always()
+  - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+    displayName: 'Publish Quality Gate Result'
+    condition: always()
 - job: MacOS_Build_and_Test
   pool:
     vmImage: 'macOS-10.14'
@@ -40,13 +53,13 @@ jobs:
   - task: DotNetCoreCLI@2
     inputs:
       command: build
-      projects: '**/*.sln'
+      projects: 'src/Steeltoe.All.sln'
       arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
   #- task: DotNetCoreCLI@2
   #  inputs:
   #    command: test
-  #    projects: '**/*.Test/*.csproj'
-  #    arguments: '-c $(buildConfiguration)'
+  #    projects: 'src/Steeltoe.All.sln'
+  #    arguments: '-c $(buildConfiguration) --filter Category!=Integration'
 - job: Windows_Build_Test_and_Package
   pool:
     vmImage: 'windows-2019'
@@ -63,7 +76,7 @@ jobs:
       inputs:
         command: 'pack'
         feedsToUse: 'select'
-        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
+        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=False'
         packagesToPack: '**/*.sln'
         versioningScheme: 'byEnvVar'
         versionEnvVar: PackageVersion
@@ -108,6 +121,8 @@ jobs:
         AnalyzeStatistics: true
         AnalyzeVerbose: true
       condition: always()
+    - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-roslynanalyzers.RoslynAnalyzers@2
+      displayName: 'Run Roslyn Analyzers'
     - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-credscan.CredScan@2
       displayName: 'Run CredScan'
       inputs:

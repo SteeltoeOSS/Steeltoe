@@ -27,5 +27,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
             : base(message, inner)
         {
         }
+
+        public HystrixTimeoutException()
+        {
+        }
     }
 }

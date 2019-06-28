@@ -4,7 +4,7 @@
     <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="$(OS.Contains('Win'))">
-    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
     <!-- <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->
   </PropertyGroup>

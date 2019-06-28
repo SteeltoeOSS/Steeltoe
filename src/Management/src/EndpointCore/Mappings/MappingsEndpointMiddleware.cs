@@ -252,12 +252,9 @@ namespace Steeltoe.Management.Endpoint.Mappings
         private IList<string> GetHttpMethods(Route route)
         {
             var constraints = route.Constraints;
-            if (constraints.TryGetValue("httpMethod", out IRouteConstraint routeConstraint))
+            if (constraints.TryGetValue("httpMethod", out IRouteConstraint routeConstraint) && routeConstraint is HttpMethodRouteConstraint methodConstraint)
             {
-                if (routeConstraint is HttpMethodRouteConstraint methodConstraint)
-                {
-                    return methodConstraint.AllowedMethods;
-                }
+                return methodConstraint.AllowedMethods;
             }
 
             return null;

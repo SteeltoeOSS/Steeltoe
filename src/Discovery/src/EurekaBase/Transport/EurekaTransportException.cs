@@ -27,5 +27,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
             : base(message, cause)
         {
         }
+
+        public EurekaTransportException()
+        {
+        }
     }
 }

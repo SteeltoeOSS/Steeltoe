@@ -171,7 +171,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         {
             this.shutdown = true;
 
-            Time.WaitUntil(() => { return !(runningThreads > 0); }, 500);
+            Time.WaitUntil(() => { return runningThreads <= 0; }, 500);
         }
 
         #endregion IHystrixTaskScheduler

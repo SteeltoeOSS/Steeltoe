@@ -24,12 +24,12 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         /// <summary>
         /// List of supported PostgreSQL assemblies
         /// </summary>
-        public static string[] Assemblies = new string[] { "Npgsql" };
+        public static readonly string[] Assemblies = new string[] { "Npgsql" };
 
         /// <summary>
         /// List of PostgreSQL types that implement IDbConnection
         /// </summary>
-        public static string[] ConnectionTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
+        public static readonly string[] ConnectionTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
 
         /// <summary>
         /// Gets NpgsqlConnection from a PostgreSQL Library

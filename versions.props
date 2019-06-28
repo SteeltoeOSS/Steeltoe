@@ -63,6 +63,5 @@
 
     <ConfigureAwaitCheckerVersion>4.0</ConfigureAwaitCheckerVersion>
     <SourceLinkGitHubVersion>1.0.0-beta2-18618-05</SourceLinkGitHubVersion>
-    <SecurityCodeScanVersion>3.0.0</SecurityCodeScanVersion>
   </PropertyGroup>
 </Project>

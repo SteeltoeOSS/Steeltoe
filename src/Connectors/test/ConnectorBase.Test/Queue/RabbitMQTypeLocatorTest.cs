@@ -38,8 +38,8 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         public void Throws_When_ConnectionType_NotFound()
         {
             // arrange
-            var types = RabbitMQTypeLocator.ConnectionInterfaceTypeNames;
-            RabbitMQTypeLocator.ConnectionInterfaceTypeNames = new string[] { "something-Wrong" };
+            var removedType = RabbitMQTypeLocator.ConnectionInterfaceTypeNames[0];
+            RabbitMQTypeLocator.ConnectionInterfaceTypeNames[0] = "something-Wrong";
 
             // act
             var exception = Assert.Throws<ConnectorException>(() => RabbitMQTypeLocator.IConnectionFactory);
@@ -48,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
             Assert.Equal("Unable to find IConnectionFactory, are you missing the RabbitMQ.Client assembly?", exception.Message);
 
             // reset
-            RabbitMQTypeLocator.ConnectionInterfaceTypeNames = types;
+            RabbitMQTypeLocator.ConnectionInterfaceTypeNames[0] = removedType;
         }
     }
 }

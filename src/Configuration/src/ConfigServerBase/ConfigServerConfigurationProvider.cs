@@ -902,12 +902,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return true;
             }
 
-            if (e is HttpRequestException)
+            if (e is HttpRequestException && e.InnerException is SocketException)
             {
-                if (e.InnerException is SocketException)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;

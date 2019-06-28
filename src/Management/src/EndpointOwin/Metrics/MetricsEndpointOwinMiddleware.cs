@@ -101,12 +101,9 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             foreach (var path in epPaths)
             {
                 PathString epPath = new PathString(path);
-                if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+                if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
                 {
-                    if (remaining.HasValue)
-                    {
-                        return remaining.Value.TrimStart('/');
-                    }
+                    return remaining.Value.TrimStart('/');
                 }
             }
 
@@ -133,12 +130,9 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                     foreach (var kvp in q.Value)
                     {
                         var pair = ParseTag(kvp);
-                        if (pair != null)
+                        if (pair != null && !results.Contains(pair.Value))
                         {
-                            if (!results.Contains(pair.Value))
-                            {
-                                results.Add(pair.Value);
-                            }
+                            results.Add(pair.Value);
                         }
                     }
                 }

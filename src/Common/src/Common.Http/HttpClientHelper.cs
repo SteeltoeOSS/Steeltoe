@@ -80,19 +80,14 @@ namespace Steeltoe.Common.Http
             prevValidator = null;
             protocolType = (SecurityProtocolType)0;
 
-            if (Platform.IsFullFramework)
+            if (Platform.IsFullFramework && !validateCertificates)
             {
-                if (!validateCertificates)
-                {
-                    protocolType = ServicePointManager.SecurityProtocol;
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                    prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                protocolType = ServicePointManager.SecurityProtocol;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
 
-                    // Disabling certificate validation is a bad idea, that's why it's off by default!
-#pragma warning disable SCS0004 // Certificate Validation has been disabled
-                    ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-#pragma warning restore SCS0004 // Certificate Validation has been disabled
-                }
+                // Disabling certificate validation is a bad idea, that's why it's off by default!
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
             }
         }
 
@@ -110,13 +105,10 @@ namespace Steeltoe.Common.Http
             SecurityProtocolType protocolType,
             RemoteCertificateValidationCallback prevValidator)
         {
-            if (Platform.IsFullFramework)
+            if (Platform.IsFullFramework && !validateCertificates)
             {
-                if (!validateCertificates)
-                {
-                    ServicePointManager.SecurityProtocol = protocolType;
-                    ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-                }
+                ServicePointManager.SecurityProtocol = protocolType;
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
             }
         }
 

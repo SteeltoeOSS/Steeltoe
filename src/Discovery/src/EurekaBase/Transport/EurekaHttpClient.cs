@@ -883,12 +883,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
                         JsonApplicationsRoot jroot = JsonApplicationsRoot.Deserialize(stream);
 
                         Applications appsResp = null;
-                        if (response.StatusCode == HttpStatusCode.OK)
+                        if (response.StatusCode == HttpStatusCode.OK && jroot != null)
                         {
-                            if (jroot != null)
-                            {
-                                appsResp = Applications.FromJsonApplications(jroot.Applications);
-                            }
+                            appsResp = Applications.FromJsonApplications(jroot.Applications);
                         }
 
                         _logger?.LogDebug(

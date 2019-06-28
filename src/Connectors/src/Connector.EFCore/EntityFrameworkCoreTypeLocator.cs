@@ -24,12 +24,12 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// <summary>
         /// List of supported MySQL Entity Framework Core Assemblies
         /// </summary>
-        public static string[] MySqlEntityAssemblies = new string[] { "MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql" };
+        public static readonly string[] MySqlEntityAssemblies = new string[] { "MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql" };
 
         /// <summary>
         /// List of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore
         /// </summary>
-        public static string[] MySqlEntityTypeNames = new string[] { "MySQL.Data.EntityFrameworkCore.Extensions.MySQLDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.MySQLDbContextOptionsExtensions" };
+        public static readonly string[] MySqlEntityTypeNames = new string[] { "MySQL.Data.EntityFrameworkCore.Extensions.MySQLDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.MySQLDbContextOptionsExtensions" };
 
         /// <summary>
         /// Gets the type used to configure EntityFramework Core with MySql
@@ -40,12 +40,12 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// <summary>
         /// List of supported PostgreSQL Entity Framework Core Assemblies
         /// </summary>
-        public static string[] PostgreSqlEntityAssemblies = new string[] { "Npgsql.EntityFrameworkCore.PostgreSQL" };
+        public static readonly string[] PostgreSqlEntityAssemblies = new string[] { "Npgsql.EntityFrameworkCore.PostgreSQL" };
 
         /// <summary>
         /// List of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore
         /// </summary>
-        public static string[] PostgreSqlEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions" };
+        public static readonly string[] PostgreSqlEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions" };
 
         /// <summary>
         /// Gets the type used to configure EntityFramework Core with PostgreSQL
@@ -56,12 +56,12 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// <summary>
         /// List of supported Microsoft SQL Server Entity Framework Core Assemblies
         /// </summary>
-        public static string[] SqlServerEntityAssemblies = new string[] { "Microsoft.EntityFrameworkCore.SqlServer" };
+        public static readonly string[] SqlServerEntityAssemblies = new string[] { "Microsoft.EntityFrameworkCore.SqlServer" };
 
         /// <summary>
         /// List of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore
         /// </summary>
-        public static string[] SqlServerEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.SqlServerDbContextOptionsExtensions" };
+        public static readonly string[] SqlServerEntityTypeNames = new string[] { "Microsoft.EntityFrameworkCore.SqlServerDbContextOptionsExtensions" };
 
         /// <summary>
         /// Gets the type used to configure EntityFramework Core with Microsoft SQL Server

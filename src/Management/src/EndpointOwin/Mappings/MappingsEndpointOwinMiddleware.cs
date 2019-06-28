@@ -167,56 +167,5 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
 
             return null;
         }
-
-        private IList<string> GetHttpMethods(object[] attributesOnActionMethod)
-        {
-            List<string> results = new List<string>();
-            foreach (var attr in attributesOnActionMethod)
-            {
-                Type attrType = attr.GetType();
-                string method = GetHttpMethodForType(attrType);
-                if (method != null)
-                {
-                    results.Add(method);
-                }
-            }
-
-            if (results.Count > 0)
-            {
-                return results;
-            }
-
-            return null;
-        }
-
-        private string GetHttpMethodForType(Type type)
-        {
-            if (type == typeof(HttpDeleteAttribute))
-            {
-                return "DELETE";
-            }
-            else if (type == typeof(HttpGetAttribute))
-            {
-                return "GET";
-            }
-            else if (type == typeof(HttpHeadAttribute))
-            {
-                return "HEAD";
-            }
-            else if (type == typeof(HttpOptionsAttribute))
-            {
-                return "OPTIONS";
-            }
-            else if (type == typeof(HttpPostAttribute))
-            {
-                return "POST";
-            }
-            else if (type == typeof(HttpPutAttribute))
-            {
-                return "PUT";
-            }
-
-            return null;
-        }
     }
 }

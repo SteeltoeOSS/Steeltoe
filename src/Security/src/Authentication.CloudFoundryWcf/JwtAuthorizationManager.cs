@@ -72,7 +72,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 CloudFoundryWcfTokenValidator.ThrowJwtException("No Token", null);
             }
 
-            throw new Exception("idk");
+            throw new NotImplementedException("Unable to locate a Principal in the request header");
         }
 
         protected override bool CheckAccessCore(OperationContext operationContext)

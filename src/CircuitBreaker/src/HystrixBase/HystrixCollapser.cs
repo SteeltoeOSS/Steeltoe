@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         GLOBAL
     }
 
-    public abstract class HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> : IHystrixExecutable<RequestResponseType>, IHystrixObservable<RequestResponseType>
+    public abstract class HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> : IHystrixExecutable<RequestResponseType>
     {
         protected internal CancellationToken _token;
 

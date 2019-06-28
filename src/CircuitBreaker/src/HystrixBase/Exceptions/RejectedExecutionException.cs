@@ -22,5 +22,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
             : base(message)
         {
         }
+
+        public RejectedExecutionException()
+        {
+        }
+
+        public RejectedExecutionException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
     }
 }

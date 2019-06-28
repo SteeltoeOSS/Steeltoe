@@ -131,7 +131,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <param name="serviceId">the service id to get instances for</param>
         /// <param name="queryOptions">any Consul query options to use when doing lookup</param>
         /// <returns>the list of service instances</returns>
-        public IList<IServiceInstance> GetInstances(string serviceId, QueryOptions queryOptions)
+        public IList<IServiceInstance> GetInstances(string serviceId, QueryOptions queryOptions = null)
         {
             return GetInstancesAsync(serviceId, queryOptions).GetAwaiter().GetResult();
         }

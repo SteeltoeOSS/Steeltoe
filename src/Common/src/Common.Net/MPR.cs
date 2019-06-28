@@ -31,54 +31,22 @@ namespace Steeltoe.Common.Net
 
         public int AddConnection(NetResource netResource, string password, string username, int flags)
         {
-            return WNetAddConnection2(netResource, password, username, flags);
+            return NativeMethods.WNetAddConnection2(netResource, password, username, flags);
         }
 
         public int UseConnection(IntPtr hwndOwner, NetResource netResource, string password, string username, int flags, string lpAccessName, string lpBufferSize, string lpResult)
         {
-            return WNetUseConnection(hwndOwner, netResource, password, username, flags, lpAccessName, lpBufferSize, lpResult);
+            return NativeMethods.WNetUseConnection(hwndOwner, netResource, password, username, flags, lpAccessName, lpBufferSize, lpResult);
         }
 
         public int CancelConnection(string name, int flags, bool force)
         {
-            return WNetCancelConnection2(name, flags, force);
+            return NativeMethods.WNetCancelConnection2(name, flags, force);
         }
 
         public int GetLastError(out int error, out StringBuilder errorBuf, int errorBufSize, out StringBuilder nameBuf, int nameBufSize)
         {
-            return WNetGetLastError(out error, out errorBuf, errorBufSize, out nameBuf, nameBufSize);
+            return NativeMethods.WNetGetLastError(out error, out errorBuf, errorBufSize, out nameBuf, nameBufSize);
         }
-
-        [DllImport("mpr.dll")]
-        private static extern int WNetAddConnection2(
-            NetResource netResource,
-            string password,
-            string username,
-            int flags);
-
-        [DllImport("mpr.dll")]
-        private static extern int WNetCancelConnection2(
-            string name,
-            int flags,
-            bool force);
-
-        [DllImport("mpr.dll")]
-        private static extern int WNetUseConnection(
-            IntPtr hwndOwner,
-            NetResource netResource,
-            string password,
-            string username,
-            int flags,
-            string lpAccessName,
-            string lpBufferSize,
-            string lpResult);
-
-        [DllImport("mpr.dll", CharSet = CharSet.Auto)]
-        private static extern int WNetGetLastError(
-            out int error,
-            out StringBuilder errorBuf,
-            int errorBufSize,
-            out StringBuilder nameBuf,
-            int nameBufSize);
     }
 }
