@@ -19,7 +19,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -242,28 +241,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestQueueKnownFailureWithNoFallback()
+        public async Task TestQueueKnownFailureWithNoFallback()
         {
             TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.HYSTRIX_FAILURE, FallbackResultTest.UNIMPLEMENTED);
             try
             {
-                var result = command.ExecuteAsync().GetAwaiter().GetResult();
+                var result = await command.ExecuteAsync();
                 Assert.True(false, "we shouldn't get here");
             }
-            catch (Exception e)
+            catch (HystrixRuntimeException e)
             {
                 output.WriteLine(e.ToString());
-                if (e.InnerException is HystrixRuntimeException)
-                {
-                    HystrixRuntimeException de = (HystrixRuntimeException)e.InnerException;
-
-                    Assert.NotNull(de.FallbackException);
-                    Assert.NotNull(de.ImplementingClass);
-                }
-                else
-                {
-                    Assert.False(true, "the cause should be HystrixRuntimeException");
-                }
+                Assert.NotNull(e.FallbackException);
+                Assert.NotNull(e.ImplementingClass);
             }
 
             Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -275,26 +265,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestQueueUnknownFailureWithNoFallback()
+        public async Task TestQueueUnknownFailureWithNoFallback()
         {
             TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.UNIMPLEMENTED);
             try
             {
-                var result = command.ExecuteAsync().GetAwaiter().GetResult();
+                var result = await command.ExecuteAsync();
                 Assert.True(false, "we shouldn't get here");
             }
-            catch (Exception e)
+            catch (HystrixRuntimeException e)
             {
                 output.WriteLine(e.ToString());
-                if (e is HystrixRuntimeException de)
-                {
-                    Assert.NotNull(de.FallbackException);
-                    Assert.NotNull(de.ImplementingClass);
-                }
-                else
-                {
-                    Assert.False(true, "the cause should be HystrixRuntimeException");
-                }
+                Assert.NotNull(e.FallbackException);
+                Assert.NotNull(e.ImplementingClass);
             }
 
             Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -329,25 +312,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestQueueFailureWithFallbackFailure()
+        public async Task TestQueueFailureWithFallbackFailure()
         {
             TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.FAILURE);
             try
             {
-                var result = command.ExecuteAsync().GetAwaiter().GetResult();
+                var result = await command.ExecuteAsync();
                 Assert.True(true, "we shouldn't get here");
             }
-            catch (Exception e)
+            catch (HystrixRuntimeException e)
             {
-                if (e is HystrixRuntimeException de)
-                {
-                    output.WriteLine(e.ToString());
-                    Assert.NotNull(de.FallbackException);
-                }
-                else
-                {
-                    Assert.True(false, "the cause should be HystrixRuntimeException");
-                }
+                output.WriteLine(e.ToString());
+                Assert.NotNull(e.FallbackException);
             }
 
             Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -714,29 +690,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestQueuedExecutionTimeoutWithNoFallback()
+        public async Task TestQueuedExecutionTimeoutWithNoFallback()
         {
             TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
             try
             {
-                var result = command.ExecuteAsync().GetAwaiter().GetResult();
+                var result = await command.ExecuteAsync();
                 Assert.True(false, "we shouldn't get here");
             }
-            catch (Exception e)
+            catch (HystrixRuntimeException e)
             {
                 // e.printStackTrace();
-                if (e is HystrixRuntimeException de)
-                {
-                    Assert.NotNull(de.FallbackException);
-                    Assert.True(de.FallbackException is InvalidOperationException);
-                    Assert.NotNull(de.ImplementingClass);
-                    Assert.NotNull(de.InnerException);
-                    Assert.True(de.InnerException is TimeoutException);
-                }
-                else
-                {
-                    Assert.False(true, "the exception should be AggregateException with cause as HystrixRuntimeException");
-                }
+                Assert.NotNull(e.FallbackException);
+                Assert.True(e.FallbackException is InvalidOperationException);
+                Assert.NotNull(e.ImplementingClass);
+                Assert.NotNull(e.InnerException);
+                Assert.True(e.InnerException is TimeoutException);
             }
 
             Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -748,10 +717,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestQueuedExecutionTimeoutWithFallback()
+        public async Task TestQueuedExecutionTimeoutWithFallback()
         {
             TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
-            Assert.Equal(FlexibleTestHystrixCommand.FALLBACK_VALUE, command.ExecuteAsync().GetAwaiter().GetResult());
+            Assert.Equal(FlexibleTestHystrixCommand.FALLBACK_VALUE, await command.ExecuteAsync());
             AssertCommandExecutionEvents(command, HystrixEventType.TIMEOUT, HystrixEventType.FALLBACK_SUCCESS);
             Assert.NotNull(command.ExecutionException);
             Assert.Equal(0, command.Builder.Metrics.CurrentConcurrentExecutionCount);
@@ -759,28 +728,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestQueuedExecutionTimeoutFallbackFailure()
+        public async Task TestQueuedExecutionTimeoutFallbackFailure()
         {
             TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
             try
             {
-                var result = command.ExecuteAsync().GetAwaiter().GetResult();
+                var result = await command.ExecuteAsync();
                 Assert.True(false, "we shouldn't get here");
             }
-            catch (Exception e)
+            catch (HystrixRuntimeException e)
             {
-                if (e is HystrixRuntimeException de)
-                {
-                    Assert.NotNull(de.FallbackException);
-                    Assert.False(de.FallbackException is InvalidOperationException);
-                    Assert.NotNull(de.ImplementingClass);
-                    Assert.NotNull(de.InnerException);
-                    Assert.True(de.InnerException is TimeoutException);
-                }
-                else
-                {
-                    Assert.False(true, "the exception should be AggregateException with cause as HystrixRuntimeException");
-                }
+                Assert.NotNull(e.FallbackException);
+                Assert.False(e.FallbackException is InvalidOperationException);
+                Assert.NotNull(e.ImplementingClass);
+                Assert.NotNull(e.InnerException);
+                Assert.True(e.InnerException is TimeoutException);
             }
 
             AssertCommandExecutionEvents(command, HystrixEventType.TIMEOUT, HystrixEventType.FALLBACK_FAILURE);
@@ -1167,7 +1129,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestExecutionSemaphoreWithQueue()
+        public async Task TestExecutionSemaphoreWithQueue()
         {
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
 
@@ -1181,11 +1143,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             SemaphoreSlim semaphore = new SemaphoreSlim(1);
 
             TestSemaphoreCommand command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
-            ThreadStart command2Action = new ThreadStart(() =>
+            ThreadStart command2Action = new ThreadStart(async () =>
             {
                 try
                 {
-                    var res = command2.ExecuteAsync().GetAwaiter().GetResult();
+                    var res = await command2.ExecuteAsync();
                 }
                 catch (Exception)
                 {
@@ -1194,11 +1156,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             });
 
             TestSemaphoreCommand command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
-            ThreadStart command3Action = new ThreadStart(() =>
+            ThreadStart command3Action = new ThreadStart(async () =>
             {
                 try
                 {
-                    var res = command3.ExecuteAsync().GetAwaiter().GetResult();
+                    var res = await command3.ExecuteAsync();
                 }
                 catch (Exception)
                 {
@@ -2050,7 +2012,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestRequestCacheOnThreadRejectionThrowsException()
+        public async Task TestRequestCacheOnThreadRejectionThrowsException()
         {
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
             CountdownEvent completionLatch = new CountdownEvent(1);
@@ -2088,7 +2050,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             RequestCacheThreadRejectionWithoutFallback r3 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
             try
             {
-                output.WriteLine("f3: " + r3.ExecuteAsync().GetAwaiter().GetResult());
+                output.WriteLine("f3: " + await r3.ExecuteAsync());
 
                 // we should have thrown an exception
                 Assert.True(false, "expected a rejection");
@@ -2132,7 +2094,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestBasicExecutionWorksWithoutRequestVariable()
+        public async Task TestBasicExecutionWorksWithoutRequestVariable()
         {
             /* force the RequestVariable to not be initialized */
             HystrixRequestContext.SetContextOnCurrentThread(null);
@@ -2141,11 +2103,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(command.Execute());
 
             TestHystrixCommand<bool> command2 = new SuccessfulTestCommand();
-            Assert.True(command2.ExecuteAsync().GetAwaiter().GetResult());
+            Assert.True(await command2.ExecuteAsync());
         }
 
         [Fact]
-        public void TestCacheKeyExecutionRequiresRequestVariable()
+        public async Task TestCacheKeyExecutionRequiresRequestVariable()
         {
             /* force the RequestVariable to not be initialized */
             HystrixRequestContext.SetContextOnCurrentThread(null);
@@ -2156,7 +2118,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Throws<HystrixRuntimeException>(() => command.Execute());
 
             SuccessfulCacheableCommand<string> command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "two");
-            Assert.Throws<HystrixRuntimeException>(() => command.ExecuteAsync().GetAwaiter().GetResult());
+            await Assert.ThrowsAsync<HystrixRuntimeException>(() => command.ExecuteAsync());
         }
 
         [Fact]
@@ -2182,14 +2144,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestBadRequestExceptionViaQueueInThread()
+        public async Task TestBadRequestExceptionViaQueueInThread()
         {
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
             BadRequestCommand command1 = null;
             try
             {
                 command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.THREAD);
-                var res = command1.ExecuteAsync().GetAwaiter().GetResult();
+                var res = await command1.ExecuteAsync();
                 Assert.True(false, "we expect to receive a " + typeof(HystrixBadRequestException).Name);
             }
             catch (Exception e)
@@ -2232,7 +2194,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 command2 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.THREAD);
-                var res = command2.ExecuteAsync().GetAwaiter().GetResult();
+                var res = command2.ExecuteAsync().Result;
                 Assert.True(false, "we expect to receive a " + typeof(HystrixBadRequestException).Name);
             }
             catch (Exception e)
