@@ -255,8 +255,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     }
 
                     // Wait for results from server
-                    task.Wait();
-                    ConfigEnvironment env = task.Result;
+                    ConfigEnvironment env = task.GetAwaiter().GetResult();
 
                     // Update config Data dictionary with any results
                     if (env != null)

@@ -286,10 +286,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 output.WriteLine(e.ToString());
-                if (e.InnerException is HystrixRuntimeException)
+                if (e is HystrixRuntimeException de)
                 {
-                    HystrixRuntimeException de = (HystrixRuntimeException)e.InnerException;
-
                     Assert.NotNull(de.FallbackException);
                     Assert.NotNull(de.ImplementingClass);
                 }
@@ -341,9 +339,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
             catch (Exception e)
             {
-                if (e.InnerException is HystrixRuntimeException)
+                if (e is HystrixRuntimeException de)
                 {
-                    HystrixRuntimeException de = (HystrixRuntimeException)e.InnerException;
                     output.WriteLine(e.ToString());
                     Assert.NotNull(de.FallbackException);
                 }
@@ -728,9 +725,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 // e.printStackTrace();
-                if (e is AggregateException && e.InnerException is HystrixRuntimeException)
+                if (e is HystrixRuntimeException de)
                 {
-                    HystrixRuntimeException de = (HystrixRuntimeException)e.InnerException;
                     Assert.NotNull(de.FallbackException);
                     Assert.True(de.FallbackException is InvalidOperationException);
                     Assert.NotNull(de.ImplementingClass);
@@ -773,9 +769,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
             catch (Exception e)
             {
-                if (e is AggregateException && e.InnerException is HystrixRuntimeException)
+                if (e is HystrixRuntimeException de)
                 {
-                    HystrixRuntimeException de = (HystrixRuntimeException)e.InnerException;
                     Assert.NotNull(de.FallbackException);
                     Assert.False(de.FallbackException is InvalidOperationException);
                     Assert.NotNull(de.ImplementingClass);
@@ -2098,7 +2093,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // we should have thrown an exception
                 Assert.True(false, "expected a rejection");
             }
-            catch (AggregateException)
+            catch (HystrixRuntimeException)
             {
                 // } catch (HystrixRuntimeException e) {
                 //                e.printStackTrace();
@@ -2197,10 +2192,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 var res = command1.ExecuteAsync().GetAwaiter().GetResult();
                 Assert.True(false, "we expect to receive a " + typeof(HystrixBadRequestException).Name);
             }
-            catch (AggregateException e)
+            catch (Exception e)
             {
                 // e.printStackTrace();
-                if (e.InnerException is HystrixBadRequestException)
+                if (e is HystrixBadRequestException)
                 {
                     // success
                 }
@@ -2240,10 +2235,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 var res = command2.ExecuteAsync().GetAwaiter().GetResult();
                 Assert.True(false, "we expect to receive a " + typeof(HystrixBadRequestException).Name);
             }
-            catch (AggregateException e)
+            catch (Exception e)
             {
                 // e.printStackTrace();
-                if (e.InnerException is HystrixBadRequestException)
+                if (e is HystrixBadRequestException)
                 {
                     // success
                 }

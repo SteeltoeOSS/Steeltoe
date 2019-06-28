@@ -205,15 +205,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             try
             {
-                var task = ExecuteAsync();
-                var result = task.Result;
-                return result;
+                return ExecuteAsync().GetAwaiter().GetResult();
             }
-            catch (AggregateException e)
-            {
-                throw e.Flatten().InnerException;
-            }
-            catch (Exception e)
+            catch (Exception e) when (!(e is HystrixRuntimeException))
             {
                 throw DecomposeException(e);
             }
