@@ -61,7 +61,6 @@
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.1</XunitStudioVersion>
 
-    <ConfigureAwaitCheckerVersion>4.0</ConfigureAwaitCheckerVersion>
     <SourceLinkGitHubVersion>1.0.0-beta2-18618-05</SourceLinkGitHubVersion>
   </PropertyGroup>
 </Project>

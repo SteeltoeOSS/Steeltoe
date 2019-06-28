@@ -125,10 +125,5 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
             long javaTicks = ticks - baseTime.Ticks;
             return javaTicks / 10000;
         }
-
-        private bool HasFormContentType(HttpRequest request)
-        {
-            return request.ContentType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase) || request.ContentType.Equals("multipart/form-data", StringComparison.OrdinalIgnoreCase);
-        }
     }
 }
