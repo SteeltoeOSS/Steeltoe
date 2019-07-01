@@ -127,15 +127,37 @@ namespace Steeltoe.Discovery.Consul.Discovery
             }
         }
 
+        private bool disposed = false;
+
         /// <summary>
         /// Remove all heart beats from scheduler
         /// </summary>
         public void Dispose()
         {
-            foreach (var instance in _serviceHeartbeats.Keys)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
             {
-                Remove(instance);
+                if (disposing)
+                {
+                    // Cleanup
+                    foreach (var instance in _serviceHeartbeats.Keys)
+                    {
+                        Remove(instance);
+                    }
+                }
+
+                disposed = true;
             }
+        }
+
+        ~TtlScheduler()
+        {
+            Dispose(false);
         }
 
         private Task PassTtl(string serviceId)

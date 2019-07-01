@@ -25,16 +25,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         private static readonly BitArray EXCEPTION_PRODUCING_EVENTS = new BitArray(NUM_EVENT_TYPES);
         private static readonly BitArray TERMINAL_EVENTS = new BitArray(NUM_EVENT_TYPES);
 
-        private readonly EventCounts eventCounts;
-        private readonly Exception failedExecutionException;
-        private readonly Exception executionException;
-        private readonly long startTimestamp;
-        private readonly int executionLatency; // time spent in run() method
-        private readonly int userThreadLatency; // time elapsed between caller thread submitting request and response being visible to it
-        private readonly bool executionOccurred;
-        private readonly bool isExecutedInThread;
-        private readonly IHystrixCollapserKey collapserKey;
-
         static ExecutionResult()
         {
             foreach (HystrixEventType eventType in HystrixEventTypeHelper.EXCEPTION_PRODUCING_EVENT_TYPES)
@@ -57,10 +47,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             internal EventCounts()
             {
-                this.events = new BitArray(NUM_EVENT_TYPES);
-                this.numEmissions = 0;
-                this.numFallbackEmissions = 0;
-                this.numCollapsed = 0;
+                events = new BitArray(NUM_EVENT_TYPES);
+                numEmissions = 0;
+                numFallbackEmissions = 0;
+                numCollapsed = 0;
             }
 
             internal EventCounts(BitArray events, int numEmissions, int numFallbackEmissions, int numCollapsed)
@@ -99,10 +89,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     }
                 }
 
-                this.events = newBitSet;
-                this.numEmissions = localNumEmits;
-                this.numFallbackEmissions = localNumFallbackEmits;
-                this.numCollapsed = localNumCollapsed;
+                events = newBitSet;
+                numEmissions = localNumEmits;
+                numFallbackEmissions = localNumFallbackEmits;
+                numCollapsed = localNumCollapsed;
             }
 
             public bool Contains(HystrixEventType eventType)
@@ -152,7 +142,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     return true;
                 }
 
-                if (o == null || this.GetType() != o.GetType())
+                if (o == null || GetType() != o.GetType())
                 {
                     return false;
                 }
@@ -273,15 +263,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             bool isExecutedInThread,
             IHystrixCollapserKey collapserKey)
         {
-            this.eventCounts = eventCounts;
-            this.startTimestamp = startTimestamp;
-            this.executionLatency = executionLatency;
-            this.userThreadLatency = userThreadLatency;
-            this.failedExecutionException = failedExecutionException;
-            this.executionException = executionException;
-            this.executionOccurred = executionOccurred;
-            this.isExecutedInThread = isExecutedInThread;
-            this.collapserKey = collapserKey;
+            Eventcounts = eventCounts;
+            StartTimestamp = startTimestamp;
+            ExecutionLatency = executionLatency;
+            UserThreadLatency = userThreadLatency;
+            Exception = failedExecutionException;
+            ExecutionException = executionException;
+            ExecutionOccurred = executionOccurred;
+            IsExecutedInThread = isExecutedInThread;
+            CollapserKey = collapserKey;
         }
 
         // we can return a static version since it's immutable
@@ -304,130 +294,130 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public ExecutionResult SetExecutionOccurred()
         {
             return new ExecutionResult(
-                eventCounts,
-                startTimestamp,
-                executionLatency,
-                userThreadLatency,
-                failedExecutionException,
-                executionException,
+                Eventcounts,
+                StartTimestamp,
+                ExecutionLatency,
+                UserThreadLatency,
+                Exception,
+                ExecutionException,
                 true,
-                isExecutedInThread,
-                collapserKey);
+                IsExecutedInThread,
+                CollapserKey);
         }
 
         public ExecutionResult SetExecutionLatency(int executionLatency)
         {
             return new ExecutionResult(
-                eventCounts,
-                startTimestamp,
+                Eventcounts,
+                StartTimestamp,
                 executionLatency,
-                userThreadLatency,
-                failedExecutionException,
-                executionException,
-                executionOccurred,
-                isExecutedInThread,
-                collapserKey);
+                UserThreadLatency,
+                Exception,
+                ExecutionException,
+                ExecutionOccurred,
+                IsExecutedInThread,
+                CollapserKey);
         }
 
         public ExecutionResult SetException(Exception e)
         {
             return new ExecutionResult(
-                eventCounts,
-                startTimestamp,
-                executionLatency,
-                userThreadLatency,
+                Eventcounts,
+                StartTimestamp,
+                ExecutionLatency,
+                UserThreadLatency,
                 e,
-                executionException,
-                executionOccurred,
-                isExecutedInThread,
-                collapserKey);
+                ExecutionException,
+                ExecutionOccurred,
+                IsExecutedInThread,
+                CollapserKey);
         }
 
         public ExecutionResult SetExecutionException(Exception executionException)
         {
             return new ExecutionResult(
-                eventCounts,
-                startTimestamp,
-                executionLatency,
-                userThreadLatency,
-                failedExecutionException,
+                Eventcounts,
+                StartTimestamp,
+                ExecutionLatency,
+                UserThreadLatency,
+                Exception,
                 executionException,
-                executionOccurred,
-                isExecutedInThread,
-                collapserKey);
+                ExecutionOccurred,
+                IsExecutedInThread,
+                CollapserKey);
         }
 
         public ExecutionResult SetInvocationStartTime(long inStartTimestamp)
         {
             return new ExecutionResult(
-                eventCounts,
+                Eventcounts,
                 inStartTimestamp,
-                executionLatency,
-                userThreadLatency,
-                failedExecutionException,
-                executionException,
-                executionOccurred,
-                isExecutedInThread,
-                collapserKey);
+                ExecutionLatency,
+                UserThreadLatency,
+                Exception,
+                ExecutionException,
+                ExecutionOccurred,
+                IsExecutedInThread,
+                CollapserKey);
         }
 
         public ExecutionResult SetExecutedInThread()
         {
             return new ExecutionResult(
-                eventCounts,
-                startTimestamp,
-                executionLatency,
-                userThreadLatency,
-                failedExecutionException,
-                executionException,
-                executionOccurred,
+                Eventcounts,
+                StartTimestamp,
+                ExecutionLatency,
+                UserThreadLatency,
+                Exception,
+                ExecutionException,
+                ExecutionOccurred,
                 true,
-                collapserKey);
+                CollapserKey);
         }
 
         public ExecutionResult SetNotExecutedInThread()
         {
             return new ExecutionResult(
-                eventCounts,
-                startTimestamp,
-                executionLatency,
-                userThreadLatency,
-                failedExecutionException,
-                executionException,
-                executionOccurred,
+                Eventcounts,
+                StartTimestamp,
+                ExecutionLatency,
+                UserThreadLatency,
+                Exception,
+                ExecutionException,
+                ExecutionOccurred,
                 false,
-                collapserKey);
+                CollapserKey);
         }
 
         public ExecutionResult MarkCollapsed(IHystrixCollapserKey collapserKey, int sizeOfBatch)
         {
             return new ExecutionResult(
-                eventCounts.Plus(HystrixEventType.COLLAPSED, sizeOfBatch),
-                startTimestamp,
-                executionLatency,
-                userThreadLatency,
-                failedExecutionException,
-                executionException,
-                executionOccurred,
-                isExecutedInThread,
+                Eventcounts.Plus(HystrixEventType.COLLAPSED, sizeOfBatch),
+                StartTimestamp,
+                ExecutionLatency,
+                UserThreadLatency,
+                Exception,
+                ExecutionException,
+                ExecutionOccurred,
+                IsExecutedInThread,
                 collapserKey);
         }
 
         public ExecutionResult MarkUserThreadCompletion(long userThreadLatency)
         {
-            if (startTimestamp > 0 && !IsResponseRejected)
+            if (StartTimestamp > 0 && !IsResponseRejected)
             {
                 /* execution time (must occur before terminal state otherwise a race condition can occur if requested by client) */
                 return new ExecutionResult(
-                    eventCounts,
-                    startTimestamp,
-                    executionLatency,
+                    Eventcounts,
+                    StartTimestamp,
+                    ExecutionLatency,
                     (int)userThreadLatency,
-                    failedExecutionException,
-                    executionException,
-                    executionOccurred,
-                    isExecutedInThread,
-                    collapserKey);
+                    Exception,
+                    ExecutionException,
+                    ExecutionOccurred,
+                    IsExecutedInThread,
+                    CollapserKey);
             }
             else
             {
@@ -438,31 +428,31 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public ExecutionResult AddEvent(HystrixEventType eventType)
         {
             return new ExecutionResult(
-                eventCounts.Plus(eventType),
-                startTimestamp,
-                executionLatency,
-                userThreadLatency,
-                failedExecutionException,
-                executionException,
-                executionOccurred,
-                isExecutedInThread,
-                collapserKey);
+                Eventcounts.Plus(eventType),
+                StartTimestamp,
+                ExecutionLatency,
+                UserThreadLatency,
+                Exception,
+                ExecutionException,
+                ExecutionOccurred,
+                IsExecutedInThread,
+                CollapserKey);
         }
 
         public ExecutionResult AddEvent(int executionLatency, HystrixEventType eventType)
         {
-            if (startTimestamp >= 0 && !IsResponseRejected)
+            if (StartTimestamp >= 0 && !IsResponseRejected)
             {
                 return new ExecutionResult(
-                    eventCounts.Plus(eventType),
-                    startTimestamp,
+                    Eventcounts.Plus(eventType),
+                    StartTimestamp,
                     executionLatency,
-                    userThreadLatency,
-                    failedExecutionException,
-                    executionException,
-                    executionOccurred,
-                    isExecutedInThread,
-                    collapserKey);
+                    UserThreadLatency,
+                    Exception,
+                    ExecutionException,
+                    ExecutionOccurred,
+                    IsExecutedInThread,
+                    CollapserKey);
             }
             else
             {
@@ -470,54 +460,39 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
-        public EventCounts Eventcounts
-        {
-            get { return eventCounts; }
-        }
+        public EventCounts Eventcounts { get; }
 
-        public long StartTimestamp
-        {
-            get { return startTimestamp; }
-        }
+        public long StartTimestamp { get; }
 
-        public int ExecutionLatency
-        {
-            get { return executionLatency; }
-        }
+        /// <summary>
+        /// Gets amound of time spent in run() method
+        /// </summary>
+        public int ExecutionLatency { get; }
 
-        public int UserThreadLatency
-        {
-            get { return userThreadLatency; }
-        }
+        /// <summary>
+        /// Gets time elapsed between caller thread submitting request and response being visible to it
+        /// </summary>
+        public int UserThreadLatency { get; }
 
         public long CommandRunStartTimeInNanos
         {
-            get { return startTimestamp * 1000 * 1000; }
+            get { return StartTimestamp * 1000 * 1000; }
         }
 
-        public Exception Exception
-        {
-            get { return failedExecutionException; }
-        }
+        public Exception Exception { get; }
 
-        public Exception ExecutionException
-        {
-            get { return executionException; }
-        }
+        public Exception ExecutionException { get; }
 
-        public IHystrixCollapserKey CollapserKey
-        {
-            get { return collapserKey; }
-        }
+        public IHystrixCollapserKey CollapserKey { get; }
 
         public bool IsResponseSemaphoreRejected
         {
-            get { return eventCounts.Contains(HystrixEventType.SEMAPHORE_REJECTED); }
+            get { return Eventcounts.Contains(HystrixEventType.SEMAPHORE_REJECTED); }
         }
 
         public bool IsResponseThreadPoolRejected
         {
-            get { return eventCounts.Contains(HystrixEventType.THREAD_POOL_REJECTED); }
+            get { return Eventcounts.Contains(HystrixEventType.THREAD_POOL_REJECTED); }
         }
 
         public bool IsResponseRejected
@@ -532,7 +507,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 List<HystrixEventType> eventList = new List<HystrixEventType>();
                 foreach (HystrixEventType eventType in ALL_EVENT_TYPES)
                 {
-                    if (eventCounts.Contains(eventType))
+                    if (Eventcounts.Contains(eventType))
                     {
                         eventList.Add(eventType);
                     }
@@ -542,33 +517,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
-        public bool IsExecutedInThread
-        {
-            get { return this.isExecutedInThread; }
-        }
+        public bool IsExecutedInThread { get; }
 
-        public bool ExecutionOccurred
-        {
-            get { return executionOccurred; }
-        }
+        public bool ExecutionOccurred { get; }
 
         public bool ContainsTerminalEvent
         {
-            get { return eventCounts.ContainsAnyOf(TERMINAL_EVENTS); }
+            get { return Eventcounts.ContainsAnyOf(TERMINAL_EVENTS); }
         }
 
         public override string ToString()
         {
             return "ExecutionResult{" +
-                    "eventCounts=" + eventCounts +
-                    ", failedExecutionException=" + failedExecutionException +
-                    ", executionException=" + executionException +
-                    ", startTimestamp=" + startTimestamp +
-                    ", executionLatency=" + executionLatency +
-                    ", userThreadLatency=" + userThreadLatency +
-                    ", executionOccurred=" + executionOccurred +
-                    ", isExecutedInThread=" + isExecutedInThread +
-                    ", collapserKey=" + collapserKey +
+                    "eventCounts=" + Eventcounts +
+                    ", failedExecutionException=" + Exception +
+                    ", executionException=" + ExecutionException +
+                    ", startTimestamp=" + StartTimestamp +
+                    ", executionLatency=" + ExecutionLatency +
+                    ", userThreadLatency=" + UserThreadLatency +
+                    ", executionOccurred=" + ExecutionOccurred +
+                    ", isExecutedInThread=" + IsExecutedInThread +
+                    ", collapserKey=" + CollapserKey +
                     '}';
         }
 

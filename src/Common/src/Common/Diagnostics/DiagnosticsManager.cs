@@ -65,23 +65,6 @@ namespace Steeltoe.Common.Diagnostics
 
         public IList<IPolledDiagnosticSource> Sources => _sources;
 
-        public void Dispose()
-        {
-            Stop();
-
-            if (_observers != null)
-            {
-                _observers.Clear();
-            }
-
-            if (_sources != null)
-            {
-                _sources.Clear();
-            }
-
-            _logger = null;
-        }
-
         public void OnCompleted()
         {
             // for future use
@@ -126,6 +109,45 @@ namespace Steeltoe.Common.Diagnostics
                     listener.Dispose();
                 }
             }
+        }
+
+        private bool disposed = false;
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // Cleanup
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    Stop();
+
+                    if (_observers != null)
+                    {
+                        _observers.Clear();
+                    }
+
+                    if (_sources != null)
+                    {
+                        _sources.Clear();
+                    }
+
+                    _logger = null;
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~DiagnosticsManager()
+        {
+            Dispose(false);
         }
 
         private void Poller(object obj)

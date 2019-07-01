@@ -16,7 +16,7 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
-    public interface ICollapsedRequest<RequestResponseType, RequestArgumentType>
+    public interface ICollapsedRequest<in RequestResponseType, out RequestArgumentType>
     {
         RequestArgumentType Argument { get;  }
 

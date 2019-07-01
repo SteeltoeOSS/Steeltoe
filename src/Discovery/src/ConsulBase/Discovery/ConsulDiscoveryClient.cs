@@ -170,17 +170,6 @@ namespace Steeltoe.Discovery.Consul.Discovery
             return GetServicesAsync(queryOptions).GetAwaiter().GetResult();
         }
 
-        /// <summary>
-        /// Dispose of the client and also the Consul service registrar if provided
-        /// </summary>
-        public void Dispose()
-        {
-            if (_registrar != null)
-            {
-                _registrar.Dispose();
-            }
-        }
-
         internal async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions)
         {
             var instances = new List<IServiceInstance>();
@@ -205,6 +194,35 @@ namespace Steeltoe.Discovery.Consul.Discovery
             {
                 instances.Add(instance);
             }
+        }
+
+        private bool disposed = false;
+
+        /// <summary>
+        /// Dispose of the client and also the Consul service registrar if provided
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing && _registrar != null)
+                {
+                    _registrar.Dispose();
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~ConsulDiscoveryClient()
+        {
+            Dispose(false);
         }
     }
 }

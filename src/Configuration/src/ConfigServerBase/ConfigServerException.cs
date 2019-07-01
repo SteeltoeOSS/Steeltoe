@@ -13,12 +13,14 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
     /// <summary>
     /// Exception thrown by Config Server client when problems occur
     /// </summary>
+    [Serializable]
     public class ConfigServerException : Exception
     {
         public ConfigServerException(string message, Exception error)
@@ -32,6 +34,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         }
 
         public ConfigServerException()
+        {
+        }
+
+        protected ConfigServerException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

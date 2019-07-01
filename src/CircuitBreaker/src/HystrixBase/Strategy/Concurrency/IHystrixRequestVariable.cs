@@ -16,7 +16,7 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 {
-    public interface IHystrixRequestVariable<T> : IDisposable
+    public interface IHystrixRequestVariable<out T> : IDisposable
     {
         T Value { get; }
     }

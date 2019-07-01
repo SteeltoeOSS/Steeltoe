@@ -29,19 +29,18 @@ namespace Steeltoe.CloudFoundry.Connector
         private static CloudFoundryServiceInfoCreator _me = null;
         private static object _lock = new object();
 
-        private IList<IServiceInfo> _serviceInfos = new List<IServiceInfo>();
-        private IList<IServiceInfoFactory> _factories = new List<IServiceInfoFactory>();
-
         internal CloudFoundryServiceInfoCreator(IConfiguration config)
         {
+#pragma warning disable S3010 // Static fields should not be updated in constructors
             _config = config;
+#pragma warning restore S3010 // Static fields should not be updated in constructors
             BuildServiceInfoFactories();
             BuildServiceInfos();
         }
 
-        public IList<IServiceInfo> ServiceInfos => _serviceInfos;
+        public IList<IServiceInfo> ServiceInfos { get; } = new List<IServiceInfo>();
 
-        internal IList<IServiceInfoFactory> Factories => _factories;
+        internal IList<IServiceInfoFactory> Factories { get; } = new List<IServiceInfoFactory>();
 
         public static CloudFoundryServiceInfoCreator Instance(IConfiguration config)
         {
@@ -77,7 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector
             where SI : class
         {
             List<SI> results = new List<SI>();
-            foreach (IServiceInfo info in _serviceInfos)
+            foreach (IServiceInfo info in ServiceInfos)
             {
                 if (info is SI si)
                 {
@@ -117,7 +116,7 @@ namespace Steeltoe.CloudFoundry.Connector
         /// <returns>List of matching Service Infos</returns>
         public List<IServiceInfo> GetServiceInfos(Type type)
         {
-            return _serviceInfos.Where((info) => info.GetType() == type).ToList();
+            return ServiceInfos.Where((info) => info.GetType() == type).ToList();
         }
 
         /// <summary>
@@ -127,12 +126,12 @@ namespace Steeltoe.CloudFoundry.Connector
         /// <returns>Service info</returns>
         public IServiceInfo GetServiceInfo(string name)
         {
-            return _serviceInfos.FirstOrDefault((info) => info.Id.Equals(name));
+            return ServiceInfos.FirstOrDefault((info) => info.Id.Equals(name));
         }
 
         internal void BuildServiceInfoFactories()
         {
-            _factories.Clear();
+            Factories.Clear();
 
             var assembly = GetType().GetTypeInfo().Assembly;
             var types = assembly.DefinedTypes;
@@ -143,7 +142,7 @@ namespace Steeltoe.CloudFoundry.Connector
                     IServiceInfoFactory instance = CreateServiceInfoFactory(type.DeclaredConstructors);
                     if (instance != null)
                     {
-                        _factories.Add(instance);
+                        Factories.Add(instance);
                     }
                 }
             }
@@ -166,7 +165,7 @@ namespace Steeltoe.CloudFoundry.Connector
 
         private void BuildServiceInfos()
         {
-            _serviceInfos.Clear();
+            ServiceInfos.Clear();
 
             CloudFoundryApplicationOptions appOpts = new CloudFoundryApplicationOptions();
             var aopSection = _config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
@@ -185,7 +184,7 @@ namespace Steeltoe.CloudFoundry.Connector
                     if (factory != null && factory.Create(s) is ServiceInfo info)
                     {
                         info.ApplicationInfo = appInfo;
-                        _serviceInfos.Add(info);
+                        ServiceInfos.Add(info);
                     }
                 }
             }
@@ -193,7 +192,7 @@ namespace Steeltoe.CloudFoundry.Connector
 
         private IServiceInfoFactory FindFactory(Service s)
         {
-            foreach (IServiceInfoFactory f in _factories)
+            foreach (IServiceInfoFactory f in Factories)
             {
                 if (f.Accept(s))
                 {

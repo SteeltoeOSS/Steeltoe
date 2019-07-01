@@ -12,31 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
+    [Serializable]
     [TypeConverter(typeof(CredentialConverter))]
     public class Credential : Dictionary<string, Credential>
     {
-        private string _value;
-
         public Credential()
         {
         }
 
         public Credential(string value)
         {
-            _value = value;
+            Value = value;
         }
 
-        public string Value
+        public string Value { get; }
+
+        protected Credential(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
-            get
-            {
-                return _value;
-            }
         }
     }
 }

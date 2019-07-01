@@ -120,7 +120,7 @@ namespace Steeltoe.Discovery.Consul.Registry
         }
 
 #pragma warning disable SA1202 // Elements must be ordered by access
-                              /// <inheritdoc/>
+        /// <inheritdoc/>
         public Task DeregisterAsync(IConsulRegistration registration)
         {
             if (registration == null)
@@ -225,10 +225,32 @@ namespace Steeltoe.Discovery.Consul.Registry
             return (S)result;
         }
 
+        private bool disposed = false;
+
         /// <inheritdoc/>
         public void Dispose()
         {
-            _scheduler?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Cleanup
+                    _scheduler?.Dispose();
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~ConsulServiceRegistry()
+        {
+            Dispose(false);
         }
     }
 }

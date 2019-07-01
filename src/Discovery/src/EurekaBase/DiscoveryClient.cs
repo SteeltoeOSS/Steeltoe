@@ -70,15 +70,9 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        private IEurekaClientConfig _config;
+        private readonly IEurekaClientConfig _config;
 
-        public virtual IEurekaClientConfig ClientConfig
-        {
-            get
-            {
-                return _config;
-            }
-        }
+        public virtual IEurekaClientConfig ClientConfig => _config;
 
         public IHealthCheckHandler HealthCheckHandler { get; set; }
 
@@ -185,8 +179,9 @@ namespace Steeltoe.Discovery.Eureka
             {
                 return GetInstancesByVipAddress(vipAddress, secure);
             }
-            else if (vipAddress == null && appName != null)
+            else if (vipAddress == null)
             {
+                // note: if appName were null, we would not get into this block
                 Application application = GetApplication(appName);
                 if (application != null)
                 {
@@ -330,19 +325,7 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        internal long RegistryFetchCounter
-        {
-            get
-            {
-                return _registryFetchCounter;
-            }
-
-            set
-            {
-                // Used for unit test
-                _registryFetchCounter = value;
-            }
-        }
+        internal long RegistryFetchCounter { get; set; }
 
         protected internal Timer StartTimer(string name, int interval, Action task)
         {

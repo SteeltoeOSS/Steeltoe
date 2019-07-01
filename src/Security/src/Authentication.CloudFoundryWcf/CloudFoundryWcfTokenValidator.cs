@@ -34,7 +34,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             : base(options)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
+
+            // alwaus use the same static logger
+#pragma warning disable S3010 // Static fields should not be updated in constructors
             _logger = logger;
+#pragma warning restore S3010 // Static fields should not be updated in constructors
         }
 
         /// <summary>
@@ -80,13 +84,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 return null;
             }
 
-            SecurityToken validatedToken = null;
             ClaimsPrincipal principal = null;
             JwtSecurityToken validJwt = null;
 
             try
             {
-                principal = _handler.ValidateToken(token, Options.TokenValidationParameters, out validatedToken);
+                principal = _handler.ValidateToken(token, Options.TokenValidationParameters, out SecurityToken validatedToken);
                 validJwt = validatedToken as JwtSecurityToken;
             }
             catch (Exception ex)
