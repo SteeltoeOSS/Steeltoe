@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -66,7 +67,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 _logger?.LogError("Failed to retrieve access token with HTTP Status: {HttpStatus}", response.StatusCode);
                 _logger?.LogWarning("Access token retrieval failure response: {Message}", response.Content.ReadAsStringAsync());
                 var error = "OAuth token endpoint failure: " + await Display(response).ConfigureAwait(false);
-                throw new Exception(error);
+                throw new ExternalException(error);
             }
         }
 

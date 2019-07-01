@@ -72,9 +72,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         internal bool IsRequestCanceled()
         {
-            foreach (var token in linkedTokens)
+            foreach (var linkedToken in linkedTokens)
             {
-                if (!token.IsCancellationRequested)
+                if (!linkedToken.IsCancellationRequested)
                 {
                     return false;
                 }
@@ -86,20 +86,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         internal Exception SetExceptionIfResponseNotReceived(Exception e, string exceptionMessage)
         {
-            Exception exception = e;
+            Exception newException = e;
 
             if (!complete)
             {
                 if (e == null)
                 {
-                    exception = new InvalidOperationException(exceptionMessage);
+                    newException = new InvalidOperationException(exceptionMessage);
                 }
 
-                SetExceptionIfResponseNotReceived(exception);
+                SetExceptionIfResponseNotReceived(newException);
             }
 
             // return any exception that was generated
-            return exception;
+            return newException;
         }
 
         #region ICollapsedRequest

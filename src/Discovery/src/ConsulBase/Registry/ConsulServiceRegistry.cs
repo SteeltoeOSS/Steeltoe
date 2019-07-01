@@ -85,13 +85,18 @@ namespace Steeltoe.Discovery.Consul.Registry
         }
 
         /// <inheritdoc/>
-        public async Task RegisterAsync(IConsulRegistration registration)
+        public Task RegisterAsync(IConsulRegistration registration)
         {
             if (registration == null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
+            return RegisterAsyncInternal(registration);
+        }
+
+        private async Task RegisterAsyncInternal(IConsulRegistration registration)
+        {
             _logger?.LogInformation("Registering service with consul {serviceId} ", registration.ServiceId);
 
             try
@@ -114,14 +119,20 @@ namespace Steeltoe.Discovery.Consul.Registry
             }
         }
 
-        /// <inheritdoc/>
-        public async Task DeregisterAsync(IConsulRegistration registration)
+#pragma warning disable SA1202 // Elements must be ordered by access
+                              /// <inheritdoc/>
+        public Task DeregisterAsync(IConsulRegistration registration)
         {
             if (registration == null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
+            return DeregisterAsyncInternal(registration);
+        }
+
+        private async Task DeregisterAsyncInternal(IConsulRegistration registration)
+        {
             if (Options.IsHeartBeatEnabled && _scheduler != null)
             {
                 _scheduler.Remove(registration.InstanceId);
@@ -133,13 +144,18 @@ namespace Steeltoe.Discovery.Consul.Registry
         }
 
         /// <inheritdoc/>
-        public async Task SetStatusAsync(IConsulRegistration registration, string status)
+        public Task SetStatusAsync(IConsulRegistration registration, string status)
         {
             if (registration == null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
+            return SetStatusAsyncInternal(registration, status);
+        }
+
+        private async Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
+        {
             if (OUT_OF_SERVICE.Equals(status, StringComparison.OrdinalIgnoreCase))
             {
                 await _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE).ConfigureAwait(false);
@@ -155,13 +171,18 @@ namespace Steeltoe.Discovery.Consul.Registry
         }
 
         /// <inheritdoc/>
-        public async Task<object> GetStatusAsync(IConsulRegistration registration)
+        public Task<object> GetStatusAsync(IConsulRegistration registration)
         {
             if (registration == null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
+            return GetStatusAsyncInternal(registration);
+        }
+
+        public async Task<object> GetStatusAsyncInternal(IConsulRegistration registration)
+        {
             var response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default).ConfigureAwait(false);
             var checks = response.Response;
 
@@ -175,6 +196,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
             return UP;
         }
+#pragma warning restore SA1202 // Elements must be ordered by access
 
         /// <inheritdoc/>
         public void Register(IConsulRegistration registration)

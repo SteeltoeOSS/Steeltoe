@@ -36,6 +36,8 @@ namespace Steeltoe.Extensions.Logging
         private IOptionsMonitor<LoggerFilterOptions> _filterOptions;
         private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
+        private bool disposed = false;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
         /// </summary>
@@ -81,14 +83,6 @@ namespace Steeltoe.Extensions.Logging
         public ILogger CreateLogger(string name)
         {
             return _loggers.GetOrAdd(name, CreateLoggerImplementation);
-        }
-
-        public void Dispose()
-        {
-            _delegate?.Dispose();
-            _delegate = null;
-            _settings = null;
-            _loggers = null;
         }
 
         /// <summary>
@@ -183,6 +177,34 @@ namespace Steeltoe.Extensions.Logging
                     l.Value.Filter = filter ?? GetFilter(category);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Cleanup
+                    _delegate?.Dispose();
+                    _delegate = null;
+                    _settings = null;
+                    _loggers = null;
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~DynamicLoggerProvider()
+        {
+            Dispose(false);
         }
 
         private void SetFiltersFromOptions()

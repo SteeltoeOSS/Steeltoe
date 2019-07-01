@@ -285,7 +285,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         }
 
         // we can return a static version since it's immutable
-        internal static ExecutionResult EMPTY = ExecutionResult.From();
+        internal static readonly ExecutionResult EMPTY = ExecutionResult.From();
 
         public static ExecutionResult From(params HystrixEventType[] eventTypes)
         {

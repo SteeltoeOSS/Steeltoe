@@ -46,19 +46,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         internal HystrixRollingPercentile(ITime time, int timeInMilliseconds, int numberOfBuckets, int bucketDataLength, bool enabled)
         {
             this.time = time;
-            this._timeInMilliseconds = timeInMilliseconds;
-            this._numberOfBuckets = numberOfBuckets;
-            this._bucketDataLength = bucketDataLength;
-            this._enabled = enabled;
+            _timeInMilliseconds = timeInMilliseconds;
+            _numberOfBuckets = numberOfBuckets;
+            _bucketDataLength = bucketDataLength;
+            _enabled = enabled;
 
-            if (this._timeInMilliseconds % this._numberOfBuckets != 0)
+            if (_timeInMilliseconds % _numberOfBuckets != 0)
             {
                 throw new ArgumentException("The timeInMilliseconds must divide equally into numberOfBuckets. For example 1000/10 is ok, 1000/11 is not.");
             }
 
-            this._bucketSizeInMilliseconds = this._timeInMilliseconds / this._numberOfBuckets;
+            _bucketSizeInMilliseconds = _timeInMilliseconds / _numberOfBuckets;
 
-            _buckets = new BucketCircularArray(this._numberOfBuckets);
+            _buckets = new BucketCircularArray(_numberOfBuckets);
         }
 
         public void AddValue(params int[] value)
@@ -152,7 +152,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
              * NOTE: This is thread-safe because it's accessing 'buckets' which is a LinkedBlockingDeque
              */
             Bucket currentBucket = _buckets.PeekLast;
-            if (currentBucket != null && currentTime < currentBucket._windowStart + this._bucketSizeInMilliseconds)
+            if (currentBucket != null && currentTime < currentBucket._windowStart + _bucketSizeInMilliseconds)
             {
                 // if we're within the bucket 'window of time' return the current one
                 // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
@@ -202,14 +202,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                         {
                             // we have at least 1 bucket so retrieve it
                             Bucket lastBucket = _buckets.PeekLast;
-                            if (currentTime < lastBucket._windowStart + this._bucketSizeInMilliseconds)
+                            if (currentTime < lastBucket._windowStart + _bucketSizeInMilliseconds)
                             {
                                 // if we're within the bucket 'window of time' return the current one
                                 // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
                                 // we'll just use the latest as long as we're not AFTER the window
                                 return lastBucket;
                             }
-                            else if (currentTime - (lastBucket._windowStart + this._bucketSizeInMilliseconds) > _timeInMilliseconds)
+                            else if (currentTime - (lastBucket._windowStart + _bucketSizeInMilliseconds) > _timeInMilliseconds)
                             {
                                 // the time passed is greater than the entire rolling counter so we want to clear it all and start from scratch
                                 Reset();
@@ -226,7 +226,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                                 Bucket[] allBuckets = _buckets.Array;
 
                                 // create a new bucket and add it as the new 'last' (once this is done other threads will start using it on subsequent retrievals)
-                                _buckets.AddLast(new Bucket(lastBucket._windowStart + this._bucketSizeInMilliseconds, _bucketDataLength));
+                                _buckets.AddLast(new Bucket(lastBucket._windowStart + _bucketSizeInMilliseconds, _bucketDataLength));
 
                                 // we created a new bucket so let's re-generate the PercentileSnapshot (not including the new bucket)
                                 currentPercentileSnapshot = new PercentileSnapshot(allBuckets);
@@ -274,8 +274,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             public PercentileBucketData(int dataLength)
             {
-                this._length = dataLength;
-                this._list = new AtomicIntegerArray(dataLength);
+                _length = dataLength;
+                _list = new AtomicIntegerArray(dataLength);
             }
 
             public void AddValue(params int[] latency)
@@ -331,33 +331,33 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 foreach (Bucket bd in buckets)
                 {
                     PercentileBucketData pbd = bd._data;
-                    int length = pbd.Length;
-                    for (int i = 0; i < length; i++)
+                    int pbdLength = pbd.Length;
+                    for (int i = 0; i < pbdLength; i++)
                     {
                         int v = pbd._list[i];
-                        this.data[index++] = v;
+                        data[index++] = v;
                         sum += v;
                     }
                 }
 
-                this.length = index;
-                if (this.length == 0)
+                length = index;
+                if (length == 0)
                 {
-                    this.mean = 0;
+                    mean = 0;
                 }
                 else
                 {
-                    this.mean = sum / this.length;
+                    mean = sum / length;
                 }
 
-                Array.Sort(this.data, 0, length);
+                Array.Sort(data, 0, length);
             }
 
             /* package for testing */
             public PercentileSnapshot(params int[] data)
             {
                 this.data = data;
-                this.length = data.Length;
+                length = data.Length;
 
                 int sum = 0;
                 foreach (int v in data)
@@ -365,7 +365,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     sum += v;
                 }
 
-                this.mean = sum / this.length;
+                mean = sum / length;
 
                 Array.Sort(this.data, 0, length);
             }
@@ -449,19 +449,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
                 public ListState(BucketCircularArray cb, AtomicReferenceArray<Bucket> data, int head, int tail)
                 {
-                    this._cb = cb;
-                    this._head = head;
-                    this._tail = tail;
+                    _cb = cb;
+                    _head = head;
+                    _tail = tail;
                     if (head == 0 && tail == 0)
                     {
                         _size = 0;
                     }
                     else
                     {
-                        this._size = (tail + cb.dataLength - head) % cb.dataLength;
+                        _size = (tail + cb.dataLength - head) % cb.dataLength;
                     }
 
-                    this._data = data;
+                    _data = data;
                 }
 
                 public Bucket Tail
@@ -633,8 +633,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             public Bucket(long startTime, int bucketDataLength)
             {
-                this._windowStart = startTime;
-                this._data = new PercentileBucketData(bucketDataLength);
+                _windowStart = startTime;
+                _data = new PercentileBucketData(bucketDataLength);
             }
         }
     }

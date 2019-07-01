@@ -109,7 +109,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             }
         }
 
+        // fire and forget
+#pragma warning disable S3168 // "async" methods should not return "void"
         protected internal async void DoPost(HttpClient client, HttpRequestMessage request)
+#pragma warning restore S3168 // "async" methods should not return "void"
         {
             HttpClientHelper.ConfigureCertificateValidation(
                 options.ValidateCertificates,

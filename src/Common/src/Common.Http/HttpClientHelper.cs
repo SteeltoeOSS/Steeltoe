@@ -169,7 +169,7 @@ namespace Steeltoe.Common.Http
             return request;
         }
 
-        public static async Task<string> GetAccessToken(
+        public static Task<string> GetAccessToken(
             string accessTokenUri,
             string clientId,
             string clientSecret,
@@ -192,6 +192,17 @@ namespace Steeltoe.Common.Http
                 throw new ArgumentException(nameof(accessTokenUri));
             }
 
+            return GetAccessTokenInternal(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, logger);
+        }
+
+        private static async Task<string> GetAccessTokenInternal(
+            string accessTokenUri,
+            string clientId,
+            string clientSecret,
+            int timeout,
+            bool validateCertificates,
+            ILogger logger)
+        {
             var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
             HttpClient client = GetHttpClient(validateCertificates, timeout);
 
@@ -239,7 +250,9 @@ namespace Steeltoe.Common.Http
             return null;
         }
 
+#pragma warning disable SA1202 // Elements must be ordered by access
         internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> GetDisableDelegate()
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             if (Platform.IsFullFramework)
             {

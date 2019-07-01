@@ -84,10 +84,12 @@ namespace Steeltoe.Common.Diagnostics
 
         public void OnCompleted()
         {
+            // for future use
         }
 
         public void OnError(Exception error)
         {
+            // for future use
         }
 
         public void OnNext(DiagnosticListener value)

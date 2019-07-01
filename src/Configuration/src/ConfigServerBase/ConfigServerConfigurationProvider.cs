@@ -793,7 +793,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 _settings.ValidateCertificates).GetAwaiter().GetResult();
         }
 
+        // fire and forget
+#pragma warning disable S3168 // "async" methods should not return "void"
         protected internal async void RefreshVaultTokenAsync(object state)
+#pragma warning restore S3168 // "async" methods should not return "void"
         {
             if (string.IsNullOrEmpty(Settings.Token))
             {

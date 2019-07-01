@@ -71,6 +71,7 @@ namespace Steeltoe.Extensions.Configuration
         /// <param name="value">The value.</param>
         public override void Set(string key, string value)
         {
+            // for future use
         }
 
         /// <summary>

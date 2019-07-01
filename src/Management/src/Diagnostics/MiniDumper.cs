@@ -45,7 +45,9 @@ namespace Steeltoe.Management.Diagnostics
                     ptr->CallbackParam = IntPtr.Zero;
                 }
 
+#pragma warning disable S3869 // "SafeHandle.DangerousGetHandle" should not be called
                 var fileHandle = dumpFile.SafeFileHandle.DangerousGetHandle();
+#pragma warning restore S3869 // "SafeHandle.DangerousGetHandle" should not be called
 
                 result.ReturnValue = MiniDumpWriteDump(processHandle, pid, fileHandle, GetMiniDumpType(), IntPtr.Zero, IntPtr.Zero, callbackParam);
                 result.ErrorCode = Marshal.GetHRForLastWin32Error();

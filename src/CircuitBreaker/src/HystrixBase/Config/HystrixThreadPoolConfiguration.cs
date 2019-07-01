@@ -12,21 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Steeltoe.CircuitBreaker.Hystrix.Config
 {
     public class HystrixThreadPoolConfiguration
     {
-        private readonly IHystrixThreadPoolKey threadPoolKey;
-        private readonly int coreSize;
         private readonly int maximumSize;
-        private readonly int maxQueueSize;
-        private readonly int queueRejectionThreshold;
-        private readonly int keepAliveTimeInMinutes;
-        private readonly bool allowMaximumSizeToDivergeFromCoreSize;
-        private readonly int rollingCounterNumberOfBuckets;
-        private readonly int rollingCounterBucketSizeInMilliseconds;
 
         public HystrixThreadPoolConfiguration(
             IHystrixThreadPoolKey threadPoolKey,
@@ -39,15 +29,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             int rollingCounterNumberOfBuckets,
             int rollingCounterBucketSizeInMilliseconds)
         {
-            this.threadPoolKey = threadPoolKey;
-            this.coreSize = coreSize;
+            ThreadPoolKey = threadPoolKey;
+            CoreSize = coreSize;
             this.maximumSize = maximumSize;
-            this.maxQueueSize = maxQueueSize;
-            this.queueRejectionThreshold = queueRejectionThreshold;
-            this.keepAliveTimeInMinutes = keepAliveTimeInMinutes;
-            this.allowMaximumSizeToDivergeFromCoreSize = allowMaximumSizeToDivergeFromCoreSize;
-            this.rollingCounterNumberOfBuckets = rollingCounterNumberOfBuckets;
-            this.rollingCounterBucketSizeInMilliseconds = rollingCounterBucketSizeInMilliseconds;
+            MaxQueueSize = maxQueueSize;
+            QueueRejectionThreshold = queueRejectionThreshold;
+            KeepAliveTimeInMinutes = keepAliveTimeInMinutes;
+            AllowMaximumSizeToDivergeFromCoreSize = allowMaximumSizeToDivergeFromCoreSize;
+            RollingCounterNumberOfBuckets = rollingCounterNumberOfBuckets;
+            RollingCounterBucketSizeInMilliseconds = rollingCounterBucketSizeInMilliseconds;
         }
 
         public static HystrixThreadPoolConfiguration Sample(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions threadPoolProperties)
@@ -64,59 +54,35 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
                     threadPoolProperties.MetricsRollingStatisticalWindowInMilliseconds);
         }
 
-        public IHystrixThreadPoolKey ThreadPoolKey
-        {
-            get { return threadPoolKey; }
-        }
+        public IHystrixThreadPoolKey ThreadPoolKey { get; }
 
-        public int CoreSize
-        {
-            get { return coreSize; }
-        }
+        public int CoreSize { get; }
 
         public int MaximumSize
         {
             get
             {
-                if (allowMaximumSizeToDivergeFromCoreSize)
+                if (AllowMaximumSizeToDivergeFromCoreSize)
                 {
                     return maximumSize;
                 }
                 else
                 {
-                    return coreSize;
+                    return CoreSize;
                 }
             }
         }
 
-        public int MaxQueueSize
-        {
-            get { return maxQueueSize; }
-        }
+        public int MaxQueueSize { get; }
 
-        public int QueueRejectionThreshold
-        {
-            get { return queueRejectionThreshold; }
-        }
+        public int QueueRejectionThreshold { get; }
 
-        public int KeepAliveTimeInMinutes
-        {
-            get { return keepAliveTimeInMinutes; }
-        }
+        public int KeepAliveTimeInMinutes { get; }
 
-        public bool AllowMaximumSizeToDivergeFromCoreSize
-        {
-            get { return allowMaximumSizeToDivergeFromCoreSize; }
-        }
+        public bool AllowMaximumSizeToDivergeFromCoreSize { get; }
 
-        public int RollingCounterNumberOfBuckets
-        {
-            get { return rollingCounterNumberOfBuckets; }
-        }
+        public int RollingCounterNumberOfBuckets { get; }
 
-        public int RollingCounterBucketSizeInMilliseconds
-        {
-            get { return rollingCounterBucketSizeInMilliseconds; }
-        }
+        public int RollingCounterBucketSizeInMilliseconds { get; }
     }
 }

@@ -33,6 +33,7 @@ namespace Steeltoe.Common.Security
 
         public override void Load()
         {
+            // for future use
         }
 
         public override void Set(string key, string value)

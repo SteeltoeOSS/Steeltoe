@@ -16,12 +16,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 {
     public class HystrixCollapserConfiguration
     {
-        private readonly IHystrixCollapserKey collapserKey;
-        private readonly int maxRequestsInBatch;
-        private readonly int timerDelayInMilliseconds;
-        private readonly bool requestCacheEnabled;
-        private readonly CollapserMetricsConfig collapserMetricsConfig;
-
         public HystrixCollapserConfiguration(
             IHystrixCollapserKey collapserKey,
             int maxRequestsInBatch,
@@ -29,11 +23,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             bool requestCacheEnabled,
             CollapserMetricsConfig collapserMetricsConfig)
         {
-            this.collapserKey = collapserKey;
-            this.maxRequestsInBatch = maxRequestsInBatch;
-            this.timerDelayInMilliseconds = timerDelayInMilliseconds;
-            this.requestCacheEnabled = requestCacheEnabled;
-            this.collapserMetricsConfig = collapserMetricsConfig;
+            CollapserKey = collapserKey;
+            MaxRequestsInBatch = maxRequestsInBatch;
+            TimerDelayInMilliseconds = timerDelayInMilliseconds;
+            IsRequestCacheEnabled = requestCacheEnabled;
+            CollapserMetricsConfiguration = collapserMetricsConfig;
         }
 
         public static HystrixCollapserConfiguration Sample(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions collapserProperties)
@@ -53,39 +47,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
                     collapserMetricsConfig);
         }
 
-        public IHystrixCollapserKey CollapserKey
-        {
-            get { return collapserKey; }
-        }
+        public IHystrixCollapserKey CollapserKey { get; }
 
-        public int MaxRequestsInBatch
-        {
-            get { return maxRequestsInBatch; }
-        }
+        public int MaxRequestsInBatch { get; }
 
-        public int TimerDelayInMilliseconds
-        {
-            get { return timerDelayInMilliseconds; }
-        }
+        public int TimerDelayInMilliseconds { get; }
 
-        public bool IsRequestCacheEnabled
-        {
-            get { return requestCacheEnabled; }
-        }
+        public bool IsRequestCacheEnabled { get; }
 
-        public CollapserMetricsConfig CollapserMetricsConfiguration
-        {
-            get { return collapserMetricsConfig; }
-        }
+        public CollapserMetricsConfig CollapserMetricsConfiguration { get; }
 
         public class CollapserMetricsConfig
         {
-            private readonly int rollingPercentileNumberOfBuckets;
-            private readonly int rollingPercentileBucketSizeInMilliseconds;
-            private readonly bool rollingPercentileEnabled;
-            private readonly int rollingCounterNumberOfBuckets;
-            private readonly int rollingCounterBucketSizeInMilliseconds;
-
             public CollapserMetricsConfig(
                 int rollingPercentileNumberOfBuckets,
                 int rollingPercentileBucketSizeInMilliseconds,
@@ -93,37 +66,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
                 int rollingCounterNumberOfBuckets,
                 int rollingCounterBucketSizeInMilliseconds)
             {
-                this.rollingPercentileNumberOfBuckets = rollingCounterNumberOfBuckets;
-                this.rollingPercentileBucketSizeInMilliseconds = rollingPercentileBucketSizeInMilliseconds;
-                this.rollingPercentileEnabled = rollingPercentileEnabled;
-                this.rollingCounterNumberOfBuckets = rollingCounterNumberOfBuckets;
-                this.rollingCounterBucketSizeInMilliseconds = rollingCounterBucketSizeInMilliseconds;
+                RollingPercentileNumberOfBuckets = rollingCounterNumberOfBuckets;
+                RollingPercentileBucketSizeInMilliseconds = rollingPercentileBucketSizeInMilliseconds;
+                IsRollingPercentileEnabled = rollingPercentileEnabled;
+                RollingCounterNumberOfBuckets = rollingCounterNumberOfBuckets;
+                RollingCounterBucketSizeInMilliseconds = rollingCounterBucketSizeInMilliseconds;
             }
 
-            public int RollingPercentileNumberOfBuckets
-            {
-                get { return rollingPercentileNumberOfBuckets; }
-            }
+            public int RollingPercentileNumberOfBuckets { get; }
 
-            public int RollingPercentileBucketSizeInMilliseconds
-            {
-                get { return rollingPercentileBucketSizeInMilliseconds; }
-            }
+            public int RollingPercentileBucketSizeInMilliseconds { get; }
 
-            public bool IsRollingPercentileEnabled
-            {
-                get { return rollingPercentileEnabled; }
-            }
+            public bool IsRollingPercentileEnabled { get; }
 
-            public int RollingCounterNumberOfBuckets
-            {
-                get { return rollingCounterNumberOfBuckets; }
-            }
+            public int RollingCounterNumberOfBuckets { get; }
 
-            public int RollingCounterBucketSizeInMilliseconds
-            {
-                get { return rollingCounterBucketSizeInMilliseconds; }
-            }
+            public int RollingCounterBucketSizeInMilliseconds { get; }
         }
     }
 }

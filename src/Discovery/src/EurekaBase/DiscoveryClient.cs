@@ -653,8 +653,7 @@ namespace Steeltoe.Discovery.Eureka
 
         private bool IsHealthCheckHandlerEnabled()
         {
-            var config = ClientConfig as EurekaClientConfig;
-            if (config != null)
+            if (ClientConfig is EurekaClientConfig config)
             {
                 return config.HealthCheckEnabled && HealthCheckHandler != null;
             }
@@ -684,6 +683,8 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
+        // both of these should fire and forget on execution but log failures
+#pragma warning disable S3168 // "async" methods should not return "void"
         private async void HeartBeatTaskAsync()
         {
             if (_shutdown > 0)
@@ -711,5 +712,6 @@ namespace Steeltoe.Discovery.Eureka
                 _logger?.LogError("CacheRefresh failed");
             }
         }
+#pragma warning restore S3168 // "async" methods should not return "void"
     }
 }

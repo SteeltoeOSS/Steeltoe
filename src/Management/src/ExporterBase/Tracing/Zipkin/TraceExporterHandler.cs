@@ -155,7 +155,10 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
             return ZipkinSpanKind.CLIENT;
         }
 
+        // fire and forget
+#pragma warning disable S3168 // "async" methods should not return "void"
         private async void SendSpansAsync(List<ZipkinSpan> spans)
+#pragma warning restore S3168 // "async" methods should not return "void"
         {
             try
             {
