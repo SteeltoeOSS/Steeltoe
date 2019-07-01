@@ -23,19 +23,19 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
     public static class RabbitMQTypeLocator
     {
         /// <summary>
-        /// List of supported RabbitMQ assemblies
+        /// Gets a list of supported RabbitMQ assemblies
         /// </summary>
-        public static readonly string[] Assemblies = new string[] { "RabbitMQ.Client" };
+        public static string[] Assemblies { get; internal set; } = new string[] { "RabbitMQ.Client" };
 
         /// <summary>
-        /// List of RabbitMQ Interface types
+        /// Gets a list of RabbitMQ Interface types
         /// </summary>
-        public static readonly string[] ConnectionInterfaceTypeNames = new string[] { "RabbitMQ.Client.IConnectionFactory" };
+        public static string[] ConnectionInterfaceTypeNames { get; internal set; } = new string[] { "RabbitMQ.Client.IConnectionFactory" };
 
         /// <summary>
-        /// List of RabbitMQ Implementation types
+        /// Gets a list of RabbitMQ Implementation types
         /// </summary>
-        public static readonly string[] ConnectionImplementationTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
+        public static string[] ConnectionImplementationTypeNames { get; internal set; } = new string[] { "RabbitMQ.Client.ConnectionFactory" };
 
         /// <summary>
         /// Gets IConnectionFactory from a RabbitMQ Library

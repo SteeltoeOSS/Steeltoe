@@ -34,8 +34,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         public void Throws_When_ConnectionType_NotFound()
         {
             // arrange
-            var removedType = PostgreSqlTypeLocator.ConnectionTypeNames[0];
-            PostgreSqlTypeLocator.ConnectionTypeNames[0] = "something-Wrong";
+            var types = PostgreSqlTypeLocator.ConnectionTypeNames;
+            PostgreSqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
             // act
             var exception = Assert.Throws<ConnectorException>(() => PostgreSqlTypeLocator.NpgsqlConnection);
@@ -44,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             Assert.Equal("Unable to find NpgsqlConnection, are you missing a PostgreSQL ADO.NET assembly?", exception.Message);
 
             // reset
-            PostgreSqlTypeLocator.ConnectionTypeNames[0] = removedType;
+            PostgreSqlTypeLocator.ConnectionTypeNames = types;
         }
     }
 }

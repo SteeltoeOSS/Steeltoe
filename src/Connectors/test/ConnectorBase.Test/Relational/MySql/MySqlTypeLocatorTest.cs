@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.Test
@@ -40,23 +41,23 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         public void Driver_Found_In_MySqlConnector_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package
-            var removedAssembly = MySqlTypeLocator.Assemblies[0];
-            MySqlTypeLocator.Assemblies[0] = string.Empty;
+            var types = MySqlTypeLocator.ConnectionTypeNames;
+            MySqlTypeLocator.Assemblies = new string[] { "MySqlConnector" };
 
             // act
             var type = MySqlTypeLocator.MySqlConnection;
 
             // assert
             Assert.NotNull(type);
-            MySqlTypeLocator.Assemblies[0] = removedAssembly;
+            MySqlTypeLocator.ConnectionTypeNames = types;
         }
 
         [Fact]
         public void Throws_When_ConnectionType_NotFound()
         {
             // arrange
-            var removedType = MySqlTypeLocator.ConnectionTypeNames[0];
-            MySqlTypeLocator.ConnectionTypeNames[0] = "something-Wrong";
+            var types = MySqlTypeLocator.ConnectionTypeNames;
+            MySqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
             // act
             var exception = Assert.Throws<ConnectorException>(() => MySqlTypeLocator.MySqlConnection);
@@ -65,7 +66,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             Assert.Equal("Unable to find MySqlConnection, are you missing a MySql ADO.NET assembly?", exception.Message);
 
             // reset
-            MySqlTypeLocator.ConnectionTypeNames[0] = removedType;
+            MySqlTypeLocator.ConnectionTypeNames = types;
         }
     }
 }

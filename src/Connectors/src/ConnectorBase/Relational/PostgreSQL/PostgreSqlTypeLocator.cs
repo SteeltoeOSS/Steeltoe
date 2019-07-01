@@ -22,14 +22,14 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
     public static class PostgreSqlTypeLocator
     {
         /// <summary>
-        /// List of supported PostgreSQL assemblies
+        /// Gets a list of supported PostgreSQL assemblies
         /// </summary>
-        public static readonly string[] Assemblies = new string[] { "Npgsql" };
+        public static string[] Assemblies { get; internal set; } = new string[] { "Npgsql" };
 
         /// <summary>
-        /// List of PostgreSQL types that implement IDbConnection
+        /// Gets a list of PostgreSQL types that implement IDbConnection
         /// </summary>
-        public static readonly string[] ConnectionTypeNames = new string[] { "Npgsql.NpgsqlConnection" };
+        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "Npgsql.NpgsqlConnection" };
 
         /// <summary>
         /// Gets NpgsqlConnection from a PostgreSQL Library

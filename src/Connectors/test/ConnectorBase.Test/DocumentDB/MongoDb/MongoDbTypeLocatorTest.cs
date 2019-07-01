@@ -38,8 +38,8 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         public void Throws_When_ConnectionType_NotFound()
         {
             // arrange
-            var removedType = MongoDbTypeLocator.ConnectionInterfaceTypeNames[0];
-            MongoDbTypeLocator.ConnectionInterfaceTypeNames[0] = "something-Wrong";
+            var types = MongoDbTypeLocator.ConnectionInterfaceTypeNames;
+            MongoDbTypeLocator.ConnectionInterfaceTypeNames = new string[] { "something-Wrong" };
 
             // act
             var exception = Assert.Throws<ConnectorException>(() => MongoDbTypeLocator.IMongoClient);
@@ -48,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             Assert.Equal("Unable to find IMongoClient, are you missing a MongoDB driver?", exception.Message);
 
             // reset
-            MongoDbTypeLocator.ConnectionInterfaceTypeNames[0] = removedType;
+            MongoDbTypeLocator.ConnectionInterfaceTypeNames = types;
         }
     }
 }
