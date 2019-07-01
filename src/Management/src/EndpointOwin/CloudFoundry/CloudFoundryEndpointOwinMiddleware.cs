@@ -23,9 +23,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class CloudFoundryEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)
@@ -33,7 +33,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger: logger)
         {

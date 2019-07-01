@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger<LoggersEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
@@ -80,10 +80,10 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                                 return;
                             }
                         }
-
-                        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return;
                     }
+
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return;
                 }
             }
         }

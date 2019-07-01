@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public LoggersHandler(LoggersEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<LoggersHandler> logger = null)
             : base(endpoint, securityServices, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {

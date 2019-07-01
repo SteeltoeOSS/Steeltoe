@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _apiDescriptionProviders = apiDescriptionProviders;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MappingsEndpointMiddleware(
             RequestDelegate next,
             IMappingsOptions options,

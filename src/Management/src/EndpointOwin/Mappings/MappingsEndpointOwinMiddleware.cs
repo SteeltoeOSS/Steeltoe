@@ -39,7 +39,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
             _apiExplorer = apiExplorer;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MappingsEndpointOwinMiddleware(OwinMiddleware next, IMappingsOptions options, IApiExplorer apiExplorer, ILogger logger = null)
             : base(next, logger: logger)
         {

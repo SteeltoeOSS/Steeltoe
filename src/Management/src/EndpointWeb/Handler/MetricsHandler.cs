@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MetricsHandler(MetricsEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<MetricsHandler> logger = null)
             : base(endpoint, securityServices, null, false, logger)
         {

@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public ThreadDumpEndpointMiddleware(RequestDelegate next, ThreadDumpEndpoint endpoint, ILogger<ThreadDumpEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {

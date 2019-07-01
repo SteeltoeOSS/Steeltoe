@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, ILogger<RefreshEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {

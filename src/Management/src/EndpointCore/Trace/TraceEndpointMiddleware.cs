@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, ILogger<TraceEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {

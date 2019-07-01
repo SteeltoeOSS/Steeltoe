@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Info
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {

@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Security
             _base = new SecurityBase(options, managementOptions, logger);
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundrySecurity(ICloudFoundryOptions options, ILogger<CloudFoundrySecurity> logger = null)
         {
             _options = options;
@@ -47,9 +47,9 @@ namespace Steeltoe.Management.Endpoint.Security
 
         public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             bool isEnabled = _managementOptions == null ? _options.IsEnabled : _options.IsEnabled(_managementOptions);
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && isEnabled)

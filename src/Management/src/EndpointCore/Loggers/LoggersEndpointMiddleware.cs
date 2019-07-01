@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, ILogger<LoggersEndpointMiddleware> logger = null)
             : base(endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {

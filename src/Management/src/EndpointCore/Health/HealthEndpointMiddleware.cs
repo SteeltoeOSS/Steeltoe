@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Health
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public HealthEndpointMiddleware(RequestDelegate next, ILogger<HealthEndpointMiddleware> logger = null)
             : base(mgmtOptions: null, logger: logger)
         {

@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, ILogger<HealthEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger: logger)
         {

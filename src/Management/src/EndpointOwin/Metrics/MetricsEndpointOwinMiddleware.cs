@@ -34,7 +34,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, ILogger<MetricsEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, null, false, logger)
         {

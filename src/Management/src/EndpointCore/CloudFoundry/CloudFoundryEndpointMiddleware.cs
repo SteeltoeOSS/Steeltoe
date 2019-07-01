@@ -27,9 +27,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
     /// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled.
     /// When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware"/> is added.
     /// </summary>
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         private ICloudFoundryOptions _options;
         private RequestDelegate _next;
@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _options = endpoint.Options as ICloudFoundryOptions;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {

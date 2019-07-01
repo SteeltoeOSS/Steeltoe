@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Env
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, ILogger<EnvEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {

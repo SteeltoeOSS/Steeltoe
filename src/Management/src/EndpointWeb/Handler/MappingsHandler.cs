@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             _apiExplorer = apiExplorer;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MappingsHandler(MappingsOptions options, IEnumerable<ISecurityService> securityServices, IApiExplorer apiExplorer, ILogger<MappingsHandler> logger = null)
             : base(securityServices, null, true, logger)
         {

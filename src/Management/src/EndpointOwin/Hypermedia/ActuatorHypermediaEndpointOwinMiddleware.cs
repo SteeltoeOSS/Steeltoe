@@ -24,9 +24,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Hypermedia
 {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class ActuatorHypermediaEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         public ActuatorHypermediaEndpointOwinMiddleware(OwinMiddleware next, ActuatorEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions = null, ILogger<ActuatorHypermediaEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, mgmtOptions?.OfType<ActuatorManagementOptions>(), logger: logger)

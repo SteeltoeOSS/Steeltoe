@@ -17,7 +17,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
-    [Obsolete]
+    [Obsolete("Use CloudFoundryManagementOptions instead.")]
     public class CloudFoundryOptions : AbstractOptions, ICloudFoundryOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:cloudfoundry";

@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _base = new SecurityBase(options, _mgmtOptions, logger);
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityMiddleware> logger)
         {
             _next = next;
@@ -56,9 +56,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             _logger.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             bool isEndpointEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
             bool isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
 
             if (Platform.IsCloudFoundry
@@ -130,9 +130,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             // Remove in 3.0
             if (_mgmtOptions == null)
             {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 configEndpoints = this._options.Global.EndpointOptions;
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
                 foreach (var ep in configEndpoints)
                 {
                     PathString epPath = new PathString(ep.Path);

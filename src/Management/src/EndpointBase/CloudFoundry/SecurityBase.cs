@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger = logger;
         }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         public SecurityBase(ICloudFoundryOptions options, ILogger logger = null)
         {
             _options = options;

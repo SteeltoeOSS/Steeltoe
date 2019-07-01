@@ -23,9 +23,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         private RequestDelegate _next;
 

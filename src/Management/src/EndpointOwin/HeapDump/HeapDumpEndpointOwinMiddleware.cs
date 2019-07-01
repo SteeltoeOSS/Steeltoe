@@ -35,7 +35,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public HeapDumpEndpointOwinMiddleware(OwinMiddleware next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger: logger)
         {

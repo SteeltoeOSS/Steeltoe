@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, ILogger<MetricsEndpointMiddleware> logger = null)
             : base(endpoint, null, false, logger)
         {

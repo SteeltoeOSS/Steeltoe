@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {
