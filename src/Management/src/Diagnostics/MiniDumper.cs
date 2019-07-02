@@ -29,9 +29,9 @@ namespace Steeltoe.Management.Diagnostics
 
         internal static Result DumpProcess(FileStream dumpFile, IntPtr processHandle, int pid)
         {
-            IntPtr callbackParam = default(IntPtr);
-            Result result = default(Result);
-            GCHandle callbackHandle = default(GCHandle);
+            IntPtr callbackParam = default;
+            Result result = default;
+            GCHandle callbackHandle = default;
             try
             {
                 var callbackDelegate = new MiniDumpCallback(MiniDumpCallbackMethod);
@@ -60,7 +60,7 @@ namespace Steeltoe.Management.Diagnostics
             }
             finally
             {
-                if (callbackParam != default(IntPtr))
+                if (callbackParam != default)
                 {
                     Marshal.FreeHGlobal(callbackParam);
                 }
@@ -166,10 +166,9 @@ namespace Steeltoe.Management.Diagnostics
                 if (Marshal.ReadByte(input + sizeof(int) + IntPtr.Size) == (int)MINIDUMP_CALLBACK_TYPE.IsProcessSnapshotCallback)
                 {
                     var o = (MINIDUMP_CALLBACK_OUTPUT*)output;
-                    if (o != null)
-                    {
-                        o->Status = 1;
-                    }
+
+                    // removed null check on o because sonar analyzer indicates that o will never be null... TH - 7/2/2019
+                    o->Status = 1;
                 }
             }
 
