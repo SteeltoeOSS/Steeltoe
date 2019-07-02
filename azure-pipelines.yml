@@ -55,11 +55,11 @@ jobs:
       command: build
       projects: 'src/Steeltoe.All.sln'
       arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
-  #- task: DotNetCoreCLI@2
-  #  inputs:
-  #    command: test
-  #    projects: 'src/Steeltoe.All.sln'
-  #    arguments: '-c $(buildConfiguration) --filter Category!=Integration'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*.Test/*.csproj'
+      arguments: '-c $(buildConfiguration) --filter Category!=SkipOnMacOS'
 - job: Windows_Build_Test_and_Package
   pool:
     vmImage: 'windows-2019'
