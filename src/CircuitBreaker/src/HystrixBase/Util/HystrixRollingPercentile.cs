@@ -583,18 +583,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                  * use compareAndSet to set in case multiple threads are attempting (which shouldn't be the case because since addLast will ONLY be called by a single thread at a time due to protection
                  * provided in <code>getCurrentBucket</code>)
                  */
+#pragma warning disable S3923 // All branches in a conditional structure should not have exactly the same implementation
                 if (state.CompareAndSet(currentState, newState))
                 {
                     // we succeeded
-                    return;
                 }
                 else
                 {
                     // we failed, someone else was adding or removing
                     // instead of trying again and risking multiple addLast concurrently (which shouldn't be the case)
                     // we'll just return and let the other thread 'win' and if the timing is off the next call to getCurrentBucket will fix things
-                    return;
                 }
+#pragma warning restore S3923 // All branches in a conditional structure should not have exactly the same implementation
             }
 
             public int Size

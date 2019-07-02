@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
 {
+    [Serializable]
     public class RejectedExecutionException : Exception
     {
         public RejectedExecutionException(string message)
@@ -29,6 +31,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
 
         public RejectedExecutionException(string message, Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        protected RejectedExecutionException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

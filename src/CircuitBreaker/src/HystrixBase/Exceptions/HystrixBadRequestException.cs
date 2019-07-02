@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
 {
+    [Serializable]
     public class HystrixBadRequestException : Exception
     {
         public HystrixBadRequestException(string message)
@@ -29,6 +31,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
         }
 
         public HystrixBadRequestException()
+        {
+        }
+
+        protected HystrixBadRequestException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }
