@@ -628,7 +628,7 @@ namespace Steeltoe.Discovery.Eureka
             if (ClientConfig.ShouldFetchRegistry)
             {
                 var result = FetchRegistryAsync(true);
-                result.Wait();
+                result.GetAwaiter().GetResult();
                 var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
                 _cacheRefreshTimer = StartTimer("Query", intervalInMilli, CacheRefreshTaskAsync);
             }
