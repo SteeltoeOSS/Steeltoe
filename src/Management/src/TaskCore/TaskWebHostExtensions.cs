@@ -30,7 +30,6 @@ namespace Steeltoe.Management.TaskCore
         /// Command line arguments should be registered as a configuration source for this functionality to work.
         /// </summary>
         /// <param name="webHost">The <see cref="T:Microsoft.AspNetCore.Hosting.IWebHost" /> to run.</param>
-
         public static void RunWithTasks(this IWebHost webHost)
         {
             if (webHost == null)
@@ -55,6 +54,7 @@ namespace Steeltoe.Management.TaskCore
                         .CreateLogger("CloudFoundryTasks");
                     logger.LogError($"No task with name {taskName} is found registered in service container");
                 }
+
                 webHost.Dispose();
             }
             else
