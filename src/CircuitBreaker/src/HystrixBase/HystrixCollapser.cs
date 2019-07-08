@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         GLOBAL
     }
 
-    public abstract class HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> : IHystrixExecutable<RequestResponseType>
+    public abstract class HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> : HysrixCollapserBase, IHystrixExecutable<RequestResponseType>
     {
         protected internal CancellationToken _token;
 
@@ -246,22 +246,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             RequestCollapserFactory.Reset();
         }
 
-        private static string GetDefaultNameFromClass(Type cls)
-        {
-            if (defaultNameCache.TryGetValue(cls, out string fromCache))
-            {
-                return fromCache;
-            }
-
-            string name = cls.Name;
-            defaultNameCache.TryAdd(cls, name);
-            return name;
-        }
-
-        // this is a micro-optimization but saves about 1-2microseconds (on 2011 MacBook Pro)
-        // on the repetitive string processing that will occur on the same classes over and over again
-        private static ConcurrentDictionary<Type, string> defaultNameCache = new ConcurrentDictionary<Type, string>();
-
         internal ICollection<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> DoShardRequests(ICollection<CollapsedRequest<RequestResponseType, RequestArgumentType>> requests)
         {
             ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>> theRequests = new List<ICollapsedRequest<RequestResponseType, RequestArgumentType>>(requests);
@@ -291,6 +275,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             // logger.debug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
             return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, this.GetType(), message, e, null);
+        }
+
+        private static string GetDefaultNameFromClass(Type cls)
+        {
+            if (_defaultNameCache.TryGetValue(cls, out string fromCache))
+            {
+                return fromCache;
+            }
+
+            string name = cls.Name;
+            _defaultNameCache.TryAdd(cls, name);
+            return name;
         }
     }
 }

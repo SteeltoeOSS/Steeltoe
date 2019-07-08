@@ -113,7 +113,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         public bool Complete
         {
-            internal get
+            get
             {
                 return complete;
             }
@@ -130,7 +130,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         public Exception Exception
         {
-            internal get
+            get
             {
                 return exception;
             }
@@ -148,7 +148,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         public RequestResponseType Response
         {
-            internal get
+            get
             {
                 return response;
             }

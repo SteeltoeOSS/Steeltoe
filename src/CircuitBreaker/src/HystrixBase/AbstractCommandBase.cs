@@ -12,32 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
-    public interface IHystrixCommandKey : IHystrixKey
+    public abstract class AbstractCommandBase
     {
-    }
+        protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _executionSemaphorePerCircuit = new ConcurrentDictionary<string, SemaphoreSlim>();
+        protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _fallbackSemaphorePerCircuit = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-    public class HystrixCommandKeyDefault : HystrixKeyDefault, IHystrixCommandKey
-    {
-        private static readonly ConcurrentDictionary<string, HystrixCommandKeyDefault> Intern = new ConcurrentDictionary<string, HystrixCommandKeyDefault>();
-
-        internal HystrixCommandKeyDefault(string name)
-            : base(name)
+        protected AbstractCommandBase()
         {
-        }
-
-        public static IHystrixCommandKey AsKey(string name)
-        {
-            return Intern.GetOrAddEx(name, k => new HystrixCommandKeyDefault(k));
-        }
-
-        public static int CommandCount
-        {
-            get { return Intern.Count; }
         }
     }
 }

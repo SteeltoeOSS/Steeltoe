@@ -68,6 +68,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             this.taskScheduler.Dispose();
         }
 

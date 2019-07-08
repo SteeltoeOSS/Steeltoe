@@ -167,11 +167,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             get { return false; }
         }
 
-        public virtual void Dispose()
+        public void Dispose()
         {
-            this.shutdown = true;
-
-            Time.WaitUntil(() => { return runningThreads <= 0; }, 500);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion IHystrixTaskScheduler
@@ -186,6 +185,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         public bool IsShutdown
         {
             get { return shutdown; }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            this.shutdown = true;
+
+            Time.WaitUntil(() => { return runningThreads <= 0; }, 500);
         }
 
         protected void RunContinuation(Task task)

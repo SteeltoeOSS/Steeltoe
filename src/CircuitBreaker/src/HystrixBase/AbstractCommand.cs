@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
-    public abstract class AbstractCommand<TResult> : IHystrixInvokableInfo, IHystrixInvokable
+    public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixInvokableInfo, IHystrixInvokable
     {
         #region NestedTypes
         protected enum TimedOutStatus
@@ -276,9 +276,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected internal CancellationToken _usersToken;
         protected internal volatile ExecutionResult _executionResult = ExecutionResult.EMPTY; // state on shared execution
         protected internal volatile ExecutionResult _executionResultAtTimeOfCancellation;
-
-        protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _executionSemaphorePerCircuit = new ConcurrentDictionary<string, SemaphoreSlim>();
-        protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _fallbackSemaphorePerCircuit = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         protected readonly AtomicCommandState commandState = new AtomicCommandState(CommandState.NOT_STARTED);
         protected readonly AtomicThreadState threadState = new AtomicThreadState(ThreadState.NOT_USING_THREAD);

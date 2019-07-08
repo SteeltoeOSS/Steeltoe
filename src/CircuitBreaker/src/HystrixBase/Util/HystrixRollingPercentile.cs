@@ -268,13 +268,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         internal class PercentileBucketData
         {
-            internal readonly int _length;
+            internal readonly int _datalength;
             internal readonly AtomicIntegerArray _list;
             internal readonly AtomicInteger _index = new AtomicInteger();
 
             public PercentileBucketData(int dataLength)
             {
-                _length = dataLength;
+                _datalength = dataLength;
                 _list = new AtomicIntegerArray(dataLength);
             }
 
@@ -283,7 +283,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 foreach (int l in latency)
                 {
                     /* We just wrap around the beginning and over-write if we go past 'dataLength' as that will effectively cause us to "sample" the most recent data */
-                    _list[_index.GetAndIncrement() % _length] = l;
+                    _list[_index.GetAndIncrement() % _datalength] = l;
 
                     // TODO Alternative to AtomicInteger? The getAndIncrement may be a source of contention on high throughput circuits on large multi-core systems.
                     // LongAdder isn't suited to this as it is not consistent. Perhaps a different data structure that doesn't need indexed adds?
@@ -322,7 +322,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 // also this way we capture the actual index size rather than the max so size the int[] to only what we need
                 foreach (Bucket bd in buckets)
                 {
-                    lengthFromBuckets += bd._data._length;
+                    lengthFromBuckets += bd._data._datalength;
                 }
 
                 data = new int[lengthFromBuckets];
@@ -443,7 +443,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                  */
                 internal readonly AtomicReferenceArray<Bucket> _data;
                 internal readonly int _size;
-                internal readonly int _tail;
+                internal readonly int _buckettail;
                 internal readonly int _head;
                 internal BucketCircularArray _cb;
 
@@ -451,7 +451,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 {
                     _cb = cb;
                     _head = head;
-                    _tail = tail;
+                    _buckettail = tail;
                     if (head == 0 && tail == 0)
                     {
                         _size = 0;
@@ -513,7 +513,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                      * In either case, a single Bucket will be returned as "last" and data loss should not occur and everything keeps in sync for head/tail.
                      * Also, it's fine to set it before incrementTail because nothing else should be referencing that index position until incrementTail occurs.
                      */
-                    _data[_tail] = b;
+                    _data[_buckettail] = b;
                     return IncrementTail();
                 }
 
@@ -530,12 +530,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     if (_size == _cb.numBuckets)
                     {
                         // increment tail and head
-                        return new ListState(_cb, _data, (_head + 1) % _cb.dataLength, (_tail + 1) % _cb.dataLength);
+                        return new ListState(_cb, _data, (_head + 1) % _cb.dataLength, (_buckettail + 1) % _cb.dataLength);
                     }
                     else
                     {
                         // increment only tail
-                        return new ListState(_cb, _data, _head, (_tail + 1) % _cb.dataLength);
+                        return new ListState(_cb, _data, _head, (_buckettail + 1) % _cb.dataLength);
                     }
                 }
             }

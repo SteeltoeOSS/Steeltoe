@@ -27,18 +27,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         static ExecutionResult()
         {
-            foreach (HystrixEventType eventType in HystrixEventTypeHelper.EXCEPTION_PRODUCING_EVENT_TYPES)
+            foreach (HystrixEventType eventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
             {
                 EXCEPTION_PRODUCING_EVENTS.Set((int)eventType, true);
             }
 
-            foreach (HystrixEventType eventType in HystrixEventTypeHelper.TERMINAL_EVENT_TYPES)
+            foreach (HystrixEventType eventType in HystrixEventTypeHelper.TerminalEventTypes)
             {
                 TERMINAL_EVENTS.Set((int)eventType, true);
             }
         }
 
-        public class EventCounts
+        public sealed class EventCounts
         {
             private readonly BitArray events;
             private readonly int numEmissions;
