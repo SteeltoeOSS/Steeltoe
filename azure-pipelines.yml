@@ -71,8 +71,7 @@ jobs:
       displayName: 'Get GemFire NativeClient assemblies'
       inputs:
         filePath: src/Connectors/EnableGemFire.ps1
-      arguments:
-        PivNetAPIToken: $(PivNetAPIToken)
+        arguments: $(PivNetAPIToken)
     - task: DotNetCoreCLI@2
       inputs:
         command: 'pack'
