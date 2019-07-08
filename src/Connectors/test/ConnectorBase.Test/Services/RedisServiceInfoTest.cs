@@ -23,7 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         public void Constructor_CreatesExpected()
         {
             string uri = "redis://joe:joes_password@localhost:1527/";
-            RedisServiceInfo r1 = new RedisServiceInfo("myId", "localhost", 1527, "joes_password");
+            RedisServiceInfo r1 = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "localhost", 1527, "joes_password");
             RedisServiceInfo r2 = new RedisServiceInfo("myId", uri);
 
             Assert.Equal("myId", r1.Id);
@@ -48,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         public void Constructor_CreatesExpected_withSecure()
         {
             string uri = "rediss://:joes_password@localhost:6380/";
-            RedisServiceInfo r1 = new RedisServiceInfo("myId", "localhost", 1527, "joes_password");
+            RedisServiceInfo r1 = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "localhost", 1527, "joes_password");
             RedisServiceInfo r2 = new RedisServiceInfo("myId", uri);
 
             Assert.Equal("myId", r1.Id);
@@ -66,6 +66,23 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             Assert.Equal("joes_password", r2.Password);
             Assert.Equal(string.Empty, r2.Path);
             Assert.Null(r2.Query);
+        }
+
+        [Theory]
+        [InlineData("redis")]
+        [InlineData("rediss")]
+        public void Constructor_CreatesExpected_WithSchema(string scheme)
+        {
+            string uri = $"{scheme}://:joes_password@localhost:6380/";
+            RedisServiceInfo redisInfo = new RedisServiceInfo("myId", scheme, "localhost", 1527, "joes_password");
+
+            Assert.Equal("myId", redisInfo.Id);
+            Assert.Equal(scheme, redisInfo.Scheme);
+            Assert.Equal("localhost", redisInfo.Host);
+            Assert.Equal(1527, redisInfo.Port);
+            Assert.Equal("joes_password", redisInfo.Password);
+            Assert.Null(redisInfo.Path);
+            Assert.Null(redisInfo.Query);
         }
     }
 }

@@ -158,6 +158,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             return GetIntFromCredentials(credentials, "port");
         }
 
+        protected internal virtual int GetTlsPortFromCredentials(Dictionary<string, Credential> credentials)
+        {
+            return GetIntFromCredentials(credentials, "tls_port");
+        }
+
         protected internal virtual string GetHostFromCredentials(Dictionary<string, Credential> credentials)
         {
             return GetStringFromCredentials(credentials, _hostList);

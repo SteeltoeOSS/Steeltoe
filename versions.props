@@ -49,6 +49,7 @@
     <CoverletVersion>2.6.0</CoverletVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
     <HttpExtensionsVersion>2.1.0</HttpExtensionsVersion>
+    <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
     <JsonNetVersion>11.0.2</JsonNetVersion>
     <MockHttpVersion>4.0.0</MockHttpVersion>
     <MoqVersion>4.8.2</MoqVersion>
@@ -60,6 +61,13 @@
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.1</XunitStudioVersion>
+
+    <HealthChecksMySqlVersion>2.2.0</HealthChecksMySqlVersion>
+    <HealthChecksMongoDbVersion>2.2.2</HealthChecksMongoDbVersion>
+    <HealthChecksNpgSqlVersion>2.2.0</HealthChecksNpgSqlVersion>
+    <HealthChecksRabbitmqVersion>2.2.1</HealthChecksRabbitmqVersion>
+    <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>
+    <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
 
     <SourceLinkGitHubVersion>1.0.0-beta2-18618-05</SourceLinkGitHubVersion>
     <SecurityCodeScanVersion>3.0.0</SecurityCodeScanVersion>

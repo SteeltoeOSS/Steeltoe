@@ -17,13 +17,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.CloudFoundryTasks;
 using System;
 using Xunit;
 
-namespace Steeltoe.Managment.CloudFoundryTasks.Test
+namespace Steeltoe.Management.TaskCore.Test
 {
-    public class CloudFoundryTaskRunTest
+    public class TaskRunTest
     {
         [Fact]
         public void DelegatingTask_ExecutesRun()

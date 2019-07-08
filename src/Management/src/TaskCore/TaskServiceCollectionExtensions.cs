@@ -16,9 +16,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Tasks;
 using System;
 
-namespace Steeltoe.Management.CloudFoundryTasks
+namespace Steeltoe.Management.TaskCore
 {
-    public static class CloudFoundryServiceCollectionExtensions
+    public static class TaskServiceCollectionExtensions
     {
         /// <summary>
         /// Register a one-off task that can be executed from command line

@@ -15,10 +15,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Tasks;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.CloudFoundry.Connector.EFCore
 {
+    /// <summary>
+    /// Applies code first migrations for the specified Entity Framework DB Context
+    /// This task name is "migrate"
+    /// </summary>
+    /// <example>
+    /// dotnet run runtask=migrate
+    /// </example>
+    /// <typeparam name="T">The DBContext which to migrate</typeparam>
     public class MigrateDbContextTask<T> : IApplicationTask
         where T : DbContext
     {
@@ -35,9 +44,24 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
 
         public void Run()
         {
-            var migrations = _db.Database.GetPendingMigrations().ToList();
+            var isNewDb = false;
+            var migrations = new List<string>();
+            try
+            {
+                migrations = _db.Database.GetPendingMigrations().ToList();
+            }
+            catch
+            {
+                isNewDb = true; // might not be true source of the error, but we'll catch real cause as part of Migrate call
+            }
+
             _logger.LogInformation("Starting database migration...");
             _db.Database.Migrate();
+            if (isNewDb)
+            {
+                migrations = _db.Database.GetAppliedMigrations().ToList();
+            }
+
             if (migrations.Any())
             {
                 _logger.LogInformation("The following migrations have been successfully applied:");

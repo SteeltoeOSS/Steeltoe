@@ -1,4 +1,4 @@
-﻿// Copyright 2017 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,23 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.Services
+namespace Steeltoe.CloudFoundry.Connector
 {
-    public class RedisServiceInfo : UriServiceInfo
+    public class ConnectionStringManager
     {
-        public const string REDIS_SCHEME = "redis";
-        public const string REDIS_SECURE_SCHEME = "rediss";
+        private readonly IConfiguration _configuration;
 
-        public RedisServiceInfo(string id, string scheme, string host, int port, string password)
-            : base(id, scheme, host, port, null, password, null)
+        public ConnectionStringManager(IConfiguration configuration)
         {
+            _configuration = configuration;
         }
 
-        public RedisServiceInfo(string id, string uri)
-            : base(id, uri)
+        public Connection Get<T>(string serviceName = null)
+            where T : IConnectionInfo, new()
         {
+            return new T().Get(_configuration, serviceName);
         }
     }
 }

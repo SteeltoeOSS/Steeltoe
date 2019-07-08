@@ -15,12 +15,12 @@
 namespace Steeltoe.Common.Tasks
 {
     /// <summary>
-    /// A runnable task bundled with the assembly that can be executed as one off
+    /// A runnable task bundled with the assembly that can be executed on-demand
     /// </summary>
     public interface IApplicationTask
     {
         /// <summary>
-        /// Gets globally unique name for task
+        /// Gets globally unique name for the task
         /// </summary>
         string Name { get; }
 
