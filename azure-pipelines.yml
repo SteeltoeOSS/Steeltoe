@@ -67,6 +67,12 @@ jobs:
       env:
         PackageVersion: $(PackageVersion)
         PackageVersionOverride: $(PackageVersionOverride)
+    - task: PowerShell@2
+      displayName: 'Get GemFire NativeClient assemblies'
+      inputs:
+        filePath: src/Connectors/EnableGemFire.ps1
+      arguments:
+        PivNetAPIToken: $(PivNetAPIToken)
     - task: DotNetCoreCLI@2
       inputs:
         command: 'pack'

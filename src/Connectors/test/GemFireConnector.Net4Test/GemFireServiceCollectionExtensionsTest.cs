@@ -12,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if NET461
-
 using Apache.Geode.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.CloudFoundry.ConnectorCore.Test;
+using Steeltoe.CloudFoundry.Connector.GemFire;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.GemFire.Test
+namespace Steeltoe.CloudFoundry.Connector.Test
 {
     public class GemFireServiceCollectionExtensionsTest
     {
@@ -151,4 +148,3 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire.Test
         }
     }
 }
-#endif

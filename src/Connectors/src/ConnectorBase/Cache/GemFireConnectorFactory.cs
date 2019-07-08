@@ -51,14 +51,18 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire
             if (!string.IsNullOrEmpty(_config.Username) && !string.IsNullOrEmpty(_config.Password))
             {
                 _logger?.LogDebug("GemFire credentials found");
+                object authInitializerInstance;
                 try
                 {
-                    ConnectorHelpers.CreateInstance(authInitializer, new object[] { _config.Username, _config.Password });
+                    authInitializerInstance = ConnectorHelpers.CreateInstance(authInitializer, new object[] { _config.Username, _config.Password });
                 }
                 catch (Exception e)
                 {
-                    throw new ConnectorException("Your implementation of Apache.Geode.Client.IAuthInitializer must have a constructor that takes two strings (username and password) as parameters", e);
+                    _logger?.LogError("Failed to create an IAuthInitializer instance for GemFire!");
+                    throw new ConnectorException("Failed to create an instance of Apache.Geode.Client.IAuthInitializer. Make sure you have a constructor that takes two strings (username and password) as parameters", e);
                 }
+
+                return GemFireTypeLocator.GetCacheAuthInitializer(authInitializer).Invoke(factory, new object[] { authInitializerInstance });
             }
 
             return factory;

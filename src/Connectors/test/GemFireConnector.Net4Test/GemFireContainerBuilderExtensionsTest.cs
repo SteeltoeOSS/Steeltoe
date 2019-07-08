@@ -15,12 +15,12 @@
 using Apache.Geode.Client;
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector;
+using Steeltoe.CloudFoundry.ConnectorAutofac;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
+namespace Steeltoe.CloudFoundry.Connector.Test
 {
     public class GemFireContainerBuilderExtensionsTest
     {

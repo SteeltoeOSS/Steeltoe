@@ -19,9 +19,6 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire
 {
     public class GemFireTypeLocator
     {
-        /// <summary>
-        /// List of supported MongoDB assemblies
-        /// </summary>
         public static string[] Assemblies = new string[] { "Pivotal.GemFire" };
 
         public static string[] CacheFactoryTypeNames = new string[] { "Apache.Geode.Client.CacheFactory" };
@@ -47,5 +44,10 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire
         public static MethodInfo AddLocatorToPoolFactory => ConnectorHelpers.FindMethod(PoolFactory, "AddLocator", new Type[] { typeof(string), typeof(int) });
 
         public static Type RegionFactory => ConnectorHelpers.FindTypeOrThrow(Assemblies, RegionFactoryTypeNames, "RegionFactory", "the Pivotal GemFire dll");
+
+        public static MethodInfo GetCacheAuthInitializer(Type authInitializer)
+        {
+            return ConnectorHelpers.FindMethod(CacheFactory, "SetAuthInitialize", new Type[] { authInitializer.GetInterface("IAuthInitialize") });
+        }
     }
 }
