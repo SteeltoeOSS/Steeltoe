@@ -1,6 +1,6 @@
 # Steeltoe
 
-[![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/SteeltoeOSS.steeltoe?branchName=master)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=master)
+[![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/SteeltoeOSS.steeltoe?branchName=2.x)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=2.x)
 
 * [Introduction](#introduction)
 * [Project Repositories](#project-repositories)

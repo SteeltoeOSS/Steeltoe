@@ -41,15 +41,19 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
         {
             if (Options.CallbackPath.HasValue && Options.CallbackPath == Request.Path)
             {
+                _logger?.LogTrace("Request path matches auth callback path");
                 var ticket = await AuthenticateAsync().ConfigureAwait(false);
                 if (ticket != null)
                 {
+                    _logger?.LogTrace("Authentication ticket found");
                     Context.Authentication.SignIn(ticket.Properties, ticket.Identity);
                     Response.Redirect(ticket.Properties.RedirectUri);
 
                     // Short-circuit, stopping rest of owin pipeline.
                     return true;
                 }
+
+                _logger?.LogDebug("Request path matched callback path, but no auth ticket was not found");
             }
 
             // Nothing to see here, please disperse.
@@ -91,6 +95,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
         {
             if (Response.StatusCode == 401)
             {
+                _logger?.LogTrace("Status code of 401 encountered, checking for auth challenge");
                 var challenge = Helper.LookupChallenge(Options.AuthenticationType, Options.AuthenticationMode);
 
                 // If there is an authorization challenge for this request, then we know we haven't completed an IDP
@@ -110,9 +115,29 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
                     var stateString = Options.StateDataFormat.Protect(state);
                     Response.Redirect(WebUtilities.AddQueryString(idpRedirectUri, "state", stateString));
                 }
+
+                _logger?.LogTrace("No auth challenge found for this 401 response");
             }
 
             return Task.FromResult<object>(null);
+        }
+
+        protected override Task ApplyResponseCoreAsync()
+        {
+            _logger?.LogTrace("Entering ApplyResponseCoreAsync with OpenIdConnect");
+            return base.ApplyResponseCoreAsync();
+        }
+
+        protected override Task ApplyResponseGrantAsync()
+        {
+            _logger?.LogTrace("Entering ApplyResponseGrantAsync with OpenIdConnect");
+            return base.ApplyResponseGrantAsync();
+        }
+
+        protected override Task TeardownCoreAsync()
+        {
+            _logger?.LogTrace("Entering TeardownCoreAsync with OpenIdConnect");
+            return base.TeardownCoreAsync();
         }
 
         private string HostInfoFromRequest(IOwinRequest request)

@@ -222,5 +222,47 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             // Assert
             Assert.NotNull(healthContributor);
         }
+
+        [Fact]
+        public void AddMySqlConnection_DoesntAddRelationalHealthContributor_WhenCommunityHealthExists()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<MySqlConnectionInfo>();
+            services.AddHealthChecks().AddMySql(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+
+            // Assert
+            Assert.Null(healthContributor);
+        }
+
+        [Fact]
+        public void AddMySqlConnection_AddsRelationalHealthContributor_WhenCommunityHealthExistsAndForced()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<MySqlConnectionInfo>();
+            services.AddHealthChecks().AddMySql(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, addSteeltoeHealthChecks: true);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
+        }
     }
 }

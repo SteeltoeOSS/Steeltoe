@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 Password = "password",
                 InstanceName = "instanceId"
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword")
+            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
             {
                 ApplicationInfo = new ApplicationInstanceInfo()
                 {
@@ -64,7 +64,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 AbortOnConnectFail = false,
                 ConnectTimeout = 1
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", "127.0.0.1", 4321, "sipassword")
+            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "127.0.0.1", 4321, "sipassword")
             {
                 ApplicationInfo = new ApplicationInstanceInfo()
                 {

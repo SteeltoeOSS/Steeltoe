@@ -105,6 +105,34 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         }
 
         [Fact]
+        public void Tags_MapTo_Metadata()
+        {
+            // arrange some tags in configuration
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>()
+                {
+                    { "consul:discovery:tags:0", "key0=value0" },
+                    { "consul:discovery:tags:1", "key1=value1" },
+                    { "consul:discovery:tags:2", "keyvalue" }
+                })
+                .Build();
+
+            // bind to options
+            var options = new ConsulDiscoveryOptions();
+            config.Bind(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX, options);
+            var tags = ConsulRegistration.CreateTags(options);
+
+            // act - get metadata from tags
+            var result = ConsulServerUtils.GetMetadata(tags);
+            Assert.Contains(result, k => k.Key == "key0");
+            Assert.Equal("value0", result["key0"]);
+            Assert.Contains(result, k => k.Key == "key1");
+            Assert.Equal("value1", result["key1"]);
+            Assert.Contains(result, k => k.Key == "keyvalue");
+            Assert.Equal("keyvalue", result["keyvalue"]);
+        }
+
+        [Fact]
         public void GetDefaultInstanceId_ReturnsExpected()
         {
             ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()

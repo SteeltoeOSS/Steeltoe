@@ -42,7 +42,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
                 ["postgres:client:host"] = "localhost",
                 ["postgres:client:port"] = "1234",
                 ["postgres:client:password"] = "password",
-                ["postgres:client:username"] = "username"
+                ["postgres:client:username"] = "username",
+                ["postgres:client:searchpath"] = "searchpath"
             };
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
@@ -54,6 +55,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             Assert.Equal(1234, sconfig.Port);
             Assert.Equal("password", sconfig.Password);
             Assert.Equal("username", sconfig.Username);
+            Assert.Equal("searchpath", sconfig.SearchPath);
             Assert.Null(sconfig.ConnectionString);
         }
 
@@ -74,6 +76,31 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 
             // assert
             Assert.Equal(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
+        }
+
+        [Fact]
+        public void ConnectionString_Returned_BuildFromConfig()
+        {
+            // arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["postgres:client:Host"] = "fake-db.host",
+                ["postgres:client:Port"] = "3000",
+                ["postgres:client:Username"] = "fakeUsername",
+                ["postgres:client:Password"] = "fakePassword",
+                ["postgres:client:Database"] = "fakeDB",
+                ["postgres:client:SearchPath"] = "fakeSchema",
+            };
+            var expected = "Host=fake-db.host;Port=3000;Username=fakeUsername;Password=fakePassword;Database=fakeDB;Search Path=fakeSchema;";
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new PostgresProviderConnectorOptions(config);
+
+            // assert
+            Assert.Equal(expected, sconfig.ToString());
         }
 
         [Fact]
@@ -102,6 +129,36 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
 
             // assert
             Assert.NotEqual(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
+        }
+
+        [Fact]
+        public void ConnectionString_Overridden_By_CloudFoundryConfig_Use_SearchPath()
+        {
+            // arrange
+            // simulate an appsettings file
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["postgres:client:ConnectionString"] = "Server=fake;Database=test;User Id=steeltoe;Password=password;",
+                ["postgres:client:SearchPath"] = "SomeSchema"
+            };
+
+            // add environment variables as Cloud Foundry would
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_EDB);
+
+            // add settings to config
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddEnvironmentVariables();
+            configurationBuilder.AddCloudFoundry();
+            var config = configurationBuilder.Build();
+
+            // act
+            var sconfig = new PostgresProviderConnectorOptions(config);
+
+            // assert
+            Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
+            Assert.EndsWith($"Search Path={sconfig.SearchPath};", sconfig.ToString());
         }
     }
 }

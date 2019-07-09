@@ -64,7 +64,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 scheme = headerScheme.First(); // .ToString()
             }
 
-            return scheme + "://" + request.Host.ToString() + request.Path.ToString();
+            return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
         }
 
         private bool IsCloudFoundryRequest(IOwinContext context)
