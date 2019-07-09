@@ -42,7 +42,6 @@ jobs:
   pool:
     vmImage: 'macOS-10.14'
   steps:
-  - pwsh: brew install p7zip
   - task: PowerShell@2
     displayName: 'Get GemFire NativeClient assemblies'
     inputs:

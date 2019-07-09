@@ -9,10 +9,26 @@ Param(
 if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
 {
     Write-Host "Downloading PivNet client..."
-    # Download pivnet cli ... TODO: get latest instead of hardcoded version
-    (New-Object System.Net.WebClient).DownloadFile("https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.60/pivnet-windows-amd64-0.0.60", "$PSScriptRoot/pivnet.exe")  
-    Write-Host "Adding alias 'pivnet' for .\pivnet.exe"
-    Set-Alias -Name pivnet -Value ".\pivnet.exe"
+    if ($IsWindows)
+    {
+        Write-Host "Running on Windows, use WebClient"
+        # Download pivnet cli ... TODO: get latest instead of hardcoded version
+        (New-Object System.Net.WebClient).DownloadFile("https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.60/pivnet-windows-amd64-0.0.60", "./pivnet.exe")  
+        Write-Host "Adding alias 'pivnet' for .\pivnet.exe"
+        Set-Alias -Name pivnet -Value ".\pivnet.exe"
+    }
+    elseif ($IsMacOS)
+    {
+        Write-Host "Running on MacOS, use brew"
+        brew install pivotal/tap/pivnet-cli
+    }
+    elseif ($IsLinux)
+    {
+        Write-Host "Running on Linux"
+        wget -O pivnet https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.60/pivnet-linux-amd64-0.0.60
+        chmod +x ./pivnet
+        Write-Host "Adding alias 'pivnet' for ./pivnet"
+        Set-Alias -Name pivnet -Value "./pivnet"    }
 }
 
 # login with API token (deprecated!)
@@ -30,13 +46,20 @@ Write-Host "File Id to download: $fileId"
 $fileName = (($productFile | jq '.aws_object_key') -split "/")[2] -replace '"', ""
 Write-Host "File Name to download: $fileName"
 
-# Download archive
+# Download archive if it isn't already present
 if (-Not (Test-Path $fileName))
 {
     Write-Host "Downloading $fileName"
     pivnet download-product-files -p pivotal-gemfire -r $gemfireReleaseVersion -i $fileId
 }
 
+# 7zip isn't currently installed on MSFT hosted MacOS agents...
+if ($IsMacOS -And -Not (Get-Command "7z" -ErrorAction SilentlyContinue))
+{
+    brew install p7zip
+}
+
+# just in case 7zip still isn't installed check first
 if (Get-Command "7z" -ErrorAction SilentlyContinue)
 {
     # Unzip file
@@ -46,6 +69,6 @@ if (Get-Command "7z" -ErrorAction SilentlyContinue)
     7z e $fileName $dllLocation -r
 }
 else
-{
+{    
     Write-Host "7zip not found, manually extract Pivotal.GemFire.dll from $fileName to continue!"
 }
