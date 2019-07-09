@@ -14,28 +14,29 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.HeapDump.Test
+namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
-    public class HeapDumpOptionsTest : BaseTest
+    public class CloudfoundryManagementOptionsTest : BaseTest
     {
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new HeapDumpEndpointOptions();
-            Assert.Null(opts.Enabled);
-            Assert.Equal("heapdump", opts.Id);
+            var opts = new CloudFoundryManagementOptions();
+            Assert.Equal("/cloudfoundryapplication", opts.Path);
         }
 
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpointOptions(config));
+            Assert.Throws<ArgumentNullException>(() => new CloudFoundryManagementOptions(config));
         }
 
         [Fact]
@@ -44,28 +45,36 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-
-                ["management:endpoints:path"] = "/cloudfoundryapplication",
-                ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:heapdump:enabled"] = "true",
-                ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
-                ["management:endpoints:cloudfoundry:enabled"] = "true"
+                ["management:endpoints:path"] = "/management",
             };
+
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var opts = new HeapDumpEndpointOptions(config);
-            var cloudOpts = new CloudFoundryEndpointOptions(config);
+            var opts = new CloudFoundryManagementOptions(config);
 
-            Assert.True(cloudOpts.Enabled);
-            Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal(string.Empty, cloudOpts.Path);
-            Assert.True(cloudOpts.ValidateCertificates);
+            Assert.Equal("/management", opts.Path);
+            Assert.False(opts.Enabled);
+        }
 
-            Assert.True(opts.Enabled);
-            Assert.Equal("heapdump", opts.Id);
-            Assert.Equal("heapdump", opts.Path);
+        [Fact]
+        public void Constructor_BindsConfigurationCorrectly_OnCF()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:path"] = "/management",
+            };
+
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            var opts = new CloudFoundryManagementOptions(config, true);
+
+            Assert.Equal("/cloudfoundryapplication", opts.Path);
+            Assert.False(opts.Enabled);
         }
     }
 }

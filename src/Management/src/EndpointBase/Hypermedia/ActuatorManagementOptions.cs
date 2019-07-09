@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {

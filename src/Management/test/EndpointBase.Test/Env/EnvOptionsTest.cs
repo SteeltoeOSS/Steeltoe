@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         }
 
         [Fact]
-        public void Contstructor_ThrowsIfConfigNull()
+        public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new EnvEndpointOptions(config));

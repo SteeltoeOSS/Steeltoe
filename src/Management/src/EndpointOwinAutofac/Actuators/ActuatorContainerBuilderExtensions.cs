@@ -14,13 +14,13 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.EndpointOwin.Hypermedia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
