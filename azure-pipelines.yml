@@ -84,7 +84,7 @@ jobs:
       inputs:
         command: 'pack'
         feedsToUse: 'select'
-        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=False'
+        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
         packagesToPack: '**/*.sln'
         versioningScheme: 'byEnvVar'
         versionEnvVar: PackageVersion
