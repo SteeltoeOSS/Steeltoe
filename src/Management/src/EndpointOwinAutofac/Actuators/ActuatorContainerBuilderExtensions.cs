@@ -20,6 +20,7 @@ using Steeltoe.Management.EndpointOwin.Hypermedia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
@@ -42,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new ActuatorManagementOptions(config))
+            container.RegisterInstance(new ActuatorManagementOptions(config, Platform.IsCloudFoundry))
                 .SingleInstance()
                 .As<IManagementOptions>();
 

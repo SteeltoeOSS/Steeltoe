@@ -21,6 +21,7 @@ using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 using System.Linq;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -50,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config, Platform.IsCloudFoundry)));
             switch (version)
             {
                 case MediaTypeVersion.V1:

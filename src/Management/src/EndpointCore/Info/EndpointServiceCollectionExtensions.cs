@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using System;
 using System.Collections.Generic;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
@@ -52,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Info
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config, Platform.IsCloudFoundry)));
             var options = new InfoEndpointOptions(config);
             services.TryAddSingleton<IInfoOptions>(options);
             services.RegisterEndpointOptions(options);

@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Env
 {
@@ -52,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Env
                 };
             });
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config, Platform.IsCloudFoundry)));
             var options = new EnvEndpointOptions(config);
             services.TryAddSingleton<IEnvOptions>(options);
             services.RegisterEndpointOptions(options);

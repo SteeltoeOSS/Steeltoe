@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Globalization;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
@@ -29,12 +32,17 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             Exposure = new Exposure();
         }
 
-        public ActuatorManagementOptions(IConfiguration config)
+        public ActuatorManagementOptions(IConfiguration config, bool isCloudFoundry = false)
             : base(config)
         {
             if (string.IsNullOrEmpty(Path))
             {
                 Path = DEFAULT_ACTUATOR_PATH;
+            }
+
+            if (isCloudFoundry && Path.StartsWith("/cloudfoundryapplication", StringComparison.OrdinalIgnoreCase))
+            {
+                Path = DEFAULT_ACTUATOR_PATH; // Override path set to /cloudfoundryapplication since it will be hidden by the cloudfoundry context actuators
             }
 
             Exposure = new Exposure(config);

@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 using System.Linq;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
@@ -35,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config, Platform.IsCloudFoundry)));
 
             services.TryAddSingleton<IActuatorHypermediaOptions>(provider =>
             {
