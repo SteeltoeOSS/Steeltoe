@@ -23,14 +23,11 @@ jobs:
   pool:
     vmImage: 'Ubuntu-16.04'
   steps:
-  # /tmp/NuGetScratch issue https://github.com/NuGet/Home/issues/7341
-  # - task: UseDotNet@2
-  #   displayName: 'Use .NET Core sdk'
-  #   inputs:
-  #     packageType: sdk
-  #     version: 2.2.300-preview2
-  #     includePreviewVersions: true
-  #     installationPath: $(Agent.ToolsDirectory)/dotnet
+  - task: PowerShell@2
+    displayName: 'Get GemFire NativeClient assemblies'
+    inputs:
+      filePath: src/Connectors/EnableGemFire.ps1
+      arguments: $(PivNetAPIToken)
   - task: DotNetCoreCLI@2
     inputs:
       command: build
@@ -45,16 +42,22 @@ jobs:
   pool:
     vmImage: 'macOS-10.14'
   steps:
+  - pwsh: brew install p7zip
+  - task: PowerShell@2
+    displayName: 'Get GemFire NativeClient assemblies'
+    inputs:
+      filePath: src/Connectors/EnableGemFire.ps1
+      arguments: $(PivNetAPIToken)
   - task: DotNetCoreCLI@2
     inputs:
       command: build
       projects: '**/*.sln'
       arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
-  #- task: DotNetCoreCLI@2
-  #  inputs:
-  #    command: test
-  #    projects: '**/*.Test/*.csproj'
-  #    arguments: '-c $(buildConfiguration)'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*.Test/*.csproj'
+      arguments: '-c $(buildConfiguration)'
 - job: Windows_Build_Test_and_Package
   pool:
     vmImage: 'windows-2019'
