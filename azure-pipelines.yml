@@ -3,8 +3,7 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 trigger:
-- master
-- fxcop
+- 2.x
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
