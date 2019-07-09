@@ -185,7 +185,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hys
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac", "CircuitBreaker\src\HystrixAutofac\Steeltoe.CircuitBreaker.HystrixAutofac.csproj", "{874DD3E0-44DD-452C-8B35-FD993187BD9A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test", "CircuitBreaker\test\Hystrix.MetricsStreamAutofac.Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test.csproj", "{92BA11CD-9E26-43B8-A515-D5E10065F856}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test", "CircuitBreaker\test\Hystrix.MetricsStreamAutofac.Net4Test\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac.Test.csproj", "{92BA11CD-9E26-43B8-A515-D5E10065F856}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.HystrixAutofac.Test", "CircuitBreaker\test\HystrixAutofac.Net4Test\Steeltoe.CircuitBreaker.HystrixAutofac.Test.csproj", "{437189F8-7B76-4639-921A-A7CD3F4E07FC}"
 EndProject

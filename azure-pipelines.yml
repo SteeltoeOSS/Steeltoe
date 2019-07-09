@@ -9,7 +9,7 @@ trigger:
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  PackageVersion: $[format('3.0.0-{0}', variables['Build.BuildId'])]
+  PackageVersion: $[format('2.3.0-{0}', variables['Build.BuildId'])]
 
 jobs:
 - job: Linux_Build_and_Test
@@ -113,25 +113,6 @@ jobs:
         codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $env:CodeCovToken
       env:
         CodeCovToken: $(CodeCovToken)
-      condition: always()
-    - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-binskim.BinSkim@3
-      displayName: 'Run BinSkim '
-      inputs:
-        AnalyzeTarget: 'Steeltoe.*.dll'
-        AnalyzeStatistics: true
-        AnalyzeVerbose: true
-      condition: always()
-    - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-roslynanalyzers.RoslynAnalyzers@2
-      displayName: 'Run Roslyn Analyzers'
-    - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-credscan.CredScan@2
-      displayName: 'Run CredScan'
-      inputs:
-        verboseOutput: true
-    - task: ms-codeanalysis.vss-microsoft-security-code-analysis.build-task-report.SdtReport@1
-      displayName: 'Create Security Analysis Report'
-      inputs:
-        BinSkim: true
-        ToolLogsNotFoundAction: Warning
       condition: always()
     - task: PowerShell@2
       displayName: Authenticode Sign Packages
