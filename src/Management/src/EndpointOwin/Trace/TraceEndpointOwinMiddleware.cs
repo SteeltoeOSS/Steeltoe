@@ -16,11 +16,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Trace;
-using Steeltoe.Management.EndpointBase;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 

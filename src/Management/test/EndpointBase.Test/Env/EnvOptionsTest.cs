@@ -13,11 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Test;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Env.Test
@@ -35,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         }
 
         [Fact]
-        public void Contstructor_ThrowsIfConfigNull()
+        public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new EnvEndpointOptions(config));

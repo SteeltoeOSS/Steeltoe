@@ -18,7 +18,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
-using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Logging;
@@ -109,7 +108,7 @@ namespace Steeltoe.Management.Endpoint
 
             if (managementOptions == null)
             {
-                managementOptions = new CloudFoundryManagementOptions(configuration, Platform.IsCloudFoundry);
+                managementOptions = new CloudFoundryManagementOptions(configuration);
                 _mgmtOptions.Add(managementOptions);
             }
 
@@ -123,7 +122,7 @@ namespace Steeltoe.Management.Endpoint
 
             if (managementOptions == null)
             {
-               managementOptions = new CloudFoundryManagementOptions(configuration, Platform.IsCloudFoundry);
+               managementOptions = new CloudFoundryManagementOptions(configuration);
                _mgmtOptions.Add(managementOptions);
             }
 
@@ -330,7 +329,7 @@ namespace Steeltoe.Management.Endpoint
             return loggerFactory != null ? loggerFactory.CreateLogger<T>() : LoggerFactory?.CreateLogger<T>();
         }
 
-        private static List<IManagementOptions> _mgmtOptions = new List<IManagementOptions>();
+        private static readonly List<IManagementOptions> _mgmtOptions = new List<IManagementOptions>();
 
         public static void ClearManagementOptions()
         {

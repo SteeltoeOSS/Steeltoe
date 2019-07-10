@@ -24,9 +24,9 @@ namespace Steeltoe.Management.Census.Trace.Test
     {
         private static readonly ITracer NoopTracer = TracerBase.NoopTracer;
         private static readonly string SPAN_NAME = "MySpanName";
-        private TracerBase tracer = Mock.Of<TracerBase>();
-        private SpanBuilderBase spanBuilder = Mock.Of<SpanBuilderBase>();
-        private SpanBase span = Mock.Of<SpanBase>();
+        private readonly TracerBase tracer = Mock.Of<TracerBase>();
+        private readonly SpanBuilderBase spanBuilder = Mock.Of<SpanBuilderBase>();
+        private readonly SpanBase span = Mock.Of<SpanBase>();
 
         public TracerBaseTest()
         {

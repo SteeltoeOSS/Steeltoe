@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Census.Trace.Test
         private readonly SpanOptions recordSpanOptions = SpanOptions.RECORD_EVENTS;
         private readonly IDictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>();
         private readonly IDictionary<string, IAttributeValue> expectedAttributes;
-        private IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
+        private readonly IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
 
         //// @Rule public readonly ExpectedException exception = ExpectedException.none();
 

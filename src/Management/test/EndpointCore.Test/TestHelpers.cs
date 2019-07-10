@@ -12,45 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using System.Collections.Generic;
-using System.IO;
-
 namespace Steeltoe.Management.Endpoint.Test
 {
- /*   public static class TestHelpers
-    {
-        public static string CreateTempFile(string contents)
-        {
-            var tempFile = Path.GetTempFileName();
-            File.WriteAllText(tempFile, contents);
-            return tempFile;
-        }
+    /*   public static class TestHelpers
+       {
+           public static string CreateTempFile(string contents)
+           {
+               var tempFile = Path.GetTempFileName();
+               File.WriteAllText(tempFile, contents);
+               return tempFile;
+           }
 
-        public static Stream StringToStream(string str)
-        {
-            var memStream = new MemoryStream();
-            var textWriter = new StreamWriter(memStream);
-            textWriter.Write(str);
-            textWriter.Flush();
-            memStream.Seek(0, SeekOrigin.Begin);
+           public static Stream StringToStream(string str)
+           {
+               var memStream = new MemoryStream();
+               var textWriter = new StreamWriter(memStream);
+               textWriter.Write(str);
+               textWriter.Flush();
+               memStream.Seek(0, SeekOrigin.Begin);
 
-            return memStream;
-        }
+               return memStream;
+           }
 
-        public static string StreamToString(Stream stream)
-        {
-            stream.Seek(0, SeekOrigin.Begin);
-            var reader = new StreamReader(stream);
+           public static string StreamToString(Stream stream)
+           {
+               stream.Seek(0, SeekOrigin.Begin);
+               var reader = new StreamReader(stream);
 
-            return reader.ReadToEnd();
-        }
+               return reader.ReadToEnd();
+           }
 
-        public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
-        {
-            var mgmtOptions = new CloudFoundryManagementOptions();
-            mgmtOptions.EndpointOptions.AddRange(options);
-            return new List<IManagementOptions>() { mgmtOptions };
-        }
-    }*/
+           public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
+           {
+               var mgmtOptions = new CloudFoundryManagementOptions();
+               mgmtOptions.EndpointOptions.AddRange(options);
+               return new List<IManagementOptions>() { mgmtOptions };
+           }
+       }*/
 }

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;

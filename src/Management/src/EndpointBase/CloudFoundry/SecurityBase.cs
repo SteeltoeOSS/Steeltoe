@@ -39,9 +39,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public readonly string AUTHORIZATION_HEADER = "Authorization";
         public readonly string BEARER = "bearer";
         public readonly string READ_SENSITIVE_DATA = "read_sensitive_data";
-        private ICloudFoundryOptions _options;
-        private IManagementOptions _mgmtOptions;
-        private ILogger _logger;
+        private readonly ICloudFoundryOptions _options;
+        private readonly IManagementOptions _mgmtOptions;
+        private readonly ILogger _logger;
 
         public SecurityBase(ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger logger = null)
         {

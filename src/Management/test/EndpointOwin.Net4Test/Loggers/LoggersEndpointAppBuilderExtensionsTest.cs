@@ -18,7 +18,6 @@ using Microsoft.Owin.Builder;
 using Owin;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using Xunit;
 

@@ -44,7 +44,7 @@ namespace Steeltoe.Common.Http
 
         public static HttpClient GetHttpClient(bool validateCertificates, HttpClientHandler handler, int timeout)
         {
-            HttpClient client = null;
+            HttpClient client;
             if (Platform.IsFullFramework)
             {
                 client = handler == null ? new HttpClient() : new HttpClient(handler);

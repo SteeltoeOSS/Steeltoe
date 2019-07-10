@@ -23,13 +23,13 @@ namespace Steeltoe.Management.Census.Stats
     [Obsolete("Use OpenCensus project packages")]
     internal sealed class MeasureToViewMap
     {
-        private object _lck = new object();
+        private readonly object _lck = new object();
         private readonly IDictionary<string, IList<MutableViewData>> mutableMap = new Dictionary<string, IList<MutableViewData>>();
 
-        private IDictionary<IViewName, IView> registeredViews = new Dictionary<IViewName, IView>();
+        private readonly IDictionary<IViewName, IView> registeredViews = new Dictionary<IViewName, IView>();
 
         // TODO(songya): consider adding a Measure.Name class
-        private IDictionary<string, IMeasure> registeredMeasures = new Dictionary<string, IMeasure>();
+        private readonly IDictionary<string, IMeasure> registeredMeasures = new Dictionary<string, IMeasure>();
 
         // Cached set of exported views. It must be set to null whenever a view is registered or
         // unregistered.

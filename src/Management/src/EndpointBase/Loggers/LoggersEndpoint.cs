@@ -36,8 +36,8 @@ namespace Steeltoe.Management.Endpoint.Loggers
             LoggerLevels.MapLogLevel(LogLevel.Trace)
         };
 
-        private ILogger<LoggersEndpoint> _logger;
-        private IDynamicLoggerProvider _cloudFoundryLoggerProvider;
+        private readonly ILogger<LoggersEndpoint> _logger;
+        private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
         public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider, ILogger<LoggersEndpoint> logger = null)
             : base(options)

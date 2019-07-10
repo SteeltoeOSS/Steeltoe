@@ -22,7 +22,6 @@ using OpenCensus.Trace.Config;
 using OpenCensus.Trace.Export;
 using OpenCensus.Trace.Propagation;
 using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Exporter.Tracing.Zipkin;
 using System;
 using System.Collections.Generic;
 using Xunit;

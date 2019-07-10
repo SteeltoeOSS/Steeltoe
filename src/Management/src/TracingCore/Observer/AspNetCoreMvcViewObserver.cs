@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         private const string OBSERVER_NAME = "AspNetCoreMvcViewDiagnosticObserver";
 
-        private static AsyncLocal<SpanContext> active = new AsyncLocal<SpanContext>();
+        private static readonly AsyncLocal<SpanContext> ActiveContext = new AsyncLocal<SpanContext>();
 
         public AspNetCoreMvcViewObserver(ITracingOptions options, ITracing tracing, ILogger<AspNetCoreMvcViewObserver> logger = null)
             : base(OBSERVER_NAME, options, tracing, logger)
@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Tracing.Observer
         {
             get
             {
-                return active.Value;
+                return ActiveContext.Value;
             }
         }
 
@@ -83,7 +83,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            if (active.Value != null)
+            if (ActiveContext.Value != null)
             {
                 Logger?.LogDebug("HandleBeforeViewEvent: Continuing existing span!");
                 return;
@@ -102,12 +102,12 @@ namespace Steeltoe.Management.Tracing.Observer
             span.PutMvcViewExecutingFilePath(ExtractViewPath(viewContext))
                 .PutServerSpanKindAttribute();
 
-            active.Value = new SpanContext(span, scope);
+            ActiveContext.Value = new SpanContext(span, scope);
         }
 
         protected internal virtual void HandleAfterViewEvent()
         {
-            var spanContext = active.Value;
+            var spanContext = ActiveContext.Value;
             if (spanContext == null)
             {
                 Logger?.LogDebug("HandleAfterViewEvent: Missing span context");
@@ -120,7 +120,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 scope.Dispose();
             }
 
-            active.Value = null;
+            ActiveContext.Value = null;
         }
 
         protected internal virtual string ExtractSpanName(ViewContext context)

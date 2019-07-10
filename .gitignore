@@ -198,6 +198,8 @@ FakesAssemblies/
 # DNX-based projects have a project.lock.json file. This should not be checked-in during development
 project.lock.json
 .vscode
+.idea
+.DS_Store
 .sonarqube/
 
 Pivotal.GemFire.dll

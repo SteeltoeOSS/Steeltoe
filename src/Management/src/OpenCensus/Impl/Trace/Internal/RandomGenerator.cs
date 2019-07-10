@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Census.Trace.Internal
     [Obsolete("Use OpenCensus project packages")]
     internal class RandomGenerator : IRandomGenerator
     {
-        private Random _random;
+        private readonly Random _random;
 
         internal RandomGenerator()
         {

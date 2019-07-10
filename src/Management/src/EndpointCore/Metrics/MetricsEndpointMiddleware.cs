@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MetricsEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, null, false, logger)

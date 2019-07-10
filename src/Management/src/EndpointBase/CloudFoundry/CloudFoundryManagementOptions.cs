@@ -13,10 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
@@ -29,10 +26,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             Path = DEFAULT_ACTUATOR_PATH;
         }
 
-        public CloudFoundryManagementOptions(IConfiguration config, bool isCloudFoundry = false)
+        public CloudFoundryManagementOptions(IConfiguration config)
             : base(config)
         {
-            if (isCloudFoundry)
+            if (Platform.IsCloudFoundry)
             {
                 Path = DEFAULT_ACTUATOR_PATH; // Ignore config path and override to /cloudfoundryapplication
             }

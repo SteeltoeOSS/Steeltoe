@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         private readonly ISpanExporter sampledSpansServiceExporter = SpanExporter.Create(4, Duration.Create(1, 0));
         private readonly InProcessRunningSpanStore activeSpansExporter = new InProcessRunningSpanStore();
         private readonly StartEndHandler startEndHandler;
-        private SpanOptions recordSpanOptions = SpanOptions.RECORD_EVENTS;
+        private readonly SpanOptions recordSpanOptions = SpanOptions.RECORD_EVENTS;
 
         public InProcessRunningSpanStoreTest()
         {

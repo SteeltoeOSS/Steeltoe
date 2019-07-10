@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Tracing;
 using System;
 using System.Collections.Generic;
 using Xunit;

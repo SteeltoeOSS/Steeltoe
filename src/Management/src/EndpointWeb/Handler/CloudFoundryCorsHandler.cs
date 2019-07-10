@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class CloudFoundryCorsHandler : ActuatorHandler
     {
-        private IEndpointOptions _options;
+        private readonly IEndpointOptions _options;
 
         public CloudFoundryCorsHandler(IEndpointOptions options, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryCorsHandler> logger = null)
             : base(securityServices, mgmtOptions, new List<HttpMethod> { HttpMethod.Options }, false, logger)

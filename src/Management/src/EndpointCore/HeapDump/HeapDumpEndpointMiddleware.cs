@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 {
     public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)

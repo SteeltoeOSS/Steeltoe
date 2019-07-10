@@ -26,7 +26,7 @@ namespace Steeltoe.Common.Discovery
     public class DiscoveryHttpClientHandler : HttpClientHandler
     {
         private readonly ILogger _logger;
-        private DiscoveryHttpClientHandlerBase _discoveryBase;
+        private readonly DiscoveryHttpClientHandlerBase _discoveryBase;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DiscoveryHttpClientHandler"/> class.

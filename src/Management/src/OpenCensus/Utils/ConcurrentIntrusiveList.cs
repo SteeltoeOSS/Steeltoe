@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Census.Utils
     {
         private int size = 0;
         private T head = default(T);
-        private object _lck = new object();
+        private readonly object _lck = new object();
 
         public ConcurrentIntrusiveList()
         {

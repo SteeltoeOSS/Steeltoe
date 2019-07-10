@@ -24,7 +24,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 

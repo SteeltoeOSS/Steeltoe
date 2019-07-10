@@ -16,7 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using OpenCensus.Trace;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Census.Trace;

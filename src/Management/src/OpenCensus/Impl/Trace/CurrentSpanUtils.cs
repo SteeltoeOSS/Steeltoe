@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Census.Trace
         {
             private readonly ISpan origContext;
             private readonly ISpan span;
-            private bool endSpan;
+            private readonly bool endSpan;
 
             public ScopeInSpan(ISpan span, bool endSpan)
             {

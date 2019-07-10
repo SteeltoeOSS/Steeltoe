@@ -23,8 +23,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 #pragma warning disable CS0618 // Type or member is obsolete
     public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>
     {
-        private ILogger<CloudFoundryEndpoint> _logger;
-        private IManagementOptions _mgmtOption;
+        private readonly ILogger<CloudFoundryEndpoint> _logger;
+        private readonly IManagementOptions _mgmtOption;
 
         public CloudFoundryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpoint> logger = null)
         : base(options)

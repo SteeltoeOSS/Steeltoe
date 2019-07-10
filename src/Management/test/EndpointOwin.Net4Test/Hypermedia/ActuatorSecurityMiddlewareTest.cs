@@ -12,26 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Primitives;
-using Microsoft.Owin.Testing;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.Test;
 using System;
-using System.Net;
-using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {
     public class ActuatorSecurityMiddlewareTest : BaseTest
     {
-        private readonly SecurityBase _base;
-
         public ActuatorSecurityMiddlewareTest(IManagementOptions mopts)
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
-            _base = new SecurityBase(new CloudFoundryEndpointOptions(), mopts);
         }
 
         public override void Dispose()

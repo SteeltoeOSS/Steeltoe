@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Census.Stats.Test
     [Obsolete]
     public class QuickStartExampleTest
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public QuickStartExampleTest(ITestOutputHelper output)
         {
