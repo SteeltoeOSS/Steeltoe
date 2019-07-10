@@ -21,7 +21,8 @@ namespace Steeltoe.Common.Security.Test
     public class PemConfigureCertificateOptionsTest
     {
         // possibly related https://github.com/dotnet/corefx/issues/11046
-        [Fact(Skip = "Fails on Linux!")]
+        [Fact]
+        [Trait("Category", "SkipOnLinux")]
         public void AddPemFiles_ReadsFiles_CreatesCertificate()
         {
             var config = new ConfigurationBuilder()

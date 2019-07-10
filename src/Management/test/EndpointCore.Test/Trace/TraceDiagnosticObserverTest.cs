@@ -257,7 +257,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             current.Stop();
         }
 
-        [Fact(Skip = "Fails on hosted agent")]
+        [Fact]
         public void Subscribe_Listener_StopActivity_AddsToQueue()
         {
             DiagnosticListener listener = new DiagnosticListener("Microsoft.AspNetCore");

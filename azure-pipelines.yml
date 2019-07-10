@@ -28,12 +28,6 @@ jobs:
     inputs:
       filePath: src/Connectors/EnableGemFire.ps1
       arguments: $(PivNetAPIToken)
-  - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
-    displayName: 'Prepare analysis on SonarCloud'
-    inputs:
-      SonarCloud: SonarCloud
-      organization: 'steeltoeoss'
-      projectKey: 'SteeltoeOSS_steeltoe'
   - task: DotNetCoreCLI@2
     inputs:
       command: build
@@ -43,13 +37,7 @@ jobs:
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration)'
-  - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
-    displayName: 'Run Code Analysis'
-    condition: always()
-  - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
-    displayName: 'Publish Quality Gate Result'
-    condition: always()
+      arguments: '-c $(buildConfiguration) --filter Category!=SkipOnLinux'
 - job: MacOS_Build_and_Test
   pool:
     vmImage: 'macOS-10.14'
@@ -73,74 +61,86 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
-    - pwsh: |
-        if ($env:PackageVersionOverride){
-            $env:PackageVersion = $env:PackageVersionOverride
-        }
-        Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
-        Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
+  - pwsh: |
+      if ($env:PackageVersionOverride){
+          $env:PackageVersion = $env:PackageVersionOverride
+      }
+      Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
+      Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
       env:
-        PackageVersion: $(PackageVersion)
-        PackageVersionOverride: $(PackageVersionOverride)
-    - task: PowerShell@2
-      displayName: 'Get GemFire NativeClient assemblies'
-      inputs:
+      PackageVersion: $(PackageVersion)
+      PackageVersionOverride: $(PackageVersionOverride)
+  - task: PowerShell@2
+        displayName: 'Get GemFire NativeClient assemblies'
+        inputs:
         filePath: src/Connectors/EnableGemFire.ps1
         arguments: $(PivNetAPIToken)
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: 'pack'
-        feedsToUse: 'select'
-        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
-        packagesToPack: '**/*.sln'
-        versioningScheme: 'byEnvVar'
-        versionEnvVar: PackageVersion
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: test
-        projects: '**/*.Net4Test/*.csproj'
-        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: test
-        projects: '**/*.Test/*.csproj'
-        arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
-      condition: always()
-    # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
-    # First install the tool on the machine, then run it
-    - pwsh: |
-        dotnet tool install -g dotnet-reportgenerator-globaltool
-        reportgenerator "-reports:**\coverage.cobertura.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
-      displayName: Create Code coverage report
-      condition: always()
-    # Publish the code coverage result (summary and web site)
-    # The summary allows to view the coverage percentage in the summary tab
-    # The web site allows to view which lines are covered directly in Azure Pipeline
-    - task: PublishCodeCoverageResults@1
-      displayName: 'Publish code coverage'
-      inputs:
-        codeCoverageTool: Cobertura
-        summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
-        reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
-      condition: always()
-    - pwsh: |
-        choco install codecov
-        codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $env:CodeCovToken
-      env:
-        CodeCovToken: $(CodeCovToken)
-      condition: always()
-    - task: PowerShell@2
-      displayName: Authenticode Sign Packages
-      inputs:
-        filePath: build/sign-packages.ps1
-      env:
-        SignClientUser: $(SignClientUser)
-        SignClientSecret: $(SignClientSecret)
-        ArtifactDirectory: $(Build.ArtifactStagingDirectory)
-      condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')))
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: $(Build.ArtifactStagingDirectory)
-        ArtifactName: Packages
-        publishLocation: Container
-      condition: always()
+  - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+    displayName: 'Prepare analysis on SonarCloud'
+    inputs:
+      SonarCloud: SonarCloud
+      organization: 'steeltoeoss'
+      projectKey: 'SteeltoeOSS_steeltoe'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'pack'
+      feedsToUse: 'select'
+      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
+      packagesToPack: '**/*.sln'
+      versioningScheme: 'byEnvVar'
+      versionEnvVar: PackageVersion
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*.Net4Test/*.csproj'
+      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*.Test/*.csproj'
+      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+    condition: always()
+  # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
+  # First install the tool on the machine, then run it
+  - pwsh: |
+      dotnet tool install -g dotnet-reportgenerator-globaltool
+      reportgenerator "-reports:**\coverage.cobertura.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
+    displayName: Create Code coverage report
+    condition: always()
+  # Publish the code coverage result (summary and web site)
+  # The summary allows to view the coverage percentage in the summary tab
+  # The web site allows to view which lines are covered directly in Azure Pipeline
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage'
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
+      reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
+    condition: always()
+  - pwsh: |
+      choco install codecov
+      codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $env:CodeCovToken
+    env:
+      CodeCovToken: $(CodeCovToken)
+    condition: always()
+  - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+    displayName: 'Run Code Analysis'
+    condition: always()
+  - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+    displayName: 'Publish Quality Gate Result'
+    condition: always()
+  - task: PowerShell@2
+    displayName: Authenticode Sign Packages
+    inputs:
+      filePath: build/sign-packages.ps1
+    env:
+      SignClientUser: $(SignClientUser)
+      SignClientSecret: $(SignClientSecret)
+      ArtifactDirectory: $(Build.ArtifactStagingDirectory)
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')))
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: $(Build.ArtifactStagingDirectory)
+      ArtifactName: Packages
+      publishLocation: Container
+    condition: always()
