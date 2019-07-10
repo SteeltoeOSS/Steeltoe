@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config, Platform.IsCloudFoundry)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
             var options = new MappingsEndpointOptions(config);
             services.TryAddSingleton<IMappingsOptions>(options);
             services.RegisterEndpointOptions(options);

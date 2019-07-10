@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Env
                 };
             });
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config, Platform.IsCloudFoundry)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
             var options = new EnvEndpointOptions(config);
             services.TryAddSingleton<IEnvOptions>(options);
             services.RegisterEndpointOptions(options);

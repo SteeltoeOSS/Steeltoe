@@ -61,6 +61,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         [Fact]
         public void Constructor_BindsConfigurationCorrectly_OnCF()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
+
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
@@ -71,10 +73,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var opts = new CloudFoundryManagementOptions(config, true);
+            var opts = new CloudFoundryManagementOptions(config);
 
             Assert.Equal("/cloudfoundryapplication", opts.Path);
             Assert.False(opts.Enabled);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+
+
         }
     }
 }

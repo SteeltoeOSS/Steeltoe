@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
 
             services.TryAddSingleton<ICloudFoundryOptions>(provider =>
             {

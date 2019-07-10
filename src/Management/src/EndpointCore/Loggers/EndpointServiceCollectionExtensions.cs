@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config, Platform.IsCloudFoundry)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
             var options = new LoggersEndpointOptions(config);
             services.TryAddSingleton<ILoggersOptions>(options);

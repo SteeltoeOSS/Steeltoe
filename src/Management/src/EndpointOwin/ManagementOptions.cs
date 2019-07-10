@@ -42,8 +42,8 @@ namespace Steeltoe.Management.EndpointOwin
             {
                 _mgmtOptions = new List<IManagementOptions>
                 {
-                     new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry),
-                     new ActuatorManagementOptions(config, Platform.IsCloudFoundry)
+                     new CloudFoundryManagementOptions(config),
+                     new ActuatorManagementOptions(config)
                 };
             }
 

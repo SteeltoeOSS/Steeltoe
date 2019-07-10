@@ -109,7 +109,7 @@ namespace Steeltoe.Management.Endpoint
 
             if (managementOptions == null)
             {
-                managementOptions = new CloudFoundryManagementOptions(configuration, Platform.IsCloudFoundry);
+                managementOptions = new CloudFoundryManagementOptions(configuration);
                 _mgmtOptions.Add(managementOptions);
             }
 
@@ -123,7 +123,7 @@ namespace Steeltoe.Management.Endpoint
 
             if (managementOptions == null)
             {
-               managementOptions = new CloudFoundryManagementOptions(configuration, Platform.IsCloudFoundry);
+               managementOptions = new CloudFoundryManagementOptions(configuration);
                _mgmtOptions.Add(managementOptions);
             }
 
@@ -142,7 +142,7 @@ namespace Steeltoe.Management.Endpoint
 
             if (managementOptions == null)
             {
-                managementOptions = new ActuatorManagementOptions(configuration, Platform.IsCloudFoundry);
+                managementOptions = new ActuatorManagementOptions(configuration);
                 _mgmtOptions.Add(managementOptions);
             }
 
@@ -341,8 +341,8 @@ namespace Steeltoe.Management.Endpoint
         {
             if (mgmtOptions.Count() < 1)
             {
-                _mgmtOptions.Add(new CloudFoundryManagementOptions(configuration, Platform.IsCloudFoundry));
-                _mgmtOptions.Add(new ActuatorManagementOptions(configuration, Platform.IsCloudFoundry));
+                _mgmtOptions.Add(new CloudFoundryManagementOptions(configuration));
+                _mgmtOptions.Add(new ActuatorManagementOptions(configuration));
             }
 
             foreach (var mgmt in mgmtOptions)

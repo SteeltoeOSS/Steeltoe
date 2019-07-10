@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config, Platform.IsCloudFoundry)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
             var options = new ThreadDumpEndpointOptions(config);
             if (version == MediaTypeVersion.V1)
             {

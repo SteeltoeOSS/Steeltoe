@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config, Platform.IsCloudFoundry)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
             services.TryAddSingleton<IActuatorHypermediaOptions>(provider =>
             {

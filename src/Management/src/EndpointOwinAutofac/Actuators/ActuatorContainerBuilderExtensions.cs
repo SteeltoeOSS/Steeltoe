@@ -43,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new ActuatorManagementOptions(config, Platform.IsCloudFoundry))
+            container.RegisterInstance(new ActuatorManagementOptions(config))
                 .SingleInstance()
                 .As<IManagementOptions>();
 

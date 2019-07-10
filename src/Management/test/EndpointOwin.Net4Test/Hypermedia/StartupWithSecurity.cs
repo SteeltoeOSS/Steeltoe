@@ -46,7 +46,7 @@ namespace Steeltoe.Management.EndpointOwin.Hypermedia.Test
             builder.AddEnvironmentVariables();
             var config = builder.Build();
 
-            var mgmtOptions = new List<IManagementOptions> { new ActuatorManagementOptions(config, Platform.IsCloudFoundry) };
+            var mgmtOptions = new List<IManagementOptions> { new ActuatorManagementOptions(config) };
             app.UseHypermediaActuator(config);
             app.UseInfoActuator(config);
         }
