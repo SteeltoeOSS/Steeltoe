@@ -26,4 +26,8 @@
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.EndpointBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
 </Project>

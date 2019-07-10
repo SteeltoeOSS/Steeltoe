@@ -81,7 +81,7 @@ namespace Steeltoe.Management.Tracing
         protected internal Span GetCurrentSpan()
         {
             var span = tracing.Tracer?.CurrentSpan;
-            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
+            if (span == null || span.Context == SpanContext.Invalid)
             {
                 return null;
             }

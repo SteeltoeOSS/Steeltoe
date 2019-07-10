@@ -24,8 +24,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 {
     public class HeapDumper : IHeapDumper
     {
-        private const int PROCESS_VM_READ = 0x10;
-        private const int PROCESS_QUERY_INFORMATION = 0x0400;
         private readonly string _basePathOverride;
 
         private readonly ILogger<HeapDumper> _logger;

@@ -70,14 +70,15 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
-            HttpResponseMessageProperty httpResponse;
-            if (reply.Properties.ContainsKey(HttpResponseMessageProperty.Name))
-            {
-                httpResponse = reply.Properties[HttpResponseMessageProperty.Name] as HttpResponseMessageProperty;
-            }
-
-            // could get here refreshed token
+#pragma warning disable S125 // Sections of code should not be commented out
+                            // HttpResponseMessageProperty httpResponse;
+                            // if (reply.Properties.ContainsKey(HttpResponseMessageProperty.Name))
+                            // {
+                            //    httpResponse = reply.Properties[HttpResponseMessageProperty.Name] as HttpResponseMessageProperty;
+                            // }
+                            // could get here refreshed token
         }
+#pragma warning restore S125 // Sections of code should not be commented out
 
         private string GetAccessToken()
         {
@@ -85,7 +86,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
             try
             {
-               string accessToken = Task.Run(() => tokenResolver.GetAccessToken()).GetAwaiter().GetResult();
+               string accessToken = tokenResolver.GetAccessToken().GetAwaiter().GetResult();
 
                return accessToken;
             }

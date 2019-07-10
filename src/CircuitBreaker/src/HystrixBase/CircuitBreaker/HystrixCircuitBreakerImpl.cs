@@ -35,15 +35,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 
         public virtual void MarkSuccess()
         {
-            if (circuitOpen.Value)
+            if (circuitOpen.Value && circuitOpen.CompareAndSet(true, false))
             {
-                if (circuitOpen.CompareAndSet(true, false))
-                {
-                    // win the thread race to reset metrics
-                    // Unsubscribe from the current stream to reset the health counts stream.  This only affects the health counts view,
-                    // and all other metric consumers are unaffected by the reset
-                    metrics.ResetStream();
-                }
+                // win the thread race to reset metrics
+                // Unsubscribe from the current stream to reset the health counts stream.  This only affects the health counts view,
+                // and all other metric consumers are unaffected by the reset
+                metrics.ResetStream();
             }
         }
 
@@ -80,7 +77,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
             {
                 // We push the 'circuitOpenedTime' ahead by 'sleepWindow' since we have allowed one request to try.
                 // If it succeeds the circuit will be closed, otherwise another singleTest will be allowed at the end of the 'sleepWindow'.
+#pragma warning disable S1066 // Collapsible "if" statements should be merged
                 if (circuitOpenedOrLastTestedTime.CompareAndSet(timeCircuitOpenedOrWasLastTested, Time.CurrentTimeMillis))
+#pragma warning restore S1066 // Collapsible "if" statements should be merged
                 {
                     // if this returns true that means we set the time so we'll return true to allow the singleTest
                     // if it returned false it means another thread raced us and allowed the singleTest before we did

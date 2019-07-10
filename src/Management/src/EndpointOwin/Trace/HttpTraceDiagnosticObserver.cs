@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Owin;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Trace;
@@ -32,9 +33,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         private const string OBSERVER_NAME = "TraceDiagnosticObserver";
         private const string DIAGNOSTIC_NAME = "Steeltoe.Owin";
-        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private readonly ILogger<HttpTraceDiagnosticObserver> _logger;
-        private readonly ITraceOptions _options;
+        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private ILogger<HttpTraceDiagnosticObserver> _logger;
+        private ITraceOptions _options;
 
         public HttpTraceDiagnosticObserver(ITraceOptions options, ILogger<HttpTraceDiagnosticObserver> logger = null)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
@@ -72,13 +73,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             {
                 HttpTrace trace = MakeTrace(context, current.Duration);
                 _queue.Enqueue(trace);
-
-                if (_queue.Count > _options.Capacity)
+                if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
                 {
-                    if (!_queue.TryDequeue(out _))
-                    {
-                        _logger?.LogDebug("Stop - Dequeue failed");
-                    }
+                    _logger?.LogDebug("Stop - Dequeue failed");
                 }
             }
         }
@@ -106,7 +103,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             foreach (var h in headers)
             {
                 // Add filtering
-                result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
+                result.Add(h.Key.ToUpperInvariant(), GetHeaderValue(h.Value));
             }
 
             return result;
@@ -158,7 +155,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
             if (HasFormContentType(request))
             {
-                var formData = await request.ReadFormAsync();
+                var formData = await request.ReadFormAsync().ConfigureAwait(false);
                 foreach (var p in formData)
                 {
                     parameters.Add(p.Key, p.Value);
@@ -195,7 +192,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         protected internal long GetJavaTime(long ticks)
         {
-            long javaTicks = ticks - BaseTime.Ticks;
+            long javaTicks = ticks - baseTime.Ticks;
             return javaTicks / 10000;
         }
 

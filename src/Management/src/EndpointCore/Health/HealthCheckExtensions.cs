@@ -66,7 +66,7 @@ namespace Steeltoe.Management.Endpoint.Health
             var healthCheckResult = new HealthCheckResult();
             try
             {
-                var res = await registration.Factory(provider).CheckHealthAsync(context);
+                var res = await registration.Factory(provider).CheckHealthAsync(context).ConfigureAwait(false);
                 healthCheckResult = new HealthCheckResult()
                 {
                     Status = res.Status.ToHealthStatus(),
@@ -79,9 +79,13 @@ namespace Steeltoe.Management.Endpoint.Health
                     healthCheckResult.Details.Add("error", res.Exception.Message);
                 }
             }
-            catch (Exception)
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
             {
+                // Catch all exceptions so that a status can always be returned
+                healthCheckResult.Details.Add("exception", e.Message);
             }
+#pragma warning restore CA1031 // Do not catch general exception types
 
             return healthCheckResult;
         }

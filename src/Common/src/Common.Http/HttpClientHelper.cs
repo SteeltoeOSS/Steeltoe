@@ -30,10 +30,10 @@ namespace Steeltoe.Common.Http
 {
     public static class HttpClientHelper
     {
-        internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate = null;
-
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private const bool DEFAULT_VALIDATE_CERTIFICATES = true;
+
+        private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate = null;
 
         private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (sender, cert, chain, sslPolicyErrors) => true;
 
@@ -78,21 +78,16 @@ namespace Steeltoe.Common.Http
             out RemoteCertificateValidationCallback prevValidator)
         {
             prevValidator = null;
-            protocolType = (SecurityProtocolType)0;
+            protocolType = 0;
 
-            if (Platform.IsFullFramework)
+            if (Platform.IsFullFramework && !validateCertificates)
             {
-                if (!validateCertificates)
-                {
-                    protocolType = ServicePointManager.SecurityProtocol;
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                    prevValidator = ServicePointManager.ServerCertificateValidationCallback;
+                protocolType = ServicePointManager.SecurityProtocol;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                prevValidator = ServicePointManager.ServerCertificateValidationCallback;
 
-                    // Disabling certificate validation is a bad idea, that's why it's off by default!
-#pragma warning disable SCS0004 // Certificate Validation has been disabled
-                    ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-#pragma warning restore SCS0004 // Certificate Validation has been disabled
-                }
+                // Disabling certificate validation is a bad idea, that's why it's off by default!
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
             }
         }
 
@@ -110,13 +105,10 @@ namespace Steeltoe.Common.Http
             SecurityProtocolType protocolType,
             RemoteCertificateValidationCallback prevValidator)
         {
-            if (Platform.IsFullFramework)
+            if (Platform.IsFullFramework && !validateCertificates)
             {
-                if (!validateCertificates)
-                {
-                    ServicePointManager.SecurityProtocol = protocolType;
-                    ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-                }
+                ServicePointManager.SecurityProtocol = protocolType;
+                ServicePointManager.ServerCertificateValidationCallback = prevValidator;
             }
         }
 
@@ -177,7 +169,7 @@ namespace Steeltoe.Common.Http
             return request;
         }
 
-        public static async Task<string> GetAccessToken(
+        public static Task<string> GetAccessToken(
             string accessTokenUri,
             string clientId,
             string clientSecret,
@@ -200,6 +192,17 @@ namespace Steeltoe.Common.Http
                 throw new ArgumentException(nameof(accessTokenUri));
             }
 
+            return GetAccessTokenInternal(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, logger);
+        }
+
+        private static async Task<string> GetAccessTokenInternal(
+            string accessTokenUri,
+            string clientId,
+            string clientSecret,
+            int timeout,
+            bool validateCertificates,
+            ILogger logger)
+        {
             var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
             HttpClient client = GetHttpClient(validateCertificates, timeout);
 
@@ -229,7 +232,7 @@ namespace Steeltoe.Common.Http
                             return null;
                         }
 
-                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                         var token = payload.Value<string>("access_token");
                         return token;
                     }
@@ -247,7 +250,9 @@ namespace Steeltoe.Common.Http
             return null;
         }
 
+#pragma warning disable SA1202 // Elements must be ordered by access
         internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> GetDisableDelegate()
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             if (Platform.IsFullFramework)
             {

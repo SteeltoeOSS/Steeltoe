@@ -16,6 +16,7 @@ using RichardSzalay.MockHttp;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
@@ -52,7 +53,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
             var resolver = new CloudFoundryClientTokenResolver(options, GetMockHttpClient());
 
             // act
-            var tokenError = await Assert.ThrowsAsync<Exception>(() => resolver.GetAccessToken());
+            var tokenError = await Assert.ThrowsAsync<ExternalException>(() => resolver.GetAccessToken());
 
             // assert
             Assert.Contains("OAuth token endpoint failure: ", tokenError.Message);

@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public InfoHandler(InfoEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<InfoHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {

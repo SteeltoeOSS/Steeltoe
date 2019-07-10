@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public string CloudFoundryApi { get; set; }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         public override bool DefaultSensitive => false;
     }
 }

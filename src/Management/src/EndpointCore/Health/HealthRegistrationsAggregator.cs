@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Health
             var contributorIds = contributors.Select(x => x.Id);
             foreach (var registration in healthServiceOptions.CurrentValue.Registrations)
             {
-                HealthCheckResult h = registration.HealthCheck(serviceProvider).Result;
+                HealthCheckResult h = registration.HealthCheck(serviceProvider).GetAwaiter().GetResult();
 
                 if (h.Status > result.Status)
                 {
@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
                 var key = GetKey(result, registration.Name);
                 result.Details.Add(key, h);
-                var possibleDuplicate = contributorIds.Where(id => id.IndexOf(registration.Name, StringComparison.OrdinalIgnoreCase) >= 0).FirstOrDefault();
+                var possibleDuplicate = contributorIds.FirstOrDefault(id => id.IndexOf(registration.Name, StringComparison.OrdinalIgnoreCase) >= 0);
                 if (!string.IsNullOrEmpty(possibleDuplicate))
                 {
                     var logger = serviceProvider.GetService(typeof(ILogger<HealthRegistrationsAggregator>)) as ILogger;

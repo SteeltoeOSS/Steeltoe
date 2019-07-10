@@ -25,17 +25,18 @@ namespace Steeltoe.Extensions.Logging
     [ProviderAlias("Dynamic")]
     public class DynamicLoggerProvider : IDynamicLoggerProvider
     {
-        // private static readonly Func<string, LogLevel, bool> _trueFilter = (cat, level) => true;
         private static readonly Func<string, LogLevel, bool> _falseFilter = (cat, level) => false;
-        private readonly ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
-
-        private readonly IOptionsMonitor<LoggerFilterOptions> _filterOptions;
-        private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
         private Func<string, LogLevel, bool> _filter = _falseFilter;
+        private ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
+
         private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ConcurrentDictionary<string, DynamicConsoleLogger>();
         private ConsoleLoggerProvider _delegate;
         private IConsoleLoggerSettings _settings;
+        private IOptionsMonitor<LoggerFilterOptions> _filterOptions;
+        private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
+
+        private bool disposed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
@@ -84,14 +85,6 @@ namespace Steeltoe.Extensions.Logging
             return _loggers.GetOrAdd(name, CreateLoggerImplementation);
         }
 
-        public void Dispose()
-        {
-            _delegate?.Dispose();
-            _delegate = null;
-            _settings = null;
-            _loggers = null;
-        }
-
         /// <summary>
         /// Get a list of logger configurations
         /// </summary>
@@ -116,12 +109,9 @@ namespace Steeltoe.Extensions.Logging
                         LogLevel? configured = GetConfiguredLevel(name);
                         LogLevel effective = GetEffectiveLevel(name);
                         var config = new LoggerConfiguration(name, configured, effective);
-                        if (results.ContainsKey(name))
+                        if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
-                            if (!results[name].Equals(config))
-                            {
-                                throw new InvalidProgramException("Shouldn't happen");
-                            }
+                            throw new InvalidProgramException("Shouldn't happen");
                         }
 
                         results[name] = config;
@@ -187,6 +177,34 @@ namespace Steeltoe.Extensions.Logging
                     l.Value.Filter = filter ?? GetFilter(category);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Cleanup
+                    _delegate?.Dispose();
+                    _delegate = null;
+                    _settings = null;
+                    _loggers = null;
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~DynamicLoggerProvider()
+        {
+            Dispose(false);
         }
 
         private void SetFiltersFromOptions()
@@ -351,12 +369,9 @@ namespace Steeltoe.Extensions.Logging
         /// <returns>Log level from default filter, value from settings or else null</returns>
         private LogLevel? GetConfiguredLevel(string name)
         {
-            if (_settings != null)
+            if (_settings != null && _settings.TryGetSwitch(name, out LogLevel level))
             {
-                if (_settings.TryGetSwitch(name, out LogLevel level))
-                {
-                    return level;
-                }
+                return level;
             }
 
             return null;

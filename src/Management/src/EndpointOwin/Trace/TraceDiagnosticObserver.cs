@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Owin;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Trace;
@@ -20,6 +21,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Trace
@@ -31,9 +33,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         private const string OBSERVER_NAME = "HttpTraceDiagnosticObserver";
         private const string DIAGNOSTIC_NAME = "Steeltoe.Owin";
-        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private readonly ILogger<TraceDiagnosticObserver> _logger;
-        private readonly ITraceOptions _options;
+        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private ILogger<TraceDiagnosticObserver> _logger;
+        private ITraceOptions _options;
 
         public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
@@ -72,13 +74,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             {
                 TraceResult trace = MakeTrace(context, current.Duration);
                 _queue.Enqueue(trace);
-
-                if (_queue.Count > _options.Capacity)
+                if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
                 {
-                    if (!_queue.TryDequeue(out _))
-                    {
-                        _logger?.LogDebug("Stop - Dequeue failed");
-                    }
+                    _logger?.LogDebug("Stop - Dequeue failed");
                 }
             }
         }
@@ -213,7 +211,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
             if (HasFormContentType(request))
             {
-                var formData = await request.ReadFormAsync();
+                var formData = await request.ReadFormAsync().ConfigureAwait(false);
                 foreach (var p in formData)
                 {
                     parameters.Add(p.Key, p.Value);
@@ -250,7 +248,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         protected internal long GetJavaTime(long ticks)
         {
-            long javaTicks = ticks - BaseTime.Ticks;
+            long javaTicks = ticks - baseTime.Ticks;
             return javaTicks / 10000;
         }
 

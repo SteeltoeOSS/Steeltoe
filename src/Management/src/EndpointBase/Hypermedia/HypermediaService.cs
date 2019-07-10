@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
         public Links Invoke(string baseUrl)
         {
             var endpointOptions = _mgmtOptions.EndpointOptions;
@@ -71,5 +71,5 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             return links;
         }
     }
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
 }

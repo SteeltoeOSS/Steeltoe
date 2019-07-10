@@ -33,6 +33,7 @@ namespace Steeltoe.Common.Security
 
         public override void Load()
         {
+            // for future use
         }
 
         public override void Set(string key, string value)
@@ -55,11 +56,6 @@ namespace Steeltoe.Common.Security
             }
 
             return false;
-        }
-
-        public override IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
-        {
-            return base.GetChildKeys(earlierKeys, parentPath);
         }
 
         private void NotifyCertChanged(object state)

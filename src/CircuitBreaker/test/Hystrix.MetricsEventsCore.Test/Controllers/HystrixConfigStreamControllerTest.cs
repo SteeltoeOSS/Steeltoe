@@ -73,10 +73,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 var client = server.CreateClient();
 
                 client.BaseAddress = new Uri("http://localhost/");
-                var result = client.GetStreamAsync("hystrix/config.stream").Result;
+                var result = client.GetStreamAsync("hystrix/config.stream").GetAwaiter().GetResult();
 
                 var client2 = server.CreateClient();
-                var cmdResult = client2.GetAsync("test/test.command").Result;
+                var cmdResult = client2.GetAsync("test/test.command").GetAwaiter().GetResult();
                 Assert.Equal(HttpStatusCode.OK, cmdResult.StatusCode);
 
                 var reader = new StreamReader(result);

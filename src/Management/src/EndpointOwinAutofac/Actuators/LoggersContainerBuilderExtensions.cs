@@ -52,11 +52,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 loggerProvider = new DynamicLoggerProvider(new ConsoleLoggerSettings().FromConfiguration(config));
             }
 
-            if (loggerFactory == null)
-            {
-                loggerFactory = new LoggerFactory(new List<ILoggerProvider> { loggerProvider });
-            }
-
             container.RegisterLogging(config);
             container.RegisterInstance(loggerProvider).As<IDynamicLoggerProvider>();
             container.Register(c =>

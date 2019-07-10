@@ -44,13 +44,11 @@ namespace Steeltoe.Common.LoadBalancer
         public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request)
         {
             _logger?.LogTrace("ResolveServiceInstance {serviceInstance}", request.Host);
-            var availableServiceInstances = await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache);
+            var availableServiceInstances = await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache).ConfigureAwait(false);
             if (availableServiceInstances.Count > 0)
             {
-// load balancer instance selection predictability is not likely to be a security concern
-#pragma warning disable SCS0005 // Weak random generator
+                // load balancer instance selection predictability is not likely to be a security concern
                 var resolvedUri = availableServiceInstances[_random.Next(availableServiceInstances.Count)].Uri;
-#pragma warning restore SCS0005 // Weak random generator
                 _logger?.LogDebug("Resolved {url} to {service}", request.Host, resolvedUri.Host);
                 return new Uri(resolvedUri, request.PathAndQuery);
             }

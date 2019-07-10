@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, IEnumerable<ISecurityService> securityServices, ILogger<EnvHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {

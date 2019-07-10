@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint
     {
         bool? Enabled { get; }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         bool? Sensitive { get; }
 
         string Path { get; }

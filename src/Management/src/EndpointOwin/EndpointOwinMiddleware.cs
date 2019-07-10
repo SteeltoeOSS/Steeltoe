@@ -39,7 +39,7 @@ namespace Steeltoe.Management.EndpointOwin
         {
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
 
-            if (_allowedMethods.Count() == 0)
+            if (!_allowedMethods.Any())
             {
                 _allowedMethods = new List<HttpMethod> { HttpMethod.Get };
             }
@@ -55,13 +55,13 @@ namespace Steeltoe.Management.EndpointOwin
             _endpoint = endpoint;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public EndpointOwinMiddleware(OwinMiddleware next, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(next)
         {
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
 
-            if (_allowedMethods.Count() == 0)
+            if (_allowedMethods.Any())
             {
                 _allowedMethods = new List<HttpMethod> { HttpMethod.Get };
             }
@@ -70,7 +70,7 @@ namespace Steeltoe.Management.EndpointOwin
             _logger = logger;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : this(next, allowedMethods, exactRequestPathMatching, logger)
         {
@@ -81,14 +81,14 @@ namespace Steeltoe.Management.EndpointOwin
         {
             if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
                 _logger?.LogTrace("Processing {SteeltoeEndpoint} request", _endpoint.GetType());
                 var result = _endpoint.Invoke();
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
-                await context.Response.WriteAsync(Serialize(result));
+                await context.Response.WriteAsync(Serialize(result)).ConfigureAwait(false);
             }
         }
 
@@ -130,7 +130,7 @@ namespace Steeltoe.Management.EndpointOwin
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(next, allowedMethods, exactRequestPathMatching, logger)
         {

@@ -32,9 +32,9 @@ namespace Steeltoe.Management.Endpoint.Trace
         private const string OBSERVER_NAME = "TraceDiagnosticObserver";
         private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
-        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private readonly ILogger<TraceDiagnosticObserver> _logger;
-        private readonly ITraceOptions _options;
+        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private ILogger<TraceDiagnosticObserver> _logger;
+        private ITraceOptions _options;
 
         public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
@@ -74,12 +74,9 @@ namespace Steeltoe.Management.Endpoint.Trace
                 TraceResult trace = MakeTrace(context, current.Duration);
                 _queue.Enqueue(trace);
 
-                if (_queue.Count > _options.Capacity)
+                if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
                 {
-                    if (!_queue.TryDequeue(out _))
-                    {
-                        _logger?.LogDebug("Stop - Dequeue failed");
-                    }
+                    _logger?.LogDebug("Stop - Dequeue failed");
                 }
             }
         }
@@ -153,7 +150,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         protected internal long GetJavaTime(long ticks)
         {
-            long javaTicks = ticks - BaseTime.Ticks;
+            long javaTicks = ticks - baseTime.Ticks;
             return javaTicks / 10000;
         }
 

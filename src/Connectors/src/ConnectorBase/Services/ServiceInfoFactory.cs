@@ -212,12 +212,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         protected internal virtual bool GetBoolFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
             bool result = false;
-            if (credentials != null)
+            if (credentials != null && credentials.ContainsKey(key))
             {
-                if (credentials.ContainsKey(key))
-                {
-                    bool.TryParse(credentials[key].Value, out result);
-                }
+                bool.TryParse(credentials[key].Value, out result);
             }
 
             return result;
@@ -249,23 +246,20 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         protected internal virtual List<string> GetListFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
             List<string> result = new List<string>();
-            if (credentials != null)
+            if (credentials != null && credentials.ContainsKey(key))
             {
-               if (credentials.ContainsKey(key))
+                Credential keyVal = credentials[key];
+                if (keyVal.Count > 0)
                 {
-                    Credential keyVal = credentials[key];
-                    if (keyVal.Count > 0)
+                    foreach (KeyValuePair<string, Credential> kvp in keyVal)
                     {
-                        foreach (KeyValuePair<string, Credential> kvp in keyVal)
+                        if (kvp.Value.Count != 0 || string.IsNullOrEmpty(kvp.Value.Value))
                         {
-                            if (kvp.Value.Count != 0 || string.IsNullOrEmpty(kvp.Value.Value))
-                            {
-                                throw new ConnectorException(string.Format("Unable to extract list from credentials: key={0}, value={1}/{2}", key, kvp.Key, kvp.Value));
-                            }
-                            else
-                            {
-                                result.Add(kvp.Value.Value);
-                            }
+                            throw new ConnectorException(string.Format("Unable to extract list from credentials: key={0}, value={1}/{2}", key, kvp.Key, kvp.Value));
+                        }
+                        else
+                        {
+                            result.Add(kvp.Value.Value);
                         }
                     }
                 }

@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public ThreadDumpEndpointMiddleware(RequestDelegate next, ThreadDumpEndpoint endpoint, ILogger<ThreadDumpEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {
@@ -42,11 +42,11 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleThreadDumpRequestAsync(context);
+                await HandleThreadDumpRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
     }
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Util;
+using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
@@ -20,8 +21,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
     }
 
-    public class HystrixCollapserKeyDefault : HystrixKeyDefault<HystrixCollapserKeyDefault>, IHystrixCollapserKey
+    public class HystrixCollapserKeyDefault : HystrixKeyDefault, IHystrixCollapserKey
     {
+        private static readonly ConcurrentDictionary<string, HystrixCollapserKeyDefault> Intern = new ConcurrentDictionary<string, HystrixCollapserKeyDefault>();
+
         internal HystrixCollapserKeyDefault(string name)
             : base(name)
         {

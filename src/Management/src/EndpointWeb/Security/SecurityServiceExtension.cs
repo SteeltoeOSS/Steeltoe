@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Security
         public static async Task<bool> IsAccessAllowed(this IEnumerable<ISecurityService> securityChecks, HttpContextBase context, IEndpointOptions options)
         {
             IEnumerable<Task<bool>> allTasks = securityChecks.Select(service => service.IsAccessAllowed(context, options));
-            bool[] returnValues = await Task.WhenAll(allTasks);
+            bool[] returnValues = await Task.WhenAll(allTasks).ConfigureAwait(false);
             return returnValues.All(isAccessAllowed => isAccessAllowed == true);
         }
     }

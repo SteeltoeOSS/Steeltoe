@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointOwin
         {
             if (_mgmtOptions == null)
             {
-                throw new Exception("Management Options not configured");
+                throw new InvalidOperationException("Management Options not configured");
             }
 
             return _mgmtOptions;

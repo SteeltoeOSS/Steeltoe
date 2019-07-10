@@ -18,12 +18,12 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
 {
-    [Obsolete]
+    [Obsolete("Use ManagementEndpointOptions instead")]
     public class ManagementOptions : IManagementOptions
     {
-        internal static ManagementOptions _instance;
         private const string DEFAULT_PATH = "/";
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints";
+        private static ManagementOptions _instance;
 
         private bool? _enabled;
         private bool? _sensitive;
@@ -87,6 +87,11 @@ namespace Steeltoe.Management.Endpoint
             }
 
             return _instance;
+        }
+
+        public static void SetInstance(ManagementOptions mgmtOptions)
+        {
+            _instance = mgmtOptions;
         }
 
         public static ManagementOptions GetInstance(IConfiguration config)

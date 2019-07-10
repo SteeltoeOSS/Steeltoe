@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public TraceHandler(TraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<TraceHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {

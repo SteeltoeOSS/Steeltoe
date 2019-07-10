@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint
 
         bool Enabled { get; }
 
-        [Obsolete]
+        [Obsolete("Use Exposure options instead")]
         bool Sensitive { get; }
 
         IEndpointOptions Options { get; }
@@ -30,12 +30,12 @@ namespace Steeltoe.Management.Endpoint
         string Path { get; }
     }
 
-    public interface IEndpoint<TResult> : IEndpoint
+    public interface IEndpoint<out TResult> : IEndpoint
     {
         TResult Invoke();
     }
 
-    public interface IEndpoint<TResult, TRequest> : IEndpoint
+    public interface IEndpoint<out TResult, in TRequest> : IEndpoint
     {
         TResult Invoke(TRequest arg);
     }

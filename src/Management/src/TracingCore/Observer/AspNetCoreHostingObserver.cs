@@ -239,6 +239,7 @@ namespace Steeltoe.Management.Tracing.Observer
             }
             catch (Exception)
             {
+                // code flow can continue just fine if the above fails for any reason
             }
 
             return null;
@@ -255,6 +256,7 @@ namespace Steeltoe.Management.Tracing.Observer
             }
             catch (Exception)
             {
+                // code flow can continue just fine if the above fails for any reason
             }
 
             return null;

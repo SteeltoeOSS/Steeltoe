@@ -195,12 +195,9 @@ namespace Steeltoe.Management.Tracing.Observer
             var headers = message.Headers;
             Propagation.Inject(Tracer.CurrentSpan.Context, headers,  (c, k, v) =>
             {
-                if (k == B3Constants.XB3TraceId)
+                if (k == B3Constants.XB3TraceId && v.Length > 16 && Options.UseShortTraceIds)
                 {
-                    if (v.Length > 16 && Options.UseShortTraceIds)
-                    {
-                        v = v.Substring(v.Length - 16, 16);
-                    }
+                    v = v.Substring(v.Length - 16, 16);
                 }
                 c.Add(k, v);
             });

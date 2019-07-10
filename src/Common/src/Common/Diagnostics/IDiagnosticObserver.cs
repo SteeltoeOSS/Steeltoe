@@ -26,7 +26,10 @@ namespace Steeltoe.Common.Diagnostics
 
         void Subscribe(DiagnosticListener listener);
 
+        // TODO: Address this warning in 3.0 ?
+#pragma warning disable S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
         void Dispose();
+#pragma warning restore S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
 
         void ProcessEvent(string @event, object value);
     }

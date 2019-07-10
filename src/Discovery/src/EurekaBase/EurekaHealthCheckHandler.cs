@@ -43,11 +43,6 @@ namespace Steeltoe.Discovery.Eureka
             _contributors = contributors.ToList();
         }
 
-        // Testing
-        internal EurekaHealthCheckHandler()
-        {
-        }
-
         public virtual InstanceStatus GetStatus(InstanceStatus currentStatus)
         {
             List<HealthCheckResult> results = DoHealthChecks(_contributors);
