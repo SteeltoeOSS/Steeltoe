@@ -1,4 +1,4 @@
-﻿// Copyright 2017 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,34 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.Security;
+using Steeltoe.Management.Endpoint;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.EndpointBase.DbMigrations
 {
-    public interface IEndpointOptions
+    public interface IEntityFrameworkOptions : IEndpointOptions
     {
-        [Obsolete]
-        bool IsEnabled { get; }
+        List<Type> ContextTypes { get; set; }
 
-        [Obsolete]
-        bool IsSensitive { get; }
-
-        bool? Enabled { get; }
-
-        [Obsolete]
-        bool? Sensitive { get;  }
-
-        [Obsolete]
-        IManagementOptions Global { get; }
-
-        string Id { get;  }
-
-        string Path { get; }
-
-        Permissions RequiredPermissions { get; }
-
-        bool IsAccessAllowed(Permissions permissions);
+        bool AutoDiscoverContexts { get; set; }
     }
 }

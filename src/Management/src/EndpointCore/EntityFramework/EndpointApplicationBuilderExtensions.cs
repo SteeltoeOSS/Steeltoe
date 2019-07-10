@@ -12,34 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.Security;
+using Microsoft.AspNetCore.Builder;
 using System;
-using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.Endpoint.EntityFramework
 {
-    public interface IEndpointOptions
+    public static class EndpointApplicationBuilderExtensions
     {
-        [Obsolete]
-        bool IsEnabled { get; }
+        /// <summary>
+        /// Enable the EntityFramework middleware
+        /// </summary>
+        /// <param name="builder">Your application builder</param>
+        public static void UseEntityFrameworkActuator(this IApplicationBuilder builder)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
 
-        [Obsolete]
-        bool IsSensitive { get; }
-
-        bool? Enabled { get; }
-
-        [Obsolete]
-        bool? Sensitive { get;  }
-
-        [Obsolete]
-        IManagementOptions Global { get; }
-
-        string Id { get;  }
-
-        string Path { get; }
-
-        Permissions RequiredPermissions { get; }
-
-        bool IsAccessAllowed(Permissions permissions);
+            builder.UseMiddleware<EntityFrameworkEndpointMiddleware>();
+        }
     }
 }
