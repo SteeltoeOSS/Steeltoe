@@ -64,6 +64,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void TestSingleCommandMultipleIntervals()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();

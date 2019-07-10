@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
  <Import Project="..\..\..\..\versions.props" />
-  <PropertyGroup Condition="! $(OS.Contains('Win'))">
-    <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(OS.Contains('Win'))">
-    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+  <PropertyGroup>
+    <TargetFrameworks>net461</TargetFrameworks>
     <!-- <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
+
+  <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
     <None Update="xunit.runner.json">

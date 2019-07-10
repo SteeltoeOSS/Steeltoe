@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _apiDescriptionProviders = apiDescriptionProviders;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MappingsEndpointMiddleware(
             RequestDelegate next,
             IMappingsOptions options,
@@ -76,11 +76,11 @@ namespace Steeltoe.Management.Endpoint.Mappings
         {
             if (IsMappingsRequest(context))
             {
-                await HandleMappingsRequestAsync(context);
+                await HandleMappingsRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -91,7 +91,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
             _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
         protected internal ApplicationMappings GetApplicationMappings(HttpContext context)
@@ -252,12 +252,9 @@ namespace Steeltoe.Management.Endpoint.Mappings
         private IList<string> GetHttpMethods(Route route)
         {
             var constraints = route.Constraints;
-            if (constraints.TryGetValue("httpMethod", out IRouteConstraint routeConstraint))
+            if (constraints.TryGetValue("httpMethod", out IRouteConstraint routeConstraint) && routeConstraint is HttpMethodRouteConstraint methodConstraint)
             {
-                if (routeConstraint is HttpMethodRouteConstraint methodConstraint)
-                {
-                    return methodConstraint.AllowedMethods;
-                }
+                return methodConstraint.AllowedMethods;
             }
 
             return null;

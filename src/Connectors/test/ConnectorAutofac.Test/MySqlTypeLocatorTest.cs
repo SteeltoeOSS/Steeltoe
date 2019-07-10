@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.CloudFoundry.Connector.MySql;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.Test
+namespace Steeltoe.CloudFoundry.ConnectorAutofac.MySql.Test
 {
     /// <summary>
     /// These tests can be found in Base, EF6 Autofac, EF6 Core and EF Core, for testing different nuget packages.
@@ -40,7 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         public void Driver_Found_In_MySqlData_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package
-            var assemblies = MySqlTypeLocator.Assemblies;
+            var types = MySqlTypeLocator.Assemblies;
             MySqlTypeLocator.Assemblies = new string[] { "MySql.Data" };
 
             // act
@@ -48,7 +49,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 
             // assert
             Assert.NotNull(type);
-            MySqlTypeLocator.Assemblies = assemblies;
+            MySqlTypeLocator.Assemblies = types;
         }
     }
 }

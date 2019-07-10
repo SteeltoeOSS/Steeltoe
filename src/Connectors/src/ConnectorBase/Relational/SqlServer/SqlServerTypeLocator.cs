@@ -22,20 +22,20 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
     public static class SqlServerTypeLocator
     {
         /// <summary>
-        /// List of supported SQL Server Client assemblies
-        /// </summary>
-        public static string[] Assemblies = new string[] { "System.Data.SqlClient" };
-
-        /// <summary>
-        /// List of SQL Server types that implement IDbConnection
-        /// </summary>
-        public static string[] ConnectionTypeNames = new string[] { "System.Data.SqlClient.SqlConnection" };
-
-        /// <summary>
         /// Gets SqlConnection from a SQL Server Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
         public static Type SqlConnection => ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "SqlConnection", "a Microsoft SQL Server ADO.NET assembly");
+
+        /// <summary>
+        /// Gets the list of supported SQL Server Client assemblies
+        /// </summary>
+        public static string[] Assemblies { get; internal set; } = new string[] { "System.Data.SqlClient" };
+
+        /// <summary>
+        /// Gets the list of SQL Server types that implement IDbConnection
+        /// </summary>
+        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "System.Data.SqlClient.SqlConnection" };
     }
 }
 
@@ -72,7 +72,9 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.SqlServer
                 var type = ConnectorHelpers.FindType(Assemblies, ConnectionTypeNames);
                 if (type == null)
                 {
+#pragma warning disable S2372 // Exceptions should not be thrown from property getters
                     throw new ConnectorException("Unable to find SqlConnection, are you missing a Microsoft SQL Server ADO.NET assembly?");
+#pragma warning restore S2372 // Exceptions should not be thrown from property getters
                 }
 
                 return type;

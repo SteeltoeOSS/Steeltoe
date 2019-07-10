@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 {
@@ -27,7 +28,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
         public void Dispose()
         {
-            _provider.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public ILogger CreateLogger(string categoryName)
@@ -37,6 +39,20 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
         public void AddProvider(ILoggerProvider provider)
         {
+            // noop
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _provider.Dispose();
+            }
+        }
+
+        ~SerilogDynamicLoggerFactory()
+        {
+            Dispose(false);
         }
     }
 }

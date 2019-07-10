@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint
 
         public virtual bool Enabled => options.Enabled.Value;
 
-        [Obsolete]
+        [Obsolete("Use hypermedia exposure settings instead.")]
         public virtual bool Sensitive => options.Sensitive.Value;
 
         public virtual IEndpointOptions Options => options;

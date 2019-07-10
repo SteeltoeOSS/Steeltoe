@@ -74,13 +74,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             {
                 TraceResult trace = MakeTrace(context, current.Duration);
                 _queue.Enqueue(trace);
-
-                if (_queue.Count > _options.Capacity)
+                if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
                 {
-                    if (!_queue.TryDequeue(out TraceResult discard))
-                    {
-                        _logger?.LogDebug("Stop - Dequeue failed");
-                    }
+                    _logger?.LogDebug("Stop - Dequeue failed");
                 }
             }
         }
@@ -215,7 +211,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
             if (HasFormContentType(request))
             {
-                var formData = await request.ReadFormAsync();
+                var formData = await request.ReadFormAsync().ConfigureAwait(false);
                 foreach (var p in formData)
                 {
                     parameters.Add(p.Key, p.Value);

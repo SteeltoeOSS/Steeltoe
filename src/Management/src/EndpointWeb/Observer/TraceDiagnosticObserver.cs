@@ -85,12 +85,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
                 TraceResult trace = MakeTrace(context, duration);
                 _queue.Enqueue(trace);
 
-                if (_queue.Count > _options.Capacity)
+                if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
                 {
-                    if (!_queue.TryDequeue(out TraceResult discard))
-                    {
-                        _logger?.LogDebug("Stop - Dequeue failed");
-                    }
+                    _logger?.LogDebug("Stop - Dequeue failed");
                 }
             }
         }

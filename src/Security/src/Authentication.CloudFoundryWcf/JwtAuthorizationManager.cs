@@ -25,7 +25,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
     // https://docs.microsoft.com/en-us/dotnet/framework/wcf/extending/custom-authorization
     public class JwtAuthorizationManager : ServiceAuthorizationManager
     {
-        private static CloudFoundryOptions _options;
+        private readonly CloudFoundryOptions _options;
 
         public JwtAuthorizationManager()
             : base()
@@ -72,7 +72,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 CloudFoundryWcfTokenValidator.ThrowJwtException("No Token", null);
             }
 
-            throw new Exception("idk");
+            throw new NotImplementedException("Unable to locate a Principal in the request header");
         }
 
         protected override bool CheckAccessCore(OperationContext operationContext)

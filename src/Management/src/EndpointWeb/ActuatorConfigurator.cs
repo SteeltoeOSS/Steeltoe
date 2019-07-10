@@ -339,7 +339,7 @@ namespace Steeltoe.Management.Endpoint
 
         private static void RegisterEndpointOptions(this IEnumerable<IManagementOptions> mgmtOptions, IConfiguration configuration, IEndpointOptions options)
         {
-            if (mgmtOptions.Count() < 1)
+            if (!mgmtOptions.Any())
             {
                 _mgmtOptions.Add(new CloudFoundryManagementOptions(configuration));
                 _mgmtOptions.Add(new ActuatorManagementOptions(configuration));

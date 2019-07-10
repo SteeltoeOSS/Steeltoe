@@ -140,6 +140,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public void MarkRequestBatched()
         {
+            // for future use
         }
 
         public void MarkResponseFromCache()
@@ -154,6 +155,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public void MarkShards(int numShards)
         {
+            // for future use
         }
     }
 }

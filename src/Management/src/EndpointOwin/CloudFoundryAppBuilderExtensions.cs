@@ -105,7 +105,9 @@ namespace Steeltoe.Management.EndpointOwin
             app.UseCloudFoundryActuators(configuration, healthContributors, apiExplorer, loggerProvider, loggerFactory, MediaTypeVersion.V1, ActuatorContext.CloudFoundry);
         }
 
+#pragma warning disable S107 // Methods should not have too many parameters
         public static void UseCloudFoundryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory, MediaTypeVersion version, ActuatorContext context)
+#pragma warning restore S107 // Methods should not have too many parameters
         {
             app.UseDiagnosticSourceMiddleware(loggerFactory);
             if (context != ActuatorContext.Actuator)

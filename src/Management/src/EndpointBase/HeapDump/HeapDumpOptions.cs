@@ -17,7 +17,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
-    [Obsolete]
+    [Obsolete("Use HeapdumpEndpointOptions instead.")]
     public class HeapDumpOptions : AbstractOptions, IHeapDumpOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:heapdump";

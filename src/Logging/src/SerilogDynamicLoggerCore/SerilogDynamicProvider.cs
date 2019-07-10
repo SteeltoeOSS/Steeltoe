@@ -36,6 +36,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         private ConcurrentDictionary<string, ILogger> _loggers = new ConcurrentDictionary<string, ILogger>();
         private ConcurrentDictionary<string, LoggingLevelSwitch> _loggerSwitches = new ConcurrentDictionary<string, LoggingLevelSwitch>();
 
+        private bool disposed = false;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SerilogDynamicProvider"/> class.
         /// Any Serilog settings can be passed in the IConfiguration as needed.
@@ -111,13 +113,6 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             return _loggers.GetOrAdd(categoryName, factory.CreateLogger(categoryName));
         }
 
-        public void Dispose()
-        {
-            _globalLogger.Dispose();
-            _loggerSwitches = null;
-            _loggers = null;
-        }
-
         public ICollection<ILoggerConfiguration> GetLoggerConfigurations()
         {
             var results = new Dictionary<string, ILoggerConfiguration>();
@@ -137,12 +132,9 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                         LogLevel? configured = GetConfiguredLevel(name);
                         LogLevel effective = GetEffectiveLevel(logger.Key);
                         var config = new LoggerConfiguration(name, configured, effective);
-                        if (results.ContainsKey(name))
+                        if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
-                            if (!results[name].Equals(config))
-                            {
-                                throw new InvalidProgramException("Shouldn't happen");
-                            }
+                            throw new InvalidProgramException("Shouldn't happen");
                         }
 
                         results[name] = config;
@@ -164,6 +156,33 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                     kvp.Value.MinimumLevel = ToSerilogLevel(currentLevel);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Cleanup
+                    _globalLogger.Dispose();
+                    _loggerSwitches = null;
+                    _loggers = null;
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~SerilogDynamicProvider()
+        {
+            Dispose(false);
         }
 
         private LogLevel? GetConfiguredLevel(string name)
@@ -189,8 +208,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
         private LogLevel GetEffectiveLevel(string name)
         {
-            LoggingLevelSwitch levelSwitch;
-            _loggerSwitches.TryGetValue(name, out levelSwitch);
+            _loggerSwitches.TryGetValue(name, out LoggingLevelSwitch levelSwitch);
             return (LogLevel)levelSwitch.MinimumLevel;
         }
 

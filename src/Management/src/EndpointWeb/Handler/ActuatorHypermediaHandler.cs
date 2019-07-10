@@ -23,16 +23,16 @@ using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class ActuatorHypermediaHandler : ActuatorHandler<ActuatorEndpoint, Links, string>
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         public ActuatorHypermediaHandler(ActuatorEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorHypermediaHandler> logger = null)
            : base(endpoint, securityServices, mgmtOptions?.OfType<ActuatorManagementOptions>(), null, true, logger)
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public ActuatorHypermediaHandler(ActuatorEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<ActuatorHypermediaHandler> logger = null)
           : base(endpoint, securityServices, null, true, logger)
         {

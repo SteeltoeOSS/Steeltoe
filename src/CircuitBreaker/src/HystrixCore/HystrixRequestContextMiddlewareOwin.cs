@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             var hystrix = HystrixRequestContext.InitializeContext();
 
-            await _next(environment);
+            await _next(environment).ConfigureAwait(false);
 
             hystrix.Dispose();
         }

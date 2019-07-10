@@ -13,13 +13,29 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
+    [Serializable]
     public class CredHubException : Exception
     {
+        public CredHubException()
+        {
+        }
+
         public CredHubException(string message)
             : base(message)
+        {
+        }
+
+        public CredHubException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        protected CredHubException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

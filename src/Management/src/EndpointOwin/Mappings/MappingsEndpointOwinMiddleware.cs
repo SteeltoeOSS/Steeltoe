@@ -39,7 +39,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
             _apiExplorer = apiExplorer;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MappingsEndpointOwinMiddleware(OwinMiddleware next, IMappingsOptions options, IApiExplorer apiExplorer, ILogger logger = null)
             : base(next, logger: logger)
         {
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
         {
             if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
@@ -60,7 +60,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
                 var serialInfo = Serialize(result);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
-                await context.Response.WriteAsync(Serialize(result));
+                await context.Response.WriteAsync(Serialize(result)).ConfigureAwait(false);
             }
         }
 
@@ -163,57 +163,6 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
             if (!string.IsNullOrEmpty(desc.HttpMethod.Method))
             {
                 return new List<string>() { desc.HttpMethod.Method };
-            }
-
-            return null;
-        }
-
-        private IList<string> GetHttpMethods(object[] attributesOnActionMethod)
-        {
-            List<string> results = new List<string>();
-            foreach (var attr in attributesOnActionMethod)
-            {
-                Type attrType = attr.GetType();
-                string method = GetHttpMethodForType(attrType);
-                if (method != null)
-                {
-                    results.Add(method);
-                }
-            }
-
-            if (results.Count > 0)
-            {
-                return results;
-            }
-
-            return null;
-        }
-
-        private string GetHttpMethodForType(Type type)
-        {
-            if (type == typeof(HttpDeleteAttribute))
-            {
-                return "DELETE";
-            }
-            else if (type == typeof(HttpGetAttribute))
-            {
-                return "GET";
-            }
-            else if (type == typeof(HttpHeadAttribute))
-            {
-                return "HEAD";
-            }
-            else if (type == typeof(HttpOptionsAttribute))
-            {
-                return "OPTIONS";
-            }
-            else if (type == typeof(HttpPostAttribute))
-            {
-                return "POST";
-            }
-            else if (type == typeof(HttpPutAttribute))
-            {
-                return "PUT";
             }
 
             return null;

@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger<LoggersEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
@@ -43,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
         {
             if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
@@ -54,7 +54,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     var endpointResponse = _endpoint.Invoke(null);
                     _logger?.LogTrace("Returning: {EndpointResponse}", endpointResponse);
                     context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
-                    await context.Response.WriteAsync(Serialize(endpointResponse));
+                    await context.Response.WriteAsync(Serialize(endpointResponse)).ConfigureAwait(false);
                 }
                 else
                 {
@@ -63,30 +63,27 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     foreach (var path in GetPaths())
                     {
                         PathString epPath = new PathString(path);
-                        if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining))
+                        if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
                         {
-                            if (remaining.HasValue)
+                            string loggerName = remaining.Value.TrimStart('/');
+
+                            var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
+
+                            change.TryGetValue("configuredLevel", out string level);
+
+                            _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
+                            if (!string.IsNullOrEmpty(loggerName))
                             {
-                                string loggerName = remaining.Value.TrimStart('/');
-
-                                var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
-
-                                change.TryGetValue("configuredLevel", out string level);
-
-                                _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
-                                if (!string.IsNullOrEmpty(loggerName))
-                                {
-                                    var changeReq = new LoggersChangeRequest(loggerName, level);
-                                    _endpoint.Invoke(changeReq);
-                                    context.Response.StatusCode = (int)HttpStatusCode.OK;
-                                    return;
-                                }
+                                var changeReq = new LoggersChangeRequest(loggerName, level);
+                                _endpoint.Invoke(changeReq);
+                                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                return;
                             }
                         }
-
-                        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return;
                     }
+
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return;
                 }
             }
         }

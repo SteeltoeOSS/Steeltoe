@@ -19,11 +19,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
     public class HystrixCommandConfiguration
     {
         private readonly IHystrixCommandKey commandKey;
-        private readonly IHystrixThreadPoolKey threadPoolKey;
-        private readonly IHystrixCommandGroupKey groupKey;
-        private readonly HystrixCommandExecutionConfig executionConfig;
-        private readonly HystrixCommandCircuitBreakerConfig circuitBreakerConfig;
-        private readonly HystrixCommandMetricsConfig metricsConfig;
 
         public HystrixCommandConfiguration(
             IHystrixCommandKey commandKey,
@@ -34,11 +29,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             HystrixCommandMetricsConfig metricsConfig)
         {
             this.commandKey = commandKey;
-            this.threadPoolKey = threadPoolKey;
-            this.groupKey = groupKey;
-            this.executionConfig = executionConfig;
-            this.circuitBreakerConfig = circuitBreakerConfig;
-            this.metricsConfig = metricsConfig;
+            ThreadPoolKey = threadPoolKey;
+            GroupKey = groupKey;
+            ExecutionConfig = executionConfig;
+            CircuitBreakerConfig = circuitBreakerConfig;
+            MetricsConfig = metricsConfig;
         }
 
         public static HystrixCommandConfiguration Sample(
@@ -79,40 +74,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
                     commandKey, threadPoolKey, groupKey, executionConfig, circuitBreakerConfig, metricsConfig);
         }
 
-        public IHystrixThreadPoolKey ThreadPoolKey
-        {
-            get { return threadPoolKey; }
-        }
+        public IHystrixThreadPoolKey ThreadPoolKey { get; }
 
-        public IHystrixCommandGroupKey GroupKey
-        {
-            get { return groupKey; }
-        }
+        public IHystrixCommandGroupKey GroupKey { get; }
 
-        public HystrixCommandExecutionConfig ExecutionConfig
-        {
-            get { return executionConfig; }
-        }
+        public HystrixCommandExecutionConfig ExecutionConfig { get; }
 
-        public HystrixCommandCircuitBreakerConfig CircuitBreakerConfig
-        {
-            get { return circuitBreakerConfig; }
-        }
+        public HystrixCommandCircuitBreakerConfig CircuitBreakerConfig { get; }
 
-        public HystrixCommandMetricsConfig MetricsConfig
-        {
-            get { return metricsConfig; }
-        }
+        public HystrixCommandMetricsConfig MetricsConfig { get; }
 
         public class HystrixCommandCircuitBreakerConfig
         {
-            private readonly bool enabled;
-            private readonly int errorThresholdPercentage;
-            private readonly bool forceClosed;
-            private readonly bool forceOpen;
-            private readonly int requestVolumeThreshold;
-            private readonly int sleepWindowInMilliseconds;
-
             public HystrixCommandCircuitBreakerConfig(
                 bool enabled,
                 int errorThresholdPercentage,
@@ -121,58 +94,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
                 int requestVolumeThreshold,
                 int sleepWindowInMilliseconds)
             {
-                this.enabled = enabled;
-                this.errorThresholdPercentage = errorThresholdPercentage;
-                this.forceClosed = forceClosed;
-                this.forceOpen = forceOpen;
-                this.requestVolumeThreshold = requestVolumeThreshold;
-                this.sleepWindowInMilliseconds = sleepWindowInMilliseconds;
+                IsEnabled = enabled;
+                ErrorThresholdPercentage = errorThresholdPercentage;
+                IsForceClosed = forceClosed;
+                IsForceOpen = forceOpen;
+                RequestVolumeThreshold = requestVolumeThreshold;
+                SleepWindowInMilliseconds = sleepWindowInMilliseconds;
             }
 
-            public bool IsEnabled
-            {
-                get { return enabled; }
-            }
+            public bool IsEnabled { get; }
 
-            public int ErrorThresholdPercentage
-            {
-                get { return errorThresholdPercentage; }
-            }
+            public int ErrorThresholdPercentage { get; }
 
-            public bool IsForceClosed
-            {
-                get { return forceClosed; }
-            }
+            public bool IsForceClosed { get; }
 
-            public bool IsForceOpen
-            {
-                get { return forceOpen; }
-            }
+            public bool IsForceOpen { get; }
 
-            public int RequestVolumeThreshold
-            {
-                get { return requestVolumeThreshold; }
-            }
+            public int RequestVolumeThreshold { get; }
 
-            public int SleepWindowInMilliseconds
-            {
-                get { return sleepWindowInMilliseconds; }
-            }
+            public int SleepWindowInMilliseconds { get; }
         }
 
         public class HystrixCommandExecutionConfig
         {
-            private readonly int semaphoreMaxConcurrentRequests;
-            private readonly ExecutionIsolationStrategy isolationStrategy;
-            private readonly bool threadInterruptOnTimeout;
-            private readonly string threadPoolKeyOverride;
-            private readonly bool timeoutEnabled;
-            private readonly int timeoutInMilliseconds;
-            private readonly bool fallbackEnabled;
-            private readonly int fallbackMaxConcurrentRequest;
-            private readonly bool requestCacheEnabled;
-            private readonly bool requestLogEnabled;
-
             public HystrixCommandExecutionConfig(
                 int semaphoreMaxConcurrentRequests,
                 ExecutionIsolationStrategy isolationStrategy,
@@ -185,78 +129,41 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
                 bool requestCacheEnabled,
                 bool requestLogEnabled)
             {
-                this.semaphoreMaxConcurrentRequests = semaphoreMaxConcurrentRequests;
-                this.isolationStrategy = isolationStrategy;
-                this.threadInterruptOnTimeout = threadInterruptOnTimeout;
-                this.threadPoolKeyOverride = threadPoolKeyOverride;
-                this.timeoutEnabled = timeoutEnabled;
-                this.timeoutInMilliseconds = timeoutInMilliseconds;
-                this.fallbackEnabled = fallbackEnabled;
-                this.fallbackMaxConcurrentRequest = fallbackMaxConcurrentRequests;
-                this.requestCacheEnabled = requestCacheEnabled;
-                this.requestLogEnabled = requestLogEnabled;
+                SemaphoreMaxConcurrentRequests = semaphoreMaxConcurrentRequests;
+                IsolationStrategy = isolationStrategy;
+                IsThreadInterruptOnTimeout = threadInterruptOnTimeout;
+                ThreadPoolKeyOverride = threadPoolKeyOverride;
+                IsTimeoutEnabled = timeoutEnabled;
+                TimeoutInMilliseconds = timeoutInMilliseconds;
+                IsFallbackEnabled = fallbackEnabled;
+                FallbackMaxConcurrentRequest = fallbackMaxConcurrentRequests;
+                IsRequestCacheEnabled = requestCacheEnabled;
+                IsRequestLogEnabled = requestLogEnabled;
             }
 
-            public int SemaphoreMaxConcurrentRequests
-            {
-                get { return semaphoreMaxConcurrentRequests; }
-            }
+            public int SemaphoreMaxConcurrentRequests { get; }
 
-            public ExecutionIsolationStrategy IsolationStrategy
-            {
-                get { return isolationStrategy; }
-            }
+            public ExecutionIsolationStrategy IsolationStrategy { get; }
 
-            public bool IsThreadInterruptOnTimeout
-            {
-                get { return threadInterruptOnTimeout; }
-            }
+            public bool IsThreadInterruptOnTimeout { get; }
 
-            public string ThreadPoolKeyOverride
-            {
-                get { return threadPoolKeyOverride; }
-            }
+            public string ThreadPoolKeyOverride { get; }
 
-            public bool IsTimeoutEnabled
-            {
-                get { return timeoutEnabled; }
-            }
+            public bool IsTimeoutEnabled { get; }
 
-            public int TimeoutInMilliseconds
-            {
-                get { return timeoutInMilliseconds; }
-            }
+            public int TimeoutInMilliseconds { get; }
 
-            public bool IsFallbackEnabled
-            {
-                get { return fallbackEnabled; }
-            }
+            public bool IsFallbackEnabled { get; }
 
-            public int FallbackMaxConcurrentRequest
-            {
-                get { return fallbackMaxConcurrentRequest; }
-            }
+            public int FallbackMaxConcurrentRequest { get; }
 
-            public bool IsRequestCacheEnabled
-            {
-                get { return requestCacheEnabled; }
-            }
+            public bool IsRequestCacheEnabled { get; }
 
-            public bool IsRequestLogEnabled
-            {
-                get { return requestLogEnabled; }
-            }
+            public bool IsRequestLogEnabled { get; }
         }
 
         public class HystrixCommandMetricsConfig
         {
-            private readonly int healthIntervalInMilliseconds;
-            private readonly bool rollingPercentileEnabled;
-            private readonly int rollingPercentileNumberOfBuckets;
-            private readonly int rollingPercentileBucketSizeInMilliseconds;
-            private readonly int rollingCounterNumberOfBuckets;
-            private readonly int rollingCounterBucketSizeInMilliseconds;
-
             public HystrixCommandMetricsConfig(
                 int healthIntervalInMilliseconds,
                 bool rollingPercentileEnabled,
@@ -265,43 +172,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
                 int rollingCounterNumberOfBuckets,
                 int rollingCounterBucketSizeInMilliseconds)
             {
-                this.healthIntervalInMilliseconds = healthIntervalInMilliseconds;
-                this.rollingPercentileEnabled = rollingPercentileEnabled;
-                this.rollingPercentileNumberOfBuckets = rollingPercentileNumberOfBuckets;
-                this.rollingPercentileBucketSizeInMilliseconds = rollingPercentileBucketSizeInMilliseconds;
-                this.rollingCounterNumberOfBuckets = rollingCounterNumberOfBuckets;
-                this.rollingCounterBucketSizeInMilliseconds = rollingCounterBucketSizeInMilliseconds;
+                HealthIntervalInMilliseconds = healthIntervalInMilliseconds;
+                IsRollingPercentileEnabled = rollingPercentileEnabled;
+                RollingPercentileNumberOfBuckets = rollingPercentileNumberOfBuckets;
+                RollingPercentileBucketSizeInMilliseconds = rollingPercentileBucketSizeInMilliseconds;
+                RollingCounterNumberOfBuckets = rollingCounterNumberOfBuckets;
+                RollingCounterBucketSizeInMilliseconds = rollingCounterBucketSizeInMilliseconds;
             }
 
-            public int HealthIntervalInMilliseconds
-            {
-                get { return healthIntervalInMilliseconds; }
-            }
+            public int HealthIntervalInMilliseconds { get; }
 
-            public bool IsRollingPercentileEnabled
-            {
-                get { return rollingPercentileEnabled; }
-            }
+            public bool IsRollingPercentileEnabled { get; }
 
-            public int RollingPercentileNumberOfBuckets
-            {
-                get { return rollingPercentileNumberOfBuckets; }
-            }
+            public int RollingPercentileNumberOfBuckets { get; }
 
-            public int RollingPercentileBucketSizeInMilliseconds
-            {
-                get { return rollingPercentileBucketSizeInMilliseconds; }
-            }
+            public int RollingPercentileBucketSizeInMilliseconds { get; }
 
-            public int RollingCounterNumberOfBuckets
-            {
-                get { return rollingCounterNumberOfBuckets; }
-            }
+            public int RollingCounterNumberOfBuckets { get; }
 
-            public int RollingCounterBucketSizeInMilliseconds
-            {
-                get { return rollingCounterBucketSizeInMilliseconds; }
-            }
+            public int RollingCounterBucketSizeInMilliseconds { get; }
         }
     }
 }

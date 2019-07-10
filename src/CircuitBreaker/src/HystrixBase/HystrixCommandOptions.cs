@@ -176,7 +176,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public virtual bool RequestLogEnabled { get; set; }
 
-        protected virtual ExecutionIsolationStrategy GetIsolationStrategy(IHystrixCommandKey key)
+        public virtual IHystrixThreadPoolOptions ThreadPoolOptions { get; set; }
+
+        private ExecutionIsolationStrategy GetIsolationStrategy(IHystrixCommandKey key)
         {
             var isolation = GetString(HYSTRIX_COMMAND_PREFIX, key.Name, "execution.isolation.strategy", Default_IsolationStrategy.ToString(), defaults?.ExecutionIsolationStrategy.ToString());
             if (ExecutionIsolationStrategy.THREAD.ToString().Equals(isolation, StringComparison.OrdinalIgnoreCase))
@@ -192,14 +194,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             throw new ArgumentOutOfRangeException("execution.isolation.strategy");
         }
 
-        protected virtual string GetThreadPoolKeyOverride(string prefix, string key, string property, string globalDefault, string instanceDefaultFromCode)
+        private string GetThreadPoolKeyOverride(string prefix, string key, string property, string globalDefault, string instanceDefaultFromCode)
         {
             string result = globalDefault;
             result = instanceDefaultFromCode ?? result; // instance default from code
             result = (_dynamic != null) ? _dynamic.GetString(prefix + ":" + key + ":" + property, result) : result; // dynamic instance value
             return result;
         }
-
-        public virtual IHystrixThreadPoolOptions ThreadPoolOptions { get; set; }
     }
 }

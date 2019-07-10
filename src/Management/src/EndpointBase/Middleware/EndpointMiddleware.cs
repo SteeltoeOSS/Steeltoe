@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
         protected bool _exactRequestPathMatching;
         protected IList<IManagementOptions> _mgmtOptions;
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public EndpointMiddleware(IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
         {
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
             _logger = logger;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public EndpointMiddleware(IEndpoint<TResult> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : this(allowedMethods, exactRequestPathMatching, logger)
         {
@@ -143,7 +143,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
             }
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(allowedMethods, exactRequestPathMatching, logger)
         {

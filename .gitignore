@@ -200,3 +200,4 @@ project.lock.json
 .vscode
 .idea
 .DS_Store
+.sonarqube/

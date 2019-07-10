@@ -18,7 +18,7 @@ using System.Collections.Generic;
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     // TODO: Move this to the Hypermedia namespace in 3.0
-    [Obsolete]
+    [Obsolete("This will move to Hypermedia namespace")]
     public class Links
     {
 #pragma warning disable SA1307 // Accessible fields must begin with upper-case letter

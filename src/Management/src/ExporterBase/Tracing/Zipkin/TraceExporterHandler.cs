@@ -155,7 +155,10 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
             return ZipkinSpanKind.CLIENT;
         }
 
+        // fire and forget
+#pragma warning disable S3168 // "async" methods should not return "void"
         private async void SendSpansAsync(List<ZipkinSpan> spans)
+#pragma warning restore S3168 // "async" methods should not return "void"
         {
             try
             {
@@ -164,7 +167,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 var request = GetHttpRequestMessage(HttpMethod.Post, requestUri);
                 request.Content = GetRequestContent(spans);
 
-                await DoPost(client, request);
+                await DoPost(client, request).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -180,7 +183,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 out RemoteCertificateValidationCallback prevValidator);
             try
             {
-                using (HttpResponseMessage response = await client.SendAsync(request))
+                using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                 {
                     _logger?.LogDebug("DoPost {uri}, status: {status}", request.RequestUri, response.StatusCode);
                     if (response.StatusCode != HttpStatusCode.OK &&

@@ -53,7 +53,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 return new List<SecurityKey> { resolved };
             }
 
-            JsonWebKeySet keyset = Task.Run(() => FetchKeySet()).GetAwaiter().GetResult();
+            JsonWebKeySet keyset = FetchKeySet().GetAwaiter().GetResult();
             if (keyset != null)
             {
                 foreach (JsonWebKey key in keyset.Keys)
@@ -97,7 +97,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpResponseMessage response = null;
             try
             {
-                response = await client.SendAsync(requestMessage);
+                response = await client.SendAsync(requestMessage).ConfigureAwait(false);
             }
             finally
             {
@@ -106,7 +106,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadAsStringAsync();
+                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return GetJsonWebKeySet(result);
             }
 

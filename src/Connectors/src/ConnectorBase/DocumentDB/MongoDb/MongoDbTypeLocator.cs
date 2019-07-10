@@ -24,24 +24,24 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
     public static class MongoDbTypeLocator
     {
         /// <summary>
-        /// List of supported MongoDB assemblies
+        /// Gets a list of supported MongoDB assemblies
         /// </summary>
-        public static string[] Assemblies = new string[] { "MongoDB.Driver" };
+        public static string[] Assemblies { get; internal set; } = new string[] { "MongoDB.Driver" };
 
         /// <summary>
-        /// List of supported MongoDB client interface types
+        /// Gets a list of supported MongoDB client interface types
         /// </summary>
-        public static string[] ConnectionInterfaceTypeNames = new string[] { "MongoDB.Driver.IMongoClient" };
+        public static string[] ConnectionInterfaceTypeNames { get; internal set; } = new string[] { "MongoDB.Driver.IMongoClient" };
 
         /// <summary>
-        /// List of supported MongoDB client types
+        /// Gets a list of supported MongoDB client types
         /// </summary>
-        public static string[] ConnectionTypeNames = new string[] { "MongoDB.Driver.MongoClient" };
+        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "MongoDB.Driver.MongoClient" };
 
         /// <summary>
-        /// Class for describing MongoDB connection information
+        /// Gets the class used for describing MongoDB connection information
         /// </summary>
-        public static string[] MongoConnectionInfo = new string[] { "MongoDB.Driver.MongoUrl" };
+        public static string[] MongoConnectionInfo { get; internal set; } = new string[] { "MongoDB.Driver.MongoUrl" };
 
         /// <summary>
         /// Gets IMongoClient from MongoDB Library

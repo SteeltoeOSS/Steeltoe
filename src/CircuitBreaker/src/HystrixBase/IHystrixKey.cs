@@ -21,10 +21,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         string Name { get; }
     }
 
-    public abstract class HystrixKeyDefault<T> : IHystrixKey
+    public abstract class HystrixKeyDefault : IHystrixKey
     {
-        protected internal static readonly ConcurrentDictionary<string, T> Intern = new ConcurrentDictionary<string, T>();
-
         private readonly string name;
 
         public HystrixKeyDefault(string name)
@@ -40,11 +38,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public override string ToString()
         {
             return name;
-        }
-
-        public static int Count
-        {
-            get { return Intern.Count; }
         }
     }
 }
