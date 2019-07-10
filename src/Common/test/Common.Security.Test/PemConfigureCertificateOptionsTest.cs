@@ -23,6 +23,7 @@ namespace Steeltoe.Common.Security.Test
         // possibly related https://github.com/dotnet/corefx/issues/11046
         [Fact]
         [Trait("Category", "SkipOnLinux")]
+        [Trait("Category", "SkipOnMacOS")]
         public void AddPemFiles_ReadsFiles_CreatesCertificate()
         {
             var config = new ConfigurationBuilder()

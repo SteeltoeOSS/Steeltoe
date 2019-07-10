@@ -322,6 +322,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void TestConcurrencyStreamProperlyFiltersOutShortCircuits()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-H");

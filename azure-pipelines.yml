@@ -83,23 +83,24 @@ jobs:
       projectKey: 'SteeltoeOSS_steeltoe'
   - task: DotNetCoreCLI@2
     inputs:
+      command: 'restore'
+      feedsToUse: 'config'
+      nugetConfigPath: NuGet.config
+      projects: 'src/Steeltoe.All.sln'
+      verbosityRestore: normal
+  - task: DotNetCoreCLI@2
+    inputs:
       command: 'pack'
       feedsToUse: 'select'
-      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
-      packagesToPack: '**/*.sln'
+      arguments: '--no-restore -c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
+      packagesToPack: 'src/Steeltoe.All.sln'
       versioningScheme: 'byEnvVar'
       versionEnvVar: PackageVersion
   - task: DotNetCoreCLI@2
     inputs:
       command: test
-      projects: '**/*.Net4Test/*.csproj'
-      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
-    condition: always()
+      projects: 'src/Steeltoe.All.sln'
+      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True --filter Category!=Integration /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
   # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
   # First install the tool on the machine, then run it
   - pwsh: |
