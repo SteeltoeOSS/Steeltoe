@@ -24,7 +24,7 @@ namespace Steeltoe.Discovery.Eureka
         {
         }
 
-        protected static ApplicationInfoManager _instance = new ApplicationInfoManager();
+        protected static readonly ApplicationInfoManager _instance = new ApplicationInfoManager();
         protected ILogger _logger;
 
         private object _statusChangedLock = new object();
@@ -41,7 +41,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public virtual InstanceInfo InstanceInfo { get; protected internal set; }
 
-        public virtual event StatusChangedHandler StatusChangedEvent;
+        public event StatusChangedHandler StatusChangedEvent;
 
         public virtual InstanceStatus InstanceStatus
         {

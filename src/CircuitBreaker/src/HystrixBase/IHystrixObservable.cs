@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         IObservable<Unit> ToObservable();
     }
 
-    public interface IHystrixObservable<TResult> : IHystrixInvokable
+    public interface IHystrixObservable<out TResult> : IHystrixInvokable
     {
         IObservable<TResult> Observe();
 

@@ -17,7 +17,7 @@ using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
-    [Obsolete]
+    [Obsolete("This class is only used by obsolete code and will be removed in a future release")]
     public class JsonWebKeySetEx : JsonWebKeySet
     {
         public JsonWebKeySetEx(string json)
@@ -27,7 +27,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             if (Keys == null || Keys.Count == 0)
             {
                 JsonWebKey key = new JsonWebKey(json);
+#pragma warning disable S2589 // Boolean expressions should not be gratuitous
                 if (key != null)
+#pragma warning restore S2589 // Boolean expressions should not be gratuitous
                 {
                     Keys.Add(key);
                 }

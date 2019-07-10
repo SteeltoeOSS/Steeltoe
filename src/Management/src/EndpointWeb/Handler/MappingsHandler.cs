@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             _apiExplorer = apiExplorer;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MappingsHandler(MappingsOptions options, IEnumerable<ISecurityService> securityServices, IApiExplorer apiExplorer, ILogger<MappingsHandler> logger = null)
             : base(securityServices, null, true, logger)
         {
@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public async override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await _securityServices.IsAccessAllowed(context, _options);
+            return await _securityServices.IsAccessAllowed(context, _options).ConfigureAwait(false);
         }
 
         public override void HandleRequest(HttpContextBase context)
@@ -210,23 +210,21 @@ namespace Steeltoe.Management.Endpoint.Handler
                     else
                     {
                         var handler = route.RouteHandler;
-                        if (handler != null)
+
+                        // Ignore WebApi handler routes as the ApiExplorer already provided those mappings
+                        if (handler != null && !(handler is HttpControllerRouteHandler))
                         {
-                            // Ignore WebApi handler routes as the ApiExplorer already provided those mappings
-                            if (!(handler is HttpControllerRouteHandler))
+                            var handlerType = handler.GetType().ToString();
+                            desc.TryGetValue(handlerType, out IList<MappingDescription> mapList);
+
+                            if (mapList == null)
                             {
-                                var handlerType = handler.GetType().ToString();
-                                desc.TryGetValue(handlerType, out IList<MappingDescription> mapList);
-
-                                if (mapList == null)
-                                {
-                                    mapList = new List<MappingDescription>();
-                                    desc.Add(handlerType, mapList);
-                                }
-
-                                var mapDesc = new MappingDescription("IHttpHandler.ProcessRequest(HttpContext context)", details);
-                                mapList.Add(mapDesc);
+                                mapList = new List<MappingDescription>();
+                                desc.Add(handlerType, mapList);
                             }
+
+                            var mapDesc = new MappingDescription("IHttpHandler.ProcessRequest(HttpContext context)", details);
+                            mapList.Add(mapDesc);
                         }
                     }
                 }

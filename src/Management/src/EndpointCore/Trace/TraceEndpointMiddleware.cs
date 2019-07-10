@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, ILogger<TraceEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {
@@ -43,11 +43,11 @@ namespace Steeltoe.Management.Endpoint.Trace
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleTraceRequestAsync(context);
+                await HandleTraceRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
     }
 }

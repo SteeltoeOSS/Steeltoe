@@ -19,7 +19,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 {
     public class RedisConnectionInfo : IConnectionInfo
     {
-        public Connection Get(IConfiguration configuration, string serviceName = null)
+        public Connection Get(IConfiguration configuration, string serviceName)
         {
             var info = serviceName == null
                 ? configuration.GetSingletonServiceInfo<RedisServiceInfo>()

@@ -25,9 +25,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         private const string Default_Host = "localhost";
         private const int Default_Port = 6379;
         private const string RedisClientSectionPrefix = "redis:client";
-        private static char[] comma = new char[] { ',' };
-
-        private static string default_EndPoints = Default_Host + ":" + Default_Port;
         private bool cloudFoundryConfigFound = false;
 
         public RedisCacheConnectorOptions()

@@ -14,6 +14,7 @@
 
 using System;
 using System.Net;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Steeltoe.Common.Net.Test
@@ -70,7 +71,7 @@ namespace Steeltoe.Common.Net.Test
             var fakeMPR = new FakeMPR(false);
 
             // act
-            var exception = Assert.Throws<Exception>(() => new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMPR));
+            var exception = Assert.Throws<ExternalException>(() => new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMPR));
 
             // assert
             Assert.Equal("Error connecting to remote share - Code: 1200, Error: Bad Device", exception.Message);

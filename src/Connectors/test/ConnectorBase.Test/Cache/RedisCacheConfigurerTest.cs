@@ -21,6 +21,7 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
+    [Collection("Redis")]
     public class RedisCacheConfigurerTest
     {
         // [Fact]

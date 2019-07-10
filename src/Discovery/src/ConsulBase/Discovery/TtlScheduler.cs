@@ -102,7 +102,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
                     checkId = "service:" + checkId;
                 }
 
-                var timer = new Timer(async s => { await PassTtl(s.ToString()); }, checkId, TimeSpan.Zero, interval);
+                var timer = new Timer(async s => { await PassTtl(s.ToString()).ConfigureAwait(false); }, checkId, TimeSpan.Zero, interval);
                 _serviceHeartbeats.AddOrUpdate(instanceId, timer, (key, oldTimer) =>
                 {
                     oldTimer.Dispose();
@@ -127,15 +127,37 @@ namespace Steeltoe.Discovery.Consul.Discovery
             }
         }
 
+        private bool disposed = false;
+
         /// <summary>
         /// Remove all heart beats from scheduler
         /// </summary>
         public void Dispose()
         {
-            foreach (var instance in _serviceHeartbeats.Keys)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
             {
-                Remove(instance);
+                if (disposing)
+                {
+                    // Cleanup
+                    foreach (var instance in _serviceHeartbeats.Keys)
+                    {
+                        Remove(instance);
+                    }
+                }
+
+                disposed = true;
             }
+        }
+
+        ~TtlScheduler()
+        {
+            Dispose(false);
         }
 
         private Task PassTtl(string serviceId)

@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, ILogger<MetricsEndpointMiddleware> logger = null)
             : base(endpoint, null, false, logger)
         {
@@ -44,11 +44,11 @@ namespace Steeltoe.Management.Endpoint.Metrics
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleMetricsRequestAsync(context);
+                await HandleMetricsRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -76,7 +76,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 if (serialInfo != null)
                 {
                     response.StatusCode = (int)HttpStatusCode.OK;
-                    await context.Response.WriteAsync(serialInfo);
+                    await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
                 }
                 else
                 {
@@ -90,7 +90,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 _logger?.LogDebug("Returning: {0}", serialInfo);
                 response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
                 response.StatusCode = (int)HttpStatusCode.OK;
-                await context.Response.WriteAsync(serialInfo);
+                await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
             }
         }
 
@@ -129,12 +129,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     foreach (var kvp in q.Value)
                     {
                         var pair = ParseTag(kvp);
-                        if (pair != null)
+                        if (pair != null && !results.Contains(pair.Value))
                         {
-                            if (!results.Contains(pair.Value))
-                            {
-                                results.Add(pair.Value);
-                            }
+                            results.Add(pair.Value);
                         }
                     }
                 }
@@ -157,12 +154,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
         private string GetMetricName(HttpRequest request, string path)
         {
             PathString epPath = new PathString(path);
-            if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+            if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
             {
-                if (remaining.HasValue)
-                {
-                    return remaining.Value.TrimStart('/');
-                }
+                return remaining.Value.TrimStart('/');
             }
 
             return null;

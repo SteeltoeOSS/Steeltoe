@@ -15,14 +15,13 @@
 using Consul;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
 namespace Steeltoe.Consul.Util
 {
-    public class ConsulServerUtils
+    public static class ConsulServerUtils
     {
         public static string FindHost(ServiceEntry healthService)
         {

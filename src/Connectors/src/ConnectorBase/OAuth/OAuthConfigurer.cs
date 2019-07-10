@@ -65,8 +65,6 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
                     options.Scope.Add(scope);
                 }
             }
-
-            return;
         }
     }
 }

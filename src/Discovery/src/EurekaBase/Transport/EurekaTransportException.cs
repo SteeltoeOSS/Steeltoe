@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
+    [Serializable]
     public class EurekaTransportException : Exception
     {
         public EurekaTransportException(string message)
@@ -25,6 +27,15 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         public EurekaTransportException(string message, Exception cause)
             : base(message, cause)
+        {
+        }
+
+        public EurekaTransportException()
+        {
+        }
+
+        protected EurekaTransportException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

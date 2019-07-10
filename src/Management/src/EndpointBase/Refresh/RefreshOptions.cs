@@ -18,7 +18,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Refresh
 {
-    [Obsolete]
+    [Obsolete("Use RefreshEndpointOptions instead")]
     public class RefreshOptions : AbstractOptions, IRefreshOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:refresh";

@@ -43,17 +43,13 @@ namespace Steeltoe.Management.Endpoint.Handler
             _mgmtOptions = mgmtOptions;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public ActuatorHandler(IEnumerable<ISecurityService> securityServices, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
         {
             _logger = logger;
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
             _exactRequestPathMatching = exactRequestPathMatching;
             _securityServices = securityServices;
-        }
-
-        public virtual void Dispose()
-        {
         }
 
         public virtual void HandleRequest(HttpContextBase context)
@@ -109,13 +105,13 @@ namespace Steeltoe.Management.Endpoint.Handler
             _endpoint = endpoint ?? throw new NullReferenceException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public ActuatorHandler(IEnumerable<ISecurityService> securityServices, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(securityServices, allowedMethods, exactRequestPathMatching, logger)
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public ActuatorHandler(IEndpoint<TResult> endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(securityServices, allowedMethods, exactRequestPathMatching, logger)
         {
@@ -135,14 +131,16 @@ namespace Steeltoe.Management.Endpoint.Handler
             return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
-        public async override Task<bool> IsAccessAllowed(HttpContextBase context)
+        public override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await _securityServices?.IsAccessAllowed(context, _endpoint.Options);
+            return _securityServices?.IsAccessAllowed(context, _endpoint.Options);
         }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
+#pragma warning disable S2436 // Types and methods should not have too many generic parameters
     public class ActuatorHandler<TEndpoint, TResult, TRequest> : ActuatorHandler<TEndpoint, TResult>
+#pragma warning restore S2436 // Types and methods should not have too many generic parameters
 #pragma warning restore SA1402 // File may only contain a single class
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
@@ -153,7 +151,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             _endpoint = endpoint ?? throw new NullReferenceException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public ActuatorHandler(IEndpoint<TResult, TRequest> endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(securityServices, allowedMethods, exactRequestPathMatching, logger)
         {
@@ -173,7 +171,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public async override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await _securityServices.IsAccessAllowed(context, _endpoint.Options);
+            return await _securityServices.IsAccessAllowed(context, _endpoint.Options).ConfigureAwait(false);
         }
     }
 }

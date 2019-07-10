@@ -1,0 +1,15 @@
+{
+  "ServerUri": "https://sonarcloud.io/",
+  "Organization": {
+    "Key": "steeltoeoss",
+    "Name": "Steeltoe OSS"
+  },
+  "ProjectKey": "SteeltoeOSS_steeltoe",
+  "ProjectName": "steeltoe",
+  "Profiles": {
+    "CSharp": {
+      "ProfileKey": "AWsuSTU1lD7SmXz2FIZ5",
+      "ProfileTimestamp": "2019-05-07T10:01:40-05:00"
+    }
+  }
+}

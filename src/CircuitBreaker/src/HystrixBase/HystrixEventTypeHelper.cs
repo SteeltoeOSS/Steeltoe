@@ -20,45 +20,39 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public static class HystrixEventTypeHelper
     {
-        public static readonly IList<HystrixEventType> EXCEPTION_PRODUCING_EVENT_TYPES = new List<HystrixEventType>();
-
-        public static readonly IList<HystrixEventType> TERMINAL_EVENT_TYPES = new List<HystrixEventType>();
-
-        private static readonly IList<HystrixEventType> ValueList = new List<HystrixEventType>();
-
         static HystrixEventTypeHelper()
         {
-            EXCEPTION_PRODUCING_EVENT_TYPES.Add(HystrixEventType.BAD_REQUEST);
-            EXCEPTION_PRODUCING_EVENT_TYPES.Add(HystrixEventType.FALLBACK_FAILURE);
-            EXCEPTION_PRODUCING_EVENT_TYPES.Add(HystrixEventType.FALLBACK_MISSING);
-            EXCEPTION_PRODUCING_EVENT_TYPES.Add(HystrixEventType.FALLBACK_REJECTION);
+            ExceptionProducingEventTypes.Add(HystrixEventType.BAD_REQUEST);
+            ExceptionProducingEventTypes.Add(HystrixEventType.FALLBACK_FAILURE);
+            ExceptionProducingEventTypes.Add(HystrixEventType.FALLBACK_MISSING);
+            ExceptionProducingEventTypes.Add(HystrixEventType.FALLBACK_REJECTION);
 
             foreach (string evName in Enum.GetNames(typeof(HystrixEventType)))
             {
                 HystrixEventType e = (HystrixEventType)Enum.Parse(typeof(HystrixEventType), evName);
                 if (e.IsTerminal())
                 {
-                    TERMINAL_EVENT_TYPES.Add(e);
+                    TerminalEventTypes.Add(e);
                 }
             }
 
-            ValueList.Add(HystrixEventType.EMIT);
-            ValueList.Add(HystrixEventType.SUCCESS);
-            ValueList.Add(HystrixEventType.FAILURE);
-            ValueList.Add(HystrixEventType.TIMEOUT);
-            ValueList.Add(HystrixEventType.BAD_REQUEST);
-            ValueList.Add(HystrixEventType.SHORT_CIRCUITED);
-            ValueList.Add(HystrixEventType.THREAD_POOL_REJECTED);
-            ValueList.Add(HystrixEventType.SEMAPHORE_REJECTED);
-            ValueList.Add(HystrixEventType.FALLBACK_EMIT);
-            ValueList.Add(HystrixEventType.FALLBACK_SUCCESS);
-            ValueList.Add(HystrixEventType.FALLBACK_FAILURE);
-            ValueList.Add(HystrixEventType.FALLBACK_REJECTION);
-            ValueList.Add(HystrixEventType.FALLBACK_MISSING);
-            ValueList.Add(HystrixEventType.EXCEPTION_THROWN);
-            ValueList.Add(HystrixEventType.RESPONSE_FROM_CACHE);
-            ValueList.Add(HystrixEventType.CANCELLED);
-            ValueList.Add(HystrixEventType.COLLAPSED);
+            Values.Add(HystrixEventType.EMIT);
+            Values.Add(HystrixEventType.SUCCESS);
+            Values.Add(HystrixEventType.FAILURE);
+            Values.Add(HystrixEventType.TIMEOUT);
+            Values.Add(HystrixEventType.BAD_REQUEST);
+            Values.Add(HystrixEventType.SHORT_CIRCUITED);
+            Values.Add(HystrixEventType.THREAD_POOL_REJECTED);
+            Values.Add(HystrixEventType.SEMAPHORE_REJECTED);
+            Values.Add(HystrixEventType.FALLBACK_EMIT);
+            Values.Add(HystrixEventType.FALLBACK_SUCCESS);
+            Values.Add(HystrixEventType.FALLBACK_FAILURE);
+            Values.Add(HystrixEventType.FALLBACK_REJECTION);
+            Values.Add(HystrixEventType.FALLBACK_MISSING);
+            Values.Add(HystrixEventType.EXCEPTION_THROWN);
+            Values.Add(HystrixEventType.RESPONSE_FROM_CACHE);
+            Values.Add(HystrixEventType.CANCELLED);
+            Values.Add(HystrixEventType.COLLAPSED);
         }
 
         public static bool IsTerminal(this HystrixEventType evType)
@@ -145,9 +139,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
-        public static IList<HystrixEventType> Values
-        {
-            get { return ValueList; }
-        }
+        public static IList<HystrixEventType> Values { get; } = new List<HystrixEventType>();
+
+        public static IList<HystrixEventType> ExceptionProducingEventTypes { get; } = new List<HystrixEventType>();
+
+        public static IList<HystrixEventType> TerminalEventTypes { get; } = new List<HystrixEventType>();
     }
 }

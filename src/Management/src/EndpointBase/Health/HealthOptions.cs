@@ -18,7 +18,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-    [Obsolete]
+    [Obsolete("Use HealthEndpointOptions instead.")]
     public class HealthOptions : AbstractOptions, IHealthOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:health";
