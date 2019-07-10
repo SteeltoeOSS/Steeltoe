@@ -17,17 +17,17 @@ using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.GemFire
 {
-    public class GemFireTypeLocator
+    public static class GemFireTypeLocator
     {
-        public static string[] Assemblies = new string[] { "Pivotal.GemFire" };
+        public static string[] Assemblies { get; internal set; } = new string[] { "Pivotal.GemFire" };
 
-        public static string[] CacheFactoryTypeNames = new string[] { "Apache.Geode.Client.CacheFactory" };
+        public static string[] CacheFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.CacheFactory" };
 
-        public static string[] CacheTypeNames = new string[] { "Apache.Geode.Client.Cache" };
+        public static string[] CacheTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.Cache" };
 
-        public static string[] PoolFactoryTypeNames = new string[] { "Apache.Geode.Client.PoolFactory" };
+        public static string[] PoolFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.PoolFactory" };
 
-        public static string[] RegionFactoryTypeNames = new string[] { "Apache.Geode.Client.RegionFactory" };
+        public static string[] RegionFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.RegionFactory" };
 
         public static Type CacheFactory => ConnectorHelpers.FindTypeOrThrow(Assemblies, CacheFactoryTypeNames, "CacheFactory", "the Pivotal GemFire dll");
 
