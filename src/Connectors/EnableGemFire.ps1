@@ -9,11 +9,11 @@ Param(
 if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
 {
     Write-Host "Downloading PivNet client..."
-    if ($IsWindows)
+    if ($IsWindows -Or $PSVersionTable.PSVersion.Major -lt 6)
     {
         Write-Host "Running on Windows, use WebClient"
         # Download pivnet cli ... TODO: get latest instead of hardcoded version
-        (New-Object System.Net.WebClient).DownloadFile("https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.60/pivnet-windows-amd64-0.0.60", "./pivnet.exe")  
+        (New-Object System.Net.WebClient).DownloadFile("https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.60/pivnet-windows-amd64-0.0.60", "$PSScriptRoot\pivnet.exe")  
         Write-Host "Adding alias 'pivnet' for .\pivnet.exe"
         Set-Alias -Name pivnet -Value ".\pivnet.exe"
     }
@@ -28,7 +28,13 @@ if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
         wget -O pivnet https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.60/pivnet-linux-amd64-0.0.60
         chmod +x ./pivnet
         Write-Host "Adding alias 'pivnet' for ./pivnet"
-        Set-Alias -Name pivnet -Value "./pivnet"    }
+        Set-Alias -Name pivnet -Value "./pivnet"
+    }
+    else
+    {
+        Write-Host "Unknown Host! Can't continue without pivnet cli and don't know how to get it"
+        return 1
+    }
 }
 
 # login with API token (deprecated!)
@@ -71,4 +77,5 @@ if (Get-Command "7z" -ErrorAction SilentlyContinue)
 else
 {    
     Write-Host "7zip not found, manually extract Pivotal.GemFire.dll from $fileName to continue!"
+	return 1
 }
