@@ -44,7 +44,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return Value.GetHashCode();
         }
     }
 }

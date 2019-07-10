@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        [Obsolete]
+        [Obsolete("Use EndPointExtensions.IsEnabled(IEndpointOptions options, IManagementOptions mgmtOptions) instead")]
         public virtual bool IsEnabled
         {
             get
@@ -71,13 +71,13 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         public virtual bool IsSensitive
         {
             get { return false; }
         }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         public virtual bool? Sensitive
         {
             get
@@ -122,7 +122,7 @@ namespace Steeltoe.Management.Endpoint
 
         public virtual bool DefaultEnabled { get; } = true;
 
-        [Obsolete]
+        [Obsolete("Use Exposure settings instead")]
         public virtual bool DefaultSensitive { get; } = true;
     }
 }

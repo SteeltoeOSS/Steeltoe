@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
 {
-    [Obsolete]
+    [Obsolete("Use AbstractEndpointOptions instead.")]
     public abstract class AbstractOptions : IEndpointOptions
     {
         protected bool? _enabled;
@@ -94,6 +94,7 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
+        [Obsolete("Use Exposure Options instead")]
         public virtual bool? Sensitive
         {
             get

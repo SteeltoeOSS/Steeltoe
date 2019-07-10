@@ -16,7 +16,7 @@ using System;
 
 namespace Steeltoe.Consul.Util
 {
-    public class DateTimeConversions
+    public static class DateTimeConversions
     {
         public static TimeSpan ToTimeSpan(string time)
         {

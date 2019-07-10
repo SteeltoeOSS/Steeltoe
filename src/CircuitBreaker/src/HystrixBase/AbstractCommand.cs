@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
-    public abstract class AbstractCommand<TResult> : IHystrixInvokableInfo, IHystrixInvokable
+    public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixInvokableInfo, IHystrixInvokable
     {
         #region NestedTypes
         protected enum TimedOutStatus
@@ -276,9 +276,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected internal CancellationToken _usersToken;
         protected internal volatile ExecutionResult _executionResult = ExecutionResult.EMPTY; // state on shared execution
         protected internal volatile ExecutionResult _executionResultAtTimeOfCancellation;
-
-        protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _executionSemaphorePerCircuit = new ConcurrentDictionary<string, SemaphoreSlim>();
-        protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _fallbackSemaphorePerCircuit = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         protected readonly AtomicCommandState commandState = new AtomicCommandState(CommandState.NOT_STARTED);
         protected readonly AtomicThreadState threadState = new AtomicThreadState(ThreadState.NOT_USING_THREAD);
@@ -542,13 +539,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             _commandStartTimestamp = Time.CurrentTimeMillis;
 
-            if (this.CommandOptions.RequestLogEnabled)
+            if (this.CommandOptions.RequestLogEnabled && _currentRequestLog != null)
             {
                 // log this command execution regardless of what happened
-                if (_currentRequestLog != null)
-                {
-                    _currentRequestLog.AddExecutedCommand(this);
-                }
+                _currentRequestLog.AddExecutedCommand(this);
             }
         }
 
@@ -1061,13 +1055,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void TimeoutThreadAction()
         {
-            if (!Time.WaitUntil(
-            () =>
+            if (!Time.WaitUntil(() => { return isCommandTimedOut.Value == TimedOutStatus.COMPLETED; }, options.ExecutionTimeoutInMilliseconds))
             {
-                return isCommandTimedOut.Value == TimedOutStatus.COMPLETED;
-            }, options.ExecutionTimeoutInMilliseconds))
-            {
+#pragma warning disable S1066 // Collapsible "if" statements should be merged
                 if (isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.TIMED_OUT))
+#pragma warning restore S1066 // Collapsible "if" statements should be merged
                 {
                     _timeoutTcs.Cancel();
 
@@ -1473,16 +1465,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void MarkCompleted()
         {
-            if (tcs.IsCompleted)
+            if (tcs.IsCompleted && !CommandIsScalar)
             {
-                if (!CommandIsScalar)
-                {
-                    long latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
-                    _eventNotifier.MarkCommandExecution(CommandKey, options.ExecutionIsolationStrategy, (int)latency, _executionResult.OrderedList);
-                    _eventNotifier.MarkEvent(HystrixEventType.SUCCESS, commandKey);
-                    _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.SUCCESS);
-                    _circuitBreaker.MarkSuccess();
-                }
+                long latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+                _eventNotifier.MarkCommandExecution(CommandKey, options.ExecutionIsolationStrategy, (int)latency, _executionResult.OrderedList);
+                _eventNotifier.MarkEvent(HystrixEventType.SUCCESS, commandKey);
+                _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.SUCCESS);
+                _circuitBreaker.MarkSuccess();
             }
         }
 

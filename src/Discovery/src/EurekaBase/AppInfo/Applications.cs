@@ -195,12 +195,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                     switch (instance.Actiontype)
                     {
                         case ActionType.ADDED:
-                            // logger.debug("Added instance {} to the existing apps in region {}", instance.getId(), instanceRegion);
-                            existingApp.Add(instance);
-                            AddInstanceToVip(instance);
-                            break;
                         case ActionType.MODIFIED:
-                            // logger.debug("Modified instance {} to the existing apps ", instance.getId());
+                            // logger.debug("Added instance {} to the existing apps in region {}", instance.getId(), instanceRegion);
                             existingApp.Add(instance);
                             AddInstanceToVip(instance);
                             break;
@@ -238,15 +234,14 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 }
             }
 
-            string hashCode = string.Empty;
-
             IOrderedEnumerable<KeyValuePair<string, int>> query = statusMap.OrderBy(kvp => kvp.Key);
+            var hashcodeBuilder = new StringBuilder();
             foreach (var entry in query)
             {
-                hashCode = hashCode + entry.Key.ToString() + "_" + entry.Value.ToString() + "_";
+                hashcodeBuilder.Append(entry.Key.ToString() + "_" + entry.Value.ToString() + "_");
             }
 
-            return hashCode;
+            return hashcodeBuilder.ToString();
         }
 
         internal ConcurrentDictionary<string, Application> ApplicationMap

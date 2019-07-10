@@ -18,7 +18,7 @@ using System.Security.Principal;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
-    public class CloudFoundryJwt
+    public static class CloudFoundryJwt
     {
         public static void OnTokenValidatedAddClaims(ClaimsIdentity identity, JwtSecurityToken jwt)
         {

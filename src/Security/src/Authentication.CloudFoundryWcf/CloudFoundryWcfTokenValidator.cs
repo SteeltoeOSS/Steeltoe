@@ -34,7 +34,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             : base(options)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
+
+            // alwaus use the same static logger
+#pragma warning disable S3010 // Static fields should not be updated in constructors
             _logger = logger;
+#pragma warning restore S3010 // Static fields should not be updated in constructors
         }
 
         /// <summary>
@@ -80,13 +84,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 return null;
             }
 
-            SecurityToken validatedToken = null;
             ClaimsPrincipal principal = null;
             JwtSecurityToken validJwt = null;
 
             try
             {
-                principal = _handler.ValidateToken(token, Options.TokenValidationParameters, out validatedToken);
+                principal = _handler.ValidateToken(token, Options.TokenValidationParameters, out SecurityToken validatedToken);
                 validJwt = validatedToken as JwtSecurityToken;
             }
             catch (Exception ex)
@@ -100,7 +103,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 ThrowJwtException(null, "invalid_token");
             }
 
+// an exception has already been thrown if principal is null
+#pragma warning disable S2259 // Null pointers should not be dereferenced
             CloudFoundryJwt.OnTokenValidatedAddClaims((ClaimsIdentity)principal.Identity, validJwt);
+#pragma warning restore S2259 // Null pointers should not be dereferenced
 
             bool validScopes = ValidateScopes(validJwt);
             if (!validScopes)

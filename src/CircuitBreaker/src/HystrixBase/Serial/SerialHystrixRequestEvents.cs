@@ -54,22 +54,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             ExecutionResult.EventCounts eventCounts = executionSignature.Eventcounts;
             foreach (HystrixEventType eventType in HystrixEventTypeHelper.Values)
             {
-                if (!eventType.Equals(HystrixEventType.COLLAPSED))
+                if (!eventType.Equals(HystrixEventType.COLLAPSED) && eventCounts.Contains(eventType))
                 {
-                    if (eventCounts.Contains(eventType))
+                    int eventCount = eventCounts.GetCount(eventType);
+                    if (eventCount > 1)
                     {
-                        int eventCount = eventCounts.GetCount(eventType);
-                        if (eventCount > 1)
-                        {
-                            json.WriteStartObject();
-                            json.WriteStringField("name", eventType.ToString());
-                            json.WriteIntegerField("count", eventCount);
-                            json.WriteEndObject();
-                        }
-                        else
-                        {
-                            json.WriteValue(eventType.ToString());
-                        }
+                        json.WriteStartObject();
+                        json.WriteStringField("name", eventType.ToString());
+                        json.WriteIntegerField("count", eventCount);
+                        json.WriteEndObject();
+                    }
+                    else
+                    {
+                        json.WriteValue(eventType.ToString());
                     }
                 }
             }

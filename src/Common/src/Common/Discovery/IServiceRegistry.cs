@@ -20,7 +20,7 @@ namespace Steeltoe.Common.Discovery
     /// Represents a Service registry (e.g. Consul, etc.)
     /// </summary>
     /// <typeparam name="T">a type representing a service instance</typeparam>
-    public interface IServiceRegistry<T> : IDisposable
+    public interface IServiceRegistry<in T> : IDisposable
         where T : IServiceInstance
     {
         /// <summary>

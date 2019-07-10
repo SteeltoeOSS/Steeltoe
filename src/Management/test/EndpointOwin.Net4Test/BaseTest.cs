@@ -23,16 +23,16 @@ namespace Steeltoe.Management.Endpoint.Test
     {
         public BaseTest()
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            ManagementOptions._instance = null;
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
+            ManagementOptions.SetInstance(null);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public virtual void Dispose()
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            ManagementOptions._instance = null;
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
+            ManagementOptions.SetInstance(null);
+#pragma warning restore CS0618 // Type or member is obsolete
             DiagnosticsManager.Instance.Dispose();
         }
 

@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-    [Obsolete]
+    [Obsolete("Use TraceEndpointOptions instead")]
     public class TraceOptions : AbstractOptions, ITraceOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:trace";

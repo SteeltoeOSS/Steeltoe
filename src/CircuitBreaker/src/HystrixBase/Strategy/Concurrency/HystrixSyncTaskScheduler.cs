@@ -83,8 +83,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             System.Threading.ThreadPool.QueueUserWorkItem(
                 (queue) =>
             {
+#pragma warning disable S2696 // Instance members should not write to "static" fields
                 isHystrixThreadPoolThread = true;
                 workQueue = queue as ThreadTaskQueue;
+#pragma warning restore S2696 // Instance members should not write to "static" fields
                 workQueue.ThreadStartTime = Time.CurrentTimeMillis;
 
                 try
@@ -185,7 +187,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             return false;
         }
 
-        protected virtual void SetupWorkQueues(int size)
+        protected void SetupWorkQueues(int size)
         {
             workQueues = new ThreadTaskQueue[size];
             for (int i = 0; i < size; i++)

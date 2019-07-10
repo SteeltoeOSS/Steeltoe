@@ -34,7 +34,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, ILogger<MetricsEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, null, false, logger)
         {
@@ -45,11 +45,11 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         {
             if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
-                await HandleMetricsRequestAsync(context);
+                await HandleMetricsRequestAsync(context).ConfigureAwait(false);
             }
         }
 
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 if (serialInfo != null)
                 {
                     response.StatusCode = (int)HttpStatusCode.OK;
-                    await context.Response.WriteAsync(serialInfo);
+                    await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
                 }
                 else
                 {
@@ -91,7 +91,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 _logger?.LogDebug("Returning: {0}", serialInfo);
                 response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
                 response.StatusCode = (int)HttpStatusCode.OK;
-                await context.Response.WriteAsync(serialInfo);
+                await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
             }
         }
 
@@ -101,12 +101,9 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             foreach (var path in epPaths)
             {
                 PathString epPath = new PathString(path);
-                if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+                if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
                 {
-                    if (remaining.HasValue)
-                    {
-                        return remaining.Value.TrimStart('/');
-                    }
+                    return remaining.Value.TrimStart('/');
                 }
             }
 
@@ -133,12 +130,9 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                     foreach (var kvp in q.Value)
                     {
                         var pair = ParseTag(kvp);
-                        if (pair != null)
+                        if (pair != null && !results.Contains(pair.Value))
                         {
-                            if (!results.Contains(pair.Value))
-                            {
-                                results.Add(pair.Value);
-                            }
+                            results.Add(pair.Value);
                         }
                     }
                 }

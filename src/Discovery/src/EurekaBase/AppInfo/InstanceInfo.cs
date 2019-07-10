@@ -259,12 +259,9 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             if (!string.IsNullOrEmpty(info.InstanceId))
             {
                 InstanceInfo me = ApplicationInfoManager.Instance.InstanceInfo;
-                if (me != null)
+                if (me != null && info.InstanceId.Equals(me.InstanceId))
                 {
-                    if (info.InstanceId.Equals(me.InstanceId))
-                    {
-                        info.IsCoordinatingDiscoveryServer = true;
-                    }
+                    info.IsCoordinatingDiscoveryServer = true;
                 }
             }
 
@@ -354,12 +351,9 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return new Dictionary<string, string>();
             }
 
-            if (json.TryGetValue("@class", out string value))
+            if (json.TryGetValue("@class", out string value) && value.Equals("java.util.Collections$EmptyMap"))
             {
-                if (value.Equals("java.util.Collections$EmptyMap"))
-                {
-                    return new Dictionary<string, string>();
-                }
+                return new Dictionary<string, string>();
             }
 
             return new Dictionary<string, string>(json);

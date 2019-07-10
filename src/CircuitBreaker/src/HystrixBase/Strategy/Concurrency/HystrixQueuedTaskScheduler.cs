@@ -114,12 +114,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             }
         }
 
-        protected virtual void StartThreadPoolWorker()
+        protected void StartThreadPoolWorker()
         {
             System.Threading.ThreadPool.QueueUserWorkItem(
                 _ =>
             {
+#pragma warning disable S2696 // Instance members should not write to "static" fields
                 isHystrixThreadPoolThread = true;
+#pragma warning restore S2696 // Instance members should not write to "static" fields
                 try
                 {
                     while (!this.shutdown)

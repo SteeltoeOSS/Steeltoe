@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _base = new SecurityBase(options, _mgmtOptions, logger);
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityMiddleware> logger)
         {
             _next = next;
@@ -56,9 +56,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             _logger.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             bool isEndpointEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
             bool isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
 
             if (Platform.IsCloudFoundry
@@ -68,39 +68,39 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             {
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(_options.CloudFoundryApi))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
                 IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
-                var sr = await GetPermissions(context);
+                var sr = await GetPermissions(context).ConfigureAwait(false);
                 if (sr.Code != HttpStatusCode.OK)
                 {
-                    await ReturnError(context, sr);
+                    await ReturnError(context, sr).ConfigureAwait(false);
                     return;
                 }
 
                 var permissions = sr.Permissions;
                 if (!target.IsAccessAllowed(permissions))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
             }
 
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
         }
 
         internal string GetAccessToken(HttpRequest request)
@@ -120,7 +120,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         internal async Task<SecurityResult> GetPermissions(HttpContext context)
         {
             string token = GetAccessToken(context.Request);
-            return await _base.GetPermissionsAsync(token);
+            return await _base.GetPermissionsAsync(token).ConfigureAwait(false);
         }
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
@@ -130,9 +130,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             // Remove in 3.0
             if (_mgmtOptions == null)
             {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 configEndpoints = this._options.Global.EndpointOptions;
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
                 foreach (var ep in configEndpoints)
                 {
                     PathString epPath = new PathString(ep.Path);
@@ -169,7 +169,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             LogError(context, error);
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
             context.Response.StatusCode = (int)error.Code;
-            await context.Response.WriteAsync(_base.Serialize(error));
+            await context.Response.WriteAsync(_base.Serialize(error)).ConfigureAwait(false);
         }
 
         private void LogError(HttpContext context, SecurityResult error)

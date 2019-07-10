@@ -18,7 +18,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Mappings
 {
-    [Obsolete]
+    [Obsolete("Use MappingsEndpointOptions instead")]
     public class MappingsOptions : AbstractOptions, IMappingsOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:mappings";

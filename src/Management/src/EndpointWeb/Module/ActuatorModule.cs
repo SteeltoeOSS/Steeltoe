@@ -68,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.Module
             {
                 if (handler.RequestVerbAndPathMatch(context.Request.HttpMethod, context.Request.Path))
                 {
-                    if (await handler.IsAccessAllowed(context))
+                    if (await handler.IsAccessAllowed(context).ConfigureAwait(false))
                     {
                         handler.HandleRequest(context);
                     }
@@ -83,7 +83,7 @@ namespace Steeltoe.Management.Endpoint.Module
         {
             HttpApplication application = (HttpApplication)sender;
             var contextWrapper = new HttpContextWrapper(application.Context);
-            await FilterAndPreProcessRequest(contextWrapper, HttpContext.Current.ApplicationInstance.CompleteRequest);
+            await FilterAndPreProcessRequest(contextWrapper, HttpContext.Current.ApplicationInstance.CompleteRequest).ConfigureAwait(false);
          }
     }
 }

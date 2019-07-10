@@ -25,8 +25,6 @@ namespace Steeltoe.Common.Discovery
     public class DiscoveryOptions
     {
         protected string _type;
-        protected IDiscoveryClientOptions _clientOptions;
-        protected IDiscoveryRegistrationOptions _registrationOptions;
 
         public DiscoveryOptions(IConfiguration config)
             : this()
@@ -36,7 +34,9 @@ namespace Steeltoe.Common.Discovery
                 throw new ArgumentNullException(nameof(config));
             }
 
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
             Configure(config);
+#pragma warning restore S1699 // Constructors should only call non-overridable methods
         }
 
         public DiscoveryOptions()
@@ -44,13 +44,7 @@ namespace Steeltoe.Common.Discovery
             ClientType = DiscoveryClientType.UNKNOWN;
         }
 
-        public string Type
-        {
-            get
-            {
-                return _type;
-            }
-        }
+        public string Type => _type;
 
         public DiscoveryClientType ClientType
         {
@@ -70,31 +64,9 @@ namespace Steeltoe.Common.Discovery
             }
         }
 
-        public IDiscoveryClientOptions ClientOptions
-        {
-            get
-            {
-                return _clientOptions;
-            }
+        public IDiscoveryClientOptions ClientOptions { get; set; }
 
-            set
-            {
-                _clientOptions = value;
-            }
-        }
-
-        public IDiscoveryRegistrationOptions RegistrationOptions
-        {
-            get
-            {
-                return _registrationOptions;
-            }
-
-            set
-            {
-                _registrationOptions = value;
-            }
-        }
+        public IDiscoveryRegistrationOptions RegistrationOptions { get; set; }
 
         public virtual void Configure(IConfiguration config)
         {

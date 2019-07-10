@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, ILogger<LoggersEndpointMiddleware> logger = null)
             : base(endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
@@ -45,11 +45,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleLoggersRequestAsync(context);
+                await HandleLoggersRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -89,29 +89,26 @@ namespace Steeltoe.Management.Endpoint.Loggers
             var serialInfo = this.HandleRequest(null);
             _logger?.LogDebug("Returning: {0}", serialInfo);
             response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
         private bool ChangeLoggerLevel(HttpRequest request, string path)
         {
             PathString epPath = new PathString(path);
-            if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+            if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
             {
-                if (remaining.HasValue)
+                string loggerName = remaining.Value.TrimStart('/');
+
+                var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
+
+                change.TryGetValue("configuredLevel", out string level);
+
+                _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
+                if (!string.IsNullOrEmpty(loggerName))
                 {
-                    string loggerName = remaining.Value.TrimStart('/');
-
-                    var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
-
-                    change.TryGetValue("configuredLevel", out string level);
-
-                    _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
-                    if (!string.IsNullOrEmpty(loggerName))
-                    {
-                        var changeReq = new LoggersChangeRequest(loggerName, level);
-                        HandleRequest(changeReq);
-                        return true;
-                    }
+                    var changeReq = new LoggersChangeRequest(loggerName, level);
+                    HandleRequest(changeReq);
+                    return true;
                 }
             }
 

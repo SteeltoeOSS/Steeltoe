@@ -45,7 +45,7 @@ namespace Steeltoe.Common.Net
         {
             if (string.IsNullOrEmpty(PreferredNetworks))
             {
-                return null;
+                return new List<string>();
             }
 
             return PreferredNetworks.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);

@@ -27,10 +27,12 @@ namespace Steeltoe.Discovery.Consul.Registry
     /// </summary>
     public class ConsulServiceRegistry : IConsulServiceRegistry
     {
+#pragma warning disable S1144 // Unused private types or members should be removed
         private const string UNKNOWN = "UNKNOWN";
         private const string UP = "UP";
         private const string DOWN = "DOWN";
         private const string OUT_OF_SERVICE = "OUT_OF_SERVICE";
+#pragma warning restore S1144 // Unused private types or members should be removed
 
         private readonly IConsulClient _client;
         private readonly IScheduler _scheduler;
@@ -83,18 +85,23 @@ namespace Steeltoe.Discovery.Consul.Registry
         }
 
         /// <inheritdoc/>
-        public async Task RegisterAsync(IConsulRegistration registration)
+        public Task RegisterAsync(IConsulRegistration registration)
         {
             if (registration == null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
+            return RegisterAsyncInternal(registration);
+        }
+
+        private async Task RegisterAsyncInternal(IConsulRegistration registration)
+        {
             _logger?.LogInformation("Registering service with consul {serviceId} ", registration.ServiceId);
 
             try
             {
-                await _client.Agent.ServiceRegister(registration.Service);
+                await _client.Agent.ServiceRegister(registration.Service).ConfigureAwait(false);
                 if (Options.IsHeartBeatEnabled && _scheduler != null)
                 {
                     _scheduler.Add(registration.InstanceId);
@@ -112,14 +119,20 @@ namespace Steeltoe.Discovery.Consul.Registry
             }
         }
 
+#pragma warning disable SA1202 // Elements must be ordered by access
         /// <inheritdoc/>
-        public async Task DeregisterAsync(IConsulRegistration registration)
+        public Task DeregisterAsync(IConsulRegistration registration)
         {
             if (registration == null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
+            return DeregisterAsyncInternal(registration);
+        }
+
+        private async Task DeregisterAsyncInternal(IConsulRegistration registration)
+        {
             if (Options.IsHeartBeatEnabled && _scheduler != null)
             {
                 _scheduler.Remove(registration.InstanceId);
@@ -127,24 +140,29 @@ namespace Steeltoe.Discovery.Consul.Registry
 
             _logger?.LogInformation("Deregistering service with consul {instanceId} ", registration.InstanceId);
 
-            await _client.Agent.ServiceDeregister(registration.InstanceId);
+            await _client.Agent.ServiceDeregister(registration.InstanceId).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public async Task SetStatusAsync(IConsulRegistration registration, string status)
+        public Task SetStatusAsync(IConsulRegistration registration, string status)
         {
             if (registration == null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
+            return SetStatusAsyncInternal(registration, status);
+        }
+
+        private async Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
+        {
             if (OUT_OF_SERVICE.Equals(status, StringComparison.OrdinalIgnoreCase))
             {
-                await _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE);
+                await _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE).ConfigureAwait(false);
             }
             else if (UP.Equals(status, StringComparison.OrdinalIgnoreCase))
             {
-                await _client.Agent.DisableServiceMaintenance(registration.InstanceId);
+                await _client.Agent.DisableServiceMaintenance(registration.InstanceId).ConfigureAwait(false);
             }
             else
             {
@@ -153,73 +171,86 @@ namespace Steeltoe.Discovery.Consul.Registry
         }
 
         /// <inheritdoc/>
-        public async Task<object> GetStatusAsync(IConsulRegistration registration)
+        public Task<object> GetStatusAsync(IConsulRegistration registration)
         {
             if (registration == null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
-            var response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default);
+            return GetStatusAsyncInternal(registration);
+        }
+
+        public async Task<object> GetStatusAsyncInternal(IConsulRegistration registration)
+        {
+            var response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default).ConfigureAwait(false);
             var checks = response.Response;
 
             foreach (HealthCheck check in checks)
             {
-                if (check.ServiceID.Equals(registration.InstanceId))
+                if (check.ServiceID.Equals(registration.InstanceId) && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return OUT_OF_SERVICE;
-                    }
+                    return OUT_OF_SERVICE;
                 }
             }
 
             return UP;
         }
+#pragma warning restore SA1202 // Elements must be ordered by access
 
         /// <inheritdoc/>
         public void Register(IConsulRegistration registration)
         {
-            Task.Run(async () =>
-            {
-                await RegisterAsync(registration);
-            }).Wait();
+            RegisterAsync(registration).GetAwaiter().GetResult();
         }
 
         /// <inheritdoc/>
         public void Deregister(IConsulRegistration registration)
         {
-            Task.Run(async () =>
-            {
-                await DeregisterAsync(registration);
-            }).Wait();
+            DeregisterAsync(registration).GetAwaiter().GetResult();
         }
 
         /// <inheritdoc/>
         public void SetStatus(IConsulRegistration registration, string status)
         {
-            Task.Run(async () =>
-            {
-                await SetStatusAsync(registration, status);
-            }).Wait();
+            SetStatusAsync(registration, status).GetAwaiter().GetResult();
         }
 
         /// <inheritdoc/>
         public S GetStatus<S>(IConsulRegistration registration)
             where S : class
         {
-            var result = Task.Run(async () =>
-            {
-                return await GetStatusAsync(registration);
-            }).Result;
+            var result = GetStatusAsync(registration).GetAwaiter().GetResult();
 
             return (S)result;
         }
 
+        private bool disposed = false;
+
         /// <inheritdoc/>
         public void Dispose()
         {
-            _scheduler?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Cleanup
+                    _scheduler?.Dispose();
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~ConsulServiceRegistry()
+        {
+            Dispose(false);
         }
     }
 }

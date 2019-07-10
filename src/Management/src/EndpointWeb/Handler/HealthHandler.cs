@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public HealthHandler(IEndpoint<HealthCheckResult, ISecurityContext> endpoint, IEnumerable<ISecurityService> securityServices, ILogger<HealthHandler> logger = null)
             : base(endpoint, securityServices, mgmtOptions: null, allowedMethods: null, exactRequestPathMatching: true, logger: logger)
         {

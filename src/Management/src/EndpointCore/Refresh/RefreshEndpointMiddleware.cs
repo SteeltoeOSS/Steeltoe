@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, ILogger<RefreshEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {
@@ -42,11 +42,11 @@ namespace Steeltoe.Management.Endpoint.Refresh
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleRefreshRequestAsync(context);
+                await HandleRefreshRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
     }
 }
