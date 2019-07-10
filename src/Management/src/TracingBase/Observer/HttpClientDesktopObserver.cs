@@ -19,7 +19,6 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Census.Trace;
 using Steeltoe.Management.Census.Trace.Propagation;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Net;
 using System.Threading;
 

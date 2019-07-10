@@ -25,9 +25,9 @@ namespace Steeltoe.Management.EndpointOwin.Diagnostics
         private const string ActivityName = "Steeltoe.Owin.Hosting.HttpRequestIn";
         private const string ActivityStartKey = "Steeltoe.Owin.Hosting.HttpRequestIn.Start";
 
-        private ILogger<DiagnosticSourceOwinMiddleware> _logger;
+        private readonly ILogger<DiagnosticSourceOwinMiddleware> _logger;
 
-        private DiagnosticListener _listener = new DiagnosticListener("Steeltoe.Owin");
+        private readonly DiagnosticListener _listener = new DiagnosticListener("Steeltoe.Owin");
 
         public DiagnosticSourceOwinMiddleware(OwinMiddleware next, ILogger<DiagnosticSourceOwinMiddleware> logger = null)
             : base(next)

@@ -36,11 +36,11 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         private readonly ISpanExporter spanExporter = SpanExporter.Create(4, Duration.Create(1, 0));
         private readonly IRunningSpanStore runningSpanStore = new InProcessRunningSpanStore();
         private readonly IStartEndHandler startEndHandler;
-        private SpanOptions recordSpanOptions = SpanOptions.RECORD_EVENTS;
+        private readonly SpanOptions recordSpanOptions = SpanOptions.RECORD_EVENTS;
 #pragma warning disable SA1214 // Readonly fields must appear before non-readonly fields
         private readonly TestHandler serviceHandler = new TestHandler();
 #pragma warning restore SA1214 // Readonly fields must appear before non-readonly fields
-        private IHandler mockServiceHandler = Mock.Of<IHandler>();
+        private readonly IHandler mockServiceHandler = Mock.Of<IHandler>();
 
         public SpanExporterTest()
         {

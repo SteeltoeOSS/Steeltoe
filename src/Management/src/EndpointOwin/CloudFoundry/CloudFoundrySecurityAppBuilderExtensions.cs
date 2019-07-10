@@ -15,10 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
-using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {

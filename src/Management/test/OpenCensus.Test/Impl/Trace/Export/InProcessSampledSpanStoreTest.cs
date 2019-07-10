@@ -372,7 +372,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
 
         private class TestStartEndHandler : IStartEndHandler
         {
-            private InProcessSampledSpanStore sampleStore;
+            private readonly InProcessSampledSpanStore sampleStore;
 
             public TestStartEndHandler(InProcessSampledSpanStore store)
             {

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;

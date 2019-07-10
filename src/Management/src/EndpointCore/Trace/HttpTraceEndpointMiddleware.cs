@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 {
     public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public HttpTraceEndpointMiddleware(RequestDelegate next, HttpTraceEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HttpTraceEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)

@@ -21,7 +21,6 @@ using Steeltoe.Management.Census.Trace.Propagation;
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 

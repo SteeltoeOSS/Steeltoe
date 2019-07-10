@@ -19,7 +19,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
     internal class JsonStreamConfigurationProvider : JsonConfigurationProvider
     {
-        private JsonStreamConfigurationSource _source;
+        private readonly JsonStreamConfigurationSource _source;
 
         internal JsonStreamConfigurationProvider(JsonStreamConfigurationSource source)
             : base(source)

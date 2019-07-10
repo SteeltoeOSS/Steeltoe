@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
 {
     public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<RefreshEndpointMiddleware> logger = null)
           : base(endpoint, mgmtOptions, logger: logger)

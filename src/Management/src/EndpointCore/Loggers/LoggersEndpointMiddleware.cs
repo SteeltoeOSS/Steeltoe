@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 {
     public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<LoggersEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)

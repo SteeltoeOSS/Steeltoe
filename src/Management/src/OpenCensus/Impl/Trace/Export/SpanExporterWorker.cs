@@ -22,11 +22,11 @@ namespace Steeltoe.Management.Census.Trace.Export
     [Obsolete("Use OpenCensus project packages")]
     internal class SpanExporterWorker : IDisposable
     {
-        private int _bufferSize;
-        private TimeSpan _scheduleDelay;
+        private readonly int _bufferSize;
+        private readonly TimeSpan _scheduleDelay;
         private bool _shutdown = false;
-        private BlockingCollection<ISpan> _spans;
-        private ConcurrentDictionary<string, IHandler> _serviceHandlers = new ConcurrentDictionary<string, IHandler>();
+        private readonly BlockingCollection<ISpan> _spans;
+        private readonly ConcurrentDictionary<string, IHandler> _serviceHandlers = new ConcurrentDictionary<string, IHandler>();
 
         public SpanExporterWorker(int bufferSize, IDuration scheduleDelay)
         {

@@ -17,7 +17,6 @@ using Microsoft.Owin;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,10 +27,10 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
     public class CloudFoundrySecurityOwinMiddleware : OwinMiddleware
     {
-        private ILogger<CloudFoundrySecurityOwinMiddleware> _logger;
-        private ICloudFoundryOptions _options;
-        private SecurityBase _base;
-        private IManagementOptions _mgmtOptions;
+        private readonly ILogger<CloudFoundrySecurityOwinMiddleware> _logger;
+        private readonly ICloudFoundryOptions _options;
+        private readonly SecurityBase _base;
+        private readonly IManagementOptions _mgmtOptions;
 
         public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
             : base(next)

@@ -20,9 +20,9 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
 {
     public class HypermediaService
     {
-        private ILogger _logger;
-        private IManagementOptions _mgmtOptions;
-        private IEndpointOptions _options;
+        private readonly ILogger _logger;
+        private readonly IManagementOptions _mgmtOptions;
+        private readonly IEndpointOptions _options;
 
         public HypermediaService(IManagementOptions mgmtOptions, IEndpointOptions options, ILogger logger = null)
         {

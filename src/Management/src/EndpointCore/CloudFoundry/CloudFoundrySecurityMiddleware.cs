@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +26,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     public class CloudFoundrySecurityMiddleware
     {
-        private RequestDelegate _next;
-        private ILogger<CloudFoundrySecurityMiddleware> _logger;
-        private ICloudFoundryOptions _options;
-        private IManagementOptions _mgmtOptions;
-        private SecurityBase _base;
+        private readonly RequestDelegate _next;
+        private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
+        private readonly ICloudFoundryOptions _options;
+        private readonly IManagementOptions _mgmtOptions;
+        private readonly SecurityBase _base;
 
         public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
         {

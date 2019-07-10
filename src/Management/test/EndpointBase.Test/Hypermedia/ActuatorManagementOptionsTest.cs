@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -36,7 +34,6 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         [Fact]
         public void Constructor_InitializesWithDefaultsOnCF()
         {
-
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
             var config = new ConfigurationBuilder().Build();
 
@@ -117,7 +114,6 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var config = configurationBuilder.Build();
 
             var opts = new ActuatorManagementOptions(config);
-                ;
 
             Assert.Equal("/actuator", opts.Path);
 

@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Testing;
 using Newtonsoft.Json;
-using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Net;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {

@@ -23,10 +23,10 @@ namespace Steeltoe.Management.Census.Trace.Test
     [Obsolete]
     public class SpanBaseTest
     {
-        private RandomGenerator random;
-        private ISpanContext spanContext;
-        private ISpanContext notSampledSpanContext;
-        private SpanOptions spanOptions;
+        private readonly RandomGenerator random;
+        private readonly ISpanContext spanContext;
+        private readonly ISpanContext notSampledSpanContext;
+        private readonly SpanOptions spanOptions;
 
         public SpanBaseTest()
         {

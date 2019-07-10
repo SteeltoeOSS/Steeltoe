@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -78,8 +75,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.Equal("/cloudfoundryapplication", opts.Path);
             Assert.False(opts.Enabled);
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-
-
         }
     }
 }

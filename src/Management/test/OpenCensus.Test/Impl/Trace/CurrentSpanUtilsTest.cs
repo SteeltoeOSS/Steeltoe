@@ -23,10 +23,10 @@ namespace Steeltoe.Management.Census.Trace.Test
     [Obsolete]
     public class CurrentSpanUtilsTest
     {
-        private ISpan span;
-        private RandomGenerator random;
-        private ISpanContext spanContext;
-        private SpanOptions spanOptions;
+        private readonly ISpan span;
+        private readonly RandomGenerator random;
+        private readonly ISpanContext spanContext;
+        private readonly SpanOptions spanOptions;
 
         public CurrentSpanUtilsTest()
         {

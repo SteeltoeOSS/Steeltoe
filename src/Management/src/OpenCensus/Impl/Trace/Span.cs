@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Census.Trace
         private long endNanoTime;
         private bool hasBeenEnded;
         private bool sampleToLocalSpanStore;
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
         public override string Name
         {

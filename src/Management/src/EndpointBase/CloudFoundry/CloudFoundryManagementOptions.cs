@@ -14,10 +14,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {

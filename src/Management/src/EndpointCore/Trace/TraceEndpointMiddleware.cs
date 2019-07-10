@@ -17,14 +17,13 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
     public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)

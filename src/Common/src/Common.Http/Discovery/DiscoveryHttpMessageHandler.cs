@@ -27,7 +27,7 @@ namespace Steeltoe.Common.Http.Discovery
     public class DiscoveryHttpMessageHandler : DelegatingHandler
     {
         private readonly ILogger _logger;
-        private DiscoveryHttpClientHandlerBase _discoveryBase;
+        private readonly DiscoveryHttpClientHandlerBase _discoveryBase;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DiscoveryHttpMessageHandler"/> class.

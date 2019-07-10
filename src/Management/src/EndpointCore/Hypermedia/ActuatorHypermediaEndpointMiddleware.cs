@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
     public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
 #pragma warning restore CS0612 // Type or member is obsolete
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions.OfType<ActuatorManagementOptions>(), logger: logger)

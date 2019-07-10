@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.ThreadDump;
-using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Handler

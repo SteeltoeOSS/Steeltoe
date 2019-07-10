@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
     [TypeConverter(typeof(CredentialConverter))]
     public class Credential : Dictionary<string, Credential>
     {
-        private string _value;
+        private readonly string _value;
 
         public Credential()
         {

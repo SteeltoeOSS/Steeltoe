@@ -14,7 +14,6 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.EndpointOwin.Hypermedia;

@@ -20,8 +20,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>
     {
-        private ILogger<ThreadDumpEndpoint> _logger;
-        private IThreadDumper _threadDumper;
+        private readonly ILogger<ThreadDumpEndpoint> _logger;
+        private readonly IThreadDumper _threadDumper;
 
         public ThreadDumpEndpoint(IThreadDumpOptions options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint> logger = null)
             : base(options)

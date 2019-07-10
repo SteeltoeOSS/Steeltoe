@@ -65,6 +65,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             Assert.True(opts.Enabled);
             Assert.Equal("dump", opts.Id);
             Assert.Equal("dump", opts.Path);
+
+            Assert.True(ep.Enabled);
         }
     }
 }

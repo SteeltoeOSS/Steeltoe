@@ -34,9 +34,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
         private const string STOP_EVENT_ACTIVITY_LOST = "Microsoft.AspNet.HttpReqIn.ActivityLost.Stop";
         private const string STOP_EVENT_ACTIVITY_RESTORED = "Microsoft.AspNet.HttpReqIn.ActivityRestored.Stop";
 
-        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private ILogger<HttpTraceDiagnosticObserver> _logger;
-        private ITraceOptions _options;
+        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private readonly ILogger<HttpTraceDiagnosticObserver> _logger;
+        private readonly ITraceOptions _options;
 
         public HttpTraceDiagnosticObserver(ITraceOptions options, ILogger<HttpTraceDiagnosticObserver> logger = null)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
 
                 if (_queue.Count > _options.Capacity)
                 {
-                    if (!_queue.TryDequeue(out HttpTrace discard))
+                    if (!_queue.TryDequeue(out _))
                     {
                         _logger?.LogDebug("Stop - Dequeue failed");
                     }
@@ -125,13 +125,13 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
 
         protected internal long GetJavaTime(long ticks)
         {
-            long javaTicks = ticks - baseTime.Ticks;
+            long javaTicks = ticks - BaseTime.Ticks;
             return javaTicks / 10000;
         }
 
-        private bool HasFormContentType(HttpRequest request)
-        {
-            return request.ContentType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase) || request.ContentType.Equals("multipart/form-data", StringComparison.OrdinalIgnoreCase);
-        }
+        // private bool HasFormContentType(HttpRequest request)
+        // {
+        //     return request.ContentType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase) || request.ContentType.Equals("multipart/form-data", StringComparison.OrdinalIgnoreCase);
+        // }
     }
 }

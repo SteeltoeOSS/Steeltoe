@@ -31,8 +31,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
     public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 #pragma warning restore CS0612 // Type or member is obsolete
     {
-        private ICloudFoundryOptions _options;
-        private RequestDelegate _next;
+        private readonly ICloudFoundryOptions _options;
+        private readonly RequestDelegate _next;
 
         public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)

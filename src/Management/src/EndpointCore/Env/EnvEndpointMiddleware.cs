@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Env
 {
     public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<EnvEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)

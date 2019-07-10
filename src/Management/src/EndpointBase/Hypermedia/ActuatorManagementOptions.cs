@@ -14,10 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {

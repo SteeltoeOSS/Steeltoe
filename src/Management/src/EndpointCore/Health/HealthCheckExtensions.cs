@@ -13,12 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
 using System;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;

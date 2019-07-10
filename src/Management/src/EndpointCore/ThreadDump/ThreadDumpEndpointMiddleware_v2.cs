@@ -15,7 +15,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -23,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class ThreadDumpEndpointMiddleware_v2 : EndpointMiddleware<ThreadDumpResult>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public ThreadDumpEndpointMiddleware_v2(RequestDelegate next, ThreadDumpEndpoint_v2 endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ThreadDumpEndpointMiddleware_v2> logger = null)
            : base(endpoint, mgmtOptions, logger: logger)

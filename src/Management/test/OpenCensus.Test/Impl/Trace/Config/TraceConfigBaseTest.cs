@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Census.Trace.Config.Test
     [Obsolete]
     public class TraceConfigBaseTest
     {
-        private ITraceConfig traceConfig = TraceConfigBase.NoopTraceConfig;
+        private readonly ITraceConfig traceConfig = TraceConfigBase.NoopTraceConfig;
 
         [Fact]
         public void ActiveTraceParams_NoOpImplementation()

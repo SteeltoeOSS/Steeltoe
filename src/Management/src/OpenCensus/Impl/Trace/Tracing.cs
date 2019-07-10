@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Census.Trace
     [Obsolete("Use OpenCensus project packages")]
     public sealed class Tracing
     {
-        private static Tracing _tracing = new Tracing();
+        private static readonly Tracing _tracing = new Tracing();
 
         internal Tracing()
             : this(false)
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Census.Trace
             }
         }
 
-        private ITraceComponent traceComponent = null;
+        private readonly ITraceComponent traceComponent = null;
 
         public static ITracer Tracer
         {

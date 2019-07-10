@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Logging.Console.Internal;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -26,17 +25,17 @@ namespace Steeltoe.Extensions.Logging
     [ProviderAlias("Dynamic")]
     public class DynamicLoggerProvider : IDynamicLoggerProvider
     {
-        private static readonly Func<string, LogLevel, bool> _trueFilter = (cat, level) => true;
+        // private static readonly Func<string, LogLevel, bool> _trueFilter = (cat, level) => true;
         private static readonly Func<string, LogLevel, bool> _falseFilter = (cat, level) => false;
+        private readonly ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
+
+        private readonly IOptionsMonitor<LoggerFilterOptions> _filterOptions;
+        private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
         private Func<string, LogLevel, bool> _filter = _falseFilter;
-        private ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
-
         private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ConcurrentDictionary<string, DynamicConsoleLogger>();
         private ConsoleLoggerProvider _delegate;
         private IConsoleLoggerSettings _settings;
-        private IOptionsMonitor<LoggerFilterOptions> _filterOptions;
-        private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.

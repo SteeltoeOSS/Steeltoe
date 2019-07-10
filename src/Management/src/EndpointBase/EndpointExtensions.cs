@@ -40,9 +40,9 @@ namespace Steeltoe.Management.Endpoint
 
         public static bool IsExposed(this IEndpointOptions options, IManagementOptions mgmtOptions)
         {
-            var actOptions = mgmtOptions as ActuatorManagementOptions;
-
-            if (!string.IsNullOrEmpty(options.Id) && actOptions != null && actOptions.Exposure != null)
+            if (!string.IsNullOrEmpty(options.Id)
+                && mgmtOptions is ActuatorManagementOptions actOptions
+                && actOptions.Exposure != null)
             {
                 var exclude = actOptions.Exposure.Exclude;
                 if (exclude != null && (exclude.Contains("*") || exclude.Contains(options.Id)))
@@ -64,8 +64,7 @@ namespace Steeltoe.Management.Endpoint
 
         public static bool RequestVerbAndPathMatch(this IEndpoint endpoint, string httpMethod, string requestPath, IEnumerable<HttpMethod> allowedMethods, IEnumerable<IManagementOptions> mgmtOptions, bool exactMatch)
         {
-            IManagementOptions matchingMgmtContext = null;
-            return endpoint.RequestPathMatches(requestPath, mgmtOptions, out matchingMgmtContext, exactMatch)
+            return endpoint.RequestPathMatches(requestPath, mgmtOptions, out IManagementOptions matchingMgmtContext, exactMatch)
                 && endpoint.IsEnabled(matchingMgmtContext)
                 && endpoint.IsExposed(matchingMgmtContext)
                 && allowedMethods.Any(m => m.Method.Equals(httpMethod));

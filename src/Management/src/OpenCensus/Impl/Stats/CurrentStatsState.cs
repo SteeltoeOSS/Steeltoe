@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Census.Stats
     public sealed class CurrentStatsState
     {
         private StatsCollectionState currentState = StatsCollectionState.ENABLED;
-        private object _lck = new object();
+        private readonly object _lck = new object();
         private bool isRead;
 
         public StatsCollectionState Value

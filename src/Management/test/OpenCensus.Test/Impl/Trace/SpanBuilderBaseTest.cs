@@ -22,9 +22,9 @@ namespace Steeltoe.Management.Census.Trace.Test
     [Obsolete]
     public class SpanBuilderBaseTest
     {
-        private ITracer tracer;
-        private Mock<SpanBuilderBase> spanBuilder = new Mock<SpanBuilderBase>();
-        private Mock<SpanBase> span = new Mock<SpanBase>();
+        private readonly ITracer tracer;
+        private readonly Mock<SpanBuilderBase> spanBuilder = new Mock<SpanBuilderBase>();
+        private readonly Mock<SpanBase> span = new Mock<SpanBase>();
 
         public SpanBuilderBaseTest()
         {

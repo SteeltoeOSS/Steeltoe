@@ -28,14 +28,14 @@ namespace Steeltoe.Management.Census.Trace.Test
     public class SpanBuilderTest
     {
         private static readonly string SPAN_NAME = "MySpanName";
-        private SpanBuilderOptions spanBuilderOptions;
-        private TraceParams alwaysSampleTraceParams = TraceParams.DEFAULT.ToBuilder().SetSampler(Samplers.AlwaysSample).Build();
+        private readonly SpanBuilderOptions spanBuilderOptions;
+        private readonly TraceParams alwaysSampleTraceParams = TraceParams.DEFAULT.ToBuilder().SetSampler(Samplers.AlwaysSample).Build();
 #pragma warning disable SA1214 // Readonly fields must appear before non-readonly fields
         private readonly TestClock testClock = TestClock.Create();
 #pragma warning restore SA1214 // Readonly fields must appear before non-readonly fields
         private readonly IRandomGenerator randomHandler = new FakeRandomHandler();
-        private IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
-        private ITraceConfig traceConfig = Mock.Of<ITraceConfig>();
+        private readonly IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
+        private readonly ITraceConfig traceConfig = Mock.Of<ITraceConfig>();
 
         public SpanBuilderTest()
         {
