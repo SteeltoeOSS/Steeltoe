@@ -21,7 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
-using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -29,9 +28,9 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
         private readonly IServiceProvider _provider;
-        private IHealthAggregator _aggregator;
-        private IList<IHealthContributor> _contributors;
-        private ILogger<HealthEndpoint> _logger;
+        private readonly IHealthAggregator _aggregator;
+        private readonly IList<IHealthContributor> _contributors;
+        private readonly ILogger<HealthEndpoint> _logger;
 
         public HealthEndpointCore(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpoint> logger = null)
             : base(options, aggregator, contributors, logger)

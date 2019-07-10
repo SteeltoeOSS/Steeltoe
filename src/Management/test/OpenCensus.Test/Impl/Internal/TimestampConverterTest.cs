@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Census.Internal.Test
     {
         private readonly ITimestamp timestamp = Timestamp.Create(1234, 5678);
 
-        private Mock<IClock> mockClock;
+        private readonly Mock<IClock> mockClock;
 
         public TimestampConverterTest()
         {

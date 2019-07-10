@@ -28,21 +28,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
     public class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
-        private Dictionary<string, string> appSettings = new Dictionary<string, string>()
-        {
-            ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/",
-            ["management:endpoints:info:enabled"] = "true",
-             ["info:application:name"] = "foobar",
-            ["info:application:version"] = "1.0.0",
-            ["info:application:date"] = "5/1/2008",
-            ["info:application:time"] = "8:30:52 AM",
-            ["info:NET:type"] = "Core",
-            ["info:NET:version"] = "2.0.0",
-            ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0"
-        };
-
         public CloudFoundrySecurityMiddlewareTest()
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");

@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Info
 {
     public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)

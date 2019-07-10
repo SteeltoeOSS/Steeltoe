@@ -98,6 +98,8 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
+            _logger?.LogDebug($"endpoint: {_endpoint.Id}, httpMethod:  {httpMethod}, requestPath: {requestPath}, contextPaths: {string.Join(",", _mgmtOptions?.Select(x => x.Path))}");
+
             return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
@@ -167,7 +169,9 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
+            var result = _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
+            _logger?.LogDebug($"endpoint: {_endpoint.Id}, httpMethod:  {httpMethod}, requestPath: {requestPath}, contextPaths: {string.Join(",", _mgmtOptions?.Select(x => x.Path))}, result: {result}");
+            return result;
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class

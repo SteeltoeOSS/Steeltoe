@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Census.Stats
     [Obsolete("Use OpenCensus project packages")]
     public class Stats
     {
-        private static Stats _stats = new Stats();
+        private static readonly Stats _stats = new Stats();
 
         internal Stats()
             : this(false)
@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Census.Stats
             }
         }
 
-        private IStatsComponent statsComponent = new StatsComponent();
+        private readonly IStatsComponent statsComponent = new StatsComponent();
 
         public static IStatsRecorder StatsRecorder
         {

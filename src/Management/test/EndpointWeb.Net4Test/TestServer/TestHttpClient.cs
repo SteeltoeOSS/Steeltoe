@@ -33,7 +33,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
 
         public Mock<HttpContextBase> Context { get; }
 
-        private ActuatorModule _module;
+        private readonly ActuatorModule _module;
 
         public NameValueCollection RequestHeaders { get; set; }
 

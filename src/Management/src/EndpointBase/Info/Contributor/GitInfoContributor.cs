@@ -25,10 +25,10 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         private const string GITSETTINGS_PREFIX = "git";
         private const string GITPROPERTIES_FILE = "git.properties";
 
-        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private string _propFile;
-        private ILogger _logger;
+        private readonly string _propFile;
+        private readonly ILogger _logger;
 
         public GitInfoContributor(ILogger<GitInfoContributor> logger = null)
             : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GITPROPERTIES_FILE)
@@ -99,7 +99,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
             {
                 DateTime dt = DateTime.Parse(value);
                 DateTime utc = dt.ToUniversalTime();
-                valueToInsert = (utc.Ticks - baseTime.Ticks) / 10000;
+                valueToInsert = (utc.Ticks - BaseTime.Ticks) / 10000;
             }
 
             dict[keyToInsert] = valueToInsert;

@@ -17,7 +17,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Owin;
-using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Env;
 using System;
 using System.Collections.Generic;

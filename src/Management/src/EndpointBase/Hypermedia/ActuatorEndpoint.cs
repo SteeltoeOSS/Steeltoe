@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,8 +26,8 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
     public class ActuatorEndpoint : AbstractEndpoint<Links, string>
 #pragma warning restore CS0618 // Type or member is obsolete
     {
-        private ILogger<ActuatorEndpoint> _logger;
-        private IManagementOptions _mgmtOption;
+        private readonly ILogger<ActuatorEndpoint> _logger;
+        private readonly IManagementOptions _mgmtOption;
 
         public ActuatorEndpoint(IActuatorHypermediaOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
         : base(options)

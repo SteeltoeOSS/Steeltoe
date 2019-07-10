@@ -18,11 +18,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Hypermedia.Test;
 using Steeltoe.Management.Endpoint.Test;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -32,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:info:enabled"] = "true",

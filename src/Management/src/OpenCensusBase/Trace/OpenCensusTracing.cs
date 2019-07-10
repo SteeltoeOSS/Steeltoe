@@ -66,7 +66,7 @@ namespace Steeltoe.Management.Census.Trace
             TraceConfig.UpdateActiveTraceParams(builder.Build());
         }
 
-        private ITraceComponent traceComponent = new TraceComponent();
+        private readonly ITraceComponent traceComponent = new TraceComponent();
 
         public ITracer Tracer
         {
@@ -76,7 +76,7 @@ namespace Steeltoe.Management.Census.Trace
             }
         }
 
-        private IPropagationComponent propagation = new B3PropagationComponent();
+        private readonly IPropagationComponent propagation = new B3PropagationComponent();
 
         public IPropagationComponent PropagationComponent
         {

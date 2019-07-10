@@ -25,9 +25,9 @@ namespace Steeltoe.Management.Endpoint.Security
     public class CloudFoundrySecurity : ISecurityService
     {
         private readonly IManagementOptions _managementOptions;
-        private ILogger<CloudFoundrySecurity> _logger;
-        private ICloudFoundryOptions _options;
-        private SecurityBase _base;
+        private readonly ILogger<CloudFoundrySecurity> _logger;
+        private readonly ICloudFoundryOptions _options;
+        private readonly SecurityBase _base;
 
         public CloudFoundrySecurity(ICloudFoundryOptions options, IManagementOptions managementOptions, ILogger<CloudFoundrySecurity> logger = null)
         {

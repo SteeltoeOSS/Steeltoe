@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Census.Tags.Unsafe
     {
         private static readonly ITagContext EMPTY_TAG_CONTEXT = new EmptyTagContext();
 
-        private static AsyncLocal<ITagContext> _context = new AsyncLocal<ITagContext>();
+        private static readonly AsyncLocal<ITagContext> _context = new AsyncLocal<ITagContext>();
 
         public static ITagContext CurrentTagContext
         {

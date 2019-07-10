@@ -38,9 +38,9 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
         private const long MillisPerSecond = 1000L;
         private const long NanosPerMillisecond = 1000 * 1000;
         private const long NanosPerSecond = NanosPerMillisecond * MillisPerSecond;
-        private ITraceExporterOptions _options;
-        private ILogger _logger;
-        private ZipkinEndpoint _localEndpoint;
+        private readonly ITraceExporterOptions _options;
+        private readonly ILogger _logger;
+        private readonly ZipkinEndpoint _localEndpoint;
 
         public TraceExporterHandler(ITraceExporterOptions options, ILogger logger = null)
         {

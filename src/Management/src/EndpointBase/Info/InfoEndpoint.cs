@@ -21,8 +21,8 @@ namespace Steeltoe.Management.Endpoint.Info
 {
     public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>
     {
-        private IList<IInfoContributor> _contributors;
-        private ILogger<InfoEndpoint> _logger;
+        private readonly IList<IInfoContributor> _contributors;
+        private readonly ILogger<InfoEndpoint> _logger;
 
         public InfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
             : base(options)

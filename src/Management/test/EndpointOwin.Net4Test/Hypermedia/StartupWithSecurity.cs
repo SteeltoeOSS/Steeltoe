@@ -16,7 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Owin;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.EndpointOwin.Hypermedia;
 using Steeltoe.Management.EndpointOwin.Info;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
@@ -46,7 +45,7 @@ namespace Steeltoe.Management.EndpointOwin.Hypermedia.Test
             builder.AddEnvironmentVariables();
             var config = builder.Build();
 
-            var mgmtOptions = new List<IManagementOptions> { new ActuatorManagementOptions(config) };
+         // var mgmtOptions = new List<IManagementOptions> { new ActuatorManagementOptions(config) };
             app.UseHypermediaActuator(config);
             app.UseInfoActuator(config);
         }

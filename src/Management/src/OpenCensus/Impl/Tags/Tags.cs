@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Census.Tags
     [Obsolete("Use OpenCensus project packages")]
     public sealed class Tags
     {
-        private static object _lck = new object();
+        private static readonly object _lck = new object();
 
         internal static void Initialize(bool enabled)
         {

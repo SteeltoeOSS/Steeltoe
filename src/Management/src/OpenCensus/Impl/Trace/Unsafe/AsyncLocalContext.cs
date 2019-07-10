@@ -21,9 +21,9 @@ namespace Steeltoe.Management.Census.Trace.Unsafe
     [Obsolete("Use OpenCensus project packages")]
     public static class AsyncLocalContext
     {
-        private static List<IAsyncLocalContextListener> callbacks = new List<IAsyncLocalContextListener>();
+        private static readonly List<IAsyncLocalContextListener> Callbacks = new List<IAsyncLocalContextListener>();
 
-        private static AsyncLocal<ISpan> _context = new AsyncLocal<ISpan>((arg) =>
+        private static readonly AsyncLocal<ISpan> _context = new AsyncLocal<ISpan>((arg) =>
         {
             CallListeners(arg);
 
@@ -52,17 +52,17 @@ namespace Steeltoe.Management.Census.Trace.Unsafe
 
         public static void AddListener(IAsyncLocalContextListener listener)
         {
-            callbacks.Add(listener);
+            Callbacks.Add(listener);
         }
 
         public static bool RemoveListener(IAsyncLocalContextListener listener)
         {
-            return callbacks.Remove(listener);
+            return Callbacks.Remove(listener);
         }
 
         private static void CallListeners(AsyncLocalValueChangedArgs<ISpan> args)
         {
-            foreach (var callback in callbacks)
+            foreach (var callback in Callbacks)
             {
                 try
                 {

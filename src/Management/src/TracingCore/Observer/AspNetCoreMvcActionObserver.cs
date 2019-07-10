@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         private const string OBSERVER_NAME = "AspNetCoreMvcActionDiagnosticObserver";
 
-        private static AsyncLocal<SpanContext> active = new AsyncLocal<SpanContext>();
+        private static readonly AsyncLocal<SpanContext> ActiveValue = new AsyncLocal<SpanContext>();
 
         public AspNetCoreMvcActionObserver(ITracingOptions options, ITracing tracing, ILogger<AspNetCoreMvcActionObserver> logger = null)
             : base(OBSERVER_NAME, options, tracing, logger)
@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Tracing.Observer
         {
             get
             {
-                return active.Value;
+                return ActiveValue.Value;
             }
         }
 
@@ -85,7 +85,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            if (active.Value != null)
+            if (ActiveValue.Value != null)
             {
                 Logger?.LogDebug("HandleBeforeActionEvent: Continuing existing span!");
                 return;
@@ -105,12 +105,12 @@ namespace Steeltoe.Management.Tracing.Observer
                 .PutServerSpanKindAttribute()
                 .PutMvcControllerAction(ExtractActionName(descriptor));
 
-            active.Value = new SpanContext(span, scope);
+            ActiveValue.Value = new SpanContext(span, scope);
         }
 
         protected internal virtual void HandleAfterActionEvent()
         {
-            var spanContext = active.Value;
+            var spanContext = ActiveValue.Value;
             if (spanContext == null)
             {
                 Logger?.LogDebug("HandleAfterActionEvent: Missing span context");
@@ -123,13 +123,12 @@ namespace Steeltoe.Management.Tracing.Observer
                 scope.Dispose();
             }
 
-            active.Value = null;
+            ActiveValue.Value = null;
         }
 
         protected internal string ExtractSpanName(ActionDescriptor descriptor)
         {
-            ControllerActionDescriptor controllerActionDescriptor = descriptor as ControllerActionDescriptor;
-            if (controllerActionDescriptor != null)
+            if (descriptor is ControllerActionDescriptor controllerActionDescriptor)
             {
                 return "action:" + controllerActionDescriptor.ControllerName + "/" + controllerActionDescriptor.ActionName;
             }
@@ -141,8 +140,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal string ExtractControllerName(ActionDescriptor descriptor)
         {
-            ControllerActionDescriptor controllerActionDescriptor = descriptor as ControllerActionDescriptor;
-            if (controllerActionDescriptor != null)
+            if (descriptor is ControllerActionDescriptor controllerActionDescriptor)
             {
                 return controllerActionDescriptor.ControllerTypeInfo.FullName;
             }
@@ -154,8 +152,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal string ExtractActionName(ActionDescriptor descriptor)
         {
-            ControllerActionDescriptor controllerActionDescriptor = descriptor as ControllerActionDescriptor;
-            if (controllerActionDescriptor != null)
+            if (descriptor is ControllerActionDescriptor controllerActionDescriptor)
             {
                 return controllerActionDescriptor.MethodInfo.ToString();
             }

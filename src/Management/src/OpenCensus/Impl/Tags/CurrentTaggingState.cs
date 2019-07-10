@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Census.Tags
     public sealed class CurrentTaggingState
     {
         private TaggingState currentState = TaggingState.ENABLED;
-        private object _lck = new object();
+        private readonly object _lck = new object();
         private bool isRead;
 
         public TaggingState Value

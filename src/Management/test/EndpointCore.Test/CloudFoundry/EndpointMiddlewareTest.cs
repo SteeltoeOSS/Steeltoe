@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/cloudfoundryapplication",

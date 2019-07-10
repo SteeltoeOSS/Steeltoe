@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
         private static readonly ISetter<IDictionary<string, string>> Setter = new TestSetter();
 #pragma warning restore SA1204 // Static elements must appear before instance elements
         private static readonly IGetter<IDictionary<string, string>> Getter = new TestGetter();
-        private ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output;
 
         public B3FormatTest(ITestOutputHelper output)
         {

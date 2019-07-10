@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Census.Stats
     internal class CumulativeMutableViewData : MutableViewData
     {
         private ITimestamp start;
-        private IDictionary<TagValues, MutableAggregation> tagValueAggregationMap = new Dictionary<TagValues, MutableAggregation>();
+        private readonly IDictionary<TagValues, MutableAggregation> tagValueAggregationMap = new Dictionary<TagValues, MutableAggregation>();
 
         internal CumulativeMutableViewData(IView view, ITimestamp start)
             : base(view)

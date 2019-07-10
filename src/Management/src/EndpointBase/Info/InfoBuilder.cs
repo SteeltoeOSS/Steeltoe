@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.Info
 {
     public class InfoBuilder : IInfoBuilder
     {
-        private Dictionary<string, object> info = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> info = new Dictionary<string, object>();
 
         public Dictionary<string, object> Build()
         {

@@ -21,8 +21,8 @@ namespace Steeltoe.Management.Census.Testing.Common
     public class TestClock : IClock
     {
         private const int NUM_NANOS_PER_SECOND = 1000 * 1000 * 1000;
+        private readonly object _lck = new object();
         private ITimestamp currentTime = Timestamp.Create(1493419949, 223123456);
-        private object _lck = new object();
 
         public static TestClock Create()
         {
@@ -31,9 +31,10 @@ namespace Steeltoe.Management.Census.Testing.Common
 
         public static TestClock Create(ITimestamp time)
         {
-            TestClock clock = new TestClock();
-            clock.Time = time;
-            return clock;
+            return new TestClock
+            {
+                Time = time
+            };
         }
 
         public ITimestamp Time

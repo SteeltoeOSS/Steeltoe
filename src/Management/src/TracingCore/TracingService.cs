@@ -22,8 +22,8 @@ namespace Steeltoe.Management.Tracing
 {
     internal class TracingService : IHostedService
     {
-        private IDiagnosticsManager observerManager;
-        private ILogger<TracingService> logger;
+        private readonly IDiagnosticsManager observerManager;
+        private readonly ILogger<TracingService> logger;
 
         public TracingService(IDiagnosticsManager observerManager, ILogger<TracingService> logger = null)
         {

@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public class HealthEndpointMiddleware : EndpointMiddleware<HealthCheckResult, ISecurityContext>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public HealthEndpointMiddleware(RequestDelegate next, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
             : base(mgmtOptions: mgmtOptions, logger: logger)

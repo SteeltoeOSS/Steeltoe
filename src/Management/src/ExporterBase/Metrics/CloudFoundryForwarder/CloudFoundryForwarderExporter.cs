@@ -36,9 +36,9 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         private readonly ILogger<CloudFoundryForwarderExporter> logger;
         private readonly ICloudFoundryMetricWriter metricFormatWriter;
 
-        private CloudFoundryForwarderOptions options;
-        private IStats stats;
-        private IViewManager viewManager;
+        private readonly CloudFoundryForwarderOptions options;
+        private readonly IStats stats;
+        private readonly IViewManager viewManager;
         private Thread workerThread;
         private bool shutdown = false;
 

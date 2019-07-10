@@ -25,8 +25,8 @@ namespace Steeltoe.Management.Endpoint.Env
     {
         private readonly ILogger<EnvEndpoint> _logger;
         private readonly IConfiguration _configuration;
-        private IHostingEnvironment _env;
-        private Sanitizer _sanitizer;
+        private readonly IHostingEnvironment _env;
+        private readonly Sanitizer _sanitizer;
 
         public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostingEnvironment env, ILogger<EnvEndpoint> logger = null)
             : base(options)
