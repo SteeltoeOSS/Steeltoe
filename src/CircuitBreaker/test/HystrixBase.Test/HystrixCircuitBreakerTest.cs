@@ -207,7 +207,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(cb.IsOpen);
         }
 
-        [Fact(Skip = "Fails on hosted agent")]
+        [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleTestOnOpenCircuitAfterTimeWindow()
         {
             string key = "cmd-F";

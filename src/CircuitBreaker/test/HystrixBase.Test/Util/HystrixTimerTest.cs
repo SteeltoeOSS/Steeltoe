@@ -37,7 +37,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             HystrixPlugins.Reset();
         }
 
-        [Fact(Skip = "Fails on hosted agent")]
+        [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleCommandSingleInterval()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
@@ -104,6 +105,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleCommandRemoveListener()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
