@@ -97,7 +97,7 @@ jobs:
       organization: 'steeltoeoss'
       projectKey: 'SteeltoeOSS_steeltoe'
       extraProperties: |
-        sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)\CodeCoverage\opencover.xml"
+        sonar.coverageReportPaths="$(Build.SourcesDirectory)\src\*\Test\*\coverage.opencover.xml"
   - task: DotNetCoreCLI@2
     inputs:
       command: 'pack'

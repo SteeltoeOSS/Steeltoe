@@ -197,6 +197,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void TestShortCircuitedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");
