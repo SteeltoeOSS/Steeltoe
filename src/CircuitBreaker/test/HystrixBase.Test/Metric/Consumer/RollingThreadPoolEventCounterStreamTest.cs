@@ -262,6 +262,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void TestShortCircuited()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-G");
