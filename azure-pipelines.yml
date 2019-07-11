@@ -30,9 +30,13 @@ jobs:
       arguments: $(PivNetAPIToken)
   - task: DotNetCoreCLI@2
     inputs:
+      command: restore
+      projects: 'src/Steeltoe.All.sln'
+  - task: DotNetCoreCLI@2
+    inputs:
       command: build
       projects: 'src/Steeltoe.All.sln'
-      arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
+      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
   - task: DotNetCoreCLI@2
     inputs:
       command: test
@@ -49,9 +53,13 @@ jobs:
       arguments: $(PivNetAPIToken)
   - task: DotNetCoreCLI@2
     inputs:
+      command: restore
+      projects: 'src/Steeltoe.All.sln'
+  - task: DotNetCoreCLI@2
+    inputs:
       command: build
       projects: 'src/Steeltoe.All.sln'
-      arguments: '-c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
+      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
   - task: DotNetCoreCLI@2
     inputs:
       command: test
