@@ -29,7 +29,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             if (context.Request.Headers["X-Forwarded-Proto"] == "https" && context.Request.Scheme != "https")
             {
                 context.Request.Scheme = "https";
-                context.Request.Headers.Remove("X-Forwarded-Proto");
             }
 
             await Next.Invoke(context).ConfigureAwait(false);
