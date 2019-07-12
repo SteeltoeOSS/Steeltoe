@@ -171,6 +171,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestTripCircuitOnTimeoutsAboveThreshold()
         {
             string key = "cmd-E";
