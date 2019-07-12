@@ -82,6 +82,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleBucketGetsStored()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-B");
@@ -513,6 +514,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleBucketsBothGetStoredAndThenAgeOut()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-I");

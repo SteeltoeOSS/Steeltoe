@@ -258,7 +258,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void Subscribe_Listener_StopActivity_AddsToQueue()
         {
             DiagnosticListener listener = new DiagnosticListener("Microsoft.AspNetCore");
