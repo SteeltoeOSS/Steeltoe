@@ -144,6 +144,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void TestTripCircuitOnTimeouts()
         {
             string key = "cmd-D";

@@ -502,7 +502,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCircuitBreakerAcrossMultipleCommandsButSameCircuitBreaker()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("SharedCircuitBreaker");
