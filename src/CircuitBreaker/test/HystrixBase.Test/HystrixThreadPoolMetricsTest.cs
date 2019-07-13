@@ -25,8 +25,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixThreadPoolMetricsTest : HystrixTestBase, IDisposable
     {
-        private static readonly IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
-        private static readonly IHystrixThreadPoolKey tpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
+        private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
+        private static readonly IHystrixThreadPoolKey TpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
         private readonly ITestOutputHelper output;
 
         public HystrixThreadPoolMetricsTest(ITestOutputHelper output)
@@ -51,7 +51,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void ShouldReturnOneExecutedTask()
         {
             // given
-            var stream = RollingThreadPoolEventCounterStream.GetInstance(tpKey, 10, 100);
+            var stream = RollingThreadPoolEventCounterStream.GetInstance(TpKey, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
             var cmd = new NoOpHystrixCommand(output);
@@ -84,7 +84,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private static IHystrixThreadPoolOptions GetThreadPoolOptions()
             {
-                HystrixThreadPoolOptions opts = new HystrixThreadPoolOptions(tpKey)
+                HystrixThreadPoolOptions opts = new HystrixThreadPoolOptions(TpKey)
                 {
                     MetricsRollingStatisticalWindowInMilliseconds = 100
                 };
@@ -95,8 +95,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 HystrixCommandOptions opts = new HystrixCommandOptions()
                 {
-                    GroupKey = groupKey,
-                    ThreadPoolKey = tpKey,
+                    GroupKey = GroupKey,
+                    ThreadPoolKey = TpKey,
                     ThreadPoolOptions = GetThreadPoolOptions()
                 };
                 return opts;
