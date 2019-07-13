@@ -25,9 +25,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixThreadPoolMetricsTest : HystrixTestBase, IDisposable
     {
-        private static IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
-        private static IHystrixThreadPoolKey tpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
-        private ITestOutputHelper output;
+        private static readonly IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
+        private static readonly IHystrixThreadPoolKey tpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
+        private readonly ITestOutputHelper output;
 
         public HystrixThreadPoolMetricsTest(ITestOutputHelper output)
             : base()
@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void ShouldReturnOneExecutedTask()
         {
             // given
@@ -68,7 +68,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class NoOpHystrixCommand : HystrixCommand<bool>
         {
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public NoOpHystrixCommand(ITestOutputHelper output)
                 : base(GetCommandOptions())

@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixCircuitBreakerTest : HystrixTestBase, IDisposable
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixCircuitBreakerTest(ITestOutputHelper output)
             : base()
@@ -623,16 +623,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private void LogHC<T>(IHystrixInvokable command, T response)
             {
-                if (command is IHystrixInvokableInfo)
+                if (command is IHystrixInvokableInfo commandInfo)
                 {
-                    IHystrixInvokableInfo commandInfo = (IHystrixInvokableInfo)command;
-                    HystrixCommandMetrics metrics = commandInfo.Metrics;
+                    var metrics = commandInfo.Metrics;
 
-                    // output.WriteLine("cb/error-count/%/total: "
-                    //        + commandInfo.IsCircuitBreakerOpen + " "
-                    //        + metrics.Healthcounts.ErrorCount + " "
-                    //        + metrics.Healthcounts.ErrorPercentage + " "
-                    //        + metrics.Healthcounts.TotalRequests + "  => " + response + "  " + commandInfo.ExecutionEvents);
+                    Console.WriteLine("cb/error-count/%/total: "
+                            + commandInfo.IsCircuitBreakerOpen + " "
+                            + metrics.Healthcounts.ErrorCount + " "
+                            + metrics.Healthcounts.ErrorPercentage + " "
+                            + metrics.Healthcounts.TotalRequests + "  => " + response + "  " + commandInfo.ExecutionEvents);
                 }
             }
         }

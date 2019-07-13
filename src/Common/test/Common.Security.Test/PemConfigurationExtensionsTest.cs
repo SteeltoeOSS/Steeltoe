@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 using System.Threading;
@@ -94,7 +92,7 @@ namespace Steeltoe.Common.Security.Test
             Assert.True(changeCalled);
         }
 
-        private static string CreateTempFile(string contents)
+        private string CreateTempFile(string contents)
         {
             var tempFile = Path.GetTempFileName();
             File.WriteAllText(tempFile, contents);

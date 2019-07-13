@@ -22,11 +22,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 {
     public class HystrixTimerTest : IDisposable
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixTimerTest(ITestOutputHelper output)
         {
-            HystrixTimer timer = HystrixTimer.GetInstance();
+            _ = HystrixTimer.GetInstance();
             HystrixTimer.Reset();
             HystrixPlugins.Reset();
             this.output = output;
@@ -37,15 +37,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             HystrixPlugins.Reset();
         }
 
+        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleCommandSingleInterval()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(50, "A");
+            TestListener l1 = new TestListener(50);
             timer.AddTimerListener(l1);
 
-            TestListener l2 = new TestListener(50, "B");
+            TestListener l2 = new TestListener(50);
             timer.AddTimerListener(l2);
 
             try
@@ -64,18 +64,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             Assert.True(l2.TickCount.Value > 7);
         }
 
+        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
-        [Trait("Category", "SkipOnMacOS")]
         public void TestSingleCommandMultipleIntervals()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(100, "A");
+            TestListener l1 = new TestListener(100);
             timer.AddTimerListener(l1);
 
-            TestListener l2 = new TestListener(10, "B");
+            TestListener l2 = new TestListener(10);
             timer.AddTimerListener(l2);
 
-            TestListener l3 = new TestListener(25, "C");
+            TestListener l3 = new TestListener(25);
             timer.AddTimerListener(l3);
 
             try
@@ -105,15 +105,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             Assert.True(l3.TickCount.Value < 25);
         }
 
+        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleCommandRemoveListener()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(50, "A");
+            TestListener l1 = new TestListener(50);
             timer.AddTimerListener(l1);
 
-            TestListener l2 = new TestListener(50, "B");
+            TestListener l2 = new TestListener(50);
             TimerReference l2ref = timer.AddTimerListener(l2);
 
             try
@@ -164,7 +164,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         public void TestReset()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(50, "A");
+            TestListener l1 = new TestListener(50);
             TimerReference tref = timer.AddTimerListener(l1);
 
             Task ex = tref._timerTask;
@@ -182,7 +182,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             Assert.Null(tref._timerTask);
 
             // assert it starts up again on use
-            TestListener l2 = new TestListener(50, "A");
+            TestListener l2 = new TestListener(50);
             TimerReference tref2 = timer.AddTimerListener(l2);
 
             Task ex2 = tref2._timerTask;
@@ -199,11 +199,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         private class TestListener : ITimerListener
         {
             public AtomicInteger TickCount = new AtomicInteger();
-            private int interval;
 
-            public TestListener(int interval, string value)
+            public TestListener(int interval)
             {
-                this.interval = interval;
+                IntervalTimeInMilliseconds = interval;
             }
 
             public void Tick()
@@ -211,10 +210,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 TickCount.IncrementAndGet();
             }
 
-            public int IntervalTimeInMilliseconds
-            {
-                get { return interval; }
-            }
+            public int IntervalTimeInMilliseconds { get; private set; }
         }
     }
 }

@@ -19,10 +19,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 {
     public class HystrixTimer
     {
-        private static HystrixTimer instance = new HystrixTimer();
+        private static readonly HystrixTimer Instance = new HystrixTimer();
 
-        private List<TimerReference> timerList = new List<TimerReference>();
-        private object _lock = new object();
+        private readonly List<TimerReference> timerList = new List<TimerReference>();
+        private readonly object _lock = new object();
 
         private HystrixTimer()
         {
@@ -30,7 +30,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         public static HystrixTimer GetInstance()
         {
-            return instance;
+            return Instance;
         }
 
         public static void Reset()

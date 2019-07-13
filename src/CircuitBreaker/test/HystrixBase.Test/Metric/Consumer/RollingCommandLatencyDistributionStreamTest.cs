@@ -28,8 +28,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest, IDisposable
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("CommandLatency");
+        private readonly ITestOutputHelper output;
         private RollingCommandLatencyDistributionStream stream;
-        private ITestOutputHelper output;
 
         public RollingCommandLatencyDistributionStreamTest(ITestOutputHelper output)
             : base()
@@ -198,7 +198,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestShortCircuitedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");

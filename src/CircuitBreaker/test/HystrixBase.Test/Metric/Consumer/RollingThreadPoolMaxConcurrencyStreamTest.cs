@@ -28,13 +28,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingThreadPoolMaxConcurrencyStreamTest : CommandStreamTest, IDisposable
     {
+        private readonly ITestOutputHelper output;
         private RollingThreadPoolMaxConcurrencyStream stream;
-        private ITestOutputHelper output;
 
         private class LatchedObserver : ObserverBase<int>
         {
-            private CountdownEvent latch;
-            private ITestOutputHelper output;
+            private readonly CountdownEvent latch;
+            private readonly ITestOutputHelper output;
 
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
@@ -58,7 +58,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
         }
 
-        private static LatchedObserver GetSubscriber(ITestOutputHelper output, CountdownEvent latch)
+        private LatchedObserver GetSubscriber(ITestOutputHelper output, CountdownEvent latch)
         {
             return new LatchedObserver(output, latch);
         }
@@ -82,9 +82,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public void TestEmptyStreamProducesZeros()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-A");
+            _ = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-A");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-A");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-A");
+            _ = HystrixCommandKeyDefault.AsKey("RollingConcurrency-A");
             stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
