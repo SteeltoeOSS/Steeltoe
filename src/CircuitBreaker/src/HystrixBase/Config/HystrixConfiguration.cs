@@ -18,18 +18,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 {
     public class HystrixConfiguration
     {
-        private readonly Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> commandConfig;
-        private readonly Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> threadPoolConfig;
-        private readonly Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration> collapserConfig;
-
         public HystrixConfiguration(
             Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> commandConfig,
             Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> threadPoolConfig,
             Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration> collapserConfig)
         {
-            this.commandConfig = commandConfig;
-            this.threadPoolConfig = threadPoolConfig;
-            this.collapserConfig = collapserConfig;
+            CommandConfig = commandConfig;
+            ThreadPoolConfig = threadPoolConfig;
+            CollapserConfig = collapserConfig;
         }
 
         public static HystrixConfiguration From(
@@ -40,19 +36,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             return new HystrixConfiguration(commandConfig, threadPoolConfig, collapserConfig);
         }
 
-        public Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> CommandConfig
-        {
-            get { return commandConfig; }
-        }
+        public Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> CommandConfig { get; }
 
-        public Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> ThreadPoolConfig
-        {
-             get { return threadPoolConfig; }
-        }
+        public Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> ThreadPoolConfig { get; }
 
-        public Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration> CollapserConfig
-        {
-            get { return collapserConfig; }
-        }
+        public Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration> CollapserConfig { get; }
     }
 }

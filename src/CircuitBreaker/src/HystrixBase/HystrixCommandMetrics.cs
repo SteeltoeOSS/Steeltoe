@@ -120,10 +120,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             Metrics.Clear();
         }
 
-        private readonly IHystrixCommandOptions properties;
-        private readonly IHystrixCommandKey key;
-        private readonly IHystrixCommandGroupKey group;
-        private readonly IHystrixThreadPoolKey threadPoolKey;
         private readonly AtomicInteger concurrentExecutionCount = new AtomicInteger();
 
         private readonly RollingCommandEventCounterStream rollingCommandEventCounterStream;
@@ -139,10 +135,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         internal HystrixCommandMetrics(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixThreadPoolKey threadPoolKey, IHystrixCommandOptions properties, HystrixEventNotifier eventNotifier)
             : base(null)
         {
-            this.key = key;
-            this.group = commandGroup;
-            this.threadPoolKey = threadPoolKey;
-            this.properties = properties;
+            CommandKey = key;
+            CommandGroup = commandGroup;
+            ThreadPoolKey = threadPoolKey;
+            Properties = properties;
 
             healthCountsStream = HealthCountsStream.GetInstance(key, properties);
             rollingCommandEventCounterStream = RollingCommandEventCounterStream.GetInstance(key, properties);
@@ -159,30 +155,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             lock (_syncLock)
             {
                 healthCountsStream.Unsubscribe();
-                HealthCountsStream.RemoveByKey(key);
-                healthCountsStream = HealthCountsStream.GetInstance(key, properties);
+                HealthCountsStream.RemoveByKey(CommandKey);
+                healthCountsStream = HealthCountsStream.GetInstance(CommandKey, Properties);
             }
         }
 
-        public IHystrixCommandKey CommandKey
-        {
-            get { return key; }
-        }
+        public IHystrixCommandKey CommandKey { get; }
 
-        public IHystrixCommandGroupKey CommandGroup
-        {
-            get { return group; }
-        }
+        public IHystrixCommandGroupKey CommandGroup { get; }
 
-        public IHystrixThreadPoolKey ThreadPoolKey
-        {
-            get { return threadPoolKey; }
-        }
+        public IHystrixThreadPoolKey ThreadPoolKey { get; }
 
-        public IHystrixCommandOptions Properties
-        {
-            get { return properties; }
-        }
+        public IHystrixCommandOptions Properties { get; }
 
         public long GetRollingCount(HystrixEventType eventType)
         {
@@ -219,20 +203,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return rollingCommandUserLatencyDistributionStream.GetLatestPercentile(percentile);
         }
 
-        public int TotalTimeMean
-        {
-            get { return rollingCommandUserLatencyDistributionStream.LatestMean; }
-        }
+        public int TotalTimeMean => rollingCommandUserLatencyDistributionStream.LatestMean;
 
-        public long RollingMaxConcurrentExecutions
-        {
-            get { return rollingCommandMaxConcurrencyStream.LatestRollingMax; }
-        }
+        public long RollingMaxConcurrentExecutions => rollingCommandMaxConcurrencyStream.LatestRollingMax;
 
-        public int CurrentConcurrentExecutionCount
-        {
-            get { return concurrentExecutionCount.Value; }
-        }
+        public int CurrentConcurrentExecutionCount => concurrentExecutionCount.Value;
 
         internal void MarkCommandStart(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, ExecutionIsolationStrategy isolationStrategy)
         {
@@ -249,10 +224,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
-        public HealthCounts Healthcounts
-        {
-            get { return healthCountsStream.Latest; }
-        }
+        public HealthCounts Healthcounts => healthCountsStream.Latest;
 
         private void UnsubscribeAll()
         {

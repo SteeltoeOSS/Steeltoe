@@ -21,14 +21,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
             // Don't do anything here (no-operation)
         }
 
-        public bool AllowRequest
-        {
-            get { return true; }
-        }
+        public bool AllowRequest => true;
 
-        public bool IsOpen
-        {
-            get { return false; }
-        }
+        public bool IsOpen => false;
     }
 }

@@ -335,7 +335,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public async void TestObserveSuccess()
+        public async Task TestObserveSuccess()
         {
             TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
             Assert.Equal(FlexibleTestHystrixCommand.EXECUTE_VALUE, await command.Observe().SingleAsync());
@@ -502,8 +502,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void TestCircuitBreakerAcrossMultipleCommandsButSameCircuitBreaker()
+        public async Task TestCircuitBreakerAcrossMultipleCommandsButSameCircuitBreaker()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("SharedCircuitBreaker");
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker(key);
@@ -513,7 +512,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // failure 1
             TestHystrixCommand<int> attempt1 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
             output.WriteLine("COMMAND KEY (from cmd): " + attempt1.CommandKey.Name);
-            attempt1.Execute();
+            await attempt1.ExecuteAsync();
             Time.Wait(100);
             Assert.True(attempt1.IsResponseFromFallback);
             Assert.False(attempt1.IsCircuitBreakerOpen);
@@ -521,7 +520,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // failure 2 with a different command, same circuit breaker
             TestHystrixCommand<int> attempt2 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
-            attempt2.Execute();
+            await attempt2.ExecuteAsync();
             Time.Wait(100);
             Assert.True(attempt2.IsFailedExecution);
             Assert.True(attempt2.IsResponseFromFallback);
@@ -530,7 +529,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // failure 3 of the Hystrix, 2nd for this particular HystrixCommand
             TestHystrixCommand<int> attempt3 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
-            attempt3.Execute();
+            await attempt3.ExecuteAsync();
             Time.Wait(150);
             Assert.True(attempt3.IsFailedExecution);
             Assert.True(attempt3.IsResponseFromFallback);
@@ -542,7 +541,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // attempt 4
             TestHystrixCommand<int> attempt4 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
-            attempt4.Execute();
+            await attempt4.ExecuteAsync();
             Time.Wait(100);
             Assert.True(attempt4.IsResponseFromFallback);
 
@@ -734,15 +733,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             try
             {
                 var result = await command.ExecuteAsync();
-                Assert.True(false, "we shouldn't get here");
+                Assert.True(false, "Looks like the 'FailureCommand' didn't fail");
             }
             catch (HystrixRuntimeException e)
             {
                 Assert.NotNull(e.FallbackException);
-                Assert.False(e.FallbackException is InvalidOperationException);
+                Assert.False(e.FallbackException is InvalidOperationException, "Fallback exception was unexpected type");
                 Assert.NotNull(e.ImplementingClass);
                 Assert.NotNull(e.InnerException);
-                Assert.True(e.InnerException is TimeoutException);
+                Assert.True(e.InnerException is TimeoutException, "Inner exception was unexpected type");
             }
 
             AssertCommandExecutionEvents(command, HystrixEventType.TIMEOUT, HystrixEventType.FALLBACK_FAILURE);
@@ -850,7 +849,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public async void TestRejectedThreadWithNoFallback()
+        public async Task TestRejectedThreadWithNoFallback()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-NoFallback");
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
@@ -1005,7 +1004,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public async void TestRejectedThreadUsingQueueSize()
+        public async Task TestRejectedThreadUsingQueueSize()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-B");
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();

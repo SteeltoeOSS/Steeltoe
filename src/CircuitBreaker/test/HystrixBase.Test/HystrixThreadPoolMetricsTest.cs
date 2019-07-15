@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -47,15 +48,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void ShouldReturnOneExecutedTask()
+        public async Task ShouldReturnOneExecutedTask()
         {
             // given
             var stream = RollingThreadPoolEventCounterStream.GetInstance(TpKey, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
             var cmd = new NoOpHystrixCommand(output);
-            cmd.Execute();
+            await cmd.ExecuteAsync();
             Time.Wait(125);
 
             ICollection<HystrixThreadPoolMetrics> instances = HystrixThreadPoolMetrics.GetInstances();

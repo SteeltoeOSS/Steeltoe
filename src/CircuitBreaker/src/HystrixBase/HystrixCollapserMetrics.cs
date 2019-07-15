@@ -70,9 +70,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             Metrics.Clear();
         }
 
-        private readonly IHystrixCollapserKey collapserKey;
-        private readonly IHystrixCollapserOptions properties;
-
         private readonly RollingCollapserEventCounterStream rollingCollapserEventCounterStream;
         private readonly CumulativeCollapserEventCounterStream cumulativeCollapserEventCounterStream;
         private readonly RollingCollapserBatchSizeDistributionStream rollingCollapserBatchSizeDistributionStream;
@@ -80,23 +77,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         internal HystrixCollapserMetrics(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
             : base(null)
         {
-            this.collapserKey = key;
-            this.properties = properties;
+            CollapserKey = key;
+            Properties = properties;
 
             rollingCollapserEventCounterStream = RollingCollapserEventCounterStream.GetInstance(key, properties);
             cumulativeCollapserEventCounterStream = CumulativeCollapserEventCounterStream.GetInstance(key, properties);
             rollingCollapserBatchSizeDistributionStream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, properties);
         }
 
-        public IHystrixCollapserKey CollapserKey
-        {
-            get { return collapserKey; }
-        }
+        public IHystrixCollapserKey CollapserKey { get; }
 
-        public IHystrixCollapserOptions Properties
-        {
-            get { return properties; }
-        }
+        public IHystrixCollapserOptions Properties { get; }
 
         public long GetRollingCount(CollapserEventType collapserEventType)
         {
@@ -133,10 +124,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return 0;
         }
 
-        public int ShardSizeMean
-        {
-            get { return 0; }
-        }
+        public int ShardSizeMean => 0;
 
         public void MarkRequestBatched()
         {
@@ -145,12 +133,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public void MarkResponseFromCache()
         {
-            HystrixThreadEventStream.GetInstance().CollapserResponseFromCache(collapserKey);
+            HystrixThreadEventStream.GetInstance().CollapserResponseFromCache(CollapserKey);
         }
 
         public void MarkBatch(int batchSize)
         {
-            HystrixThreadEventStream.GetInstance().CollapserBatchExecuted(collapserKey, batchSize);
+            HystrixThreadEventStream.GetInstance().CollapserBatchExecuted(CollapserKey, batchSize);
         }
 
         public void MarkShards(int numShards)
