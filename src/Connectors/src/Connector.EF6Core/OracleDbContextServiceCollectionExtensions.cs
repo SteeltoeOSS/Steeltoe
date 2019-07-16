@@ -86,9 +86,9 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
 
         private static void DoAdd(IServiceCollection services, IConfiguration config, OracleServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
-            OracleProviderConnectorOptions OracleConfig = new OracleProviderConnectorOptions(config);
+            OracleProviderConnectorOptions oracleConfig = new OracleProviderConnectorOptions(config);
 
-            OracleDbContextConnectorFactory factory = new OracleDbContextConnectorFactory(info, OracleConfig, dbContextType);
+            OracleDbContextConnectorFactory factory = new OracleDbContextConnectorFactory(info, oracleConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
     }

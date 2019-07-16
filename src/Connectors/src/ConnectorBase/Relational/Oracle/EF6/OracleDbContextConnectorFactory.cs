@@ -18,7 +18,7 @@ using System;
 
 namespace Steeltoe.CloudFoundry.ConnectorBase.Relational.Oracle.EF6
 {
-    public class OracleDbContextConnectorFactory:OracleProviderConnectorFactory
+    public class OracleDbContextConnectorFactory : OracleProviderConnectorFactory
     {
         public OracleDbContextConnectorFactory(OracleServiceInfo info, OracleProviderConnectorOptions config, Type dbContextType)
     : base(info, config, dbContextType)

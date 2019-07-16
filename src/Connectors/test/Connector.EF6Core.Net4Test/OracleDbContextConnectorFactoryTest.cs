@@ -57,7 +57,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EF6.Test
                 Port = 1521,
                 Password = "I2rK7m8vGPs=1",
                 Username = "SYSTEM",
-                ServiceName= "ORCLCDB"
+                ServiceName = "ORCLCDB"
             };
             OracleServiceInfo si = new OracleServiceInfo("MyId", "Oracle://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var factory = new OracleDbContextConnectorFactory(si, config, typeof(GoodOracleDbContext));

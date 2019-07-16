@@ -57,12 +57,14 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore
             {
                 throw new ArgumentException(nameof(serviceName));
             }
-            var connection = GetConnection(config,serviceName);
+
+            var connection = GetConnection(config, serviceName);
 
             return DoUseOracle(optionsBuilder, connection, oracleOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseOracle<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object oracleOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseOracle<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object oracleOptionsAction = null)
+            where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
@@ -79,7 +81,8 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore
             return DoUseOracle<TContext>(optionsBuilder, connection, oracleOptionsAction);
         }
 
-        public static DbContextOptionsBuilder<TContext> UseOracle<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object oracleOptionsAction = null) where TContext : DbContext
+        public static DbContextOptionsBuilder<TContext> UseOracle<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object oracleOptionsAction = null)
+            where TContext : DbContext
         {
             if (optionsBuilder == null)
             {
