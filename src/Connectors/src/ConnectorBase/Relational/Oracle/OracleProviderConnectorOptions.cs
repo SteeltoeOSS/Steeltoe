@@ -41,17 +41,6 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
 
             section.Bind(this);
 
-            if (Uri != null)
-            {
-                Server = Uri.Split(':')[2].Substring(2);
-            }
-
-            Username = Uid;
-            ServiceName = Service;
-            Password = Pw;
-
-            section.Bind(this);
-
             cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
@@ -66,14 +55,6 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
         public string Password { get; set; }
 
         public string ServiceName { get; set; }
-
-        public string Uid { get; set; }
-
-        public string Uri { get; set; }
-
-        public string Service { get; set; }
-
-        public string Pw { get; set; }
 
         internal Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
 
