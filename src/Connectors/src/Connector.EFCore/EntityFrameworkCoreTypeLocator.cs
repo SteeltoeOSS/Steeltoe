@@ -68,5 +68,21 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
         public static Type SqlServerDbContextOptionsType => ConnectorHelpers.FindTypeOrThrow(SqlServerEntityAssemblies, SqlServerEntityTypeNames, "DbContextOptionsBuilder", "a Microsoft SQL Server EntityFramework Core assembly");
+
+        /// <summary>
+        /// Gets a list of supported Oracle Entity Framework Core Assemblies
+        /// </summary>
+        public static string[] OracleEntityAssemblies { get; internal set; } = new string[] { "Oracle.EntityFrameworkCore", "Devart.Data.Oracle.EFCore" };
+
+        /// <summary>
+        /// Gets a list of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore
+        /// </summary>
+        public static string[] OracleEntityTypeNames { get; internal set; } = new string[] { "Microsoft.EntityFrameworkCore.OracleDbContextOptionsExtensions", "Devart.Data.Oracle.Entity.OracleOptionsExtension" };
+
+        /// <summary>
+        /// Gets the type used to configure EntityFramework Core with Oracle
+        /// </summary>
+        /// <exception cref="ConnectorException">When type is not found</exception>
+        public static Type OracleDbContextOptionsType => ConnectorHelpers.FindTypeOrThrow(OracleEntityAssemblies, OracleEntityTypeNames, "DbContextOptionsBuilder", "a Oracle EntityFramework Core assembly");
     }
 }
