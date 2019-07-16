@@ -93,10 +93,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             Metrics.Clear();
         }
 
-        private readonly IHystrixThreadPoolKey threadPoolKey;
-        private readonly IHystrixTaskScheduler threadPool;
-        private readonly IHystrixThreadPoolOptions properties;
-
         private readonly AtomicInteger concurrentExecutionCount = new AtomicInteger();
 
         private readonly RollingThreadPoolEventCounterStream rollingCounterStream;
@@ -106,9 +102,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         private HystrixThreadPoolMetrics(IHystrixThreadPoolKey threadPoolKey, IHystrixTaskScheduler threadPool, IHystrixThreadPoolOptions properties)
             : base(null)
         {
-            this.threadPoolKey = threadPoolKey;
-            this.threadPool = threadPool;
-            this.properties = properties;
+            ThreadPoolKey = threadPoolKey;
+            TaskScheduler = threadPool;
+            Properties = properties;
 
             rollingCounterStream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
             cumulativeCounterStream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
@@ -119,89 +115,44 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             return () =>
             {
-                return HystrixThreadPoolMetrics.GetInstance(threadPoolKey).concurrentExecutionCount.Value;
+                return GetInstance(threadPoolKey).concurrentExecutionCount.Value;
             };
         }
 
-        public IHystrixTaskScheduler TaskScheduler
-        {
-            get { return threadPool; }
-        }
+        public IHystrixTaskScheduler TaskScheduler { get; }
 
-        public IHystrixThreadPoolKey ThreadPoolKey
-        {
-            get { return threadPoolKey; }
-        }
+        public IHystrixThreadPoolKey ThreadPoolKey { get; }
 
-        public IHystrixThreadPoolOptions Properties
-        {
-            get { return properties; }
-        }
+        public IHystrixThreadPoolOptions Properties { get; }
 
-        public int CurrentActiveCount
-        {
-            get { return threadPool.CurrentActiveCount; }
-        }
+        public int CurrentActiveCount => TaskScheduler.CurrentActiveCount;
 
-        public int CurrentCompletedTaskCount
-        {
-            get { return threadPool.CurrentCompletedTaskCount; }
-        }
+        public int CurrentCompletedTaskCount => TaskScheduler.CurrentCompletedTaskCount;
 
-        public int CurrentCorePoolSize
-        {
-            get { return threadPool.CurrentCorePoolSize; }
-        }
+        public int CurrentCorePoolSize => TaskScheduler.CurrentCorePoolSize;
 
-        public int CurrentLargestPoolSize
-        {
-            get { return threadPool.CurrentLargestPoolSize; }
-        }
+        public int CurrentLargestPoolSize => TaskScheduler.CurrentLargestPoolSize;
 
-        public int CurrentMaximumPoolSize
-        {
-            get { return threadPool.CurrentMaximumPoolSize; }
-        }
+        public int CurrentMaximumPoolSize => TaskScheduler.CurrentMaximumPoolSize;
 
-        public int CurrentPoolSize
-        {
-            get { return threadPool.CurrentPoolSize; }
-        }
+        public int CurrentPoolSize => TaskScheduler.CurrentPoolSize;
 
-        public int CurrentTaskCount
-        {
-            get { return threadPool.CurrentTaskCount; }
-        }
+        public int CurrentTaskCount => TaskScheduler.CurrentTaskCount;
 
-        public int CurrentQueueSize
-        {
-            get { return threadPool.CurrentQueueSize; }
-        }
+        public int CurrentQueueSize => TaskScheduler.CurrentQueueSize;
 
         public void MarkThreadExecution()
         {
             concurrentExecutionCount.IncrementAndGet();
         }
 
-        public long RollingCountThreadsExecuted
-        {
-            get { return rollingCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED); }
-        }
+        public long RollingCountThreadsExecuted => rollingCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
 
-        public long CumulativeCountThreadsExecuted
-        {
-            get { return cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED); }
-        }
+        public long CumulativeCountThreadsExecuted => cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
 
-        public long RollingCountThreadsRejected
-        {
-            get { return rollingCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED); }
-        }
+        public long RollingCountThreadsRejected => rollingCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
 
-        public long CumulativeCountThreadsRejected
-        {
-            get { return cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED); }
-        }
+        public long CumulativeCountThreadsRejected => cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
 
         public long GetRollingCount(ThreadPoolEventType @event)
         {

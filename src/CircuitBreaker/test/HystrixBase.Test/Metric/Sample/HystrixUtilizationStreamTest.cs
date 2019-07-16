@@ -86,6 +86,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metrix.Sample.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void TestTwoSubscribersOneUnsubscribes()
         {
             CountdownEvent latch1 = new CountdownEvent(1);

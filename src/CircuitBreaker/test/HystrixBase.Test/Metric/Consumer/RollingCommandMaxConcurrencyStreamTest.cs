@@ -133,8 +133,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
          * Command 1 gets started in Bucket A and not completed until Bucket B
          * Commands 2 and 3 both start and end in Bucket B, and there should be a max-concurrency of 3
          */
-        [Fact(Skip = "Fails on hosted agent")]
-        public void TtestOneCommandCarriesOverToNextBucket()
+        [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
+        public void TestOneCommandCarriesOverToNextBucket()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-C");
             stream = RollingCommandMaxConcurrencyStream.GetInstance(key, 10, 100);
@@ -253,6 +254,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void TestConcurrencyStreamProperlyFiltersOutShortCircuits()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-G");

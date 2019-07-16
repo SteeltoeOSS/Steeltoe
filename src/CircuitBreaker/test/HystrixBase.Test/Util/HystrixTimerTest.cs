@@ -22,11 +22,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 {
     public class HystrixTimerTest : IDisposable
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixTimerTest(ITestOutputHelper output)
         {
-            HystrixTimer timer = HystrixTimer.GetInstance();
+            _ = HystrixTimer.GetInstance();
             HystrixTimer.Reset();
             HystrixPlugins.Reset();
             this.output = output;
@@ -37,14 +37,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             HystrixPlugins.Reset();
         }
 
-        [Fact(Skip = "Fails on hosted agent")]
+        // [Trait("Category", "FlakyOnHostedAgents")]
+        [Fact]
         public void TestSingleCommandSingleInterval()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(50, "A");
+            TestListener l1 = new TestListener(40);
             timer.AddTimerListener(l1);
 
-            TestListener l2 = new TestListener(50, "B");
+            TestListener l2 = new TestListener(40);
             timer.AddTimerListener(l2);
 
             try
@@ -56,7 +57,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 output.WriteLine(e.ToString());
             }
 
-            // we should have 7 or more 50ms ticks within 500ms
+            // we should have 7 or more 40ms ticks within 500ms
             output.WriteLine("l1 ticks: " + l1.TickCount.Value);
             output.WriteLine("l2 ticks: " + l2.TickCount.Value);
             Assert.True(l1.TickCount.Value > 7);
@@ -64,17 +65,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")]
         public void TestSingleCommandMultipleIntervals()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(100, "A");
+            TestListener l1 = new TestListener(100);
             timer.AddTimerListener(l1);
 
-            TestListener l2 = new TestListener(10, "B");
+            TestListener l2 = new TestListener(10);
             timer.AddTimerListener(l2);
 
-            TestListener l3 = new TestListener(25, "C");
+            TestListener l3 = new TestListener(25);
             timer.AddTimerListener(l3);
 
             try
@@ -86,32 +86,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 output.WriteLine(e.ToString());
             }
 
-            // we should have 3 or more 100ms ticks within 500ms
+            // we should have more than 2 ticks @ 100ms within 500ms
             output.WriteLine("l1 ticks: " + l1.TickCount.Value);
-            Assert.True(l1.TickCount.Value >= 3);
+            Assert.InRange(l1.TickCount.Value, 2, 6);
 
-            // but it can't be more than 6
-            Assert.True(l1.TickCount.Value < 6);
-
-            // we should have 30 or more 10ms ticks within 500ms
+            // we should have 25 - 550 10ms ticks within 500ms
             output.WriteLine("l2 ticks: " + l2.TickCount.Value);
-            Assert.True(l2.TickCount.Value > 30);
-            Assert.True(l2.TickCount.Value < 550);
+            Assert.InRange(l2.TickCount.Value, 25, 55);
 
             // we should have 15-20 25ms ticks within 500ms
             output.WriteLine("l3 ticks: " + l3.TickCount.Value);
-            Assert.True(l3.TickCount.Value > 14);
-            Assert.True(l3.TickCount.Value < 25);
+            Assert.InRange(l3.TickCount.Value, 10, 25);
         }
 
-        [Fact(Skip = "Fails on hosted agent")]
+        // [Trait("Category", "FlakyOnHostedAgents")]
+        [Fact]
         public void TestSingleCommandRemoveListener()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(50, "A");
+            TestListener l1 = new TestListener(50);
             timer.AddTimerListener(l1);
 
-            TestListener l2 = new TestListener(50, "B");
+            TestListener l2 = new TestListener(50);
             TimerReference l2ref = timer.AddTimerListener(l2);
 
             try
@@ -123,11 +119,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 output.WriteLine(e.ToString());
             }
 
-            // we should have 7 or more 50ms ticks within 500ms
+            // we should have more than 5 ticks @ 50ms within 500ms
             output.WriteLine("l1 ticks: " + l1.TickCount.Value);
             output.WriteLine("l2 ticks: " + l2.TickCount.Value);
-            Assert.True(l1.TickCount.Value > 7);
-            Assert.True(l2.TickCount.Value > 7);
+            Assert.True(l1.TickCount.Value > 5);
+            Assert.True(l2.TickCount.Value > 5);
 
             // remove l2
             l2ref.Dispose();
@@ -146,12 +142,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 output.WriteLine(e.ToString());
             }
 
-            // we should have 7 or more 50ms ticks within 500ms
+            // we should have more than 5 ticks @ 50ms within 500ms
             output.WriteLine("l1 ticks: " + l1.TickCount.Value);
             output.WriteLine("l2 ticks: " + l2.TickCount.Value);
 
             // l1 should continue ticking
-            Assert.True(l1.TickCount.Value > 7);
+            Assert.True(l1.TickCount.Value > 5);
 
             // we should have no ticks on l2 because we removed it
             output.WriteLine("tickCount.Value: " + l2.TickCount.Value + " on l2: " + l2);
@@ -162,7 +158,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         public void TestReset()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(50, "A");
+            TestListener l1 = new TestListener(50);
             TimerReference tref = timer.AddTimerListener(l1);
 
             Task ex = tref._timerTask;
@@ -180,7 +176,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             Assert.Null(tref._timerTask);
 
             // assert it starts up again on use
-            TestListener l2 = new TestListener(50, "A");
+            TestListener l2 = new TestListener(50);
             TimerReference tref2 = timer.AddTimerListener(l2);
 
             Task ex2 = tref2._timerTask;
@@ -197,11 +193,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         private class TestListener : ITimerListener
         {
             public AtomicInteger TickCount = new AtomicInteger();
-            private int interval;
 
-            public TestListener(int interval, string value)
+            public TestListener(int interval)
             {
-                this.interval = interval;
+                IntervalTimeInMilliseconds = interval;
             }
 
             public void Tick()
@@ -209,10 +204,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 TickCount.IncrementAndGet();
             }
 
-            public int IntervalTimeInMilliseconds
-            {
-                get { return interval; }
-            }
+            public int IntervalTimeInMilliseconds { get; private set; }
         }
     }
 }

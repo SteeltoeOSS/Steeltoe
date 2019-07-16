@@ -48,12 +48,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             }
         }
 
-        public int IntervalTimeInMilliseconds
-        {
-            get
-            {
-                return rq.Properties.TimerDelayInMilliseconds;
-            }
-        }
+        public int IntervalTimeInMilliseconds => rq.Properties.TimerDelayInMilliseconds;
     }
 }
