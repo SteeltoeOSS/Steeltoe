@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Infosys Ltd.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
-            var regBuilder = OracleContainerBuilderExtensions.RegisterOracleConnection(container, config);
+            _ = OracleContainerBuilderExtensions.RegisterOracleConnection(container, config);
             var services = container.Build();
             var dbConn = services.Resolve<IDbConnection>();
 
@@ -70,7 +70,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
-            var regBuilder = OracleContainerBuilderExtensions.RegisterOracleConnection(container, config);
+            _ = OracleContainerBuilderExtensions.RegisterOracleConnection(container, config);
             var services = container.Build();
             var healthContributor = services.Resolve<IHealthContributor>();
 

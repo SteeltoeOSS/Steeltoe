@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Infosys Ltd.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac.Test
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
-            var regBuilder = OracleDbContextContainerBuilderExtensions.RegisterDbContext<GoodOracleDbContextcs>(container, config);
+            _ = OracleDbContextContainerBuilderExtensions.RegisterDbContext<GoodOracleDbContextcs>(container, config);
             var services = container.Build();
             var dbConn = services.Resolve<GoodOracleDbContextcs>();
 

@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Infosys Ltd.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector;
 using System;
 
-namespace Steeltoe.CloudFoundry.ConnectorBase.Relational.Oracle
+namespace Steeltoe.CloudFoundry.Connector.Oracle
 {
     /// <summary>
     /// Assemblies and types used for interacting with Oracle
@@ -23,14 +22,14 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Relational.Oracle
     public static class OracleTypeLocator
     {
         /// <summary>
-        /// List of supported Oracle Client assemblies
+        /// Gets a list of supported Oracle Client assemblies
         /// </summary>
-        public static string[] Assemblies = new string[] { "Oracle.ManagedDataAccess" };
+        public static string[] Assemblies { get; internal set; } = new string[] { "Oracle.ManagedDataAccess" };
 
         /// <summary>
-        /// List of Oracle types that implement IDbConnection
+        /// Gets a list of Oracle types that implement IDbConnection
         /// </summary>
-        public static string[] ConnectionTypeNames = new string[] { "Oracle.ManagedDataAccess.Client.OracleConnection" };
+        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "Oracle.ManagedDataAccess.Client.OracleConnection" };
 
         /// <summary>
         /// Gets SqlConnection from a Oracle Library

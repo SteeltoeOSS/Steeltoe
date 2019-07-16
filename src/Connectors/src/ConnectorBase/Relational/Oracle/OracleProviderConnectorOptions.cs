@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Infosys Ltd.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.CloudFoundry.ConnectorBase.Relational.Oracle
+namespace Steeltoe.CloudFoundry.Connector.Oracle
 {
     public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
     {
@@ -85,8 +84,7 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Relational.Oracle
                 return ConnectionString;
             }
 
-            return string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};", Username, Password, 
-                Server, Port, ServiceName);
+            return string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};", Username, Password, Server, Port, ServiceName);
         }
     }
 }

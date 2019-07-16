@@ -15,10 +15,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.MySql;
+using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.PostgreSql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
-using Steeltoe.CloudFoundry.ConnectorBase.Relational.Oracle;
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;

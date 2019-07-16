@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Infosys Ltd.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,12 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.ConnectorBase.Relational.Oracle;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.ConnectorBase.Test.Relational.Oracle
+namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
 {
     public class OracleProviderConnectorOptionsTest
     {

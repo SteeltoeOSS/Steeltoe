@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Infosys Ltd.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.ConnectorBase.Relational.Oracle.EF6
+namespace Steeltoe.CloudFoundry.Connector.Oracle.EF6
 {
     public class OracleDbContextConnectorFactory : OracleProviderConnectorFactory
     {
         public OracleDbContextConnectorFactory(OracleServiceInfo info, OracleProviderConnectorOptions config, Type dbContextType)
-    : base(info, config, dbContextType)
+            : base(info, config, dbContextType)
         {
             if (dbContextType == null)
             {

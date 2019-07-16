@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Infosys Ltd.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.CloudFoundry.ConnectorBase.Relational.Oracle;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.ConnectorBase.Test.Relational.Oracle
+namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
 {
     public class OracleProviderConfigurerTest
     {
@@ -79,8 +78,7 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Test.Relational.Oracle
 
             OracleProviderConfigurer configurer = new OracleProviderConfigurer();
             var opts = configurer.Configure(null, config);
-            string connectionString = string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};", 
-                config.Username, config.Password, config.Server, config.Port, config.ServiceName);
+            string connectionString = string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};", config.Username, config.Password, config.Server, config.Port, config.ServiceName);
             Assert.Equal(connectionString, opts);
         }
 
@@ -99,7 +97,7 @@ namespace Steeltoe.CloudFoundry.ConnectorBase.Test.Relational.Oracle
             OracleProviderConfigurer configurer = new OracleProviderConfigurer();
             OracleServiceInfo si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
 
-            var opts = configurer.Configure(si, config);
+            _ = configurer.Configure(si, config);
 
             Assert.Equal("localhost", config.Server);
             Assert.Equal(1521, config.Port);
