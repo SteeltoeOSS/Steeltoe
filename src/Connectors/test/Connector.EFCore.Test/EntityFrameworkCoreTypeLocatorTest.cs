@@ -1,4 +1,4 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// Copyright 2019 Infosys Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -82,6 +82,36 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
 
             // assert
             Assert.NotNull(type);
+        }
+
+        [Fact]
+        public void Options_Found_In_OracleEF_Assembly()
+        {
+            // arrange ~ narrow the assembly list to one specific nuget package
+            var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[0] };
+
+            // act
+            var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
+
+            // assert
+            Assert.NotNull(type);
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
+        }
+
+        [Fact(Skip = "Change NuGet reference to see this test pass")]
+        public void Options_Found_In_Devart_Assembly()
+        {
+            // arrange ~ narrow the assembly list to one specific nuget package
+            var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[1] };
+
+            // act
+            var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
+
+            // assert
+            Assert.NotNull(type);
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
         }
     }
 }
