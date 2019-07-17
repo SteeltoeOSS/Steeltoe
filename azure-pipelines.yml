@@ -34,7 +34,7 @@ jobs:
   - task: DotNetCoreCLI@2
     inputs:
       command: test
-      projects: 'src\CircuitBreaker\test\HystrixBase.Test\Steeltoe.CircuitBreaker.HystrixBase.Test.csproj'
+      projects: 'src/CircuitBreaker/test/HystrixBase.Test/Steeltoe.CircuitBreaker.HystrixBase.Test.csproj'
       arguments: '-c $(buildConfiguration) --filter "Category!=SkipOnLinux&Category!=FlakyOnHostedAgents"'
 - job: MacOS_Build_and_Test
   pool:
@@ -52,20 +52,20 @@ jobs:
   - task: DotNetCoreCLI@2
     inputs:
       command: test
-      projects: 'src\CircuitBreaker\test\HystrixBase.Test\Steeltoe.CircuitBreaker.HystrixBase.Test.csproj'
+      projects: 'src/CircuitBreaker/test/HystrixBase.Test/Steeltoe.CircuitBreaker.HystrixBase.Test.csproj'
       arguments: '-c $(buildConfiguration) --filter "Category!=SkipOnMacOS&Category!=FlakyOnHostedAgents"'
 - job: Windows_Build_Test_and_Package
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'win1803'
   steps:
   - task: DotNetCoreCLI@2
     inputs:
       command: restore
-      projects: 'src/CircuitBreaker/CircuitBreaker.sln'
+      projects: 'src\CircuitBreaker\CircuitBreaker.sln'
   - task: DotNetCoreCLI@2
     inputs:
       command: build
-      projects: 'src/CircuitBreaker/CircuitBreaker.sln'
+      projects: 'src\CircuitBreaker\CircuitBreaker.sln'
       arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
   - task: DotNetCoreCLI@2
     inputs:
