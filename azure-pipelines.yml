@@ -56,7 +56,7 @@ jobs:
       arguments: '-c $(buildConfiguration) --filter "Category!=SkipOnMacOS&Category!=FlakyOnHostedAgents"'
 - job: Windows_Build_Test_and_Package
   pool:
-    vmImage: 'win1803'
+    vmImage: 'windows-2019'
   steps:
   - task: DotNetCoreCLI@2
     inputs:
