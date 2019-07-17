@@ -482,7 +482,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             Assert.False(cmd.Execute()); // fallback should fire
             output.WriteLine("RESULT : " + cmd.ExecutionEvents);
-            Assert.True(cmd.IsCircuitBreakerOpen);
+            Assert.True(cmd.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly closed");
         }
 
         [Fact]
@@ -498,7 +498,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             Assert.True(cmd.Execute()); // fallback should fire
             output.WriteLine("RESULT : " + cmd.ExecutionEvents);
-            Assert.False(cmd.IsCircuitBreakerOpen);
+            Assert.False(cmd.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open");
         }
 
         [Fact]
@@ -514,42 +514,44 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine("COMMAND KEY (from cmd): " + attempt1.CommandKey.Name);
             await attempt1.ExecuteAsync();
             Time.Wait(100);
-            Assert.True(attempt1.IsResponseFromFallback);
-            Assert.False(attempt1.IsCircuitBreakerOpen);
-            Assert.False(attempt1.IsResponseShortCircuited);
+            Assert.True(attempt1.IsFailedExecution, "Unexpected execution success (1)");
+            Assert.True(attempt1.IsResponseFromFallback, "Response not from fallback as was expected (1)");
+            Assert.False(attempt1.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open (1)");
+            Assert.False(attempt1.IsResponseShortCircuited, "Circuitbreaker unexpectedly short circuited (1)");
 
             // failure 2 with a different command, same circuit breaker
             TestHystrixCommand<int> attempt2 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
             await attempt2.ExecuteAsync();
             Time.Wait(100);
-            Assert.True(attempt2.IsFailedExecution);
-            Assert.True(attempt2.IsResponseFromFallback);
-            Assert.False(attempt2.IsCircuitBreakerOpen);
-            Assert.False(attempt2.IsResponseShortCircuited);
+            Assert.True(attempt2.IsFailedExecution, "Unexpected execution success (2)");
+            Assert.True(attempt2.IsResponseFromFallback, "Response not from fallback as was expected (2)");
+            Assert.False(attempt2.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open (2)");
+            Assert.False(attempt2.IsResponseShortCircuited, "Circuitbreaker unexpectedly short circuited (2)");
 
             // failure 3 of the Hystrix, 2nd for this particular HystrixCommand
             TestHystrixCommand<int> attempt3 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
             await attempt3.ExecuteAsync();
             Time.Wait(150);
-            Assert.True(attempt3.IsFailedExecution);
-            Assert.True(attempt3.IsResponseFromFallback);
-            Assert.False(attempt3.IsResponseShortCircuited);
+            Assert.True(attempt3.IsFailedExecution, "Unexpected execution success (3)");
+            Assert.True(attempt3.IsResponseFromFallback, "Response not from fallback as was expected (3)");
+            Assert.False(attempt3.IsResponseShortCircuited, "Circuitbreaker unexpectedly short circuited (3)");
 
             // it should now be 'open' and prevent further executions
             // after having 3 failures on the Hystrix that these 2 different HystrixCommand objects are for
-            Assert.True(attempt3.IsCircuitBreakerOpen);
+            Assert.True(attempt3.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly closed (3)");
 
             // attempt 4
             TestHystrixCommand<int> attempt4 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
             await attempt4.ExecuteAsync();
             Time.Wait(100);
-            Assert.True(attempt4.IsResponseFromFallback);
+            Assert.True(attempt4.IsFailedExecution, "Unexpected execution success (4)");
+            Assert.True(attempt4.IsResponseFromFallback, "Response not from fallback as was expected (4)");
 
             // this should now be true as the response will be short-circuited
-            Assert.True(attempt4.IsResponseShortCircuited);
+            Assert.True(attempt4.IsResponseShortCircuited, "Circuitbreaker not short circuited as expected (4)");
 
             // this should remain open
-            Assert.True(attempt4.IsCircuitBreakerOpen);
+            Assert.True(attempt4.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly closed (4)");
 
             AssertSaneHystrixRequestLog(4);
             AssertCommandExecutionEvents(attempt1, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_SUCCESS);
@@ -619,7 +621,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // the time should be 50+ since we timeout at 50ms
             Assert.True(command.ExecutionTimeInMilliseconds >= 50);
-            Assert.False(command.IsCircuitBreakerOpen);
+            Assert.False(command.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open");
             Assert.False(command.IsResponseShortCircuited);
             Assert.True(command.IsResponseTimedOut);
             Assert.True(command.IsResponseFromFallback);
@@ -674,7 +676,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             /* response should still be the same as 'testCircuitBreakerOnExecutionTimeout' */
             Assert.True(command.IsResponseFromFallback);
-            Assert.False(command.IsCircuitBreakerOpen);
+            Assert.False(command.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open");
             Assert.False(command.IsResponseShortCircuited);
 
             Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -2581,11 +2583,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (HystrixBadRequestException)
             {
                 // success
-                // e.printStackTrace();
+                // e.printStackTrace()
             }
             catch (Exception e)
             {
-                // e.printStackTrace();
+                // e.printStackTrace()
                 Assert.False(true, "We expect a " + typeof(HystrixBadRequestException).Name + " but got a " + e.GetType().Name);
             }
 
@@ -2595,13 +2597,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void TestInterruptFutureOnTimeout()
+        public async Task TestInterruptFutureOnTimeout()
         {
             // given
             InterruptibleCommand cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
 
             // when
-            Task<bool> f = cmd.ExecuteAsync();
+            _ = await cmd.ExecuteAsync();
 
             // then
             Time.Wait(500);
@@ -5514,7 +5516,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
             catch (Exception)
             {
-                // output.WriteLine("Interrupted!");
+                // output.WriteLine("Interrupted!")
                 hasBeenInterrupted = true;
                 throw;
             }
