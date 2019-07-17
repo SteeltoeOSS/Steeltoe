@@ -2597,13 +2597,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public async Task TestInterruptFutureOnTimeout()
+        public void TestInterruptFutureOnTimeout()
         {
             // given
             InterruptibleCommand cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
 
             // when
-            _ = await cmd.ExecuteAsync();
+            _ = cmd.ExecuteAsync();
 
             // then
             Time.Wait(500);
@@ -5540,7 +5540,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override string Run()
         {
-            // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : In run()");
+            // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : In run()")
             throw new Exception("run_exception");
         }
 
@@ -5548,16 +5548,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : In fallback => " + ExecutionEvents);
+                // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : In fallback => " + ExecutionEvents)
                 Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 30000);
                 _token.ThrowIfCancellationRequested();
             }
             catch (Exception)
             {
-                // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : Interruption occurred");
+                // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : Interruption occurred")
             }
 
-            // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : CMD Success Result");
+            // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : CMD Success Result")
             return "fallback";
         }
 
