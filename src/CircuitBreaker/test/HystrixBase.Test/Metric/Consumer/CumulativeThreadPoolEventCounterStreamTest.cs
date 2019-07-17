@@ -89,7 +89,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // no writes
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -119,7 +119,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -148,7 +148,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -179,7 +179,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -209,7 +209,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -242,7 +242,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd3.Observe();
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -276,8 +276,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command failure2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
             Command failure3 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
 
-            CommandStreamTest.Command shortCircuit1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
-            CommandStreamTest.Command shortCircuit2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            Command shortCircuit1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            Command shortCircuit2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
 
             failure1.Observe();
             failure2.Observe();
@@ -290,7 +290,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -352,7 +352,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -403,7 +403,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -437,7 +437,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -469,7 +469,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -497,7 +497,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
             // let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
-            List<CommandStreamTest.Command> fallbackSaturators = new List<CommandStreamTest.Command>();
+            List<Command> fallbackSaturators = new List<Command>();
             for (int i = 0; i < 5; i++)
             {
                 fallbackSaturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 400));
@@ -525,7 +525,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -560,7 +560,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd2.Observe();
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {

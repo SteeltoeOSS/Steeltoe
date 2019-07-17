@@ -71,7 +71,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // no writes
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -81,8 +81,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
+        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleBucketGetsStored()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-B");
@@ -119,7 +119,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
                 output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
             catch (Exception)
@@ -185,7 +185,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -197,8 +197,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             AssertBetween(600, 800, stream.GetLatestPercentile(100.0));
         }
 
+        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestShortCircuitedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");
@@ -248,7 +248,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -314,7 +314,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception ex)
             {
@@ -388,7 +388,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -434,7 +434,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -501,7 +501,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -513,8 +513,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             AssertBetween(100, 150, stream.GetLatestPercentile(100.0));
         }
 
+        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleBucketsBothGetStoredAndThenAgeOut()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-I");
@@ -569,7 +569,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {

@@ -96,7 +96,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // no writes
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -124,7 +124,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             cmd2.Observe();
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
@@ -132,9 +132,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
          * 3 Commands,
          * Command 1 gets started in Bucket A and not completed until Bucket B
          * Commands 2 and 3 both start and end in Bucket B, and there should be a max-concurrency of 3
+        [Trait("Category", "FlakyOnHostedAgents")]
          */
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestOneCommandCarriesOverToNextBucket()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-C");
@@ -154,7 +154,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Time.Wait(1);
             cmd3.Observe();
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
@@ -189,7 +189,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Time.Wait(100);
             cmd4.Observe();
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
@@ -223,7 +223,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Time.Wait(100);
             cmd4.Observe();
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(0, stream.LatestRollingMax);
         }
 
@@ -248,7 +248,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd3.Observe();
             cmd4.Observe();
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(1, stream.LatestRollingMax);
         }
@@ -289,7 +289,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 cmd.Observe();
             }
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(1, stream.LatestRollingMax);
         }
@@ -344,7 +344,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 t.Start();
             }
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(10, stream.LatestRollingMax);
         }
@@ -386,7 +386,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 rejectedCmd.Observe();
             }
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(10, stream.LatestRollingMax);
         }

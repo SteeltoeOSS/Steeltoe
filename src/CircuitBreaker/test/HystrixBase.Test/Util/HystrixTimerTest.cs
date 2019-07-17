@@ -60,8 +60,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             // we should have 7 or more 40ms ticks within 500ms
             output.WriteLine("l1 ticks: " + l1.TickCount.Value);
             output.WriteLine("l2 ticks: " + l2.TickCount.Value);
-            Assert.True(l1.TickCount.Value > 7);
-            Assert.True(l2.TickCount.Value > 7);
+            Assert.True(l1.TickCount.Value > 7, "l1 failed to execute 7 ticks in a window that could fit 12");
+            Assert.True(l2.TickCount.Value > 7, "l2 failed to execute 7 ticks in a window that could fit 12");
         }
 
         [Fact]
@@ -122,8 +122,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             // we should have more than 5 ticks @ 50ms within 500ms
             output.WriteLine("l1 ticks: " + l1.TickCount.Value);
             output.WriteLine("l2 ticks: " + l2.TickCount.Value);
-            Assert.True(l1.TickCount.Value > 5);
-            Assert.True(l2.TickCount.Value > 5);
+            Assert.True(l1.TickCount.Value > 5, "l1 failed to execute more than 5 ticks in a window that could fit 10");
+            Assert.True(l2.TickCount.Value > 5, "l2 failed to execute more than 5 ticks in a window that could fit 10");
 
             // remove l2
             l2ref.Dispose();
@@ -147,7 +147,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             output.WriteLine("l2 ticks: " + l2.TickCount.Value);
 
             // l1 should continue ticking
-            Assert.True(l1.TickCount.Value > 5);
+            Assert.True(l1.TickCount.Value > 5, "l1 failed to execute more than 5 ticks in a window that could fit 10");
 
             // we should have no ticks on l2 because we removed it
             output.WriteLine("tickCount.Value: " + l2.TickCount.Value + " on l2: " + l2);

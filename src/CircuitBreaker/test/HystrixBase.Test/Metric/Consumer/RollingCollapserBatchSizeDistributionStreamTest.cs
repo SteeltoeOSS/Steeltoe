@@ -70,7 +70,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // no writes
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -147,7 +147,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -228,7 +228,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Collapser.From(output, key, 12).Observe();
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {

@@ -41,7 +41,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 this.stopwatch = stopwatch;
             }
 
-            public int IntervalTimeInMilliseconds => throw new System.NotImplementedException();
+            public int IntervalTimeInMilliseconds => throw new NotImplementedException();
 
             public void Tick()
             {

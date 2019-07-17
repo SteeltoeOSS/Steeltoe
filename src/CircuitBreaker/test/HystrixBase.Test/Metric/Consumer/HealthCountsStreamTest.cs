@@ -87,7 +87,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // no writes
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -113,7 +113,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd.Observe();
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -139,7 +139,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd.Observe();
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -160,12 +160,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.TIMEOUT);
+            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.TIMEOUT);
 
             cmd.Observe();
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -186,12 +186,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
+            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
 
             cmd.Observe();
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -221,7 +221,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd3.Observe();
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -269,7 +269,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -326,7 +326,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -354,17 +354,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // 10 commands will saturate threadpools when called concurrently.
             // submit 2 more requests and they should be THREADPOOL_REJECTED
             // should see 10 SUCCESSes, 2 THREADPOOL_REJECTED and 2 FALLBACK_SUCCESSes
-            List<CommandStreamTest.Command> saturators = new List<CommandStreamTest.Command>();
+            List<Command> saturators = new List<Command>();
 
             for (int i = 0; i < 10; i++)
             {
                 saturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 400));
             }
 
-            CommandStreamTest.Command rejected1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
-            CommandStreamTest.Command rejected2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            Command rejected1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            Command rejected2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
 
-            foreach (CommandStreamTest.Command saturator in saturators)
+            foreach (Command saturator in saturators)
             {
                 saturator.Observe();
             }
@@ -383,7 +383,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -406,13 +406,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
+            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
 
             cmd.Observe();
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -434,13 +434,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            CommandStreamTest.Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
+            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
 
             cmd.Observe();
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -464,16 +464,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
             // let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
-            List<CommandStreamTest.Command> fallbackSaturators = new List<CommandStreamTest.Command>();
+            List<Command> fallbackSaturators = new List<Command>();
             for (int i = 0; i < 5; i++)
             {
                 fallbackSaturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 400));
             }
 
-            CommandStreamTest.Command rejection1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
-            CommandStreamTest.Command rejection2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
+            Command rejection1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
+            Command rejection2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
 
-            foreach (CommandStreamTest.Command saturator in fallbackSaturators)
+            foreach (Command saturator in fallbackSaturators)
             {
                 saturator.Observe();
             }
@@ -492,7 +492,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -515,15 +515,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(30).Subscribe(new LatchedObserver(output, latch));
 
-            CommandStreamTest.Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
-            CommandStreamTest.Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 10);
+            Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 10);
 
             cmd1.Observe();
             cmd2.Observe();
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -587,7 +587,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 cmd.Execute();
             }
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.True(allEqual.Value);
 
             // we should be getting the same object from both streams.  this ensures that multiple subscribers don't induce extra work

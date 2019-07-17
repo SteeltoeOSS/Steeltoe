@@ -613,7 +613,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public override T OnEmit<T>(IHystrixInvokable command, T response)
             {
                 LogHC(command, response);
-                return base.OnEmit<T>(command, response);
+                return base.OnEmit(command, response);
             }
 
             private void LogHC<T>(IHystrixInvokable command, T response)

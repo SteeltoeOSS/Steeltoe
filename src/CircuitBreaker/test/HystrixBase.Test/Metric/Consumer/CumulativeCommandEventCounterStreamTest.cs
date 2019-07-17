@@ -87,7 +87,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // no writes
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -114,7 +114,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -124,7 +124,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(HystrixEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
             expected[(int)(int)HystrixEventType.SUCCESS] = 1;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -143,7 +143,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -154,7 +154,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
             expected[(int)HystrixEventType.FAILURE] = 1;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -173,7 +173,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -184,7 +184,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
             expected[(int)HystrixEventType.TIMEOUT] = 1;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -203,7 +203,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -214,7 +214,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
             expected[(int)HystrixEventType.BAD_REQUEST] = 1;
             expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -237,7 +237,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -249,7 +249,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
             expected[(int)HystrixEventType.SUCCESS] = 1;
             expected[(int)HystrixEventType.RESPONSE_FROM_CACHE] = 2;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -289,7 +289,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -304,7 +304,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.FAILURE] = 3;
             expected[(int)HystrixEventType.SHORT_CIRCUITED] = 2;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 5;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -348,7 +348,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -363,7 +363,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SUCCESS] = 10;
             expected[(int)HystrixEventType.SEMAPHORE_REJECTED] = 2;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -408,7 +408,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -423,7 +423,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SUCCESS] = 10;
             expected[(int)HystrixEventType.THREAD_POOL_REJECTED] = 2;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -442,7 +442,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -454,7 +454,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.FAILURE] = 1;
             expected[(int)HystrixEventType.FALLBACK_FAILURE] = 1;
             expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -473,7 +473,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -485,7 +485,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.FAILURE] = 1;
             expected[(int)HystrixEventType.FALLBACK_MISSING] = 1;
             expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -528,7 +528,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -541,7 +541,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 5;
             expected[(int)HystrixEventType.FALLBACK_REJECTION] = 2;
             expected[(int)HystrixEventType.EXCEPTION_THROWN] = 2;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -580,7 +580,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -591,7 +591,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(HystrixEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
             expected[(int)HystrixEventType.CANCELLED] = 1;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -611,7 +611,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -623,7 +623,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SUCCESS] = 1;
             expected[(int)HystrixEventType.COLLAPSED] = 3;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -645,7 +645,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -658,7 +658,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.FAILURE] = 1;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
     }
 }

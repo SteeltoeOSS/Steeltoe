@@ -81,7 +81,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // no writes
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -112,7 +112,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -125,7 +125,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)CollapserEventType.ADDED_TO_BATCH] = 3;
             string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
             output.WriteLine("ReqLog : " + log);
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -160,7 +160,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)CollapserEventType.ADDED_TO_BATCH] = 3;
             expected[(int)CollapserEventType.RESPONSE_FROM_CACHE] = 6;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         // by doing a take(30), we expect all values to stay in the stream, as cumulative counters never age out of window
@@ -183,7 +183,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -196,7 +196,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)CollapserEventType.ADDED_TO_BATCH] = 3;
             expected[(int)CollapserEventType.RESPONSE_FROM_CACHE] = 6;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         private static string CollapserEventsToStr(long[] eventCounts)

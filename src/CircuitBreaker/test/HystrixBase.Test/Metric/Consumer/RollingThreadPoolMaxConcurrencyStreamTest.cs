@@ -94,7 +94,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // no writes
             try
             {
-                Assert.True(latch.Wait(10000));
+                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             }
             catch (Exception)
             {
@@ -123,7 +123,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Time.Wait(1);
             cmd2.Observe();
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
@@ -146,7 +146,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Time.Wait(1);
             cmd2.Observe();
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             // since commands run in semaphore isolation, they are not tracked by threadpool metrics
             Assert.Equal(0, stream.LatestRollingMax);
@@ -179,7 +179,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Time.Wait(1);
             cmd3.Observe();
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
@@ -214,7 +214,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd3.Observe();
             Time.Wait(100);
             cmd4.Observe();
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
@@ -252,7 +252,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd3.Observe();
             Time.Wait(100);
             cmd4.Observe();
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
@@ -286,7 +286,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd3.Observe();
             Time.Wait(100);
             cmd4.Observe();
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(0, stream.LatestRollingMax);
         }
 
@@ -313,7 +313,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd3.Observe();
             cmd4.Observe();
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(cmd2.IsResponseFromCache);
             Assert.True(cmd3.IsResponseFromCache);
@@ -359,7 +359,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 cmd.Observe();
             }
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             foreach (Command cmd in shortCircuited)
             {
@@ -414,7 +414,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 Task.Run(() => rejectedCmd.Observe());
             }
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             foreach (Command rejectedCmd in rejected)
@@ -465,7 +465,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 rejectedCmd.Observe();
             }
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             foreach (Command rejectedCmd in rejected)
             {
