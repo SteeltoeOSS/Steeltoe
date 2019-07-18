@@ -144,14 +144,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-            Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 160);
-            Command cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 15);
+            Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 175);
+            Command cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 50);
+            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 50);
 
             cmd1.Observe();
             Time.Wait(100); // bucket roll
             cmd2.Observe();
-            Time.Wait(1);
             cmd3.Observe();
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");

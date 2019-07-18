@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Util
@@ -25,7 +26,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 return true;
             }
 
-            return sema.Wait(1);
+            return sema.Wait(0);
         }
     }
 }

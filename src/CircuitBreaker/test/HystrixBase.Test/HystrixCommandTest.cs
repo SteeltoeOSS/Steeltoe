@@ -932,7 +932,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Time.Wait(100);
 
             // command3 should find queue filled, and get rejected
-            Assert.False(command3.Execute(), "Command3 returned True instead of False");
+            var result = command3.Execute();
+            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+
+            Assert.False(result, "Command3 returned True instead of False");
             Assert.True(command3.IsResponseRejected, "Command3 rejected when not expected");
             Assert.False(command1.IsResponseRejected, "Command1 not rejected when expected");
             Assert.False(command2.IsResponseRejected, "Command2 not rejected when expected");
@@ -943,7 +946,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Observable.Merge(result1, result2).ToList().SingleAsync().Wait(); // await the 2 latent commands
 
             Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+
             AssertSaneHystrixRequestLog(3);
             pool.Dispose();
         }
@@ -2728,6 +2731,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     Assert.True(false, ex.Message);
                 }
+
+                output.WriteLine("Number acquired: " + numAcquired.Value);
+                output.WriteLine("Current Count: " + s.CurrentCount);
 
                 Assert.Equal(num_permits, numAcquired.Value);
                 Assert.Equal(num_permits, s.CurrentCount);
