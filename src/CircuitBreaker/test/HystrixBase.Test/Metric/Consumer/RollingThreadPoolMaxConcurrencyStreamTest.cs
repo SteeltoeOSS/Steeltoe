@@ -54,7 +54,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(int maxConcurrency)
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : Max of " + maxConcurrency);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : Max of " + maxConcurrency);
             }
         }
 

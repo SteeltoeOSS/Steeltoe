@@ -55,7 +55,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Skip(10).Take(10).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                     Assert.Equal(0, distribution.GetTotalCount());
                 },
                 (e) =>
@@ -91,7 +91,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 },
                 (e) =>
                 {
@@ -173,7 +173,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(30).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 },
                 (e) =>
                 {

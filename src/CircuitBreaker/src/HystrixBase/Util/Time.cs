@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         {
             get
             {
-                return DateTime.Now.Ticks / 10000;
+                return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             }
         }
 
@@ -34,7 +34,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             get
             {
                 long javaTicks = DateTime.Now.Ticks - baseTime.Ticks;
-                return javaTicks / 10000;
+                return javaTicks / TimeSpan.TicksPerMillisecond;
             }
         }
 
@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             SpinWait sw = default(SpinWait);
 
             long start = DateTime.Now.Ticks;
-            long ticksToWait = maxWaitMilli * 10000;
+            long ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
 
             while (!check())
             {

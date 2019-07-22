@@ -55,7 +55,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(int value)
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : Max of " + value);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : Max of " + value);
             }
         }
 

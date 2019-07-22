@@ -20,6 +20,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 {
     public class TimerReferenceTest
     {
+        private const int GRACE = 175;
+
         [Fact]
         public void TimerReference_CallsListenerOnTime()
         {
@@ -29,7 +31,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             stopWatch.Start();
             timerReference.Start();
             Time.WaitUntil(() => { return !stopWatch.IsRunning; }, 2000);
-            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - 50, 1000 + 50);
+            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000, 1000 + GRACE);
         }
 
         private class TestListener : ITimerListener

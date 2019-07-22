@@ -312,7 +312,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             protected override List<int> Run()
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " " + Thread.CurrentThread.ManagedThreadId + " : Executing batch of : " + args.Count);
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " " + Thread.CurrentThread.ManagedThreadId + " : Executing batch of : " + args.Count);
                 return args;
             }
         }

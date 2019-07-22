@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 {
     public class TimeTest
     {
-        private const int GRACE = 180;
+        private const int GRACE = 175;
 
         [Fact]
         public void WaitUntil_WaitsExpectedTime()

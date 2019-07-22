@@ -46,7 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnCompletedCore()
             {
-                output.WriteLine("OnCompletedCore @ " + (DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnCompletedCore @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId);
                 latch.SignalEx();
             }
 
@@ -57,7 +57,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(long[] eventCounts)
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + BucketToString(eventCounts) + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + BucketToString(eventCounts) + " " + Thread.CurrentThread.ManagedThreadId);
             }
         }
 

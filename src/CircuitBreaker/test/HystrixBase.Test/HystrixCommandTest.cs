@@ -1000,11 +1000,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Contains("Executed", requestLog.GetExecutedCommandsAsString());
 
             // block on the outstanding work, so we don't inadvertently affect any other tests
-            long startTime = DateTime.Now.Ticks / 10000;
+            long startTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             _ = await f1;
             _ = await f2;
             Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
-            output.WriteLine("Time blocked : " + ((DateTime.Now.Ticks / 10000) - startTime));
+            output.WriteLine("Time blocked : " + ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) - startTime));
             pool.Dispose();
         }
 
@@ -1098,17 +1098,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             TestSemaphoreCommandWithSlowFallback command3 = null;
             try
             {
-                output.WriteLine("c2 start: " + (DateTime.Now.Ticks / 10000));
+                output.WriteLine("c2 start: " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond));
                 command2 = new TestSemaphoreCommandWithSlowFallback(circuitBreaker, 1, 800);
                 result2 = command2.ExecuteAsync();
-                output.WriteLine("c2 after queue: " + (DateTime.Now.Ticks / 10000));
+                output.WriteLine("c2 after queue: " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond));
 
                 // make sure that thread gets a chance to run before queuing the next one
                 Time.Wait(50);
-                output.WriteLine("c3 start: " + (DateTime.Now.Ticks / 10000));
+                output.WriteLine("c3 start: " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond));
                 command3 = new TestSemaphoreCommandWithSlowFallback(circuitBreaker, 1, 200);
                 Task<bool> result3 = command3.ExecuteAsync();
-                output.WriteLine("c3 after queue: " + (DateTime.Now.Ticks / 10000));
+                output.WriteLine("c3 after queue: " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond));
                 _ = await result3;
             }
             catch (Exception)
@@ -2312,7 +2312,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             TestHystrixCommand<bool> cmd = new InterruptibleCommand(new TestCircuitBreaker(), false);
 
             output.WriteLine("Starting command");
-            long timeMillis = DateTime.Now.Ticks / 10000;
+            long timeMillis = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             try
             {
                 cmd.Execute();
@@ -2322,7 +2322,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 Assert.NotNull(cmd.ExecutionException);
 
-                output.WriteLine("Unsuccessful Execution took : " + ((DateTime.Now.Ticks / 10000) - timeMillis));
+                output.WriteLine("Unsuccessful Execution took : " + ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) - timeMillis));
                 AssertCommandExecutionEvents(cmd, HystrixEventType.TIMEOUT, HystrixEventType.FALLBACK_MISSING);
                 Assert.Equal(0, cmd._metrics.CurrentConcurrentExecutionCount);
                 AssertSaneHystrixRequestLog(1);
@@ -3000,43 +3000,43 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable originalSubscription = originalObservable.Finally(() =>
         {
-            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
+            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
             originalLatch.SignalEx();
         }).Subscribe(
                     (b) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
                         originalValue.Value = b;
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
                         originalLatch.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
                         originalLatch.SignalEx();
                     });
 
             IDisposable fromCacheSubscription = fromCacheObservable.Finally(() =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
                     fromCacheLatch.SignalEx();
                 }).Subscribe(
                     (b) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
                         fromCacheValue.Value = b;
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
                         fromCacheLatch.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnCompleted");
                         fromCacheLatch.SignalEx();
                     });
 
@@ -3096,43 +3096,43 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable originalSubscription = originalObservable.Finally(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
                 originalLatch.SignalEx();
             }).Subscribe(
                 (b) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
                     originalValue.Value = b;
                 },
                 (e) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
                     originalLatch.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
                     originalLatch.SignalEx();
                 });
 
             IDisposable fromCacheSubscription = fromCacheObservable.Finally(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
                 fromCacheLatch.SignalEx();
             }).Subscribe(
                     (b) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
                         fromCacheValue.Value = b;
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
                         fromCacheLatch.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnCompleted");
                         fromCacheLatch.SignalEx();
                     });
 
@@ -3196,64 +3196,64 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable originalSubscription = originalObservable.Finally(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
                 originalLatch.SignalEx();
             }).Subscribe(
                 (b) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
                     originalValue.Value = b;
                 },
                 (e) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
                     originalLatch.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
                     originalLatch.SignalEx();
                 });
 
             IDisposable fromCache1Subscription = fromCache1Observable.Finally(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
                 fromCache1Latch.SignalEx();
             }).Subscribe(
                     (b) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
                         fromCache1Value.Value = b;
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
                         fromCache1Latch.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnCompleted");
                         fromCache1Latch.SignalEx();
                     });
 
             IDisposable fromCache2Subscription = fromCache2Observable.Finally(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
                 fromCache2Latch.SignalEx();
             }).Subscribe(
                     (b) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
                         fromCache2Value.Value = b;
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
                         fromCache2Latch.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnCompleted");
                         fromCache2Latch.SignalEx();
                     });
 
@@ -3333,61 +3333,61 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IDisposable originalSubscription = originalObservable.Finally(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
                 originalLatch.SignalEx();
             }).Subscribe(
                 (b) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
                 },
                 (e) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
                     originalLatch.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
                     originalLatch.SignalEx();
                 });
 
             IDisposable fromCache1Subscription = fromCache1Observable.Finally(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
                 fromCache1Latch.SignalEx();
             }).Subscribe(
                     (b) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
                         fromCache1Latch.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnCompleted");
                         fromCache1Latch.SignalEx();
                     });
 
             IDisposable fromCache2Subscription = fromCache2Observable.Finally(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
                 fromCache2Latch.SignalEx();
             }).Subscribe(
                     (b) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
                         fromCache2Latch.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnCompleted");
                         fromCache2Latch.SignalEx();
                     });
 
@@ -3461,30 +3461,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 .Do(
                 (i) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnNext : " + i);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnNext : " + i);
                 },
                 (throwable) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnError : " + throwable);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnError : " + throwable);
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnCompleted");
                 })
                 .OnSubscribe(() =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnSubscribe");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnSubscribe");
                 })
                 .OnDispose(() =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnUnsubscribe");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnUnsubscribe");
                 })
                 .Take(1)
 
                 .ObserveOn(DefaultScheduler.Instance)
                 .Map((i) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Doing some more computation in the onNext!!");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : Doing some more computation in the onNext!!");
 
                     try
                     {
@@ -3501,24 +3501,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             o.OnSubscribe(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnSubscribee");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnSubscribee");
             }).OnDispose(() =>
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnUnsubscribe");
+                output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnUnsubscribe");
             }).Subscribe(
                 (i) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + i);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + i);
                 },
                 (e) =>
                 {
                     latch.SignalEx();
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
                 },
                 () =>
                 {
                     latch.SignalEx();
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
                 });
 
             latch.Wait(1000);
@@ -3538,23 +3538,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     .Do(
                 (integer) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
                 },
                 (ex) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + ex);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + ex);
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
                 })
                 .OnSubscribe(() =>
                {
-                   output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnSubscribe");
+                   output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnSubscribe");
                })
                 .OnDispose(() =>
                {
-                   output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnUnsubscribe");
+                   output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnUnsubscribe");
                });
 
             // the zip operator will subscribe to each observable.  there is a race between the error of the first
@@ -3569,17 +3569,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             zipped.Subscribe(
                 (s) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + s);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + s);
                 },
                 (e) =>
                 {
                     latch.SignalEx();
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
                 },
                 () =>
                 {
                     latch.SignalEx();
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
                 });
 
             latch.Wait(1000);
@@ -3596,28 +3596,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             CountdownEvent latch = new CountdownEvent(1);
 
-            output.WriteLine((DateTime.Now.Ticks / 10000) + " : Starting");
+            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : Starting");
             IObservable<int> o = cmd.ToObservable().Retry(2);
-            output.WriteLine((DateTime.Now.Ticks / 10000) + " Created retried command : " + o);
+            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " Created retried command : " + o);
 
             o.Subscribe(
                 (integer) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
                 },
                 (e) =>
                 {
                     latch.SignalEx();
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
                 },
                 () =>
                 {
                     latch.SignalEx();
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
                 });
 
             latch.Wait(1000);
-            output.WriteLine((DateTime.Now.Ticks / 10000) + " ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         }
 
         [Fact]
@@ -4240,7 +4240,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private void AssertExecute(TestHystrixCommand<int> command, Action<TestHystrixCommand<int>> assertion, bool isSuccess)
         {
-            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Running command.execute() and then assertions...");
+            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : Running command.execute() and then assertions...");
             if (isSuccess)
             {
                 command.Execute();
@@ -4618,17 +4618,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override bool Run()
         {
-            long start = DateTime.Now.Ticks / 10000;
+            long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             output?.WriteLine(">>> TestCommandRejection running " + sleepTime);
             try
             {
                 Time.WaitUntil(() => { return _token.IsCancellationRequested; }, sleepTime);
                 _token.ThrowIfCancellationRequested();
-                output?.WriteLine(">>> TestCommandRejection finished " + ((DateTime.Now.Ticks / 10000) - start));
+                output?.WriteLine(">>> TestCommandRejection finished " + ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) - start));
             }
             catch (Exception e)
             {
-                output?.WriteLine(">>> TestCommandRejection finished " + ((DateTime.Now.Ticks / 10000) - start));
+                output?.WriteLine(">>> TestCommandRejection finished " + ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) - start));
                 output?.WriteLine(">>> TestCommandRejection exception: " + e.ToString());
             }
 
