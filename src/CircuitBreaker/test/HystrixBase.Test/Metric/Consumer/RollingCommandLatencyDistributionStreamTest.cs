@@ -281,6 +281,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+            //    if (distribution.GetTotalCount() > 0)
+            //    {
+            //        AssertBetween(200, 300, (int)distribution.GetMean());
+            //    }
             },
             (e) =>
             {
