@@ -108,14 +108,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCollapser<List<string>, string, string> collapser1 = new TestRequestCollapser(output, timer, 1, 2, 10);
             HystrixCollapser<List<string>, string, string> collapser2 = new TestRequestCollapser(output, timer, 2, 2, 10);
             HystrixCollapser<List<string>, string, string> collapser3 = new TestRequestCollapser(output, timer, 3, 2, 10);
-            output.WriteLine("*** " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Constructed the collapsers");
+            output.WriteLine("*** " + (DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Constructed the collapsers");
             Task<string> response1 = collapser1.ExecuteAsync();
             Task<string> response2 = collapser2.ExecuteAsync();
             Task<string> response3 = collapser3.ExecuteAsync();
-            output.WriteLine("*** " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " queued the collapsers");
+            output.WriteLine("*** " + (DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " queued the collapsers");
 
             timer.IncrementTime(10); // let time pass that equals the default delay/period
-            output.WriteLine("*** " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " incremented the virtual timer");
+            output.WriteLine("*** " + (DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " incremented the virtual timer");
 
             Assert.Equal("1", GetResult(response1, 1000));
             Assert.Equal("2", GetResult(response2, 1000));
@@ -208,7 +208,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             List<IObservable<int>> observables = new List<IObservable<int>>();
             for (int i = 0; i < num; i++)
             {
-                MyCollapser c = new MyCollapser(output, "5", false, 500);
+                MyCollapser c = new MyCollapser(output, "5", false);
                 observables.Add(c.ToObservable());
             }
 
@@ -2388,18 +2388,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             private readonly string arg;
             private ITestOutputHelper output;
 
-            public MyCollapser(ITestOutputHelper output, string arg, bool reqCacheEnabled, int timerDelayInMilliseconds)
-            : base(
-                HystrixCollapserKeyDefault.AsKey("UNITTEST"),
-                RequestCollapserScope.REQUEST,
-                new RealCollapserTimer(),
-                GetCollapserOptions(reqCacheEnabled, timerDelayInMilliseconds),
-                HystrixCollapserMetrics.GetInstance(HystrixCollapserKeyDefault.AsKey("UNITTEST"), GetCollapserOptions(reqCacheEnabled, timerDelayInMilliseconds)))
-            {
-                this.arg = arg;
-                this.output = output;
-            }
-
             public MyCollapser(ITestOutputHelper output, string arg, bool reqCacheEnabled)
                 : base(
                     HystrixCollapserKeyDefault.AsKey("UNITTEST"),
@@ -2446,16 +2434,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 var opts = new HystrixCollapserOptions(HystrixCollapserKeyDefault.AsKey("UNITTEST"))
                 {
                     RequestCacheEnabled = reqCacheEnabled,
-                };
-                return opts;
-            }
-
-            private static IHystrixCollapserOptions GetCollapserOptions(bool reqCacheEnabled, int timerDelayInMilliseconds)
-            {
-                var opts = new HystrixCollapserOptions(HystrixCollapserKeyDefault.AsKey("UNITTEST"))
-                {
-                    RequestCacheEnabled = reqCacheEnabled,
-                    TimerDelayInMilliseconds = timerDelayInMilliseconds
                 };
                 return opts;
             }
@@ -2580,21 +2558,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             protected override void OnCompletedCore()
             {
-                output.WriteLine("OnCompleted @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond));
+                output.WriteLine("OnCompleted @ " + (DateTime.Now.Ticks / 10000));
                 completions++;
                 latch.SignalEx();
             }
 
             protected override void OnErrorCore(Exception error)
             {
-                output.WriteLine("OnError @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + error.Message.ToString());
+                output.WriteLine("OnError @ " + (DateTime.Now.Ticks / 10000) + " : " + error.Message.ToString());
                 OnErrorEvents.Add(error);
                 latch.SignalEx();
             }
 
             protected override void OnNextCore(T value)
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + value.ToString());
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + value.ToString());
                 OnNextEvents.Add(value);
             }
         }

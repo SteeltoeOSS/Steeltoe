@@ -46,7 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnCompletedCore()
             {
-                output.WriteLine("OnCompleted @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond));
+                output.WriteLine("OnCompleted @ " + (DateTime.Now.Ticks / 10000));
                 latch.SignalEx();
             }
 
@@ -57,7 +57,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(HealthCounts healthCounts)
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + healthCounts);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + healthCounts);
             }
         }
 
@@ -566,18 +566,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             reduced.Subscribe(
                 (b) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnNext : " + b);
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnNext : " + b);
                     allEqual.Value = b;
                 },
                 (e) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnError : " + e);
                     output.WriteLine(e.ToString());
                     latch.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnCompleted");
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnCompleted");
                     latch.SignalEx();
                 });
 
@@ -616,17 +616,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     .Subscribe(
                     (healthCounts) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnNext : " + healthCounts);
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnNext : " + healthCounts);
                         healthCounts1.IncrementAndGet();
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnError : " + e);
                         latch1.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnCompleted");
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 1 OnCompleted");
                         latch1.SignalEx();
                     });
             IDisposable s2 = stream
@@ -640,17 +640,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     .Subscribe(
                         (healthCounts) =>
                         {
-                            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnNext : " + healthCounts + " : " + healthCounts2.Value);
+                            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnNext : " + healthCounts + " : " + healthCounts2.Value);
                             healthCounts2.IncrementAndGet();
                         },
                         (e) =>
                         {
-                            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnError : " + e);
+                            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnError : " + e);
                             latch2.SignalEx();
                         },
                         () =>
                         {
-                            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnCompleted");
+                            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Health 2 OnCompleted");
                             latch2.SignalEx();
                         });
 

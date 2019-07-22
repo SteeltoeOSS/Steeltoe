@@ -17,7 +17,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
 using System.Reactive.Subjects;
@@ -47,7 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
             rollingDistributionStream = stream
                     .Observe()
-                    .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), ThreadPoolScheduler.Instance) // stream of unaggregated buckets
+                    .Window(TimeSpan.FromMilliseconds(bucketSizeInMs)) // stream of unaggregated buckets
                     .SelectMany((d) => reduceBucketToSingleDistribution(d)) // stream of aggregated Histograms
                     .StartWith(emptyDistributionsToStart) // stream of aggregated Histograms that starts with n empty
                     .Window(numBuckets, 1) // windowed stream: each OnNext is a stream of n Histograms

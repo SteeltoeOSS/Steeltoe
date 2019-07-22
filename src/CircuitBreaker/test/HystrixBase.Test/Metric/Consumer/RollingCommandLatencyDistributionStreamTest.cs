@@ -56,7 +56,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + Thread.CurrentThread.ManagedThreadId);
                     Assert.Equal(0, distribution.GetTotalCount());
                 },
                 (e) =>
@@ -93,10 +93,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
             (distribution) =>
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 if (distribution.GetTotalCount() == 1)
                 {
-                    AssertBetween(10, 100, (int)distribution.GetMean());
+                    AssertBetween(10, 50, (int)distribution.GetMean());
                 }
                 else if (distribution.GetTotalCount() == 2)
                 {
@@ -129,7 +129,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
 
             AssertBetween(150, 400, stream.LatestMean);
-            AssertBetween(10, 100, stream.GetLatestPercentile(0.0));
+            AssertBetween(10, 50, stream.GetLatestPercentile(0.0));
             AssertBetween(300, 800, stream.GetLatestPercentile(100.0));
         }
 
@@ -153,11 +153,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
             (distribution) =>
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 if (distribution.GetTotalCount() < 4 && distribution.GetTotalCount() > 0)
                 {
                     // buckets before timeout latency registers
-                    AssertBetween(10, 100, distribution.GetMean());
+                    AssertBetween(10, 50, distribution.GetMean());
                 }
                 else if (distribution.GetTotalCount() == 4)
                 {
@@ -193,7 +193,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
 
             AssertBetween(150, 350, stream.LatestMean); // now timeout latency of 600ms is there
-            AssertBetween(10, 100, stream.GetLatestPercentile(0.0));
+            AssertBetween(10, 40, stream.GetLatestPercentile(0.0));
             AssertBetween(600, 800, stream.GetLatestPercentile(100.0));
         }
 
@@ -217,7 +217,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
             (distribution) =>
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 AssertBetween(0, 30, (int)distribution.GetMean());
             },
             (e) =>
@@ -280,11 +280,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
             (distribution) =>
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-            //    if (distribution.GetTotalCount() > 0)
-            //    {
-            //        AssertBetween(200, 300, (int)distribution.GetMean());
-            //    }
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                if (distribution.GetTotalCount() > 0)
+                {
+                    AssertBetween(200, 250, (int)distribution.GetMean());
+                }
             },
             (e) =>
             {
@@ -324,7 +324,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(10, stream.Latest.GetTotalCount());
-            AssertBetween(200, 300, stream.LatestMean);
+            AssertBetween(200, 250, stream.LatestMean);
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(threadPoolRejected.IsResponseThreadPoolRejected);
         }
@@ -348,7 +348,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
             (distribution) =>
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 if (distribution.GetTotalCount() > 0)
                 {
                     AssertBetween(200, 250, (int)distribution.GetMean());
@@ -415,7 +415,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
             (distribution) =>
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 Assert.True(distribution.GetTotalCount() <= 1);
             },
             (e) =>
@@ -457,7 +457,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
             (distribution) =>
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 if (distribution.GetTotalCount() == 2)
                 {
                     AssertBetween(55, 90, (int)distribution.GetMean());
@@ -525,7 +525,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(30).Subscribe(
             (distribution) =>
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 if (distribution.GetTotalCount() == 2)
                 {
                     AssertBetween(55, 90, distribution.GetMean());
@@ -582,7 +582,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private void AssertBetween(int expectedLow, int expectedHigh, int value)
         {
             output.WriteLine("Low:" + expectedLow + " High:" + expectedHigh + " Value: " + value);
-            Assert.InRange(value, expectedLow, expectedHigh);
+            Assert.True(expectedLow <= value);
+            Assert.True(expectedHigh >= value);
         }
     }
 }

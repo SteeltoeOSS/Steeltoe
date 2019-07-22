@@ -30,11 +30,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             _listener = listener;
             _tokenSource = new CancellationTokenSource();
             _period = period;
-            _timerTask = new Task(() => { Run(_tokenSource.Token); }, TaskCreationOptions.LongRunning);
         }
 
         public void Start()
         {
+            _timerTask = new Task(() => { Run(_tokenSource.Token); }, TaskCreationOptions.LongRunning);
             _timerTask.Start();
         }
 
@@ -51,6 +51,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
         }
 
+        private bool disposed = false;
+
         public void Dispose()
         {
             Dispose(true);
@@ -59,13 +61,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_tokenSource.IsCancellationRequested)
+            if (!disposed)
             {
-                _tokenSource.Cancel();
-            }
+                if (disposing)
+                {
+                    if (!_tokenSource.IsCancellationRequested)
+                    {
+                        _tokenSource.Cancel();
+                    }
 
-            _listener = null;
-            _timerTask = null;
+                    _listener = null;
+                    _timerTask = null;
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~TimerReference()
+        {
+            Dispose(false);
         }
     }
 }

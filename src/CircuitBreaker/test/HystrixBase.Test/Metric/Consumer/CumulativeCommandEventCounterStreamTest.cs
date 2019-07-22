@@ -56,7 +56,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(long[] value)
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + BucketToString(value));
+                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + BucketToString(value));
             }
         }
 
@@ -523,8 +523,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 Assert.True(false, ex.Message);
             }
 
-            output.WriteLine("ReqLog1 : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-
             rejection1.Observe();
             rejection2.Observe();
 
@@ -536,8 +534,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             {
                 Assert.True(false, "Interrupted ex");
             }
-
-            output.WriteLine("ReqLog2 : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             Assert.Equal(HystrixEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
@@ -560,11 +556,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Command toCancel = Command.From(groupKey, key, HystrixEventType.SUCCESS, 500);
 
-            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : about to Observe and Subscribe");
+            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : about to Observe and Subscribe");
             IDisposable s = toCancel.Observe().
                     OnDispose(() =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Thread.CurrentThread.ManagedThreadId + " : UnSubscribe From command.Observe()");
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : UnSubscribe From command.Observe()");
                     }).Subscribe(
                     (i) =>
                     {
@@ -579,7 +575,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                         output.WriteLine("Command OnCompleted");
                     });
 
-            output.WriteLine((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + " : " + Task.CurrentId + " : about to unSubscribe");
+            output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Task.CurrentId + " : about to unSubscribe");
             s.Dispose();
 
             try

@@ -16,7 +16,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
 using System.Reactive.Subjects;
@@ -55,7 +54,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             rollingMaxStream = inputEventStream
                     .Observe()
                     .Map((arg) => GetConcurrencyCountFromEvent(arg))
-                    .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), ThreadPoolScheduler.Instance)
+                    .Window(TimeSpan.FromMilliseconds(bucketSizeInMs))
                     .SelectMany((arg) => ReduceStreamToMax(arg))
                     .StartWith(emptyRollingMaxBuckets)
                     .Window(numBuckets, 1)
