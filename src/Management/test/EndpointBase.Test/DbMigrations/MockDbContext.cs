@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
-namespace Steeltoe.Management.EndpointBase.DbMigrations
+namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 {
-    public class EntityFrameworkDescriptor
+    public class MockDbContext : DbContext
     {
-        public List<string> PendingMigrations { get; set; } = new List<string>();
-
-        public List<string> AppliedMigrations { get; set; } = new List<string>();
     }
 }

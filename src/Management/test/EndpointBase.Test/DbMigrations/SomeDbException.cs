@@ -12,11 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
-namespace Steeltoe.Management.Endpoint.Test.EntityFramework
+namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 {
-    public class MockDbContext : DbContext
+    public class SomeDbException : DbException
     {
+        public SomeDbException(string message)
+            : base(message)
+        {
+        }
     }
 }

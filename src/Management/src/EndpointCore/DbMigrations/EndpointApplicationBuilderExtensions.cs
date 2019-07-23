@@ -15,7 +15,7 @@
 using Microsoft.AspNetCore.Builder;
 using System;
 
-namespace Steeltoe.Management.Endpoint.EntityFramework
+namespace Steeltoe.Management.Endpoint.DbMigrations
 {
     public static class EndpointApplicationBuilderExtensions
     {
@@ -23,14 +23,14 @@ namespace Steeltoe.Management.Endpoint.EntityFramework
         /// Enable the EntityFramework middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        public static void UseEntityFrameworkActuator(this IApplicationBuilder builder)
+        public static void UseDbMigrationsActuator(this IApplicationBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.UseMiddleware<EntityFrameworkEndpointMiddleware>();
+            builder.UseMiddleware<DbMigrationsEndpointMiddleware>();
         }
     }
 }

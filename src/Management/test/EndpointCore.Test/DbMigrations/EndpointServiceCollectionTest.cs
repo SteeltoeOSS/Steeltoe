@@ -17,13 +17,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.Endpoint.Test.EntityFramework;
 using Steeltoe.Management.EndpointBase.DbMigrations;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.EntityFramework.Test
+namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 {
     public class EndpointServiceCollectionTest : BaseTest
     {
@@ -32,18 +31,14 @@ namespace Steeltoe.Management.Endpoint.EntityFramework.Test
         {
             var services = new ServiceCollection();
             ServiceCollection nullServices = null;
-            nullServices.Invoking(s => s.AddEntityFrameworkActuator(null, null))
+            nullServices.Invoking(s => s.AddDbMigrationsActuator(null))
                 .Should()
                 .Throw<ArgumentNullException>()
                 .Where(x => x.ParamName == "services");
-            services.Invoking(s => s.AddEntityFrameworkActuator(null, null))
+            services.Invoking(s => s.AddDbMigrationsActuator(null))
                 .Should()
                 .Throw<ArgumentNullException>()
                 .Where(x => x.ParamName == "config");
-            services.Invoking(s => s.AddEntityFrameworkActuator(Substitute.For<IConfiguration>(), null))
-                .Should()
-                .Throw<ArgumentNullException>()
-                .Where(x => x.ParamName == "configAction");
         }
 
         [Fact]
@@ -61,12 +56,12 @@ namespace Steeltoe.Management.Endpoint.EntityFramework.Test
             var config = configurationBuilder.Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddEntityFrameworkActuator(config, builder => builder.AddDbContext<MockDbContext>());
+            services.AddDbMigrationsActuator(config);
 
             var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<IEntityFrameworkOptions>();
+            var options = serviceProvider.GetService<IDbMigrationsOptions>();
             options.Should().NotBeNull();
-            var ep = serviceProvider.GetService<EntityFrameworkEndpoint>();
+            var ep = serviceProvider.GetService<DbMigrationsEndpoint>();
             ep.Should().NotBeNull();
         }
     }

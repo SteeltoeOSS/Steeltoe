@@ -16,21 +16,20 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Security;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointBase.DbMigrations
 {
-    public class EntityFrameworkEndpointOptions : AbstractEndpointOptions, IEntityFrameworkOptions
+    public class DbMigrationsEndpointOptions : AbstractEndpointOptions, IDbMigrationsOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:entityframework";
 
-        public EntityFrameworkEndpointOptions()
+        public DbMigrationsEndpointOptions()
         {
             Id = "entityframework";
             RequiredPermissions = Permissions.RESTRICTED;
         }
 
-        public EntityFrameworkEndpointOptions(IConfiguration config)
+        public DbMigrationsEndpointOptions(IConfiguration config)
             : base(MANAGEMENT_INFO_PREFIX, config)
         {
             if (string.IsNullOrEmpty(Id))
@@ -45,9 +44,5 @@ namespace Steeltoe.Management.EndpointBase.DbMigrations
         }
 
         public string[] KeysToSanitize => Array.Empty<string>();
-
-        public List<Type> ContextTypes { get; set; } = new List<Type>();
-
-        public bool AutoDiscoverContexts { get; set; } = false;
     }
 }

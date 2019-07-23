@@ -26,7 +26,6 @@ using NSubstitute;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.Endpoint.Test.EntityFramework;
 using Steeltoe.Management.EndpointBase.DbMigrations;
 using System;
 using System.Collections.Generic;
@@ -35,7 +34,7 @@ using System.Net;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.EntityFramework.Test
+namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
@@ -52,8 +51,7 @@ namespace Steeltoe.Management.Endpoint.EntityFramework.Test
         [Fact]
         public async void HandleEntityFrameworkRequestAsync_ReturnsExpected()
         {
-            var opts = new EntityFrameworkEndpointOptions();
-            opts.ContextTypes.Add(typeof(MockDbContext));
+            var opts = new DbMigrationsEndpointOptions();
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
@@ -66,12 +64,13 @@ namespace Steeltoe.Management.Endpoint.EntityFramework.Test
             var efContext = new MockDbContext();
             var container = Substitute.For<IServiceProvider>();
             container.GetService(typeof(MockDbContext)).Returns(efContext);
-            var helper = Substitute.For<EntityFrameworkEndpoint.EntityFrameworkEndpointHelper>();
+            var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
+            helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
             helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[] { "pending" });
             helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[] { "applied" });
-            var ep = new EntityFrameworkEndpoint(opts, container, helper);
+            var ep = new DbMigrationsEndpoint(opts, container, helper);
 
-            var middle = new EntityFrameworkEndpointMiddleware(null, ep, mgmtOptions);
+            var middle = new DbMigrationsEndpointMiddleware(null, ep, mgmtOptions);
 
             var context = CreateRequest("GET", "/entityframework");
             await middle.HandleEntityFrameworkRequestAsync(context);
@@ -80,10 +79,10 @@ namespace Steeltoe.Management.Endpoint.EntityFramework.Test
             var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
             var json = await reader.ReadToEndAsync();
             var expected = JToken.FromObject(
-                new Dictionary<string, EntityFrameworkDescriptor>()
+                new Dictionary<string, DbMigrationsDescriptor>()
             {
                 {
-                    nameof(MockDbContext), new EntityFrameworkDescriptor()
+                    nameof(MockDbContext), new DbMigrationsDescriptor()
                     {
                         AppliedMigrations = new List<string> { "applied" },
                         PendingMigrations = new List<string> { "pending" }
@@ -113,10 +112,10 @@ namespace Steeltoe.Management.Endpoint.EntityFramework.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 var expected = JToken.FromObject(
-                    new Dictionary<string, EntityFrameworkDescriptor>()
+                    new Dictionary<string, DbMigrationsDescriptor>()
                     {
                         {
-                            nameof(MockDbContext), new EntityFrameworkDescriptor()
+                            nameof(MockDbContext), new DbMigrationsDescriptor()
                             {
                                 AppliedMigrations = new List<string> { "applied" },
                                 PendingMigrations = new List<string> { "pending" }
@@ -132,19 +131,18 @@ namespace Steeltoe.Management.Endpoint.EntityFramework.Test
         [Fact]
         public void EntityFrameworkEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new EntityFrameworkEndpointOptions();
-            opts.ContextTypes.Add(typeof(MockDbContext));
+            var opts = new DbMigrationsEndpointOptions();
             var efContext = new MockDbContext();
             var container = Substitute.For<IServiceProvider>();
             container.GetService(typeof(MockDbContext)).Returns(efContext);
-            var helper = Substitute.For<EntityFrameworkEndpoint.EntityFrameworkEndpointHelper>();
+            var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
             helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[] { "pending" });
             helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[] { "applied" });
-            var ep = new EntityFrameworkEndpoint(opts, container, helper);
+            var ep = new DbMigrationsEndpoint(opts, container, helper);
 
             var mgmt = new CloudFoundryManagementOptions() { Path = "/" };
             mgmt.EndpointOptions.Add(opts);
-            var middle = new EntityFrameworkEndpointMiddleware(null, ep, new List<IManagementOptions> { mgmt });
+            var middle = new DbMigrationsEndpointMiddleware(null, ep, new List<IManagementOptions> { mgmt });
 
             middle.RequestVerbAndPathMatch("GET", "/entityframework").Should().BeTrue();
             middle.RequestVerbAndPathMatch("PUT", "/entityframework").Should().BeFalse();

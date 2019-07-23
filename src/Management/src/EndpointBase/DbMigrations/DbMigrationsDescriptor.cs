@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Data.Common;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Test.EntityFramework
+namespace Steeltoe.Management.EndpointBase.DbMigrations
 {
-    public class SomeDbException : DbException
+    public class DbMigrationsDescriptor
     {
-        public SomeDbException(string message)
-            : base(message)
-        {
-        }
+        public List<string> PendingMigrations { get; set; } = new List<string>();
+
+        public List<string> AppliedMigrations { get; set; } = new List<string>();
     }
 }

@@ -19,13 +19,13 @@ using Steeltoe.Management.EndpointBase.DbMigrations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.EntityFramework
+namespace Steeltoe.Management.Endpoint.DbMigrations
 {
-    public class EntityFrameworkEndpointMiddleware : EndpointMiddleware<Dictionary<string, EntityFrameworkDescriptor>>
+    public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
     {
         private RequestDelegate _next;
 
-        public EntityFrameworkEndpointMiddleware(RequestDelegate next, EntityFrameworkEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<EntityFrameworkEndpointMiddleware> logger = null)
+        public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;

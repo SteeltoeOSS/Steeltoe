@@ -19,7 +19,7 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.EndpointBase.DbMigrations;
 using System;
 
-namespace Steeltoe.Management.Endpoint.EntityFramework
+namespace Steeltoe.Management.Endpoint.DbMigrations
 {
     public static class EndpointServiceCollectionExtensions
     {
@@ -28,8 +28,7 @@ namespace Steeltoe.Management.Endpoint.EntityFramework
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:entityframework)</param>
-        /// <param name="configAction">Configuration action to register DBContexts being exposed</param>
-        public static void AddEntityFrameworkActuator(this IServiceCollection services, IConfiguration config, Action<EntityFrameworkActuatorOptionsBuilder> configAction)
+        public static void AddDbMigrationsActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
@@ -41,18 +40,11 @@ namespace Steeltoe.Management.Endpoint.EntityFramework
                 throw new ArgumentNullException(nameof(config));
             }
 
-            if (configAction == null)
-            {
-                throw new ArgumentNullException(nameof(configAction));
-            }
-
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            var optionsBuilder = new EntityFrameworkActuatorOptionsBuilder(config);
-            configAction(optionsBuilder);
-            var options = optionsBuilder.Build();
-            services.TryAddSingleton<IEntityFrameworkOptions>(options);
+            var options = new DbMigrationsEndpointOptions(config);
+            services.TryAddSingleton<IDbMigrationsOptions>(options);
             services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<EntityFrameworkEndpoint>();
+            services.TryAddSingleton<DbMigrationsEndpoint>();
         }
     }
 }

@@ -54,6 +54,7 @@ namespace Steeltoe.Management.CloudFoundryTasks
                         .CreateLogger("CloudFoundryTasks");
                     logger.LogError($"No task with name {taskName} is found registered in service container");
                 }
+
                 webHost.Dispose();
             }
             else

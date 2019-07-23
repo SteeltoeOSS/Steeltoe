@@ -13,15 +13,10 @@
 // limitations under the License.
 
 using Steeltoe.Management.Endpoint;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointBase.DbMigrations
 {
-    public interface IEntityFrameworkOptions : IEndpointOptions
+    public interface IDbMigrationsOptions : IEndpointOptions
     {
-        List<Type> ContextTypes { get; set; }
-
-        bool AutoDiscoverContexts { get; set; }
     }
 }

@@ -18,10 +18,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Test.EntityFramework;
 using Steeltoe.Management.EndpointBase.DbMigrations;
 
-namespace Steeltoe.Management.Endpoint.EntityFramework.Test
+namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 {
     public class Startup
     {
@@ -36,8 +35,9 @@ namespace Steeltoe.Management.Endpoint.EntityFramework.Test
         {
             services.AddDbContext<MockDbContext>();
             services.AddCloudFoundryActuator(Configuration);
-            services.AddEntityFrameworkActuator(Configuration, builder => builder.AddDbContext<MockDbContext>());
-            var helper = Substitute.For<EntityFrameworkEndpoint.EntityFrameworkEndpointHelper>();
+            services.AddEntityFrameworkInMemoryDatabase().AddDbContext<MockDbContext>();
+            services.AddDbMigrationsActuator(Configuration);
+            var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
             helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[] { "pending" });
             helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[] { "applied" });
             helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.EntityFramework.Test
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseEntityFrameworkActuator();
+            app.UseDbMigrationsActuator();
         }
     }
 }
