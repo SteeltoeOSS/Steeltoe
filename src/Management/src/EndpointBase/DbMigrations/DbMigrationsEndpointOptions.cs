@@ -21,11 +21,11 @@ namespace Steeltoe.Management.EndpointBase.DbMigrations
 {
     public class DbMigrationsEndpointOptions : AbstractEndpointOptions, IDbMigrationsOptions
     {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:entityframework";
+        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dbmigrations";
 
         public DbMigrationsEndpointOptions()
         {
-            Id = "entityframework";
+            Id = "dbmigrations";
             RequiredPermissions = Permissions.RESTRICTED;
         }
 
@@ -34,7 +34,7 @@ namespace Steeltoe.Management.EndpointBase.DbMigrations
         {
             if (string.IsNullOrEmpty(Id))
             {
-                Id = "entityframework";
+                Id = "dbmigrations";
             }
 
             if (RequiredPermissions == Permissions.UNDEFINED)

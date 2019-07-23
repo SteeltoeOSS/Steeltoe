@@ -55,11 +55,6 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
-            var config = configurationBuilder.Build();
-            var host = new HostingEnvironment()
-            {
-                EnvironmentName = "EnvironmentName"
-            };
             var mgmtOptions = TestHelpers.GetManagementOptions(opts);
             var efContext = new MockDbContext();
             var container = Substitute.For<IServiceProvider>();
@@ -72,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 
             var middle = new DbMigrationsEndpointMiddleware(null, ep, mgmtOptions);
 
-            var context = CreateRequest("GET", "/entityframework");
+            var context = CreateRequest("GET", "/dbmigrations");
             await middle.HandleEntityFrameworkRequestAsync(context);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
