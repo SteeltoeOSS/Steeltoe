@@ -39,10 +39,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-A";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd3 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
 
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
@@ -52,22 +52,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             _ = await cmd4.ExecuteAsync();
 
             // this should still allow requests as everything has been successful
-            Time.Wait(150);
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             // fail
-            HystrixCommand<bool> cmd5 = new FailureCommand(key, 1);
-            HystrixCommand<bool> cmd6 = new FailureCommand(key, 1);
-            HystrixCommand<bool> cmd7 = new FailureCommand(key, 1);
-            HystrixCommand<bool> cmd8 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
+            HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
+            HystrixCommand<bool> cmd7 = new FailureCommand(key, 0);
+            HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
             Assert.False(await cmd5.ExecuteAsync());
             Assert.False(await cmd6.ExecuteAsync());
             Assert.False(await cmd7.ExecuteAsync());
             Assert.False(await cmd8.ExecuteAsync());
 
             // everything has failed in the test window so we should return false now
-            Time.Wait(150);
+            Time.Wait(300);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
         }
@@ -457,19 +456,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             public TestCircuitBreaker()
             {
-                this.metrics = GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
+                metrics = GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
                 forceShortCircuit = false;
             }
 
             public TestCircuitBreaker(IHystrixCommandKey commandKey)
             {
-                this.metrics = GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
+                metrics = GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
                 forceShortCircuit = false;
             }
 
             public TestCircuitBreaker SetForceShortCircuit(bool value)
             {
-                this.forceShortCircuit = value;
+                forceShortCircuit = value;
                 return this;
             }
 

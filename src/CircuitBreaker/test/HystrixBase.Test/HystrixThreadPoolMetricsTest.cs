@@ -56,13 +56,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             var cmd = new NoOpHystrixCommand(output);
             await cmd.ExecuteAsync();
-            Time.Wait(125);
+            Time.Wait(250);
 
             ICollection<HystrixThreadPoolMetrics> instances = HystrixThreadPoolMetrics.GetInstances();
 
             // then
+            output.WriteLine($"Instance count: {instances.Count}");
             Assert.Equal(1, instances.Count);
             HystrixThreadPoolMetrics metrics = instances.First();
+            output.WriteLine($"RollingCountThreadsExecuted: {metrics.RollingCountThreadsExecuted}");
             Assert.Equal(1, metrics.RollingCountThreadsExecuted);
         }
 

@@ -59,11 +59,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
         }
 
-        private static LatchedObserver GetSubscriber(ITestOutputHelper output, CountdownEvent latch)
-        {
-            return new LatchedObserver(output, latch);
-        }
-
         public RollingThreadPoolEventCounterStreamTest(ITestOutputHelper output)
             : base()
         {
@@ -88,7 +83,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // no writes
             try
@@ -114,9 +109,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
 
             cmd.Observe();
 
@@ -144,9 +139,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
 
             cmd.Observe();
 
@@ -174,9 +169,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.TIMEOUT);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.TIMEOUT);
 
             cmd.Observe();
 
@@ -204,9 +199,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
 
             cmd.Observe();
 
@@ -234,11 +229,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
-            Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-            Command cmd3 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+            Command cmd3 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
 
             cmd1.Observe();
             cmd2.Observe();
@@ -272,16 +267,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // 3 failures in a row will trip circuit.  let bucket roll once then submit 2 requests.
             // should see 3 FAILUREs and 2 SHORT_CIRCUITs and each should see a FALLBACK_SUCCESS
-            Command failure1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
-            Command failure2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
-            Command failure3 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command failure1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command failure2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command failure3 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
 
-            Command shortCircuit1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
-            Command shortCircuit2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            Command shortCircuit1 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            Command shortCircuit2 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
 
             failure1.Observe();
             failure2.Observe();
@@ -321,7 +316,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // 10 commands will saturate semaphore when called from different threads.
             // submit 2 more requests and they should be SEMAPHORE_REJECTED
@@ -330,11 +325,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             for (int i = 0; i < 10; i++)
             {
-                saturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
+                saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
-            Command rejected1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
-            Command rejected2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            Command rejected1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            Command rejected2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
 
             foreach (Command saturator in saturators)
             {
@@ -388,7 +383,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // 10 commands will saturate threadpools when called concurrently.
             // submit 2 more requests and they should be THREADPOOL_REJECTED
@@ -397,11 +392,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             for (int i = 0; i < 10; i++)
             {
-                saturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 200));
+                saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 200));
             }
 
-            Command rejected1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
-            Command rejected2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            Command rejected1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            Command rejected2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
 
             foreach (Command saturator in saturators)
             {
@@ -448,9 +443,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
 
             cmd.Observe();
 
@@ -478,9 +473,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
 
             cmd.Observe();
             try
@@ -507,18 +502,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
             // let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
             List<Command> fallbackSaturators = new List<Command>();
             for (int i = 0; i < 5; i++)
             {
-                fallbackSaturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 400));
+                fallbackSaturators.Add(Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 400));
             }
 
-            Command rejection1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
-            Command rejection2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
+            Command rejection1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
+            Command rejection2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_SUCCESS, 0);
 
             foreach (Command saturator in fallbackSaturators)
             {
@@ -562,10 +557,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             // by doing a take(20), we ensure that all rolling counts go back to 0
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(20).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(20).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
-            Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 10);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 10);
 
             cmd1.Observe();
             cmd2.Observe();
