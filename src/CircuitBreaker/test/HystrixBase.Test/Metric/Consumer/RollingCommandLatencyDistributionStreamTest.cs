@@ -201,8 +201,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public void TestShortCircuitedCommandDoesNotGetLatencyTracked()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");
-            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("CommandLatencyD");
+            var commandKey = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");
+            stream = RollingCommandLatencyDistributionStream.GetInstance(commandKey, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
             // 3 failures is enough to trigger short-circuit.  execute those, then wait for bucket to roll
@@ -210,15 +211,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             List<Command> commands = new List<Command>();
             for (int i = 0; i < 3; i++)
             {
-                commands.Add(Command.From(GroupKey, key, HystrixEventType.FAILURE, 0));
+                commands.Add(Command.From(groupKey, commandKey, HystrixEventType.FAILURE, 0));
             }
 
-            CountdownEvent latch = new CountdownEvent(1);
+            CountdownEvent latch = new CountdownEvent(0);
             stream.Observe().Take(10).Subscribe(
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                AssertBetween(0, 30, (int)distribution.GetMean());
+                Assert.InRange(distribution.GetMean(), 0, 30);
             },
             (e) =>
             {
@@ -234,7 +235,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 cmd.Observe();
             }
 
-            Command shortCircuit = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+            Command shortCircuit = Command.From(groupKey, commandKey, HystrixEventType.SUCCESS);
 
             try
             {
