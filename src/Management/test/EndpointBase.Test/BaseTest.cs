@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Diagnostics;
 using System;
 
@@ -46,7 +47,21 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             return JsonConvert.SerializeObject(
                 value,
-                new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+                GetSerializerSettings());
+        }
+
+        public JsonSerializer GetSerializer()
+        {
+            return JsonSerializer.Create(GetSerializerSettings());
+        }
+
+        public JsonSerializerSettings GetSerializerSettings()
+        {
+            return new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+            };
         }
     }
 }
