@@ -75,7 +75,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// <param name="entries">Maximum number of entries to retrieve</param>
         /// <typeparam name="T">Type of CredHub credential to be retrieved</typeparam>
         /// <returns>The details of the retrieved credential</returns>
-        Task<List<CredHubCredential<T>>> GetByNameWithHistoryAsync<T>(string name, int entries);
+        Task<List<CredHubCredential<T>>> GetByNameWithHistoryAsync<T>(string name, int entries = 10);
 
         /// <summary>
         /// Search for credentials with a full or partial name.

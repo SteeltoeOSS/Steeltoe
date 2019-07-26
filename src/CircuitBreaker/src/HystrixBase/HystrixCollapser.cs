@@ -17,7 +17,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -32,7 +31,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         GLOBAL
     }
 
-    public abstract class HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> : IHystrixExecutable<RequestResponseType>, IHystrixObservable<RequestResponseType>
+    public abstract class HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> : HysrixCollapserBase, IHystrixExecutable<RequestResponseType>
     {
         protected internal CancellationToken _token;
 
@@ -74,8 +73,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
 
             IHystrixCollapserOptions options = HystrixOptionsFactory.GetCollapserOptions(collapserKey, optionsDefault);
-            this.collapserFactory = new RequestCollapserFactory(collapserKey, scope, timer, options);
-            this.requestCache = HystrixRequestCache.GetInstance(collapserKey);
+            collapserFactory = new RequestCollapserFactory(collapserKey, scope, timer, options);
+            requestCache = HystrixRequestCache.GetInstance(collapserKey);
 
             if (metrics == null)
             {
@@ -89,37 +88,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCollapser(collapserKey, this.metrics, options);
         }
 
-        public virtual IHystrixCollapserKey CollapserKey
-        {
-            get { return collapserFactory.CollapserKey; }
-        }
+        public virtual IHystrixCollapserKey CollapserKey => collapserFactory.CollapserKey;
 
-        public virtual RequestCollapserScope Scope
-        {
-            get { return collapserFactory.Scope; }
-        }
+        public virtual RequestCollapserScope Scope => collapserFactory.Scope;
 
-        public virtual HystrixCollapserMetrics Metrics
-        {
-            get { return metrics; }
-        }
+        public virtual HystrixCollapserMetrics Metrics => metrics;
 
         public abstract RequestArgumentType RequestArgument { get; }
 
-        private IHystrixCollapserOptions Properties
-        {
-            get { return collapserFactory.Properties; }
-        }
+        private IHystrixCollapserOptions Properties => collapserFactory.Properties;
 
         public RequestResponseType Execute()
         {
             try
             {
-                var task = ExecuteAsync();
-                var result = task.Result;
-                return result;
+                return ExecuteAsync().GetAwaiter().GetResult();
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is HystrixRuntimeException))
             {
                 throw DecomposeException(e);
             }
@@ -132,7 +117,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public Task<RequestResponseType> ExecuteAsync(CancellationToken token)
         {
-            this._token = token;
+            _token = token;
             Task<RequestResponseType> toStart = ToTask();
             return toStart;
         }
@@ -141,9 +126,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             RequestCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> requestCollapser = collapserFactory.GetRequestCollapser(this);
             CollapsedRequest<RequestResponseType, RequestArgumentType> request = null;
-            HystrixCachedTask<RequestResponseType> entry = null;
 
-            if (AddCacheEntryIfAbsent(CacheKey, out entry))
+            if (AddCacheEntryIfAbsent(CacheKey, out HystrixCachedTask<RequestResponseType> entry))
             {
                 metrics.MarkResponseFromCache();
                 var origTask = entry.CachedTask;
@@ -152,9 +136,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 var continued = origTask.ContinueWith<RequestResponseType>(
                     (parent) =>
                     {
-                        CollapsedRequest<RequestResponseType, RequestArgumentType> req =
-                            parent.AsyncState as CollapsedRequest<RequestResponseType, RequestArgumentType>;
-                        if (req != null)
+                        if (parent.AsyncState is CollapsedRequest<RequestResponseType, RequestArgumentType> req)
                         {
                             if (req.Exception != null)
                             {
@@ -205,7 +187,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             IObservable<RequestResponseType> observable = Observable.FromAsync<RequestResponseType>((ct) =>
             {
-                this._token = ct;
+                _token = ct;
                 Task<RequestResponseType> toStart = ToTask();
                 return toStart;
             });
@@ -223,11 +205,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected bool AddCacheEntryIfAbsent(string cacheKey, out HystrixCachedTask<RequestResponseType> entry)
         {
-            entry = null;
             var newEntry = new HystrixCachedTask<RequestResponseType>();
             if (Properties.RequestCacheEnabled && cacheKey != null)
             {
-                entry = requestCache.PutIfAbsent<HystrixCachedTask<RequestResponseType>>(cacheKey, newEntry);
+                entry = requestCache.PutIfAbsent(cacheKey, newEntry);
                 if (entry != null)
                 {
                     return true;
@@ -238,72 +219,54 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return false;
         }
 
-        protected virtual string CacheKey
-        {
-            get { return null; }
-        }
+        protected virtual string CacheKey => null;
 
         internal static void Reset()
         {
             RequestCollapserFactory.Reset();
         }
 
-        private static string GetDefaultNameFromClass(Type cls)
-        {
-            if (defaultNameCache.TryGetValue(cls, out string fromCache))
-            {
-                return fromCache;
-            }
-
-            string name = cls.Name;
-            defaultNameCache.TryAdd(cls, name);
-            return name;
-        }
-
-        // this is a micro-optimization but saves about 1-2microseconds (on 2011 MacBook Pro)
-        // on the repetitive string processing that will occur on the same classes over and over again
-        private static ConcurrentDictionary<Type, string> defaultNameCache = new ConcurrentDictionary<Type, string>();
-
         internal ICollection<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> DoShardRequests(ICollection<CollapsedRequest<RequestResponseType, RequestArgumentType>> requests)
         {
             ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>> theRequests = new List<ICollapsedRequest<RequestResponseType, RequestArgumentType>>(requests);
-            ICollection<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> shards = this.ShardRequests(theRequests);
-            this.metrics.MarkShards(shards.Count);
+            ICollection<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> shards = ShardRequests(theRequests);
+            metrics.MarkShards(shards.Count);
             return shards;
         }
 
         internal HystrixCommand<BatchReturnType> DoCreateObservableCommand(ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>> requests)
         {
-            HystrixCommand<BatchReturnType> command = this.CreateCommand(requests);
+            HystrixCommand<BatchReturnType> command = CreateCommand(requests);
 
-            command.MarkAsCollapsedCommand(this.CollapserKey, requests.Count);
-            this.metrics.MarkBatch(requests.Count);
+            command.MarkAsCollapsedCommand(CollapserKey, requests.Count);
+            metrics.MarkBatch(requests.Count);
 
             return command;
         }
 
         internal void DoMapResponseToRequests(BatchReturnType batchResponse, ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>> requests)
         {
-            this.MapResponseToRequests(batchResponse, requests);
+            MapResponseToRequests(batchResponse, requests);
         }
 
         protected virtual Exception DecomposeException(Exception e)
         {
-            if (e is HystrixRuntimeException)
-            {
-                return (HystrixRuntimeException)e;
-            }
-
-            // if we have an exception we know about we'll throw it directly without the wrapper exception
-            if (e.InnerException is HystrixRuntimeException)
-            {
-                return (HystrixRuntimeException)e.InnerException;
-            }
-
             string message = GetType() + " HystrixCollapser failed while executing.";
 
             // logger.debug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
-            return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, this.GetType(), message, e, null);
+            return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, GetType(), message, e, null);
+        }
+
+        private static string GetDefaultNameFromClass(Type cls)
+        {
+            if (_defaultNameCache.TryGetValue(cls, out string fromCache))
+            {
+                return fromCache;
+            }
+
+            string name = cls.Name;
+            _defaultNameCache.TryAdd(cls, name);
+            return name;
         }
     }
 }

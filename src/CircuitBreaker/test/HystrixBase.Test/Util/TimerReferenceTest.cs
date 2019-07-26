@@ -34,7 +34,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
         private class TestListener : ITimerListener
         {
-            private Stopwatch stopwatch;
+            private readonly Stopwatch stopwatch;
 
             public TestListener(Stopwatch stopwatch)
             {

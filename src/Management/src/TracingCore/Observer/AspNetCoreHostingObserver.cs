@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         private const string OBSERVER_NAME = "AspNetCoreHostingDiagnosticObserver";
 
-        private static AsyncLocal<SpanContext> active = new AsyncLocal<SpanContext>();
+        private static readonly AsyncLocal<SpanContext> ActiveValue = new AsyncLocal<SpanContext>();
 
         public AspNetCoreHostingObserver(ITracingOptions options, ITracing tracing, ILogger<AspNetCoreHostingObserver> logger = null)
             : base(OBSERVER_NAME, options, tracing, logger)
@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Tracing.Observer
         {
             get
             {
-                return active.Value;
+                return ActiveValue.Value;
             }
         }
 
@@ -105,7 +105,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal void HandleExceptionEvent(HttpContext context, Exception exception)
         {
-            var spanContext = active.Value;
+            var spanContext = ActiveValue.Value;
             if (spanContext == null)
             {
                 Logger?.LogDebug("HandleExceptionEvent: Missing span context, {exception}", exception);
@@ -132,7 +132,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            if (active.Value != null)
+            if (ActiveValue.Value != null)
             {
                 Logger?.LogDebug("HandleStartEvent: Continuing existing span!");
                 return;
@@ -166,12 +166,12 @@ namespace Steeltoe.Management.Tracing.Observer
                 span.PutHttpRequestHeadersAttribute(AsList(context.Request.Headers));
             }
 
-            active.Value = new SpanContext(span, scope);
+            ActiveValue.Value = new SpanContext(span, scope);
         }
 
         protected internal void HandleStopEvent(HttpContext context)
         {
-            var spanContext = active.Value;
+            var spanContext = ActiveValue.Value;
             if (spanContext == null)
             {
                 Logger?.LogDebug("HandleStopEvent: Missing span context");
@@ -201,7 +201,7 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             scope.Dispose();
-            active.Value = null;
+            ActiveValue.Value = null;
         }
 
         protected internal string ExtractSpanName(HttpContext context)
@@ -239,6 +239,7 @@ namespace Steeltoe.Management.Tracing.Observer
             }
             catch (Exception)
             {
+                // code flow can continue just fine if the above fails for any reason
             }
 
             return null;
@@ -255,6 +256,7 @@ namespace Steeltoe.Management.Tracing.Observer
             }
             catch (Exception)
             {
+                // code flow can continue just fine if the above fails for any reason
             }
 
             return null;

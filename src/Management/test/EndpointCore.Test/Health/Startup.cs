@@ -17,7 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
 {

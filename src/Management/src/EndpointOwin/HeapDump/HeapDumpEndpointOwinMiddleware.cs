@@ -35,7 +35,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public HeapDumpEndpointOwinMiddleware(OwinMiddleware next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger: logger)
         {
@@ -46,11 +46,11 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         {
             if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
-                await HandleHeapDumpRequestAsync(context);
+                await HandleHeapDumpRequestAsync(context).ConfigureAwait(false);
             }
         }
 
@@ -67,7 +67,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
             }
 
             string gzFilename = filename + ".gz";
-            var result = await Utils.CompressFileAsync(filename, gzFilename);
+            var result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
 
             if (result != null)
             {
@@ -76,7 +76,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
                     context.Response.Headers.Add("Content-Disposition", new string[] { "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"" });
                     context.Response.StatusCode = (int)HttpStatusCode.OK;
                     context.Response.ContentLength = result.Length;
-                    await result.CopyToAsync(context.Response.Body);
+                    await result.CopyToAsync(context.Response.Body).ConfigureAwait(false);
                 }
 
                 File.Delete(gzFilename);

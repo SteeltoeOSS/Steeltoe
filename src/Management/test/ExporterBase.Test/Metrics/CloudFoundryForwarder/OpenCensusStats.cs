@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
 {
     public class OpenCensusStats : IStats
     {
-        private IStatsComponent statsComponent = new StatsComponent();
+        private readonly IStatsComponent statsComponent = new StatsComponent();
 
         public OpenCensusStats()
         {

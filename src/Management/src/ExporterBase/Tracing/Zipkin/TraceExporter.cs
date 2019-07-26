@@ -23,11 +23,12 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
     public class TraceExporter : ITraceExporter
     {
         private const string EXPORTER_NAME = "ZipkinTraceExporter";
-        private ITraceExporterOptions _options;
-        private ILogger<TraceExporter> _logger;
-        private IExportComponent _exportComponent;
+        private readonly ITraceExporterOptions _options;
+        private readonly ILogger<TraceExporter> _logger;
+        private readonly IExportComponent _exportComponent;
+        private readonly object _lck = new object();
+
         private TraceExporterHandler _handler;
-        private object _lck = new object();
 
         public TraceExporter(ITraceExporterOptions options, ITracing tracing, ILogger<TraceExporter> logger = null)
         {

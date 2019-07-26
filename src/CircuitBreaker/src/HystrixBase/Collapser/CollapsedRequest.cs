@@ -21,20 +21,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 {
     public class CollapsedRequest<RequestResponseType, RequestArgumentType> : ICollapsedRequest<RequestResponseType, RequestArgumentType>
     {
-        private readonly RequestArgumentType argument;
-        private readonly CancellationToken token;
         private readonly ConcurrentQueue<CancellationToken> linkedTokens = new ConcurrentQueue<CancellationToken>();
         private RequestResponseType response;
         private Exception exception;
         private bool complete;
-        private TaskCompletionSource<RequestResponseType> tcs;
 
         internal CollapsedRequest(RequestArgumentType arg, CancellationToken token)
         {
-            argument = arg;
-            this.token = token;
-            tcs = null;
-            response = default(RequestResponseType);
+            Argument = arg;
+            Token = token;
+            CompletionSource = null;
+            response = default;
             exception = null;
             complete = false;
         }
@@ -44,23 +41,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             linkedTokens.Enqueue(token);
         }
 
-        internal CancellationToken Token
-        {
-            get { return token; }
-        }
+        internal CancellationToken Token { get; }
 
-        internal TaskCompletionSource<RequestResponseType> CompletionSource
-        {
-            get
-            {
-                return tcs;
-            }
-
-            set
-            {
-                tcs = value;
-            }
-        }
+        internal TaskCompletionSource<RequestResponseType> CompletionSource { get; set; }
 
         internal void SetExceptionIfResponseNotReceived(Exception e)
         {
@@ -72,9 +55,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         internal bool IsRequestCanceled()
         {
-            foreach (var token in linkedTokens)
+            foreach (var linkedToken in linkedTokens)
             {
-                if (!token.IsCancellationRequested)
+                if (!linkedToken.IsCancellationRequested)
                 {
                     return false;
                 }
@@ -86,60 +69,48 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         internal Exception SetExceptionIfResponseNotReceived(Exception e, string exceptionMessage)
         {
-            Exception exception = e;
+            Exception newException = e;
 
             if (!complete)
             {
                 if (e == null)
                 {
-                    exception = new InvalidOperationException(exceptionMessage);
+                    newException = new InvalidOperationException(exceptionMessage);
                 }
 
-                SetExceptionIfResponseNotReceived(exception);
+                SetExceptionIfResponseNotReceived(newException);
             }
 
             // return any exception that was generated
-            return exception;
+            return newException;
         }
 
         #region ICollapsedRequest
-        public RequestArgumentType Argument
-        {
-            get
-            {
-                return argument;
-            }
-        }
+        public RequestArgumentType Argument { get; }
 
         public bool Complete
         {
-            internal get
-            {
-                return complete;
-            }
+            get => complete;
 
             set
             {
                 complete = value;
-                if (!tcs.Task.IsCompleted)
+                if (!CompletionSource.Task.IsCompleted)
                 {
-                    Response = default(RequestResponseType);
+                    Response = default;
                 }
             }
         }
 
         public Exception Exception
         {
-            internal get
-            {
-                return exception;
-            }
+            get => exception;
 
             set
             {
                 exception = value;
                 complete = true;
-                if (!tcs.TrySetException(value))
+                if (!CompletionSource.TrySetException(value))
                 {
                     throw new InvalidOperationException("Task has already terminated so exectpion can not be set : " + value);
                 }
@@ -148,16 +119,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         public RequestResponseType Response
         {
-            internal get
-            {
-                return response;
-            }
+            get => response;
 
             set
             {
                 response = value;
                 complete = true;
-                if (!tcs.TrySetResult(value))
+                if (!CompletionSource.TrySetResult(value))
                 {
                     throw new InvalidOperationException("Task has already terminated so response can not be set : " + value);
                 }

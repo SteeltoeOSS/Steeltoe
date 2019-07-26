@@ -291,5 +291,47 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
             // Assert
             Assert.NotNull(healthContributor);
         }
+
+        [Fact]
+        public void AddRabbitMQConnection_DoesntAddsRabbitMQHealthContributor_WhenCommunityHealthCheckExists()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<RabbitMQConnectionInfo>();
+            services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
+
+            // Assert
+            Assert.Null(healthContributor);
+        }
+
+        [Fact]
+        public void AddRabbitMQConnection_AddsRabbitMQHealthContributor_WhenCommunityHealthCheckExistsAndForced()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<RabbitMQConnectionInfo>();
+            services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            RabbitMQProviderServiceCollectionExtensions.AddRabbitMQConnection(services, config, addSteeltoeHealthChecks: true);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
+        }
     }
 }

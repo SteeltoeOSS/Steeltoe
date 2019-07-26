@@ -118,6 +118,48 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         }
 
         [Fact]
+        public void AddDistributedRedisCache_DoesntAddRedisHealthContributor_WhenCommunityHealthCheckExists()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<RedisConnectionInfo>();
+            services.AddHealthChecks().AddRedis(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
+
+            // Assert
+            Assert.Null(healthContributor);
+        }
+
+        [Fact]
+        public void AddDistributedRedisCache_AddsRedisHealthContributor_WhenCommunityHealthCheckExistsAndForced()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<RedisConnectionInfo>();
+            services.AddHealthChecks().AddRedis(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, addSteeltoeHealthChecks: true);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
+        }
+
+        [Fact]
         public void AddDistributedRedisCache_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
             // Arrange
@@ -312,6 +354,35 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Contains("cbe9d9a0-6502-438d-87ec-f26f1974e378.redis.cache.windows.net", service.Configuration);
             Assert.Contains(":6379", service.Configuration);
             Assert.Contains("password=V+4dv03jSUZkEcjGhVMR0hjEPfILCCcth1JE8vPRki4=", service.Configuration);
+        }
+
+        [Fact]
+        public void AddRedisConnectionMultiplexer_WithEnterpriseVCAPs_AddsRedisConnectionMultiplexer()
+        {
+            // Arrange
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerEnterpriseVCAP);
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["redis:client:AbortOnConnectFail"] = "false",
+                ["redis:client:connectTimeout"] = "1"
+            };
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            builder.AddInMemoryCollection(appsettings);
+            var config = builder.Build();
+
+            // Act
+            RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
+            var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
+
+            // Assert
+            Assert.NotNull(service);
+            Assert.IsType<ConnectionMultiplexer>(service);
+            Assert.Contains("redis-1076.redis-enterprise.system.cloudyazure.io", service.Configuration);
+            Assert.Contains(":1076", service.Configuration);
+            Assert.Contains("password=rQrMqqg-.LJzO498EcAIfp-auu4czBiGM40wjveTdHw-EJu0", service.Configuration);
         }
 
         [Fact]

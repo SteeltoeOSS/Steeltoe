@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Test;

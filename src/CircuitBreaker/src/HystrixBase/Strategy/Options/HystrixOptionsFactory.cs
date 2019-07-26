@@ -13,12 +13,11 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Util;
-using System;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 {
-    public class HystrixOptionsFactory
+    public static class HystrixOptionsFactory
     {
         public static void Reset()
         {

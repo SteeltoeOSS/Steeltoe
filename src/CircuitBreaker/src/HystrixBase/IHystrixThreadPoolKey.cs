@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Util;
+using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
@@ -26,8 +27,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     /// <summary>
     /// Default implementation of the interface
     /// </summary>
-    public class HystrixThreadPoolKeyDefault : HystrixKeyDefault<HystrixThreadPoolKeyDefault>, IHystrixThreadPoolKey
+    public class HystrixThreadPoolKeyDefault : HystrixKeyDefault, IHystrixThreadPoolKey
     {
+        private static readonly ConcurrentDictionary<string, HystrixThreadPoolKeyDefault> Intern = new ConcurrentDictionary<string, HystrixThreadPoolKeyDefault>();
+
         internal HystrixThreadPoolKeyDefault(string name)
             : base(name)
         {
@@ -45,7 +48,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static int ThreadPoolCount
         {
-            get { return Count; }
+            get { return Intern.Count; }
         }
     }
 }

@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Owin;
-using Steeltoe.Management.EndpointOwin.Hypermedia;
 using Steeltoe.Management.EndpointOwin.Info;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;

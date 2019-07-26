@@ -24,7 +24,7 @@ namespace Steeltoe.Discovery.Eureka
         {
         }
 
-        protected static DiscoveryManager _instance = new DiscoveryManager();
+        protected static readonly DiscoveryManager _instance = new DiscoveryManager();
 
         public static DiscoveryManager Instance
         {

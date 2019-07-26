@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Census.Stats
 
         public static OpenCensusStats Instance => AsSingleton.Value;
 
-        private IStatsComponent statsComponent = new StatsComponent();
+        private readonly IStatsComponent statsComponent = new StatsComponent();
 
         public OpenCensusStats()
         {

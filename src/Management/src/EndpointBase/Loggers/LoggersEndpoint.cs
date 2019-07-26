@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -35,8 +36,8 @@ namespace Steeltoe.Management.Endpoint.Loggers
             LoggerLevels.MapLogLevel(LogLevel.Trace)
         };
 
-        private ILogger<LoggersEndpoint> _logger;
-        private IDynamicLoggerProvider _cloudFoundryLoggerProvider;
+        private readonly ILogger<LoggersEndpoint> _logger;
+        private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
         public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider, ILogger<LoggersEndpoint> logger = null)
             : base(options)
@@ -55,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
         {
-            _logger?.LogDebug("Invoke({0})", request);
+            _logger?.LogDebug("Invoke({0})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
             return DoInvoke(_cloudFoundryLoggerProvider, request);
         }

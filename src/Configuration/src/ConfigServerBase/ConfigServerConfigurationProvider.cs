@@ -111,7 +111,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source)
             : this(source.DefaultSettings, source.LogFactory)
         {
-            var root = source.Configuration as IConfigurationRoot;
+            _ = source.Configuration as IConfigurationRoot;
             _configuration = WrapWithPlaceholderResolver(source.Configuration);
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
         }
@@ -125,7 +125,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             : this(source.DefaultSettings, source.LogFactory)
         {
             _client = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            var root = source.Configuration as IConfigurationRoot;
+            _ = source.Configuration as IConfigurationRoot;
             _configuration = WrapWithPlaceholderResolver(source.Configuration);
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
         }
@@ -133,7 +133,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <summary>
         /// Gets the configuration settings the provider uses when accessing the server.
         /// </summary>
-        public virtual ConfigServerClientSettings Settings => _settings as ConfigServerClientSettings;
+        public virtual ConfigServerClientSettings Settings => _settings;
 
         internal IDictionary<string, string> Properties => Data;
 
@@ -145,7 +145,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public override void Load()
         {
-            Load(true);
+            LoadInternal(true);
         }
 
         [Obsolete("Will be removed in next release, use the ConfigServerConfigurationSource")]
@@ -167,7 +167,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return this;
         }
 
-        internal ConfigEnvironment Load(bool updateDictionary = true)
+        internal ConfigEnvironment LoadInternal(bool updateDictionary = true)
         {
             // Refresh settings with latest configuration values
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
@@ -255,8 +255,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     }
 
                     // Wait for results from server
-                    task.Wait();
-                    ConfigEnvironment env = task.Result;
+                    ConfigEnvironment env = task.GetAwaiter().GetResult();
 
                     // Update config Data dictionary with any results
                     if (env != null)
@@ -355,7 +354,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             uri = uri.Substring(0, uri.Length - 1);
                         }
 
-                        uri = uri + path;
+                        uri += path;
                     }
                 }
 
@@ -391,7 +390,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             if (!string.IsNullOrEmpty(_settings.Token) && !ConfigServerClientSettings.IsMultiServerConfig(_settings.Uri))
             {
-                if (_settings.DisableTokenRenewal != true)
+                if (!_settings.DisableTokenRenewal)
                 {
                     RenewToken(_settings.Token);
                 }
@@ -506,7 +505,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             }
                         }
 
-                        Stream stream = await response.Content.ReadAsStreamAsync();
+                        Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                         return Deserialize(stream);
                     }
                 }
@@ -554,8 +553,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             var request = GetRequestMessage(requestUri);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out prevProtocols, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out SecurityProtocolType prevProtocols, out RemoteCertificateValidationCallback prevValidator);
 
             // Invoke config server
             try
@@ -585,7 +583,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                         }
                     }
 
-                    Stream stream = await response.Content.ReadAsStreamAsync();
+                    Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     return Deserialize(stream);
                 }
             }
@@ -624,7 +622,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 throw new ArgumentException(nameof(baseRawUri));
             }
 
-            var path = _settings.Name + "/" + _settings.Environment;
+            var path = $"{_settings.Name}/{_settings.Environment}";
             if (!string.IsNullOrWhiteSpace(label))
             {
                 // If label contains slash, replace it
@@ -791,10 +789,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 _settings.ClientId,
                 _settings.ClientSecret,
                 _settings.Timeout,
-                _settings.ValidateCertificates).Result;
+                _settings.ValidateCertificates).GetAwaiter().GetResult();
         }
 
+        // fire and forget
+#pragma warning disable S3168 // "async" methods should not return "void"
         protected internal async void RefreshVaultTokenAsync(object state)
+#pragma warning restore S3168 // "async" methods should not return "void"
         {
             if (string.IsNullOrEmpty(Settings.Token))
             {
@@ -804,10 +805,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             var obscuredToken = Settings.Token.Substring(0, 4) + "[*]" + Settings.Token.Substring(Settings.Token.Length - 4);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            SecurityProtocolType prevProtocols = (SecurityProtocolType)0;
             HttpClientHelper.ConfigureCertificateValidation(
                 _settings.ValidateCertificates,
-                out prevProtocols,
+                out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
             HttpClient client = null;
@@ -844,7 +844,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             var rawUri = Settings.RawUris[0];
             if (!rawUri.EndsWith("/"))
             {
-                rawUri = rawUri + "/";
+                rawUri += "/";
             }
 
             return rawUri + VAULT_RENEW_PATH;
@@ -903,12 +903,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return true;
             }
 
-            if (e is HttpRequestException)
+            if (e is HttpRequestException && e.InnerException is SocketException)
             {
-                if (e.InnerException is SocketException)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;

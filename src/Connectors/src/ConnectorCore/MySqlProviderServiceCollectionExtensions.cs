@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Relational.MySql;
@@ -21,6 +22,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Data;
+using System.Linq;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql
 {
@@ -33,10 +35,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logging factory</param>
-        /// <param name="builder">Microsoft HealthChecksBuilder</param>
+        /// <param name="addSteeltoeHealthChecks">Add steeltoeHealth checks even if community health checks exist</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>MySqlConnection is retrievable as both MySqlConnection and IDbConnection</remarks>
-        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, IHealthChecksBuilder builder = null)
+        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -50,7 +52,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
 
-            DoAdd(services, info, config, contextLifetime, builder);
+            DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
         }
 
@@ -62,10 +64,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
         /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
         /// <param name="logFactory">logging factory</param>
-        /// <param name="builder">Microsoft HealthChecksBuilder</param>
+        /// <param name="addSteeltoeHealthChecks">Add steeltoeHealth checks even if community health checks exist</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>MySqlConnection is retrievable as both MySqlConnection and IDbConnection</remarks>
-        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, IHealthChecksBuilder builder = null)
+        public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -84,24 +86,21 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
             MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
-            DoAdd(services, info, config, contextLifetime, builder);
+            DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, IHealthChecksBuilder builder)
+        private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
         {
             Type mySqlConnection = ConnectorHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
             var mySqlConfig = new MySqlProviderConnectorOptions(config);
             var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(mySqlConnection, factory.Create, contextLifetime));
-            if (builder == null)
+
+            if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
             {
                 services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), ServiceLifetime.Singleton));
-            }
-            else
-            {
-                builder.AddMySql(factory.CreateConnectionString());
             }
         }
     }

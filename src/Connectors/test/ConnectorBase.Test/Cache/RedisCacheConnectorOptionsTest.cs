@@ -21,6 +21,7 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
+    [Collection("Redis")]
     public class RedisCacheConnectorOptionsTest
     {
         [Fact]
@@ -83,7 +84,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Assert.Equal(100, sconfig.SyncTimeout);
 
             Assert.Null(sconfig.ConnectionString);
-    }
+        }
 
         [Fact]
         public void ConnectionString_Returned_AsConfigured()

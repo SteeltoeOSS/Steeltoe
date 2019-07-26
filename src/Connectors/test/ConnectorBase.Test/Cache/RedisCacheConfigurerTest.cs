@@ -21,6 +21,7 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis.Test
 {
+    [Collection("Redis")]
     public class RedisCacheConfigurerTest
     {
         // [Fact]
@@ -60,7 +61,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             RedisCacheConfigurer configurer = new RedisCacheConfigurer();
             RedisCacheConnectorOptions connOptions = new RedisCacheConnectorOptions();
-            RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword")
+            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
             {
                 ApplicationInfo = new ApplicationInstanceInfo()
                 {
@@ -104,7 +105,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 Password = "password",
                 InstanceName = "instanceId"
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword")
+            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
             {
                 ApplicationInfo = new ApplicationInstanceInfo()
                 {
@@ -154,7 +155,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 Port = 1234,
                 Password = "password"
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", "foobar", 4321, "sipassword")
+            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
             {
                 ApplicationInfo = new ApplicationInstanceInfo()
                 {

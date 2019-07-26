@@ -18,6 +18,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -50,7 +51,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
         }
 
         [Fact]
-        public async void TestThreadContextOnTimeout()
+        public async Task TestThreadContextOnTimeout()
         {
             AtomicBoolean isInitialized = new AtomicBoolean();
             await Assert.ThrowsAsync<HystrixRuntimeException>(async () =>
@@ -82,6 +83,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("SimpleCommand")
             };
             new SimpleCommand(output, opts).Execute();
+
+            Assert.True(true, "Nothing blew up");
         }
 
         private class SimpleCommand : HystrixCommand<string>

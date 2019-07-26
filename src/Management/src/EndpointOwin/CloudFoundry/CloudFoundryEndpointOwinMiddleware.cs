@@ -23,9 +23,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class CloudFoundryEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)
@@ -33,7 +33,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger: logger)
         {
@@ -44,14 +44,14 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         {
             if (!IsCloudFoundryRequest(context))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
                 var endpointResponse = _endpoint.Invoke(GetRequestUri(context.Request));
                 _logger?.LogTrace("Returning: {EndpointResponse}", endpointResponse);
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/json;charset=UTF-8" });
-                await context.Response.WriteAsync(Serialize(endpointResponse));
+                await context.Response.WriteAsync(Serialize(endpointResponse)).ConfigureAwait(false);
             }
         }
 
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 scheme = headerScheme.First(); // .ToString()
             }
 
-            return scheme + "://" + request.Host.ToString() + request.Path.ToString();
+            return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
         }
 
         private bool IsCloudFoundryRequest(IOwinContext context)

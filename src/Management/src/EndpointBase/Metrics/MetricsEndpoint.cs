@@ -23,8 +23,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>
     {
-        private ILogger<MetricsEndpoint> _logger;
-        private IStats _stats;
+        private readonly ILogger<MetricsEndpoint> _logger;
+        private readonly IStats _stats;
 
         public MetricsEndpoint(IMetricsOptions options, IStats stats,  ILogger<MetricsEndpoint> logger = null)
             : base(options)

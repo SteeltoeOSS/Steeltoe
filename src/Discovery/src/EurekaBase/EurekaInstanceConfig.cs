@@ -36,8 +36,10 @@ namespace Steeltoe.Discovery.Eureka
 
         public EurekaInstanceConfig()
         {
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
             _thisHostName = GetHostName(true);
             _thisHostAddress = GetHostAddress(true);
+#pragma warning restore S1699 // Constructors should only call non-overridable methods
 
             IsInstanceEnabledOnInit = false;
             NonSecurePort = Default_NonSecurePort;

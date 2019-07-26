@@ -36,6 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents
 
             public void GetResult()
             {
+                // for future use
             }
 
             public bool IsCompleted

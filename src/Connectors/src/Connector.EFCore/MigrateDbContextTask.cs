@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Tasks;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.CloudFoundry.Connector.EFCore
@@ -62,6 +61,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
             {
                 migrations = _db.Database.GetAppliedMigrations().ToList();
             }
+
             if (migrations.Any())
             {
                 _logger.LogInformation("The following migrations have been successfully applied:");

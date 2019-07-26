@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
 {
+    [Serializable]
     public class HystrixTimeoutException : Exception
     {
         public HystrixTimeoutException(string message)
@@ -25,6 +27,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
 
         public HystrixTimeoutException(string message, Exception inner)
             : base(message, inner)
+        {
+        }
+
+        public HystrixTimeoutException()
+        {
+        }
+
+        protected HystrixTimeoutException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

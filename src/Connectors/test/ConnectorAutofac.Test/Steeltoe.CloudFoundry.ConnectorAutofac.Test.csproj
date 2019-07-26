@@ -15,6 +15,7 @@
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <!--<PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />-->
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
     <!--<PackageReference Include="MySql.Data" Version="$(MySqlV6)" />-->
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />

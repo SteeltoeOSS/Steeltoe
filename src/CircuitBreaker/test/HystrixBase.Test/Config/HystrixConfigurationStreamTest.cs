@@ -31,8 +31,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("Config");
         private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("Command");
 
-        private ITestOutputHelper output;
-        private HystrixConfigurationStream stream;
+        private readonly ITestOutputHelper output;
+        private readonly HystrixConfigurationStream stream;
 
         public HystrixConfigurationStreamTest(ITestOutputHelper output)
             : base()
@@ -107,7 +107,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
+                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnError : " + e);
                         latch1.SignalEx();
                     },
                     () =>
@@ -131,7 +131,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                 },
                 (e) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
+                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>

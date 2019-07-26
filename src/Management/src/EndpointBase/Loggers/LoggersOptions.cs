@@ -17,7 +17,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
-    [Obsolete]
+    [Obsolete("Use LoggersEndpointOptions instead.")]
     public class LoggersOptions : AbstractOptions, ILoggersOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";

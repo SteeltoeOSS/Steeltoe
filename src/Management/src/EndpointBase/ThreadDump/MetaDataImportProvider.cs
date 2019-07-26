@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class MetaDataImportProvider : IMetadataImportProvider
     {
-        private object _import;
+        private readonly object _import;
 
         public MetaDataImportProvider(object import)
         {

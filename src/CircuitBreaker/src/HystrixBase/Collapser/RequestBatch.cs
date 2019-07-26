@@ -16,6 +16,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -195,7 +196,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
                                 // check that all requests had setResponse or setException invoked in case 'mapResponseToRequests' was implemented poorly
                                 Exception e = null;
-                                foreach (CollapsedRequest<RequestResponseType, RequestArgumentType> request in shardRequests)
+                                foreach (var request in shardRequests.OfType<CollapsedRequest<RequestResponseType, RequestArgumentType>>())
                                 {
                                     try
                                     {
@@ -211,7 +212,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                             {
                                 // logger.error("Exception while creating and queueing command with batch.", e);
                                 // if a failure occurs we want to pass that exception to all of the Futures that we've returned
-                                foreach (CollapsedRequest<RequestResponseType, RequestArgumentType> request in shardRequests)
+                                foreach (var request in shardRequests.OfType<CollapsedRequest<RequestResponseType, RequestArgumentType>>())
                                 {
                                     try
                                     {

@@ -22,6 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
         public void Dispose()
         {
+            // for future use
         }
 
         public void Init(HttpApplication context)
@@ -32,25 +33,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void Context_EndRequest(object sender, EventArgs e)
         {
-            HttpApplication app = sender as HttpApplication;
-            if (app != null)
+            if (sender is HttpApplication app)
             {
                 var items = app.Context?.Items;
-                if (items != null)
+                if (items != null && items["_hystrix_context_"] is HystrixRequestContext hystrix)
                 {
-                    var hystrix = items["_hystrix_context_"] as HystrixRequestContext;
-                    if (hystrix != null)
-                    {
-                        hystrix.Dispose();
-                    }
+                    hystrix.Dispose();
                 }
             }
         }
 
         private void Context_BeginRequest(object sender, EventArgs e)
         {
-            HttpApplication app = sender as HttpApplication;
-            if (app != null)
+            if (sender is HttpApplication app)
             {
                 var items = app.Context?.Items;
                 if (items != null)
