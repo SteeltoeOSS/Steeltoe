@@ -259,8 +259,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(expected, stream.Latest);
         }
 
-        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void TestShortCircuited()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-RollingCounter-G");

@@ -198,8 +198,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             AssertBetween(600, 800, stream.GetLatestPercentile(100.0));
         }
 
-        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void TestShortCircuitedCommandDoesNotGetLatencyTracked()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("CommandLatencyD");
