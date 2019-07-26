@@ -120,11 +120,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             try
             {
                 Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine($"ReqLog: {HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString()}");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine($"Exception encountered: {e.Message}");
+                output.WriteLine($"ReqLog: {HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString()}");
                 Assert.True(false, "Interrupted ex");
             }
 

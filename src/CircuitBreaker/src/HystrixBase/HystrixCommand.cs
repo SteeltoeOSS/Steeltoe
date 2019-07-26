@@ -303,7 +303,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected virtual async Task<TResult> RunAsync()
         {
-            return await Task.FromResult(default(TResult)).ConfigureAwait(false);
+            return await Task.FromResult(default(TResult)).ConfigureAwait(true);
         }
 
         protected virtual async Task<TResult> RunFallbackAsync()
