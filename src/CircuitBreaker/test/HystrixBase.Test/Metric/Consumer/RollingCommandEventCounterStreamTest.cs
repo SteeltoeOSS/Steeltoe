@@ -30,13 +30,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     public class RollingCommandEventCounterStreamTest : CommandStreamTest, IDisposable
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("RollingCommandCounter");
+        private readonly ITestOutputHelper output;
         private RollingCommandEventCounterStream stream;
-        private ITestOutputHelper output;
 
         private class LatchedObserver : ObserverBase<long[]>
         {
-            private CountdownEvent latch;
-            private ITestOutputHelper output;
+            private readonly CountdownEvent latch;
+            private readonly ITestOutputHelper output;
 
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
@@ -127,7 +127,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
             expected[(int)HystrixEventType.SUCCESS] = 1;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -158,7 +162,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.FAILURE] = 1;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -189,7 +197,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.TIMEOUT] = 1;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -220,7 +232,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.BAD_REQUEST] = 1;
             expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -256,7 +272,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SUCCESS] = 1;
             expected[(int)HystrixEventType.RESPONSE_FROM_CACHE] = 2;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -313,7 +333,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SHORT_CIRCUITED] = 2;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 5;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -374,7 +398,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SEMAPHORE_REJECTED] = 2;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -426,7 +454,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SUCCESS] = 10;
             expected[(int)HystrixEventType.THREAD_POOL_REJECTED] = 2;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -458,7 +490,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.FALLBACK_FAILURE] = 1;
             expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -490,7 +526,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.FALLBACK_MISSING] = 1;
             expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -547,7 +587,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.FALLBACK_REJECTION] = 2;
             expected[(int)HystrixEventType.EXCEPTION_THROWN] = 2;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -579,7 +623,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SUCCESS] = 1;
             expected[(int)HystrixEventType.COLLAPSED] = 3;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
 
         [Fact]
@@ -611,7 +659,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(HystrixEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            for (var i = 0; i < HystrixEventTypeHelper.Values.Count; i++)
+            {
+                output.WriteLine($"Expected: {expected[i]} at position {i}. Actual: {stream.Latest[i]}");
+                Assert.Equal(expected[i], stream.Latest[i]);
+            }
         }
     }
 }
