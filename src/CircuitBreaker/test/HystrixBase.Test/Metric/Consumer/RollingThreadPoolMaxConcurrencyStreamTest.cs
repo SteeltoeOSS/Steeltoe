@@ -202,9 +202,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
 
-            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 310);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
-            Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
+            Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 1);
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
 
             cmd1.Observe();

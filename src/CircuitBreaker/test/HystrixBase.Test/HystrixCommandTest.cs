@@ -1244,7 +1244,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             t2.Start();
 
             // make sure that t2 gets a chance to run before queuing the next one
-            Time.Wait(50);
+            Time.Wait(100);
             t3.Start();
             t2.Join();
             t3.Join();

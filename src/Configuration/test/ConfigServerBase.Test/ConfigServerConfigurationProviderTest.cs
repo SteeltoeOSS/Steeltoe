@@ -22,7 +22,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
@@ -376,13 +378,25 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_HostTimesout()
+        public async void RemoteLoadAsync_HostTimesOut()
         {
             // Arrange
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
 
             // Act and Assert
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(new string[] { "http://localhost:9999/app/profile" }, null));
+            try
+            {
+                HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(new string[] { "http://localhost:9999/app/profile" }, null));
+            }
+            catch (ThrowsException e)
+            {
+                if (e.InnerException is TaskCanceledException)
+                {
+                    return;
+                }
+
+                Assert.True(false, "Request didn't timeout or throw TaskCanceledException");
+            }
         }
 
         [Fact]

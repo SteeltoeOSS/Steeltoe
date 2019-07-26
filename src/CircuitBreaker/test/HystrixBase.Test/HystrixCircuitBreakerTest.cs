@@ -165,7 +165,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await cmd4.ExecuteAsync();
 
             // everything has been a timeout so we should not allow any requests
-            Time.Wait(150);
+            Time.Wait(10);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
         }
@@ -212,12 +212,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-F";
 
-            int sleepWindow = 200;
-            HystrixCommand<bool> cmd1 = new FailureCommand(key, 60);
+            HystrixCommand<bool> cmd1 = new FailureCommand(key, 50);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+            Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (1)");
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             await cmd1.ExecuteAsync();
@@ -229,21 +228,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await cmd4.ExecuteAsync();
 
             // everything has failed in the test window so we should return false now
-            Time.Wait(150);
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+            Time.Wait(100);
+            Assert.False(cb.AllowRequest, "Request allowed when NOT expected! (1)");
+            Assert.True(cb.IsOpen, "Circuit is closed when it should be open! (1)");
 
             // wait for sleepWindow to pass
-            Time.Wait(sleepWindow + 50);
+            Time.Wait(250);
 
             // we should now allow 1 request
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+            Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (2)");
 
             // but the circuit should still be open
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+            Assert.True(cb.IsOpen, "Circuit is closed when it should be open! (2)");
 
             // and further requests are still blocked
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+            Assert.False(cb.AllowRequest, "Request allowed when NOT expected! (2)");
         }
 
         [Fact]
