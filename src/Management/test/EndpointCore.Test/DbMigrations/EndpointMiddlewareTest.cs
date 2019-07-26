@@ -103,7 +103,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/entityframework");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dbmigrations");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 var expected = JToken.FromObject(
@@ -139,8 +139,8 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             mgmt.EndpointOptions.Add(opts);
             var middle = new DbMigrationsEndpointMiddleware(null, ep, new List<IManagementOptions> { mgmt });
 
-            middle.RequestVerbAndPathMatch("GET", "/entityframework").Should().BeTrue();
-            middle.RequestVerbAndPathMatch("PUT", "/entityframework").Should().BeFalse();
+            middle.RequestVerbAndPathMatch("GET", "/dbmigrations").Should().BeTrue();
+            middle.RequestVerbAndPathMatch("PUT", "/dbmigrations").Should().BeFalse();
             middle.RequestVerbAndPathMatch("GET", "/badpath").Should().BeFalse();
         }
 
