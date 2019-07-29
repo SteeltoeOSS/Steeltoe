@@ -184,19 +184,26 @@ namespace Steeltoe.Common.Http
 
             if (string.IsNullOrEmpty(clientId))
             {
-                throw new ArgumentException(nameof(accessTokenUri));
+                throw new ArgumentException(nameof(clientId));
             }
 
             if (string.IsNullOrEmpty(clientSecret))
             {
-                throw new ArgumentException(nameof(accessTokenUri));
+                throw new ArgumentException(nameof(clientSecret));
             }
 
-            return GetAccessTokenInternal(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, logger);
+            var parsedUri = new Uri(accessTokenUri);
+
+            if (!parsedUri.IsWellFormedOriginalString())
+            {
+                throw new ArgumentException("Access token Uri is not well formed", nameof(accessTokenUri));
+            }
+
+            return GetAccessTokenInternal(parsedUri, clientId, clientSecret, timeout, validateCertificates, logger);
         }
 
         private static async Task<string> GetAccessTokenInternal(
-            string accessTokenUri,
+            Uri accessTokenUri,
             string clientId,
             string clientSecret,
             int timeout,
@@ -228,7 +235,7 @@ namespace Steeltoe.Common.Http
                             logger?.LogInformation(
                                 "GetAccessToken returned status: {0} while obtaining access token from: {1}",
                                 response.StatusCode,
-                                accessTokenUri);
+                                WebUtility.UrlEncode(accessTokenUri.OriginalString));
                             return null;
                         }
 
@@ -240,7 +247,7 @@ namespace Steeltoe.Common.Http
             }
             catch (Exception e)
             {
-                logger?.LogError("GetAccessToken exception: {0} ,obtaining access token from: {1}", e, WebUtility.UrlEncode(accessTokenUri));
+                logger?.LogError("GetAccessToken exception: {0}, obtaining access token from: {1}", e, WebUtility.UrlEncode(accessTokenUri.OriginalString));
             }
             finally
             {

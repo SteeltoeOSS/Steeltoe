@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.MySql;
+using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.PostgreSql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
@@ -71,6 +72,21 @@ namespace Steeltoe.CloudFoundry.Connector.Relational
             return new RelationalHealthContributor(connection, logger);
         }
 
+        public static IHealthContributor GetOracleContributor(IConfiguration configuration, ILogger<RelationalHealthContributor> logger = null)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            var info = configuration.GetSingletonServiceInfo<OracleServiceInfo>();
+            Type oracleConnection = ConnectorHelpers.FindType(OracleTypeLocator.Assemblies, OracleTypeLocator.ConnectionTypeNames);
+            var oracleConfig = new OracleProviderConnectorOptions(configuration);
+            var factory = new OracleProviderConnectorFactory(info, oracleConfig, oracleConnection);
+            var connection = factory.Create(null) as IDbConnection;
+            return new RelationalHealthContributor(connection, logger);
+        }
+
         public readonly IDbConnection _connection;
         private readonly ILogger<RelationalHealthContributor> _logger;
 
@@ -92,7 +108,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational
             {
                 _connection.Open();
                 var cmd = _connection.CreateCommand();
-                cmd.CommandText = "SELECT 1;";
+                cmd.CommandText = (Id.IndexOf("Oracle", StringComparison.OrdinalIgnoreCase) != -1) ? "SELECT 1 FROM dual" : "SELECT 1;";
                 var qresult = cmd.ExecuteScalar();
                 result.Details.Add("status", HealthStatus.UP.ToString());
                 result.Status = HealthStatus.UP;
@@ -127,6 +143,9 @@ namespace Steeltoe.CloudFoundry.Connector.Relational
                     break;
                 case "MySqlConnection":
                     result = "MySQL";
+                    break;
+                case "OracleConnection":
+                    result = "Oracle";
                     break;
             }
 

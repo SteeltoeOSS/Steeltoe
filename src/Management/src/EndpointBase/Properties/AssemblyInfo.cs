@@ -34,3 +34,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("Steeltoe.Management.EndpointOwin.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.EndpointWeb.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.EndpointAutofac.Test")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
