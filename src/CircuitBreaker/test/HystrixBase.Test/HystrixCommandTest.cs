@@ -864,11 +864,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             TestCommandRejection command3 = null;
             try
             {
-                command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
-                command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
-                command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+                command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 700, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+                command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 700, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+                command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 700, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
                 f = command1.ExecuteAsync(); // Running
-                Time.Wait(20); // Let first start
+                Time.Wait(50); // Let first start
                 f2 = command2.ExecuteAsync(); // In Queue
                 await command3.ExecuteAsync(); // Start, queue rejected
                 Assert.True(false, "we shouldn't get here");
@@ -2609,7 +2609,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             _ = cmd.ExecuteAsync();
 
             // then
-            Time.Wait(500);
+            Time.Wait(1000);
             Assert.True(cmd.HasBeenInterrupted);
         }
 
