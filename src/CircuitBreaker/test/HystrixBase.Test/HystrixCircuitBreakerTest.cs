@@ -175,7 +175,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-E";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 60);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 50);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
@@ -202,7 +202,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await cmd9.ExecuteAsync();
 
             // this should trip the circuit as the error percentage is above the threshold
-            Time.Wait(150);
+            Time.Wait(400);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
         }
