@@ -157,7 +157,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                         return new Command(setter, HystrixEventType.FAILURE, latency, uniqueArg, desiredFallbackEventType, fallbackLatency);
                     case HystrixEventType.TIMEOUT:
                         uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
-                        return new Command(setter, HystrixEventType.SUCCESS, 1000, uniqueArg, desiredFallbackEventType, fallbackLatency);
+                        return new Command(setter, HystrixEventType.SUCCESS, 600, uniqueArg, desiredFallbackEventType, fallbackLatency);
                     case HystrixEventType.BAD_REQUEST:
                         uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
                         return new Command(setter, HystrixEventType.BAD_REQUEST, latency, uniqueArg, desiredFallbackEventType, 0);
