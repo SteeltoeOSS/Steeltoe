@@ -198,21 +198,5 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(expected, stream.Latest);
         }
-
-        private static string CollapserEventsToStr(long[] eventCounts)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("[");
-            foreach (CollapserEventType eventType in CollapserEventTypeHelper.Values)
-            {
-                if (eventCounts[(int)eventType] > 0)
-                {
-                    sb.Append(eventType).Append("->").Append(eventCounts[(int)eventType]).Append(", ");
-                }
-            }
-
-            sb.Append("]");
-            return sb.ToString();
-        }
     }
 }

@@ -21,6 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
     public class TimerReferenceTest
     {
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TimerReference_CallsListenerOnTime()
         {
             Stopwatch stopWatch = new Stopwatch();

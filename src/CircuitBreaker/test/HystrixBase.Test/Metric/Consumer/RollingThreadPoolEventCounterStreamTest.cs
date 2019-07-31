@@ -29,13 +29,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest, IDisposable
     {
-        private readonly ITestOutputHelper output;
         private RollingThreadPoolEventCounterStream stream;
+        private ITestOutputHelper output;
 
         private class LatchedObserver : ObserverBase<long[]>
         {
-            private readonly CountdownEvent latch;
-            private readonly ITestOutputHelper output;
+            private CountdownEvent latch;
+            private ITestOutputHelper output;
 
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
@@ -74,11 +74,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesZeros()
         {
-            _ = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-A");
+            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-A");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-A");
-            _ = HystrixCommandKeyDefault.AsKey("RollingCounter-A");
+            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingCounter-A");
             stream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 500);
             stream.StartCachingStreamValuesIfUnstarted();
 
@@ -86,20 +87,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // no writes
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.EXECUTED) + stream.GetLatestCount(ThreadPoolEventType.REJECTED));
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleSuccess()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-B");
@@ -115,21 +109,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             cmd.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleFailure()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-C");
@@ -145,21 +132,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             cmd.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleTimeout()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-D");
@@ -175,21 +155,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             cmd.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleBadRequest()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-E");
@@ -205,21 +178,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             cmd.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestRequestFromCache()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-F");
@@ -239,15 +205,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd2.Observe();
             cmd3.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             // RESPONSE_FROM_CACHE should not show up at all in thread pool counters - just the success
@@ -257,7 +215,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestShortCircuited()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-G");
@@ -287,15 +245,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             shortCircuit1.Observe();
             shortCircuit2.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(shortCircuit1.IsResponseShortCircuited);
             Assert.True(shortCircuit2.IsResponseShortCircuited);
@@ -307,6 +257,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSemaphoreRejected()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-H");
@@ -354,15 +305,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             rejected1.Observe();
             rejected2.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(rejected1.IsResponseSemaphoreRejected);
             Assert.True(rejected2.IsResponseSemaphoreRejected);
@@ -374,6 +317,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadPoolRejected()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-I");
@@ -414,18 +358,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             rejected1.Observe();
             rejected2.Observe();
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.True(rejected1.IsResponseThreadPoolRejected);
-            Assert.True(rejected2.IsResponseThreadPoolRejected);
+            Assert.True(rejected1.IsResponseThreadPoolRejected, "Command1 IsResponseThreadPoolRejected");
+            Assert.True(rejected2.IsResponseThreadPoolRejected, "Command2 IsResponseThreadPoolRejected");
 
             // none of these got executed on a thread-pool, so thread pool metrics should be 0
             Assert.Equal(2, stream.Latest.Length);
@@ -434,6 +370,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestFallbackFailure()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-J");
@@ -449,21 +386,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             cmd.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
             Assert.Equal(0, stream.GetLatestCount(ThreadPoolEventType.REJECTED));
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestFallbackMissing()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-K");
@@ -478,14 +408,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
 
             cmd.Observe();
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(2, stream.Latest.Length);
             Assert.Equal(1, stream.GetLatestCount(ThreadPoolEventType.EXECUTED));
@@ -493,6 +416,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestFallbackRejection()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-L");
@@ -531,14 +455,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             rejection1.Observe();
             rejection2.Observe();
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             // all 7 commands executed on-thread, so should be executed according to thread-pool metrics
             Assert.Equal(2, stream.Latest.Length);
@@ -547,6 +464,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleEventsOverTimeGetStoredAndAgeOut()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-M");
@@ -564,14 +482,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             cmd1.Observe();
             cmd2.Observe();
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             // all commands should have aged out
             Assert.Equal(2, stream.Latest.Length);

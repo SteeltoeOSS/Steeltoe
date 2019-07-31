@@ -278,6 +278,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadIsolatedResponseFromCache()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);

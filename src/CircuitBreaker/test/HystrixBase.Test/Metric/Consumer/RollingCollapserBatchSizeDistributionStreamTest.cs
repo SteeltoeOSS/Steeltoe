@@ -68,15 +68,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 });
 
             // no writes
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
@@ -145,14 +137,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Collapser.From(output, key, 11).Observe();
             Collapser.From(output, key, 12).Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             // should have 4 batches: 3, 1, 5, 3
             Assert.Equal(4, stream.Latest.GetTotalCount());
@@ -226,14 +211,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Collapser.From(output, key, 10).Observe();
             Collapser.From(output, key, 11).Observe();
             Collapser.From(output, key, 12).Observe();
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(0, stream.Latest.GetTotalCount());
             Assert.Equal(0, stream.LatestMean);

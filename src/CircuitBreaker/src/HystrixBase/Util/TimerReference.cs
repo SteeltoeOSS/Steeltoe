@@ -51,8 +51,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
         }
 
-        private bool disposed = false;
-
         public void Dispose()
         {
             Dispose(true);
@@ -61,26 +59,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (disposing)
             {
-                if (disposing)
+                if (!_tokenSource.IsCancellationRequested)
                 {
-                    if (!_tokenSource.IsCancellationRequested)
-                    {
-                        _tokenSource.Cancel();
-                    }
-
-                    _listener = null;
-                    _timerTask = null;
+                    _tokenSource.Cancel();
                 }
 
-                disposed = true;
+                _listener = null;
+                _timerTask = null;
             }
-        }
-
-        ~TimerReference()
-        {
-            Dispose(false);
         }
     }
 }

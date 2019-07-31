@@ -78,6 +78,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesZeros()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-A");
@@ -85,22 +86,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(5).Subscribe(
+                new LatchedObserver(output, latch));
 
             // no writes
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(0, stream.LatestRollingMax);
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestStartsAndEndsInSameBucketProduceValue()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-B");
@@ -126,9 +122,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
          * 3 Commands,
          * Command 1 gets started in Bucket A and not completed until Bucket B
          * Commands 2 and 3 both start and end in Bucket B, and there should be a max-concurrency of 3
-        [Trait("Category", "FlakyOnHostedAgents")]
          */
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestOneCommandCarriesOverToNextBucket()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-C");
@@ -138,13 +134,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 175);
-            Command cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 50);
-            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 50);
+            Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 160);
+            Command cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 15);
 
             cmd1.Observe();
             Time.Wait(100); // bucket roll
             cmd2.Observe();
+            Time.Wait(1);
             cmd3.Observe();
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
@@ -160,6 +157,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         //
         // Max concurrency should be 3
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleCommandsCarryOverMultipleBuckets()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-D");
@@ -194,6 +192,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
          //  4:                              [--]
          //  Max concurrency should be 3, but by waiting for 30 bucket rolls, final max concurrency should be 0
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleCommandsCarryOverMultipleBucketsAndThenAgeOut()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-E");
@@ -221,6 +220,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestConcurrencyStreamProperlyFiltersOutResponseFromCache()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-F");
@@ -247,7 +247,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestConcurrencyStreamProperlyFiltersOutShortCircuits()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-G");
@@ -288,6 +288,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-H");
@@ -343,6 +344,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestConcurrencyStreamProperlyFiltersOutThreadPoolRejections()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-I");
