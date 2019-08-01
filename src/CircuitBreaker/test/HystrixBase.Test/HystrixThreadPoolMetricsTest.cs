@@ -38,6 +38,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void ShouldYieldNoExecutedTasksOnStartup()
         {
             // given
@@ -48,6 +49,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task ShouldReturnOneExecutedTask()
         {
             // given

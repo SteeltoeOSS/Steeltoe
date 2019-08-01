@@ -65,6 +65,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleCommandMultipleIntervals()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
@@ -99,8 +100,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             Assert.InRange(l3.TickCount.Value, 8, 25);
         }
 
-        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleCommandRemoveListener()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
@@ -155,6 +156,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestReset()
         {
             HystrixTimer timer = HystrixTimer.GetInstance();
