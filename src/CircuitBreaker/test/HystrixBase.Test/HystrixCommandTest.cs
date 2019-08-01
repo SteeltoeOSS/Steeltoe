@@ -1133,6 +1133,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestExecutionSemaphoreWithQueue()
         {
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
@@ -1271,6 +1272,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestRejectedExecutionSemaphoreWithFallbackViaExecute()
         {
             TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
@@ -3896,6 +3898,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadPoolQueueFullNoFallback()
         {
             SingleThreadedPoolWithQueue pool = null;
@@ -3932,6 +3935,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadPoolQueueFullSuccessfulFallback()
         {
             SingleThreadedPoolWithQueue pool = null;
@@ -3973,6 +3977,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadPoolQueueFullUnsuccessfulFallback()
         {
             SingleThreadedPoolWithQueue pool = null;
