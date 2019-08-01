@@ -44,25 +44,16 @@ namespace Steeltoe.Management.EndpointBase.DbMigrations
             }
         }
 
-        internal static Type _dbContextType;
-        internal static MethodInfo _getDatabase;
-        internal static MethodInfo _getPendingMigrations;
-        internal static MethodInfo _getAppliedMigrations;
-        internal static MethodInfo _getMigrations;
+        internal static readonly Type _dbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
+        internal static readonly Type _migrationsExtensionsType = Type.GetType("Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions,Microsoft.EntityFrameworkCore.Relational");
+        internal static readonly MethodInfo _getDatabase = _dbContextType.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance).GetMethod;
+        internal static readonly MethodInfo _getPendingMigrations = _migrationsExtensionsType.GetMethod("GetPendingMigrations", BindingFlags.Static | BindingFlags.Public);
+        internal static readonly MethodInfo _getAppliedMigrations = _migrationsExtensionsType.GetMethod("GetAppliedMigrations", BindingFlags.Static | BindingFlags.Public);
+        internal static readonly MethodInfo _getMigrations = _migrationsExtensionsType.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
 
         private readonly IServiceProvider _container;
         private readonly DbMigrationsEndpointHelper _endpointHelper;
         private readonly ILogger<DbMigrationsEndpoint> _logger;
-
-        static DbMigrationsEndpoint()
-        {
-            _dbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
-            _getDatabase = _dbContextType.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance).GetMethod;
-            var extensions = Type.GetType("Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions,Microsoft.EntityFrameworkCore.Relational");
-            _getPendingMigrations = extensions.GetMethod("GetPendingMigrations", BindingFlags.Static | BindingFlags.Public);
-            _getAppliedMigrations = extensions.GetMethod("GetAppliedMigrations", BindingFlags.Static | BindingFlags.Public);
-            _getMigrations = extensions.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
-        }
 
         public DbMigrationsEndpoint(
             IDbMigrationsOptions options,
@@ -116,6 +107,7 @@ namespace Steeltoe.Management.EndpointBase.DbMigrations
                 catch (DbException e) when (e.Message.Contains("exist"))
                 {
                     // todo: maybe improve detection logic when database is new. hard to do generically across all providers
+                    _logger?.LogWarning("Encountered exception loading migrations: {exception}", e.Message);
                     descriptor.PendingMigrations = _endpointHelper.GetMigrations(dbContext).ToList();
                 }
             }

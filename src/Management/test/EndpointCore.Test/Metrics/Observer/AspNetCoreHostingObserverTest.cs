@@ -132,6 +132,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void HandleStopEvent_RecordsStats()
         {
             var options = new MetricsEndpointOptions();

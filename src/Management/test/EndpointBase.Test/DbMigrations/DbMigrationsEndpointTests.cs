@@ -15,10 +15,10 @@
 using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointBase.DbMigrations;
 using System;
 using System.Reflection;
-using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations.Test

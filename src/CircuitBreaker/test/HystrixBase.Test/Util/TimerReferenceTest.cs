@@ -21,6 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
     public class TimerReferenceTest
     {
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TimerReference_CallsListenerOnTime()
         {
             Stopwatch stopWatch = new Stopwatch();
@@ -29,7 +30,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             stopWatch.Start();
             timerReference.Start();
             Time.WaitUntil(() => { return !stopWatch.IsRunning; }, 2000);
-            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - 50, 1000 + 50);
+            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - 150, 1000 + 150);
         }
 
         private class TestListener : ITimerListener
@@ -41,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 this.stopwatch = stopwatch;
             }
 
-            public int IntervalTimeInMilliseconds => throw new System.NotImplementedException();
+            public int IntervalTimeInMilliseconds => throw new NotImplementedException();
 
             public void Tick()
             {
