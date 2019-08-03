@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
@@ -29,6 +30,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         public CommandStreamTest()
             : base()
         {
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
         }
 
         private static readonly AtomicInteger UniqueId = new AtomicInteger(0);
@@ -312,25 +318,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             protected override List<int> Run()
             {
-                output.WriteLine((DateTime.Now.Ticks / 10000) + " " + Thread.CurrentThread.ManagedThreadId + " : Executing batch of : " + args.Count);
+                output.WriteLine(Time.CurrentTimeMillis + " " + Thread.CurrentThread.ManagedThreadId + " : Executing batch of : " + args.Count);
                 return args;
             }
-        }
-
-        protected static string BucketToString(long[] eventCounts)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("[");
-            foreach (HystrixEventType eventType in HystrixEventTypeHelper.Values)
-            {
-                if (eventCounts[(int)eventType] > 0)
-                {
-                    sb.Append(eventType).Append("->").Append(eventCounts[(int)eventType]).Append(", ");
-                }
-            }
-
-            sb.Append("]");
-            return sb.ToString();
         }
 
         protected static bool HasData(long[] eventCounts)

@@ -90,7 +90,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             output.WriteLine("l1 ticks: " + l1.TickCount.Value);
             Assert.InRange(l1.TickCount.Value, 2, 6);
 
-            // we should have 25 - 550 10ms ticks within 500ms
+            // we should have 25 - 55 10ms ticks within 500ms
             output.WriteLine("l2 ticks: " + l2.TickCount.Value);
             Assert.InRange(l2.TickCount.Value, 25, 55);
 

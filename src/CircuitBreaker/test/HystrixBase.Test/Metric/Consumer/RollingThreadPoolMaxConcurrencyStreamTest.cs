@@ -54,7 +54,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(int maxConcurrency)
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : Max of " + maxConcurrency);
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : Max of " + maxConcurrency);
             }
         }
 
@@ -82,24 +82,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public void TestEmptyStreamProducesZeros()
         {
-            _ = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-A");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-A");
-            _ = HystrixCommandKeyDefault.AsKey("RollingConcurrency-A");
             stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
-
-            // no writes
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(0, stream.LatestRollingMax);
         }
@@ -124,6 +113,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd2.Observe();
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+
+            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
@@ -149,6 +140,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             // since commands run in semaphore isolation, they are not tracked by threadpool metrics
+            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0, stream.LatestRollingMax);
         }
 
@@ -180,6 +172,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd3.Observe();
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+
+            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
@@ -215,6 +209,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Time.Wait(100);
             cmd4.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+
+            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
@@ -253,6 +249,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Time.Wait(100);
             cmd4.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+
+            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
@@ -287,6 +285,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Time.Wait(100);
             cmd4.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+
+            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0, stream.LatestRollingMax);
         }
 
@@ -322,7 +322,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")]
         public void TestConcurrencyStreamProperlyFiltersOutShortCircuits()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-H");
@@ -370,7 +369,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        public void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
+        public async void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-I");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-I");
@@ -387,31 +386,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             List<Command> saturators = new List<Command>();
             for (int i = 0; i < 10; i++)
             {
-                saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 400, ExecutionIsolationStrategy.SEMAPHORE));
+                saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
             List<Command> rejected = new List<Command>();
             for (int i = 0; i < 10; i++)
             {
-                rejected.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 100, ExecutionIsolationStrategy.SEMAPHORE));
+                rejected.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
             foreach (Command saturatingCmd in saturators)
             {
-               Task t = new Task(
-               () =>
-                {
-                    saturatingCmd.Observe();
-                }, CancellationToken.None,
-                TaskCreationOptions.LongRunning);
-                t.Start();
+                _ = Task.Run(() => saturatingCmd.Execute());
             }
 
-            Time.Wait(30);
+            await Task.Delay(50);
 
             foreach (Command rejectedCmd in rejected)
             {
-                Task.Run(() => rejectedCmd.Observe());
+                await Task.Run(() => rejectedCmd.Execute());
             }
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");

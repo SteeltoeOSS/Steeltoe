@@ -90,7 +90,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             get
             {
-                StartCachingStreamValuesIfUnstarted();
                 if (counterSubject.TryGetValue(out Output v))
                 {
                     return v;

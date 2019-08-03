@@ -54,7 +54,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         {
             get
             {
-                return _array.Length;
+                lock (this._array)
+                {
+                    return _array.Length;
+                }
             }
         }
     }

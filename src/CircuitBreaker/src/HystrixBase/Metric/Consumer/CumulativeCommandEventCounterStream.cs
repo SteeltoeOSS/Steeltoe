@@ -35,12 +35,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static CumulativeCommandEventCounterStream GetInstance(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
         {
-            var result = Streams.GetOrAddEx(commandKey.Name, (k) => new CumulativeCommandEventCounterStream(commandKey, numBuckets, bucketSizeInMs, HystrixCommandMetrics.AppendEventToBucket, HystrixCommandMetrics.BucketAggregator));
+            var result = Streams.GetOrAddEx(commandKey.Name, (k) =>
+            {
+                var stream = new CumulativeCommandEventCounterStream(commandKey, numBuckets, bucketSizeInMs, HystrixCommandMetrics.AppendEventToBucket, HystrixCommandMetrics.BucketAggregator);
+                stream.StartCachingStreamValuesIfUnstarted();
+                return stream;
+            });
             return result;
         }
 
         public static void Reset()
         {
+            foreach (var stream in Streams.Values)
+            {
+                stream.Unsubscribe();
+            }
+
+            HystrixCommandCompletionStream.Reset();
+
             Streams.Clear();
         }
 

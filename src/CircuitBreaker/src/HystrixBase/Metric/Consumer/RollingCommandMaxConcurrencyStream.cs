@@ -32,12 +32,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static RollingCommandMaxConcurrencyStream GetInstance(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
         {
-            var result = Streams.GetOrAddEx(commandKey.Name, (k) => new RollingCommandMaxConcurrencyStream(commandKey, numBuckets, bucketSizeInMs));
+            var result = Streams.GetOrAddEx(commandKey.Name, (k) =>
+            {
+                var stream = new RollingCommandMaxConcurrencyStream(commandKey, numBuckets, bucketSizeInMs);
+                stream.StartCachingStreamValuesIfUnstarted();
+                return stream;
+            });
             return result;
         }
 
         public static void Reset()
         {
+            foreach (var stream in Streams.Values)
+            {
+                stream.Unsubscribe();
+            }
+
+            HystrixCommandStartStream.Reset();
+
             Streams.Clear();
         }
 

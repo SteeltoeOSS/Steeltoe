@@ -14,11 +14,13 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Collapser;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using System;
+using System.Text;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
@@ -46,6 +48,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCircuitBreakerFactory.Reset();
             HystrixPlugins.Reset();
             HystrixOptionsFactory.Reset();
+
+            // clear up all streams
+            CumulativeCollapserEventCounterStream.Reset();
+            CumulativeCommandEventCounterStream.Reset();
+            CumulativeThreadPoolEventCounterStream.Reset();
+            RollingCollapserBatchSizeDistributionStream.Reset();
+            RollingCollapserEventCounterStream.Reset();
+            RollingCommandEventCounterStream.Reset();
+            RollingCommandLatencyDistributionStream.Reset();
+            RollingCommandMaxConcurrencyStream.Reset();
+            RollingCommandUserLatencyDistributionStream.Reset();
+            RollingThreadPoolEventCounterStream.Reset();
+            RollingThreadPoolMaxConcurrencyStream.Reset();
         }
 
         public void Reset()
@@ -63,6 +78,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             HystrixThreadPoolFactory.Shutdown();
+        }
+
+        protected static string BucketToString(long[] eventCounts)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            foreach (HystrixEventType eventType in HystrixEventTypeHelper.Values)
+            {
+                if (eventCounts[(int)eventType] > 0)
+                {
+                    sb.Append(eventType).Append("->").Append(eventCounts[(int)eventType]).Append(", ");
+                }
+            }
+
+            sb.Append("]");
+            return sb.ToString();
         }
     }
 }

@@ -56,6 +56,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static void Reset()
         {
+            foreach (var stream in Streams.Values)
+            {
+                stream.Unsubscribe();
+            }
+
+            HystrixCommandCompletionStream.Reset();
+
             Streams.Clear();
         }
 

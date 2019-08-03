@@ -55,8 +55,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Skip(10).Take(10).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                    Assert.Equal(0, distribution.GetTotalCount());
+                    output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 },
                 (e) =>
                 {
@@ -67,15 +66,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     latch.SignalEx();
                 });
 
-            // no writes
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
@@ -91,7 +82,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(10).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 },
                 (e) =>
                 {
@@ -105,54 +96,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Collapser.From(output, key, 1).Observe();
             Collapser.From(output, key, 2).Observe();
             Collapser.From(output, key, 3).Observe();
-
-            try
-            {
-                Time.Wait(250);
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Time.Wait(250);
 
             Collapser.From(output, key, 4).Observe();
-
-            try
-            {
-                Time.Wait(250);
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Time.Wait(250);
 
             Collapser.From(output, key, 5).Observe();
             Collapser.From(output, key, 6).Observe();
             Collapser.From(output, key, 7).Observe();
             Collapser.From(output, key, 8).Observe();
             Collapser.From(output, key, 9).Observe();
-
-            try
-            {
-                Time.Wait(250);
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Time.Wait(250);
 
             Collapser.From(output, key, 10).Observe();
             Collapser.From(output, key, 11).Observe();
             Collapser.From(output, key, 12).Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             // should have 4 batches: 3, 1, 5, 3
             Assert.Equal(4, stream.Latest.GetTotalCount());
@@ -173,7 +133,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.Observe().Take(30).Subscribe(
                 (distribution) =>
                 {
-                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 },
                 (e) =>
                 {
@@ -187,53 +147,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Collapser.From(output, key, 1).Observe();
             Collapser.From(output, key, 2).Observe();
             Collapser.From(output, key, 3).Observe();
-
-            try
-            {
-                Time.Wait(200);
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Time.Wait(200);
 
             Collapser.From(output, key, 4).Observe();
-
-            try
-            {
-                Time.Wait(200);
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Time.Wait(200);
 
             Collapser.From(output, key, 5).Observe();
             Collapser.From(output, key, 6).Observe();
             Collapser.From(output, key, 7).Observe();
             Collapser.From(output, key, 8).Observe();
             Collapser.From(output, key, 9).Observe();
-
-            try
-            {
-                Time.Wait(200);
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
+            Time.Wait(200);
 
             Collapser.From(output, key, 10).Observe();
             Collapser.From(output, key, 11).Observe();
             Collapser.From(output, key, 12).Observe();
-            try
-            {
-                Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(0, stream.Latest.GetTotalCount());
             Assert.Equal(0, stream.LatestMean);

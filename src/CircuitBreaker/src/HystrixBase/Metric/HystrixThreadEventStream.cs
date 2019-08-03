@@ -22,7 +22,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class HystrixThreadEventStream
     {
-        private static readonly ThreadLocal<HystrixThreadEventStream> ThreadLocalStreams = new ThreadLocal<HystrixThreadEventStream>();
+        private static ThreadLocal<HystrixThreadEventStream> threadLocalStreams = new ThreadLocal<HystrixThreadEventStream>(
+            () =>
+        {
+            return new HystrixThreadEventStream(Thread.CurrentThread.ManagedThreadId);
+        }, true);
 
         private readonly long threadId;
         private readonly string threadName;
@@ -84,13 +88,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public static HystrixThreadEventStream GetInstance()
         {
-            var result = ThreadLocalStreams.Value;
-            if (result == null)
-            {
-                result = ThreadLocalStreams.Value = new HystrixThreadEventStream(Thread.CurrentThread.ManagedThreadId);
-            }
-
-            return result;
+            return threadLocalStreams.Value;
         }
 
         public void Shutdown()
@@ -129,6 +127,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
         public override string ToString()
         {
             return "HystrixThreadEventStream (" + threadId + " - " + threadName + ")";
+        }
+
+        internal static void Reset()
+        {
+            foreach (var stream in threadLocalStreams.Values)
+            {
+                stream.Shutdown();
+            }
+
+            threadLocalStreams.Dispose();
+
+            threadLocalStreams = new ThreadLocal<HystrixThreadEventStream>(
+            () =>
+            {
+                return new HystrixThreadEventStream(Thread.CurrentThread.ManagedThreadId);
+            }, true);
         }
     }
 }

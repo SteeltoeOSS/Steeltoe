@@ -19,13 +19,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 {
     public static class Time
     {
-        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private const int SPIN_WAIT_ITERATIONS = 5;
+        private const long YIELD_THRESHOLD = 1000;
+        private const long SLEEP_THRESHOLD = TimeSpan.TicksPerMillisecond;
 
         public static long CurrentTimeMillis
         {
             get
             {
-                return DateTime.Now.Ticks / 10000;
+                return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             }
         }
 
@@ -33,35 +35,67 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         {
             get
             {
-                long javaTicks = DateTime.Now.Ticks - baseTime.Ticks;
-                return javaTicks / 10000;
+                return DateTimeOffset.Now.ToUnixTimeMilliseconds();
             }
         }
 
         public static bool WaitUntil(Func<bool> check, int maxWaitMilli)
         {
-            SpinWait sw = default(SpinWait);
-
+            long ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
             long start = DateTime.Now.Ticks;
-            long ticksToWait = maxWaitMilli * 10000;
 
-            while (!check())
+            while (true)
             {
                 long elapsed = DateTime.Now.Ticks - start;
+                long ticksLeft = ticksToWait - elapsed;
+
+                if (check())
+                {
+                    return true;
+                }
+
                 if (elapsed >= ticksToWait)
                 {
                     return false;
                 }
 
-                sw.SpinOnce();
+                DoWait(ticksLeft);
             }
-
-            return true;
         }
 
         public static void Wait(int maxWaitMilli)
         {
-            WaitUntil(() => { return false; }, maxWaitMilli);
+            long ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
+            long start = DateTime.Now.Ticks;
+
+            while (true)
+            {
+                long elapsed = DateTime.Now.Ticks - start;
+                long ticksLeft = ticksToWait - elapsed;
+
+                if (elapsed >= ticksToWait)
+                {
+                    return;
+                }
+
+                DoWait(ticksLeft);
+            }
+        }
+
+        private static void DoWait(long ticksLeft)
+        {
+            if (ticksLeft > SLEEP_THRESHOLD)
+            {
+                Thread.Sleep(1);
+            }
+            else if (ticksLeft > YIELD_THRESHOLD)
+            {
+                Thread.Yield();
+            }
+            else
+            {
+                Thread.SpinWait(SPIN_WAIT_ITERATIONS);
+            }
         }
     }
 }
