@@ -13,46 +13,30 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Logging.Console.Internal;
 using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Logging
 {
-    public class DynamicConsoleLogger : ILogger
+    public class DynamicILogger : ILogger
     {
-        private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
-        private readonly ConsoleLogger _delegate;
+        private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
-        internal DynamicConsoleLogger(ConsoleLogger consoleLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
+        public DynamicILogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         {
             _messageProcessors = messageProcessors;
-            _delegate = consoleLogger;
+            Delegate = iLogger;
         }
 
-        public IDisposable BeginScope<TState>(TState state) => _delegate.BeginScope(state);
+        public IDisposable BeginScope<TState>(TState state) => Delegate.BeginScope(state);
 
-        public bool IsEnabled(LogLevel logLevel) => _delegate.IsEnabled(logLevel);
+        public bool IsEnabled(LogLevel logLevel) => Filter.Invoke(Name, logLevel);
 
-        public IConsole Console
-        {
-            get => _delegate.Console;
+        public ILogger Delegate { get; set; }
 
-            set => _delegate.Console = value;
-        }
+        public Func<string, LogLevel, bool> Filter { get; set; }
 
-        public Func<string, LogLevel, bool> Filter
-        {
-            get => _delegate.Filter;
-
-            set => _delegate.Filter = value;
-        }
-
-        [Obsolete("Changing this property has no effect. Use " + nameof(ConsoleLoggerOptions) + "." + nameof(ConsoleLoggerOptions.IncludeScopes) + " instead")]
-        public bool IncludeScopes { get; set; }
-
-        public string Name => _delegate.Name;
+        public string Name { get; internal set; }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
@@ -78,11 +62,11 @@ namespace Steeltoe.Extensions.Logging
 
             if (!string.IsNullOrEmpty(message) || exception != null)
             {
-                WriteMessage(logLevel, _delegate.Name, eventId.Id, message, exception);
+                WriteMessage(logLevel, Name, eventId.Id, message, exception);
             }
         }
 
         public virtual void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
-            => _delegate.WriteMessage(logLevel, _delegate.Name, eventId, message, exception);
+            => Delegate.Log(logLevel, Name, eventId, message, exception);
     }
 }

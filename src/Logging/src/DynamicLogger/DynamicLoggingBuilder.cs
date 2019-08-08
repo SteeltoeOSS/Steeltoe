@@ -37,22 +37,7 @@ namespace Steeltoe.Extensions.Logging
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicLoggerProvider>());
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ConsoleLoggerOptions>, ConsoleLoggerOptionsSetup>());
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<ConsoleLoggerOptions>, LoggerProviderOptionsChangeTokenSource<ConsoleLoggerOptions, ConsoleLoggerProvider>>());
-            builder.Services.AddSingleton<IDynamicLoggerProvider>((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
-            return builder;
-        }
-
-        public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder, IConfiguration configuration)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            var settings = new ConsoleLoggerSettings().FromConfiguration(configuration);
-            var provider = new DynamicLoggerProvider(settings);
-            builder.AddFilter<DynamicLoggerProvider>(null, LogLevel.Trace);
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicLoggerProvider>((p) => provider));
-            builder.Services.AddSingleton<IDynamicLoggerProvider>((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
+            builder.Services.AddSingleton((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
             return builder;
         }
 

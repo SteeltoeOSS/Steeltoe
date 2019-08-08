@@ -13,8 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -24,27 +27,40 @@ namespace Steeltoe.Extensions.Logging.Test
 {
     public class DynamicLoggerProviderTest
     {
+        private readonly Dictionary<string, string> defaultAppSettings = new Dictionary<string, string>()
+        {
+            ["Logging:IncludeScopes"] = "false",
+            ["Logging:LogLevel:Default"] = "Information",
+            ["Logging:LogLevel:System"] = "Information",
+            ["Logging:LogLevel:Microsoft"] = "Information",
+            ["Logging:LogLevel:A"] = "Information",
+        };
+
+        private readonly IConfigurationRoot defaultConfiguration;
+
+        public DynamicLoggerProviderTest()
+        {
+            defaultConfiguration = new ConfigurationBuilder().AddInMemoryCollection(defaultAppSettings).Build();
+        }
+
         [Fact]
         public void Create_CreatesCorrectLogger()
         {
-            var provider = new DynamicLoggerProvider(GetLoggerSettings());
-            LoggerFactory fac = new LoggerFactory();
-            fac.AddProvider(provider);
+            var provider = GetLoggerProvider(defaultConfiguration);
 
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = provider.CreateLogger("A.B.C.D.TestClass");
             Assert.NotNull(logger);
-            Assert.True(logger.IsEnabled(LogLevel.Information));
-            Assert.False(logger.IsEnabled(LogLevel.Debug));
+            Assert.True(logger.IsEnabled(LogLevel.Information), "Information is not enabled when it should be");
+            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug is enabled when it shouldn't be");
         }
 
         [Fact]
         public void SetLogLevel_UpdatesLogger()
         {
-            var provider = new DynamicLoggerProvider(GetLoggerSettings());
-            LoggerFactory fac = new LoggerFactory();
-            fac.AddProvider(provider);
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
 
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = provider.CreateLogger("A.B.C.D.TestClass");
+
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Critical));
             Assert.True(logger.IsEnabled(LogLevel.Error));
@@ -65,7 +81,7 @@ namespace Steeltoe.Extensions.Logging.Test
         public void SetLogLevel_UpdatesNamespaceDescendants()
         {
             // arrange (A* should log at Information)
-            var provider = new DynamicLoggerProvider(GetLoggerSettings());
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
 
             // act I: with original setup
             var childLogger = provider.CreateLogger("A.B.C");
@@ -104,7 +120,7 @@ namespace Steeltoe.Extensions.Logging.Test
         public void SetLogLevel_Can_Reset_to_Default()
         {
             // arrange (A* should log at Information)
-            var provider = new DynamicLoggerProvider(GetLoggerSettings());
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
 
             // act I: with original setup
             var firstLogger = provider.CreateLogger("A.B.C");
@@ -142,11 +158,8 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void GetLoggerConfigurations_ReturnsExpected()
         {
-            var provider = new DynamicLoggerProvider(GetLoggerSettings());
-            LoggerFactory fac = new LoggerFactory();
-            fac.AddProvider(provider);
-
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            _ = provider.CreateLogger("A.B.C.D.TestClass");
 
             var logConfig = provider.GetLoggerConfigurations();
             Assert.Equal(6, logConfig.Count);
@@ -162,12 +175,10 @@ namespace Steeltoe.Extensions.Logging.Test
         public void GetLoggerConfigurations_ReturnsExpected_After_SetLogLevel()
         {
             // arrange
-            var provider = new DynamicLoggerProvider(GetLoggerSettings());
-            LoggerFactory fac = new LoggerFactory();
-            fac.AddProvider(provider);
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
 
             // act I
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            _ = provider.CreateLogger("A.B.C.D.TestClass");
             var logConfig = provider.GetLoggerConfigurations();
 
             // assert I
@@ -197,9 +208,7 @@ namespace Steeltoe.Extensions.Logging.Test
         public void SetLogLevel_Works_OnDefault()
         {
             // arrange
-            var provider = new DynamicLoggerProvider(GetLoggerSettings());
-            LoggerFactory fac = new LoggerFactory();
-            fac.AddProvider(provider);
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
             var originalLogConfig = provider.GetLoggerConfigurations();
 
             // act
@@ -215,9 +224,7 @@ namespace Steeltoe.Extensions.Logging.Test
         public void ResetLogLevel_Works_OnDefault()
         {
             // arrange
-            var provider = new DynamicLoggerProvider(GetLoggerSettings());
-            LoggerFactory fac = new LoggerFactory();
-            fac.AddProvider(provider);
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
             var originalLogConfig = provider.GetLoggerConfigurations();
 
             // act
@@ -232,14 +239,12 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), resetConfig);
         }
 
-        [Fact]
+        [Fact(Skip = "This method of console redirection doesn't work in Logging 3.0")]
         public void LoggerLogs_At_Configured_Setting()
         {
             // arrange
-            var provider = new DynamicLoggerProvider(GetLoggerSettings());
-            LoggerFactory fac = new LoggerFactory();
-            fac.AddProvider(provider);
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            var logger = provider.CreateLogger("A.B.C.D.TestClass");
 
             // act I - log at all levels, expect Info and above to work
             using (var unConsole = new ConsoleOutputBorrower())
@@ -352,21 +357,17 @@ namespace Steeltoe.Extensions.Logging.Test
             logger.LogTrace("Trace message");
         }
 
-        private ConsoleLoggerSettings GetLoggerSettings()
+        private ILoggerProvider GetLoggerProvider(IConfiguration config)
         {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["Logging:IncludeScopes"] = "false",
-                ["Logging:LogLevel:Default"] = "Information",
-                ["Logging:LogLevel:System"] = "Information",
-                ["Logging:LogLevel:Microsoft"] = "Information",
-                ["Logging:LogLevel:A"] = "Information",
-            };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
+            var serviceProvider = new ServiceCollection()
+                        .AddLogging(builder => builder
+                            .AddConfiguration(config.GetSection("Logging"))
+                            .AddDynamicConsole()
+                            .AddFilter<DynamicLoggerProvider>(null, LogLevel.Trace))
+                        .BuildServiceProvider();
 
-            return new ConsoleLoggerSettings().FromConfiguration(config);
+            var loggerProviderConfiguration = serviceProvider.GetService<ILoggerProviderConfiguration<ConsoleLoggerProvider>>();
+            return serviceProvider.GetRequiredService<ILoggerProvider>();
         }
     }
 }
