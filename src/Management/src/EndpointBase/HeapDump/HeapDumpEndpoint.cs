@@ -19,8 +19,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 {
     public class HeapDumpEndpoint : AbstractEndpoint<string>
     {
-        private ILogger<HeapDumpEndpoint> _logger;
-        private IHeapDumper _heapDumper;
+        private readonly ILogger<HeapDumpEndpoint> _logger;
+        private readonly IHeapDumper _heapDumper;
 
         public HeapDumpEndpoint(IHeapDumpOptions options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
             : base(options)

@@ -60,9 +60,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             }
         }
 
-        public virtual void Dispose()
+        public void Dispose()
         {
-            _disposeAction?.Invoke(Value);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         internal static void Remove(HystrixRequestContext context, IHystrixRequestVariable<T> v)
@@ -71,6 +72,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             {
                 v.Dispose();
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            _disposeAction?.Invoke(Value);
         }
     }
 }

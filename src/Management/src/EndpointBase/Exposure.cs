@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Security;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint

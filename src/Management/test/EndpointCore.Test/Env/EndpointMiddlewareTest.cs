@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> AppSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var opts = new EnvEndpointOptions();
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
+            configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
             var host = new HostingEnvironment()
             {
@@ -75,7 +75,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
             var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -99,7 +99,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         {
             var opts = new EnvEndpointOptions();
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
+            configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
             var host = new HostingEnvironment() { EnvironmentName = "EnvironmentName" };
             var ep = new EnvEndpoint(opts, config, host);

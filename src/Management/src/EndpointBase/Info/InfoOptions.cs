@@ -18,7 +18,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
-    [Obsolete]
+    [Obsolete("Use InfoEndpointOptions instead.")]
     public class InfoOptions : AbstractOptions, IInfoOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:info";

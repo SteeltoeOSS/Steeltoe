@@ -13,15 +13,13 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
     public class HttpTraceResult
     {
-        private List<TraceResult> list;
+        private readonly List<TraceResult> list;
 
         [JsonProperty("traces")]
         public List<HttpTrace> Traces { get; }

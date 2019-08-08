@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class CloudFoundryCorsHandler : ActuatorHandler
     {
-        private IEndpointOptions _options;
+        private readonly IEndpointOptions _options;
 
         public CloudFoundryCorsHandler(IEndpointOptions options, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryCorsHandler> logger = null)
             : base(securityServices, mgmtOptions, new List<HttpMethod> { HttpMethod.Options }, false, logger)
@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             _mgmtOptions = mgmtOptions;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundryCorsHandler(CloudFoundryOptions options, IEnumerable<ISecurityService> securityServices, ILogger<CloudFoundryCorsHandler> logger = null)
            : base(securityServices, new List<HttpMethod> { HttpMethod.Options }, false, logger)
         {
@@ -88,7 +88,10 @@ namespace Steeltoe.Management.Endpoint.Handler
                     }
 
                     var fullPath = path + _options.Id;
-                    return requestPath.StartsWith(fullPath);
+                    if (requestPath.StartsWith(fullPath))
+                    {
+                        return true;
+                    }
                 }
             }
 

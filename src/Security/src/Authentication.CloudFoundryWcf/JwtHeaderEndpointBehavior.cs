@@ -59,14 +59,17 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
+            // for future use
         }
 
         public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
         {
+            // for future use
         }
 
         public void Validate(ServiceEndpoint endpoint)
         {
+            // for future use
         }
 
         protected override object CreateBehavior()

@@ -16,7 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Builder;
 using Owin;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using Xunit;
 

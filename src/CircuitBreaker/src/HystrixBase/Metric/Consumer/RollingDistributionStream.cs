@@ -23,34 +23,12 @@ using System.Reactive.Subjects;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
-    public class RollingDistributionStream<Event>
+    public class RollingDistributionStream<Event> : RollingDistributionStreamBase
         where Event : IHystrixEvent
     {
         private readonly BehaviorSubject<CachedValuesHistogram> rollingDistribution = new BehaviorSubject<CachedValuesHistogram>(CachedValuesHistogram.BackedBy(CachedValuesHistogram.GetNewHistogram()));
         private readonly IObservable<CachedValuesHistogram> rollingDistributionStream;
         private AtomicReference<IDisposable> rollingDistributionSubscription = new AtomicReference<IDisposable>(null);
-
-        private static Func<LongHistogram, LongHistogram, LongHistogram> DistributionAggregator { get; } = (initialDistribution, distributionToAdd) =>
-        {
-            initialDistribution.Add(distributionToAdd);
-            return initialDistribution;
-        };
-
-        private static Func<IObservable<LongHistogram>, IObservable<LongHistogram>> ReduceWindowToSingleDistribution { get; } = (window) =>
-        {
-            var result = window.Aggregate((arg1, arg2) => DistributionAggregator(arg1, arg2)).Select(n => n);
-            return result;
-        };
-
-        private static Func<LongHistogram, CachedValuesHistogram> CacheHistogramValues { get; } = (histogram) =>
-        {
-            return CachedValuesHistogram.BackedBy(histogram);
-        };
-
-        private static Func<IObservable<CachedValuesHistogram>, IObservable<IList<CachedValuesHistogram>>> ConvertToList { get; } = (windowOf2) =>
-        {
-            return windowOf2.ToList();
-        };
 
         protected RollingDistributionStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<LongHistogram, Event, LongHistogram> addValuesToBucket)
         {

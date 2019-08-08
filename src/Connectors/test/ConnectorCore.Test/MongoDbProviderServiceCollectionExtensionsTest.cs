@@ -14,6 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Common.HealthChecks;
@@ -203,6 +205,56 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
 
             // Act
             services.AddMongoClient(config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
+        }
+
+        [Fact]
+        public void AddMongoClientConnection_AddingCommunityContributor_DoesntAddSteeltoeHealthCheck()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_Enterprise_VCAP);
+
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<MongoDbConnectionInfo>();
+            services.AddHealthChecks().AddMongoDb(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            services.AddMongoClient(config, "steeltoe");
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
+
+            // Assert
+            Assert.Null(healthContributor);
+        }
+
+        [Fact]
+        public void AddMongoClientConnection_AddingCommunityContributor_AddsSteeltoeHealthCheckWhenForced()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_Enterprise_VCAP);
+
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<MongoDbConnectionInfo>();
+            services.AddHealthChecks().AddMongoDb(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            services.AddMongoClient(config, "steeltoe", addSteeltoeHealthChecks: true);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
 
             // Assert

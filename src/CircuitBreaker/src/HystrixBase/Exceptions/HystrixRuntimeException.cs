@@ -13,44 +13,57 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
 {
+    [Serializable]
     public class HystrixRuntimeException : Exception
     {
-        private readonly Type commandClass;
-        private readonly Exception fallbackException;
-        private readonly FailureType failureCause;
-
         public HystrixRuntimeException(FailureType failureCause, Type commandClass, string message)
             : base(message)
         {
-            this.failureCause = failureCause;
-            this.commandClass = commandClass;
-            this.fallbackException = null;
+            FailureType = failureCause;
+            ImplementingClass = commandClass;
+            FallbackException = null;
         }
 
         public HystrixRuntimeException(FailureType failureCause, Type commandClass, string message, Exception cause, Exception fallbackException)
             : base(message, cause)
         {
-            this.failureCause = failureCause;
-            this.commandClass = commandClass;
-            this.fallbackException = fallbackException;
+            FailureType = failureCause;
+            ImplementingClass = commandClass;
+            FallbackException = fallbackException;
         }
 
-        public FailureType FailureType
+        public FailureType FailureType { get; }
+
+        public Exception FallbackException { get; }
+
+        public Type ImplementingClass { get; }
+
+        public HystrixRuntimeException()
         {
-            get { return failureCause; }
         }
 
-        public Exception FallbackException
+        public HystrixRuntimeException(string message)
+            : base(message)
         {
-            get { return fallbackException;  }
         }
 
-        public Type ImplementingClass
+        public HystrixRuntimeException(string message, Exception innerException)
+            : base(message, innerException)
         {
-            get { return commandClass;  }
+        }
+
+        protected HystrixRuntimeException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
         }
     }
 }

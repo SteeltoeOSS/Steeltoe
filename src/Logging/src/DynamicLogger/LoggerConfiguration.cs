@@ -48,7 +48,7 @@ namespace Steeltoe.Extensions.Logging
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return Name.GetHashCode();
         }
 
         public override bool Equals(object obj)

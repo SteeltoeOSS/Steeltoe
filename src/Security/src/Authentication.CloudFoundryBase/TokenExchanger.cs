@@ -62,7 +62,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpResponseMessage response;
             try
             {
-                response = await _httpClient.SendAsync(requestMessage, cancellationToken);
+                response = await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -79,11 +79,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns>The user's ClaimsIdentity</returns>
         public async Task<ClaimsIdentity> ExchangeAuthCodeForClaimsIdentity(string code)
         {
-            HttpResponseMessage response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default(CancellationToken));
+            HttpResponseMessage response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default(CancellationToken)).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
-                var tokens = await response.Content.ReadAsJsonAsync<OpenIdTokenResponse>();
+                _logger?.LogTrace("Successfully exchanged auth code for a token");
+                var tokens = await response.Content.ReadAsJsonAsync<OpenIdTokenResponse>().ConfigureAwait(false);
 #if DEBUG
                 _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
                 _logger?.LogTrace("Access token received: {accessToken}", tokens.AccessToken);
@@ -96,7 +97,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 _logger?.LogError("Failed call to exchange code for token : " + response.StatusCode);
                 _logger?.LogWarning(response.ReasonPhrase);
-                _logger?.LogInformation(await response.Content.ReadAsStringAsync());
+                _logger?.LogInformation(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
                 return null;
             }
@@ -116,7 +117,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpResponseMessage response;
             try
             {
-                response = await _httpClient.SendAsync(requestMessage);
+                response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
             }
             finally
             {
@@ -183,6 +184,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         internal ClaimsIdentity BuildIdentityWithClaims(IEnumerable<Claim> claims, string tokenScopes, string accessToken)
         {
+            _logger?.LogTrace("Building identity with claims from token");
 #if DEBUG
             foreach (var claim in claims)
             {
@@ -206,6 +208,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                         new Claim(ClaimTypes.Email, email),
                     });
 
+            _logger?.LogTrace("Adding scope claims from token");
             var additionalScopes = tokenScopes.Split(' ').Where(s => s != "openid");
             foreach (var scope in additionalScopes)
             {
@@ -213,6 +216,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
 
             claimsId.AddClaim(new Claim(ClaimTypes.Authentication, accessToken));
+            _logger?.LogTrace("Finished building identity with claims from token");
 
             return claimsId;
         }

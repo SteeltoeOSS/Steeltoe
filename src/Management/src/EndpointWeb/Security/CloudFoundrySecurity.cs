@@ -25,9 +25,9 @@ namespace Steeltoe.Management.Endpoint.Security
     public class CloudFoundrySecurity : ISecurityService
     {
         private readonly IManagementOptions _managementOptions;
-        private ILogger<CloudFoundrySecurity> _logger;
-        private ICloudFoundryOptions _options;
-        private SecurityBase _base;
+        private readonly ILogger<CloudFoundrySecurity> _logger;
+        private readonly ICloudFoundryOptions _options;
+        private readonly SecurityBase _base;
 
         public CloudFoundrySecurity(ICloudFoundryOptions options, IManagementOptions managementOptions, ILogger<CloudFoundrySecurity> logger = null)
         {
@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Security
             _base = new SecurityBase(options, managementOptions, logger);
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundrySecurity(ICloudFoundryOptions options, ILogger<CloudFoundrySecurity> logger = null)
         {
             _options = options;
@@ -47,9 +47,9 @@ namespace Steeltoe.Management.Endpoint.Security
 
         public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             bool isEnabled = _managementOptions == null ? _options.IsEnabled : _options.IsEnabled(_managementOptions);
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && isEnabled)
@@ -67,22 +67,22 @@ namespace Steeltoe.Management.Endpoint.Security
                 // identify the application so we can confirm the user making the request has permission
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE)).ConfigureAwait(false);
                     return false;
                 }
 
                 // make sure we know where to get user permissions
                 if (string.IsNullOrEmpty(_options.CloudFoundryApi))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE)).ConfigureAwait(false);
                     return false;
                 }
 
                 _logger?.LogTrace("Getting user permissions");
-                var sr = await GetPermissions(context);
+                var sr = await GetPermissions(context).ConfigureAwait(false);
                 if (sr.Code != HttpStatusCode.OK)
                 {
-                    await ReturnError(context, sr);
+                    await ReturnError(context, sr).ConfigureAwait(false);
                     return false;
                 }
 
@@ -90,7 +90,7 @@ namespace Steeltoe.Management.Endpoint.Security
                 var permissions = sr.Permissions;
                 if (!target.IsAccessAllowed(permissions))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE)).ConfigureAwait(false);
                     return false;
                 }
 
@@ -103,7 +103,7 @@ namespace Steeltoe.Management.Endpoint.Security
         internal async Task<SecurityResult> GetPermissions(HttpContextBase context)
         {
             string token = GetAccessToken(context.Request);
-            return await _base.GetPermissionsAsync(token);
+            return await _base.GetPermissionsAsync(token).ConfigureAwait(false);
         }
 
         internal string GetAccessToken(HttpRequestBase request)
@@ -126,7 +126,7 @@ namespace Steeltoe.Management.Endpoint.Security
             LogError(context, error);
             context.Response.Headers.Set("Content-Type",  "application/json;charset=UTF-8");
             context.Response.StatusCode = (int)error.Code;
-            await context.Response.Output.WriteAsync(_base.Serialize(error));
+            await context.Response.Output.WriteAsync(_base.Serialize(error)).ConfigureAwait(false);
         }
 
         private void LogError(HttpContextBase context, SecurityResult error)

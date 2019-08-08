@@ -225,5 +225,47 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Assert
             Assert.NotNull(healthContributor);
         }
+
+        [Fact]
+        public void AddPosgreSqlConnection_DoesntAddRelationalHealthContributor_WhenCommunityHealthCheckExists()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<PostgresConnectionInfo>();
+            services.AddHealthChecks().AddNpgSql(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+
+            // Assert
+            Assert.Null(healthContributor);
+        }
+
+        [Fact]
+        public void AddPosgreSqlConnection_AddsRelationalHealthContributor_WhenCommunityHealthCheckExistsAndForced()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<PostgresConnectionInfo>();
+            services.AddHealthChecks().AddNpgSql(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config, addSteeltoeHealthChecks: true);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
+        }
     }
 }

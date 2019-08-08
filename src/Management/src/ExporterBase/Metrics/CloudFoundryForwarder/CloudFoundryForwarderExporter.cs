@@ -36,9 +36,9 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         private readonly ILogger<CloudFoundryForwarderExporter> logger;
         private readonly ICloudFoundryMetricWriter metricFormatWriter;
 
-        private CloudFoundryForwarderOptions options;
-        private IStats stats;
-        private IViewManager viewManager;
+        private readonly CloudFoundryForwarderOptions options;
+        private readonly IStats stats;
+        private readonly IViewManager viewManager;
         private Thread workerThread;
         private bool shutdown = false;
 
@@ -109,7 +109,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             }
         }
 
+        // fire and forget
+#pragma warning disable S3168 // "async" methods should not return "void"
         protected internal async void DoPost(HttpClient client, HttpRequestMessage request)
+#pragma warning restore S3168 // "async" methods should not return "void"
         {
             HttpClientHelper.ConfigureCertificateValidation(
                 options.ValidateCertificates,
@@ -117,7 +120,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                 out RemoteCertificateValidationCallback prevValidator);
             try
             {
-                using (HttpResponseMessage response = await client.SendAsync(request))
+                using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                 {
                     logger?.LogDebug("DoPost {0}, status: {1}", request.RequestUri, response.StatusCode);
                     if (response.StatusCode != HttpStatusCode.OK &&

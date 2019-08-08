@@ -14,7 +14,6 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.EndpointOwinAutofac.Actuators;

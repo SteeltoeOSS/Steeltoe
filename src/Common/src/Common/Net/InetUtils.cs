@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -134,7 +135,7 @@ namespace Steeltoe.Common.Net
             }
 
             IEnumerable<string> preferredNetworks = _options.GetPreferredNetworks();
-            if (preferredNetworks == null)
+            if (!preferredNetworks.Any())
             {
                 return true;
             }

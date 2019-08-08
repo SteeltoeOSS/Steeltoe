@@ -21,7 +21,6 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Census.Trace;
 using System;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace Steeltoe.Management.Tracing.Observer
 {

@@ -2,11 +2,11 @@
   <Import Project="..\..\..\..\versions.props" />
 
   <PropertyGroup>
-    <Description>Steeltoe Management Extensions for Tasks in Cloud Foundry with Microsoft DI</Description>
+    <Description>Extensions for running tasks embedded in your ASP.NET Core application. Ideal for cf run-task in Cloud Foundry.</Description>
+    <AssemblyName>Steeltoe.Management.TaskCore</AssemblyName>
+    <PackageId>Steeltoe.Management.TaskCore</PackageId>
+    <PackageTags>Spring Cloud;Tasks;Management;Monitoring;Task;aspnetcore</PackageTags>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.Management.CloudFoundryTasks</AssemblyName>
-    <PackageId>Steeltoe.Management.CloudFoundryTasks</PackageId>
-    <PackageTags>Spring Cloud;Tasks;Management;Monitoring;CloudFoundry</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   

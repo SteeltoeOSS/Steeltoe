@@ -196,5 +196,47 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             // Assert
             Assert.NotNull(healthContributor);
         }
+
+        [Fact]
+        public void AddSqlServerConnection_DoesntAddsRelationalHealthContributor_WhenCommunityHealthCheckExists()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<SqlServerConnectionInfo>();
+            services.AddHealthChecks().AddSqlServer(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+
+            // Assert
+            Assert.Null(healthContributor);
+        }
+
+        [Fact]
+        public void AddSqlServerConnection_AddsRelationalHealthContributor_WhenCommunityHealthCheckExistsAndForced()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            var cm = new ConnectionStringManager(config);
+            var ci = cm.Get<SqlServerConnectionInfo>();
+            services.AddHealthChecks().AddSqlServer(ci.ConnectionString, name: ci.Name);
+
+            // Act
+            SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config, addSteeltoeHealthChecks: true);
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+
+            // Assert
+            Assert.NotNull(healthContributor);
+        }
     }
 }

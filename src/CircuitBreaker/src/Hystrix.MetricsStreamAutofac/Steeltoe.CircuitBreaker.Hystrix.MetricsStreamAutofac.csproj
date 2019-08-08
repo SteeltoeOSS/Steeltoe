@@ -4,12 +4,14 @@
 
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Metrics Event Stream Autofac</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac</PackageId>
     <PackageTags>ASPNET;Autofac;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
+
+  <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj" />

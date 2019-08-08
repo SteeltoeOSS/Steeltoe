@@ -34,6 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;
@@ -102,6 +103,7 @@ namespace Steeltoe.CloudFoundry.Connector
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;
@@ -127,6 +129,7 @@ namespace Steeltoe.CloudFoundry.Connector
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;
@@ -147,6 +150,7 @@ namespace Steeltoe.CloudFoundry.Connector
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;
@@ -173,6 +177,7 @@ namespace Steeltoe.CloudFoundry.Connector
             }
             catch (Exception)
             {
+                // Sometimes dependencies are missing... Should be handled later in framework code
             }
 
             return null;

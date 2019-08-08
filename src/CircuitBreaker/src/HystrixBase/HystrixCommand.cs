@@ -109,13 +109,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected new virtual void Run()
         {
-            var result = RunAsync().Result;
+            var result = RunAsync().GetAwaiter().GetResult();
             return;
         }
 
         protected new virtual void RunFallback()
         {
-            var result = RunFallbackAsync().Result;
+            var result = RunFallbackAsync().GetAwaiter().GetResult();
             return;
         }
 
@@ -205,15 +205,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             try
             {
-                var task = ExecuteAsync();
-                var result = task.Result;
-                return result;
+                return ExecuteAsync().GetAwaiter().GetResult();
             }
-            catch (AggregateException e)
-            {
-                throw e.Flatten().InnerException;
-            }
-            catch (Exception e)
+            catch (Exception e) when (!(e is HystrixRuntimeException))
             {
                 throw DecomposeException(e);
             }
@@ -301,22 +295,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected virtual TResult Run()
         {
-            return RunAsync().Result;
+            return RunAsync().GetAwaiter().GetResult();
         }
 
         protected virtual TResult RunFallback()
         {
-            return RunFallbackAsync().Result;
+            return RunFallbackAsync().GetAwaiter().GetResult();
         }
 
         protected virtual async Task<TResult> RunAsync()
         {
-            return await Task.FromResult(default(TResult));
+            return await Task.FromResult(default(TResult)).ConfigureAwait(false);
         }
 
         protected virtual async Task<TResult> RunFallbackAsync()
         {
-            return await Task.FromException<TResult>(new InvalidOperationException("No fallback available."));
+            return await Task.FromException<TResult>(new InvalidOperationException("No fallback available.")).ConfigureAwait(false);
         }
 
         protected override TResult DoRun()

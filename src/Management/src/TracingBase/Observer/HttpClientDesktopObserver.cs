@@ -19,7 +19,6 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Census.Trace;
 using Steeltoe.Management.Census.Trace.Propagation;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Net;
 using System.Threading;
 
@@ -166,12 +165,9 @@ namespace Steeltoe.Management.Tracing.Observer
             var headers = message.Headers;
             Propagation.Inject(Tracer.CurrentSpan.Context, headers, (c, k, v) =>
             {
-                if (k == B3Constants.XB3TraceId)
+                if (k == B3Constants.XB3TraceId && v.Length > 16 && Options.UseShortTraceIds)
                 {
-                    if (v.Length > 16 && Options.UseShortTraceIds)
-                    {
-                        v = v.Substring(v.Length - 16, 16);
-                    }
+                    v = v.Substring(v.Length - 16, 16);
                 }
                 if (c.Get(k) != null)
                 {

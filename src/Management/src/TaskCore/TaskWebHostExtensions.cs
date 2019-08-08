@@ -20,10 +20,16 @@ using Steeltoe.Common.Tasks;
 using System;
 using System.Linq;
 
-namespace Steeltoe.Management.CloudFoundryTasks
+namespace Steeltoe.Management.TaskCore
 {
-    public static class CloudFoundryWebHostExtensions
+    public static class TaskWebHostExtensions
     {
+        /// <summary>
+        /// Runs a web application, blocking the calling thread until the host shuts down.<para />
+        /// To execute your task, invoke the application with argument "runtask=taskname", where "taskname" is your task's name.<para/>
+        /// Command line arguments should be registered as a configuration source for this functionality to work.
+        /// </summary>
+        /// <param name="webHost">The <see cref="T:Microsoft.AspNetCore.Hosting.IWebHost" /> to run.</param>
         public static void RunWithTasks(this IWebHost webHost)
         {
             if (webHost == null)
@@ -44,9 +50,12 @@ namespace Steeltoe.Management.CloudFoundryTasks
                 }
                 else
                 {
-                    var logger = scope.GetService<ILogger>();
+                    var logger = scope.GetService<ILoggerFactory>()
+                        .CreateLogger("CloudFoundryTasks");
                     logger.LogError($"No task with name {taskName} is found registered in service container");
                 }
+
+                webHost.Dispose();
             }
             else
             {

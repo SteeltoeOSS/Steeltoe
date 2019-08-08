@@ -144,10 +144,10 @@ namespace Steeltoe.Discovery.Eureka
 
         public override string HostName
         {
-            get
-            {
-                return GetHostName(false);
-            }
+            // _hostName is accessed by GetHostName()
+#pragma warning disable S4275 // Getters and setters should access the expected fields
+            get => GetHostName(false);
+#pragma warning restore S4275 // Getters and setters should access the expected fields
 
             set
             {

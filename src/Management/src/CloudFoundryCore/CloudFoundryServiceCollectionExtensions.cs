@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
@@ -62,8 +61,8 @@ namespace Steeltoe.Management.CloudFoundry
 
             if (context != ActuatorContext.Actuator)
             {
-                var managmentOptions = new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry);
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managmentOptions));
+                var managementOptions = new CloudFoundryManagementOptions(config);
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managementOptions));
 
                 services.AddCors();
                 services.AddCloudFoundryActuator(config);

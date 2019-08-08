@@ -24,9 +24,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Hypermedia
 {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class ActuatorHypermediaEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         public ActuatorHypermediaEndpointOwinMiddleware(OwinMiddleware next, ActuatorEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions = null, ILogger<ActuatorHypermediaEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, mgmtOptions?.OfType<ActuatorManagementOptions>(), logger: logger)
@@ -38,14 +38,14 @@ namespace Steeltoe.Management.EndpointOwin.Hypermedia
         {
             if (!IsCloudFoundryRequest(context))
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             else
             {
                 var endpointResponse = _endpoint.Invoke(GetRequestUri(context.Request));
                 _logger?.LogTrace("Returning: {EndpointResponse}", endpointResponse);
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/json;charset=UTF-8" });
-                await context.Response.WriteAsync(Serialize(endpointResponse));
+                await context.Response.WriteAsync(Serialize(endpointResponse)).ConfigureAwait(false);
             }
         }
 

@@ -13,11 +13,17 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Steeltoe.CloudFoundry.Connector
 {
+    [Serializable]
     public class ConnectorException : Exception
     {
+        public ConnectorException()
+        {
+        }
+
         public ConnectorException(string message)
             : base(message)
         {
@@ -25,6 +31,11 @@ namespace Steeltoe.CloudFoundry.Connector
 
         public ConnectorException(string message, Exception nested)
             : base(message, nested)
+        {
+        }
+
+        protected ConnectorException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

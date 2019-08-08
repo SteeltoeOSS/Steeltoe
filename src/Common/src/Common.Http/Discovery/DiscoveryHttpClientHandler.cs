@@ -26,7 +26,7 @@ namespace Steeltoe.Common.Discovery
     public class DiscoveryHttpClientHandler : HttpClientHandler
     {
         private readonly ILogger _logger;
-        private DiscoveryHttpClientHandlerBase _discoveryBase;
+        private readonly DiscoveryHttpClientHandlerBase _discoveryBase;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DiscoveryHttpClientHandler"/> class.
@@ -45,8 +45,8 @@ namespace Steeltoe.Common.Discovery
             var current = request.RequestUri;
             try
             {
-                request.RequestUri = await _discoveryBase.LookupServiceAsync(current);
-                return await base.SendAsync(request, cancellationToken);
+                request.RequestUri = await _discoveryBase.LookupServiceAsync(current).ConfigureAwait(false);
+                return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception e)
             {

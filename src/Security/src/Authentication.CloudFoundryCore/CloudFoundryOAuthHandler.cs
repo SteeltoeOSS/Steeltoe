@@ -98,11 +98,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             options.CallbackUrl = redirectUri;
 
             var tEx = new TokenExchanger(options, GetHttpClient());
-            HttpResponseMessage response = await tEx.ExchangeCodeForToken(code, Options.TokenEndpoint, Context.RequestAborted);
+            HttpResponseMessage response = await tEx.ExchangeCodeForToken(code, Options.TokenEndpoint, Context.RequestAborted).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadAsStringAsync();
+                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 _logger?.LogDebug("ExchangeCodeAsync() received json: {json}", result);
 
@@ -112,7 +112,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             }
             else
             {
-                var error = "OAuth token endpoint failure: " + await Display(response);
+                var error = "OAuth token endpoint failure: " + await Display(response).ConfigureAwait(false);
                 return OAuthTokenResponse.Failed(new Exception(error));
             }
         }
@@ -132,7 +132,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             HttpResponseMessage response = null;
             try
             {
-                response = await client.SendAsync(request, Context.RequestAborted);
+                response = await client.SendAsync(request, Context.RequestAborted).ConfigureAwait(false);
             }
             finally
             {
@@ -145,7 +145,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 throw new HttpRequestException($"An error occurred when retrieving token information ({response.StatusCode}).");
             }
 
-            var resp = await response.Content.ReadAsStringAsync();
+            var resp = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             _logger?.LogDebug("CreateTicketAsync() received json: {json}", resp);
 
@@ -153,7 +153,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
             context.RunClaimActions();
-            await Events.CreatingTicket(context);
+            await Events.CreatingTicket(context).ConfigureAwait(false);
 
             if (Options.UseTokenLifetime)
             {
@@ -161,7 +161,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 properties.ExpiresUtc = CloudFoundryHelper.GetExpTime(payload);
             }
 
-            await Events.CreatingTicket(context);
+            await Events.CreatingTicket(context).ConfigureAwait(false);
             var ticket = new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
             return ticket;
         }
@@ -215,7 +215,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             var output = new StringBuilder();
             output.Append("Status: " + response.StatusCode + ";");
             output.Append("Headers: " + response.Headers.ToString() + ";");
-            output.Append("Body: " + await response.Content.ReadAsStringAsync() + ";");
+            output.Append("Body: " + await response.Content.ReadAsStringAsync().ConfigureAwait(false) + ";");
             return output.ToString();
         }
     }

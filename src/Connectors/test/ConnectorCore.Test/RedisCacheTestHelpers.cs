@@ -38,6 +38,35 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
       ]
 }";
 
+        public static string SingleServerEnterpriseVCAP = @"
+{
+      'redislabs': [
+        {
+          'label': 'redislabs',
+          'provider': null,
+          'plan': 'medium-redis',
+          'name': 'myRedisService',
+          'tags': [
+            'redislabs',
+            'redis'
+          ],
+          'instance_name': 'myRedisService',
+          'binding_name': null,
+          'credentials': {
+            'host': 'redis-1076.redis-enterprise.system.cloudyazure.io',
+            'ip_list': [
+              '10.0.12.37'
+            ],
+            'name': 'cf-7080d854-50a5-413d-82cb-4cb0fc93e4b9',
+            'password': 'rQrMqqg-.LJzO498EcAIfp-auu4czBiGM40wjveTdHw-EJu0',
+            'port': 1076
+          },
+          'syslog_drain_url': null,
+          'volume_mounts': []
+        }
+      ]
+}";
+
         public static string SingleServerVCAP_AzureBroker = @"
 {
       'azure-rediscache': [

@@ -553,7 +553,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
-            provider.Load();
+            provider.LoadInternal();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Equal(1, TestConfigServerStartup.RequestCount);
@@ -578,7 +578,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
-            provider.Load();
+            provider.LoadInternal();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Equal(1, TestConfigServerStartup.RequestCount);
@@ -603,7 +603,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
-            provider.Load();
+            provider.LoadInternal();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
             Assert.Equal(26, provider.Properties.Count);
@@ -629,7 +629,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
-            var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
+            var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
         }
 
         [Fact]
@@ -652,7 +652,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
-            var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
+            var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
             Assert.Equal(1, TestConfigServerStartup.RequestCount);
         }
 
@@ -676,7 +676,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
-            var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
+            var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
         }
 
         [Fact]
@@ -699,7 +699,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
-            var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
+            var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
             Assert.Equal(1, TestConfigServerStartup.RequestCount);
         }
 
@@ -724,7 +724,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
-            var ex = Assert.Throws<ConfigServerException>(() => provider.Load());
+            var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
             Assert.Equal(6, TestConfigServerStartup.RequestCount);
         }
 
@@ -763,7 +763,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
-            provider.Load();
+            provider.LoadInternal();
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
 

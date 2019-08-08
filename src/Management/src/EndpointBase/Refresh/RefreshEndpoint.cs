@@ -21,8 +21,8 @@ namespace Steeltoe.Management.Endpoint.Refresh
 {
     public class RefreshEndpoint : AbstractEndpoint<IList<string>>
     {
-        private ILogger<RefreshEndpoint> _logger;
-        private IConfiguration _configuration;
+        private readonly ILogger<RefreshEndpoint> _logger;
+        private readonly IConfiguration _configuration;
 
         public RefreshEndpoint(IRefreshOptions options, IConfiguration configuration, ILogger<RefreshEndpoint> logger = null)
             : base(options)

@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public class HealthEndpointMiddleware : EndpointMiddleware<HealthCheckResult, ISecurityContext>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public HealthEndpointMiddleware(RequestDelegate next, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
             : base(mgmtOptions: mgmtOptions, logger: logger)
@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Health
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public HealthEndpointMiddleware(RequestDelegate next, ILogger<HealthEndpointMiddleware> logger = null)
             : base(mgmtOptions: null, logger: logger)
         {
@@ -48,11 +48,11 @@ namespace Steeltoe.Management.Endpoint.Health
 
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleHealthRequestAsync(context);
+                await HandleHealthRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -61,7 +61,7 @@ namespace Steeltoe.Management.Endpoint.Health
             var serialInfo = DoRequest(context);
             _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
         protected internal string DoRequest(HttpContext context)

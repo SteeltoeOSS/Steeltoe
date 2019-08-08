@@ -14,8 +14,6 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using OpenCensus.Stats;
-using OpenCensus.Tags;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Tags;

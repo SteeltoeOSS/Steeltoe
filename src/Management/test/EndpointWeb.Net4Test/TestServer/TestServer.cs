@@ -36,9 +36,9 @@ namespace Steeltoe.Management.EndpointWeb.Test
         {
             get
             {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 ManagementOptions.Reset();
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 var handlers = ManagementConfig.ConfigureManagementActuators(null, _currentSettings);
                 var actuatorModule = new ActuatorModule(handlers, null);

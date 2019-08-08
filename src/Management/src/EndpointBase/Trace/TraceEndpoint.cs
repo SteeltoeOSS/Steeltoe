@@ -20,8 +20,8 @@ namespace Steeltoe.Management.Endpoint.Trace
 {
     public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>
     {
-        private ILogger<TraceEndpoint> _logger;
-        private ITraceRepository _traceRepo;
+        private readonly ILogger<TraceEndpoint> _logger;
+        private readonly ITraceRepository _traceRepo;
 
         public TraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
             : base(options)

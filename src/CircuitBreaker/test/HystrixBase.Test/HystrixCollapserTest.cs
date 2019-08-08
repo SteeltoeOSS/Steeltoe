@@ -2158,7 +2158,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.ctimer = ctimer;
             }
 
-            public override void Dispose()
+            protected override void Dispose(bool disposing)
             {
                 // Called when context is disposed
                 foreach (var v in ctimer.Tasks.Values)
@@ -2170,7 +2170,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     }
                 }
 
-                base.Dispose();
+                base.Dispose(disposing);
             }
         }
 

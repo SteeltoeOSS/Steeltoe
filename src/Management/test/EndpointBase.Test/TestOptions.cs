@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Steeltoe.Management.Endpoint.Security;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Test
 {

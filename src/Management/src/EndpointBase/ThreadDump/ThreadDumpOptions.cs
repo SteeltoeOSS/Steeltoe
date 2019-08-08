@@ -14,11 +14,10 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
-    [Obsolete]
+    [Obsolete("Use ThreadDumpEndpointOptions instead")]
     public class ThreadDumpOptions : AbstractOptions, IThreadDumpOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dump";
