@@ -71,6 +71,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void NoEvents()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -88,6 +89,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadIsolatedSuccess()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -107,6 +109,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSemaphoreIsolatedSuccess()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -126,6 +129,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadIsolatedFailure()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -145,6 +149,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSemaphoreIsolatedFailure()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -164,6 +169,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadIsolatedTimeout()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -183,6 +189,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSemaphoreIsolatedTimeout()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -202,6 +209,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadIsolatedBadRequest()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -221,6 +229,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSemaphoreIsolatedBadRequest()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -240,6 +249,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadRejectedCommand()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -259,6 +269,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSemaphoreRejectedCommand()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -278,6 +289,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadIsolatedResponseFromCache()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -306,6 +318,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSemaphoreIsolatedResponseFromCache()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);
@@ -335,6 +348,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestShortCircuit()
         {
             CountdownEvent commandLatch = new CountdownEvent(1);

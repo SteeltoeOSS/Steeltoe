@@ -45,6 +45,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesEmptyDistributions()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-A");
@@ -68,19 +69,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 });
 
             // no writes
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestBatches()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
@@ -145,14 +139,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Collapser.From(output, key, 11).Observe();
             Collapser.From(output, key, 12).Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             // should have 4 batches: 3, 1, 5, 3
             Assert.Equal(4, stream.Latest.GetTotalCount());
@@ -163,6 +150,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         // by doing a take(30), all metrics should fall out of window and we should observe an empty histogram
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestBatchesAgeOut()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
@@ -226,14 +214,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Collapser.From(output, key, 10).Observe();
             Collapser.From(output, key, 11).Observe();
             Collapser.From(output, key, 12).Observe();
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(0, stream.Latest.GetTotalCount());
             Assert.Equal(0, stream.LatestMean);

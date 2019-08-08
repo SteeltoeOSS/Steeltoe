@@ -55,7 +55,7 @@
     <MoqVersion>4.8.2</MoqVersion>
     <OpenCensusVersion>0.1.0-alpha-42253</OpenCensusVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
-    <ReactiveVersion>3.1.1</ReactiveVersion>
+    <ReactiveVersion>4.1.5</ReactiveVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>

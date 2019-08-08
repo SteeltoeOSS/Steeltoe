@@ -59,13 +59,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_tokenSource.IsCancellationRequested)
+            if (disposing)
             {
-                _tokenSource.Cancel();
-            }
+                if (!_tokenSource.IsCancellationRequested)
+                {
+                    _tokenSource.Cancel();
+                }
 
-            _listener = null;
-            _timerTask = null;
+                _listener = null;
+                _timerTask = null;
+            }
         }
     }
 }

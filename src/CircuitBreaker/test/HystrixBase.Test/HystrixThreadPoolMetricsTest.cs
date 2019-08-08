@@ -37,6 +37,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void ShouldYieldNoExecutedTasksOnStartup()
         {
             // given
@@ -47,21 +48,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public void ShouldReturnOneExecutedTask()
+        [Trait("Category", "FlakyOnHostedAgents")]
+        public async Task ShouldReturnOneExecutedTask()
         {
             // given
             var stream = RollingThreadPoolEventCounterStream.GetInstance(tpKey, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
             var cmd = new NoOpHystrixCommand(output);
-            cmd.Execute();
-            Time.Wait(125);
+            await cmd.ExecuteAsync();
+            Time.Wait(250);
 
             ICollection<HystrixThreadPoolMetrics> instances = HystrixThreadPoolMetrics.GetInstances();
 
             // then
+            output.WriteLine($"Instance count: {instances.Count}");
             Assert.Equal(1, instances.Count);
             HystrixThreadPoolMetrics metrics = instances.First();
+            output.WriteLine($"RollingCountThreadsExecuted: {metrics.RollingCountThreadsExecuted}");
             Assert.Equal(1, metrics.RollingCountThreadsExecuted);
         }
 

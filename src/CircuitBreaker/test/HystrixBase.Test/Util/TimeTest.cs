@@ -20,6 +20,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
     public class TimeTest
     {
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void WaitUntil_WaitsExpectedTime()
         {
             Stopwatch stopWatch = new Stopwatch();
@@ -30,6 +31,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void Wait_WaitsExpectedTime()
         {
             Stopwatch stopWatch = new Stopwatch();

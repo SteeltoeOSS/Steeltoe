@@ -80,7 +80,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metrix.Sample.Test
                     latch.SignalEx();
                 });
 
-            Assert.True(latch.Wait(10000));
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.True(commandShowsUp.Value);
             Assert.True(threadPoolShowsUp.Value);
         }

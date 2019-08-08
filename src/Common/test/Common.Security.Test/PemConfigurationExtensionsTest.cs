@@ -62,6 +62,7 @@ namespace Steeltoe.Common.Security.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void AddPemFiles_NotifiesOnChange()
         {
             var tempFile1 = CreateTempFile("cert");
