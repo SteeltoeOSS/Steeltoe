@@ -218,7 +218,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(expected, stream.Latest);
         }
 
-        [Fact(Skip = "Fails on hosted agent")]
+        [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestShortCircuited()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-RollingCounter-G");

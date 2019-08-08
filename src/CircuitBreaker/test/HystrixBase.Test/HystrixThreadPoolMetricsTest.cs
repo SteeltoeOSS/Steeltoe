@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -25,9 +26,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixThreadPoolMetricsTest : HystrixTestBase, IDisposable
     {
-        private static IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
-        private static IHystrixThreadPoolKey tpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
-        private ITestOutputHelper output;
+        private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("HystrixThreadPoolMetrics-UnitTest");
+        private static readonly IHystrixThreadPoolKey TpKey = HystrixThreadPoolKeyDefault.AsKey("HystrixThreadPoolMetrics-ThreadPool");
+        private readonly ITestOutputHelper output;
 
         public HystrixThreadPoolMetricsTest(ITestOutputHelper output)
             : base()
@@ -52,7 +53,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public async Task ShouldReturnOneExecutedTask()
         {
             // given
-            var stream = RollingThreadPoolEventCounterStream.GetInstance(tpKey, 10, 100);
+            var stream = RollingThreadPoolEventCounterStream.GetInstance(TpKey, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
             var cmd = new NoOpHystrixCommand(output);
@@ -71,7 +72,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class NoOpHystrixCommand : HystrixCommand<bool>
         {
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public NoOpHystrixCommand(ITestOutputHelper output)
                 : base(GetCommandOptions())
@@ -87,7 +88,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private static IHystrixThreadPoolOptions GetThreadPoolOptions()
             {
-                HystrixThreadPoolOptions opts = new HystrixThreadPoolOptions(tpKey)
+                HystrixThreadPoolOptions opts = new HystrixThreadPoolOptions(TpKey)
                 {
                     MetricsRollingStatisticalWindowInMilliseconds = 100
                 };
@@ -98,8 +99,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 HystrixCommandOptions opts = new HystrixCommandOptions()
                 {
-                    GroupKey = groupKey,
-                    ThreadPoolKey = tpKey,
+                    GroupKey = GroupKey,
+                    ThreadPoolKey = TpKey,
                     ThreadPoolOptions = GetThreadPoolOptions()
                 };
                 return opts;

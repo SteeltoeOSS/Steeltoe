@@ -30,7 +30,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixCollapserTest : HystrixTestBase, IDisposable
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixCollapserTest(ITestOutputHelper output)
             : base()
@@ -705,7 +705,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // we should still have executed only one command
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
-            IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList().First();
+            IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.AsEnumerable().First();
             output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
             Assert.Equal(2, command.ExecutionEvents.Count);
             Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
@@ -757,7 +757,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // we should still have executed only one command
             Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
-            IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList().First();
+            IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.AsEnumerable().First();
             output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
             Assert.Equal(2, command.ExecutionEvents.Count);
             Assert.Contains(HystrixEventType.SUCCESS, command.ExecutionEvents);
@@ -1888,10 +1888,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 return opts;
             }
 
-            public override string RequestArgument
-            {
-                get { return value; }
-            }
+            public override string RequestArgument => value;
 
             protected override HystrixCommand<List<string>> CreateCommand(ICollection<ICollapsedRequest<string, string>> requests)
             {
@@ -2198,8 +2195,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     if (v.Task == this._listener)
                     {
-                        ATask removed = v;
-                        ctimer.Tasks.TryRemove(v, out removed);
+                        _ = ctimer.Tasks.TryRemove(v, out ATask removed);
                     }
                 }
 
@@ -2282,10 +2278,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 ActualListener.Tick();
             }
 
-            public int IntervalTimeInMilliseconds
-            {
-                get { return 10; }
-            }
+            public int IntervalTimeInMilliseconds => 10;
         }
 
         private static IHystrixCollapserKey CollapserKeyFromString(object o)
@@ -2315,15 +2308,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 return opts;
             }
 
-            public override int RequestArgument
-            {
-                get { return value; }
-            }
+            public override int RequestArgument => value;
 
             protected override HystrixCommand<object> CreateCommand(ICollection<ICollapsedRequest<object, int>> requests)
             {
                 List<int> args = new List<int>();
-                foreach (CollapsedRequest<object, int> request in requests)
+                foreach (ICollapsedRequest<object, int> request in requests)
                 {
                     args.Add(request.Argument);
                 }
@@ -2352,15 +2342,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.output = output;
             }
 
-            public override int RequestArgument
-            {
-                get { return value; }
-            }
+            public override int RequestArgument => value;
 
             protected override HystrixCommand<object> CreateCommand(ICollection<ICollapsedRequest<object, int>> requests)
             {
                 List<int> args = new List<int>();
-                foreach (CollapsedRequest<object, int> request in requests)
+                foreach (ICollapsedRequest<object, int> request in requests)
                 {
                     args.Add(request.Argument);
                 }
@@ -2390,8 +2377,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             public Pair(A a, B b)
             {
-                this.AA = a;
-                this.BB = b;
+                AA = a;
+                BB = b;
             }
         }
 
@@ -2446,15 +2433,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.output = output;
             }
 
-            public override string RequestArgument
-            {
-                get { return arg; }
-            }
+            public override string RequestArgument => arg;
 
             protected override HystrixCommand<List<Pair<string, int>>> CreateCommand(ICollection<ICollapsedRequest<int, string>> collapsedRequests)
             {
                 List<string> args = new List<string>(collapsedRequests.Count);
-                foreach (CollapsedRequest<int, string> req in collapsedRequests)
+                foreach (ICollapsedRequest<int, string> req in collapsedRequests)
                 {
                     args.Add(req.Argument);
                 }
@@ -2476,10 +2460,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             }
 
-            protected override string CacheKey
-            {
-                get { return arg; }
-            }
+            protected override string CacheKey => arg;
 
             private static IHystrixCollapserOptions GetCollapserOptions(bool reqCacheEnabled)
             {
@@ -2495,17 +2476,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             private CountdownEvent latch = new CountdownEvent(1);
             private ITestOutputHelper output;
-            private bool isDisposed = false;
-
-            private List<T> values;
-            private List<Exception> errors;
             private int completions = 0;
 
             public TestSubscriber(ITestOutputHelper output)
             {
                 this.output = output;
-                this.values = new List<T>();
-                this.errors = new List<Exception>();
+                this.OnNextEvents = new List<T>();
+                this.OnErrorEvents = new List<Exception>();
             }
 
             public void Unsubscribe()
@@ -2515,13 +2492,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     Subscription.Dispose();
                 }
 
-                isDisposed = true;
+                IsUnsubscribed = true;
             }
 
-            public List<T> OnNextEvents
-            {
-                get { return values; }
-            }
+            public List<T> OnNextEvents { get; private set; }
 
             public List<Notification<T>> OnCompletedEvents
             {
@@ -2538,15 +2512,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             }
 
-            public List<Exception> OnErrorEvents
-            {
-                get { return errors; }
-            }
+            public List<Exception> OnErrorEvents { get; private set; }
 
-            public bool IsUnsubscribed
-            {
-                get { return isDisposed; } set { isDisposed = value; }
-            }
+            public bool IsUnsubscribed { get; set; } = false;
 
             public IDisposable Subscription { get; set; }
 
@@ -2564,7 +2532,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             public void AssertNoErrors()
             {
-                if (errors.Count > 0)
+                if (OnErrorEvents.Count > 0)
                 {
                     Assert.False(true, "Unexpecteed onError events");
                 }
@@ -2574,7 +2542,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 foreach (var v in check)
                 {
-                    if (!values.Contains(v))
+                    if (!OnNextEvents.Contains(v))
                     {
                         Assert.False(true, "Value not found: " + v);
                     }
@@ -2583,12 +2551,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             internal void AssertError(Type et)
             {
-                if (errors.Count != 1)
+                if (OnErrorEvents.Count != 1)
                 {
                     Assert.False(true, "No errors or multiple errors");
                 }
 
-                Exception e = errors[0];
+                Exception e = OnErrorEvents[0];
                 var eTypeInfo = e.GetType().GetTypeInfo();
                 var etTypeInfo = et.GetTypeInfo();
                 if (eTypeInfo.Equals(etTypeInfo) || eTypeInfo.IsSubclassOf(et))
@@ -2601,7 +2569,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             internal void AssertNoValues()
             {
-                int c = values.Count;
+                int c = OnNextEvents.Count;
                 if (c != 0)
                 {
                     Assert.False(true, "No onNext events expected yet some received: " + c);
@@ -2615,8 +2583,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     Assert.False(true, "Not completed!");
                 }
-                else
-                if (s > 1)
+                else if (s > 1)
                 {
                     Assert.False(true, "Completed multiple times: " + s);
                 }
@@ -2632,14 +2599,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             protected override void OnErrorCore(Exception error)
             {
                 output.WriteLine("OnError @ " + (DateTime.Now.Ticks / 10000) + " : " + error.Message.ToString());
-                errors.Add(error);
+                OnErrorEvents.Add(error);
                 latch.SignalEx();
             }
 
             protected override void OnNextCore(T value)
             {
                 output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + value.ToString());
-                values.Add(value);
+                OnNextEvents.Add(value);
             }
         }
     }

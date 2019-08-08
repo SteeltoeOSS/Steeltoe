@@ -530,7 +530,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // failure 1
             TestHystrixCommand<int> attempt1 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
             output.WriteLine("COMMAND KEY (from cmd): " + attempt1.CommandKey.Name);
-            attempt1.Execute();
+            await attempt1.ExecuteAsync();
             Time.Wait(100);
             Assert.True(attempt1.IsFailedExecution, "Unexpected execution success (1)");
             Assert.True(attempt1.IsResponseFromFallback, "Response not from fallback as was expected (1)");
@@ -753,6 +753,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueuedExecutionTimeoutFallbackFailure()
         {
             TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
@@ -764,10 +765,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (HystrixRuntimeException e)
             {
                 Assert.NotNull(e.FallbackException);
-                Assert.False(e.FallbackException is InvalidOperationException);
+                Assert.False(e.FallbackException is InvalidOperationException, "Fallback exception was unexpected type");
                 Assert.NotNull(e.ImplementingClass);
                 Assert.NotNull(e.InnerException);
-                Assert.True(e.InnerException is TimeoutException);
+                Assert.True(e.InnerException is TimeoutException, "Inner exception was unexpected type");
             }
 
             AssertCommandExecutionEvents(command, HystrixEventType.TIMEOUT, HystrixEventType.FALLBACK_FAILURE);
@@ -2731,6 +2732,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSemaphoreThreadSafety()
         {
             int num_permits = 1;
