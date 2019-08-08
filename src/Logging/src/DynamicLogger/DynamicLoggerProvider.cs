@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Logging.Console.Internal;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -29,37 +28,14 @@ namespace Steeltoe.Extensions.Logging
         private static readonly Func<string, LogLevel, bool> _trueFilter = (cat, level) => true;
         private static readonly Func<string, LogLevel, bool> _falseFilter = (cat, level) => false;
 
+        private readonly ConcurrentDictionary<string, LogLevel> _originalLevels = new ConcurrentDictionary<string, LogLevel>();
+        private readonly ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
+
+        private readonly IOptionsMonitor<LoggerFilterOptions> _filterOptions;
+        private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
         private Func<string, LogLevel, bool> _filter = _falseFilter;
-        private ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
-
-        private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ConcurrentDictionary<string, DynamicConsoleLogger>();
+        private ConcurrentDictionary<string, DynamicILogger> _loggers = new ConcurrentDictionary<string, DynamicILogger>();
         private ConsoleLoggerProvider _delegate;
-        private IConsoleLoggerSettings _settings;
-        private IOptionsMonitor<LoggerFilterOptions> _filterOptions;
-        private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
-        /// </summary>
-        /// <param name="settings">Logging Settings</param>
-        public DynamicLoggerProvider(IConsoleLoggerSettings settings)
-        {
-            _delegate = new ConsoleLoggerProvider(settings);
-            _settings = settings;
-            SetFiltersFromSettings();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
-        /// </summary>
-        /// <param name="filter">Default log level filter</param>
-        /// <param name="includeScopes">Enable log scoping</param>
-        public DynamicLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
-        {
-            _delegate = new ConsoleLoggerProvider(filter, includeScopes);
-            _filter = filter ?? _falseFilter;
-            _settings = null;
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
@@ -70,9 +46,9 @@ namespace Steeltoe.Extensions.Logging
         public DynamicLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options, IOptionsMonitor<LoggerFilterOptions> filterOptions, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         {
             _filterOptions = filterOptions;
-            SetFiltersFromOptions();
             _delegate = new ConsoleLoggerProvider(options);
             _messageProcessors = messageProcessors;
+            SetFiltersFromOptions();
         }
 
         /// <summary>
@@ -89,7 +65,6 @@ namespace Steeltoe.Extensions.Logging
         {
             _delegate?.Dispose();
             _delegate = null;
-            _settings = null;
             _loggers = null;
         }
 
@@ -194,6 +169,7 @@ namespace Steeltoe.Extensions.Logging
         {
             foreach (var rule in _filterOptions.CurrentValue.Rules.Where(p => string.IsNullOrEmpty(p.ProviderName) || p.ProviderName == "Console"))
             {
+                _originalLevels.TryAdd(rule.CategoryName ?? "Default", rule.LogLevel ?? LogLevel.None);
                 if (rule.CategoryName == "Default" || string.IsNullOrEmpty(rule.CategoryName))
                 {
                     _filter = (category, level) => level >= rule.LogLevel;
@@ -205,31 +181,10 @@ namespace Steeltoe.Extensions.Logging
             }
         }
 
-        private void SetFiltersFromSettings()
+        private DynamicILogger CreateLoggerImplementation(string name)
         {
-            foreach (var setting in (_settings as ConsoleLoggerSettings).Switches)
-            {
-                if (setting.Key == "Default")
-                {
-                    _filter = (category, level) => level >= setting.Value;
-                }
-                else
-                {
-                    _runningFilters.TryAdd(setting.Key, (category, level) => level >= setting.Value);
-                }
-            }
-
-            if (_filter == null)
-            {
-                _filter = _falseFilter;
-            }
-        }
-
-        private DynamicConsoleLogger CreateLoggerImplementation(string name)
-        {
-            var logger = _delegate.CreateLogger(name) as ConsoleLogger;
-            logger.Filter = GetFilter(name);
-            return new DynamicConsoleLogger(logger, _messageProcessors);
+            var logger = _delegate.CreateLogger(name);
+            return new DynamicILogger(logger, _messageProcessors) { Filter = GetFilter(name), Name = name };
         }
 
         /// <summary>
@@ -255,18 +210,6 @@ namespace Steeltoe.Extensions.Logging
                 return _filter;
             }
 
-            // check if there are any applicable settings
-            if (_settings != null)
-            {
-                foreach (var prefix in prefixes)
-                {
-                    if (_settings.TryGetSwitch(prefix, out LogLevel level))
-                    {
-                        return (n, l) => l >= level;
-                    }
-                }
-            }
-
             return _falseFilter;
         }
 
@@ -286,18 +229,6 @@ namespace Steeltoe.Extensions.Logging
                 {
                     var filter = _runningFilters.First(n => n.Key.Equals(prefix, StringComparison.InvariantCultureIgnoreCase)).Value;
                     return GetLogLevelFromFilter(name, filter);
-                }
-            }
-
-            // fall back to settings
-            if (_settings != null)
-            {
-                foreach (var prefix in prefixes)
-                {
-                    if (_settings.TryGetSwitch(prefix, out LogLevel level))
-                    {
-                        return level;
-                    }
                 }
             }
 
@@ -352,9 +283,9 @@ namespace Steeltoe.Extensions.Logging
         /// <returns>Log level from default filter, value from settings or else null</returns>
         private LogLevel? GetConfiguredLevel(string name)
         {
-            if (_settings != null)
+            if (_originalLevels != null)
             {
-                if (_settings.TryGetSwitch(name, out LogLevel level))
+                if (_originalLevels.TryGetValue(name, out LogLevel level))
                 {
                     return level;
                 }
