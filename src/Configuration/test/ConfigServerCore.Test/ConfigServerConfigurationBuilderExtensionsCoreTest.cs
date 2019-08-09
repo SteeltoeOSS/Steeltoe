@@ -562,27 +562,31 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             var vcap_services = @"
 {
-'vcap': {
-    'services': {
-        'p-config-server': [
-        {
-        'credentials': {
-         'access_token_uri': 'https://p-spring-cloud-services.uaa.wise.com/oauth/token',
-         'client_id': 'p.config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef',
-         'client_secret': 'e8KF1hXvAnGd',
-         'uri': 'https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com'
-        },
-        'label': 'p.config-server',
-        'name': 'My Config Server',
-        'plan': 'standard',
-        'tags': [
-         'configuration',
-         'spring-cloud'
-            ]
+    'vcap': {
+        'services': {
+            'p.config-server': [{
+                'binding_name':'',
+                'credentials': {
+                     'client_secret':'e8KF1hXvAnGd',
+                     'uri':'https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com',
+                     'client_id':'config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f',
+                     'access_token_uri':'https://p-spring-cloud-services.uaa.wise.com/oauth/token'
+                    },
+                    'instance_name': 'myConfigServer',
+                    'label': 'p.config-server',
+                    'name': 'myConfigServer',
+                    'plan': 'standard',
+                    'provider': null,
+                    'syslog_drain_url': null,
+                    'tags': [
+                        'configuration',
+                        'spring-cloud'
+                    ],
+                    'volume_mounts': []
+                }
+            ]}
         }
-        ]
     }
-}
 }";
 
             var appsettings = @"
@@ -624,7 +628,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.False(settings.FailFast);
             Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", settings.Uri);
             Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", settings.AccessTokenUri);
-            Assert.Equal("p.config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", settings.ClientId);
+            Assert.Equal("config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f", settings.ClientId);
             Assert.Equal("e8KF1hXvAnGd", settings.ClientSecret);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
             Assert.Equal("my-app", settings.Name);
