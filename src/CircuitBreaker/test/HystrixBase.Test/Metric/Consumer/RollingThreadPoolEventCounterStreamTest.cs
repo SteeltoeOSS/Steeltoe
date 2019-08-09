@@ -31,13 +31,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest, IDisposable
     {
-        private readonly ITestOutputHelper output;
         private RollingThreadPoolEventCounterStream stream;
+        private ITestOutputHelper output;
 
         private class LatchedObserver : ObserverBase<long[]>
         {
-            private readonly CountdownEvent latch;
-            private readonly ITestOutputHelper output;
+            private CountdownEvent latch;
+            private ITestOutputHelper output;
 
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
@@ -61,11 +61,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
         }
 
-        private static LatchedObserver GetSubscriber(ITestOutputHelper output, CountdownEvent latch)
-        {
-            return new LatchedObserver(output, latch);
-        }
-
         public RollingThreadPoolEventCounterStreamTest(ITestOutputHelper output)
             : base()
         {
@@ -81,6 +76,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesZeros()
         {
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-A");
@@ -97,6 +93,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestSingleSuccess()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-B");
@@ -106,7 +103,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
 
@@ -120,6 +117,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestSingleFailure()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-C");
@@ -129,7 +127,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
 
@@ -143,6 +141,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestSingleTimeout()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-D");
@@ -152,7 +151,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.TIMEOUT);
 
@@ -166,6 +165,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestSingleBadRequest()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-E");
@@ -175,7 +175,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
 
@@ -189,6 +189,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]       
         public async void TestRequestFromCache()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-F");
@@ -198,7 +199,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
             Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
@@ -218,6 +219,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async Task TestShortCircuited()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-G");
@@ -227,7 +229,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // 3 failures in a row will trip circuit.  let bucket roll once then submit 2 requests.
             // should see 3 FAILUREs and 2 SHORT_CIRCUITs and each should see a FALLBACK_SUCCESS
@@ -261,6 +263,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestSemaphoreRejected()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-H");
@@ -270,7 +273,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // 10 commands will saturate semaphore when called from different threads.
             // submit 2 more requests and they should be SEMAPHORE_REJECTED
@@ -296,7 +299,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await Task.Run(() => rejected2.Execute());
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(rejected1.IsResponseSemaphoreRejected, "rejected1 not rejected");
             Assert.True(rejected2.IsResponseSemaphoreRejected, "rejected2 not rejected");
@@ -308,6 +310,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestThreadPoolRejected()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-I");
@@ -317,7 +320,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // 10 commands will saturate threadpools when called concurrently.
             // submit 2 more requests and they should be THREADPOOL_REJECTED
@@ -343,8 +346,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.True(rejected1.IsResponseThreadPoolRejected);
-            Assert.True(rejected2.IsResponseThreadPoolRejected);
+            Assert.True(rejected1.IsResponseThreadPoolRejected, "Command1 IsResponseThreadPoolRejected");
+            Assert.True(rejected2.IsResponseThreadPoolRejected, "Command2 IsResponseThreadPoolRejected");
 
             // none of these got executed on a thread-pool, so thread pool metrics should be 0
             Assert.Equal(2, stream.Latest.Length);
@@ -353,6 +356,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestFallbackFailure()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-J");
@@ -362,7 +366,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
 
@@ -376,6 +380,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestFallbackMissing()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-K");
@@ -385,7 +390,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
 
@@ -400,6 +405,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestFallbackRejection()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-L");
@@ -409,7 +415,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
             // let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
@@ -444,6 +450,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestMultipleEventsOverTimeGetStoredAndAgeOut()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-M");
@@ -454,7 +461,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             // by doing a take(20), we ensure that all rolling counts go back to 0
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(20).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(20).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
             Command cmd2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 10);

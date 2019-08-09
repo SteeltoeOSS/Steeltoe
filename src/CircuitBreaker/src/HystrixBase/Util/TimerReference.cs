@@ -67,10 +67,5 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             _listener = null;
             _timerTask = null;
         }
-
-        ~TimerReference()
-        {
-            Dispose(false);
-        }
     }
 }

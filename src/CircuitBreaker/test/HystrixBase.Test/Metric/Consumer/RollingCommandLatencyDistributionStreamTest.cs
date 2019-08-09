@@ -29,8 +29,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest, IDisposable
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("CommandLatency");
-        private readonly ITestOutputHelper output;
         private RollingCommandLatencyDistributionStream stream;
+        private ITestOutputHelper output;
 
         public RollingCommandLatencyDistributionStreamTest(ITestOutputHelper output)
             : base()
@@ -47,6 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesEmptyDistributions()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-A");
@@ -204,7 +205,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(3, stream.Latest.GetTotalCount());
             AssertBetween(0, 75, stream.LatestMean);
@@ -213,6 +213,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestThreadPoolRejectedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-E");
@@ -260,6 +261,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]       
         public async void TestSemaphoreRejectedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-F");
@@ -308,6 +310,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestResponseFromCacheDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-G");
@@ -338,13 +341,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(1, stream.Latest.GetTotalCount());
             AssertBetween(0, 75, stream.LatestMean);
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestMultipleBucketsBothGetStored()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-H");

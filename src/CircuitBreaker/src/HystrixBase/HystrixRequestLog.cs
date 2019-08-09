@@ -210,7 +210,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
             catch (Exception)
             {
-                // logger.error("Failed to create HystrixRequestLog response header string.", e);
+                // logger.error("Failed to create HystrixRequestLog response header string.", e)
                 // don't let this cause the entire app to fail so just return "Unknown"
                 return "Unknown";
             }

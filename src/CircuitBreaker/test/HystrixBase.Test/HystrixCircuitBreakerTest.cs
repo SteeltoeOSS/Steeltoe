@@ -18,6 +18,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,14 +39,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitAsync()
         {
             string key = "cmd-A";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd3 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
 
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             HystrixCircuitBreakerImpl breaker = cb as HystrixCircuitBreakerImpl;
@@ -62,10 +64,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             // fail
-            HystrixCommand<bool> cmd5 = new FailureCommand(key, 1);
-            HystrixCommand<bool> cmd6 = new FailureCommand(key, 1);
-            HystrixCommand<bool> cmd7 = new FailureCommand(key, 1);
-            HystrixCommand<bool> cmd8 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
+            HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
+            HystrixCommand<bool> cmd7 = new FailureCommand(key, 0);
+            HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
             Assert.False(await cmd5.ExecuteAsync());
             Assert.False(await cmd6.ExecuteAsync());
             Assert.False(await cmd7.ExecuteAsync());
@@ -81,6 +83,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnFailuresAboveThreshold()
         {
             string key = "cmd-B";
@@ -94,21 +97,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             // success with high latency
-            await cmd1.ExecuteAsync();
+            _ = await cmd1.ExecuteAsync();
             HystrixCommand<bool> cmd2 = new SuccessCommand(key, 1);
-            await cmd2.ExecuteAsync();
+            _ = await cmd2.ExecuteAsync();
             HystrixCommand<bool> cmd3 = new FailureCommand(key, 1);
-            await cmd3.ExecuteAsync();
+            _ = await cmd3.ExecuteAsync();
             HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
-            await cmd4.ExecuteAsync();
+            _ = await cmd4.ExecuteAsync();
             HystrixCommand<bool> cmd5 = new FailureCommand(key, 1);
-            await cmd5.ExecuteAsync();
+            _ = await cmd5.ExecuteAsync();
             HystrixCommand<bool> cmd6 = new SuccessCommand(key, 1);
-            await cmd6.ExecuteAsync();
+            _ = await cmd6.ExecuteAsync();
             HystrixCommand<bool> cmd7 = new FailureCommand(key, 1);
-            await cmd7.ExecuteAsync();
+            _ = await cmd7.ExecuteAsync();
             HystrixCommand<bool> cmd8 = new FailureCommand(key, 1);
-            await cmd8.ExecuteAsync();
+            _ = await cmd8.ExecuteAsync();
 
             // Let window pass, this should trip the circuit as the error percentage is above the threshold
             Time.Wait(125);
@@ -120,6 +123,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitDoesNotTripOnFailuresBelowThreshold()
         {
             string key = "cmd-C";
@@ -157,6 +161,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnTimeouts()
         {
             string key = "cmd-D";
@@ -184,11 +189,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnTimeoutsAboveThreshold()
         {
             string key = "cmd-E";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 60);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 50);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
@@ -196,23 +202,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             // success with high latency
-            await cmd1.ExecuteAsync();
             HystrixCommand<bool> cmd2 = new SuccessCommand(key, 1);
-            await cmd2.ExecuteAsync();
             HystrixCommand<bool> cmd3 = new TimeoutCommand(key);
-            await cmd3.ExecuteAsync();
             HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
-            await cmd4.ExecuteAsync();
             HystrixCommand<bool> cmd5 = new TimeoutCommand(key);
-            await cmd5.ExecuteAsync();
             HystrixCommand<bool> cmd6 = new TimeoutCommand(key);
-            await cmd6.ExecuteAsync();
             HystrixCommand<bool> cmd7 = new SuccessCommand(key, 1);
-            await cmd7.ExecuteAsync();
             HystrixCommand<bool> cmd8 = new TimeoutCommand(key);
-            await cmd8.ExecuteAsync();
             HystrixCommand<bool> cmd9 = new TimeoutCommand(key);
-            await cmd9.ExecuteAsync();
+            var taskList = new List<Task>
+            {
+                cmd1.ExecuteAsync(),
+                cmd2.ExecuteAsync(),
+                cmd3.ExecuteAsync(),
+                cmd4.ExecuteAsync(),
+                cmd5.ExecuteAsync(),
+                cmd6.ExecuteAsync(),
+                cmd7.ExecuteAsync(),
+                cmd8.ExecuteAsync(),
+                cmd9.ExecuteAsync(),
+            };
+            await Task.WhenAll(taskList);
 
             // Allow window to pass, this should trip the circuit as the error percentage is above the threshold
             Time.Wait(125);
@@ -221,16 +231,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestSingleTestOnOpenCircuitAfterTimeWindow()
         {
             string key = "cmd-F";
 
-            int sleepWindow = 200;
-            HystrixCommand<bool> cmd1 = new FailureCommand(key, 60);
+            HystrixCommand<bool> cmd1 = new FailureCommand(key, 50);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+            Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (1)");
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             await cmd1.ExecuteAsync();
@@ -247,19 +257,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
             // wait for sleepWindow to pass
-            Time.Wait(sleepWindow + 50);
+            Time.Wait(250);
 
             // we should now allow 1 request
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+            Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (2)");
 
             // but the circuit should still be open
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+            Assert.True(cb.IsOpen, "Circuit is closed when it should be open! (2)");
 
             // and further requests are still blocked
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+            Assert.False(cb.AllowRequest, "Request allowed when NOT expected! (2)");
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitClosedAfterSuccess()
         {
             string key = "cmd-G";
@@ -272,13 +283,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
-            await cmd1.ExecuteAsync();
+            _ = await cmd1.ExecuteAsync();
             HystrixCommand<bool> cmd2 = new FailureCommand(key, 1, sleepWindow);
-            await cmd2.ExecuteAsync();
+            _ = await cmd2.ExecuteAsync();
             HystrixCommand<bool> cmd3 = new FailureCommand(key, 1, sleepWindow);
-            await cmd3.ExecuteAsync();
+            _ = await cmd3.ExecuteAsync();
             HystrixCommand<bool> cmd4 = new TimeoutCommand(key, sleepWindow);
-            await cmd4.ExecuteAsync();
+            _ = await cmd4.ExecuteAsync();
 
             // Allow window to pass, everything has failed in the test window so we should return false now
             Time.Wait(125);
@@ -294,7 +305,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
             // we should now allow 1 request, and upon success, should cause the circuit to be closed
-            HystrixCommand<bool> cmd5 = new SuccessCommand(key, 60, sleepWindow);
+            HystrixCommand<bool> cmd5 = new SuccessCommand(key, 10, sleepWindow);
             IObservable<bool> asyncResult = cmd5.Observe();
 
             // and further requests are still blocked while the singleTest command is in flight
@@ -314,25 +325,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestMultipleTimeWindowRetriesBeforeClosingCircuit()
         {
             string key = "cmd-H";
 
             int sleepWindow = 200;
-            HystrixCommand<bool> cmd1 = new FailureCommand(key, 60);
+            HystrixCommand<bool> cmd1 = new FailureCommand(key, 50);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed when expected!");
             Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
 
-            await cmd1.ExecuteAsync();
+            _ = await cmd1.ExecuteAsync();
             HystrixCommand<bool> cmd2 = new FailureCommand(key, 1);
-            await cmd2.ExecuteAsync();
+            _ = await cmd2.ExecuteAsync();
             HystrixCommand<bool> cmd3 = new FailureCommand(key, 1);
-            await cmd3.ExecuteAsync();
+            _ = await cmd3.ExecuteAsync();
             HystrixCommand<bool> cmd4 = new TimeoutCommand(key);
-            await cmd4.ExecuteAsync();
+            _ = await cmd4.ExecuteAsync();
 
             // everything has failed in the test window so we should return false now
             // Allow window to pass,
@@ -351,7 +363,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
 
             // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
-            HystrixCommand<bool> cmd5 = new FailureCommand(key, 60);
+            HystrixCommand<bool> cmd5 = new FailureCommand(key, 50);
             IObservable<bool> asyncResult5 = cmd5.Observe();
             output.WriteLine(Time.CurrentTimeMillis + " !!!! Kicked off the single-test");
 
@@ -373,7 +385,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window over");
 
             // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
-            HystrixCommand<bool> cmd6 = new FailureCommand(key, 60);
+            HystrixCommand<bool> cmd6 = new FailureCommand(key, 50);
             IObservable<bool> asyncResult6 = cmd6.Observe();
             output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest just kicked off");
 
@@ -388,13 +400,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (3) when NOT expected!");
 
             // wait for sleepWindow to pass
-            Time.Wait(sleepWindow + 50);
+            Time.Wait(sleepWindow);
 
             // but the circuit should still be open
             Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
 
             // we should now allow 1 request, and upon success, should cause the circuit to be closed
-            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 60);
+            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 50);
             IObservable<bool> asyncResult7 = cmd7.Observe();
 
             // and further requests are still blocked while the singleTest command is in flight
@@ -469,19 +481,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             public TestCircuitBreaker()
             {
-                this.metrics = GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
+                metrics = GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
                 forceShortCircuit = false;
             }
 
             public TestCircuitBreaker(IHystrixCommandKey commandKey)
             {
-                this.metrics = GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
+                metrics = GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
                 forceShortCircuit = false;
             }
 
             public TestCircuitBreaker SetForceShortCircuit(bool value)
             {
-                this.forceShortCircuit = value;
+                forceShortCircuit = value;
                 return this;
             }
 

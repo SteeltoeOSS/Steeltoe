@@ -107,15 +107,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return base.ExecuteAsync();
         }
 
-        protected new virtual void Run()
-        {
-            _ = RunAsync().GetAwaiter().GetResult();
-        }
+        protected new virtual void Run() => RunAsync().GetAwaiter().GetResult();
 
-        protected new virtual void RunFallback()
-        {
-            _ = RunFallbackAsync().GetAwaiter().GetResult();
-        }
+        protected new virtual void RunFallback() => RunFallbackAsync().GetAwaiter().GetResult();
 
         protected override Unit DoRun()
         {

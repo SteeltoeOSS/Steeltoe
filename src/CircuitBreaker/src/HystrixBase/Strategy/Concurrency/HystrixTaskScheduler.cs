@@ -108,20 +108,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         public bool IsShutdown => shutdown;
 
-        private bool disposed;
-
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (disposing)
             {
-                if (disposing)
-                {
-                    shutdown = true;
+                shutdown = true;
 
-                    Time.WaitUntil(() => { return runningThreads <= 0; }, 500);
-                }
-
-                disposed = true;
+                Time.WaitUntil(() => { return runningThreads <= 0; }, 500);
             }
         }
 

@@ -42,6 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestStreamHasData()
         {
             AtomicBoolean commandShowsUp = new AtomicBoolean(false);
@@ -85,6 +86,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestTwoSubscribersOneUnsubscribes()
         {
             CountdownEvent latch1 = new CountdownEvent(1);
@@ -160,6 +162,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestTwoSubscribersBothUnsubscribe()
         {
             CountdownEvent latch1 = new CountdownEvent(1);
@@ -236,6 +239,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestTwoSubscribersOneSlowOneFast()
         {
             CountdownEvent latch = new CountdownEvent(1);

@@ -79,6 +79,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesZeros()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-A");
@@ -95,6 +96,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestSingleSuccess()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-B");
@@ -109,12 +111,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await cmd.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0L, stream.Latest.ErrorCount);
             Assert.Equal(1L, stream.Latest.TotalRequests);
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestSingleFailure()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-C");
@@ -148,12 +152,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await cmd.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(1L, stream.Latest.ErrorCount);
             Assert.Equal(1L, stream.Latest.TotalRequests);
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestSingleBadRequest()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-E");
@@ -175,6 +181,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestRequestFromCache()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-F");
@@ -199,6 +206,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestShortCircuited()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-G");
@@ -238,6 +246,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]       
         public async void TestSemaphoreRejected()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-H");
@@ -271,7 +280,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await Task.Run(() => rejected2.Execute());
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(rejected1.IsResponseSemaphoreRejected, "rejected1 not rejected");
             Assert.True(rejected2.IsResponseSemaphoreRejected, "rejected2 not rejected");
@@ -282,6 +290,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestThreadPoolRejected()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-I");
@@ -321,6 +330,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestFallbackFailure()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-J");
@@ -336,12 +346,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-
             Assert.Equal(1L, stream.Latest.ErrorCount);
             Assert.Equal(1L, stream.Latest.TotalRequests);
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestFallbackMissing()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-K");
@@ -356,14 +366,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await Assert.ThrowsAsync<HystrixRuntimeException>(async () => await cmd.Observe());
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-
             Assert.Equal(1L, stream.Latest.ErrorCount);
             Assert.Equal(1L, stream.Latest.TotalRequests);
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestFallbackRejection()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-L");
@@ -399,12 +408,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-
             Assert.Equal(7L, stream.Latest.ErrorCount);
             Assert.Equal(7L, stream.Latest.TotalRequests);
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]               
         public async void TestMultipleEventsOverTimeGetStoredAndAgeOut()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-M");
@@ -423,12 +432,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-
             Assert.Equal(0L, stream.Latest.ErrorCount);
             Assert.Equal(0L, stream.Latest.TotalRequests);
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSharedSourceStream()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-N");
@@ -476,7 +485,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             for (int i = 0; i < 10; i++)
             {
-                HystrixCommand<int> cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+                HystrixCommand<int> cmd = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
                 cmd.Execute();
             }
 
@@ -551,7 +560,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // execute 5 commands, then unsubscribe from first stream. then execute the rest
             for (int i = 0; i < 10; i++)
             {
-                HystrixCommand<int> cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+                HystrixCommand<int> cmd = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
                 cmd.Execute();
                 if (i == 5)
                 {
