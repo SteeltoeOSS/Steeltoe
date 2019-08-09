@@ -47,15 +47,4 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             return new OpenIdConnectAuthenticationHandler(Options.LoggerFactory?.CreateLogger("OpenIdConnectAuthenticationHandler"));
         }
     }
-
-#pragma warning disable SA1402 // File may only contain a single class
-    [Obsolete("This class has been renamed OpenIdConnectAuthenticationHandler")]
-    public class OpenIDConnectAuthenticationMiddleware : OpenIdConnectAuthenticationMiddleware
-#pragma warning restore SA1402 // File may only contain a single class
-    {
-        public OpenIDConnectAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app, OpenIDConnectOptions options)
-               : base(next, app, options)
-        {
-        }
-    }
 }

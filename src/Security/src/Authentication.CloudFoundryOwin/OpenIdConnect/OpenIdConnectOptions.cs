@@ -80,16 +80,4 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 
         internal ILoggerFactory LoggerFactory;
     }
-
-    [Obsolete("This class is being renamed OpenIdConnectOptions")]
-#pragma warning disable SA1402 // File may only contain a single class
-    public class OpenIDConnectOptions : OpenIdConnectOptions
-#pragma warning restore SA1402 // File may only contain a single class
-    {
-        public OpenIDConnectOptions(string authenticationType = "PivotalSSO")
-            : base(authenticationType)
-        {
-            CallbackPath = new PathString("/signin-oidc");
-        }
-    }
 }

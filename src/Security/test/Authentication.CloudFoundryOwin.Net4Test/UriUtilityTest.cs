@@ -21,25 +21,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin.Test
     public class UriUtilityTest
     {
         [Fact]
-        public void OriginalCallbackUri_Not_Changed()
-        {
-            // arrange
-#pragma warning disable CS0618 // Type or member is obsolete
-            var options = new OpenIDConnectOptions();
-#pragma warning restore CS0618 // Type or member is obsolete
-            var requestContext = OwinTestHelpers.CreateRequest("GET", string.Empty);
-
-            // act
-            var redirectUri = UriUtility.CalculateFullRedirectUri(options, requestContext.Request);
-
-            // assert
-            Assert.StartsWith(options.AuthDomain, redirectUri);
-            Assert.Contains("response_type=code", redirectUri);
-            Assert.Contains("scope=openid", redirectUri);
-            Assert.EndsWith("redirect_uri=" + WebUtility.UrlEncode("http://localhost/signin-oidc"), redirectUri);
-        }
-
-        [Fact]
         public void Can_CalculateFullRedirectUri_WithDefaults()
         {
             // arrange
