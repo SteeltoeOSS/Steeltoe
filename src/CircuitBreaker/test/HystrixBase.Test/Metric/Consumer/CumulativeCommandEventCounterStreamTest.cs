@@ -59,6 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             protected override void OnNextCore(long[] value)
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + BucketToString(value));
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
         }
 
@@ -116,7 +117,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]        
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleFailure()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-C");
@@ -139,7 +140,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]        
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleTimeout()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-D");
@@ -162,7 +163,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleBadRequest()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-E");
@@ -185,7 +186,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]       
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestRequestFromCache()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-F");
@@ -213,7 +214,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestShortCircuited()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-G");
@@ -237,8 +238,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await failure3.Observe();
             Time.Wait(150);
 
-            var breaker = failure1.CircuitBreaker as HystrixCircuitBreakerImpl;
-
             await shortCircuit1.Observe();
             await shortCircuit2.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
@@ -255,7 +254,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSemaphoreRejected()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-H");
@@ -302,7 +301,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestThreadPoolRejected()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-I");
@@ -347,7 +346,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestFallbackFailure()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-J");
@@ -371,7 +370,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestFallbackMissing()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-K");
@@ -396,7 +395,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestFallbackRejection()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-L");
@@ -411,11 +410,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             List<Command> fallbackSaturators = new List<Command>();
             for (int i = 0; i < 5; i++)
             {
-                fallbackSaturators.Add(Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
+                fallbackSaturators.Add(Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
             }
 
-            Command rejection1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
-            Command rejection2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
+            Command rejection1 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
+            Command rejection2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
 
             foreach (Command saturator in fallbackSaturators)
             {
@@ -511,7 +510,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestMultipleEventsOverTimeGetStoredAndNeverAgeOut()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-N");

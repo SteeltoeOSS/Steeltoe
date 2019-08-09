@@ -163,7 +163,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-    public void TestBooleanInstanceDynamicOverrideOfEverything()
+        public void TestBooleanInstanceDynamicOverrideOfEverything()
         {
             var configSettings = @"
             {
@@ -216,7 +216,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-    public void TestIntegerGlobalDynamicOverrideOfCodeDefault()
+        public void TestIntegerGlobalDynamicOverrideOfCodeDefault()
         {
             var configSettings = @"
             {
@@ -311,7 +311,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(3456, properties.MetricsRollingStatisticalWindowInMilliseconds);
         }
 
-    internal static MemoryStream GetMemoryStream(string json)
+        internal static MemoryStream GetMemoryStream(string json)
         {
             var memStream = new MemoryStream();
             var textWriter = new StreamWriter(memStream);

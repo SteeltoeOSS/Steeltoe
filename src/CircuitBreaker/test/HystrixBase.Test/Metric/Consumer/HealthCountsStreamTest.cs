@@ -61,6 +61,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             protected override void OnNextCore(HealthCounts healthCounts)
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
         }
 
@@ -96,7 +97,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleSuccess()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-B");
@@ -118,7 +119,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleFailure()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-C");
@@ -159,7 +160,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleBadRequest()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-E");
@@ -181,7 +182,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestRequestFromCache()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-F");
@@ -206,7 +207,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestShortCircuited()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-G");
@@ -246,7 +247,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]       
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSemaphoreRejected()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-H");
@@ -290,7 +291,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestThreadPoolRejected()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-I");
@@ -330,7 +331,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestFallbackFailure()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-J");
@@ -351,7 +352,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestFallbackMissing()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-K");
@@ -372,7 +373,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestFallbackRejection()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-L");
@@ -413,7 +414,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestMultipleEventsOverTimeGetStoredAndAgeOut()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-M");

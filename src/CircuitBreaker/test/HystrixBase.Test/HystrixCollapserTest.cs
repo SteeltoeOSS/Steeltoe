@@ -1650,7 +1650,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             List<IHystrixInvokableInfo> cmdIterator = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList();
             AssertCommandExecutionEvents(cmdIterator[0], HystrixEventType.SUCCESS, HystrixEventType.COLLAPSED);
             Assert.Equal(1, cmdIterator[0].NumberCollapsed); // should only be 1 collapsed - other came from cache, then was cancelled
-    }
+        }
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]

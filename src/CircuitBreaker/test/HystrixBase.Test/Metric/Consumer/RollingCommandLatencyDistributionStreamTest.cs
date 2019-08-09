@@ -59,6 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 (distribution) =>
                 {
                     output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + Thread.CurrentThread.ManagedThreadId);
+                    output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 },
                 (e) =>
                 {
@@ -85,6 +86,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             },
             (e) =>
             {
@@ -102,7 +104,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            AssertBetween(150, 400, stream.LatestMean);
+            AssertBetween(100, 400, stream.LatestMean);
             AssertBetween(10, 100, stream.GetLatestPercentile(0.0));
             AssertBetween(300, 800, stream.GetLatestPercentile(100.0));
         }
@@ -128,6 +130,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             },
             (e) =>
             {
@@ -151,7 +154,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            AssertBetween(150, 400, stream.LatestMean); // now timeout latency of 600ms is there
+            AssertBetween(100, 400, stream.LatestMean); // now timeout latency of 600ms is there
             AssertBetween(10, 100, stream.GetLatestPercentile(0.0));
             AssertBetween(300, 800, stream.GetLatestPercentile(100.0));
         }
@@ -178,6 +181,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             },
             (e) =>
             {
@@ -213,7 +217,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestThreadPoolRejectedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-E");
@@ -235,6 +239,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             },
             (e) =>
             {
@@ -261,7 +266,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]       
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSemaphoreRejectedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-F");
@@ -283,6 +288,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             },
             (e) =>
             {
@@ -325,6 +331,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             },
             (e) =>
             {
@@ -347,7 +354,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestMultipleBucketsBothGetStored()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-H");
@@ -359,6 +366,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             },
             (e) =>
             {
@@ -404,6 +412,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             },
             (e) =>
             {

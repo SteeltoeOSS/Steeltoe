@@ -1026,7 +1026,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertCommandExecutionEvents(command3, HystrixEventType.THREAD_POOL_REJECTED, HystrixEventType.FALLBACK_FAILURE);
             int numInFlight = circuitBreaker.Metrics.CurrentConcurrentExecutionCount;
             Assert.True(numInFlight <= 1, "Pool-filler NOT still going"); // pool-filler still going
-                                           // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
+                                                                          // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
             HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
             Assert.Equal(3, requestLog.AllExecutedCommands.Count);
             Assert.Contains("Executed", requestLog.GetExecutedCommandsAsString());

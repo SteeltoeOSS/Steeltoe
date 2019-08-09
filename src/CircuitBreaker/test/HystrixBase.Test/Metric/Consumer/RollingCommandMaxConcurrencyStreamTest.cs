@@ -56,6 +56,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             protected override void OnNextCore(int value)
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : Max of " + value);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
         }
 
@@ -185,13 +186,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
-         // BUCKETS
-         //      A    |    B    |    C    |    D    |    E    |
-         //  1:  [-------------------------------]
-         //  2:          [-------------------------------]
-         //  3:                      [--]
-         //  4:                              [--]
-         //  Max concurrency should be 3, but by waiting for 30 bucket rolls, final max concurrency should be 0
+        // BUCKETS
+        //      A    |    B    |    C    |    D    |    E    |
+        //  1:  [-------------------------------]
+        //  2:          [-------------------------------]
+        //  3:                      [--]
+        //  4:                              [--]
+        //  Max concurrency should be 3, but by waiting for 30 bucket rolls, final max concurrency should be 0
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleCommandsCarryOverMultipleBucketsAndThenAgeOut()
@@ -249,7 +250,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestConcurrencyStreamProperlyFiltersOutShortCircuits()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-G");
@@ -290,7 +291,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-H");

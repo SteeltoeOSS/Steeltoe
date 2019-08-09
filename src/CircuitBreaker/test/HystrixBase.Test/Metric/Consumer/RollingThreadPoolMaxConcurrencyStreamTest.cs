@@ -55,7 +55,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             protected override void OnNextCore(int maxConcurrency)
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : Max of " + maxConcurrency);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
+        }
+
+        private static LatchedObserver GetSubscriber(ITestOutputHelper output, CountdownEvent latch)
+        {
+            return new LatchedObserver(output, latch);
         }
 
         public RollingThreadPoolMaxConcurrencyStreamTest(ITestOutputHelper output)
@@ -176,13 +182,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
-         // BUCKETS
-         //      A    |    B    |    C    |    D    |    E    |
-         //  1:  [-------------------------------]
-         //  2:          [-------------------------------]
-         //  3:                      [--]
-         //  4:                              [--]
-         //  Max concurrency should be 3
+        // BUCKETS
+        //      A    |    B    |    C    |    D    |    E    |
+        //  1:  [-------------------------------]
+        //  2:          [-------------------------------]
+        //  3:                      [--]
+        //  4:                              [--]
+        //  Max concurrency should be 3
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleCommandsCarryOverMultipleBuckets()
@@ -214,14 +220,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
-         // BUCKETS
-         //      A    |    B    |    C    |    D    |    E    |
-         //  1:  [-------------------------------]              ThreadPool x
-         //  2:          [-------------------------------]                 y
-         //  3:                      [--]                                  x
-         //  4:                              [--]                          x
-         //  Same input data as above test, just that command 2 runs in a separate threadpool, so concurrency should not get tracked
-         //  Max concurrency should be 2 for x
+        // BUCKETS
+        //      A    |    B    |    C    |    D    |    E    |
+        //  1:  [-------------------------------]              ThreadPool x
+        //  2:          [-------------------------------]                 y
+        //  3:                      [--]                                  x
+        //  4:                              [--]                          x
+        //  Same input data as above test, just that command 2 runs in a separate threadpool, so concurrency should not get tracked
+        //  Max concurrency should be 2 for x
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleCommandsCarryOverMultipleBucketsForMultipleThreadPools()
@@ -255,12 +261,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
-         // BUCKETS
-         //  1:  [-------------------------------]
-         //  2:          [-------------------------------]
-         //  3:                      [--]
-         //  4:                              [--]
-         //  Max concurrency should be 3, but by waiting for 30 bucket rolls, final max concurrency should be 0
+        // BUCKETS
+        //  1:  [-------------------------------]
+        //  2:          [-------------------------------]
+        //  3:                      [--]
+        //  4:                              [--]
+        //  Max concurrency should be 3, but by waiting for 30 bucket rolls, final max concurrency should be 0
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleCommandsCarryOverMultipleBucketsAndThenAgeOut()
@@ -325,7 +331,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestConcurrencyStreamProperlyFiltersOutShortCircuits()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-H");
@@ -373,7 +379,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]               
+        [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-I");

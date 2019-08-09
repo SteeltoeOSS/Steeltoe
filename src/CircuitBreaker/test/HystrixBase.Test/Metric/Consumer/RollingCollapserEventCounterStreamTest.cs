@@ -56,7 +56,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             protected override void OnNextCore(long[] eventCounts)
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + CollapserEventsToStr(eventCounts) + " " + Thread.CurrentThread.ManagedThreadId);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
+        }
+
+        private static LatchedObserver GetSubscriber(ITestOutputHelper output, CountdownEvent latch)
+        {
+            return new LatchedObserver(output, latch);
         }
 
         public RollingCollapserEventCounterStreamTest(ITestOutputHelper output)

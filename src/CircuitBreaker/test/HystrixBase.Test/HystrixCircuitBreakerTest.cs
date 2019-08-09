@@ -50,7 +50,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
 
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
-            HystrixCircuitBreakerImpl breaker = cb as HystrixCircuitBreakerImpl;
 
             _ = await cmd1.ExecuteAsync();
             _ = await cmd2.ExecuteAsync();
@@ -90,7 +89,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 60);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
-            HystrixCircuitBreakerImpl breaker = cb as HystrixCircuitBreakerImpl;
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
