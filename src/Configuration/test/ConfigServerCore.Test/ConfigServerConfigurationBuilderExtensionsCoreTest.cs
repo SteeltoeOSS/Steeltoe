@@ -526,6 +526,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Null(settings.Username);
             Assert.Null(settings.Password);
         }
+
         [Fact]
         public void AddConfigServer_WithCloudfoundryEnvironmentSCS3_ConfiguresClientCorrectly()
         {
@@ -631,6 +632,5 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Null(settings.Username);
             Assert.Null(settings.Password);
         }
-
     }
 }
