@@ -17,7 +17,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-    [Obsolete]
+    [Obsolete("Use MetricsEndpointOptions instead")]
     public class MetricsOptions : AbstractOptions, IMetricsOptions
     {
         internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:metrics";

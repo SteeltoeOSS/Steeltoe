@@ -78,7 +78,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             TraceExporterOptions opts = new TraceExporterOptions("default", config);
             Assert.Equal("foobar", opts.ServiceName);
 
-            // Managment name overrides spring name
+            // Management name overrides spring name
             appsettings = new Dictionary<string, string>()
             {
                 ["spring:application:name"] = "foobar",

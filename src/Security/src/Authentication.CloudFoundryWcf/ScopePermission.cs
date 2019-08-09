@@ -21,7 +21,7 @@ using System.Web;
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
     [Serializable]
-    public sealed class ScopePermission : IPermission, ISecurityEncodable, IUnrestrictedPermission
+    public sealed class ScopePermission : IPermission, IUnrestrictedPermission
     {
         public string Scope { get; set; }
 

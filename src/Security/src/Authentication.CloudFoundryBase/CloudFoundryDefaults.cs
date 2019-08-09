@@ -16,7 +16,7 @@ using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public class CloudFoundryDefaults
+    public static class CloudFoundryDefaults
     {
         public const string SECURITY_CLIENT_SECTION_PREFIX = "security:oauth2:client";
         public const string SECURITY_RESOURCE_SECTION_PREFIX = "security:oauth2:resource";

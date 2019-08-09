@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Env
 {
     public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<EnvEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Env
             _next = next;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, ILogger<EnvEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {
@@ -42,11 +42,11 @@ namespace Steeltoe.Management.Endpoint.Env
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleEnvRequestAsync(context);
+                await HandleEnvRequestAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
 
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Env
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            await context.Response.WriteAsync(serialInfo);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
     }
 }

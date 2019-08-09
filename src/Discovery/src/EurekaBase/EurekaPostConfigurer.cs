@@ -18,7 +18,7 @@ using System;
 
 namespace Steeltoe.Discovery.Eureka
 {
-    public class EurekaPostConfigurer
+    public static class EurekaPostConfigurer
     {
         public const string SPRING_APPLICATION_NAME_KEY = "spring:application:name";
         public const string SPRING_APPLICATION_INSTANCEID_KEY = "spring:application:instance_id";
@@ -119,6 +119,11 @@ namespace Steeltoe.Discovery.Eureka
                 return;
             }
 
+            if (EurekaInstanceOptions.Default_Appname.Equals(instOptions.AppName))
+            {
+                instOptions.AppName = si.ApplicationInfo.ApplicationName;
+            }
+
             if (string.IsNullOrEmpty(instOptions.RegistrationMethod) ||
                 ROUTE_REGISTRATIONMETHOD.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
             {
@@ -135,7 +140,6 @@ namespace Steeltoe.Discovery.Eureka
             if (HOST_REGISTRATIONMETHOD.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
             {
                 UpdateWithDefaultsForHost(si, instOptions, instOptions.HostName);
-                return;
             }
         }
 

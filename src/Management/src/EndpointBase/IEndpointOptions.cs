@@ -14,23 +14,24 @@
 
 using Steeltoe.Management.Endpoint.Security;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
 {
     public interface IEndpointOptions
     {
-        [Obsolete]
+        [Obsolete("Use EndPointExtensions.IsEnabled(IEndpointOptions options, IManagementOptions mgmtOptions) instead")]
         bool IsEnabled { get; }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         bool IsSensitive { get; }
 
         bool? Enabled { get; }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         bool? Sensitive { get;  }
 
-        [Obsolete]
+        [Obsolete("Use EndPointExtensions instead")]
         IManagementOptions Global { get; }
 
         string Id { get;  }

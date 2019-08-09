@@ -99,20 +99,14 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         private void ConfigureServiceCredentials(Dictionary<string, Credential> credentials)
         {
-            if (string.IsNullOrEmpty(Endpoint))
+            if (string.IsNullOrEmpty(Endpoint) && credentials.TryGetValue(ENDPOINT_KEY, out Credential endpoint))
             {
-                if (credentials.TryGetValue(ENDPOINT_KEY, out Credential endpoint))
-                {
-                    Endpoint = endpoint.Value;
-                }
+                Endpoint = endpoint.Value;
             }
 
-            if (string.IsNullOrEmpty(AccessToken))
+            if (string.IsNullOrEmpty(AccessToken) && credentials.TryGetValue(ACCESS_KEY, out Credential token))
             {
-                if (credentials.TryGetValue(ACCESS_KEY, out Credential token))
-                {
-                    AccessToken = token.Value;
-                }
+                AccessToken = token.Value;
             }
         }
     }

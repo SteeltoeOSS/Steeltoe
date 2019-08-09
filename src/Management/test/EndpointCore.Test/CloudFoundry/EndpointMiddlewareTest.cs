@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -75,9 +75,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 Assert.NotNull(json);
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 var links = JsonConvert.DeserializeObject<Links>(json);
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
                 Assert.NotNull(links);
                 Assert.True(links._links.ContainsKey("self"));
                 Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);

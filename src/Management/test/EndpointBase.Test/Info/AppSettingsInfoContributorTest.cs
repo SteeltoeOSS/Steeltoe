@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 {
     public class AppSettingsInfoContributorTest : BaseTest
     {
-        private Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0",

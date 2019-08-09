@@ -14,14 +14,13 @@
 
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class ThreadDumpEndpoint_v2 : AbstractEndpoint<ThreadDumpResult>
     {
-        private ILogger<ThreadDumpEndpoint_v2> _logger;
-        private IThreadDumper _threadDumper;
+        private readonly ILogger<ThreadDumpEndpoint_v2> _logger;
+        private readonly IThreadDumper _threadDumper;
 
         public ThreadDumpEndpoint_v2(IThreadDumpOptions options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint_v2> logger = null)
             : base(options)

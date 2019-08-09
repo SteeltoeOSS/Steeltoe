@@ -34,30 +34,30 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
         public void Options_Found_In_Oracle_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package
-            var mySqlAssemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[0] };
+            var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "MySql.Data.EntityFrameworkCore" };
 
             // act
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
             // assert
             Assert.NotNull(type);
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = mySqlAssemblies;
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
         }
 
         [Fact]
         public void Options_Found_In_Pomelo_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package
-            var mySqlAssemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies[1] };
+            var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "Pomelo.EntityFrameworkCore.MySql" };
 
             // act
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
             // assert
             Assert.NotNull(type);
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = mySqlAssemblies;
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
         }
 
         [Fact]
@@ -82,6 +82,36 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
 
             // assert
             Assert.NotNull(type);
+        }
+
+        [Fact]
+        public void Options_Found_In_OracleEF_Assembly()
+        {
+            // arrange ~ narrow the assembly list to one specific nuget package
+            var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[0] };
+
+            // act
+            var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
+
+            // assert
+            Assert.NotNull(type);
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
+        }
+
+        [Fact(Skip = "Change NuGet reference to see this test pass")]
+        public void Options_Found_In_Devart_Assembly()
+        {
+            // arrange ~ narrow the assembly list to one specific nuget package
+            var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new string[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[1] };
+
+            // act
+            var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
+
+            // assert
+            Assert.NotNull(type);
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
         }
     }
 }

@@ -106,7 +106,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 LastAccess = currentTime;
                 Logger?.LogDebug("Cache stale, fetching config server health");
-                Cached = Provider.Load(false);
+                Cached = Provider.LoadInternal(false);
             }
 
             return Cached?.PropertySources;

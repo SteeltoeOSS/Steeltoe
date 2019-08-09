@@ -19,24 +19,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 {
     public class TimeTest
     {
+        private const int GRACE = 180;
+
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void WaitUntil_WaitsExpectedTime()
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             Time.WaitUntil(() => { return false; }, 1000);
             stopWatch.Stop();
-            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - 20, 1000 + 20);
+            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - GRACE, 1000 + GRACE);
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void Wait_WaitsExpectedTime()
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             Time.Wait(1000);
             stopWatch.Stop();
-            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - 20, 1000 + 20);
+            Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - GRACE, 1000 + GRACE);
         }
     }
 }

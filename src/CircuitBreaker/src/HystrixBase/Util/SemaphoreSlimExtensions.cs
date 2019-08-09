@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 return true;
             }
 
-            return sema.Wait(1);
+            return sema.Wait(0);
         }
     }
 }

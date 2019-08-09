@@ -90,7 +90,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
 
             public int Run(object cmd)
             {
-                var result = RunAsync().Result;
+                var result = RunAsync().GetAwaiter().GetResult();
                 return result;
             }
 

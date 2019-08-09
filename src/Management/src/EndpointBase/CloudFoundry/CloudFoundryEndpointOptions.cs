@@ -14,8 +14,6 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
@@ -46,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public string CloudFoundryApi { get; set; }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         public override bool DefaultSensitive => false;
     }
 }

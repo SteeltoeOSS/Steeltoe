@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public HeapDumpHandler(HeapDumpEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<HeapDumpHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {

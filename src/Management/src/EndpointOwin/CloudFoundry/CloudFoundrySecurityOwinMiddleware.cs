@@ -17,7 +17,6 @@ using Microsoft.Owin;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,10 +27,10 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
     public class CloudFoundrySecurityOwinMiddleware : OwinMiddleware
     {
-        private ILogger<CloudFoundrySecurityOwinMiddleware> _logger;
-        private ICloudFoundryOptions _options;
-        private SecurityBase _base;
-        private IManagementOptions _mgmtOptions;
+        private readonly ILogger<CloudFoundrySecurityOwinMiddleware> _logger;
+        private readonly ICloudFoundryOptions _options;
+        private readonly SecurityBase _base;
+        private readonly IManagementOptions _mgmtOptions;
 
         public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
             : base(next)
@@ -42,7 +41,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             _base = new SecurityBase(options, _mgmtOptions, logger);
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
             : base(next)
         {
@@ -53,9 +52,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         public override async Task Invoke(IOwinContext context)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             bool isEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && isEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
@@ -76,14 +75,14 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 // identify the application so we can confirm the user making the request has permission
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
                 // make sure we know where to get user permissions
                 if (string.IsNullOrEmpty(_options.CloudFoundryApi))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
@@ -91,15 +90,15 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
                 _logger?.LogTrace("Getting user permissions");
-                var sr = await GetPermissions(context);
+                var sr = await GetPermissions(context).ConfigureAwait(false);
                 if (sr.Code != HttpStatusCode.OK)
                 {
-                    await ReturnError(context, sr);
+                    await ReturnError(context, sr).ConfigureAwait(false);
                     return;
                 }
 
@@ -107,20 +106,20 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 var permissions = sr.Permissions;
                 if (!target.IsAccessAllowed(permissions))
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE));
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE)).ConfigureAwait(false);
                     return;
                 }
 
                 _logger?.LogTrace("Access granted!");
             }
 
-            await Next.Invoke(context);
+            await Next.Invoke(context).ConfigureAwait(false);
         }
 
         internal async Task<SecurityResult> GetPermissions(IOwinContext context)
         {
             string token = GetAccessToken(context.Request);
-            return await _base.GetPermissionsAsync(token);
+            return await _base.GetPermissionsAsync(token).ConfigureAwait(false);
         }
 
         internal string GetAccessToken(IOwinRequest request)
@@ -144,9 +143,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             // Remove in 3.0
             if (_mgmtOptions == null)
             {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 configEndpoints = _options.Global.EndpointOptions;
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
                 foreach (var ep in configEndpoints)
                 {
                     PathString epPath = new PathString(ep.Path);
@@ -183,7 +182,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             LogError(context, error);
             context.Response.Headers.SetValues("Content-Type", new string[] { "application/json;charset=UTF-8" });
             context.Response.StatusCode = (int)error.Code;
-            await context.Response.WriteAsync(_base.Serialize(error));
+            await context.Response.WriteAsync(_base.Serialize(error)).ConfigureAwait(false);
         }
 
         private void LogError(IOwinContext context, SecurityResult error)

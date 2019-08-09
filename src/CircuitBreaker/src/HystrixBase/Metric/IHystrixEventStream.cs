@@ -16,7 +16,7 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
-    public interface IHystrixEventStream<E>
+    public interface IHystrixEventStream<out E>
         where E : IHystrixEvent
     {
         IObservable<E> Observe();

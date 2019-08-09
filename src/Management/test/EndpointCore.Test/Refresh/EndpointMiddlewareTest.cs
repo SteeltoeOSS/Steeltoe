@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> AppSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             var mopts = TestHelpers.GetManagementOptions(opts);
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
+            configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
 
             var ep = new RefreshEndpoint(opts, config);
@@ -69,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -94,7 +94,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             var opts = new RefreshEndpointOptions();
             var mopts = TestHelpers.GetManagementOptions(opts);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
+            configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
             var ep = new RefreshEndpoint(opts, config);
             var middle = new RefreshEndpointMiddleware(null, ep, mopts);

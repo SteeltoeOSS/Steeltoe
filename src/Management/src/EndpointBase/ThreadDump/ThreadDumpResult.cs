@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump

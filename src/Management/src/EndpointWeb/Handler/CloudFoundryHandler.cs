@@ -22,16 +22,16 @@ using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class CloudFoundryHandler : ActuatorHandler<CloudFoundryEndpoint, Links, string>
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         public CloudFoundryHandler(CloudFoundryEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryHandler> logger = null)
            : base(endpoint, securityServices, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), null, true, logger)
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundryHandler(CloudFoundryEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<CloudFoundryHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {

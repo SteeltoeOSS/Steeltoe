@@ -14,14 +14,13 @@
 
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
     public class HttpTraceEndpoint : AbstractEndpoint<HttpTraceResult>
     {
-        private ILogger<HttpTraceEndpoint> _logger;
-        private IHttpTraceRepository _traceRepo;
+        private readonly ILogger<HttpTraceEndpoint> _logger;
+        private readonly IHttpTraceRepository _traceRepo;
 
         public HttpTraceEndpoint(ITraceOptions options, IHttpTraceRepository traceRepository, ILogger<HttpTraceEndpoint> logger = null)
             : base(options)

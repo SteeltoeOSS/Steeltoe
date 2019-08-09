@@ -131,7 +131,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("1024", configuration["vcap:application:limits:disk"]);
             Assert.Equal("my-app.10.244.0.34.xip.io", configuration["vcap:application:uris:0"]);
             Assert.Equal("my-app2.10.244.0.34.xip.io", configuration["vcap:application:uris:1"]);
-            Assert.Equal("my-app", configuration["spring:application:name"]);
             Assert.Equal("elephantsql-c6c60", configuration["vcap:services:elephantsql:0:name"]);
             Assert.Equal("mysendgrid", configuration["vcap:services:sendgrid:0:name"]);
 

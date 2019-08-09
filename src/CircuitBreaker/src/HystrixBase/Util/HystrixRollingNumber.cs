@@ -123,7 +123,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             Bucket lastBucket = GetCurrentBucket();
             if (lastBucket == null)
             {
-                return new long[0];
+                return Array.Empty<long>();
             }
 
             // get buckets as an array (which is a copy of the current state at this point in time)
@@ -465,7 +465,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     */
                 internal readonly AtomicReferenceArray<Bucket> _data;
                 internal readonly int _size;
-                internal readonly int _tail;
+                internal readonly int _listtail;
                 internal readonly int _head;
                 internal readonly BucketCircularArray _ca;
 
@@ -473,7 +473,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 {
                     this._ca = ca;
                     this._head = head;
-                    this._tail = tail;
+                    this._listtail = tail;
                     if (head == 0 && tail == 0)
                     {
                         _size = 0;
@@ -535,7 +535,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                      * In either case, a single Bucket will be returned as "last" and data loss should not occur and everything keeps in sync for head/tail.
                      * Also, it's fine to set it before incrementTail because nothing else should be referencing that index position until incrementTail occurs.
                      */
-                    _data[_tail] = b;
+                    _data[_listtail] = b;
                     return IncrementTail();
                 }
 
@@ -552,12 +552,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     if (_size == _ca.numBuckets)
                     {
                         // increment tail and head
-                        return new ListState(_ca, _data, (_head + 1) % _ca.dataLength, (_tail + 1) % _ca.dataLength);
+                        return new ListState(_ca, _data, (_head + 1) % _ca.dataLength, (_listtail + 1) % _ca.dataLength);
                     }
                     else
                     {
                         // increment only tail
-                        return new ListState(_ca, _data, _head, (_tail + 1) % _ca.dataLength);
+                        return new ListState(_ca, _data, _head, (_listtail + 1) % _ca.dataLength);
                     }
                 }
             }
@@ -605,18 +605,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                  * use compareAndSet to set in case multiple threads are attempting (which shouldn't be the case because since addLast will ONLY be called by a single thread at a time due to protection
                  * provided in <code>getCurrentBucket</code>)
                  */
+#pragma warning disable S3923 // All branches in a conditional structure should not have exactly the same implementation
                 if (state.CompareAndSet(currentState, newState))
                 {
                     // we succeeded
-                    return;
                 }
                 else
                 {
                     // we failed, someone else was adding or removing
                     // instead of trying again and risking multiple addLast concurrently (which shouldn't be the case)
                     // we'll just return and let the other thread 'win' and if the timing is off the next call to getCurrentBucket will fix things
-                    return;
                 }
+#pragma warning restore S3923 // All branches in a conditional structure should not have exactly the same implementation
             }
 
             public Bucket Last

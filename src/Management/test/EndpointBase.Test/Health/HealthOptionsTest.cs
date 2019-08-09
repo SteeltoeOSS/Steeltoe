@@ -18,7 +18,6 @@ using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Security.Claims;
 using Xunit;
 

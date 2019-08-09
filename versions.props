@@ -31,7 +31,7 @@
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
     <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
-    
+
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV6>6.10.7</MySqlV6>
@@ -49,19 +49,26 @@
     <CoverletVersion>2.6.0</CoverletVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
     <HttpExtensionsVersion>2.1.0</HttpExtensionsVersion>
+    <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
     <JsonNetVersion>11.0.2</JsonNetVersion>
     <MockHttpVersion>4.0.0</MockHttpVersion>
     <MoqVersion>4.8.2</MoqVersion>
     <OpenCensusVersion>0.1.0-alpha-42253</OpenCensusVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
-    <ReactiveVersion>3.1.1</ReactiveVersion>
+    <ReactiveVersion>4.1.5</ReactiveVersion>
     <StyleCopVersion>1.0.2</StyleCopVersion>
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.1</XunitStudioVersion>
 
+    <HealthChecksMySqlVersion>2.2.0</HealthChecksMySqlVersion>
+    <HealthChecksMongoDbVersion>2.2.2</HealthChecksMongoDbVersion>
+    <HealthChecksNpgSqlVersion>2.2.0</HealthChecksNpgSqlVersion>
+    <HealthChecksRabbitmqVersion>2.2.1</HealthChecksRabbitmqVersion>
+    <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>
+    <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
+
     <SourceLinkGitHubVersion>1.0.0-beta2-18618-05</SourceLinkGitHubVersion>
-    <SecurityCodeScanVersion>3.0.0</SecurityCodeScanVersion>
   </PropertyGroup>
 </Project>

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,7 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        public async void TestTimeoutRace()
+        public async Task TestTimeoutRace()
         {
             int num_trials = 10;
 
@@ -61,7 +62,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         if (s == null)
                         {
                             output.WriteLine("Received NULL!");
-                            throw new Exception("Received NULL");
+                            Assert.True(false, "Received NULL result");
                         }
                     }
 
@@ -70,13 +71,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         if (!hi.IsResponseTimedOut)
                         {
                             output.WriteLine("Timeout not found in executed command");
-                            throw new Exception("Timeout not found in executed command");
+                            Assert.True(false, "Timeout not found in executed command");
                         }
 
                         if (hi.IsResponseTimedOut && hi.ExecutionEvents.Count == 1)
                         {
                             output.WriteLine("Missing fallback status!");
-                            throw new Exception("Missing fallback status on timeout.");
+                            Assert.True(false, "Missing fallback status on timeout.");
                         }
                     }
                 }

@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Diagnostics;
 using System;
 
@@ -23,16 +24,16 @@ namespace Steeltoe.Management.Endpoint.Test
     {
         public BaseTest()
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            ManagementOptions._instance = null;
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
+            ManagementOptions.SetInstance(null);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public virtual void Dispose()
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            ManagementOptions._instance = null;
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
+            ManagementOptions.SetInstance(null);
+#pragma warning restore CS0618 // Type or member is obsolete
             DiagnosticsManager.Instance.Dispose();
         }
 
@@ -46,7 +47,21 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             return JsonConvert.SerializeObject(
                 value,
-                new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+                GetSerializerSettings());
+        }
+
+        public JsonSerializer GetSerializer()
+        {
+            return JsonSerializer.Create(GetSerializerSettings());
+        }
+
+        public JsonSerializerSettings GetSerializerSettings()
+        {
+            return new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+            };
         }
     }
 }

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -30,7 +29,7 @@ namespace Steeltoe.Management.EndpointOwin
         {
             if (_mgmtOptions == null)
             {
-                throw new Exception("Management Options not configured");
+                throw new InvalidOperationException("Management Options not configured");
             }
 
             return _mgmtOptions;
@@ -42,7 +41,7 @@ namespace Steeltoe.Management.EndpointOwin
             {
                 _mgmtOptions = new List<IManagementOptions>
                 {
-                     new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry),
+                     new CloudFoundryManagementOptions(config),
                      new ActuatorManagementOptions(config)
                 };
             }

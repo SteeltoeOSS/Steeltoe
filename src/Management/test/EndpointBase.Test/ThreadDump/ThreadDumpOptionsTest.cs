@@ -32,14 +32,14 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         }
 
         [Fact]
-        public void Contstructor_ThrowsIfConfigNull()
+        public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpointOptions(config));
         }
 
         [Fact]
-        public void Contstructor_BindsConfigurationCorrectly()
+        public void Constructor_BindsConfigurationCorrectly()
         {
             var appsettings = new Dictionary<string, string>()
             {
@@ -65,6 +65,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             Assert.True(opts.Enabled);
             Assert.Equal("dump", opts.Id);
             Assert.Equal("dump", opts.Path);
+
+            Assert.True(ep.Enabled);
         }
     }
 }

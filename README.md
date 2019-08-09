@@ -13,9 +13,9 @@
 
 ## Introduction
 
-Steeltoe is an open source project aimed at developing cloud native .NET microservice applications.  This project provides libraries that follow similar development patterns from well-known and proven microservice libraries like Netflix OSS, Spring Cloud and others. 
+Steeltoe is an open source project aimed at developing cloud native .NET microservice applications.  This project provides libraries that follow similar development patterns from well-known and proven microservice libraries like Netflix OSS, Spring Cloud and others.
 
-Steeltoe libraries are built on top of .NET APIs, following the .NET Standard 2.0 specification. Therefore, Steeltoe allows you work with .NET Core and .NET Framework 4.x. 
+Steeltoe libraries are built on top of .NET APIs, following the .NET Standard 2.0 specification. Therefore, Steeltoe allows you work with .NET Core and .NET Framework 4.x.
 
 Today, most Steeltoe components work in a stand-alone environment as well other PaaS implementations.
 
@@ -39,9 +39,10 @@ Steeltoe provides services that broadly fall into two categories:
 
 ## Project Repositories
 
-Steeltoe is fully open source and is found under the SteeltoeOSS organization on GitHub. 
+Steeltoe is fully open source and is found under the SteeltoeOSS organization on GitHub.
 
-#### Steeltoe Core Components: 
+### Steeltoe Core Components
+
 These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) repository:
 
 * Configuration - configuration providers which extend the reach of [.NET Configuration](https://github.com/aspnet/Configuration) services
@@ -60,7 +61,7 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 
 * Security - simplify integration of security services provided by the cloud platform
 
-#### Other Repositories:
+#### Other Repositories
 
 * [Dockerfiles](https://github.com/SteeltoeOSS/Dockerfiles) - Our collection of docker files we have on dockerhub
 
@@ -70,11 +71,12 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 
 * [Steeltoe-site](https://github.com/SteeltoeOSS/steeltoe-site) - All of the steeltoe.io website and documentation artifacts
 
-* [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling 
+* [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling
 
 View the [Steeltoe project list](project-docs/project-list.md) for brief descriptions of all projects, build statuses, and links to the source code.
 
 ## Roadmaps
+
 * [3.0.0](roadmaps/3.0.0.md) - In Progress
 * [2.3.0](roadmaps/2.3.0.md) - In Progress
 * [2.2.0](roadmaps/2.2.0.md) - Released
@@ -117,4 +119,3 @@ As a member of the [.NET Foundation](https://dotnetfoundation.org/), the Steelto
 ## Licenses
 
 The Steeltoe project uses the [Apache License Version 2.0](LICENSE) license for all of its code.  See the [contribution licensing](project-docs/contributing-license.md) document for more details.
-

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Tracing;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -94,7 +93,7 @@ namespace Steeltoe.Management.Tracing.Test
             TracingOptions opts = new TracingOptions("default", config);
             Assert.Equal("foobar", opts.Name);
 
-            // Managment name overrides spring name
+            // Management name overrides spring name
             appsettings = new Dictionary<string, string>()
             {
                 ["spring:application:name"] = "foobar",

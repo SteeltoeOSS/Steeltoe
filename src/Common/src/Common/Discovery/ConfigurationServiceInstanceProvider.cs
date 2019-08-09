@@ -30,11 +30,16 @@ namespace Steeltoe.Common.Discovery
 
         public string Description => "A service instance provider that returns services from app configuration";
 
-        public IList<string> Services => _serviceInstances.CurrentValue.Select(si => si.ServiceId).Distinct().ToList();
+        public IList<string> Services => GetServices();
 
         public IList<IServiceInstance> GetInstances(string serviceId)
         {
             return new List<IServiceInstance>(_serviceInstances.CurrentValue.Where(si => si.ServiceId.Equals(serviceId, StringComparison.InvariantCultureIgnoreCase)));
+        }
+
+        internal IList<string> GetServices()
+        {
+            return _serviceInstances.CurrentValue.Select(si => si.ServiceId).Distinct().ToList();
         }
     }
 }

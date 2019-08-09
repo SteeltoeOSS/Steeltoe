@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Security;
 using System;
@@ -38,9 +39,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public readonly string AUTHORIZATION_HEADER = "Authorization";
         public readonly string BEARER = "bearer";
         public readonly string READ_SENSITIVE_DATA = "read_sensitive_data";
-        private ICloudFoundryOptions _options;
-        private IManagementOptions _mgmtOptions;
-        private ILogger _logger;
+        private readonly ICloudFoundryOptions _options;
+        private readonly IManagementOptions _mgmtOptions;
+        private readonly ILogger _logger;
 
         public SecurityBase(ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger logger = null)
         {
@@ -49,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger = logger;
         }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         public SecurityBase(ICloudFoundryOptions options, ILogger logger = null)
         {
             _options = options;
@@ -59,7 +60,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public bool IsCloudFoundryRequest(string requestPath)
         {
             var contextPath = _mgmtOptions == null ? _options.Path : _mgmtOptions.Path;
-            return requestPath.StartsWith(contextPath);
+            return requestPath.StartsWith(contextPath, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public string Serialize(SecurityResult error)
@@ -95,7 +96,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 out RemoteCertificateValidationCallback prevValidator);
             try
             {
-                _logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
+                _logger?.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
 
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
@@ -104,7 +105,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     out prevValidator);
                 using (var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT))
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                     {
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
@@ -118,7 +119,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                                 : new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
                         }
 
-                        return new SecurityResult(await GetPermissions(response));
+                        return new SecurityResult(await GetPermissions(response).ConfigureAwait(false));
                     }
                 }
             }
@@ -140,9 +141,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
             try
             {
-                json = await response.Content.ReadAsStringAsync();
+                json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                _logger?.LogDebug("GetPermisions returned json: {0}", json);
+                _logger?.LogDebug("GetPermisions returned json: {0}", SecurityUtilities.SanitizeInput(json));
 
                 var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
@@ -154,7 +155,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
             catch (Exception e)
             {
-                _logger?.LogError("Exception {0} extracting permissions from {1}", e, json);
+                _logger?.LogError("Exception {0} extracting permissions from {1}", e, SecurityUtilities.SanitizeInput(json));
+                throw;
             }
 
             _logger?.LogDebug("GetPermisions returning: {0}", permissions);

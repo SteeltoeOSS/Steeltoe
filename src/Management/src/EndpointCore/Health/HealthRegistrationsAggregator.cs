@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Health
@@ -34,9 +34,10 @@ namespace Steeltoe.Management.Endpoint.Health
                 return result;
             }
 
+            var contributorIds = contributors.Select(x => x.Id);
             foreach (var registration in healthServiceOptions.CurrentValue.Registrations)
             {
-                HealthCheckResult h = registration.HealthCheck(serviceProvider).Result;
+                HealthCheckResult h = registration.HealthCheck(serviceProvider).GetAwaiter().GetResult();
 
                 if (h.Status > result.Status)
                 {
@@ -45,6 +46,12 @@ namespace Steeltoe.Management.Endpoint.Health
 
                 var key = GetKey(result, registration.Name);
                 result.Details.Add(key, h);
+                var possibleDuplicate = contributorIds.FirstOrDefault(id => id.IndexOf(registration.Name, StringComparison.OrdinalIgnoreCase) >= 0);
+                if (!string.IsNullOrEmpty(possibleDuplicate))
+                {
+                    var logger = serviceProvider.GetService(typeof(ILogger<HealthRegistrationsAggregator>)) as ILogger;
+                    logger?.LogDebug($"Possible duplicate HealthCheck registation {registration.Name}, {possibleDuplicate} ");
+                }
             }
 
             return result;

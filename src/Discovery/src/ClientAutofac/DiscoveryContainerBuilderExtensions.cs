@@ -276,7 +276,7 @@ namespace Steeltoe.Discovery.Client
             {
                 if (eurekaInfos.Count != 1)
                 {
-                    throw new ConnectorException(string.Format("Multiple discovery service types bound to application."));
+                    throw new ConnectorException("Multiple discovery service types bound to application.");
                 }
 
                 return eurekaInfos[0];
@@ -287,7 +287,7 @@ namespace Steeltoe.Discovery.Client
 
         private static bool IsRecognizedDiscoveryService(IServiceInfo info)
         {
-            return (info as EurekaServiceInfo) != null;
+            return info is EurekaServiceInfo;
         }
         #endregion ServiceInfo
 

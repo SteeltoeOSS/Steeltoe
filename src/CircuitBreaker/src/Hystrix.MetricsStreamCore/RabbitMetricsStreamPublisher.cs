@@ -98,8 +98,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             }
         }
 
-        protected override void Dispose()
+        protected override void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
             if (Channel != null)
             {
                 Channel.Dispose();

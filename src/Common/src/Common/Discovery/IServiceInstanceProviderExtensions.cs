@@ -29,7 +29,7 @@ namespace Steeltoe.Common.Discovery
             if (distributedCache != null)
             {
                 // check the cache for existing service instances
-                var instanceData = await distributedCache.GetAsync(serviceInstancesKeyPrefix + serviceId);
+                var instanceData = await distributedCache.GetAsync(serviceInstancesKeyPrefix + serviceId).ConfigureAwait(false);
                 if (instanceData != null && instanceData.Length > 0)
                 {
                     return DeserializeFromCache<List<SerializableIServiceInstance>>(instanceData).ToList<IServiceInstance>();
@@ -40,7 +40,7 @@ namespace Steeltoe.Common.Discovery
             var instances = serviceInstanceProvider.GetInstances(serviceId);
             if (distributedCache != null)
             {
-                await distributedCache.SetAsync(serviceInstancesKeyPrefix + serviceId, SerializeForCache(MapToSerializable(instances)));
+                await distributedCache.SetAsync(serviceInstancesKeyPrefix + serviceId, SerializeForCache(MapToSerializable(instances))).ConfigureAwait(false);
             }
 
             return instances;

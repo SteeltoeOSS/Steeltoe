@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
+using Steeltoe.Common;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
@@ -35,6 +36,11 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             if (string.IsNullOrEmpty(Path))
             {
                 Path = DEFAULT_ACTUATOR_PATH;
+            }
+
+            if (Platform.IsCloudFoundry && Path.StartsWith("/cloudfoundryapplication", StringComparison.OrdinalIgnoreCase))
+            {
+                Path = DEFAULT_ACTUATOR_PATH; // Override path set to /cloudfoundryapplication since it will be hidden by the cloudfoundry context actuators
             }
 
             Exposure = new Exposure(config);

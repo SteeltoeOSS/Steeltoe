@@ -17,14 +17,13 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.Console.Internal;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace Steeltoe.Extensions.Logging
 {
     public class DynamicConsoleLogger : ILogger
     {
-        private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
-        private ConsoleLogger _delegate;
+        private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
+        private readonly ConsoleLogger _delegate;
 
         internal DynamicConsoleLogger(ConsoleLogger consoleLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         {

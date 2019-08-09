@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         public void Driver_Found_In_MySqlConnector_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package
-            var assemblies = MySqlTypeLocator.Assemblies;
+            var types = MySqlTypeLocator.Assemblies;
             MySqlTypeLocator.Assemblies = new string[] { "MySqlConnector" };
 
             // act
@@ -48,7 +48,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 
             // assert
             Assert.NotNull(type);
-            MySqlTypeLocator.Assemblies = assemblies;
+            MySqlTypeLocator.Assemblies = types;
         }
     }
 }
