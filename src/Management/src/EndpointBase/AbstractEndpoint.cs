@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -32,7 +29,7 @@ namespace Steeltoe.Management.Endpoint
 
         public virtual bool Enabled => options.Enabled.Value;
 
-        [Obsolete]
+        [Obsolete("Use hypermedia exposure settings instead.")]
         public virtual bool Sensitive => options.Sensitive.Value;
 
         public virtual IEndpointOptions Options => options;

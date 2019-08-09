@@ -237,9 +237,9 @@ namespace Microsoft.Diagnostics.Runtime
 
             while (taskList.Count > 0)
             {
-                var task = Task.WhenAny(taskList).Result;
+                var task = Task.WhenAny(taskList).GetAwaiter().GetResult();
                 if (task.Result.Item1 != null)
-                    yield return task.Result;
+                    yield return task.GetAwaiter().GetResult();
 
                 bool removed = taskList.Remove(task);
                 Debug.Assert(removed);

@@ -34,14 +34,11 @@ namespace Steeltoe.Discovery.Eureka
         /// <returns>service instances</returns>
         public static IList<IServiceInstance> GetInstances(IConfiguration configuration, string serviceId, ILoggerFactory logFactory = null)
         {
-            return System.Threading.Tasks.Task.Run(() =>
-            {
-                EurekaClientOptions config = ConfigureClientOptions(configuration);
-                LookupClient client = GetLookupClient(config, logFactory);
-                var result = client.GetInstances(serviceId);
-                client.ShutdownAsync().Wait();
-                return result;
-            }).Result;
+            EurekaClientOptions config = ConfigureClientOptions(configuration);
+            LookupClient client = GetLookupClient(config, logFactory);
+            var result = client.GetInstancesInternal(serviceId);
+            client.ShutdownAsync().GetAwaiter().GetResult();
+            return result;
         }
 
         /// <summary>
@@ -53,14 +50,11 @@ namespace Steeltoe.Discovery.Eureka
         /// <returns>all registered services</returns>
         public static IList<string> GetServices(IConfiguration configuration, ILoggerFactory logFactory = null)
         {
-            return System.Threading.Tasks.Task.Run(() =>
-            {
-                EurekaClientOptions config = ConfigureClientOptions(configuration);
-                var client = GetLookupClient(config, logFactory);
-                var result = client.GetServices();
-                client.ShutdownAsync().Wait();
-                return result;
-            }).Result;
+            EurekaClientOptions config = ConfigureClientOptions(configuration);
+            var client = GetLookupClient(config, logFactory);
+            var result = client.GetServicesInternal();
+            client.ShutdownAsync().GetAwaiter().GetResult();
+            return result;
         }
 
         internal static LookupClient GetLookupClient(EurekaClientOptions config, ILoggerFactory logFactory)
@@ -91,7 +85,7 @@ namespace Steeltoe.Discovery.Eureka
                 }
             }
 
-            public IList<IServiceInstance> GetInstances(string serviceId)
+            public IList<IServiceInstance> GetInstancesInternal(string serviceId)
             {
                 IList<InstanceInfo> infos = GetInstancesByVipAddress(serviceId, false);
                 List<IServiceInstance> instances = new List<IServiceInstance>();
@@ -104,7 +98,7 @@ namespace Steeltoe.Discovery.Eureka
                 return instances;
             }
 
-            public IList<string> GetServices()
+            public IList<string> GetServicesInternal()
             {
                 Applications applications = Applications;
                 if (applications == null)

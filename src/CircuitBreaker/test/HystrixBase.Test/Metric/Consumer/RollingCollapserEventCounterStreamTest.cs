@@ -58,11 +58,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
         }
 
-        private static LatchedObserver GetSubscriber(ITestOutputHelper output, CountdownEvent latch)
-        {
-            return new LatchedObserver(output, latch);
-        }
-
         public RollingCollapserEventCounterStreamTest(ITestOutputHelper output)
             : base()
         {
@@ -85,17 +80,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
             // no writes
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
@@ -112,28 +100,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
             for (int i = 0; i < 3; i++)
             {
                 Collapser.From(output, key, i).Observe();
             }
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[CollapserEventTypeHelper.Values.Count];
             expected[(int)CollapserEventType.BATCH_EXECUTED] = 1;
             expected[(int)CollapserEventType.ADDED_TO_BATCH] = 3;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         [Fact]
@@ -144,7 +124,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
             for (int i = 0; i < 3; i++)
             {
@@ -153,22 +133,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 Collapser.From(output, key, i).Observe(); // same arg - should get a response from cache
             }
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[CollapserEventTypeHelper.Values.Count];
             expected[(int)CollapserEventType.BATCH_EXECUTED] = 1;
             expected[(int)CollapserEventType.ADDED_TO_BATCH] = 3;
             expected[(int)CollapserEventType.RESPONSE_FROM_CACHE] = 6;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         // by doing a take(30), we expect all values to return to 0 as they age out of rolling window
@@ -180,7 +152,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(30).Subscribe(GetSubscriber(output, latch));
+            stream.Observe().Take(30).Subscribe(new LatchedObserver(output, latch));
 
             for (int i = 0; i < 3; i++)
             {
@@ -189,22 +161,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 Collapser.From(output, key, i).Observe(); // same arg - should get a response from cache
             }
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[CollapserEventTypeHelper.Values.Count];
             expected[(int)CollapserEventType.BATCH_EXECUTED] = 0;
             expected[(int)CollapserEventType.ADDED_TO_BATCH] = 0;
             expected[(int)CollapserEventType.RESPONSE_FROM_CACHE] = 0;
-            Assert.Equal<long[]>(expected, stream.Latest);
+            Assert.Equal(expected, stream.Latest);
         }
 
         protected static string CollapserEventsToStr(long[] eventCounts)

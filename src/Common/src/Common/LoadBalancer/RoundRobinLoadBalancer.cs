@@ -45,7 +45,7 @@ namespace Steeltoe.Common.LoadBalancer
             string cacheKey = IndexKeyPrefix + serviceName;
 
             // get instances for this service
-            var availableServiceInstances = await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, _distributedCache);
+            var availableServiceInstances = await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, _distributedCache).ConfigureAwait(false);
             if (!availableServiceInstances.Any())
             {
                 _logger?.LogError("No service instances available for {serviceName}", serviceName);
@@ -54,14 +54,14 @@ namespace Steeltoe.Common.LoadBalancer
 
             // get next instance, or wrap back to first instance if we reach the end of the list
             IServiceInstance serviceInstance = null;
-            var nextInstanceIndex = await GetOrInitNextIndex(cacheKey, 0);
+            var nextInstanceIndex = await GetOrInitNextIndex(cacheKey, 0).ConfigureAwait(false);
             if (nextInstanceIndex >= availableServiceInstances.Count)
             {
                 nextInstanceIndex = 0;
             }
 
             serviceInstance = availableServiceInstances[nextInstanceIndex];
-            await SetNextIndex(cacheKey, nextInstanceIndex);
+            await SetNextIndex(cacheKey, nextInstanceIndex).ConfigureAwait(false);
             return new Uri(serviceInstance.Uri, request.PathAndQuery);
         }
 
@@ -75,7 +75,7 @@ namespace Steeltoe.Common.LoadBalancer
             int index = initValue;
             if (_distributedCache != null)
             {
-                var cacheEntry = await _distributedCache.GetAsync(cacheKey);
+                var cacheEntry = await _distributedCache.GetAsync(cacheKey).ConfigureAwait(false);
                 if (cacheEntry != null && cacheEntry.Length > 0)
                 {
                     index = BitConverter.ToInt16(cacheEntry, 0);
@@ -93,7 +93,7 @@ namespace Steeltoe.Common.LoadBalancer
         {
             if (_distributedCache != null)
             {
-                await _distributedCache.SetAsync(cacheKey, BitConverter.GetBytes(currentValue + 1));
+                await _distributedCache.SetAsync(cacheKey, BitConverter.GetBytes(currentValue + 1)).ConfigureAwait(false);
             }
             else
             {

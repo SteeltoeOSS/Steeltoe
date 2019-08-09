@@ -21,8 +21,8 @@ namespace Steeltoe.Management.Tracing
 {
     public class TracingLogProcessor : IDynamicMessageProcessor
     {
-        private ITracing tracing;
-        private ITracingOptions options;
+        private readonly ITracing tracing;
+        private readonly ITracingOptions options;
 
         public TracingLogProcessor(ITracingOptions options, ITracing tracing)
         {
@@ -81,7 +81,7 @@ namespace Steeltoe.Management.Tracing
         protected internal Span GetCurrentSpan()
         {
             var span = tracing.Tracer?.CurrentSpan;
-            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
+            if (span == null || span.Context == SpanContext.Invalid)
             {
                 return null;
             }

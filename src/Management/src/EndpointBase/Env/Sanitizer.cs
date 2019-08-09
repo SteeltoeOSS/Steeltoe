@@ -21,8 +21,8 @@ namespace Steeltoe.Management.Endpoint.Env
     public class Sanitizer
     {
         private readonly string[] regex_parts = new string[] { "*", "$", "^", "+" };
-        private string[] _keysToSanitize;
-        private List<Regex> _matchers = new List<Regex>();
+        private readonly string[] _keysToSanitize;
+        private readonly List<Regex> _matchers = new List<Regex>();
 
         public Sanitizer(string[] keysToSanitize)
         {

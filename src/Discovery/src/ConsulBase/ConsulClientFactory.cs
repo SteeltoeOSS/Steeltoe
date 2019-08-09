@@ -22,7 +22,7 @@ namespace Steeltoe.Consul.Client
     /// <summary>
     /// A factory to use in configuring and creating a Consul client
     /// </summary>
-    public class ConsulClientFactory
+    public static class ConsulClientFactory
     {
         /// <summary>
         /// Create a Consul client using the provided configuration options

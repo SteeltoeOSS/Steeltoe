@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     internal class TestSession : ISession
     {
-        private Dictionary<string, byte[]> _store
+        private readonly Dictionary<string, byte[]> _store
                 = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
 
         public bool IsAvailable { get; } = true;

@@ -52,7 +52,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 switch (eventType)
                 {
                     case HystrixEventType.EXCEPTION_THROWN:
-                        foreach (HystrixEventType exceptionEventType in HystrixEventTypeHelper.EXCEPTION_PRODUCING_EVENT_TYPES)
+                        foreach (HystrixEventType exceptionEventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
                         {
                             var ordinal1 = (int)eventType;
                             var ordinal2 = (int)exceptionEventType;

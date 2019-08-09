@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Testing;
 using Newtonsoft.Json;
-using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Net;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {
@@ -54,9 +51,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 Assert.NotNull(json);
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 var links = JsonConvert.DeserializeObject<Links>(json);
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
                 Assert.NotNull(links);
                 Assert.True(links._links.ContainsKey("self"), "Self is one of the available links");
                 Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);

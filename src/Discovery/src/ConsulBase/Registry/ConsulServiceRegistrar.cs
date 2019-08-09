@@ -127,17 +127,6 @@ namespace Steeltoe.Discovery.Consul.Registry
             _registry.Deregister(Registration);
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            if (Interlocked.CompareExchange(ref _running, NOT_RUNNING, RUNNING) == RUNNING)
-            {
-                Deregister();
-            }
-
-            _registry.Dispose();
-        }
-
         private void DoWithRetry(Action retryable, ConsulRetryOptions options)
         {
             if (retryable == null)
@@ -175,6 +164,39 @@ namespace Steeltoe.Discovery.Consul.Registry
                 }
             }
             while (true);
+        }
+
+        private bool disposed = false;
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Cleanup
+                    if (Interlocked.CompareExchange(ref _running, NOT_RUNNING, RUNNING) == RUNNING)
+                    {
+                        Deregister();
+                    }
+
+                    _registry.Dispose();
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~ConsulServiceRegistrar()
+        {
+            Dispose(false);
         }
     }
 }

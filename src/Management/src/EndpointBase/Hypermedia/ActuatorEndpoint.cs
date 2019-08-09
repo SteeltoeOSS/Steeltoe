@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,12 +22,12 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
     /// <summary>
     /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators
     /// </summary>
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class ActuatorEndpoint : AbstractEndpoint<Links, string>
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
-        private ILogger<ActuatorEndpoint> _logger;
-        private IManagementOptions _mgmtOption;
+        private readonly ILogger<ActuatorEndpoint> _logger;
+        private readonly IManagementOptions _mgmtOption;
 
         public ActuatorEndpoint(IActuatorHypermediaOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
         : base(options)
@@ -39,9 +38,9 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
 
         protected new IActuatorHypermediaOptions Options => options as IActuatorHypermediaOptions;
 
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
         public override Links Invoke(string baseUrl)
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             HypermediaService service = new HypermediaService(_mgmtOption, options, _logger);
             return service.Invoke(baseUrl);

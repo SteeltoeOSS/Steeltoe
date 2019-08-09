@@ -37,6 +37,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         }
 
         [Fact]
+        [Trait("Category", "Integration")]
         public void SpringCloudConfigServer_ReturnsExpectedDefaultData()
         {
             // Arrange
@@ -76,6 +77,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         }
 
         [Fact]
+        [Trait("Category", "Integration")]
         public async void SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
         {
             // These settings match the default java config server
@@ -124,6 +126,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         }
 
         [Fact]
+        [Trait("Category", "Integration")]
         public async void SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
         {
             // Arrange
@@ -222,6 +225,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         }
 
         [Fact(Skip = "Requires matching PCF environment with SCCS provisioned")]
+        [Trait("Category", "Integration")]
         public async void SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
         {
             // Arrange
@@ -363,6 +367,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         //      serviceUrl:
         //          defaultZone: http://localhost:8761/eureka/
         [Fact]
+        [Trait("Category", "Integration")]
         public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
         {
             // Arrange
@@ -410,6 +415,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         }
 
         [Fact]
+        [Trait("Category", "Integration")]
         public async void SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
         {
             // These settings match the default java config server

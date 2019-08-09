@@ -85,15 +85,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 if (applicationData != null)
                 {
                     LoadData("vcap:application", applicationData.GetChildren());
-
-                    Data.TryGetValue("vcap:application:name", out string vcapAppName);
-                    Data.TryGetValue("spring:application:name", out string springName);
-                    if (!string.IsNullOrEmpty(vcapAppName) &&
-                        string.IsNullOrEmpty(springName))
-                    {
-                        Data["spring:application:name"] = vcapAppName;
-                    }
-
                     AddDiegoVariables();
                 }
             }
@@ -115,7 +106,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections)
         {
-            if (sections == null || sections.Count() == 0)
+            if (sections == null || !sections.Any())
             {
                 return;
             }

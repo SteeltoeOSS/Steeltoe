@@ -25,9 +25,9 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public class HealthEndpoint : AbstractEndpoint<HealthCheckResult, ISecurityContext>
     {
-        private IHealthAggregator _aggregator;
-        private IList<IHealthContributor> _contributors;
-        private ILogger<HealthEndpoint> _logger;
+        private readonly IHealthAggregator _aggregator;
+        private readonly IList<IHealthContributor> _contributors;
+        private readonly ILogger<HealthEndpoint> _logger;
 
         public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
            : base(options)

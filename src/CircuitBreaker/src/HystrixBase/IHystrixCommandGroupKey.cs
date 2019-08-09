@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Util;
+using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
@@ -20,8 +21,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
     }
 
-    public class HystrixCommandGroupKeyDefault : HystrixKeyDefault<HystrixCommandGroupKeyDefault>, IHystrixCommandGroupKey
+    // public class HystrixCommandGroupKeyDefault : HystrixKeyDefault<HystrixCommandGroupKeyDefault>, IHystrixCommandGroupKey
+    public class HystrixCommandGroupKeyDefault : HystrixKeyDefault, IHystrixCommandGroupKey
     {
+        private static readonly ConcurrentDictionary<string, HystrixCommandGroupKeyDefault> Intern = new ConcurrentDictionary<string, HystrixCommandGroupKeyDefault>();
+
         internal HystrixCommandGroupKeyDefault(string name)
             : base(name)
         {
@@ -34,7 +38,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static int GroupCount
         {
-            get { return Count; }
+            get { return Intern.Count; }
         }
     }
 }

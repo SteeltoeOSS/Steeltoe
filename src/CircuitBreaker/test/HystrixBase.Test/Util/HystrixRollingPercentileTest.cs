@@ -427,6 +427,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             {
                 TestThreadSafety();
             }
+
+            Assert.True(true, "Nothing blew up");
         }
 
         internal PercentileSnapshot GetPercentileForValues(params int[] values)

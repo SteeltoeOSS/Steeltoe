@@ -17,7 +17,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using Xunit.Abstractions;
@@ -157,7 +156,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                         return new Command(setter, HystrixEventType.FAILURE, latency, uniqueArg, desiredFallbackEventType, fallbackLatency);
                     case HystrixEventType.TIMEOUT:
                         uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
-                        return new Command(setter, HystrixEventType.SUCCESS, 1000, uniqueArg, desiredFallbackEventType, fallbackLatency);
+                        return new Command(setter, HystrixEventType.SUCCESS, 1000, uniqueArg, desiredFallbackEventType, fallbackLatency); // use 1000 so that it always times out (at 600ms)
                     case HystrixEventType.BAD_REQUEST:
                         uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
                         return new Command(setter, HystrixEventType.BAD_REQUEST, latency, uniqueArg, desiredFallbackEventType, 0);

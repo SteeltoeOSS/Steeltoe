@@ -182,6 +182,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         public virtual string Label { get; set; }
 
+#pragma warning disable S4275 // Getters and setters should access the expected fields
         /// <summary>
         /// Gets or sets the username used when accessing the Config Server
         /// </summary>
@@ -199,6 +200,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             get { return GetPassword(); }
             set { this.password = value; }
         }
+#pragma warning restore S4275 // Getters and setters should access the expected fields
 
         /// <summary>
         /// Gets or sets a value indicating whether enables/Disables failfast behavior

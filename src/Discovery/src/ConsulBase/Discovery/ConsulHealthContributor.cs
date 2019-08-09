@@ -81,8 +81,8 @@ namespace Steeltoe.Discovery.Consul.Discovery
         public HealthCheckResult Health()
         {
             var result = new HealthCheckResult();
-            var leaderStatus = GetLeaderStatusAsync().Result;
-            var services = GetCatalogServicesAsync().Result;
+            var leaderStatus = GetLeaderStatusAsync().GetAwaiter().GetResult();
+            var services = GetCatalogServicesAsync().GetAwaiter().GetResult();
             result.Status = HealthStatus.UP;
             result.Details.Add("leader", leaderStatus);
             result.Details.Add("services", services);

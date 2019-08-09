@@ -32,8 +32,10 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
         public ConsulDiscoveryOptions()
         {
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
             _hostName = ResolveHostName();
             _hostAddress = ResolveHostAddress(_hostName);
+#pragma warning restore S1699 // Constructors should only call non-overridable methods
         }
 
         /// <summary>

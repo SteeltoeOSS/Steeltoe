@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{976463
 		..\..\nuget.config = ..\..\nuget.config
 		..\..\sharedproject.props = ..\..\sharedproject.props
 		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\Steeltoe.ruleset = ..\..\Steeltoe.ruleset
 		..\..\stylecop.json = ..\..\stylecop.json
 		..\..\targetframework.props = ..\..\targetframework.props
 		..\..\versions.props = ..\..\versions.props
@@ -66,9 +67,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensusBase", "src\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj", "{2AB1AA07-0B80-4929-A35B-473C174DE67F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundryTasks", "src\CloudFoundryTasks\Steeltoe.Management.CloudFoundryTasks.csproj", "{7FEBDFA0-170C-454F-B42E-360FA0A90DD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TaskCore", "src\TaskCore\Steeltoe.Management.TaskCore.csproj", "{7FEBDFA0-170C-454F-B42E-360FA0A90DD7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Managment.CloudFoundryTasks.Test", "test\CloudFoundryTasks.Test\Steeltoe.Managment.CloudFoundryTasks.Test.csproj", "{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TaskCore.Test", "test\TaskCore.Test\Steeltoe.Management.TaskCore.Test.csproj", "{BED3B6AA-7EAD-42BC-89C7-8DB5BA395909}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{402D8CB5-C3C3-47E0-BEB3-63D0975E5109}"
 EndProject
@@ -79,6 +80,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{8E13D7F7-FF49-41C8-A458-CF8795C93718}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{E18EE9BB-7195-4E20-9733-064319D2F60C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{E1379BFB-ABE6-4265-B493-397C0A05B0D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -196,6 +199,10 @@ Global
 		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E18EE9BB-7195-4E20-9733-064319D2F60C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,6 +236,7 @@ Global
 		{34EAED24-C851-4F13-819D-EAE88E24B98F} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 		{8E13D7F7-FF49-41C8-A458-CF8795C93718} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 		{E18EE9BB-7195-4E20-9733-064319D2F60C} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
+		{E1379BFB-ABE6-4265-B493-397C0A05B0D0} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7949396C-4BFF-4834-9BC2-F3A345E9CCE5}

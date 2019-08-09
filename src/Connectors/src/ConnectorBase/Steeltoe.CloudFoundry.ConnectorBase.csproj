@@ -6,6 +6,7 @@
     <AssemblyName>Steeltoe.CloudFoundry.ConnectorBase</AssemblyName>
     <PackageId>Steeltoe.CloudFoundry.ConnectorBase</PackageId>
     <PackageTags>CloudFoundry;Connectors</PackageTags>
+    <RootNamespace>Steeltoe.CloudFoundry.Connector</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 

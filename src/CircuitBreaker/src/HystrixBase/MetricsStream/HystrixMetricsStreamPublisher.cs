@@ -24,7 +24,7 @@ using System.Reactive.Observable.Aliases;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 {
-    public class HystrixMetricsStreamPublisher
+    public class HystrixMetricsStreamPublisher : IDisposable
     {
         protected const string SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE = "spring.cloud.hystrix.stream";
 
@@ -50,7 +50,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             StartMetricsPublishing();
         }
 
-        public virtual void StartMetricsPublishing()
+        public void StartMetricsPublishing()
         {
             logger?.LogInformation("Hystrix Metrics starting");
 
@@ -107,6 +107,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                 });
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
         protected virtual bool EnsureConnection()
         {
             return true;
@@ -121,10 +131,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
         }
 
         protected virtual void OnComplete()
-        {
-        }
-
-        protected virtual void Dispose()
         {
         }
     }

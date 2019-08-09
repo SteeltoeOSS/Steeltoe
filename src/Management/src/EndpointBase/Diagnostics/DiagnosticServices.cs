@@ -22,8 +22,8 @@ namespace Steeltoe.Management.Endpoint.Diagnostics
 {
     public class DiagnosticServices : IHostedService
     {
-        private IDiagnosticsManager observerManager;
-        private ILogger<DiagnosticServices> logger;
+        private readonly IDiagnosticsManager observerManager;
+        private readonly ILogger<DiagnosticServices> logger;
 
         public DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger = null)
         {

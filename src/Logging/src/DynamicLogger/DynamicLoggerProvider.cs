@@ -25,7 +25,6 @@ namespace Steeltoe.Extensions.Logging
     [ProviderAlias("Dynamic")]
     public class DynamicLoggerProvider : IDynamicLoggerProvider
     {
-        private static readonly Func<string, LogLevel, bool> _trueFilter = (cat, level) => true;
         private static readonly Func<string, LogLevel, bool> _falseFilter = (cat, level) => false;
 
         private readonly ConcurrentDictionary<string, LogLevel> _originalLevels = new ConcurrentDictionary<string, LogLevel>();
@@ -36,6 +35,8 @@ namespace Steeltoe.Extensions.Logging
         private Func<string, LogLevel, bool> _filter = _falseFilter;
         private ConcurrentDictionary<string, DynamicILogger> _loggers = new ConcurrentDictionary<string, DynamicILogger>();
         private ConsoleLoggerProvider _delegate;
+
+        private bool disposed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicLoggerProvider"/> class.
@@ -92,12 +93,9 @@ namespace Steeltoe.Extensions.Logging
                         LogLevel? configured = GetConfiguredLevel(name);
                         LogLevel effective = GetEffectiveLevel(name);
                         var config = new LoggerConfiguration(name, configured, effective);
-                        if (results.ContainsKey(name))
+                        if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
-                            if (!results[name].Equals(config))
-                            {
-                                throw new InvalidProgramException("Shouldn't happen");
-                            }
+                            throw new InvalidProgramException("Shouldn't happen");
                         }
 
                         results[name] = config;
@@ -163,6 +161,34 @@ namespace Steeltoe.Extensions.Logging
                     l.Value.Filter = filter ?? GetFilter(category);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Cleanup
+                    _delegate?.Dispose();
+                    _delegate = null;
+                    _settings = null;
+                    _loggers = null;
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~DynamicLoggerProvider()
+        {
+            Dispose(false);
         }
 
         private void SetFiltersFromOptions()

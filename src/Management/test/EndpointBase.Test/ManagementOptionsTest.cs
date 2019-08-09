@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace Steeltoe.Management.Endpoint.Test
 {
     public class ManagementOptionsTest : BaseTest
@@ -58,4 +58,4 @@ namespace Steeltoe.Management.Endpoint.Test
     }
 }
 
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete

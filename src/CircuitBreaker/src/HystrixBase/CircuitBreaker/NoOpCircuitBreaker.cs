@@ -12,17 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 {
     public class NoOpCircuitBreaker : IHystrixCircuitBreaker
     {
         public void MarkSuccess()
         {
+            // Don't do anything here (no-operation)
         }
 
         public bool AllowRequest

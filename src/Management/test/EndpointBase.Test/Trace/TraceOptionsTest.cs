@@ -43,14 +43,14 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         }
 
         [Fact]
-        public void Contstructor_ThrowsIfConfigNull()
+        public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new TraceEndpointOptions(config));
         }
 
         [Fact]
-        public void Contstructor_BindsConfigurationCorrectly()
+        public void Constructor_BindsConfigurationCorrectly()
         {
             var appsettings = new Dictionary<string, string>()
             {

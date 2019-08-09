@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -33,14 +32,14 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         }
 
         [Fact]
-        public void Contstructor_ThrowsIfConfigNull()
+        public void Constructor_ThrowsIfConfigNull()
         {
             IConfiguration config = null;
             Assert.Throws<ArgumentNullException>(() => new HypermediaEndpointOptions(config));
         }
 
         [Fact]
-        public void Contstructor_BindsConfigurationCorrectly()
+        public void Constructor_BindsConfigurationCorrectly()
         {
             var appsettings = new Dictionary<string, string>()
             {

@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
         {
         }
 
-        [Obsolete]
+        [Obsolete("Use Exposure Options instead.")]
         public override bool DefaultSensitive => false;
     }
 }

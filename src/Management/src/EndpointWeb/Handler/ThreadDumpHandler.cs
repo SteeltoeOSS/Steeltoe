@@ -27,8 +27,8 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
         }
 
-        [Obsolete]
-         public ThreadDumpHandler(ThreadDumpEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<ThreadDumpHandler> logger = null)
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
+        public ThreadDumpHandler(ThreadDumpEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<ThreadDumpHandler> logger = null)
             : base(endpoint, securityServices, null, true, logger)
         {
         }

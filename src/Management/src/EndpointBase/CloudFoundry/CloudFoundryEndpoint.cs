@@ -20,11 +20,11 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
     public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>
     {
-        private ILogger<CloudFoundryEndpoint> _logger;
-        private IManagementOptions _mgmtOption;
+        private readonly ILogger<CloudFoundryEndpoint> _logger;
+        private readonly IManagementOptions _mgmtOption;
 
         public CloudFoundryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpoint> logger = null)
         : base(options)
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger = logger;
         }
 
-        [Obsolete]
+        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
         public CloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null)
             : base(options)
         {
@@ -106,4 +106,4 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         }
     }
 }
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete

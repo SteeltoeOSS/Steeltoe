@@ -15,9 +15,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Trace;
-using System;
 using System.Collections.Generic;
-using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {

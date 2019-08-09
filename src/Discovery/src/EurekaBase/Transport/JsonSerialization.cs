@@ -17,7 +17,7 @@ using System.IO;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
-    internal class JsonSerialization
+    internal static class JsonSerialization
     {
         internal static T Deserialize<T>(Stream stream)
         {

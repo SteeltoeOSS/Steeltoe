@@ -46,6 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesEmptyDistributions()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-A");
@@ -69,19 +70,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 });
 
             // no writes
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleBucketGetsStored()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-B");
@@ -95,11 +89,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 if (distribution.GetTotalCount() == 1)
                 {
-                    AssertBetween(10, 50, (int)distribution.GetMean());
+                    AssertBetween(10, 50, distribution.GetMean());
                 }
                 else if (distribution.GetTotalCount() == 2)
                 {
-                    AssertBetween(300, 400, (int)distribution.GetMean());
+                    AssertBetween(300, 400, distribution.GetMean());
                 }
             },
             (e) =>
@@ -116,17 +110,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd1.Observe();
             cmd2.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            }
-            catch (Exception)
-            {
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            output.WriteLine($"ReqLog: {HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString()}");
             AssertBetween(150, 400, stream.LatestMean);
             AssertBetween(10, 50, stream.GetLatestPercentile(0.0));
             AssertBetween(300, 800, stream.GetLatestPercentile(100.0));
@@ -142,6 +127,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         // FAILURE
         // TIMEOUT
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleBucketWithMultipleEventTypes()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-C");
@@ -156,11 +142,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 if (distribution.GetTotalCount() < 4 && distribution.GetTotalCount() > 0)
                 {
                     // buckets before timeout latency registers
-                    AssertBetween(10, 50, distribution.GetMean());
+                    AssertBetween(10, 100, distribution.GetMean());
                 }
                 else if (distribution.GetTotalCount() == 4)
                 {
-                    AssertBetween(150, 250, distribution.GetMean()); // now timeout latency of 600ms is there
+                    AssertBetween(150, 300, distribution.GetMean()); // now timeout latency of 600ms is there
                 }
             },
             (e) =>
@@ -182,21 +168,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd3.Observe();
             cmd4.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             AssertBetween(150, 350, stream.LatestMean); // now timeout latency of 600ms is there
             AssertBetween(10, 40, stream.GetLatestPercentile(0.0));
             AssertBetween(600, 800, stream.GetLatestPercentile(100.0));
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestShortCircuitedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");
@@ -216,7 +195,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             (distribution) =>
             {
                 output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                AssertBetween(0, 30, (int)distribution.GetMean());
+                AssertBetween(0, 30, distribution.GetMean());
             },
             (e) =>
             {
@@ -244,15 +223,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 Assert.True(false, ie.Message);
             }
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(3, stream.Latest.GetTotalCount());
             AssertBetween(0, 30, stream.LatestMean);
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -260,6 +231,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadPoolRejectedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-E");
@@ -281,7 +253,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 if (distribution.GetTotalCount() > 0)
                 {
-                    AssertBetween(200, 250, (int)distribution.GetMean());
+                    AssertBetween(200, 250, distribution.GetMean());
                 }
             },
             (e) =>
@@ -310,24 +282,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 Assert.True(false, ie.Message);
             }
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception ex)
-            {
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                Assert.Null(ex);
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(10, stream.Latest.GetTotalCount());
             AssertBetween(200, 250, stream.LatestMean);
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.True(threadPoolRejected.IsResponseThreadPoolRejected);
+            Assert.True(threadPoolRejected.IsResponseThreadPoolRejected, "Response NOT ThreadPoolRejected as expected");
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSemaphoreRejectedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-F");
@@ -349,7 +313,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 if (distribution.GetTotalCount() > 0)
                 {
-                    AssertBetween(200, 250, (int)distribution.GetMean());
+                    AssertBetween(200, 250, distribution.GetMean());
                 }
             },
             (e) =>
@@ -384,15 +348,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 Assert.True(false, ie.Message);
             }
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(10, stream.Latest.GetTotalCount());
             AssertBetween(200, 250, stream.LatestMean);
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -400,6 +356,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestResponseFromCacheDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-G");
@@ -430,21 +387,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 cmd.Observe();
             }
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.False(true, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(1, stream.Latest.GetTotalCount());
             AssertBetween(0, 30, stream.LatestMean);
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleBucketsBothGetStored()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-H");
@@ -458,11 +408,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
                 if (distribution.GetTotalCount() == 2)
                 {
-                    AssertBetween(55, 90, (int)distribution.GetMean());
+                    AssertBetween(55, 90, distribution.GetMean());
                 }
                 if (distribution.GetTotalCount() == 5)
                 {
-                    AssertBetween(60, 90, (int)distribution.GetMean());
+                    AssertBetween(60, 90, distribution.GetMean());
                 }
             },
             (e) =>
@@ -497,21 +447,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd4.Observe();
             cmd5.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             AssertBetween(55, 90, stream.LatestMean);
             AssertBetween(10, 50, stream.GetLatestPercentile(0.0));
             AssertBetween(100, 150, stream.GetLatestPercentile(100.0));
         }
 
         [Fact]
+        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleBucketsBothGetStoredAndThenAgeOut()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-I");
@@ -564,23 +507,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             cmd4.Observe();
             cmd5.Observe();
 
-            try
-            {
-                Assert.True(latch.Wait(10000));
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
-
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
         private void AssertBetween(int expectedLow, int expectedHigh, int value)
         {
             output.WriteLine("Low:" + expectedLow + " High:" + expectedHigh + " Value: " + value);
-            Assert.True(expectedLow <= value);
-            Assert.True(expectedHigh >= value);
+            Assert.True(expectedLow <= value, $"Actual value {value} not more than {expectedLow}");
+            Assert.True(expectedHigh >= value, $"Actual value {value} not less than {expectedHigh}");
         }
     }
 }

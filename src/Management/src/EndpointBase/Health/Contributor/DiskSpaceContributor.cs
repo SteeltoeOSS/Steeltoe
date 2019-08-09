@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor
     public class DiskSpaceContributor : IHealthContributor
     {
         private const string ID = "diskSpace";
-        private DiskSpaceContributorOptions _options;
+        private readonly DiskSpaceContributorOptions _options;
 
         public DiskSpaceContributor(DiskSpaceContributorOptions options = null)
         {
