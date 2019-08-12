@@ -109,19 +109,21 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// </summary>
         /// <param name="builder">Your <see cref="AuthenticationBuilder"/></param>
         /// <param name="config">Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider"/></param>
+        /// <param name="cloudFoundryOIDCOptions">Your own <see cref="CloudFoundryOpenIdConnectOptions"/></param>
         /// <returns><see cref="AuthenticationBuilder"/> configured to use OpenID Connect with UAA or Pivotal SSO</returns>
-        public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, IConfiguration config)
-            => builder.AddCloudFoundryOpenIdConnect(CloudFoundryDefaults.AuthenticationScheme, config);
+        public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, IConfiguration config, CloudFoundryOpenIdConnectOptions cloudFoundryOIDCOptions = null)
+            => builder.AddCloudFoundryOpenIdConnect(CloudFoundryDefaults.AuthenticationScheme, config, cloudFoundryOIDCOptions);
 
         /// <summary>
         /// Adds OpenID Connect middleware and configuration for using UAA or Pivotal SSO for user authentication
         /// </summary>
         /// <param name="builder">Your <see cref="AuthenticationBuilder"/></param>
         /// <param name="authenticationScheme">An identifier for this authentication mechanism. Default value is <see cref="CloudFoundryDefaults.DisplayName"/></param>
-        /// <param name="config">Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider"/></param>
+        /// <param name="config">(Optional) Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider"/></param>
+        /// <param name="cloudFoundryOIDCOptions">(Optional) Your own <see cref="CloudFoundryOpenIdConnectOptions"/></param>
         /// <returns><see cref="AuthenticationBuilder"/> configured to use OpenID Connect with UAA or Pivotal SSO</returns>
-        public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration config)
-            => builder.AddCloudFoundryOpenIdConnect(authenticationScheme, CloudFoundryDefaults.DisplayName, config);
+        public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration config, CloudFoundryOpenIdConnectOptions cloudFoundryOIDCOptions = null)
+            => builder.AddCloudFoundryOpenIdConnect(authenticationScheme, CloudFoundryDefaults.DisplayName, config, cloudFoundryOIDCOptions);
 
         /// <summary>
         /// Adds OpenID Connect middleware and configuration for using UAA or Pivotal SSO for user authentication
@@ -130,17 +132,19 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <param name="authenticationScheme">An identifier for this authentication mechanism. Default value is <see cref="CloudFoundryDefaults.DisplayName"/></param>
         /// <param name="displayName">Sets a display name for this auth scheme. Defaults to <see cref="CloudFoundryDefaults.DisplayName"/></param>
         /// <param name="config">Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider"/></param>
+        /// <param name="cloudFoundryOIDCOptions">(Optional) Your own <see cref="CloudFoundryOpenIdConnectOptions"/></param>
         /// <returns><see cref="AuthenticationBuilder"/> configured to use OpenID Connect with UAA or Pivotal SSO</returns>
-        public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config)
+        public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config, CloudFoundryOpenIdConnectOptions cloudFoundryOIDCOptions = null)
         {
+            cloudFoundryOIDCOptions = cloudFoundryOIDCOptions ?? new CloudFoundryOpenIdConnectOptions();
+
             builder.AddOpenIdConnect(authenticationScheme, displayName, options =>
             {
-                var cloudFoundryOptions = new CloudFoundryOpenIdConnectOptions();
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
-                securitySection.Bind(cloudFoundryOptions);
+                securitySection.Bind(cloudFoundryOIDCOptions);
 
                 SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-                CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
+                CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOIDCOptions);
             });
             return builder;
         }
