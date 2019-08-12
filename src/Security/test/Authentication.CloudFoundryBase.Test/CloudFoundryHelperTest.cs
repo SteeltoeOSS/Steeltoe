@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json.Linq;
-using Steeltoe.Common;
 using System;
 using Xunit;
 
@@ -35,12 +34,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetTokenValidationParameters_ReturnsExpected()
         {
             var parameters = CloudFoundryHelper.GetTokenValidationParameters(null, "https://foo.bar.com/keyurl", null, false);
-            Assert.True(parameters.ValidateAudience);
-            Assert.True(parameters.ValidateIssuer);
+            Assert.False(parameters.ValidateAudience, "Audience validation should not be enabled by default");
+            Assert.True(parameters.ValidateIssuer, "Issuer validation should be enabled by default");
             Assert.NotNull(parameters.IssuerValidator);
-
-            // Assert.Equal(cftv.ValidateIssuer, parameters.IssuerValidator);
-            Assert.True(parameters.ValidateLifetime);
+            Assert.True(parameters.ValidateLifetime, "Token lifetime validation should be enabled by default");
             Assert.NotNull(parameters.IssuerSigningKeyResolver);
         }
 

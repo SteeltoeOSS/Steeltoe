@@ -33,7 +33,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             ClientSecret = CloudFoundryDefaults.ClientSecret;
             ResponseType = OpenIdConnectResponseType.Code;
             SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+            // http://irisclasson.com/2018/09/18/asp-net-core-openidconnect-why-is-the-claimsprincipal-name-null/
             TokenValidationParameters.NameClaimType = "user_name";
+            TokenValidationParameters.ValidateAudience = true;
+            TokenValidationParameters.ValidateIssuer = true;
+            TokenValidationParameters.ValidateLifetime = true;
         }
 
         /// <summary>
