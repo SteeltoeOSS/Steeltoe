@@ -197,7 +197,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 await cmd.Observe();
             }
 
-            Time.Wait(150);
+            Time.Wait(200);
 
             try
             {

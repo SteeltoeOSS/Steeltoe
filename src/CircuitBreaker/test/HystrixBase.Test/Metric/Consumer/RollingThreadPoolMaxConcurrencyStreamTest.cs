@@ -316,11 +316,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
 
-            cmd1.Observe();
-            Time.Wait(5);
-            cmd2.Observe();
-            cmd3.Observe();
-            cmd4.Observe();
+            cmd1.Execute();
+            cmd2.Execute();
+            cmd3.Execute();
+            cmd4.Execute();
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -365,7 +364,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             foreach (Command cmd in shortCircuited)
             {
-                cmd.Observe();
+                 cmd.Execute();
             }
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");

@@ -199,7 +199,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
             Command cmd2 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
@@ -209,7 +209,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await cmd2.Observe();
             await cmd3.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(HystrixEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
@@ -226,6 +225,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
+            //var stream2 = HystrixCommandCompletionStream.GetInstance(key);
+            //var observable2 = stream2.Observe().Subscribe((comp) =>
+            //{
+            //    output.WriteLine("CompletionStream: " + Time.CurrentTimeMillis + " " + comp.ToString() + " " + Thread.CurrentThread.ManagedThreadId);
+            //});
+            //var stream3 = HealthCountsStream.GetInstance(key, 10, 100);
+            //var observable3 = stream3.Observe().Subscribe((comp) =>
+            //{
+            //    output.WriteLine("HealthCountStream: " + Time.CurrentTimeMillis + " " + comp.ToString() + " " + Thread.CurrentThread.ManagedThreadId);
+            //});
+
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
@@ -241,9 +251,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await failure1.Observe();
             await failure2.Observe();
             await failure3.Observe();
-            Time.Wait(150);
 
-            var breaker = failure1.CircuitBreaker as HystrixCircuitBreakerImpl;
+            Time.Wait(200);
+
+            output.WriteLine(Time.CurrentTimeMillis + " running failures");
 
             await shortCircuit1.Observe();
             await shortCircuit2.Observe();
@@ -317,7 +328,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(7).Subscribe(new LatchedObserver(output, latch));
 
             // 10 commands will saturate threadpools when called concurrently.
             // submit 2 more requests and they should be THREADPOOL_REJECTED

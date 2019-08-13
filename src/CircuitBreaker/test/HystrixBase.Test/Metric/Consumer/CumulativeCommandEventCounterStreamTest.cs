@@ -236,8 +236,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await failure1.Observe();
             await failure2.Observe();
             await failure3.Observe();
-            Time.Wait(150);
 
+            Time.Wait(200);
+
+            output.WriteLine(Time.CurrentTimeMillis + " running failures");
             await shortCircuit1.Observe();
             await shortCircuit2.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
