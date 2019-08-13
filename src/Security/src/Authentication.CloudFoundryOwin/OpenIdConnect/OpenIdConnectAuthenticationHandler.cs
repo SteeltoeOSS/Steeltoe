@@ -145,11 +145,4 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             return request.Scheme + Uri.SchemeDelimiter + request.Host;
         }
     }
-
-#pragma warning disable SA1402 // File may only contain a single class
-    [Obsolete("This class has been renamed OpenIdConnectAuthenticationHandler")]
-    public class OpenIDConnectAuthenticationHandler : OpenIdConnectAuthenticationHandler
-#pragma warning restore SA1402 // File may only contain a single class
-    {
-    }
 }

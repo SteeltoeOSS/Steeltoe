@@ -48,27 +48,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin.Test
         }
 
         [Fact]
-        public void Configure_ObsoleteVersion_NoServiceInfo_ReturnsDefaults()
-        {
-            // arrange
-#pragma warning disable CS0618 // Type or member is obsolete
-            var opts = new OpenIDConnectOptions();
-#pragma warning restore CS0618 // Type or member is obsolete
-            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
-
-            // act
-            OpenIdConnectConfigurer.Configure(null, opts);
-
-            // assert
-            Assert.Equal("PivotalSSO", opts.AuthenticationType);
-            Assert.Equal(CloudFoundryDefaults.ClientId, opts.ClientId);
-            Assert.Equal(CloudFoundryDefaults.ClientSecret, opts.ClientSecret);
-            Assert.Equal(new PathString("/signin-oidc"), opts.CallbackPath);
-            Assert.Equal(authURL + CloudFoundryDefaults.CheckTokenUri, opts.TokenInfoUrl);
-            Assert.True(opts.ValidateCertificates);
-        }
-
-        [Fact]
         public void Configure_WithServiceInfo_ReturnsExpected()
         {
             // arrange
