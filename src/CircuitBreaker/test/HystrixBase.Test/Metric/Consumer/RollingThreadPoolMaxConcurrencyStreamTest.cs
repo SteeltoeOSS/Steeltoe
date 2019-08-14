@@ -353,14 +353,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             for (int i = 0; i < 20; i++)
             {
-                shortCircuited.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 100));
+                shortCircuited.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 0));
             }
 
             failure1.Execute();
             failure2.Execute();
             failure3.Execute();
 
-            Time.Wait(150);
+            Time.Wait(200);
 
             foreach (Command cmd in shortCircuited)
             {
