@@ -290,7 +290,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             _ = await cmd4.ExecuteAsync();
 
             // Allow window to pass, everything has failed in the test window so we should return false now
-            Time.Wait(125);
+            // Time.Wait(125);
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             output.WriteLine("CircuitBreaker state 1 : " + cmd1.Metrics.Healthcounts);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");

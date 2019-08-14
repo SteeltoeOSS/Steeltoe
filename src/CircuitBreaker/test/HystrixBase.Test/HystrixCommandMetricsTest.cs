@@ -39,24 +39,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-metrics-A";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             HystrixCommandMetrics metrics = cmd1._metrics;
             cmd1.Execute();
             Time.Wait(200);
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
             cmd2.Execute();
             Time.Wait(200);
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd3 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
             cmd3.Execute();
             cmd4.Execute();
             Time.Wait(200);
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(25, metrics.Healthcounts.ErrorPercentage);
 
@@ -65,15 +68,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             cmd5.Execute();
             cmd6.Execute();
             Time.Wait(200);
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd8 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd9 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd8 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd9 = new SuccessCommand(key, 0);
             cmd7.Execute();
             cmd8.Execute();
             cmd9.Execute();
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             // latent
@@ -95,7 +100,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-metrics-B";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             HystrixCommandMetrics metrics = cmd1._metrics;
             cmd1.Execute();
             Time.Wait(200);
@@ -103,15 +108,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
             cmd2.Execute();
             Time.Wait(200);
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd3 = new BadRequestCommand(key, 1);
-            HystrixCommand<bool> cmd4 = new BadRequestCommand(key, 1);
+            HystrixCommand<bool> cmd3 = new BadRequestCommand(key, 0);
+            HystrixCommand<bool> cmd4 = new BadRequestCommand(key, 0);
             try
             {
                 cmd3.Execute();

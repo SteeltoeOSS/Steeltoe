@@ -309,7 +309,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 40);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);

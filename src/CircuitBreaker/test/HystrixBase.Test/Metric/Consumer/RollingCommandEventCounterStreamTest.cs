@@ -88,7 +88,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -105,7 +105,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
 
@@ -128,7 +128,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20);
 
@@ -152,7 +152,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.TIMEOUT);
             await cmd.Observe();
@@ -175,7 +175,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST);
 
@@ -251,13 +251,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await failure2.Observe();
             await failure3.Observe();
 
-            Time.Wait(200);
+            Time.Wait(200); // Make sure healthcount stream pops so circuit breaker reads failures
 
             output.WriteLine(Time.CurrentTimeMillis + " running failures");
 
             await shortCircuit1.Observe();
             await shortCircuit2.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+
+            var result = stream.Latest; // Get result before rolls off
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(shortCircuit1.IsResponseShortCircuited, "Circuit 1 not shorted as was expected");
@@ -268,7 +270,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SHORT_CIRCUITED] = 2;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 5;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            Assert.Equal(expected, result);
         }
 
         [Fact]
@@ -306,6 +308,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await Task.Run(() => rejected2.Execute());
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            var result = stream.Latest; // Get result before rolls off
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.True(rejected1.IsResponseSemaphoreRejected, "Response not semaphore rejected as was expected (1)");
             Assert.True(rejected2.IsResponseSemaphoreRejected, "Response not semaphore rejected as was expected (2)");
@@ -315,7 +319,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SEMAPHORE_REJECTED] = 2;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.Equal(expected, stream.Latest);
+            Assert.Equal(expected, result);
         }
 
         [Fact]
@@ -327,7 +331,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(7).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
             // 10 commands will saturate threadpools when called concurrently.
             // submit 2 more requests and they should be THREADPOOL_REJECTED
@@ -352,6 +356,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await rejected2.Observe();
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
+            var result = stream.Latest; // Get result before rolls off
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             Assert.True(rejected1.IsResponseThreadPoolRejected, "Not ThreadPoolRejected as was expected (1)");
@@ -361,7 +366,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             expected[(int)HystrixEventType.SUCCESS] = 10;
             expected[(int)HystrixEventType.THREAD_POOL_REJECTED] = 2;
             expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
-            Assert.Equal(expected, stream.Latest);
+            Assert.Equal(expected, result);
         }
 
         [Fact]
@@ -373,9 +378,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
 
-            Command cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
+            Command cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_FAILURE);
 
             await Assert.ThrowsAsync<HystrixRuntimeException>(async () => await cmd.Observe());
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
