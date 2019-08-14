@@ -225,17 +225,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
             stream.StartCachingStreamValuesIfUnstarted();
 
-            //var stream2 = HystrixCommandCompletionStream.GetInstance(key);
-            //var observable2 = stream2.Observe().Subscribe((comp) =>
-            //{
+            // var stream2 = HystrixCommandCompletionStream.GetInstance(key);
+            // var observable2 = stream2.Observe().Subscribe((comp) =>
+            // {
             //    output.WriteLine("CompletionStream: " + Time.CurrentTimeMillis + " " + comp.ToString() + " " + Thread.CurrentThread.ManagedThreadId);
-            //});
-            //var stream3 = HealthCountsStream.GetInstance(key, 10, 100);
-            //var observable3 = stream3.Observe().Subscribe((comp) =>
-            //{
+            // });
+            // var stream3 = HealthCountsStream.GetInstance(key, 10, 100);
+            // var observable3 = stream3.Observe().Subscribe((comp) =>
+            // {
             //    output.WriteLine("HealthCountStream: " + Time.CurrentTimeMillis + " " + comp.ToString() + " " + Thread.CurrentThread.ManagedThreadId);
-            //});
-
+            // });
             CountdownEvent latch = new CountdownEvent(1);
             stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
 
