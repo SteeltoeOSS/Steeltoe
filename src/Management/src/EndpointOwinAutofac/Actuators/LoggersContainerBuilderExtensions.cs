@@ -14,8 +14,6 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Steeltoe.Common.Logging.Autofac;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
@@ -29,13 +27,11 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
     public static class LoggersContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Loggers endpoint, middleware and options<para />Steeltoe's <see cref="DynamicConsoleLogger"/> will be configured and included in the DI container
+        /// Register the Loggers endpoint, middleware and options<para />Steeltoe's <see cref="DynamicILogger"/> will be configured and included in the DI container
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="loggerProvider">Your pre-existing <see cref="DynamicLoggerProvider"/> will be created if not provided</param>
-        /// <param name="loggerFactory">Your pre-existing <see cref="ILoggerFactory"/>. A new <see cref="LoggerFactory"/> will be added if not provided</param>
-        public static void RegisterLoggersActuator(this ContainerBuilder container, IConfiguration config, DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
+        public static void RegisterLoggersActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -47,13 +43,8 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            if (loggerProvider == null)
-            {
-                loggerProvider = new DynamicLoggerProvider(new ConsoleLoggerSettings().FromConfiguration(config));
-            }
-
             container.RegisterLogging(config);
-            container.RegisterInstance(loggerProvider).As<IDynamicLoggerProvider>();
+            container.RegisterType<DynamicLoggerProvider>().As<IDynamicLoggerProvider>();
             container.Register(c =>
             {
                 var options = new LoggersEndpointOptions(config);

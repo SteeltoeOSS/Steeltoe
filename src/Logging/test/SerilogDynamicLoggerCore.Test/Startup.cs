@@ -15,19 +15,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 {
-    public class TestServerStartup
+    public class Startup
     {
-        private ILogger<TestServerStartup> _logger;
+        private ILogger<Startup> _logger;
 
-        public TestServerStartup(ILogger<TestServerStartup> logger)
+        public Startup(ILogger<Startup> logger)
         {
             _logger = logger;
         }

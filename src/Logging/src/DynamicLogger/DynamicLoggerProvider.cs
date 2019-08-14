@@ -62,14 +62,6 @@ namespace Steeltoe.Extensions.Logging
             return _loggers.GetOrAdd(name, CreateLoggerImplementation);
         }
 
-        public void Dispose()
-        {
-            _delegate?.Dispose();
-            _delegate = null;
-            _settings = null;
-            _loggers = null;
-        }
-
         /// <summary>
         /// Get a list of logger configurations
         /// </summary>
@@ -179,7 +171,6 @@ namespace Steeltoe.Extensions.Logging
                     // Cleanup
                     _delegate?.Dispose();
                     _delegate = null;
-                    _settings = null;
                     _loggers = null;
                 }
 
@@ -194,7 +185,7 @@ namespace Steeltoe.Extensions.Logging
 
         private void SetFiltersFromOptions()
         {
-            foreach (var rule in _filterOptions.CurrentValue.Rules.Where(p => string.IsNullOrEmpty(p.ProviderName) || p.ProviderName == "Console"))
+            foreach (var rule in _filterOptions.CurrentValue.Rules.Where(p => string.IsNullOrEmpty(p.ProviderName) || p.ProviderName == "Console" || p.ProviderName == "Logging"))
             {
                 _originalLevels.TryAdd(rule.CategoryName ?? "Default", rule.LogLevel ?? LogLevel.None);
                 if (rule.CategoryName == "Default" || string.IsNullOrEmpty(rule.CategoryName))
@@ -310,7 +301,7 @@ namespace Steeltoe.Extensions.Logging
         /// <returns>Log level from default filter, value from settings or else null</returns>
         private LogLevel? GetConfiguredLevel(string name)
         {
-            if (_settings != null && _settings.TryGetSwitch(name, out LogLevel level))
+            if (_originalLevels != null && _originalLevels.TryGetValue(name, out LogLevel level))
             {
                 return level;
             }

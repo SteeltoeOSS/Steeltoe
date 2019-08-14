@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
@@ -96,7 +97,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             if (provider == null)
             {
-                _logger?.LogInformation("Unable to access Cloud Foundry Logging provider, log configuration unavailable");
+                _logger?.LogInformation("Unable to access the Dynamic Logging provider, log configuration unavailable");
                 return new List<ILoggerConfiguration>();
             }
 
@@ -107,7 +108,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             if (provider == null)
             {
-                _logger?.LogInformation("Unable to access Cloud Foundry Logging provider, log level not changed");
+                _logger?.LogInformation("Unable to access the Dynamic Logging provider, log level not changed");
                 return;
             }
 

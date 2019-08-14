@@ -39,7 +39,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
             builder.AddEnvironmentVariables();
             var config = builder.Build();
 
-            LoggerProvider = new DynamicLoggerProvider(new ConsoleLoggerSettings().FromConfiguration(config));
+            LoggerProvider = new DynamicLoggerProvider(null, null);
             LoggerFactory = new LoggerFactory();
             LoggerFactory.AddProvider(LoggerProvider);
 

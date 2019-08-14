@@ -40,9 +40,10 @@ namespace Steeltoe.Management.Endpoint.Env
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<IHostingEnvironment>((provider) =>
+#if NETCOREAPP3_0
+            services.TryAddSingleton<IHostEnvironment>((provider) =>
             {
-                var service = provider.GetRequiredService<Microsoft.AspNetCore.Hosting.IHostingEnvironment>();
+                var service = provider.GetRequiredService<IHostEnvironment>();
                 return new GenericHostingEnvironment()
                 {
                     EnvironmentName = service.EnvironmentName,
@@ -51,6 +52,19 @@ namespace Steeltoe.Management.Endpoint.Env
                     ContentRootPath = service.ContentRootPath
                 };
             });
+#else
+            services.TryAddSingleton<IHostingEnvironment>((provider) =>
+            {
+                var service = provider.GetRequiredService<IHostingEnvironment>();
+                return new GenericHostingEnvironment()
+                {
+                    EnvironmentName = service.EnvironmentName,
+                    ApplicationName = service.ApplicationName,
+                    ContentRootFileProvider = service.ContentRootFileProvider,
+                    ContentRootPath = service.ContentRootPath
+                };
+            });
+#endif
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
             var options = new EnvEndpointOptions(config);

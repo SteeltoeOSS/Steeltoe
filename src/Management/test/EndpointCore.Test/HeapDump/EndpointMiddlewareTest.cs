@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
@@ -48,19 +49,22 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             {
                 var opts = new HeapDumpEndpointOptions();
                 var mopts = TestHelpers.GetManagementOptions(opts);
-                LoggerFactory loggerFactory = new LoggerFactory();
-                loggerFactory.AddConsole(minLevel: LogLevel.Debug);
+
+                IServiceCollection serviceCollection = new ServiceCollection();
+                serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
+                var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
+
                 var logger1 = loggerFactory.CreateLogger<HeapDumper>();
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
-                HeapDumper obs = new HeapDumper(opts, logger: logger1);
+                var obs = new HeapDumper(opts, logger: logger1);
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
                 var middle = new HeapDumpEndpointMiddleware(null, ep, mopts, logger3);
                 var context = CreateRequest("GET", "/heapdump");
                 await middle.HandleHeapDumpRequestAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
-                byte[] buffer = new byte[1024];
+                var buffer = new byte[1024];
                 await context.Response.Body.ReadAsync(buffer, 0, 1024);
                 Assert.NotEqual(0, buffer[0]);
             }
@@ -90,13 +94,13 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                     Assert.Equal("application/octet-stream", contentType.Single());
                     Assert.True(result.Content.Headers.Contains("Content-Disposition"));
 
-                    string tempFile = Path.GetTempFileName();
-                    FileStream fs = new FileStream(tempFile, FileMode.Create);
-                    Stream input = await result.Content.ReadAsStreamAsync();
+                    var tempFile = Path.GetTempFileName();
+                    var fs = new FileStream(tempFile, FileMode.Create);
+                    var input = await result.Content.ReadAsStreamAsync();
                     await input.CopyToAsync(fs);
                     fs.Close();
 
-                    FileStream fs2 = File.Open(tempFile, FileMode.Open);
+                    var fs2 = File.Open(tempFile, FileMode.Open);
                     Assert.NotEqual(0, fs2.Length);
                     fs2.Close();
                     File.Delete(tempFile);
@@ -109,7 +113,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         {
             var opts = new HeapDumpEndpointOptions();
             var mopts = TestHelpers.GetManagementOptions(opts);
-            HeapDumper obs = new HeapDumper(opts);
+            var obs = new HeapDumper(opts);
             var ep = new HeapDumpEndpoint(opts, obs);
             var middle = new HeapDumpEndpointMiddleware(null, ep, mopts);
 

@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -54,7 +55,11 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
-            services.AddLogging(builder => builder.AddDynamicConsole(config));
+            services.AddLogging(builder =>
+            {
+                builder.AddConfiguration(config);
+                builder.AddDynamicConsole();
+            });
             services.AddLoggersActuator(config);
             var serviceProvider = services.BuildServiceProvider();
 

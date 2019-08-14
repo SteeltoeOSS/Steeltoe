@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <Import Project="..\..\..\..\versions.props" />
-    <PropertyGroup>
-        <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
 
   <ItemGroup>
