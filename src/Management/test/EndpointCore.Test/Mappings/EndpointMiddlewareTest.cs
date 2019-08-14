@@ -13,10 +13,15 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+#if !NETCOREAPP3_0
 using Microsoft.AspNetCore.Hosting.Internal;
+#endif
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+#if NETCOREAPP3_0
+using Microsoft.Extensions.Hosting.Internal;
+#endif
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
@@ -102,11 +107,15 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
+#if NETCOREAPP3_0
+                await Assert.ThrowsAsync<NotImplementedException>(() => client.GetAsync("http://localhost/cloudfoundryapplication/mappings"));
+#else
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/mappings");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 var expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"Steeltoe.Management.EndpointCore.Mappings.Test.HomeController\":[{\"handler\":\"Steeltoe.Management.EndpointCore.Mappings.Test.Person Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]}\"}]}}}}}";
                 Assert.Equal(expected, json);
+#endif
             }
         }
 

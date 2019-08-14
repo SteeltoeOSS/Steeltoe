@@ -31,7 +31,12 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         {
             services.AddMappingsActuator(Configuration);
             services
-                .AddMvc();
+                .AddMvc(o =>
+                {
+#if NETCOREAPP3_0
+                    o.EnableEndpointRouting = false;
+#endif
+                });
         }
 
         public void Configure(IApplicationBuilder app)

@@ -6,10 +6,6 @@
     <AspNetVersion>5.2.4</AspNetVersion>
     <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <AspNetCoreDataProtectionRedisVersion>2.2.0</AspNetCoreDataProtectionRedisVersion>
-    <AspNetCoreDepTestVersion>2.1.0</AspNetCoreDepTestVersion>
-    <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
-    <AspNetCoreMvcTestVersion>2.1.0</AspNetCoreMvcTestVersion>
-    <AspNetCoreHealthChecksVersion>2.2.0</AspNetCoreHealthChecksVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
     <DiagnosticSourceVersion>4.4.1</DiagnosticSourceVersion>
@@ -17,11 +13,8 @@
     <EF6Version>6.2.0</EF6Version>
     <EFCoreVersion>2.0.0</EFCoreVersion>
     <EFCoreTestVersion>2.1.2</EFCoreTestVersion>
-    <ExtensionsVersion>2.0.0</ExtensionsVersion>
-    <HostingExtensionVersion>2.1.0</HostingExtensionVersion>
     <HttpVersion>4.3.3</HttpVersion>
     <HttpClientVersion>4.3.3</HttpClientVersion>
-    <LoggingVersion>2.1.0</LoggingVersion>
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <OwinVersion>4.0.0</OwinVersion>
     <OwinOAuthVersion>4.0.0</OwinOAuthVersion>
@@ -70,5 +63,19 @@
     <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
 
     <SourceLinkGitHubVersion>1.0.0-beta2-18618-05</SourceLinkGitHubVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <AspNetCoreTestVersion>3.0.0-preview8.19405.7</AspNetCoreTestVersion>
+    <ExtensionsVersion>3.0.0-preview8.19405.4</ExtensionsVersion>
+    <HealthChecksVersion>3.0.0-preview8.19405.4</HealthChecksVersion>
+    <LoggingVersion>3.0.0-preview8.19405.4</LoggingVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+    <AspNetCoreDepTestVersion>2.1.0</AspNetCoreDepTestVersion>
+    <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
+    <AspNetCoreMvcTestVersion>2.1.0</AspNetCoreMvcTestVersion>
+    <ExtensionsVersion>2.2.0</ExtensionsVersion>
+    <HealthChecksVersion>2.2.0</HealthChecksVersion>
+    <LoggingVersion>2.1.0</LoggingVersion>
   </PropertyGroup>
 </Project>

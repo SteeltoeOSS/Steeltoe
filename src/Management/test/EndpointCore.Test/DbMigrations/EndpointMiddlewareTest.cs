@@ -15,7 +15,9 @@
 using FluentAssertions;
 using FluentAssertions.Json;
 using Microsoft.AspNetCore.Hosting;
+#if !NETCOREAPP3_0
 using Microsoft.AspNetCore.Hosting.Internal;
+#endif
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;

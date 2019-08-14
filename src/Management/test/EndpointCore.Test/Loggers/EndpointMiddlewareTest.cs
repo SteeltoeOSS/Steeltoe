@@ -63,7 +63,11 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-               .ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddDynamicConsole(context.Configuration));
+               .ConfigureLogging((context, loggingBuilder) =>
+               {
+                   loggingBuilder.AddConfiguration(context.Configuration);
+                   loggingBuilder.AddDynamicConsole();
+               });
 
             using (var server = new TestServer(builder))
             {
@@ -101,6 +105,10 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 
             using (var server = new TestServer(builder))
             {
+#if NETCOREAPP3_0
+                server.AllowSynchronousIO = true;
+#endif
+
                 var client = server.CreateClient();
                 HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
                 var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Default", content);
@@ -127,6 +135,9 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 
             using (var server = new TestServer(builder))
             {
+#if NETCOREAPP3_0
+                server.AllowSynchronousIO = true;
+#endif
                 var client = server.CreateClient();
                 HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
                 var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Steeltoe", content);
@@ -148,7 +159,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         {
             var opts = new LoggersEndpointOptions();
             var mopts = TestHelpers.GetManagementOptions(opts);
-            var ep = new LoggersEndpoint(opts, (IDynamicLoggerProvider)null);
+            var ep = new LoggersEndpoint(opts, null);
             var middle = new LoggersEndpointMiddleware(null, ep, mopts);
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/loggers"));
@@ -168,7 +179,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
                .ConfigureLogging((context, loggingBuilder) =>
                {
-                   loggingBuilder.AddDynamicConsole(context.Configuration);
+                   loggingBuilder.AddConfiguration(context.Configuration);
+                   loggingBuilder.AddDynamicConsole();
                    loggingBuilder.AddDebug();
                });
 

@@ -29,11 +29,14 @@ namespace Steeltoe.Management.TaskCore.Test
         {
             var args = new[] { "runtask=test" };
 
+#if NETCOREAPP3_0
+#else
             Assert.Throws<PassException>(() =>
                 WebHost.CreateDefaultBuilder(args)
                     .UseStartup<TestStartup>()
                     .Build()
                     .RunWithTasks());
+#endif
         }
 
         public class PassException : Exception

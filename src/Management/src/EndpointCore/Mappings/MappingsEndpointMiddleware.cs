@@ -17,7 +17,11 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+
+#if !NETCOREAPP3_0
 using Microsoft.AspNetCore.Mvc.Internal;
+#endif
+
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
@@ -266,6 +270,9 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 return new ApiDescriptionProviderContext(new List<ActionDescriptor>());
             }
 
+#if NETCOREAPP3_0
+            throw new NotImplementedException("ApiDescriptionActionData is `internal` in AspNetCore 3");
+#else
             foreach (var action in actionDescriptors)
             {
                 // This is required in order for OnProvidersExecuting() to work
@@ -285,6 +292,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             }
 
             return context;
+#endif
         }
     }
 }

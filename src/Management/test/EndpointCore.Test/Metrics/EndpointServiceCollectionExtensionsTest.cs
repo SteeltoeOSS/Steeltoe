@@ -12,10 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if !NETCOREAPP3_0
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
+#endif
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+#if NETCOREAPP3_0
+using Microsoft.Extensions.Hosting.Internal;
+#endif
+using Microsoft.Extensions.FileProviders;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Tags;
@@ -51,7 +58,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             services.AddOptions();
             services.AddLogging();
+#if NETCOREAPP3_0
+            services.AddSingleton<IHostEnvironment>(new TestHost());
+#else
             services.AddSingleton<Microsoft.AspNetCore.Hosting.IHostingEnvironment>(new TestHost());
+#endif
             services.AddMetricsActuator(config);
 
             var serviceProvider = services.BuildServiceProvider();
@@ -87,7 +98,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             return builder.Build();
         }
 
+#if NETCOREAPP3_0
+        private class TestHost : IHostEnvironment
+#else
         private class TestHost : Microsoft.AspNetCore.Hosting.IHostingEnvironment
+#endif
         {
             public string EnvironmentName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

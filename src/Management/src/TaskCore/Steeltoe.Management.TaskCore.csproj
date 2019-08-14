@@ -6,7 +6,7 @@
     <AssemblyName>Steeltoe.Management.TaskCore</AssemblyName>
     <PackageId>Steeltoe.Management.TaskCore</PackageId>
     <PackageTags>Spring Cloud;Tasks;Management;Monitoring;Task;aspnetcore</PackageTags>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   

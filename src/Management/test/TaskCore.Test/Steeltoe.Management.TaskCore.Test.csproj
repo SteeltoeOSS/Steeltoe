@@ -1,16 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\..\..\..\versions.props" />
-    <PropertyGroup>
-        <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
+  <Import Project="..\..\..\..\versions.props" />
+  <PropertyGroup Condition="! $(OS.Contains('Win'))">
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(OS.Contains('Win'))">
+    <TargetFrameworks>net461;netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+  </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
 
   <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore" Version="$(AspNetCoreVersion)" />
-      <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
-    </ItemGroup>
-
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+    <PackageReference Include="Microsoft.AspNetCore" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\TaskCore\Steeltoe.Management.TaskCore.csproj" />
   </ItemGroup>

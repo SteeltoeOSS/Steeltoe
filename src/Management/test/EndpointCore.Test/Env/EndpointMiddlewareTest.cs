@@ -13,10 +13,17 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+#if !NETCOREAPP3_0
 using Microsoft.AspNetCore.Hosting.Internal;
+#endif
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+#if NETCOREAPP3_0
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting.Internal;
+#endif
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
