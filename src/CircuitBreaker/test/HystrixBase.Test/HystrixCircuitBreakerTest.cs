@@ -87,7 +87,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-B";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 60);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
@@ -126,7 +126,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-C";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 60);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
@@ -192,7 +192,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-E";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 50);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
@@ -223,7 +223,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await Task.WhenAll(taskList);
 
             // Allow window to pass, this should trip the circuit as the error percentage is above the threshold
-            Time.Wait(125);
+            Time.Wait(200);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
         }
@@ -234,7 +234,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-F";
 
-            HystrixCommand<bool> cmd1 = new FailureCommand(key, 50);
+            HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
@@ -250,7 +250,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await cmd4.ExecuteAsync();
 
             // Allow window to pass, everything has failed in the test window so we should return false now
-            Time.Wait(125);
+            Time.Wait(200);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
@@ -290,7 +290,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             _ = await cmd4.ExecuteAsync();
 
             // Allow window to pass, everything has failed in the test window so we should return false now
-            Time.Wait(125);
+            Time.Wait(200);
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             output.WriteLine("CircuitBreaker state 1 : " + cmd1.Metrics.Healthcounts);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
@@ -312,7 +312,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await asyncResult.SingleAsync();
 
             // Allow window to pass, all requests should be open again
-            Time.Wait(125);
+            Time.Wait(200);
             output.WriteLine("CircuitBreaker state 2 : " + cmd1.Metrics.Healthcounts);
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected (1)!");
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected (2)!");
@@ -329,7 +329,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             string key = "cmd-H";
 
             int sleepWindow = 400;
-            HystrixCommand<bool> cmd1 = new FailureCommand(key, 50);
+            HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
@@ -346,7 +346,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // everything has failed in the test window so we should return false now
             // Allow window to pass,
-            Time.Wait(125);
+            Time.Wait(200);
             output.WriteLine(Time.CurrentTimeMillis + " !!!! 1 4 failures, circuit will open on recalc");
 
             // Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
@@ -432,7 +432,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             int sleepWindow = 400;
             int lowVolume = 5;
 
-            HystrixCommand<bool> cmd1 = new FailureCommand(key, 60, sleepWindow, lowVolume);
+            HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
@@ -448,7 +448,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await cmd4.ExecuteAsync();
 
             // Allow window to pass, even though it has all failed we won't trip the circuit because the volume is low
-            Time.Wait(125);
+            Time.Wait(200);
 
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");

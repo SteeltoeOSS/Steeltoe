@@ -371,13 +371,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Time.Wait(200);
 
+            List<Task<int>> shorts = new List<Task<int>>();
             foreach (Command cmd in shortCircuited)
             {
-                 cmd.Execute();
+                 shorts.Add(cmd.ExecuteAsync());
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Task.WaitAll(shorts.ToArray());
+
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+ 
             foreach (Command cmd in shortCircuited)
             {
                 Assert.True(cmd.IsResponseShortCircuited);

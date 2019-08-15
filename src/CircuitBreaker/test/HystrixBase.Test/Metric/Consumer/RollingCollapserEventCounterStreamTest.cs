@@ -36,6 +36,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             private CountdownEvent latch;
             private ITestOutputHelper output;
 
+            public bool StreamRunning { get; set; } = false;
+
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
                 this.latch = latch;
@@ -44,6 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnCompletedCore()
             {
+                StreamRunning = false;
                 output.WriteLine("OnCompletedCore @ " + Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId);
                 latch.SignalEx();
             }
@@ -55,6 +58,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(long[] eventCounts)
             {
+                StreamRunning = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + CollapserEventsToStr(eventCounts) + " " + Thread.CurrentThread.ManagedThreadId);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
@@ -83,11 +87,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestEmptyStreamProducesZeros()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-A");
-            stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
+
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -101,11 +107,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestCollapsed()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-B");
-            stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             for (int i = 0; i < 3; i++)
             {
@@ -125,11 +132,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestCollapsedAndResponseFromCache()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-C");
-            stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             for (int i = 0; i < 3; i++)
             {
@@ -153,11 +161,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestCollapsedAndResponseFromCacheAgeOutOfRollingWindow()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-D");
-            stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(30).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
+            stream.Observe().Take(30).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             for (int i = 0; i < 3; i++)
             {

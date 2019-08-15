@@ -140,11 +140,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd5 = new FailureCommand(key, 1);
-            HystrixCommand<bool> cmd6 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
+            HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
             cmd5.Execute();
             cmd6.Execute();
-            Time.Wait(200);
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(75, metrics.Healthcounts.ErrorPercentage);

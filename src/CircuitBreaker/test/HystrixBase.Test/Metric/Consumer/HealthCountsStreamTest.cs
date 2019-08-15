@@ -43,6 +43,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             public bool StreamRunning { get; set; } = false;
 
+            public volatile int OnNextCount = 0;
+
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
                 this.latch = latch;
@@ -64,6 +66,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             protected override void OnNextCore(HealthCounts healthCounts)
             {
                 StreamRunning = true;
+                OnNextCount++;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
@@ -241,7 +244,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await failure3.Observe();
 
             output.WriteLine(Time.CurrentTimeMillis + " Waiting for health window to change");
-            Time.Wait(250);
+            Assert.True(Time.WaitUntil(() => observer.OnNextCount > 1, 250), "health window update took to long");
             output.WriteLine(Time.CurrentTimeMillis + " Running short circuits");
 
             await shortCircuit1.Observe();
