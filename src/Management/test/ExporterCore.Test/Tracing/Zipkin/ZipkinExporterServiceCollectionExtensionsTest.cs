@@ -16,6 +16,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+#if NETCOREAPP3_0
+using Microsoft.Extensions.Hosting;
+#endif
 using OpenCensus.Exporter.Zipkin;
 using OpenCensus.Trace;
 using OpenCensus.Trace.Config;
@@ -52,7 +55,11 @@ namespace Steeltoe.Management.Exporter.Tracing.Test
             var config = GetConfiguration();
 
             services.AddOptions();
+#if NETCOREAPP3_0
+            services.AddSingleton<IHostEnvironment>(new TestHost());
+#else
             services.AddSingleton<IHostingEnvironment>(new TestHost());
+#endif
             services.AddSingleton<ITracing>(new TestTracing());
 
             services.AddZipkinExporter(config);
@@ -79,7 +86,11 @@ namespace Steeltoe.Management.Exporter.Tracing.Test
             return builder.Build();
         }
 
+#if NETCOREAPP3_0
+        private class TestHost : IHostEnvironment
+#else
         private class TestHost : IHostingEnvironment
+#endif
         {
             public string EnvironmentName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
