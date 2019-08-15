@@ -27,7 +27,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
     public static class LoggersContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Loggers endpoint, middleware and options<para />Steeltoe's <see cref="DynamicILogger"/> will be configured and included in the DI container
+        /// Register the Loggers endpoint, middleware and options<para />Steeltoe's <see cref="DynamicConsoleLogger"/> will be configured and included in the DI container
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             }
 
             container.RegisterLogging(config);
-            container.RegisterType<DynamicLoggerProvider>().As<IDynamicLoggerProvider>();
+            container.RegisterType<DynamicConsoleLoggerProvider>().As<IDynamicLoggerProvider>();
             container.Register(c =>
             {
                 var options = new LoggersEndpointOptions(config);

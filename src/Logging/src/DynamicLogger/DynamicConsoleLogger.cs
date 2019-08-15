@@ -18,11 +18,11 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Logging
 {
-    public class DynamicILogger : ILogger
+    public class DynamicConsoleLogger : ILogger
     {
         private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
-        public DynamicILogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
+        public DynamicConsoleLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         {
             _messageProcessors = messageProcessors;
             Delegate = iLogger;
