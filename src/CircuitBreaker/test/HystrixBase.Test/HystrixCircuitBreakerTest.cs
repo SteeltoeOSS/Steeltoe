@@ -15,6 +15,7 @@
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
@@ -50,6 +51,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
 
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            stream.Observe().Subscribe((healthCounts) =>
+            {
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            });
 
             _ = await cmd1.ExecuteAsync();
             _ = await cmd2.ExecuteAsync();
@@ -89,6 +96,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            stream.Observe().Subscribe((healthCounts) =>
+            {
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            });
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -128,6 +141,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            stream.Observe().Subscribe((healthCounts) =>
+            {
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            });
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -166,6 +185,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             HystrixCommand<bool> cmd1 = new TimeoutCommand(key);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            stream.Observe().Subscribe((healthCounts) =>
+            {
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            });
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -194,6 +219,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            stream.Observe().Subscribe((healthCounts) =>
+            {
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            });
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -224,6 +255,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // Allow window to pass, this should trip the circuit as the error percentage is above the threshold
             Time.Wait(200);
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
         }
@@ -236,6 +268,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            stream.Observe().Subscribe((healthCounts) =>
+            {
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            });
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (1)");
@@ -276,6 +314,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             int sleepWindow = 400;
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            stream.Observe().Subscribe((healthCounts) =>
+            {
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            });
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -331,6 +375,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             int sleepWindow = 400;
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            stream.Observe().Subscribe((healthCounts) =>
+            {
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            });
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed when expected!");
@@ -434,6 +484,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            stream.Observe().Subscribe((healthCounts) =>
+            {
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            });
 
             // this should start as allowing requests
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
