@@ -24,8 +24,8 @@
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
     <!-- These next two references were bumped to 2.2.0 to account for inclusion of AspNetCore Healthchecks in Steeltoe ConnectorCore -->
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreHealthChecksVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreHealthChecksVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(HealthChecksVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(HealthChecksVersion)" />
   </ItemGroup>
 
 </Project>

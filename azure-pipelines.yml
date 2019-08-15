@@ -32,7 +32,7 @@ jobs:
     displayName: 'Use .NET Core sdk'
     inputs:
       packageType: sdk
-      version: 2.2.300
+      version: 3.0.100-preview8-013656
       installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DotNetCoreCLI@2
     inputs:
@@ -61,7 +61,7 @@ jobs:
     displayName: 'Use .NET Core sdk'
     inputs:
       packageType: sdk
-      version: 2.2.300
+      version: 3.0.100-preview8-013656
       installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DotNetCoreCLI@2
     inputs:
@@ -103,7 +103,7 @@ jobs:
     displayName: 'Use .NET Core sdk'
     inputs:
       packageType: sdk
-      version: 2.2.300
+      version: 3.0.100-preview8-013656
       installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DotNetCoreCLI@2
     inputs:

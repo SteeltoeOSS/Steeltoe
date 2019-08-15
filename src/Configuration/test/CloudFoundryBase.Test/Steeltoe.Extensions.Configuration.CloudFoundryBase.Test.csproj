@@ -19,6 +19,6 @@
     <ProjectReference Include="..\..\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(AspNetCoreTestVersion)" />
+    <!--<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />-->
   </ItemGroup>
 </Project>

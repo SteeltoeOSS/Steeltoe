@@ -23,9 +23,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreTestVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreTestVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(AspNetCoreTestVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="$(AspNetCoreTestVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(AspNetCoreTestVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(ExtensionsVersion)" />
   </ItemGroup>
 </Project>

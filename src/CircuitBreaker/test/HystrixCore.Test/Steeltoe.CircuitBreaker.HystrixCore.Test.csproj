@@ -12,7 +12,7 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreTestVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreDepTestVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(ExtensionsVersion)" />
   </ItemGroup>
   
   <ItemGroup>
