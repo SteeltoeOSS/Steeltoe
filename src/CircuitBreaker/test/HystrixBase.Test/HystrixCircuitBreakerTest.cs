@@ -52,40 +52,41 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-            stream.Observe().Subscribe((healthCounts) =>
+            using (stream.Observe().Subscribe((healthCounts) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            });
+            }))
+            {
+                _ = await cmd1.ExecuteAsync();
+                _ = await cmd2.ExecuteAsync();
+                _ = await cmd3.ExecuteAsync();
+                _ = await cmd4.ExecuteAsync();
 
-            _ = await cmd1.ExecuteAsync();
-            _ = await cmd2.ExecuteAsync();
-            _ = await cmd3.ExecuteAsync();
-            _ = await cmd4.ExecuteAsync();
+                // this should still allow requests as everything has been successful
+                Time.Wait(125);
 
-            // this should still allow requests as everything has been successful
-            Time.Wait(125);
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                // fail
+                HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
+                HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
+                HystrixCommand<bool> cmd7 = new FailureCommand(key, 0);
+                HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
+                Assert.False(await cmd5.ExecuteAsync());
+                Assert.False(await cmd6.ExecuteAsync());
+                Assert.False(await cmd7.ExecuteAsync());
+                Assert.False(await cmd8.ExecuteAsync());
 
-            // fail
-            HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
-            HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
-            HystrixCommand<bool> cmd7 = new FailureCommand(key, 0);
-            HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
-            Assert.False(await cmd5.ExecuteAsync());
-            Assert.False(await cmd6.ExecuteAsync());
-            Assert.False(await cmd7.ExecuteAsync());
-            Assert.False(await cmd8.ExecuteAsync());
+                // make sure window has passed
+                Time.Wait(125);
 
-            // make sure window has passed
-            Time.Wait(125);
-
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+                Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+                Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+            }
         }
 
         [Fact]
@@ -97,40 +98,41 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-            stream.Observe().Subscribe((healthCounts) =>
+            using (stream.Observe().Subscribe((healthCounts) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            });
+            }))
+            {
+                // this should start as allowing requests
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
-            // this should start as allowing requests
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                // success with high latency
+                _ = await cmd1.ExecuteAsync();
+                HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
+                _ = await cmd2.ExecuteAsync();
+                HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
+                _ = await cmd3.ExecuteAsync();
+                HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
+                _ = await cmd4.ExecuteAsync();
+                HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
+                _ = await cmd5.ExecuteAsync();
+                HystrixCommand<bool> cmd6 = new SuccessCommand(key, 0);
+                _ = await cmd6.ExecuteAsync();
+                HystrixCommand<bool> cmd7 = new FailureCommand(key, 0);
+                _ = await cmd7.ExecuteAsync();
+                HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
+                _ = await cmd8.ExecuteAsync();
 
-            // success with high latency
-            _ = await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
-            _ = await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
-            _ = await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
-            _ = await cmd4.ExecuteAsync();
-            HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
-            _ = await cmd5.ExecuteAsync();
-            HystrixCommand<bool> cmd6 = new SuccessCommand(key, 0);
-            _ = await cmd6.ExecuteAsync();
-            HystrixCommand<bool> cmd7 = new FailureCommand(key, 0);
-            _ = await cmd7.ExecuteAsync();
-            HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
-            _ = await cmd8.ExecuteAsync();
+                // Let window pass, this should trip the circuit as the error percentage is above the threshold
+                Time.Wait(125);
 
-            // Let window pass, this should trip the circuit as the error percentage is above the threshold
-            Time.Wait(125);
-
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+                Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+                Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+            }
         }
 
         [Fact]
@@ -142,39 +144,40 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-            stream.Observe().Subscribe((healthCounts) =>
+            using (stream.Observe().Subscribe((healthCounts) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            });
+            }))
+            {
+                // this should start as allowing requests
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
-            // this should start as allowing requests
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                // success with high latency
+                await cmd1.ExecuteAsync();
+                HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
+                await cmd2.ExecuteAsync();
+                HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
+                await cmd3.ExecuteAsync();
+                HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
+                await cmd4.ExecuteAsync();
+                HystrixCommand<bool> cmd5 = new SuccessCommand(key, 0);
+                await cmd5.ExecuteAsync();
+                HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
+                await cmd6.ExecuteAsync();
+                HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
+                await cmd7.ExecuteAsync();
+                HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
+                await cmd8.ExecuteAsync();
 
-            // success with high latency
-            await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
-            await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
-            await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
-            await cmd4.ExecuteAsync();
-            HystrixCommand<bool> cmd5 = new SuccessCommand(key, 0);
-            await cmd5.ExecuteAsync();
-            HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
-            await cmd6.ExecuteAsync();
-            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
-            await cmd7.ExecuteAsync();
-            HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
-            await cmd8.ExecuteAsync();
-
-            // Allow window to pass, this should remain closed as the failure threshold is below the percentage limit
-            Time.Wait(125);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                // Allow window to pass, this should remain closed as the failure threshold is below the percentage limit
+                Time.Wait(125);
+                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+            }
         }
 
         [Fact]
@@ -186,29 +189,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new TimeoutCommand(key);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-            stream.Observe().Subscribe((healthCounts) =>
+            using (stream.Observe().Subscribe((healthCounts) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            });
+            }))
+            {
+                // this should start as allowing requests
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
-            // this should start as allowing requests
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                // success with high latency
+                await cmd1.ExecuteAsync();
+                HystrixCommand<bool> cmd2 = new TimeoutCommand(key);
+                await cmd2.ExecuteAsync();
+                HystrixCommand<bool> cmd3 = new TimeoutCommand(key);
+                await cmd3.ExecuteAsync();
+                HystrixCommand<bool> cmd4 = new TimeoutCommand(key);
+                await cmd4.ExecuteAsync();
 
-            // success with high latency
-            await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new TimeoutCommand(key);
-            await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new TimeoutCommand(key);
-            await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new TimeoutCommand(key);
-            await cmd4.ExecuteAsync();
-
-            // Allow window to pass, everything has been a timeout so we should not allow any requests
-            Time.Wait(125);
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+                // Allow window to pass, everything has been a timeout so we should not allow any requests
+                Time.Wait(125);
+                Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+                Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+            }
         }
 
         [Fact]
@@ -220,26 +224,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-            stream.Observe().Subscribe((healthCounts) =>
+            using (stream.Observe().Subscribe((healthCounts) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            });
+            }))
+            {
+                // this should start as allowing requests
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
-            // this should start as allowing requests
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
-
-            // success with high latency
-            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
-            HystrixCommand<bool> cmd3 = new TimeoutCommand(key);
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
-            HystrixCommand<bool> cmd5 = new TimeoutCommand(key);
-            HystrixCommand<bool> cmd6 = new TimeoutCommand(key);
-            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
-            HystrixCommand<bool> cmd8 = new TimeoutCommand(key);
-            HystrixCommand<bool> cmd9 = new TimeoutCommand(key);
-            var taskList = new List<Task>
+                // success with high latency
+                HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
+                HystrixCommand<bool> cmd3 = new TimeoutCommand(key);
+                HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
+                HystrixCommand<bool> cmd5 = new TimeoutCommand(key);
+                HystrixCommand<bool> cmd6 = new TimeoutCommand(key);
+                HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
+                HystrixCommand<bool> cmd8 = new TimeoutCommand(key);
+                HystrixCommand<bool> cmd9 = new TimeoutCommand(key);
+                var taskList = new List<Task>
             {
                 cmd1.ExecuteAsync(),
                 cmd2.ExecuteAsync(),
@@ -251,13 +255,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 cmd8.ExecuteAsync(),
                 cmd9.ExecuteAsync(),
             };
-            await Task.WhenAll(taskList);
+                await Task.WhenAll(taskList);
 
-            // Allow window to pass, this should trip the circuit as the error percentage is above the threshold
-            Time.Wait(200);
-            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+                // Allow window to pass, this should trip the circuit as the error percentage is above the threshold
+                Time.Wait(200);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+                Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+            }
         }
 
         [Fact]
@@ -269,40 +274,41 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-            stream.Observe().Subscribe((healthCounts) =>
+            using (stream.Observe().Subscribe((healthCounts) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            });
+            }))
+            {
+                // this should start as allowing requests
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (1)");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
-            // this should start as allowing requests
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (1)");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                await cmd1.ExecuteAsync();
+                HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
+                await cmd2.ExecuteAsync();
+                HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
+                await cmd3.ExecuteAsync();
+                HystrixCommand<bool> cmd4 = new FailureCommand(key, 0);
+                await cmd4.ExecuteAsync();
 
-            await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
-            await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
-            await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new FailureCommand(key, 0);
-            await cmd4.ExecuteAsync();
+                // Allow window to pass, everything has failed in the test window so we should return false now
+                Time.Wait(200);
+                Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+                Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
-            // Allow window to pass, everything has failed in the test window so we should return false now
-            Time.Wait(200);
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+                // wait for sleepWindow to pass
+                Time.Wait(500);
 
-            // wait for sleepWindow to pass
-            Time.Wait(500);
+                // we should now allow 1 request
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (2)");
 
-            // we should now allow 1 request
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (2)");
+                // but the circuit should still be open
+                Assert.True(cb.IsOpen, "Circuit is closed when it should be open! (2)");
 
-            // but the circuit should still be open
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open! (2)");
-
-            // and further requests are still blocked
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected! (2)");
+                // and further requests are still blocked
+                Assert.False(cb.AllowRequest, "Request allowed when NOT expected! (2)");
+            }
         }
 
         [Fact]
@@ -315,55 +321,56 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-            stream.Observe().Subscribe((healthCounts) =>
+            using (stream.Observe().Subscribe((healthCounts) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            });
+            }))
+            {
+                // this should start as allowing requests
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
-            // this should start as allowing requests
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                _ = await cmd1.ExecuteAsync();
+                HystrixCommand<bool> cmd2 = new FailureCommand(key, 0, sleepWindow);
+                _ = await cmd2.ExecuteAsync();
+                HystrixCommand<bool> cmd3 = new FailureCommand(key, 0, sleepWindow);
+                _ = await cmd3.ExecuteAsync();
+                HystrixCommand<bool> cmd4 = new TimeoutCommand(key, sleepWindow);
+                _ = await cmd4.ExecuteAsync();
 
-            _ = await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0, sleepWindow);
-            _ = await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0, sleepWindow);
-            _ = await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new TimeoutCommand(key, sleepWindow);
-            _ = await cmd4.ExecuteAsync();
+                // Allow window to pass, everything has failed in the test window so we should return false now
+                Time.Wait(200);
+                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("CircuitBreaker state 1 : " + cmd1.Metrics.Healthcounts);
+                Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+                Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
-            // Allow window to pass, everything has failed in the test window so we should return false now
-            Time.Wait(200);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            output.WriteLine("CircuitBreaker state 1 : " + cmd1.Metrics.Healthcounts);
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+                // wait for sleepWindow to pass
+                Time.Wait(sleepWindow + 50);
 
-            // wait for sleepWindow to pass
-            Time.Wait(sleepWindow + 50);
+                // but the circuit should still be open
+                Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
-            // but the circuit should still be open
-            Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
+                // we should now allow 1 request, and upon success, should cause the circuit to be closed
+                HystrixCommand<bool> cmd5 = new SuccessCommand(key, 10, sleepWindow);
+                IObservable<bool> asyncResult = cmd5.Observe();
 
-            // we should now allow 1 request, and upon success, should cause the circuit to be closed
-            HystrixCommand<bool> cmd5 = new SuccessCommand(key, 10, sleepWindow);
-            IObservable<bool> asyncResult = cmd5.Observe();
+                // and further requests are still blocked while the singleTest command is in flight
+                Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
 
-            // and further requests are still blocked while the singleTest command is in flight
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+                await asyncResult.SingleAsync();
 
-            await asyncResult.SingleAsync();
+                // Allow window to pass, all requests should be open again
+                Time.Wait(200);
+                output.WriteLine("CircuitBreaker state 2 : " + cmd1.Metrics.Healthcounts);
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected (1)!");
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected (2)!");
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected (3)!");
 
-            // Allow window to pass, all requests should be open again
-            Time.Wait(200);
-            output.WriteLine("CircuitBreaker state 2 : " + cmd1.Metrics.Healthcounts);
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected (1)!");
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected (2)!");
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected (3)!");
-
-            // and the circuit should be closed again
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                // and the circuit should be closed again
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+            }
         }
 
         [Fact]
@@ -376,102 +383,103 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-            stream.Observe().Subscribe((healthCounts) =>
+            using (stream.Observe().Subscribe((healthCounts) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            });
+            }))
+            {
+                // this should start as allowing requests
+                Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
 
-            // this should start as allowing requests
-            Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
+                _ = await cmd1.ExecuteAsync();
+                HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
+                _ = await cmd2.ExecuteAsync();
+                HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
+                _ = await cmd3.ExecuteAsync();
+                HystrixCommand<bool> cmd4 = new TimeoutCommand(key);
+                _ = await cmd4.ExecuteAsync();
 
-            _ = await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
-            _ = await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
-            _ = await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new TimeoutCommand(key);
-            _ = await cmd4.ExecuteAsync();
+                // everything has failed in the test window so we should return false now
+                // Allow window to pass,
+                Time.Wait(200);
+                output.WriteLine(Time.CurrentTimeMillis + " !!!! 1 4 failures, circuit will open on recalc");
 
-            // everything has failed in the test window so we should return false now
-            // Allow window to pass,
-            Time.Wait(200);
-            output.WriteLine(Time.CurrentTimeMillis + " !!!! 1 4 failures, circuit will open on recalc");
+                // Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
+                Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
 
-            // Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-            Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
+                // wait for sleepWindow to pass
+                output.WriteLine(Time.CurrentTimeMillis + " !!!! 2 Sleep window starting where all commands fail-fast");
+                Time.Wait(sleepWindow + 50);
+                output.WriteLine(Time.CurrentTimeMillis + " !!!! 3 Sleep window over, should allow singleTest()");
 
-            // wait for sleepWindow to pass
-            output.WriteLine(Time.CurrentTimeMillis + " !!!! 2 Sleep window starting where all commands fail-fast");
-            Time.Wait(sleepWindow + 50);
-            output.WriteLine(Time.CurrentTimeMillis + " !!!! 3 Sleep window over, should allow singleTest()");
+                // but the circuit should still be open
+                Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
 
-            // but the circuit should still be open
-            Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
+                // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
+                HystrixCommand<bool> cmd5 = new FailureCommand(key, 50);
+                IObservable<bool> asyncResult5 = cmd5.Observe();
+                output.WriteLine(Time.CurrentTimeMillis + " !!!! Kicked off the single-test");
 
-            // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
-            HystrixCommand<bool> cmd5 = new FailureCommand(key, 50);
-            IObservable<bool> asyncResult5 = cmd5.Observe();
-            output.WriteLine(Time.CurrentTimeMillis + " !!!! Kicked off the single-test");
+                // and further requests are still blocked while the singleTest command is in flight
+                Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
+                output.WriteLine(Time.CurrentTimeMillis + " !!!! Confirmed that no other requests go out during single-test");
 
-            // and further requests are still blocked while the singleTest command is in flight
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
-            output.WriteLine(Time.CurrentTimeMillis + " !!!! Confirmed that no other requests go out during single-test");
+                await asyncResult5.SingleAsync();
+                output.WriteLine(Time.CurrentTimeMillis + " !!!! SingleTest just completed");
 
-            await asyncResult5.SingleAsync();
-            output.WriteLine(Time.CurrentTimeMillis + " !!!! SingleTest just completed");
+                // all requests should still be blocked, because the singleTest failed
+                Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (1) when NOT expected!");
+                Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (2) when NOT expected!");
+                Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (3) when NOT expected!");
 
-            // all requests should still be blocked, because the singleTest failed
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (1) when NOT expected!");
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (2) when NOT expected!");
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (3) when NOT expected!");
+                // wait for sleepWindow to pass
+                output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window START");
+                Time.Wait(sleepWindow + 50);
+                output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window over");
 
-            // wait for sleepWindow to pass
-            output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window START");
-            Time.Wait(sleepWindow + 50);
-            output.WriteLine(Time.CurrentTimeMillis + " !!!! 2nd sleep window over");
+                // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
+                HystrixCommand<bool> cmd6 = new FailureCommand(key, 50);
+                IObservable<bool> asyncResult6 = cmd6.Observe();
+                output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest just kicked off");
 
-            // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
-            HystrixCommand<bool> cmd6 = new FailureCommand(key, 50);
-            IObservable<bool> asyncResult6 = cmd6.Observe();
-            output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest just kicked off");
+                // and further requests are still blocked while the singleTest command is in flight
+                Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
+                Assert.False(await asyncResult6.SingleAsync());
+                output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest now over");
 
-            // and further requests are still blocked while the singleTest command is in flight
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
-            Assert.False(await asyncResult6.SingleAsync());
-            output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest now over");
+                // all requests should still be blocked, because the singleTest failed
+                Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (1) when NOT expected!");
+                Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (2) when NOT expected!");
+                Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (3) when NOT expected!");
 
-            // all requests should still be blocked, because the singleTest failed
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (1) when NOT expected!");
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (2) when NOT expected!");
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed (3) when NOT expected!");
+                // wait for sleepWindow to pass
+                Time.Wait(sleepWindow);
 
-            // wait for sleepWindow to pass
-            Time.Wait(sleepWindow);
+                // but the circuit should still be open
+                Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
 
-            // but the circuit should still be open
-            Assert.True(cb.IsOpen, Time.CurrentTimeMillis + " Circuit is closed when it should be open!");
+                // we should now allow 1 request, and upon success, should cause the circuit to be closed
+                HystrixCommand<bool> cmd7 = new SuccessCommand(key, 50);
+                IObservable<bool> asyncResult7 = cmd7.Observe();
 
-            // we should now allow 1 request, and upon success, should cause the circuit to be closed
-            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 50);
-            IObservable<bool> asyncResult7 = cmd7.Observe();
+                // and further requests are still blocked while the singleTest command is in flight
+                Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
 
-            // and further requests are still blocked while the singleTest command is in flight
-            Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
+                await asyncResult7.SingleAsync();
 
-            await asyncResult7.SingleAsync();
+                // all requests should be open again
+                Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed (1) when expected!");
+                Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed (2) when expected!");
+                Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed (3) when expected!");
 
-            // all requests should be open again
-            Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed (1) when expected!");
-            Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed (2) when expected!");
-            Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed (3) when expected!");
+                // and the circuit should be closed again
+                Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
 
-            // and the circuit should be closed again
-            Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
-
-            // and the circuit should be closed again
-            Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
+                // and the circuit should be closed again
+                Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
+            }
         }
 
         [Fact]
@@ -485,29 +493,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
-            stream.Observe().Subscribe((healthCounts) =>
+            using (stream.Observe().Subscribe((healthCounts) =>
             {
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            });
+            }))
+            {
+                // this should start as allowing requests
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
-            // this should start as allowing requests
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                await cmd1.ExecuteAsync();
+                HystrixCommand<bool> cmd2 = new FailureCommand(key, 0, sleepWindow, lowVolume);
+                await cmd2.ExecuteAsync();
+                HystrixCommand<bool> cmd3 = new FailureCommand(key, 0, sleepWindow, lowVolume);
+                await cmd3.ExecuteAsync();
+                HystrixCommand<bool> cmd4 = new FailureCommand(key, 0, sleepWindow, lowVolume);
+                await cmd4.ExecuteAsync();
 
-            await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0, sleepWindow, lowVolume);
-            await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0, sleepWindow, lowVolume);
-            await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new FailureCommand(key, 0, sleepWindow, lowVolume);
-            await cmd4.ExecuteAsync();
+                // Allow window to pass, even though it has all failed we won't trip the circuit because the volume is low
+                Time.Wait(200);
 
-            // Allow window to pass, even though it has all failed we won't trip the circuit because the volume is low
-            Time.Wait(200);
-
-            Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
-            Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+                Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
+                Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
+            }
         }
 
         internal static HystrixCommandMetrics GetMetrics(HystrixCommandOptions properties)
