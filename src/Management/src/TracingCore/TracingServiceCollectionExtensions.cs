@@ -43,7 +43,11 @@ namespace Steeltoe.Management.Tracing
 
             services.TryAddSingleton<ITracingOptions>((p) =>
             {
+#if NETCOREAPP3_0
+                var h = p.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>();
+#else
                 var h = p.GetRequiredService<Microsoft.AspNetCore.Hosting.IHostingEnvironment>();
+#endif
                 return new TracingOptions(h.ApplicationName, config);
             });
 

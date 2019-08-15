@@ -22,7 +22,7 @@ namespace Steeltoe.Extensions.Logging
     {
         private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
-        public DynamicConsoleLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
+        internal DynamicConsoleLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         {
             _messageProcessors = messageProcessors;
             Delegate = iLogger;
@@ -67,6 +67,6 @@ namespace Steeltoe.Extensions.Logging
         }
 
         public virtual void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
-            => Delegate.Log(logLevel, Name, eventId, message, exception);
+            => Delegate.Log(logLevel, eventId, exception, message);
     }
 }

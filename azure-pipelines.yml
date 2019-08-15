@@ -29,11 +29,15 @@ jobs:
       filePath: src/Connectors/EnableGemFire.ps1
       arguments: $(PivNetAPIToken)
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk'
+    displayName: 'Install .NET Core 2.x SDK'
+    inputs:
+      packageType: sdk
+      version: 2.2.300
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 3.x SDK'
     inputs:
       packageType: sdk
       version: 3.0.100-preview8-013656
-      installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DotNetCoreCLI@2
     inputs:
       command: restore
@@ -58,11 +62,15 @@ jobs:
       filePath: src/Connectors/EnableGemFire.ps1
       arguments: $(PivNetAPIToken)
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk'
+    displayName: 'Install .NET Core 2.x SDK'
+    inputs:
+      packageType: sdk
+      version: 2.2.300
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 3.x SDK'
     inputs:
       packageType: sdk
       version: 3.0.100-preview8-013656
-      installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DotNetCoreCLI@2
     inputs:
       command: restore
@@ -100,11 +108,15 @@ jobs:
       filePath: src/Connectors/EnableGemFire.ps1
       arguments: $(PivNetAPIToken)
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk'
+    displayName: 'Install .NET Core 2.x SDK'
+    inputs:
+      packageType: sdk
+      version: 2.2.300
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 3.x SDK'
     inputs:
       packageType: sdk
       version: 3.0.100-preview8-013656
-      installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DotNetCoreCLI@2
     inputs:
       command: 'restore'

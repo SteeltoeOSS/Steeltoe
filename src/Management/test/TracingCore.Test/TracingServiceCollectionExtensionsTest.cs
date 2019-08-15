@@ -49,7 +49,11 @@ namespace Steeltoe.Management.Tracing.Test
             var config = GetConfiguration();
 
             services.AddOptions();
+#if NETCOREAPP3_0
+            services.AddSingleton<IHostEnvironment>(new TestHost());
+#else
             services.AddSingleton<Microsoft.AspNetCore.Hosting.IHostingEnvironment>(new TestHost());
+#endif
             services.AddDistributedTracing(config);
 
             var serviceProvider = services.BuildServiceProvider();
@@ -72,7 +76,11 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.NotNull(processer);
         }
 
+#if NETCOREAPP3_0
+        private class TestHost : IHostEnvironment
+#else
         private class TestHost : Microsoft.AspNetCore.Hosting.IHostingEnvironment
+#endif
         {
             public string EnvironmentName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

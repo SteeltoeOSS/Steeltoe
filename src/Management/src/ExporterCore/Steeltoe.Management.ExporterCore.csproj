@@ -3,7 +3,7 @@
   
   <PropertyGroup>
     <Description>Steeltoe Management Exporter</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.ExporterCore</AssemblyName>
     <PackageId>Steeltoe.Management.ExporterCore</PackageId>
     <PackageTags>Asp.NET Core, Management;Monitoring;Metrics;Distributed Trace</PackageTags>
@@ -11,10 +11,15 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="OpenCensus.Exporter.Zipkin" Version="$(OpenCensusVersion)" />
   </ItemGroup>
-  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\ExporterBase\Steeltoe.Management.ExporterBase.csproj" />
   </ItemGroup>

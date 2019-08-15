@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using OpenCensus.Exporter.Zipkin;
 using Steeltoe.Management.Census.Trace;
 using Steeltoe.Management.Exporter.Tracing.Zipkin;
@@ -38,7 +39,7 @@ namespace Steeltoe.Management.Exporter.Tracing
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<ZipkinTraceExporter>((p) =>
+            services.TryAddSingleton((p) =>
             {
                 return CreateExporter(p, config);
             });
@@ -46,7 +47,11 @@ namespace Steeltoe.Management.Exporter.Tracing
 
         private static ZipkinTraceExporter CreateExporter(IServiceProvider p, IConfiguration config)
         {
+#if NETCOREAPP3_0
+            var h = p.GetRequiredService<IHostEnvironment>();
+#else
             var h = p.GetRequiredService<IHostingEnvironment>();
+#endif
             var opts = new TraceExporterOptions(h.ApplicationName, config);
             var censusOpts = new ZipkinTraceExporterOptions()
             {
