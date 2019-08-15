@@ -96,19 +96,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // success with high latency
             _ = await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
             _ = await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
             _ = await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
             _ = await cmd4.ExecuteAsync();
-            HystrixCommand<bool> cmd5 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
             _ = await cmd5.ExecuteAsync();
-            HystrixCommand<bool> cmd6 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd6 = new SuccessCommand(key, 0);
             _ = await cmd6.ExecuteAsync();
-            HystrixCommand<bool> cmd7 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd7 = new FailureCommand(key, 0);
             _ = await cmd7.ExecuteAsync();
-            HystrixCommand<bool> cmd8 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
             _ = await cmd8.ExecuteAsync();
 
             // Let window pass, this should trip the circuit as the error percentage is above the threshold
@@ -135,19 +135,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // success with high latency
             await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
             await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
             await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
             await cmd4.ExecuteAsync();
-            HystrixCommand<bool> cmd5 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd5 = new SuccessCommand(key, 0);
             await cmd5.ExecuteAsync();
-            HystrixCommand<bool> cmd6 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
             await cmd6.ExecuteAsync();
-            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
             await cmd7.ExecuteAsync();
-            HystrixCommand<bool> cmd8 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd8 = new FailureCommand(key, 0);
             await cmd8.ExecuteAsync();
 
             // Allow window to pass, this should remain closed as the failure threshold is below the percentage limit
@@ -200,12 +200,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             // success with high latency
-            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
             HystrixCommand<bool> cmd3 = new TimeoutCommand(key);
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
             HystrixCommand<bool> cmd5 = new TimeoutCommand(key);
             HystrixCommand<bool> cmd6 = new TimeoutCommand(key);
-            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
             HystrixCommand<bool> cmd8 = new TimeoutCommand(key);
             HystrixCommand<bool> cmd9 = new TimeoutCommand(key);
             var taskList = new List<Task>
@@ -242,11 +242,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
             await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
             await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd4 = new FailureCommand(key, 0);
             await cmd4.ExecuteAsync();
 
             // Allow window to pass, everything has failed in the test window so we should return false now
@@ -255,7 +255,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
             // wait for sleepWindow to pass
-            Time.Wait(250);
+            Time.Wait(500);
 
             // we should now allow 1 request
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (2)");
@@ -273,8 +273,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-G";
 
-            int sleepWindow = 200;
-            HystrixCommand<bool> cmd1 = new FailureCommand(key, 1, sleepWindow);
+            int sleepWindow = 400;
+            HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
             // this should start as allowing requests
@@ -282,15 +282,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             _ = await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 1, sleepWindow);
+            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0, sleepWindow);
             _ = await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 1, sleepWindow);
+            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0, sleepWindow);
             _ = await cmd3.ExecuteAsync();
             HystrixCommand<bool> cmd4 = new TimeoutCommand(key, sleepWindow);
             _ = await cmd4.ExecuteAsync();
 
             // Allow window to pass, everything has failed in the test window so we should return false now
-            // Time.Wait(125);
+            Time.Wait(125);
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             output.WriteLine("CircuitBreaker state 1 : " + cmd1.Metrics.Healthcounts);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
@@ -328,7 +328,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-H";
 
-            int sleepWindow = 200;
+            int sleepWindow = 400;
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 50);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
 
@@ -337,9 +337,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
 
             _ = await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
             _ = await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0);
             _ = await cmd3.ExecuteAsync();
             HystrixCommand<bool> cmd4 = new TimeoutCommand(key);
             _ = await cmd4.ExecuteAsync();
@@ -429,7 +429,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-I";
 
-            int sleepWindow = 200;
+            int sleepWindow = 400;
             int lowVolume = 5;
 
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 60, sleepWindow, lowVolume);
@@ -440,11 +440,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
 
             await cmd1.ExecuteAsync();
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 1, sleepWindow, lowVolume);
+            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0, sleepWindow, lowVolume);
             await cmd2.ExecuteAsync();
-            HystrixCommand<bool> cmd3 = new FailureCommand(key, 1, sleepWindow, lowVolume);
+            HystrixCommand<bool> cmd3 = new FailureCommand(key, 0, sleepWindow, lowVolume);
             await cmd3.ExecuteAsync();
-            HystrixCommand<bool> cmd4 = new FailureCommand(key, 1, sleepWindow, lowVolume);
+            HystrixCommand<bool> cmd4 = new FailureCommand(key, 0, sleepWindow, lowVolume);
             await cmd4.ExecuteAsync();
 
             // Allow window to pass, even though it has all failed we won't trip the circuit because the volume is low
@@ -545,7 +545,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             public Command(string commandKey, bool shouldFail, int latencyToAdd)
-            : this(commandKey, shouldFail, false, latencyToAdd, 200, 1)
+            : this(commandKey, shouldFail, false, latencyToAdd, 400, 1)
             {
             }
 
@@ -620,7 +620,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private class BadRequestCommand : Command
         {
             public BadRequestCommand(string commandKey, int latencyToAdd)
-                : base(commandKey, false, true, latencyToAdd, 200, 1)
+                : base(commandKey, false, true, latencyToAdd, 400, 1)
             {
             }
 

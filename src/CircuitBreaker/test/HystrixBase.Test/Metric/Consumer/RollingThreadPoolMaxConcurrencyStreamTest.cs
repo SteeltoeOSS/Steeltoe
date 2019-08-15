@@ -36,6 +36,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             private CountdownEvent latch;
             private ITestOutputHelper output;
 
+            public bool StreamRunning { get; set; } = false;
+
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
             {
                 this.latch = latch;
@@ -44,6 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnCompletedCore()
             {
+                StreamRunning = false;
                 latch.SignalEx();
             }
 
@@ -54,14 +57,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             protected override void OnNextCore(int maxConcurrency)
             {
+                StreamRunning = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : Max of " + maxConcurrency);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
-        }
-
-        private static LatchedObserver GetSubscriber(ITestOutputHelper output, CountdownEvent latch)
-        {
-            return new LatchedObserver(output, latch);
         }
 
         public RollingThreadPoolMaxConcurrencyStreamTest(ITestOutputHelper output)
@@ -85,11 +84,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestEmptyStreamProducesZeros()
         {
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-A");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(GetSubscriber(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
+
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(0, stream.LatestRollingMax);
@@ -102,11 +103,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-B");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-B");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-B");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 50);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 40);
@@ -128,11 +130,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-C");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-C");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-C");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10, ExecutionIsolationStrategy.SEMAPHORE);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 14, ExecutionIsolationStrategy.SEMAPHORE);
@@ -160,11 +163,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-D");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-D");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-D");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 560);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 50);
@@ -196,11 +200,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-E");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-E");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-E");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
@@ -237,11 +242,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-X");
             IHystrixCommandKey keyX = HystrixCommandKeyDefault.AsKey("RollingConcurrency-X");
             IHystrixCommandKey keyY = HystrixCommandKeyDefault.AsKey("RollingConcurrency-Y");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKeyX, keyX, HystrixEventType.SUCCESS, 300);
             Command cmd2 = Command.From(groupKeyY, keyY, HystrixEventType.SUCCESS, 300);
@@ -274,11 +280,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-F");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-F");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-F");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(30).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(30).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
@@ -305,11 +312,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-G");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-G");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-G");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(5).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 40);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
@@ -336,11 +344,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-H");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-H");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-H");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // after 3 failures, next command should short-circuit.
             // to prove short-circuited commands don't contribute to concurrency, execute 3 FAILURES in the first bucket sequentially
@@ -384,11 +393,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-I");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-I");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-I");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands executed concurrently on different caller threads should saturate semaphore
             // once these are in-flight, execute 10 more concurrently on new caller threads.
@@ -436,11 +446,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-J");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-J");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-J");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            stream.Observe().Take(10).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands executed concurrently should saturate the Hystrix threadpool
             // once these are in-flight, execute 10 more concurrently

@@ -54,6 +54,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     return true;
                 }
 
+                if (ticksToWait <= 0)
+                {
+                    return false;
+                }
+
                 if (elapsed >= ticksToWait)
                 {
                     return false;
@@ -66,6 +71,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         public static void Wait(int maxWaitMilli)
         {
             long ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
+
+            if (ticksToWait <= 0)
+            {
+                return;
+            }
+
             long start = DateTime.Now.Ticks;
 
             while (true)
