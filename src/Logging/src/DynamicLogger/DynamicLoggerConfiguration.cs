@@ -16,15 +16,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Extensions.Logging
 {
-    public class LoggerConfiguration : ILoggerConfiguration
+    public class DynamicLoggerConfiguration : ILoggerConfiguration
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerConfiguration"/> class.
+        /// Initializes a new instance of the <see cref="DynamicLoggerConfiguration"/> class.
         /// </summary>
         /// <param name="name">Namespace</param>
         /// <param name="configured">Original log level</param>
         /// <param name="effective">Currently effective log level</param>
-        public LoggerConfiguration(string name, LogLevel? configured, LogLevel effective)
+        public DynamicLoggerConfiguration(string name, LogLevel? configured, LogLevel effective)
         {
             Name = name;
             ConfiguredLevel = configured;
@@ -53,15 +53,10 @@ namespace Steeltoe.Extensions.Logging
 
         public override bool Equals(object obj)
         {
-            LoggerConfiguration lc = obj as LoggerConfiguration;
-            if (lc == null)
-            {
-                return false;
-            }
-
-            return this.Name == lc.Name &&
-                this.ConfiguredLevel == lc.ConfiguredLevel &&
-                this.EffectiveLevel == lc.EffectiveLevel;
+            return obj is DynamicLoggerConfiguration lc &&
+                    Name == lc.Name &&
+                    ConfiguredLevel == lc.ConfiguredLevel &&
+                    EffectiveLevel == lc.EffectiveLevel;
         }
 
         public override string ToString()

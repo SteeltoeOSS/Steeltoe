@@ -153,12 +153,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 
             var logConfig = provider.GetLoggerConfigurations();
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
         }
 
         [Fact]
@@ -175,12 +175,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 
             // assert I
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
 
             // act II
             provider.SetLogLevel("A.B", LogLevel.Trace);
@@ -188,12 +188,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 
             // assert II
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Trace), logConfig);
         }
 
         [Fact]
@@ -210,8 +210,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             var updatedLogConfig = provider.GetLoggerConfigurations();
 
             // assert
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
         }
 
         [Fact]
@@ -230,9 +230,9 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             var resetConfig = provider.GetLoggerConfigurations();
 
             // assert
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), resetConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), resetConfig);
         }
 
         [Fact]

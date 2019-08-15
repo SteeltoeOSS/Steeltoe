@@ -88,7 +88,7 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should NOT be enabled yet");
 
             // change the log level and confirm it worked
-            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
+            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicConsoleLoggerProvider;
             provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
             Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
         }
@@ -158,7 +158,7 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
 
             // change the log level and confirm it worked
-            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
+            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicConsoleLoggerProvider;
             provider.SetLogLevel("Steeltoe.Extensions.Logging.Test", LogLevel.Trace);
             Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
         }
@@ -232,7 +232,7 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.NotNull(dlogProvider);
             Assert.NotEmpty(logProviders);
             Assert.Single(logProviders);
-            Assert.IsType<DynamicLoggerProvider>(logProviders.SingleOrDefault());
+            Assert.IsType<DynamicConsoleLoggerProvider>(logProviders.SingleOrDefault());
         }
 
         [Fact]

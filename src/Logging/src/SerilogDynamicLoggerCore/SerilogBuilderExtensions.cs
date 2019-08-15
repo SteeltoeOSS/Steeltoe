@@ -37,12 +37,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
         public static ILoggingBuilder AddSerilogDynamicConsole(this ILoggingBuilder builder)
         {
-            builder.AddFilter<DynamicLoggerProvider>(null, LogLevel.Trace);
             builder.Services.AddSingleton<ISerilogOptions, SerilogOptions>();
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, SerilogDynamicProvider>());
 
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<ConsoleLoggerOptions>, LoggerProviderOptionsChangeTokenSource<ConsoleLoggerOptions, ConsoleLoggerProvider>>());
-            builder.Services.AddSingleton<IDynamicLoggerProvider>((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
+            builder.Services.AddSingleton((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
             return builder;
         }
 
@@ -51,7 +50,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// dynamically controlling the minimum log level via management endpoints
         /// </summary>
         /// <param name="builder">The <see cref="IWebHostBuilder"/> for configuring the WebHostBuilder  </param>
-        /// <param name="configureLogger">The delegate for configuring the <see cref="LoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" /></param>
+        /// <param name="configureLogger">The delegate for configuring the <see cref="DynamicLoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" /></param>
         /// <param name="preserveStaticLogger">Indicates whether to preserve the value of <see cref="Serilog.Log.Logger"/>.</param>
         /// <returns>The <see cref="IWebHostBuilder"/></returns>
         public static IHostBuilder UseSerilogDynamicConsole(this IHostBuilder builder, Action<HostBuilderContext, Serilog.LoggerConfiguration> configureLogger, bool preserveStaticLogger = false)
@@ -87,7 +86,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// dynamically controlling the minimum log level via management endpoints
         /// </summary>
         /// <param name="builder">The <see cref="IWebHostBuilder"/> for configuring the WebHostBuilder  </param>
-        /// <param name="configureLogger">The delegate for configuring the <see cref="LoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" /></param>
+        /// <param name="configureLogger">The delegate for configuring the <see cref="DynamicLoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" /></param>
         /// <param name="preserveStaticLogger">Indicates whether to preserve the value of <see cref="Serilog.Log.Logger"/>.</param>
         /// <returns>The <see cref="IWebHostBuilder"/></returns>
         public static IWebHostBuilder UseSerilogDynamicConsole(this IWebHostBuilder builder, Action<WebHostBuilderContext, Serilog.LoggerConfiguration> configureLogger, bool preserveStaticLogger = false)

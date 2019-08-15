@@ -27,7 +27,7 @@ indent_size = 2
 # Dotnet code style settings:
 [*.cs]
 # Sort using and Import directives with System.* appearing first
-dotnet_sort_system_directives_first = true
+dotnet_sort_system_directives_first = false
 
 # Don't use this. qualifier
 dotnet_style_qualification_for_field = false:suggestion

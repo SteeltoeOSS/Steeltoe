@@ -57,7 +57,7 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void SetLogLevel_UpdatesLogger()
         {
-            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
 
             var logger = provider.CreateLogger("A.B.C.D.TestClass");
 
@@ -81,7 +81,7 @@ namespace Steeltoe.Extensions.Logging.Test
         public void SetLogLevel_UpdatesNamespaceDescendants()
         {
             // arrange (A* should log at Information)
-            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
 
             // act I: with original setup
             var childLogger = provider.CreateLogger("A.B.C");
@@ -120,7 +120,7 @@ namespace Steeltoe.Extensions.Logging.Test
         public void SetLogLevel_Can_Reset_to_Default()
         {
             // arrange (A* should log at Information)
-            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
 
             // act I: with original setup
             var firstLogger = provider.CreateLogger("A.B.C");
@@ -158,24 +158,24 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void GetLoggerConfigurations_ReturnsExpected()
         {
-            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
             _ = provider.CreateLogger("A.B.C.D.TestClass");
 
             var logConfig = provider.GetLoggerConfigurations();
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
         }
 
         [Fact]
         public void GetLoggerConfigurations_ReturnsExpected_After_SetLogLevel()
         {
             // arrange
-            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
 
             // act I
             _ = provider.CreateLogger("A.B.C.D.TestClass");
@@ -183,12 +183,12 @@ namespace Steeltoe.Extensions.Logging.Test
 
             // assert I
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
 
             // act II
             provider.SetLogLevel("A.B", LogLevel.Trace);
@@ -196,19 +196,19 @@ namespace Steeltoe.Extensions.Logging.Test
 
             // assert II
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
         }
 
         [Fact]
         public void SetLogLevel_Works_OnDefault()
         {
             // arrange
-            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
             var originalLogConfig = provider.GetLoggerConfigurations();
 
             // act
@@ -216,15 +216,15 @@ namespace Steeltoe.Extensions.Logging.Test
             var updatedLogConfig = provider.GetLoggerConfigurations();
 
             // assert
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
         }
 
         [Fact]
         public void ResetLogLevel_Works_OnDefault()
         {
             // arrange
-            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
             var originalLogConfig = provider.GetLoggerConfigurations();
 
             // act
@@ -234,16 +234,16 @@ namespace Steeltoe.Extensions.Logging.Test
             var resetConfig = provider.GetLoggerConfigurations();
 
             // assert
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), resetConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), resetConfig);
         }
 
         [Fact(Skip = "This method of console redirection doesn't work in Logging 3.0")]
         public void LoggerLogs_At_Configured_Setting()
         {
             // arrange
-            var provider = GetLoggerProvider(defaultConfiguration) as DynamicLoggerProvider;
+            var provider = GetLoggerProvider(defaultConfiguration) as DynamicConsoleLoggerProvider;
             var logger = provider.CreateLogger("A.B.C.D.TestClass");
 
             // act I - log at all levels, expect Info and above to work
@@ -363,7 +363,7 @@ namespace Steeltoe.Extensions.Logging.Test
                         .AddLogging(builder => builder
                             .AddConfiguration(config.GetSection("Logging"))
                             .AddDynamicConsole()
-                            .AddFilter<DynamicLoggerProvider>(null, LogLevel.Trace))
+                            .AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace))
                         .BuildServiceProvider();
 
             var loggerProviderConfiguration = serviceProvider.GetService<ILoggerProviderConfiguration<ConsoleLoggerProvider>>();
