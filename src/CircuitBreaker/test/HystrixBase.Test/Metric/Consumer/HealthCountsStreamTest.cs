@@ -91,11 +91,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestEmptyStreamProducesZeros()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Health-A");
-            stream = HealthCountsStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+            stream = HealthCountsStream.GetInstance(key, 10, 100);
+            stream.Observe().Take(5).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
+
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());

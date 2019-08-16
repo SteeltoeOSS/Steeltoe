@@ -43,23 +43,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             HystrixCommandMetrics metrics = cmd1._metrics;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
+
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
                 cmd1.Execute();
                 Time.Wait(125);
 
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
 
                 HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
                 cmd2.Execute();
                 Time.Wait(125);
 
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
                 HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
@@ -68,7 +72,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 cmd4.Execute();
                 Time.Wait(125);
 
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 Assert.Equal(25, metrics.Healthcounts.ErrorPercentage);
 
                 HystrixCommand<bool> cmd5 = new TimeoutCommand(key);
@@ -76,8 +80,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 cmd5.Execute();
                 cmd6.Execute();
                 Time.Wait(125);
-
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
                 HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
@@ -87,13 +90,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 cmd8.Execute();
                 cmd9.Execute();
 
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
                 // latent
                 HystrixCommand<bool> cmd10 = new SuccessCommand(key, 60);
                 cmd10.Execute();
 
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
                 // 6 success + 1 latent success + 1 failure + 2 timeout = 10 total
                 // latent success not considered error
@@ -112,23 +115,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             HystrixCommandMetrics metrics = cmd1._metrics;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
                 cmd1.Execute();
                 Time.Wait(125);
 
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
 
                 HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
                 cmd2.Execute();
                 Time.Wait(125);
 
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
                 HystrixCommand<bool> cmd3 = new BadRequestCommand(key, 0);
@@ -139,7 +145,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
                 catch (HystrixBadRequestException)
                 {
-                    output.WriteLine("Caught expected HystrixBadRequestException from cmd3");
+                    output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + "Caught expected HystrixBadRequestException from cmd3");
                 }
 
                 try
@@ -148,12 +154,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
                 catch (HystrixBadRequestException)
                 {
-                    output.WriteLine("Caught expected HystrixBadRequestException from cmd4");
+                    output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + "Caught expected HystrixBadRequestException from cmd4");
                 }
 
                 Time.Wait(125);
 
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
                 HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
@@ -162,7 +168,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 cmd6.Execute();
                 Time.Wait(125);
 
-                output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 Assert.Equal(75, metrics.Healthcounts.ErrorPercentage);
             }
         }

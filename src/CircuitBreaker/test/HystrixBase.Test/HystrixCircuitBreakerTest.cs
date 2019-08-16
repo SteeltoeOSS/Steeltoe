@@ -52,12 +52,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
+
                 _ = await cmd1.ExecuteAsync();
                 _ = await cmd2.ExecuteAsync();
                 _ = await cmd3.ExecuteAsync();
@@ -98,12 +102,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
+
                 // this should start as allowing requests
                 Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
                 Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
@@ -144,12 +152,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
+
                 // this should start as allowing requests
                 Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
                 Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
@@ -189,12 +201,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new TimeoutCommand(key);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
+
                 // this should start as allowing requests
                 Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
                 Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
@@ -224,12 +240,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
+
                 // this should start as allowing requests
                 Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
                 Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
@@ -274,12 +294,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
+
                 // this should start as allowing requests
                 Assert.True(cb.AllowRequest, "Request NOT allowed when expected! (1)");
                 Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
@@ -321,12 +345,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
+
                 // this should start as allowing requests
                 Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
                 Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
@@ -383,12 +411,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
+
                 // this should start as allowing requests
                 Assert.True(cb.AllowRequest, Time.CurrentTimeMillis + " Request NOT allowed when expected!");
                 Assert.False(cb.IsOpen, Time.CurrentTimeMillis + " Circuit breaker is open when it should be closed!");
@@ -493,12 +525,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
             IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
+            bool streamStarted = false;
             using (stream.Observe().Subscribe((healthCounts) =>
             {
+                streamStarted = true;
                 output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + healthCounts);
                 output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                Assert.True(Time.WaitUntil(() => streamStarted, 1000), "Stream failed to start");
+
                 // this should start as allowing requests
                 Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
                 Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
