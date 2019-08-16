@@ -67,6 +67,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         internal static void Reset()
         {
+            RollingCollapserEventCounterStream.Reset();
+            CumulativeCollapserEventCounterStream.Reset();
+            RollingCollapserBatchSizeDistributionStream.Reset();
             Metrics.Clear();
         }
 

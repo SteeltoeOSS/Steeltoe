@@ -52,6 +52,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         private CumulativeCollapserEventCounterStream stream;
+        private IDisposable latchSubscription;
         private ITestOutputHelper output;
 
         public CumulativeCollapserEventCounterStreamTest(ITestOutputHelper output)
@@ -62,10 +63,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         public override void Dispose()
         {
+            latchSubscription?.Dispose();
+            stream?.Unsubscribe();
+            latchSubscription = null;
+            stream = null;
             base.Dispose();
-
-            stream.Unsubscribe();
-            CumulativeCollapserEventCounterStream.Reset();
         }
 
         [Fact]
@@ -76,7 +78,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(5).Subscribe(new LatchedObserver(latch));
+            latchSubscription = stream.Observe().Take(5).Subscribe(new LatchedObserver(latch));
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -94,7 +96,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(latch));
+            latchSubscription = stream.Observe().Take(10).Subscribe(new LatchedObserver(latch));
 
             for (int i = 0; i < 3; i++)
             {
@@ -120,7 +122,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(latch));
+            latchSubscription = stream.Observe().Take(10).Subscribe(new LatchedObserver(latch));
 
             for (int i = 0; i < 3; i++)
             {
@@ -149,7 +151,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(30).Subscribe(new LatchedObserver(latch));
+            latchSubscription = stream.Observe().Take(30).Subscribe(new LatchedObserver(latch));
 
             for (int i = 0; i < 3; i++)
             {

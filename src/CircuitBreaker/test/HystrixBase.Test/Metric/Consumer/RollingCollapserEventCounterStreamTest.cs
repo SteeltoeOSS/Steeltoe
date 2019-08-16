@@ -29,6 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     public class RollingCollapserEventCounterStreamTest : CommandStreamTest, IDisposable
     {
         private RollingCollapserEventCounterStream stream;
+        private IDisposable latchSubscription;
         private ITestOutputHelper output;
 
         private class LatchedObserver : ObserverBase<long[]>
@@ -79,8 +80,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         public override void Dispose()
         {
+            latchSubscription?.Dispose();
+            stream?.Unsubscribe();
+            latchSubscription = null;
+            stream = null;
             base.Dispose();
-            stream.Unsubscribe();
         }
 
         [Fact]
@@ -91,7 +95,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
@@ -111,7 +115,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             for (int i = 0; i < 3; i++)
@@ -136,7 +140,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             for (int i = 0; i < 3; i++)
@@ -165,7 +169,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            stream.Observe().Take(30).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(30).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             for (int i = 0; i < 3; i++)

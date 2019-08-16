@@ -27,6 +27,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest, IDisposable
     {
         private RollingCollapserBatchSizeDistributionStream stream;
+        private IDisposable latchSubscription;
 
         private ITestOutputHelper output;
 
@@ -34,14 +35,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             : base()
         {
             this.output = output;
-            RollingCollapserBatchSizeDistributionStream.Reset();
-            HystrixCollapserEventStream.Reset();
         }
 
         public override void Dispose()
         {
+            latchSubscription?.Dispose();
+            stream?.Unsubscribe();
+            latchSubscription = null;
+            stream = null;
             base.Dispose();
-            stream.Unsubscribe();
         }
 
         [Fact]
@@ -53,7 +55,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Skip(10).Take(10).Subscribe(
+            latchSubscription = stream.Observe().Skip(10).Take(10).Subscribe(
                 (distribution) =>
                 {
                     output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
@@ -82,7 +84,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(
+            latchSubscription = stream.Observe().Take(10).Subscribe(
                 (distribution) =>
                 {
                     output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
@@ -135,7 +137,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream.StartCachingStreamValuesIfUnstarted();
 
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(30).Subscribe(
+            latchSubscription = stream.Observe().Take(30).Subscribe(
                 (distribution) =>
                 {
                     output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
