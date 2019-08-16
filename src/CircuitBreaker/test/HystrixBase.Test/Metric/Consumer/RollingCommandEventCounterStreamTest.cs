@@ -253,7 +253,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await failure2.Observe();
             await failure3.Observe();
 
-            Time.Wait(200); // Make sure healthcount stream pops so circuit breaker reads failures
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "health count took to long to update");
 
             output.WriteLine(Time.CurrentTimeMillis + " running failures");
 

@@ -183,7 +183,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 await cmd.Observe();
             }
 
-            Time.Wait(150);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "health count took to long to update");
 
             try
             {
@@ -324,7 +324,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await cmd1.Observe();
             await cmd2.Observe();
 
-            Time.Wait(150);
+            // Time.Wait(150);
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 200, output), "Stream update took to long");
 
             await cmd3.Observe();
             await cmd4.Observe();
@@ -358,7 +359,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await cmd1.Observe();
             await cmd2.Observe();
 
-            Time.Wait(150);
+            // Time.Wait(150);
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 200, output), "Stream update took to long");
 
             await cmd3.Observe();
             await cmd4.Observe();

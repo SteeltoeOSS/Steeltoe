@@ -144,7 +144,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
 
             cmd1.Observe();
-            Time.Wait(100); // bucket roll
+
+            // Time.Wait(100); // bucket roll
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 150, output), "Stream update took to long");
             cmd2.Observe();
             cmd3.Observe();
 
@@ -180,11 +182,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
 
             cmd1.Observe();
-            Time.Wait(100);  // bucket roll
+
+            // Time.Wait(100);  // bucket roll
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 150, output), "Stream update took to long");
             cmd2.Observe();
-            Time.Wait(100); // bucket roll
+
+            // Time.Wait(100);  // bucket roll
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 150, output), "Stream update took to long");
             cmd3.Observe();
-            Time.Wait(100); // bucket roll
+
+            // Time.Wait(100);  // bucket roll
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 150, output), "Stream update took to long");
             cmd4.Observe();
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
@@ -218,11 +226,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
 
             cmd1.Observe();
-            Time.Wait(100); // bucket roll
+
+            // Time.Wait(100);  // bucket roll
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 150, output), "Stream update took to long");
             cmd2.Observe();
-            Time.Wait(100);
+
+            // Time.Wait(100);  // bucket roll
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 150, output), "Stream update took to long");
             cmd3.Observe();
-            Time.Wait(100);
+
+            // Time.Wait(100);  // bucket roll
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 150, output), "Stream update took to long");
             cmd4.Observe();
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
@@ -288,7 +302,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             failure2.Execute();
             failure3.Execute();
 
-            Time.Wait(100);
+            // Time.Wait(100);  // bucket roll
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 200, output), "Health count stream update took to long");
 
             foreach (Command cmd in shortCircuited)
             {

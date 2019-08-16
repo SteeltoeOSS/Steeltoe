@@ -257,7 +257,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await failure2.Observe();
             await failure3.Observe();
 
-            Time.Wait(150);
+            // Time.Wait(150);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 200, output), "Health count stream update took to long");
 
             var breaker = failure1.CircuitBreaker as HystrixCircuitBreakerImpl;
 

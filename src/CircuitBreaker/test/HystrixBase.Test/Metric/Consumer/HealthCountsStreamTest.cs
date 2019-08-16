@@ -246,7 +246,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await failure3.Observe();
 
             output.WriteLine(Time.CurrentTimeMillis + " Waiting for health window to change");
-            Time.Wait(200);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "health count took to long to update");
             output.WriteLine(Time.CurrentTimeMillis + " Running short circuits");
 
             await shortCircuit1.Observe();
