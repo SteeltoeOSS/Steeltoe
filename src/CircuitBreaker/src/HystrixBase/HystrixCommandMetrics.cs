@@ -123,6 +123,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             RollingCommandUserLatencyDistributionStream.Reset();
             RollingCommandMaxConcurrencyStream.Reset();
             HystrixThreadEventStream.Reset();
+            HealthCountsStream.Reset();
 
             Metrics.Clear();
         }

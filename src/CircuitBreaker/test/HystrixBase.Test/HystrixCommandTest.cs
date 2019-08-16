@@ -533,6 +533,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await attempt1.ExecuteAsync();
 
             // Time.Wait(100);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "Health count update took to long");
+
             Assert.True(attempt1.IsFailedExecution, "Unexpected execution success (1)");
             Assert.True(attempt1.IsResponseFromFallback, "Response not from fallback as was expected (1)");
             Assert.False(attempt1.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open (1)");
@@ -543,6 +545,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await attempt2.ExecuteAsync();
 
             // Time.Wait(100);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "Health count update took to long");
+
             Assert.True(attempt2.IsFailedExecution, "Unexpected execution success (2)");
             Assert.True(attempt2.IsResponseFromFallback, "Response not from fallback as was expected (2)");
             Assert.False(attempt2.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly open (2)");
@@ -553,11 +557,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await attempt3.ExecuteAsync();
 
             // Time.Wait(150);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "Health count update took to long");
+
             Assert.True(attempt3.IsFailedExecution, "Unexpected execution success (3)");
             Assert.True(attempt3.IsResponseFromFallback, "Response not from fallback as was expected (3)");
             Assert.False(attempt3.IsResponseShortCircuited, "Circuitbreaker unexpectedly short circuited (3)");
 
-            Time.Wait(150);
+            // Time.Wait(150);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "Health count update took to long");
 
             // it should now be 'open' and prevent further executions
             // after having 3 failures on the Hystrix that these 2 different HystrixCommand objects are for
@@ -568,6 +575,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await attempt4.ExecuteAsync();
 
             // Time.Wait(100);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "Health count update took to long");
+
             Assert.True(attempt4.IsResponseFromFallback, "Response not from fallback as was expected (4)");
 
             // this should now be true as the response will be short-circuited

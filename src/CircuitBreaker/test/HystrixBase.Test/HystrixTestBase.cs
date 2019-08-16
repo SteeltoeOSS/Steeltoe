@@ -19,8 +19,10 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
+using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Text;
+using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
@@ -78,6 +80,42 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             HystrixThreadPoolFactory.Shutdown();
+        }
+
+        public virtual bool WaitForHealthCountToUpdate(string commandKey, int maxTimeToWait, ITestOutputHelper output = null)
+        {
+            return WaitForHealthCountToUpdate(commandKey, 1, maxTimeToWait, output);
+        }
+
+        public virtual bool WaitForHealthCountToUpdate(string commandKey, int numberOfUpdates, int maxTimeToWait, ITestOutputHelper output = null)
+        {
+            var stream = HealthCountsStream.GetInstance(commandKey);
+            if (stream == null)
+            {
+                return false;
+            }
+
+            return WaitForObservableToUpdate(stream.Observe(), numberOfUpdates, maxTimeToWait, output);
+        }
+
+        public virtual bool WaitForObservableToUpdate<T>(IObservable<T> observable, int numberOfUpdates, int maxTimeToWait, ITestOutputHelper output = null)
+        {
+            bool updated = false;
+
+            using (observable.Subscribe((item) =>
+            {
+                numberOfUpdates--;
+                if (numberOfUpdates <= 0)
+                {
+                    updated = true;
+                }
+
+                output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : " + item.ToString());
+                output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            }))
+            {
+                return Time.WaitUntil(() => updated, maxTimeToWait);
+            }
         }
 
         protected static string BucketToString(long[] eventCounts)
