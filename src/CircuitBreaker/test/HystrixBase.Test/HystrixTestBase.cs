@@ -101,19 +101,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public virtual bool WaitForObservableToUpdate<T>(IObservable<T> observable, int numberOfUpdates, int maxTimeToWait, ITestOutputHelper output = null)
         {
             bool updated = false;
+            int number = numberOfUpdates;
 
             using (observable.Subscribe((item) =>
             {
-                numberOfUpdates--;
-                if (numberOfUpdates <= 0)
+                number--;
+                if (number <= 0)
                 {
                     updated = true;
+                    output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : required updates received");
                 }
 
                 output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : " + item.ToString());
                 output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }))
             {
+                output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : Starting wait");
                 return Time.WaitUntil(() => updated, maxTimeToWait);
             }
         }

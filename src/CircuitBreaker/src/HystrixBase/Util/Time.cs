@@ -65,6 +65,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 }
 
                 DoWait(ticksLeft);
+
+                if (check())
+                {
+                    return true;
+                }
             }
         }
 
