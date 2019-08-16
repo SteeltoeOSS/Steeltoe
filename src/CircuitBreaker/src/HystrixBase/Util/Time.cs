@@ -68,29 +68,37 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
         }
 
+        // Used by unit tests only
         public static void Wait(int maxWaitMilli)
         {
-            long ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
-
-            if (ticksToWait <= 0)
+            if (maxWaitMilli <= 0)
             {
                 return;
             }
 
-            long start = DateTime.Now.Ticks;
+            Thread.Sleep(maxWaitMilli);
 
-            while (true)
-            {
-                long elapsed = DateTime.Now.Ticks - start;
-                long ticksLeft = ticksToWait - elapsed;
+            // long ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
 
-                if (elapsed >= ticksToWait)
-                {
-                    return;
-                }
+            // if (ticksToWait <= 0)
+            // {
+            //    return;
+            // }
 
-                DoWait(ticksLeft);
-            }
+            // long start = DateTime.Now.Ticks;
+
+            // while (true)
+            // {
+            //    long elapsed = DateTime.Now.Ticks - start;
+            //    long ticksLeft = ticksToWait - elapsed;
+
+            // if (elapsed >= ticksToWait)
+            //    {
+            //        return;
+            //    }
+
+            // DoWait(ticksLeft);
+            // }
         }
 
         private static void DoWait(long ticksLeft)
