@@ -320,7 +320,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // Time.Wait(200);
             Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
 
-            output.WriteLine("ReqLog : " + Time.CurrentTimeMillis  + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output.WriteLine("ReqLog : " + Time.CurrentTimeMillis + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             output.WriteLine("CircuitBreaker state 1 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
