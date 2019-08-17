@@ -300,7 +300,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             int sleepWindow = 400;
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            HystrixCircuitBreakerImpl cb = (HystrixCircuitBreakerImpl)cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -320,31 +320,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // Time.Wait(200);
             Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            output.WriteLine("CircuitBreaker state 1 : " + cmd1.Metrics.Healthcounts);
+            output.WriteLine("ReqLog : " + Time.CurrentTimeMillis  + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output.WriteLine("CircuitBreaker state 1 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
             Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
             // wait for sleepWindow to pass
-            Time.Wait(sleepWindow + 50);
+            Time.Wait(sleepWindow + 100);
 
             // but the circuit should still be open
             Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
             // we should now allow 1 request, and upon success, should cause the circuit to be closed
             HystrixCommand<bool> cmd5 = new SuccessCommand(key, 10, sleepWindow);
-            IObservable<bool> asyncResult = cmd5.Observe();
-
-            // and further requests are still blocked while the singleTest command is in flight
-            Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
-
-            await asyncResult.SingleAsync();
+            output.WriteLine("Starting test cmd : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+            _ = await cmd5.Observe();
 
             // Allow window to pass, all requests should be open again
             // Time.Wait(200);
             Assert.True(WaitForHealthCountToUpdate(key, 250, output), "Health count stream failed to update");
 
-            output.WriteLine("CircuitBreaker state 2 : " + cmd1.Metrics.Healthcounts);
+            output.WriteLine("CircuitBreaker state 2 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected (1)!");
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected (2)!");
             Assert.True(cb.AllowRequest, "Request NOT allowed when expected (3)!");
