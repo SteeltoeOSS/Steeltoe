@@ -61,8 +61,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 StreamRunning = true;
             }
 
-            output?.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + value);
-            output?.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            if (output != null)
+            {
+                var tostring = value.ToString();
+                var array = value as Array;
+                if (array != null)
+                {
+                    tostring = Join(",", array);
+                }
+
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + tostring);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            }
+        }
+
+        private string Join(string v, Array array)
+        {
+            StringBuilder sb = new StringBuilder("[");
+            foreach (var val in array)
+            {
+                sb.Append(val.ToString());
+                sb.Append(v);
+            }
+
+            return sb.ToString(0, sb.Length - 1) + "]";
         }
     }
 }

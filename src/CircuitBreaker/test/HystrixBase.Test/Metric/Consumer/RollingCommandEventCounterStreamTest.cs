@@ -465,7 +465,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(HystrixEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[HystrixEventTypeHelper.Values.Count];
             expected[(int)HystrixEventType.SUCCESS] = 1;
