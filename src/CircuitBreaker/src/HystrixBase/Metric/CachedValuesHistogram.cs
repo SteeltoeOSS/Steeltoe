@@ -150,5 +150,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
         {
             return totalCount;
         }
+
+        public override string ToString()
+        {
+            return "[" + GetMean() + "/" + GetTotalCount() + "]";
+        }
     }
 }

@@ -31,6 +31,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         private ITestOutputHelper output;
 
+        private class LatchedObserver : TestObserverBase<CachedValuesHistogram>
+        {
+            public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
+                : base(output, latch)
+            {
+            }
+        }
+
         public RollingCollapserBatchSizeDistributionStreamTest(ITestOutputHelper output)
             : base()
         {
@@ -51,24 +59,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestEmptyStreamProducesEmptyDistributions()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-A");
-            stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            latchSubscription = stream.Observe().Skip(10).Take(10).Subscribe(
-                (distribution) =>
-                {
-                    output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                    output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                },
-                (e) =>
-                {
-                    Assert.True(false, e.Message);
-                },
-                () =>
-                {
-                    latch.SignalEx();
-                });
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
@@ -80,24 +76,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestBatches()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
-            stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            latchSubscription = stream.Observe().Take(10).Subscribe(
-                (distribution) =>
-                {
-                    output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                    output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                },
-                (e) =>
-                {
-                    Assert.True(false, e.Message);
-                },
-                () =>
-                {
-                    latch.SignalEx();
-                });
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Collapser.From(output, key, 1).Observe();
             Collapser.From(output, key, 2).Observe();
@@ -133,43 +117,32 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestBatchesAgeOut()
         {
             IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
-            stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            latchSubscription = stream.Observe().Take(30).Subscribe(
-                (distribution) =>
-                {
-                    output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                    output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                },
-                (e) =>
-                {
-                    Assert.True(false, e.Message);
-                },
-                () =>
-                {
-                    latch.SignalEx();
-                });
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
+            latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Collapser.From(output, key, 1).Observe();
             Collapser.From(output, key, 2).Observe();
             Collapser.From(output, key, 3).Observe();
-            Time.Wait(200);
+            Time.Wait(250);
 
             Collapser.From(output, key, 4).Observe();
-            Time.Wait(200);
+            Time.Wait(250);
 
             Collapser.From(output, key, 5).Observe();
             Collapser.From(output, key, 6).Observe();
             Collapser.From(output, key, 7).Observe();
             Collapser.From(output, key, 8).Observe();
             Collapser.From(output, key, 9).Observe();
-            Time.Wait(200);
+            Time.Wait(250);
 
             Collapser.From(output, key, 10).Observe();
             Collapser.From(output, key, 11).Observe();
             Collapser.From(output, key, 12).Observe();
+
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(0, stream.Latest.GetTotalCount());

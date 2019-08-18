@@ -33,43 +33,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private RollingCommandMaxConcurrencyStream stream;
         private IDisposable latchSubscription;
 
-        private class LatchedObserver : ObserverBase<int>
+        private class LatchedObserver : TestObserverBase<int>
         {
-            public const int STABLE_TICK_COUNT = 2;
-
-            private CountdownEvent latch;
-            private ITestOutputHelper output;
-            private int tickCount = 0;
-
-            public bool StreamRunning { get; set; } = false;
-
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
+                : base(output, latch)
             {
-                this.latch = latch;
-                this.output = output;
-            }
-
-            protected override void OnCompletedCore()
-            {
-                StreamRunning = false;
-                latch.SignalEx();
-            }
-
-            protected override void OnErrorCore(Exception error)
-            {
-                Assert.False(true, error.Message);
-            }
-
-            protected override void OnNextCore(int value)
-            {
-                tickCount++;
-                if (tickCount >= STABLE_TICK_COUNT)
-                {
-                    StreamRunning = true;
-                }
-
-                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : Max of " + value);
-                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
         }
 

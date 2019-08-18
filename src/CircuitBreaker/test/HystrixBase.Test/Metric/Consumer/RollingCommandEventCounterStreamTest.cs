@@ -36,36 +36,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         private IDisposable latchSubscription;
         private ITestOutputHelper output;
 
-        private class LatchedObserver : ObserverBase<long[]>
+        private class LatchedObserver : TestObserverBase<long[]>
         {
-            private CountdownEvent latch;
-            private ITestOutputHelper output;
-
-            public bool StreamRunning { get; set; } = false;
-
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
+                : base(output, latch)
             {
-                this.latch = latch;
-                this.output = output;
-            }
-
-            protected override void OnCompletedCore()
-            {
-                StreamRunning = false;
-                output.WriteLine("OnCompletedCore @ " + Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId);
-                latch.SignalEx();
-            }
-
-            protected override void OnErrorCore(Exception error)
-            {
-                Assert.False(true, error.Message);
-            }
-
-            protected override void OnNextCore(long[] eventCounts)
-            {
-                StreamRunning = true;
-                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " : " + BucketToString(eventCounts) + " " + Thread.CurrentThread.ManagedThreadId);
-                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
         }
 
@@ -93,7 +68,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(5).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
@@ -112,7 +87,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(5).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
@@ -136,7 +111,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(5).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20);
@@ -161,7 +136,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.TIMEOUT);
@@ -185,7 +160,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(5).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST);
@@ -210,7 +185,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(5).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
@@ -238,7 +213,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 3 failures in a row will trip circuit.  let bucket roll once then submit 2 requests.
@@ -285,7 +260,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands will saturate semaphore when called from different threads.
@@ -335,7 +310,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands will saturate threadpools when called concurrently.
@@ -382,7 +357,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(5).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_FAILURE);
@@ -408,7 +383,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
@@ -434,7 +409,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
@@ -480,7 +455,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             for (int i = 0; i < 3; i++)
@@ -508,7 +483,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(30).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(30 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
