@@ -110,9 +110,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
             stream = HealthCountsStream.GetInstance(key, 10, 100);
-            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 20);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
 
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             await cmd.Observe();
@@ -132,8 +132,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
             stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-            Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.TIMEOUT);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            Command cmd = Command.From(groupKey, key, HystrixEventType.TIMEOUT);  // Timeout 1000
+            latchSubscription = stream.Observe().Take(15 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             await cmd.Observe();
@@ -155,7 +155,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             stream = HealthCountsStream.GetInstance(key, 10, 100);
 
             Command cmd = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             await Assert.ThrowsAsync<HystrixBadRequestException>(async () => await cmd.Observe());
@@ -177,11 +177,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
             stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
 
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             await cmd1.Observe();
@@ -220,7 +220,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await failure3.Observe();
 
             output.WriteLine(Time.CurrentTimeMillis + " Waiting for health window to change");
-            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "health count took to long to update");
+            var currentTickCount = observer.TickCount;
+            Assert.True(Time.WaitUntil(() => observer.TickCount > currentTickCount, 250), "health count took to long to update");
             output.WriteLine(Time.CurrentTimeMillis + " Running short circuits");
 
             await shortCircuit1.Observe();

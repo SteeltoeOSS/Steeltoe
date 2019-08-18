@@ -134,6 +134,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-RollingCounter-D");
             CountdownEvent latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
+            long[] expected = new long[HystrixEventTypeHelper.Values.Count];
+            expected[(int)HystrixEventType.TIMEOUT] = 1;
+            expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
 
             stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
             latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
@@ -144,10 +147,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(HystrixEventTypeHelper.Values.Count, stream.Latest.Length);
-            long[] expected = new long[HystrixEventTypeHelper.Values.Count];
-            expected[(int)HystrixEventType.TIMEOUT] = 1;
-            expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(expected, stream.Latest);
         }
 

@@ -83,24 +83,41 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Collapser.From(output, key, 1).Observe();
-            Collapser.From(output, key, 2).Observe();
-            Collapser.From(output, key, 3).Observe();
-            Time.Wait(250);
+            // First collapser created with key will be used for all command creations
+            var c1 = Collapser.From(output, key, 1);
+            c1.Observe();
+            var c2 = Collapser.From(output, key, 2);
+            c2.Observe();
+            var c3 = Collapser.From(output, key, 3);
+            c3.Observe();
+            Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 1 too long to start");
+            c1.CommandCreated = false;
 
-            Collapser.From(output, key, 4).Observe();
-            Time.Wait(250);
+            var c4 = Collapser.From(output, key, 4);
+            c4.Observe();
+            Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 2 too long to start");
+            c1.CommandCreated = false;
 
-            Collapser.From(output, key, 5).Observe();
-            Collapser.From(output, key, 6).Observe();
-            Collapser.From(output, key, 7).Observe();
-            Collapser.From(output, key, 8).Observe();
-            Collapser.From(output, key, 9).Observe();
-            Time.Wait(250);
+            var c5 = Collapser.From(output, key, 5);
+            c5.Observe();
+            var c6 = Collapser.From(output, key, 6);
+            c6.Observe();
+            var c7 = Collapser.From(output, key, 7);
+            c7.Observe();
+            var c8 = Collapser.From(output, key, 8);
+            c8.Observe();
+            var c9 = Collapser.From(output, key, 9);
+            c9.Observe();
+            Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 3 too long to start");
+            c1.CommandCreated = false;
 
-            Collapser.From(output, key, 10).Observe();
-            Collapser.From(output, key, 11).Observe();
-            Collapser.From(output, key, 12).Observe();
+            var c10 = Collapser.From(output, key, 10);
+            c10.Observe();
+            var c11 = Collapser.From(output, key, 11);
+            c11.Observe();
+            var c12 = Collapser.From(output, key, 12);
+            c12.Observe();
+            Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 4 too long to start");
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
@@ -124,24 +141,41 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Collapser.From(output, key, 1).Observe();
-            Collapser.From(output, key, 2).Observe();
-            Collapser.From(output, key, 3).Observe();
-            Time.Wait(250);
+            // First collapser created with key will be used for all command creations
+            var c1 = Collapser.From(output, key, 1);
+            c1.Observe();
+            var c2 = Collapser.From(output, key, 2);
+            c2.Observe();
+            var c3 = Collapser.From(output, key, 3);
+            c3.Observe();
+            Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 1 too long to start");
+            c1.CommandCreated = false;
 
-            Collapser.From(output, key, 4).Observe();
-            Time.Wait(250);
+            var c4 = Collapser.From(output, key, 4);
+            c4.Observe();
+            Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 2 too long to start");
+            c1.CommandCreated = false;
 
-            Collapser.From(output, key, 5).Observe();
-            Collapser.From(output, key, 6).Observe();
-            Collapser.From(output, key, 7).Observe();
-            Collapser.From(output, key, 8).Observe();
-            Collapser.From(output, key, 9).Observe();
-            Time.Wait(250);
+            var c5 = Collapser.From(output, key, 5);
+            c5.Observe();
+            var c6 = Collapser.From(output, key, 6);
+            c6.Observe();
+            var c7 = Collapser.From(output, key, 7);
+            c7.Observe();
+            var c8 = Collapser.From(output, key, 8);
+            c8.Observe();
+            var c9 = Collapser.From(output, key, 9);
+            c9.Observe();
+            Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 3 too long to start");
+            c1.CommandCreated = false;
 
-            Collapser.From(output, key, 10).Observe();
-            Collapser.From(output, key, 11).Observe();
-            Collapser.From(output, key, 12).Observe();
+            var c10 = Collapser.From(output, key, 10);
+            c10.Observe();
+            var c11 = Collapser.From(output, key, 11);
+            c11.Observe();
+            var c12 = Collapser.From(output, key, 12);
+            c12.Observe();
+            Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 4 too long to start");
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 

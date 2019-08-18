@@ -29,11 +29,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         public const int STABLE_TICK_COUNT = 2;
 
+        public volatile int TickCount = 0;
+
+        public volatile bool StreamRunning = false;
+
         private CountdownEvent latch;
         private ITestOutputHelper output;
-        private int tickCount = 0;
-
-        public bool StreamRunning { get; set; } = false;
 
         public TestObserverBase(ITestOutputHelper output, CountdownEvent latch)
         {
@@ -55,8 +56,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override void OnNextCore(T value)
         {
-            tickCount++;
-            if (tickCount >= STABLE_TICK_COUNT)
+            TickCount++;
+            if (TickCount >= STABLE_TICK_COUNT)
             {
                 StreamRunning = true;
             }

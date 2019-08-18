@@ -243,6 +243,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
         public class Collapser : HystrixCollapser<List<int>, int, int>
         {
+            public bool CommandCreated = false;
+
             private readonly int arg;
             private ITestOutputHelper output;
 
@@ -284,6 +286,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 {
                     args.Add(collapsedReq.Argument);
                 }
+
+                CommandCreated = true;
 
                 return new BatchCommand(output, args);
             }
