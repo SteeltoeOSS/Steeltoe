@@ -209,10 +209,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             latchSubscription = stream.Observe().Take(10).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
-            Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
-            Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
-            Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
+            Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
+            Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 15);
+            Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 15);
 
             cmd1.Observe();
 
