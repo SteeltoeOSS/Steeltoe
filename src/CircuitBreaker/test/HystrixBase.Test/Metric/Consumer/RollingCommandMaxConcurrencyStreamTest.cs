@@ -155,8 +155,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 400);
             Command cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 400);
-            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 15);
-            Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 15);
+            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+            Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
             Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
@@ -192,8 +192,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 400);
             Command cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 400);
-            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 15);
-            Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 15);
+            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+            Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
             Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");

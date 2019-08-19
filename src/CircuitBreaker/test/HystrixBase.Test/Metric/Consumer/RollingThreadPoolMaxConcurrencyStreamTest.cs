@@ -179,13 +179,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
-            Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 15);
-            Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 15);
+            Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
+            Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
 
@@ -229,8 +229,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Command cmd1 = Command.From(groupKeyX, keyX, HystrixEventType.SUCCESS, 400);
             Command cmd2 = Command.From(groupKeyY, keyY, HystrixEventType.SUCCESS, 400);
-            Command cmd3 = Command.From(groupKeyX, keyY, HystrixEventType.SUCCESS, 15);
-            Command cmd4 = Command.From(groupKeyX, keyY, HystrixEventType.SUCCESS, 15);
+            Command cmd3 = Command.From(groupKeyX, keyY, HystrixEventType.SUCCESS, 10);
+            Command cmd4 = Command.From(groupKeyX, keyY, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
 
@@ -273,8 +273,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
-            Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 15);
-            Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 15);
+            Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
+            Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
 

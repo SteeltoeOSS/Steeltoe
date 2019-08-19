@@ -300,15 +300,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await cmd1.Observe();
             await cmd2.Observe();
 
-            // Time.Wait(150);
-            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 200, output), "Stream update took to long");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
 
             await cmd3.Observe();
             await cmd4.Observe();
             await cmd5.Observe();
 
             Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
-            AssertBetween(60, 150, stream.LatestMean);
+            AssertBetween(50, 150, stream.LatestMean);
             AssertBetween(10, 150, stream.GetLatestPercentile(0.0));
             AssertBetween(100, 150, stream.GetLatestPercentile(100.0));
         }
