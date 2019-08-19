@@ -22,6 +22,7 @@ using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Text;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
@@ -119,6 +120,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : Starting wait");
                 return Time.WaitUntil(() => updated, maxTimeToWait);
             }
+        }
+
+        public virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int maxWaitTime, ITestOutputHelper output = null)
+        {
+            var current = observer.TickCount;
+            int countToWait = count;
+
+            output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output?.WriteLine("WaitForLatchedObserverToUpdate @ " + Time.CurrentTimeMillis + " Starting wait");
+            return Time.WaitUntil(() => observer.TickCount >= current + countToWait, maxWaitTime);
         }
 
         protected static string BucketToString(long[] eventCounts)

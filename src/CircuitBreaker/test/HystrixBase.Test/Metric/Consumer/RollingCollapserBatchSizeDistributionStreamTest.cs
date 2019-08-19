@@ -16,9 +16,11 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -63,11 +65,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
-
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
@@ -80,46 +80,49 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // First collapser created with key will be used for all command creations
+            List<Task> tasks = new List<Task>();
+
             var c1 = Collapser.From(output, key, 1);
-            c1.Observe();
+            tasks.Add(c1.ExecuteAsync());
             var c2 = Collapser.From(output, key, 2);
-            c2.Observe();
+            tasks.Add(c2.ExecuteAsync());
             var c3 = Collapser.From(output, key, 3);
-            c3.Observe();
+            tasks.Add(c3.ExecuteAsync());
             Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 1 too long to start");
             c1.CommandCreated = false;
 
             var c4 = Collapser.From(output, key, 4);
-            c4.Observe();
+            tasks.Add(c4.ExecuteAsync());
             Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 2 too long to start");
             c1.CommandCreated = false;
 
             var c5 = Collapser.From(output, key, 5);
-            c5.Observe();
+            tasks.Add(c5.ExecuteAsync());
             var c6 = Collapser.From(output, key, 6);
-            c6.Observe();
+            tasks.Add(c6.ExecuteAsync());
             var c7 = Collapser.From(output, key, 7);
-            c7.Observe();
+            tasks.Add(c7.ExecuteAsync());
             var c8 = Collapser.From(output, key, 8);
-            c8.Observe();
+            tasks.Add(c8.ExecuteAsync());
             var c9 = Collapser.From(output, key, 9);
-            c9.Observe();
+            tasks.Add(c9.ExecuteAsync());
             Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 3 too long to start");
             c1.CommandCreated = false;
 
             var c10 = Collapser.From(output, key, 10);
-            c10.Observe();
+            tasks.Add(c10.ExecuteAsync());
             var c11 = Collapser.From(output, key, 11);
-            c11.Observe();
+            tasks.Add(c11.ExecuteAsync());
             var c12 = Collapser.From(output, key, 12);
-            c12.Observe();
+            tasks.Add(c12.ExecuteAsync());
             Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 4 too long to start");
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Task.WaitAll(tasks.ToArray());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
 
             // should have 4 batches: 3, 1, 5, 3
             Assert.Equal(4, stream.Latest.GetTotalCount());
@@ -142,40 +145,44 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // First collapser created with key will be used for all command creations
+            List<Task> tasks = new List<Task>();
+
             var c1 = Collapser.From(output, key, 1);
-            c1.Observe();
+            tasks.Add(c1.ExecuteAsync());
             var c2 = Collapser.From(output, key, 2);
-            c2.Observe();
+            tasks.Add(c2.ExecuteAsync());
             var c3 = Collapser.From(output, key, 3);
-            c3.Observe();
+            tasks.Add(c3.ExecuteAsync());
             Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 1 too long to start");
             c1.CommandCreated = false;
 
             var c4 = Collapser.From(output, key, 4);
-            c4.Observe();
+            tasks.Add(c4.ExecuteAsync());
             Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 2 too long to start");
             c1.CommandCreated = false;
 
             var c5 = Collapser.From(output, key, 5);
-            c5.Observe();
+            tasks.Add(c5.ExecuteAsync());
             var c6 = Collapser.From(output, key, 6);
-            c6.Observe();
+            tasks.Add(c6.ExecuteAsync());
             var c7 = Collapser.From(output, key, 7);
-            c7.Observe();
+            tasks.Add(c7.ExecuteAsync());
             var c8 = Collapser.From(output, key, 8);
-            c8.Observe();
+            tasks.Add(c8.ExecuteAsync());
             var c9 = Collapser.From(output, key, 9);
-            c9.Observe();
+            tasks.Add(c9.ExecuteAsync());
             Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 3 too long to start");
             c1.CommandCreated = false;
 
             var c10 = Collapser.From(output, key, 10);
-            c10.Observe();
+            tasks.Add(c10.ExecuteAsync());
             var c11 = Collapser.From(output, key, 11);
-            c11.Observe();
+            tasks.Add(c11.ExecuteAsync());
             var c12 = Collapser.From(output, key, 12);
-            c12.Observe();
+            tasks.Add(c12.ExecuteAsync());
             Assert.True(Time.WaitUntil(() => c1.CommandCreated, 500), "Batch 4 too long to start");
+
+            Task.WaitAll(tasks.ToArray());
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 

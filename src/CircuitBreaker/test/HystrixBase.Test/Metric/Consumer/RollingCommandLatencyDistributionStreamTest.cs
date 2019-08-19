@@ -68,10 +68,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
 
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
-
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
@@ -83,16 +82,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd2 = Command.From(GroupKey, key, HystrixEventType.TIMEOUT); // latency = 600
             await cmd1.Observe();
             await cmd2.Observe();
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+
             AssertBetween(100, 400, stream.LatestMean);
             AssertBetween(10, 100, stream.GetLatestPercentile(0.0));
             AssertBetween(300, 800, stream.GetLatestPercentile(100.0));
@@ -115,7 +114,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
@@ -128,9 +127,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await Assert.ThrowsAsync<HystrixBadRequestException>(async () => await cmd4.Observe());
             await cmd2.Observe();  // Timeout should run last
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             AssertBetween(100, 400, stream.LatestMean); // now timeout latency of 600ms is there
             AssertBetween(10, 100, stream.GetLatestPercentile(0.0));
             AssertBetween(300, 800, stream.GetLatestPercentile(100.0));
@@ -144,7 +141,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 3 failures is enough to trigger short-circuit.  execute those, then wait for bucket to roll
@@ -173,8 +170,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 Assert.True(false, ie.Message);
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(3, stream.Latest.GetTotalCount());
             AssertBetween(0, 75, stream.LatestMean);
 
@@ -190,7 +186,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands with latency should occupy the entire threadpool.  execute those, then wait for bucket to roll
@@ -203,16 +199,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             Command threadPoolRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
 
+            List<Task> satTasks = new List<Task>();
             foreach (Command cmd in commands)
             {
-                _ = cmd.ExecuteAsync();
+                satTasks.Add(cmd.ExecuteAsync());
             }
 
             await threadPoolRejected.Observe();
+            Task.WaitAll(satTasks.ToArray());
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(10, stream.Latest.GetTotalCount());
             AssertBetween(500, 750, stream.LatestMean);
             Assert.True(threadPoolRejected.IsResponseThreadPoolRejected);
@@ -227,7 +223,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands with latency should occupy all semaphores.  execute those, then wait for bucket to roll
@@ -239,17 +235,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             }
 
             Command semaphoreRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            List<Task> satTasks = new List<Task>();
             foreach (Command saturator in commands)
             {
-                _ = Task.Run(() => saturator.Execute());
+                satTasks.Add(Task.Run(() => saturator.Execute()));
             }
 
             await Task.Delay(50);
 
             await Task.Run(() => semaphoreRejected.Execute());
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Task.WaitAll(satTasks.ToArray());
+
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(10, stream.Latest.GetTotalCount());
             AssertBetween(500, 750, stream.LatestMean);
             Assert.True(semaphoreRejected.IsResponseSemaphoreRejected);
@@ -264,7 +262,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // should get 1 SUCCESS and 1 RESPONSE_FROM_CACHE
@@ -275,8 +273,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 _ = cmd.ExecuteAsync();
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(1, stream.Latest.GetTotalCount());
             AssertBetween(0, 75, stream.LatestMean);
         }
@@ -290,7 +287,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
@@ -309,9 +306,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await cmd3.Observe();
             await cmd4.Observe();
             await cmd5.Observe();
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             AssertBetween(60, 150, stream.LatestMean);
             AssertBetween(10, 150, stream.GetLatestPercentile(0.0));
             AssertBetween(100, 150, stream.GetLatestPercentile(100.0));
@@ -325,7 +321,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(30 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
@@ -338,12 +334,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             await cmd1.Observe();
             await cmd2.Observe();
 
-            // Time.Wait(150);
-            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 200, output), "Stream update took to long");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
 
             await cmd3.Observe();
             await cmd4.Observe();
             await cmd5.Observe();
+
+            WaitForLatchedObserverToUpdate(observer, 1, 500, output);
+
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
 
             Assert.Equal(0, stream.Latest.GetTotalCount());

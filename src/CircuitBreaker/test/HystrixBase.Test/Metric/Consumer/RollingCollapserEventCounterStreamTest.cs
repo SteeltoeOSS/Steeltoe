@@ -16,11 +16,13 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -70,12 +72,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
             Assert.Equal(0, stream.GetLatest(CollapserEventType.ADDED_TO_BATCH));
             Assert.Equal(0, stream.GetLatest(CollapserEventType.BATCH_EXECUTED));
@@ -90,16 +91,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
+            List<Task> cTasks = new List<Task>();
             for (int i = 0; i < 3; i++)
             {
-                Collapser.From(output, key, i).Observe();
+                cTasks.Add(Collapser.From(output, key, i).ExecuteAsync());
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Task.WaitAll(cTasks.ToArray());
+
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+
             Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[CollapserEventTypeHelper.Values.Count];
             expected[(int)CollapserEventType.BATCH_EXECUTED] = 1;
@@ -115,18 +119,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
+            List<Task> cTasks = new List<Task>();
             for (int i = 0; i < 3; i++)
             {
-                Collapser.From(output, key, i).Observe();
-                Collapser.From(output, key, i).Observe(); // same arg - should get a response from cache
-                Collapser.From(output, key, i).Observe(); // same arg - should get a response from cache
+                cTasks.Add(Collapser.From(output, key, i).ExecuteAsync());
+                cTasks.Add(Collapser.From(output, key, i).ExecuteAsync()); // same arg - should get a response from cache
+                cTasks.Add(Collapser.From(output, key, i).ExecuteAsync()); // same arg - should get a response from cache
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Task.WaitAll(cTasks.ToArray());
+
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+
             Assert.Equal(CollapserEventTypeHelper.Values.Count, stream.Latest.Length);
             long[] expected = new long[CollapserEventTypeHelper.Values.Count];
             expected[(int)CollapserEventType.BATCH_EXECUTED] = 1;
@@ -144,15 +151,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserEventCounterStream.GetInstance(key, 10, 100);
-            latchSubscription = stream.Observe().Take(30 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
+            List<Task> cTasks = new List<Task>();
             for (int i = 0; i < 3; i++)
             {
-                Collapser.From(output, key, i).Observe();
-                Collapser.From(output, key, i).Observe(); // same arg - should get a response from cache
-                Collapser.From(output, key, i).Observe(); // same arg - should get a response from cache
+                cTasks.Add(Collapser.From(output, key, i).ExecuteAsync());
+                cTasks.Add(Collapser.From(output, key, i).ExecuteAsync()); // same arg - should get a response from cache
+                cTasks.Add(Collapser.From(output, key, i).ExecuteAsync()); // same arg - should get a response from cache
             }
+
+            Task.WaitAll(cTasks.ToArray());
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
