@@ -64,15 +64,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             if (output != null)
             {
-                var tostring = value.ToString();
-                var array = value as Array;
-                if (array != null)
+                try
                 {
-                    tostring = Join(",", array);
-                }
+                    var tostring = value.ToString();
+                    var array = value as Array;
+                    if (array != null)
+                    {
+                        tostring = Join(",", array);
+                    }
 
-                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + tostring);
-                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                    output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + tostring);
+                    output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 

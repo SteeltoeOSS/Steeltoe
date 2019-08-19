@@ -69,9 +69,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             CountdownEvent latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
-            stream = RollingCommandMaxConcurrencyStream.GetInstance(key, 10, 500);
+            stream = RollingCommandMaxConcurrencyStream.GetInstance(key, 10, 100);
             latchSubscription = stream.Observe().Subscribe(observer);
-            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 500), "Stream failed to start");
 
             Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
 
@@ -97,7 +97,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Task t2 = cmd2.ExecuteAsync();
             Task.WaitAll(t1, t2);
 
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 2000, output), "Latch took to long to update");
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
