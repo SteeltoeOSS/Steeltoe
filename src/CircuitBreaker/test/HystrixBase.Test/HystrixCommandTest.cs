@@ -1262,9 +1262,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             SemaphoreSlim semaphore = new SemaphoreSlim(1);
 
-            TestSemaphoreCommand command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
+            TestSemaphoreCommand command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
+
+            bool t2Started = false;
             ThreadStart command2Action = new ThreadStart(() =>
             {
+                t2Started = true;
                 try
                 {
                     results.Add(command2.Execute());
@@ -1275,7 +1278,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             });
 
-            TestSemaphoreCommand command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
+            TestSemaphoreCommand command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
             ThreadStart command3Action = new ThreadStart(() =>
             {
                 try
@@ -1293,9 +1296,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Thread t3 = new Thread(command3Action);
 
             t2.Start();
+            Assert.True(Time.WaitUntil(() => t2Started, 500), "t2 took to long to start");
 
-            // make sure that t2 gets a chance to run before queuing the next one
-            Time.Wait(100);
             t3.Start();
             t2.Join();
             t3.Join();
