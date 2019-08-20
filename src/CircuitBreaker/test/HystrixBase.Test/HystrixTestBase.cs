@@ -132,6 +132,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             return Time.WaitUntil(() => observer.TickCount >= current + countToWait, maxWaitTime);
         }
 
+        public virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int minWaitTime, int maxWaitTime, ITestOutputHelper output = null)
+        {
+            var current = observer.TickCount;
+            int countToWait = count;
+            long minTime = Time.CurrentTimeMillis + minWaitTime;
+
+            output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output?.WriteLine("WaitForLatchedObserverToUpdate @ " + Time.CurrentTimeMillis + " Starting wait");
+            return Time.WaitUntil(() => observer.TickCount >= current + countToWait && Time.CurrentTimeMillis >= minTime, maxWaitTime);
+        }
+
         protected static string BucketToString(long[] eventCounts)
         {
             StringBuilder sb = new StringBuilder();

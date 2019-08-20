@@ -182,24 +182,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
-            Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
+            Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
 
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Task t2 = cmd2.ExecuteAsync();
 
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Task t3 = cmd3.ExecuteAsync();
 
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Task t4 = cmd4.ExecuteAsync();
 
             Task.WaitAll(t1, t2, t3, t4);
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
@@ -227,27 +227,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Command cmd1 = Command.From(groupKeyX, keyX, HystrixEventType.SUCCESS, 400);
-            Command cmd2 = Command.From(groupKeyY, keyY, HystrixEventType.SUCCESS, 400);
+            Command cmd1 = Command.From(groupKeyX, keyX, HystrixEventType.SUCCESS, 300);
+            Command cmd2 = Command.From(groupKeyY, keyY, HystrixEventType.SUCCESS, 300);
             Command cmd3 = Command.From(groupKeyX, keyY, HystrixEventType.SUCCESS, 10);
             Command cmd4 = Command.From(groupKeyX, keyY, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
 
             // Time.Wait(100); // bucket roll
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Task t2 = cmd2.ExecuteAsync();
 
             // Time.Wait(100); // bucket roll
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Task t3 = cmd3.ExecuteAsync();
 
             // Time.Wait(100); // bucket roll
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Task t4 = cmd4.ExecuteAsync();
 
             Task.WaitAll(t1, t2, t3, t4);
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
@@ -271,20 +271,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
-            Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 400);
+            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
+            Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
 
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Task t2 = cmd2.ExecuteAsync();
 
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Task t3 = cmd3.ExecuteAsync();
 
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
             Task t4 = cmd4.ExecuteAsync();
 
             Task.WaitAll(t1, t2, t3, t4);
