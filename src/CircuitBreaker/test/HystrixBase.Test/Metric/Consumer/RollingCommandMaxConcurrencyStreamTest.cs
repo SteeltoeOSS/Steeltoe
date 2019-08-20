@@ -159,15 +159,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
             Task t2 = cmd2.ExecuteAsync();
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
             Task t3 = cmd3.ExecuteAsync();
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
             Task t4 = cmd4.ExecuteAsync();
 
             Task.WaitAll(t1, t2, t3, t4);
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
@@ -196,11 +196,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
 
             Task t1 = cmd1.ExecuteAsync();
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
             Task t2 = cmd2.ExecuteAsync();
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
             Task t3 = cmd3.ExecuteAsync();
-            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 100, 500, output), "Latch took to long to update");
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
             Task t4 = cmd4.ExecuteAsync();
 
             Task.WaitAll(t1, t2, t3, t4);
