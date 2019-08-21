@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 {
     public class AtomicInteger
     {
-        protected int _value;
+        protected volatile int _value;
 
         public AtomicInteger()
             : this(0)

@@ -117,6 +117,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 metricsInstance.UnsubscribeAll();
             }
 
+            RollingCommandEventCounterStream.Reset();
+            CumulativeCommandEventCounterStream.Reset();
+            RollingCommandLatencyDistributionStream.Reset();
+            RollingCommandUserLatencyDistributionStream.Reset();
+            RollingCommandMaxConcurrencyStream.Reset();
+            HystrixThreadEventStream.Reset();
+            HealthCountsStream.Reset();
+
             Metrics.Clear();
         }
 

@@ -35,11 +35,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static CumulativeCollapserEventCounterStream GetInstance(IHystrixCollapserKey collapserKey, int numBuckets, int bucketSizeInMs)
         {
-            return Streams.GetOrAddEx(collapserKey.Name, (k) => new CumulativeCollapserEventCounterStream(collapserKey, numBuckets, bucketSizeInMs, HystrixCollapserMetrics.AppendEventToBucket, HystrixCollapserMetrics.BucketAggregator));
+            return Streams.GetOrAddEx(collapserKey.Name, (k) =>
+            {
+                var stream = new CumulativeCollapserEventCounterStream(collapserKey, numBuckets, bucketSizeInMs, HystrixCollapserMetrics.AppendEventToBucket, HystrixCollapserMetrics.BucketAggregator);
+                stream.StartCachingStreamValuesIfUnstarted();
+                return stream;
+            });
         }
 
         public static void Reset()
         {
+            foreach (var stream in Streams.Values)
+            {
+                stream.Unsubscribe();
+            }
+
+            HystrixCollapserEventStream.Reset();
             Streams.Clear();
         }
 

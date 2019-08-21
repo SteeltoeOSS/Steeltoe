@@ -90,6 +90,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         internal static void Reset()
         {
+            RollingThreadPoolEventCounterStream.Reset();
+            CumulativeThreadPoolEventCounterStream.Reset();
+            RollingThreadPoolMaxConcurrencyStream.Reset();
+
             Metrics.Clear();
         }
 
