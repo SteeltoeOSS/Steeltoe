@@ -268,7 +268,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             failure2.Execute();
             failure3.Execute();
 
-            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "Health count stream update took to long");
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 500, output), "Health count stream update took to long");
 
             List<Task> tasks = new List<Task>();
             foreach (Command cmd in shortCircuited)

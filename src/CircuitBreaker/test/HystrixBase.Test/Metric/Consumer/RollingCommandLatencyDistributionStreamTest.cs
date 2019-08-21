@@ -159,7 +159,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 await cmd.Observe();
             }
 
-            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "health count took to long to update");
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 500, output), "health count took to long to update");
 
             try
             {

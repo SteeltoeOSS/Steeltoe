@@ -152,7 +152,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Task t1 = cmd1.ExecuteAsync();
 
             // Time.Wait(150); // bucket roll
-            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 250, output), "Stream update took to long");
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 500, output), "Stream update took to long");
             Task t2 = cmd2.ExecuteAsync();
             Task t3 = cmd3.ExecuteAsync();
 
@@ -356,7 +356,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             failure2.Execute();
             failure3.Execute();
 
-            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "Health count stream update took to long");
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 500, output), "Health count stream update took to long");
 
             List<Task<int>> shorts = new List<Task<int>>();
             foreach (Command cmd in shortCircuited)

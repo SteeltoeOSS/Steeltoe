@@ -220,7 +220,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             failure2.Execute();
             failure3.Execute();
 
-            Assert.True(WaitForHealthCountToUpdate(key.Name, 250, output), "health count took to long to update");
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 500, output), "health count took to long to update");
 
             output.WriteLine(Time.CurrentTimeMillis + " running failures");
             shortCircuit1.Execute();
