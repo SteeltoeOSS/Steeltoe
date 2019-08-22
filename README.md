@@ -62,23 +62,22 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 * Security - simplify integration of security services provided by the cloud platform
 
 #### Other Repositories
+* [Samples](https://github.com/SteeltoeOSS/Samples) - Our collection of Sample applications used as a reference for Steeltoe .NET Application development
+
+* [Initializr](https://github.com/SteeltoeOSS/initializr) - The [Steeltoe Initializr](https://start.steeltoe.io) source code 
+
+* [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling
 
 * [Dockerfiles](https://github.com/SteeltoeOSS/Dockerfiles) - Our collection of docker files we have on dockerhub
 
 * [eShopOnContainers](https://github.com/SteeltoeOSS/eShopOnContainers) - Sample reference microservice and container based application with added Steeltoe capabilities (Forked and updated from dotnet-architecture org)
 
-* [Samples](https://github.com/SteeltoeOSS/Samples) - Our collection of Sample applications used as a reference for Steeltoe .NET Application development
-
 * [Steeltoe-site](https://github.com/SteeltoeOSS/steeltoe-site) - All of the steeltoe.io website and documentation artifacts
-
-* [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling
-
-View the [Steeltoe project list](project-docs/project-list.md) for brief descriptions of all projects, build statuses, and links to the source code.
 
 ## Roadmaps
 
 * [3.0.0](roadmaps/3.0.0.md) - In Progress
-* [2.3.0](roadmaps/2.3.0.md) - In Progress
+* [2.3.0](roadmaps/2.3.0.md) - Released
 * [2.2.0](roadmaps/2.2.0.md) - Released
 * [2.1.0](roadmaps/2.1.0.md) - Released
 * [2.0.0](roadmaps/2.0.0.md) - Released
@@ -107,7 +106,7 @@ The released and release candidates can be found on [NuGet](https://www.nuget.or
 
 The Steeltoe project welcomes contributions on GitHub both by filing issues and through PRs. You are also welcome to join our discussions on [Slack](https://slack.steeltoe.io/)
 
-Check out the [contributing guidelines](project-docs/contributing.md) page to see how you can get involved and contribute to Steeltoe.
+Check out the [contributing guidelines](../.github/CONTRIBUTING.md) page to see how you can get involved and contribute to Steeltoe.
 
 Also its worth noting, the Steeltoe project has adopted the code of conduct defined by the [Contributor Covenant](https://contributor-covenant.org/).
 If you'd like more information, see the [.NET Foundation Code of Conduct](https://www.dotnetfoundation.org/code-of-conduct) write-up.
@@ -118,4 +117,4 @@ As a member of the [.NET Foundation](https://dotnetfoundation.org/), the Steelto
 
 ## Licenses
 
-The Steeltoe project uses the [Apache License Version 2.0](LICENSE) license for all of its code.  See the [contribution licensing](project-docs/contributing-license.md) document for more details.
+The Steeltoe project uses the [Apache License Version 2.0](../.github/LICENSE.md) license for all of its code.  See the [contribution licensing](../.github/contributing-docs/contributing-license.md) document for more details.
