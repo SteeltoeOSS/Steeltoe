@@ -32,9 +32,9 @@ namespace Steeltoe.Extensions.Logging
 
         public bool IsEnabled(LogLevel logLevel) => Filter.Invoke(Name, logLevel);
 
-        public ILogger Delegate { get; set; }
+        public ILogger Delegate { get; private set; }
 
-        public Func<string, LogLevel, bool> Filter { get; set; }
+        public Func<string, LogLevel, bool> Filter { get; internal set; }
 
         public string Name { get; internal set; }
 

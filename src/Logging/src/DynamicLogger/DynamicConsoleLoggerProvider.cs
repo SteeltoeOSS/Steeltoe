@@ -178,11 +178,6 @@ namespace Steeltoe.Extensions.Logging
             }
         }
 
-        ~DynamicConsoleLoggerProvider()
-        {
-            Dispose(false);
-        }
-
         private void SetFiltersFromOptions()
         {
             foreach (var rule in _filterOptions.CurrentValue.Rules.Where(p => string.IsNullOrEmpty(p.ProviderName) || p.ProviderName == "Console" || p.ProviderName == "Logging"))
@@ -212,11 +207,10 @@ namespace Steeltoe.Extensions.Logging
         /// <returns>A filter function for log level</returns>
         private Func<string, LogLevel, bool> GetFilter(string name)
         {
-            var prefixes = GetKeyPrefixes(name);
-
             // check if there are any applicable filters
             if (_runningFilters.Any())
             {
+                var prefixes = GetKeyPrefixes(name);
                 foreach (var prefix in prefixes)
                 {
                     if (_runningFilters.ContainsKey(prefix))
