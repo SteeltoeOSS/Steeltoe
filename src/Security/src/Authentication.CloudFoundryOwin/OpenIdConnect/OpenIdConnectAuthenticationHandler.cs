@@ -142,7 +142,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 
         private string HostInfoFromRequest(IOwinRequest request)
         {
-            return request.Scheme + Uri.SchemeDelimiter + request.Host;
+            return request.Scheme + Uri.SchemeDelimiter + request.Host + request.PathBase;
         }
     }
 
