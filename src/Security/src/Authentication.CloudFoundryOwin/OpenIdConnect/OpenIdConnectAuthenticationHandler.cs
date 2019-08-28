@@ -39,7 +39,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
         /// <returns>A bool used to determine whether or not to continue down the OWIN pipline</returns>
         public override async Task<bool> InvokeAsync()
         {
-            if (Options.CallbackPath.HasValue && Options.CallbackPath == Request.Path)
+            if (Options.CallbackPath == Request.Path)
             {
                 _logger?.LogTrace("Request path matches auth callback path");
                 var ticket = await AuthenticateAsync().ConfigureAwait(false);
@@ -62,7 +62,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 
         protected override async Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-            if (Options.CallbackPath.HasValue && Options.CallbackPath != (Request.PathBase + Request.Path))
+            if (Options.CallbackPath != Request.Path)
             {
                 return null;
             }
@@ -142,7 +142,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
 
         private string HostInfoFromRequest(IOwinRequest request)
         {
-            return request.Scheme + Uri.SchemeDelimiter + request.Host;
+            return request.Scheme + Uri.SchemeDelimiter + request.Host + request.PathBase;
         }
     }
 }
