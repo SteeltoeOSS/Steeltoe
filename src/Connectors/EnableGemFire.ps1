@@ -12,8 +12,8 @@ if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
     if ($IsWindows -Or $PSVersionTable.PSVersion.Major -lt 6)
     {
         Write-Host "Running on Windows, use WebClient"
-        # Download pivnet cli ... TODO: get latest instead of hardcoded version
-        (New-Object System.Net.WebClient).DownloadFile("https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.60/pivnet-windows-amd64-0.0.60", "$PSScriptRoot\pivnet.exe")  
+        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest).Content | jq  '.assets[].browser_download_url | select(contains(\"windows\"))' -r
+        (New-Object System.Net.WebClient).DownloadFile($pivnetClientUri, "$PSScriptRoot\pivnet.exe")  
         Write-Host "Adding alias 'pivnet' for .\pivnet.exe"
         Set-Alias -Name pivnet -Value ".\pivnet.exe"
     }
@@ -25,7 +25,8 @@ if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
     elseif ($IsLinux)
     {
         Write-Host "Running on Linux"
-        wget -O pivnet https://github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.60/pivnet-linux-amd64-0.0.60
+        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest).Content | jq  '.assets[].browser_download_url | select(contains(\"linux\"))' -r
+        wget -O pivnet $pivnetClientUri
         chmod +x ./pivnet
         Write-Host "Adding alias 'pivnet' for ./pivnet"
         Set-Alias -Name pivnet -Value "./pivnet"
@@ -42,14 +43,15 @@ if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
 pivnet login --api-token=$PivNetAPIToken
 
 # Find latest (file) version - requires jq
-$gemfireReleaseVersion = pivnet releases -p pivotal-gemfire --format=json | jq '[.[]|select(.version | startswith(\"Native Client 10\"))][0].version'
+$gemfireReleases = pivnet releases -p pivotal-gemfire --format=json
+$gemfireReleaseVersion = $gemfireReleases | jq '[.[]|select(.version | startswith(\"Native Client 10\"))][0].version'
 Write-Host "Looking for Native Client version $gemfireReleaseVersion"
 $productFile = pivnet product-files -p pivotal-gemfire -r $gemfireReleaseVersion --format=json | jq '[.[]|select(.name|contains(\"Windows\"))][0]'
 $fileId = $productFile | jq '.id'
 Write-Host "File Id to download: $fileId"
 
 # get file name from source like "aws_object_key": "product-files/pivotal-gemfire/pivotal-gemfire-native-10.0.2-build.9-Windows-64bit.zip"
-$fileName = (($productFile | jq '.aws_object_key') -split "/")[2] -replace '"', ""
+$fileName = (($productFile | jq '.aws_object_key' -r) -split "/")[2]
 Write-Host "File Name to download: $fileName"
 
 # Download archive if it isn't already present
