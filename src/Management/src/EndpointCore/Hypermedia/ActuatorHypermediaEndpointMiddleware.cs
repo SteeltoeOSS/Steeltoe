@@ -20,6 +20,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Steeltoe.Management.Endpoint;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
@@ -53,7 +54,8 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
         {
             var serialInfo = HandleRequest(GetRequestUri(context.Request));
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
+            context.Response.Headers.SetContentType(context.Request.Headers);
+           // context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
             await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 

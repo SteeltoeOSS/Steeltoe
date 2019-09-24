@@ -56,7 +56,9 @@ namespace Steeltoe.Management.Endpoint.Info
         {
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
+           // context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
+            context.Response.Headers.SetContentType(context.Request.Headers);
+
             await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
     }

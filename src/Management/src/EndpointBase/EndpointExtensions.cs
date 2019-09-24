@@ -16,6 +16,9 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
+using Steeltoe.Management.EndpointBase;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -80,6 +83,13 @@ namespace Steeltoe.Management.Endpoint
             return mgmtContext == null || endpoint.Options.IsExposed(mgmtContext);
         }
 
+        public static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
+        {
+            var contentType = ActuatorMediaTypes.GetContentHeaders(requestHeaders["Accept"].ToList(), version);
+            
+            responseHeaders.Add("Content-Type",contentType);
+        }
+        
         private static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)
         {
             matchingContext = null;
@@ -110,5 +120,6 @@ namespace Steeltoe.Management.Endpoint
                 return false;
             }
         }
+        
     }
 }

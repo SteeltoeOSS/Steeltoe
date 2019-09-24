@@ -67,7 +67,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             var serialInfo = HandleRequest(GetRequestUri(context.Request));
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
+            
+            context.Response.Headers.SetContentType(context.Request.Headers);
+           // context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
             await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
