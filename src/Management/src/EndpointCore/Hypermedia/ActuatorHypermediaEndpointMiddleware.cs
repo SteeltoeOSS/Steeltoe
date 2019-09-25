@@ -15,10 +15,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
@@ -53,7 +56,8 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
         {
             var serialInfo = HandleRequest(GetRequestUri(context.Request));
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
+
+            context.HandleContentNegotiation(_logger);
             await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
