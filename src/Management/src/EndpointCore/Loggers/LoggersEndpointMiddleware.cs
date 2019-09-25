@@ -90,10 +90,8 @@ namespace Steeltoe.Management.Endpoint.Loggers
             var serialInfo = this.HandleRequest(null);
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
-            await context.HandleContentNegotiation(_logger, onSuccess: (ctx) =>
-            {
-                ctx.Response.WriteAsync(serialInfo).ConfigureAwait(false);
-            });
+            context.HandleContentNegotiation(_logger);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
         private bool ChangeLoggerLevel(HttpRequest request, string path)

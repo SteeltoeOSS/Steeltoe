@@ -90,11 +90,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 var serialInfo = this.HandleRequest(null);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
 
-                await context.HandleContentNegotiation(_logger, onSuccess: (ctx) =>
-                {
-                    ctx.Response.StatusCode = (int)HttpStatusCode.OK;
-                    ctx.Response.WriteAsync(serialInfo).ConfigureAwait(false);
-                });
+                context.HandleContentNegotiation(_logger);
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
             }
         }
 

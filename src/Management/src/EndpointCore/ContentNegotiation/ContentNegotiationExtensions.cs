@@ -27,42 +27,38 @@ namespace Steeltoe.Management.EndpointCore.ContentNegotiation
 {
     public static class ContentNegotiationExtensions
     {
-        public static async Task HandleContentNegotiation(this HttpContext context, ILogger logger, Action<HttpContext> onSuccess)
+        public static void HandleContentNegotiation(this HttpContext context, ILogger logger)
         {
-            if (context.Request.Headers.HasSupportedAcceptHeaders())
-            {
-                context.Response.Headers.SetContentType(context.Request.Headers);
-                onSuccess(context);
-            }
-            else
-            {
-                string errorMessage = "Unsupported accept headers received";
-                context.LogError(logger, errorMessage);
-                context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
-                context.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                await context.Response.WriteAsync(errorMessage).ConfigureAwait(false);
-            }
+            context.Response.Headers.SetContentType(context.Request.Headers, logger);
         }
 
-        public static void LogError(this HttpContext context, ILogger logger, string error)
+        public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders,  string contentType)
         {
-            logger?.LogError("Unsupported headers error {0}", error);
+            logger?.LogError("setting contentType to {0}", contentType);
             var logTrace = logger?.IsEnabled(LogLevel.Trace);
 
             if (logTrace.GetValueOrDefault())
             {
-                foreach (var header in context.Request.Headers)
+                foreach (var header in requestHeaders)
                 {
                     logger.LogTrace("Header: {0} - {1}", header.Key, header.Value);
                 }
             }
         }
 
-        public static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
+        public static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger, MediaTypeVersion version = MediaTypeVersion.V2)
         {
-            var contentType = ActuatorMediaTypes.GetContentHeaders(requestHeaders["Accept"].ToList(), version);
+            var acceptMediaTypes = new List<string>();
+            if (requestHeaders.TryGetValue("Accept", out var acceptHeader))
+            {
+                acceptMediaTypes = acceptHeader.ToString().Split(';').ToList();
+            }
+
+            var contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
 
             responseHeaders.Add("Content-Type", contentType);
+
+            logger?.LogContentType(requestHeaders, contentType);
         }
 
         public static bool HasSupportedAcceptHeaders(this IHeaderDictionary requestHeaders, MediaTypeVersion version = MediaTypeVersion.V2)

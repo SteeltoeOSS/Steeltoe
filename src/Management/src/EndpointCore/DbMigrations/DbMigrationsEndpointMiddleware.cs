@@ -48,10 +48,9 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
         {
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            await context.HandleContentNegotiation(_logger, onSuccess: (ctx) =>
-            {
-                ctx.Response.WriteAsync(serialInfo);
-            });
+
+            context.HandleContentNegotiation(_logger);
+            await context.Response.WriteAsync(serialInfo);
         }
     }
 }

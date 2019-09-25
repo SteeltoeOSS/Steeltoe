@@ -26,29 +26,30 @@ namespace Steeltoe.Management.EndpointBase
 
         public static readonly string APP_JSON = "application/json";
 
+        public static readonly string ANY = "*/*";
+
         public static string GetContentHeaders(List<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
         {
-            var contentHeader = string.Empty;
+            string contentHeader = null;
 
-            if (acceptHeaders == null || acceptHeaders.Count <= 0)
-            {
-                contentHeader = APP_JSON;
-            }
-            else
+            if (acceptHeaders != null && acceptHeaders.Count > 0)
             {
                 foreach (var acceptHeader in acceptHeaders)
                 {
-                    contentHeader = AllowedAcceptHeaders(version)
-                        .FirstOrDefault(header => acceptHeader == header);
+                    if (acceptHeader == ANY)
+                    {
+                        contentHeader = AllowedAcceptHeaders(version).First();
+                    }
+                    else
+                    {
+                        contentHeader = AllowedAcceptHeaders(version)
+                            .FirstOrDefault(header => acceptHeader == header);
+                    }
                 }
             }
 
-            if (contentHeader != null)
-            {
-                contentHeader += ";charset=UTF-8";
-            }
-
-            return contentHeader;
+            contentHeader ??= APP_JSON;
+            return contentHeader += ";charset=UTF-8";
         }
 
         public static List<string> AllowedAcceptHeaders(MediaTypeVersion version = MediaTypeVersion.V2)

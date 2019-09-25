@@ -57,10 +57,8 @@ namespace Steeltoe.Management.Endpoint.Trace
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
-            await context.HandleContentNegotiation(_logger, onSuccess: (ctx) =>
-            {
-                ctx.Response.WriteAsync(serialInfo).ConfigureAwait(false);
-            });
+            context.HandleContentNegotiation(_logger);
+            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
     }
 }

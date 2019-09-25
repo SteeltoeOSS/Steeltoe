@@ -82,7 +82,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         [InlineData(EndpointNames.Env, "http://localhost/actuator/env")]
         [InlineData(EndpointNames.Mappings, "http://localhost/actuator/mappings")]
         [InlineData(EndpointNames.Refresh, "http://localhost/actuator/refresh")]
-        public async void EndpointMiddleware_AcceptV1_JSON_WhenNotConfigured_ReturnsUnacceptable(EndpointNames epName, string epPath)
+        public async void EndpointMiddleware_AcceptV1_JSON_WhenNotConfigured_ReturnsAppJson(EndpointNames epName, string epPath)
         {
             // arrange a server and client
             var builder = new WebHostBuilder()
@@ -100,7 +100,10 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
                 // send the request
                 var result = await client.GetAsync(epPath);
-                Assert.Equal(HttpStatusCode.NotAcceptable, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+
+                var contentHeaders = result.Content.Headers.GetValues("Content-Type");
+                Assert.Contains("application/json; charset=UTF-8", contentHeaders);
             }
         }
 
@@ -115,7 +118,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         [InlineData(EndpointNames.Env, "http://localhost/actuator/env")]
         [InlineData(EndpointNames.Mappings, "http://localhost/actuator/mappings")]
         [InlineData(EndpointNames.Refresh, "http://localhost/actuator/refresh")]
-        public async void HypermediaEndpointMiddleware_AcceptInvalid_ReturnsUnacceptable(EndpointNames epName, string epPath)
+        public async void EndpointMiddleware_AcceptInvalid_ReturnsAppJson(EndpointNames epName, string epPath)
         {
             // arrange a server and client
             var builder = new WebHostBuilder()
@@ -134,7 +137,10 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
                 // send the request
                 var result = await client.GetAsync(epPath);
-                Assert.Equal(HttpStatusCode.NotAcceptable, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+
+                var contentHeaders = result.Content.Headers.GetValues("Content-Type");
+                Assert.Contains("application/json; charset=UTF-8", contentHeaders);
             }
         }
 
@@ -165,6 +171,43 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
             {
                 var client = server.CreateClient();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ActuatorMediaTypes.V2_JSON));
+
+                // send the request
+                var result = await client.GetAsync(epPath);
+                var json = await result.Content.ReadAsStringAsync();
+
+                var contentHeaders = result.Content.Headers.GetValues("Content-Type");
+                Assert.Contains(contentHeaders, (header) => header.StartsWith(ActuatorMediaTypes.V2_JSON));
+            }
+        }
+
+        [Theory]
+        [InlineData(EndpointNames.Hypermedia, "http://localhost/actuator")]
+        [InlineData(EndpointNames.Cloudfoundry, "http://localhost/actuator")]
+        [InlineData(EndpointNames.Info, "http://localhost/actuator/info")]
+        [InlineData(EndpointNames.Metrics, "http://localhost/actuator/metrics")]
+        [InlineData(EndpointNames.Loggers, "http://localhost/actuator/loggers")]
+        [InlineData(EndpointNames.Health, "http://localhost/actuator/health")]
+        [InlineData(EndpointNames.Trace, "http://localhost/actuator/trace")]
+        [InlineData(EndpointNames.Env, "http://localhost/actuator/env")]
+        [InlineData(EndpointNames.Mappings, "http://localhost/actuator/mappings")]
+        [InlineData(EndpointNames.Refresh, "http://localhost/actuator/refresh")]
+        public async void EndpointMiddleware_Accept_ANY_Returns_MostSpecific(EndpointNames epName, string epPath)
+        {
+            // arrange a server and client
+            var builder = new WebHostBuilder()
+                .StartupByEpName(epName)
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+                .ConfigureLogging((webhostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ActuatorMediaTypes.ANY));
 
                 // send the request
                 var result = await client.GetAsync(epPath);
