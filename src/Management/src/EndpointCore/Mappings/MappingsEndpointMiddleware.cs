@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,10 +94,11 @@ namespace Steeltoe.Management.Endpoint.Mappings
             var serialInfo = Serialize(result);
 
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            //context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            context.Response.Headers.SetContentType(context.Request.Headers);
 
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            await context.HandleContentNegotiation(_logger, onSuccess: (ctx) =>
+            {
+                ctx.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            });
         }
 
         protected internal ApplicationMappings GetApplicationMappings(HttpContext context)

@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,11 +89,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 // GET /metrics
                 var serialInfo = this.HandleRequest(null);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
-               // response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-                context.Response.Headers.SetContentType(context.Request.Headers);
 
-                response.StatusCode = (int)HttpStatusCode.OK;
-                await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+                await context.HandleContentNegotiation(_logger, onSuccess: (ctx) =>
+                {
+                    ctx.Response.StatusCode = (int)HttpStatusCode.OK;
+                    ctx.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+                });
             }
         }
 

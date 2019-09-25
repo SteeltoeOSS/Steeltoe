@@ -15,10 +15,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.EndpointBase;
+using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Steeltoe.Management.EndpointBase;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -55,10 +56,11 @@ namespace Steeltoe.Management.Endpoint.Trace
         {
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            //context.Response.Headers.Add("Content-Type", ActuatorMediaTypes.V2_JSON);
-            context.Response.Headers.SetContentType(context.Request.Headers, MediaTypeVersion.V1);
 
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            await context.HandleContentNegotiation(_logger, onSuccess: (ctx) =>
+            {
+                ctx.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            });
         }
     }
 }

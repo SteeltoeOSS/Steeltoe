@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointBase.DbMigrations;
+using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -47,10 +48,10 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
         {
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            //context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-            
-            context.Response.Headers.SetContentType(context.Request.Headers);
-            await context.Response.WriteAsync(serialInfo);
+            await context.HandleContentNegotiation(_logger, onSuccess: (ctx) =>
+            {
+                ctx.Response.WriteAsync(serialInfo);
+            });
         }
     }
 }

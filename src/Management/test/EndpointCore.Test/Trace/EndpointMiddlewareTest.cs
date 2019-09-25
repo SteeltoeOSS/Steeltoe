@@ -92,7 +92,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/trace");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
-               Assert.NotNull(json);
+                Assert.NotNull(json);
             }
         }
 
