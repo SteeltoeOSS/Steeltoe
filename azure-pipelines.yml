@@ -23,6 +23,11 @@ jobs:
   pool:
     vmImage: 'Ubuntu-16.04'
   steps:
+  - task: PowerShell@2
+    displayName: 'Get GemFire NativeClient assemblies'
+    inputs:
+      filePath: src/Connectors/EnableGemFire.ps1
+      arguments: $(PivNetAPIToken)
   - task: UseDotNet@2
     displayName: 'Use .NET Core sdk'
     inputs:
@@ -42,11 +47,16 @@ jobs:
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration) --filter "Category!=SkipOnLinux&Category!=FlakyOnHostedAgents"'
+      arguments: '-c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux"'
 - job: MacOS_Build_and_Test
   pool:
     vmImage: 'macOS-10.14'
   steps:
+  - task: PowerShell@2
+    displayName: 'Get GemFire NativeClient assemblies'
+    inputs:
+      filePath: src/Connectors/EnableGemFire.ps1
+      arguments: $(PivNetAPIToken)
   - task: UseDotNet@2
     displayName: 'Use .NET Core sdk'
     inputs:
@@ -66,7 +76,7 @@ jobs:
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration) --filter "Category!=SkipOnMacOS&Category!=FlakyOnHostedAgents"'
+      arguments: '-c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnMacOS"'
 - job: Windows_Build_Test_and_Package
   pool:
     vmImage: 'windows-2019'
@@ -77,9 +87,18 @@ jobs:
       }
       Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
       Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
+      $prefix = $env:PackageVersion.Split('-')[0]
+      $suffix = $env:PackageVersion.Split('-')[1]
+      Write-Host "##vso[task.setvariable variable=VersionPrefix;]$prefix"
+      Write-Host "##vso[task.setvariable variable=VersionSuffix;]$suffix"
     env:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
+  - task: PowerShell@2
+    displayName: 'Get GemFire NativeClient assemblies'
+    inputs:
+      filePath: src/Connectors/EnableGemFire.ps1
+      arguments: $(PivNetAPIToken)
   - task: UseDotNet@2
     displayName: 'Use .NET Core sdk'
     inputs:
@@ -103,7 +122,7 @@ jobs:
     inputs:
       command: 'pack'
       feedsToUse: 'select'
-      arguments: '--no-restore -c $(buildConfiguration) /p:TreatWarningsAsErrors=True'
+      arguments: '--no-restore -c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
       packagesToPack: 'src/Steeltoe.All.sln'
       versioningScheme: 'byEnvVar'
       versionEnvVar: PackageVersion
@@ -111,7 +130,8 @@ jobs:
     inputs:
       command: test
       projects: 'src/Steeltoe.All.sln'
-      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration&Category!=FlakyOnHostedAgents" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+#      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration&Category!=FlakyOnHostedAgents" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+      arguments: '-c $(buildConfiguration) -maxcpucount:1 /p:TreatWarningsAsErrors=True /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
   # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
   # First install the tool on the machine, then run it
   - pwsh: |

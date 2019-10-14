@@ -30,24 +30,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return _concurrentThreadsExecuting.DecrementAndGet();
         }
 
-        public static int GlobalConcurrentThreadsExecuting
-        {
-            get { return _concurrentThreadsExecuting.Value; }
-        }
+        public static int GlobalConcurrentThreadsExecuting => _concurrentThreadsExecuting.Value;
 
-        public static int CommandCount
-        {
-            get { return HystrixCommandKeyDefault.CommandCount; }
-        }
+        public static int CommandCount => HystrixCommandKeyDefault.CommandCount;
 
-        public static int ThreadPoolCount
-        {
-            get { return HystrixThreadPoolKeyDefault.ThreadPoolCount; }
-        }
+        public static int ThreadPoolCount => HystrixThreadPoolKeyDefault.ThreadPoolCount;
 
-        public static int GroupCount
-        {
-            get { return HystrixCommandGroupKeyDefault.GroupCount; }
-        }
+        public static int GroupCount => HystrixCommandGroupKeyDefault.GroupCount;
     }
 }

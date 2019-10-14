@@ -24,7 +24,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Security;
 using System.Threading;
@@ -68,15 +67,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             public new CommandState Value
             {
-                get
-                {
-                    return (CommandState)_value;
-                }
+                get => (CommandState)_value;
 
-                set
-                {
-                    _value = (int)value;
-                }
+                set => _value = (int)value;
             }
 
             public bool CompareAndSet(CommandState expected, CommandState update)
@@ -94,15 +87,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             public new ThreadState Value
             {
-                get
-                {
-                    return (ThreadState)_value;
-                }
+                get => (ThreadState)_value;
 
-                set
-                {
-                    _value = (int)value;
-                }
+                set => _value = (int)value;
             }
 
             public bool CompareAndSet(ThreadState expected, ThreadState update)
@@ -120,15 +107,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             public new TimedOutStatus Value
             {
-                get
-                {
-                    return (TimedOutStatus)_value;
-                }
+                get => (TimedOutStatus)_value;
 
-                set
-                {
-                    _value = (int)value;
-                }
+                set => _value = (int)value;
             }
 
             public bool CompareAndSet(TimedOutStatus expected, TimedOutStatus update)
@@ -139,85 +120,40 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected class HystrixCompletionSource
         {
-            private TaskCompletionSource<TResult> source;
-            private TResult result;
-            private Exception exception;
             private bool? canceled;
             private bool resultSet;
 
             public HystrixCompletionSource(AbstractCommand<TResult> cmd)
             {
-                source = new TaskCompletionSource<TResult>(cmd);
+                Source = new TaskCompletionSource<TResult>(cmd);
                 resultSet = false;
             }
 
-            public TaskCompletionSource<TResult> Source
-            {
-                get
-                {
-                    return source;
-                }
-            }
+            public TaskCompletionSource<TResult> Source { get; }
 
-            public bool IsCanceled
-            {
-                get
-                {
-                    return canceled ?? false;
-                }
-            }
+            public bool IsCanceled => canceled ?? false;
 
-            public bool IsCompleted
-            {
-                get
-                {
-                    return IsFaulted || IsCanceled || resultSet == true;
-                }
-            }
+            public bool IsCompleted => IsFaulted || IsCanceled || resultSet;
 
-            public bool IsFaulted
-            {
-                get
-                {
-                    return exception != null;
-                }
-            }
+            public bool IsFaulted => Exception != null;
 
-            public Exception Exception
-            {
-                get
-                {
-                    return exception;
-                }
-            }
+            public Exception Exception { get; private set; }
 
-            public Task<TResult> Task
-            {
-                get
-                {
-                    return source.Task;
-                }
-            }
+            public Task<TResult> Task => Source.Task;
 
-            public TResult Result
-            {
-                get
-                {
-                    return result;
-                }
-            }
+            public TResult Result { get; private set; }
 
             internal void TrySetException(Exception exception)
             {
                 if (!IsCompleted)
                 {
-                    this.exception = exception;
+                    Exception = exception;
                 }
             }
 
             internal void TrySetCanceled()
             {
-               if (!IsCompleted)
+                if (!IsCompleted)
                 {
                     canceled = true;
                 }
@@ -228,7 +164,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 if (!IsCompleted)
                 {
                     resultSet = true;
-                    this.result = result;
+                    Result = result;
                 }
             }
 
@@ -241,15 +177,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                 if (IsCanceled)
                 {
-                    source.SetCanceled();
+                    Source.SetCanceled();
                 }
                 else if (IsFaulted)
                 {
-                    source.SetException(this.exception);
+                    Source.SetException(Exception);
                 }
                 else
                 {
-                    source.SetResult(this.result);
+                    Source.SetResult(Result);
                 }
             }
         }
@@ -283,7 +219,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected readonly IHystrixCommandGroupKey commandGroup;
 
         protected HystrixCompletionSource tcs;
-        private ILogger logger;
+        private readonly ILogger logger;
 
         #endregion Fields
 
@@ -304,30 +240,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             ILogger logger = null)
         {
             this.logger = logger;
-            this.commandGroup = InitGroupKey(group);
-            this.commandKey = InitCommandKey(key, GetType());
-            this.options = InitCommandOptions(this.commandKey, optionsStrategy, commandOptionsDefaults);
-            this.threadPoolKey = InitThreadPoolKey(threadPoolKey, this.commandGroup, this.options.ExecutionIsolationThreadPoolKeyOverride);
-            this._metrics = InitMetrics(metrics, this.commandGroup, this.threadPoolKey, this.commandKey, this.options);
-            this._circuitBreaker = InitCircuitBreaker(this.options.CircuitBreakerEnabled, circuitBreaker, this.commandGroup, this.commandKey, this.options, this._metrics);
+            commandGroup = InitGroupKey(group);
+            commandKey = InitCommandKey(key, GetType());
+            options = InitCommandOptions(commandKey, optionsStrategy, commandOptionsDefaults);
+            this.threadPoolKey = InitThreadPoolKey(threadPoolKey, commandGroup, options.ExecutionIsolationThreadPoolKeyOverride);
+            _metrics = InitMetrics(metrics, commandGroup, this.threadPoolKey, commandKey, options);
+            _circuitBreaker = InitCircuitBreaker(options.CircuitBreakerEnabled, circuitBreaker, commandGroup, commandKey, options, _metrics);
 
-            this._threadPool = InitThreadPool(threadPool, this.threadPoolKey, threadPoolOptionsDefaults);
+            _threadPool = InitThreadPool(threadPool, this.threadPoolKey, threadPoolOptionsDefaults);
 
             // Strategies from plugins
-            this._eventNotifier = HystrixPlugins.EventNotifier;
-            this._concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
-            HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCommand(this.commandKey, this.commandGroup, this._metrics, this._circuitBreaker, this.options);
+            _eventNotifier = HystrixPlugins.EventNotifier;
+            _concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
+            HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCommand(commandKey, commandGroup, _metrics, _circuitBreaker, options);
 
-            this._executionHook = InitExecutionHook(executionHook);
+            _executionHook = InitExecutionHook(executionHook);
 
-            this._requestCache = HystrixRequestCache.GetInstance(this.commandKey);
-            this._currentRequestLog = InitRequestLog(this.options.RequestLogEnabled);
+            _requestCache = HystrixRequestCache.GetInstance(commandKey);
+            _currentRequestLog = InitRequestLog(options.RequestLogEnabled);
 
             /* fallback semaphore override if applicable */
-            this._fallbackSemaphoreOverride = fallbackSemaphore;
+            _fallbackSemaphoreOverride = fallbackSemaphore;
 
             /* execution semaphore override if applicable */
-            this._executionSemaphoreOverride = executionSemaphore;
+            _executionSemaphoreOverride = executionSemaphore;
         }
         #endregion Constructors
 
@@ -520,9 +456,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected void Setup()
         {
-            this._timeoutTcs = CancellationTokenSource.CreateLinkedTokenSource(this._usersToken);
-            this._token = _timeoutTcs.Token;
-            this.tcs = new HystrixCompletionSource(this);
+            _timeoutTcs = CancellationTokenSource.CreateLinkedTokenSource(_usersToken);
+            _token = _timeoutTcs.Token;
+            tcs = new HystrixCompletionSource(this);
 
             /* this is a stateful object so can only be used once */
             if (!commandState.CompareAndSet(CommandState.NOT_STARTED, CommandState.OBSERVABLE_CHAIN_CREATED))
@@ -531,7 +467,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     "This instance can only be executed once. Please instantiate a new instance.");
                 throw new HystrixRuntimeException(
                     FailureType.BAD_REQUEST_EXCEPTION,
-                    this.GetType(),
+                    GetType(),
                     LogMessagePrefix + " command executed multiple times - this is not permitted.",
                     ex,
                     null);
@@ -539,7 +475,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             _commandStartTimestamp = Time.CurrentTimeMillis;
 
-            if (this.CommandOptions.RequestLogEnabled && _currentRequestLog != null)
+            if (CommandOptions.RequestLogEnabled && _currentRequestLog != null)
             {
                 // log this command execution regardless of what happened
                 _currentRequestLog.AddExecutedCommand(this);
@@ -630,7 +566,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             try
             {
-                this._execThreadTask.Start(this._threadPool.GetTaskScheduler());
+                _execThreadTask.Start(_threadPool.GetTaskScheduler());
             }
             catch (Exception e)
             {
@@ -672,7 +608,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             // we don't know what kind of exception this is so create a generic message and throw a new HystrixRuntimeException
             string message = LogMessagePrefix + " failed while executing. {0}";
             logger?.LogDebug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
-            return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, this.GetType(), message, e, null);
+            return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, GetType(), message, e, null);
         }
 
         protected abstract TResult DoRun();
@@ -736,7 +672,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 /* executionHook for all errors */
                 e = WrapWithOnErrorHook(failureType, e);
                 tcs.TrySetException(
-                    new HystrixRuntimeException(failureType, this.GetType(), LogMessagePrefix + " " + message + " and encountered unrecoverable error.", e, null));
+                    new HystrixRuntimeException(failureType, GetType(), LogMessagePrefix + " " + message + " and encountered unrecoverable error.", e, null));
                 return;
             }
             else
@@ -787,8 +723,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                             fallbackSemaphore?.Release();
                         }
 
-                        tcs.TrySetResult((TResult)fallbackExecutionResult);
-                        return;
+                        tcs.TrySetResult(fallbackExecutionResult);
                     }
                     else
                     {
@@ -818,7 +753,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                 tcs.TrySetException(new HystrixRuntimeException(
                     failureType,
-                    this.GetType(),
+                    GetType(),
                     LogMessagePrefix + " " + message + " and no fallback available.",
                     e,
                     fe));
@@ -835,7 +770,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                 tcs.TrySetException(new HystrixRuntimeException(
                     failureType,
-                    this.GetType(),
+                    GetType(),
                     LogMessagePrefix + " " + message + " and fallback failed.",
                     e,
                     fe));
@@ -851,7 +786,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             Exception wrapped = WrapWithOnErrorHook(failureType, underlying);
             tcs.TrySetException(new HystrixRuntimeException(
                 failureType,
-                this.GetType(),
+                GetType(),
                 LogMessagePrefix + " " + message + " and fallback disabled.",
                 wrapped,
                 null));
@@ -866,7 +801,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             // if we couldn't acquire a permit, we "fail fast" by throwing an exception
             tcs.TrySetException(new HystrixRuntimeException(
                 FailureType.REJECTED_SEMAPHORE_FALLBACK,
-                this.GetType(),
+                GetType(),
                 LogMessagePrefix + " fallback execution rejected.",
                 null,
                 null));
@@ -1019,8 +954,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     fromCache.Wait(cmd._token);
                 }
 
-                AbstractCommand<TResult> originalCommand = fromCache.AsyncState as AbstractCommand<TResult>;
-                if (originalCommand != null)
+                if (fromCache.AsyncState is AbstractCommand<TResult> originalCommand)
                 {
                     cmd._executionResult = originalCommand._executionResult;
                 }
@@ -1425,7 +1359,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void MarkCollapsedCommand(IHystrixCollapserKey collapserKey, int sizeOfBatch)
         {
-            _eventNotifier.MarkEvent(HystrixEventType.COLLAPSED, this.commandKey);
+            _eventNotifier.MarkEvent(HystrixEventType.COLLAPSED, commandKey);
             _executionResult = _executionResult.MarkCollapsed(collapserKey, sizeOfBatch);
         }
 
@@ -1602,227 +1536,65 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         #region IHystrixInvokableInfo
 
-        public IHystrixCommandGroupKey CommandGroup
-        {
-            get
-            {
-                return commandGroup;
-            }
-        }
+        public IHystrixCommandGroupKey CommandGroup => commandGroup;
 
         protected readonly IHystrixCommandKey commandKey;
 
-        public IHystrixCommandKey CommandKey
-        {
-            get
-            {
-                return commandKey;
-            }
-        }
+        public IHystrixCommandKey CommandKey => commandKey;
 
         protected readonly IHystrixThreadPoolKey threadPoolKey;
 
-        public IHystrixThreadPoolKey ThreadPoolKey
-        {
-            get
-            {
-                return threadPoolKey;
-            }
-        }
+        public IHystrixThreadPoolKey ThreadPoolKey => threadPoolKey;
 
         protected readonly IHystrixCommandOptions options;
 
-        public IHystrixCommandOptions CommandOptions
-        {
-            get
-            {
-                return options;
-            }
-        }
+        public IHystrixCommandOptions CommandOptions => options;
 
-        public long CommandRunStartTimeInNanos
-        {
-            get
-            {
-                return _executionResult.CommandRunStartTimeInNanos;
-            }
-        }
+        public long CommandRunStartTimeInNanos => _executionResult.CommandRunStartTimeInNanos;
 
-        public ExecutionResult.EventCounts EventCounts
-        {
-            get
-            {
-                return CommandResult.Eventcounts;
-            }
-        }
+        public ExecutionResult.EventCounts EventCounts => CommandResult.Eventcounts;
 
-        public List<HystrixEventType> ExecutionEvents
-        {
-            get
-            {
-                return CommandResult.OrderedList;
-            }
-        }
+        public List<HystrixEventType> ExecutionEvents => CommandResult.OrderedList;
 
-        public int ExecutionTimeInMilliseconds
-        {
-            get
-            {
-                return CommandResult.ExecutionLatency;
-            }
-        }
+        public int ExecutionTimeInMilliseconds => CommandResult.ExecutionLatency;
 
-        public Exception FailedExecutionException
-        {
-            get
-            {
-                return _executionResult.Exception;
-            }
-        }
+        public Exception FailedExecutionException => _executionResult.Exception;
 
-        public bool IsCircuitBreakerOpen
-        {
-            get
-            {
-                return options.CircuitBreakerForceOpen || (!options.CircuitBreakerForceClosed && _circuitBreaker.IsOpen);
-            }
-        }
+        public bool IsCircuitBreakerOpen => options.CircuitBreakerForceOpen || (!options.CircuitBreakerForceClosed && _circuitBreaker.IsOpen);
 
-        public bool IsExecutedInThread
-        {
-            get
-            {
-                return CommandResult.IsExecutedInThread;
-            }
-        }
+        public bool IsExecutedInThread => CommandResult.IsExecutedInThread;
 
-        public bool IsExecutionComplete
-        {
-            get
-            {
-                return commandState.Value == CommandState.TERMINAL;
-            }
-        }
+        public bool IsExecutionComplete => commandState.Value == CommandState.TERMINAL;
 
-        public bool IsFailedExecution
-        {
-            get
-            {
-                return CommandResult.Eventcounts.Contains(HystrixEventType.FAILURE);
-            }
-        }
+        public bool IsFailedExecution => CommandResult.Eventcounts.Contains(HystrixEventType.FAILURE);
 
-        public bool IsResponseFromCache
-        {
-            get
-            {
-                return _isResponseFromCache;
-            }
-        }
+        public bool IsResponseFromCache => _isResponseFromCache;
 
-        public bool IsResponseFromFallback
-        {
-            get
-            {
-                return CommandResult.Eventcounts.Contains(HystrixEventType.FALLBACK_SUCCESS);
-            }
-        }
+        public bool IsResponseFromFallback => CommandResult.Eventcounts.Contains(HystrixEventType.FALLBACK_SUCCESS);
 
-        public bool IsResponseRejected
-        {
-            get
-            {
-                return CommandResult.IsResponseRejected;
-            }
-        }
+        public bool IsResponseRejected => CommandResult.IsResponseRejected;
 
-        public bool IsResponseSemaphoreRejected
-        {
-            get
-            {
-                return CommandResult.IsResponseSemaphoreRejected;
-            }
-        }
+        public bool IsResponseSemaphoreRejected => CommandResult.IsResponseSemaphoreRejected;
 
-        public bool IsResponseShortCircuited
-        {
-            get
-            {
-                return CommandResult.Eventcounts.Contains(HystrixEventType.SHORT_CIRCUITED);
-            }
-        }
+        public bool IsResponseShortCircuited => CommandResult.Eventcounts.Contains(HystrixEventType.SHORT_CIRCUITED);
 
-        public bool IsResponseThreadPoolRejected
-        {
-            get
-            {
-                return CommandResult.IsResponseThreadPoolRejected;
-            }
-        }
+        public bool IsResponseThreadPoolRejected => CommandResult.IsResponseThreadPoolRejected;
 
-        public bool IsResponseTimedOut
-        {
-            get
-            {
-                return CommandResult.Eventcounts.Contains(HystrixEventType.TIMEOUT);
-            }
-        }
+        public bool IsResponseTimedOut => CommandResult.Eventcounts.Contains(HystrixEventType.TIMEOUT);
 
-        public bool IsSuccessfulExecution
-        {
-            get
-            {
-                return CommandResult.Eventcounts.Contains(HystrixEventType.SUCCESS);
-            }
-        }
+        public bool IsSuccessfulExecution => CommandResult.Eventcounts.Contains(HystrixEventType.SUCCESS);
 
-        public HystrixCommandMetrics Metrics
-        {
-            get
-            {
-                return _metrics;
-            }
-        }
+        public HystrixCommandMetrics Metrics => _metrics;
 
-        public int NumberCollapsed
-        {
-            get
-            {
-                return CommandResult.Eventcounts.GetCount(HystrixEventType.COLLAPSED);
-            }
-        }
+        public int NumberCollapsed => CommandResult.Eventcounts.GetCount(HystrixEventType.COLLAPSED);
 
-        public int NumberEmissions
-        {
-            get
-            {
-                return CommandResult.Eventcounts.GetCount(HystrixEventType.EMIT);
-            }
-        }
+        public int NumberEmissions => CommandResult.Eventcounts.GetCount(HystrixEventType.EMIT);
 
-        public int NumberFallbackEmissions
-        {
-            get
-            {
-                return CommandResult.Eventcounts.GetCount(HystrixEventType.FALLBACK_EMIT);
-            }
-        }
+        public int NumberFallbackEmissions => CommandResult.Eventcounts.GetCount(HystrixEventType.FALLBACK_EMIT);
 
-        public IHystrixCollapserKey OriginatingCollapserKey
-        {
-            get
-            {
-                return _executionResult.CollapserKey;
-            }
-        }
+        public IHystrixCollapserKey OriginatingCollapserKey => _executionResult.CollapserKey;
 
-        public string PublicCacheKey
-        {
-            get
-            {
-                return CacheKey;
-            }
-        }
+        public string PublicCacheKey => CacheKey;
 
         #endregion IHystrixInvokableInfo
 
@@ -1832,44 +1604,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public virtual bool IsFallbackUserDefined
         {
-            get
-            {
-                return _isFallbackUserDefined;
-            }
+            get => _isFallbackUserDefined;
 
-            set
-            {
-                _isFallbackUserDefined = value;
-            }
+            set => _isFallbackUserDefined = value;
         }
 
-        public Exception ExecutionException
-        {
-            get { return _executionResult.ExecutionException; }
-        }
+        public Exception ExecutionException => _executionResult.ExecutionException;
 
-        internal IHystrixCircuitBreaker CircuitBreaker
-        {
-            get { return this._circuitBreaker; }
-        }
+        internal IHystrixCircuitBreaker CircuitBreaker => _circuitBreaker;
 
-        protected virtual string CacheKey
-        {
-            get { return null; }
-        }
+        protected virtual string CacheKey => null;
 
-        protected virtual bool IsRequestCachingEnabled
-        {
-            get { return options.RequestCacheEnabled && CacheKey != null; }
-        }
+        protected virtual bool IsRequestCachingEnabled => options.RequestCacheEnabled && CacheKey != null;
 
-        protected virtual string LogMessagePrefix
-        {
-            get
-            {
-                return CommandKey.Name;
-            }
-        }
+        protected virtual string LogMessagePrefix => CommandKey.Name;
 
         protected virtual ExecutionResult CommandResult
         {
@@ -1894,15 +1642,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
-        protected virtual bool ShouldOutputOnNextEvents
-        {
-            get { return false; }
-        }
+        protected virtual bool ShouldOutputOnNextEvents => false;
 
-        protected virtual bool CommandIsScalar
-        {
-            get { return true; }
-        }
+        protected virtual bool CommandIsScalar => true;
         #endregion
     }
 }

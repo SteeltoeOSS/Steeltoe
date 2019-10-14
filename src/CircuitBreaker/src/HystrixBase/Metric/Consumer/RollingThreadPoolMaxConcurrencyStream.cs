@@ -32,11 +32,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static RollingThreadPoolMaxConcurrencyStream GetInstance(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
         {
-            return Streams.GetOrAddEx(threadPoolKey.Name, (k) => new RollingThreadPoolMaxConcurrencyStream(threadPoolKey, numBuckets, bucketSizeInMs));
+            return Streams.GetOrAddEx(threadPoolKey.Name, (k) =>
+            {
+                var stream = new RollingThreadPoolMaxConcurrencyStream(threadPoolKey, numBuckets, bucketSizeInMs);
+                stream.StartCachingStreamValuesIfUnstarted();
+                return stream;
+            });
         }
 
         public static void Reset()
         {
+            foreach (var stream in Streams.Values)
+            {
+                stream.Unsubscribe();
+            }
+
+            HystrixThreadPoolStartStream.Reset();
+
             Streams.Clear();
         }
 

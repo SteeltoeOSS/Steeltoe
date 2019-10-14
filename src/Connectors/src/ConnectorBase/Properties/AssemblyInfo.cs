@@ -19,3 +19,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.ConnectorAutofac.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.Connector.EFCore.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.Connector.EF6Core.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.GemFireConnector.Test")]

@@ -237,6 +237,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryWcf.Test", "Security\test\Authentication.CloudFoundryWcf.Net4Test\Steeltoe.Security.Authentication.CloudFoundryWcf.Test.csproj", "{E1607543-77BC-4CCB-8CEA-B5E032BA7309}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.GemFireConnector.Test", "Connectors\test\GemFireConnector.Net4Test\Steeltoe.CloudFoundry.GemFireConnector.Test.csproj", "{D5572167-00EB-48FA-8CC3-0394A399C289}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -655,6 +657,10 @@ Global
 		{E1607543-77BC-4CCB-8CEA-B5E032BA7309}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1607543-77BC-4CCB-8CEA-B5E032BA7309}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1607543-77BC-4CCB-8CEA-B5E032BA7309}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5572167-00EB-48FA-8CC3-0394A399C289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5572167-00EB-48FA-8CC3-0394A399C289}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5572167-00EB-48FA-8CC3-0394A399C289}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5572167-00EB-48FA-8CC3-0394A399C289}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -763,6 +769,7 @@ Global
 		{64F7AC0F-27CE-435A-8805-2E2472183BCB} = {5128206A-242E-4069-AD30-910EDC40B165}
 		{A2992F85-4EFA-43E7-A2F8-8B9A3E25344F} = {5128206A-242E-4069-AD30-910EDC40B165}
 		{E1607543-77BC-4CCB-8CEA-B5E032BA7309} = {5128206A-242E-4069-AD30-910EDC40B165}
+		{D5572167-00EB-48FA-8CC3-0394A399C289} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

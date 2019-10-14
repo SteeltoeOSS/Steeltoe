@@ -51,11 +51,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
                 .Subscribe(
                    (data) =>
                    {
-                      result = Serialize.ToJsonList(data, null);
-                      if (result.Count > 0)
-                      {
+                       result = Serialize.ToJsonList(data, null);
+                       if (result.Count > 0)
+                       {
                            latch.SignalEx();
-                      }
+                       }
                    },
                    (e) =>
                    {

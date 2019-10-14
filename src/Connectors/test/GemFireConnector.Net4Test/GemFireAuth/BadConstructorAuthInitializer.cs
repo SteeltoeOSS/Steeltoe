@@ -12,12 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using Apache.Geode.Client;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
+namespace Steeltoe.CloudFoundry.Connector.Test
 {
-    [Obsolete("This class will be removed in a future release, use Steeltoe.Security.Authentication.CloudFoundry.OpenIdTokenResponse instead.")]
-    public class OpenIDTokenResponse : OpenIdTokenResponse
+    public class BadConstructorAuthInitializer : IAuthInitialize
     {
+        public void Close()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

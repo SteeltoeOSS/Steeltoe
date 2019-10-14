@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
@@ -39,53 +40,60 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-metrics-A";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             HystrixCommandMetrics metrics = cmd1._metrics;
+
+            Assert.True(WaitForHealthCountToUpdate(key, 1000), "Health count stream took to long");
+
             cmd1.Execute();
-            Time.Wait(200);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
+
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
             cmd2.Execute();
-            Time.Wait(200);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
+
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd3 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
             cmd3.Execute();
             cmd4.Execute();
-            Time.Wait(200);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
+
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(25, metrics.Healthcounts.ErrorPercentage);
 
             HystrixCommand<bool> cmd5 = new TimeoutCommand(key);
             HystrixCommand<bool> cmd6 = new TimeoutCommand(key);
             cmd5.Execute();
             cmd6.Execute();
-            Time.Wait(200);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd8 = new SuccessCommand(key, 1);
-            HystrixCommand<bool> cmd9 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd7 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd8 = new SuccessCommand(key, 0);
+            HystrixCommand<bool> cmd9 = new SuccessCommand(key, 0);
             cmd7.Execute();
             cmd8.Execute();
             cmd9.Execute();
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             // latent
             HystrixCommand<bool> cmd10 = new SuccessCommand(key, 60);
             cmd10.Execute();
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
             // 6 success + 1 latent success + 1 failure + 2 timeout = 10 total
             // latent success not considered error
             // error percentage = 1 failure + 2 timeout / 10
-            Time.Wait(200);
+            Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
             Assert.Equal(30, metrics.Healthcounts.ErrorPercentage);
         }
 
@@ -95,30 +103,32 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             string key = "cmd-metrics-B";
 
-            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 1);
+            HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             HystrixCommandMetrics metrics = cmd1._metrics;
-            cmd1.Execute();
-            Time.Wait(200);
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForHealthCountToUpdate(key, 1000), "Health count stream took to long");
+            cmd1.Execute();
+            Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
+
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(0, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd2 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd2 = new FailureCommand(key, 0);
             cmd2.Execute();
-            Time.Wait(200);
+            Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd3 = new BadRequestCommand(key, 1);
-            HystrixCommand<bool> cmd4 = new BadRequestCommand(key, 1);
+            HystrixCommand<bool> cmd3 = new BadRequestCommand(key, 0);
+            HystrixCommand<bool> cmd4 = new BadRequestCommand(key, 0);
             try
             {
                 cmd3.Execute();
             }
             catch (HystrixBadRequestException)
             {
-                output.WriteLine("Caught expected HystrixBadRequestException from cmd3");
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + "Caught expected HystrixBadRequestException from cmd3");
             }
 
             try
@@ -127,21 +137,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
             catch (HystrixBadRequestException)
             {
-                output.WriteLine("Caught expected HystrixBadRequestException from cmd4");
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + "Caught expected HystrixBadRequestException from cmd4");
             }
 
-            Time.Wait(200);
+            Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(50, metrics.Healthcounts.ErrorPercentage);
 
-            HystrixCommand<bool> cmd5 = new FailureCommand(key, 1);
-            HystrixCommand<bool> cmd6 = new FailureCommand(key, 1);
+            HystrixCommand<bool> cmd5 = new FailureCommand(key, 0);
+            HystrixCommand<bool> cmd6 = new FailureCommand(key, 0);
             cmd5.Execute();
             cmd6.Execute();
-            Time.Wait(200);
+            Assert.True(WaitForHealthCountToUpdate(key, 250), "Health count stream took to long");
 
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             Assert.Equal(75, metrics.Healthcounts.ErrorPercentage);
         }
 
@@ -167,7 +177,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             try
             {
-                Time.Wait(200);
+                Time.Wait(150);
             }
             catch (Exception ie)
             {

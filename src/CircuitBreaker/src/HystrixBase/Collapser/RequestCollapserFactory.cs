@@ -23,19 +23,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
     public class RequestCollapserFactory
     {
         private readonly ICollapserTimer timer;
-        private readonly IHystrixCollapserKey collapserKey;
-        private readonly IHystrixCollapserOptions properties;
         private readonly HystrixConcurrencyStrategy concurrencyStrategy;
-        private readonly RequestCollapserScope scope;
 
         public RequestCollapserFactory(IHystrixCollapserKey collapserKey, RequestCollapserScope scope, ICollapserTimer timer, IHystrixCollapserOptions properties)
         {
             /* strategy: ConcurrencyStrategy */
-            this.concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
+            concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
             this.timer = timer;
-            this.scope = scope;
-            this.collapserKey = collapserKey;
-            this.properties = properties;
+            Scope = scope;
+            CollapserKey = collapserKey;
+            Properties = properties;
         }
 
         public static void Reset()
@@ -60,28 +57,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             return (RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType>)result;
         }
 
-        public IHystrixCollapserKey CollapserKey
-        {
-            get { return collapserKey; }
-        }
+        public IHystrixCollapserKey CollapserKey { get; }
 
-        public RequestCollapserScope Scope
-        {
-            get { return scope; }
-        }
+        public RequestCollapserScope Scope { get; }
 
-        public IHystrixCollapserOptions Properties
-        {
-            get { return properties; }
-        }
+        public IHystrixCollapserOptions Properties { get; }
 
         public RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> GetRequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>(HystrixCollapser<BatchReturnType, ResponseType, RequestArgumentType> commandCollapser)
         {
-            if (this.Scope == RequestCollapserScope.REQUEST)
+            if (Scope == RequestCollapserScope.REQUEST)
             {
                 return GetCollapserForUserRequest(commandCollapser);
             }
-            else if (this.Scope == RequestCollapserScope.GLOBAL)
+            else if (Scope == RequestCollapserScope.GLOBAL)
             {
                 return GetCollapserForGlobalScope(commandCollapser);
             }
@@ -97,7 +85,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         private RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> GetCollapserForGlobalScope<BatchReturnType, ResponseType, RequestArgumentType>(HystrixCollapser<BatchReturnType, ResponseType, RequestArgumentType> commandCollapser)
         {
-            var result = globalScopedCollapsers.GetOrAddEx(collapserKey.Name, (k) => new RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>(commandCollapser, properties, timer, concurrencyStrategy));
+            var result = globalScopedCollapsers.GetOrAddEx(CollapserKey.Name, (k) => new RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>(commandCollapser, Properties, timer, concurrencyStrategy));
             return (RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType>)result;
         }
 
@@ -111,7 +99,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         private RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType> GetRequestVariableForCommand<BatchReturnType, ResponseType, RequestArgumentType>(HystrixCollapser<BatchReturnType, ResponseType, RequestArgumentType> commandCollapser)
         {
-            var result = requestScopedCollapsers.GetOrAddEx(commandCollapser.CollapserKey.Name, (k) => new RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType>(commandCollapser, properties, timer, concurrencyStrategy));
+            var result = requestScopedCollapsers.GetOrAddEx(commandCollapser.CollapserKey.Name, (k) => new RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType>(commandCollapser, Properties, timer, concurrencyStrategy));
             return (RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType>)result;
         }
 

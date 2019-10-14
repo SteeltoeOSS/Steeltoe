@@ -526,5 +526,115 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Null(settings.Username);
             Assert.Null(settings.Password);
         }
+
+        [Fact]
+        public void AddConfigServer_WithCloudfoundryEnvironmentSCS3_ConfiguresClientCorrectly()
+        {
+            // Arrange
+            var vcap_application = @" 
+{
+'vcap': {
+    'application': 
+        {
+          'application_id': 'fa05c1a9-0fc1-4fbd-bae1-139850dec7a3',
+          'application_name': 'my-app',
+          'application_uris': [
+            'my-app.10.244.0.34.xip.io'
+          ],
+          'application_version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca',
+          'limits': {
+            'disk': 1024,
+            'fds': 16384,
+            'mem': 256
+          },
+          'name': 'my-app',
+          'space_id': '06450c72-4669-4dc6-8096-45f9777db68a',
+          'space_name': 'my-space',
+          'uris': [
+            'my-app.10.244.0.34.xip.io',
+            'my-app2.10.244.0.34.xip.io'
+          ],
+          'users': null,
+          'version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca'
+        }
+    }
+}";
+
+            var vcap_services = @"
+{
+    'vcap': {
+        'services': {
+            'p.config-server': [{
+                'binding_name':'',
+                'credentials': {
+                     'client_secret':'e8KF1hXvAnGd',
+                     'uri':'https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com',
+                     'client_id':'config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f',
+                     'access_token_uri':'https://p-spring-cloud-services.uaa.wise.com/oauth/token'
+                    },
+                    'instance_name': 'myConfigServer',
+                    'label': 'p.config-server',
+                    'name': 'myConfigServer',
+                    'plan': 'standard',
+                    'provider': null,
+                    'syslog_drain_url': null,
+                    'tags': [
+                        'configuration',
+                        'spring-cloud'
+                    ],
+                    'volume_mounts': []
+                }
+            ]}
+        }
+    }
+}";
+
+            var appsettings = @"
+{
+    'spring': {
+        'application': {
+            'name': '${vcap:application:name?foobar}'   
+        }
+    }
+}";
+            var tempPath = Path.GetTempPath();
+            var appsettingsPath = TestHelpers.CreateTempFile(appsettings);
+            string appsettingsfileName = Path.GetFileName(appsettingsPath);
+
+            var vcapAppPath = TestHelpers.CreateTempFile(vcap_application);
+            string vcapAppfileName = Path.GetFileName(vcapAppPath);
+
+            var vcapServicesPath = TestHelpers.CreateTempFile(vcap_services);
+            string vcapServicesfileName = Path.GetFileName(vcapServicesPath);
+
+            var environment = new HostingEnvironment();
+
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(tempPath);
+            configurationBuilder.AddJsonFile(appsettingsfileName);
+            configurationBuilder.AddJsonFile(vcapAppfileName);
+            configurationBuilder.AddJsonFile(vcapServicesfileName);
+
+            // Act and Assert
+            configurationBuilder.AddConfigServer(environment);
+            IConfigurationRoot config = configurationBuilder.Build();
+            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+
+            Assert.NotNull(configServerProvider);
+
+            // Check settings
+            ConfigServerClientSettings settings = configServerProvider.Settings;
+            Assert.True(settings.Enabled);
+            Assert.False(settings.FailFast);
+            Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", settings.Uri);
+            Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", settings.AccessTokenUri);
+            Assert.Equal("config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f", settings.ClientId);
+            Assert.Equal("e8KF1hXvAnGd", settings.ClientSecret);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+            Assert.Equal("my-app", settings.Name);
+            Assert.Null(settings.Label);
+            Assert.Null(settings.Username);
+            Assert.Null(settings.Password);
+        }
     }
 }

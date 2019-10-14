@@ -147,7 +147,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                         }
 
                         builder[builder.Length - 2] = ']';
-                        builder.Length = builder.Length - 1;
+                        builder.Length -= 1;
                     }
                     else
                     {

@@ -35,11 +35,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static CumulativeThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
         {
-            return Streams.GetOrAddEx(threadPoolKey.Name, (k) => new CumulativeThreadPoolEventCounterStream(threadPoolKey, numBuckets, bucketSizeInMs, HystrixThreadPoolMetrics.AppendEventToBucket, HystrixThreadPoolMetrics.CounterAggregator));
+            return Streams.GetOrAddEx(threadPoolKey.Name, (k) =>
+            {
+                var stream = new CumulativeThreadPoolEventCounterStream(threadPoolKey, numBuckets, bucketSizeInMs, HystrixThreadPoolMetrics.AppendEventToBucket, HystrixThreadPoolMetrics.CounterAggregator);
+                stream.StartCachingStreamValuesIfUnstarted();
+                return stream;
+            });
         }
 
         public static void Reset()
         {
+            foreach (var stream in Streams.Values)
+            {
+                stream.Unsubscribe();
+            }
+
+            HystrixThreadPoolCompletionStream.Reset();
+
             Streams.Clear();
         }
 

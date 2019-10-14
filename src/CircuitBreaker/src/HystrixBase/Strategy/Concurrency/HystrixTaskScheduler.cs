@@ -14,7 +14,6 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
@@ -46,12 +45,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                 throw new ArgumentOutOfRangeException("corePoolSize");
             }
 
-            this.allowMaxToDivergeFromCore = options.AllowMaximumSizeToDivergeFromCoreSize;
-            this.corePoolSize = options.CoreSize;
-            this.maximumPoolSize = options.MaximumSize;
-            this.keepAliveTime = TimeSpan.FromMinutes(options.KeepAliveTimeMinutes);
-            this.queueSize = options.MaxQueueSize;
-            this.queueSizeRejectionThreshold = options.QueueSizeRejectionThreshold;
+            allowMaxToDivergeFromCore = options.AllowMaximumSizeToDivergeFromCoreSize;
+            corePoolSize = options.CoreSize;
+            maximumPoolSize = options.MaximumSize;
+            keepAliveTime = TimeSpan.FromMinutes(options.KeepAliveTimeMinutes);
+            queueSize = options.MaxQueueSize;
+            queueSizeRejectionThreshold = options.QueueSizeRejectionThreshold;
 
             System.Threading.ThreadPool.GetMinThreads(out int workThreads, out int compThreads);
 
@@ -59,113 +58,44 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         }
 
         #region IHystrixTaskScheduler
-        public virtual int CurrentActiveCount
-        {
-            get
-            {
-                return this.runningTasks;
-            }
-        }
+        public virtual int CurrentActiveCount => runningTasks;
 
-        public virtual int CurrentCompletedTaskCount
-        {
-            get
-            {
-                return this.completedTasks;
-            }
-        }
+        public virtual int CurrentCompletedTaskCount => completedTasks;
 
-        public virtual int CurrentCorePoolSize
-        {
-            get
-            {
-                return this.corePoolSize;
-            }
-        }
+        public virtual int CurrentCorePoolSize => corePoolSize;
 
-        public virtual int CurrentLargestPoolSize
-        {
-            get
-            {
-                return this.corePoolSize;
-            }
-        }
+        public virtual int CurrentLargestPoolSize => corePoolSize;
 
-        public virtual int CurrentMaximumPoolSize
-        {
-            get
-            {
-                return this.corePoolSize;
-            }
-        }
+        public virtual int CurrentMaximumPoolSize => corePoolSize;
 
-        public virtual int CurrentPoolSize
-        {
-            get
-            {
-                return runningThreads;
-            }
-        }
+        public virtual int CurrentPoolSize => runningThreads;
 
-        public virtual int CurrentQueueSize
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public virtual int CurrentQueueSize => 0;
 
-        public virtual int CurrentTaskCount
-        {
-            get
-            {
-                return this.runningTasks;
-            }
-        }
+        public virtual int CurrentTaskCount => runningTasks;
 
         public virtual int CorePoolSize
         {
-            get
-            {
-                return this.corePoolSize;
-            }
+            get => corePoolSize;
 
-            set
-            {
-                throw new NotImplementedException();
-            }
+            set => throw new NotImplementedException();
         }
 
         public virtual int MaximumPoolSize
         {
-            get
-            {
-                return this.maximumPoolSize;
-            }
+            get => maximumPoolSize;
 
-            set
-            {
-                throw new NotImplementedException();
-            }
+            set => throw new NotImplementedException();
         }
 
         public virtual TimeSpan KeepAliveTime
         {
-            get
-            {
-                return this.keepAliveTime;
-            }
+            get => keepAliveTime;
 
-            set
-            {
-                throw new NotImplementedException();
-            }
+            set => throw new NotImplementedException();
         }
 
-        public virtual bool IsQueueSpaceAvailable
-        {
-            get { return false; }
-        }
+        public virtual bool IsQueueSpaceAvailable => false;
 
         public void Dispose()
         {
@@ -174,18 +104,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         }
 
         #endregion IHystrixTaskScheduler
-        public override int MaximumConcurrencyLevel
-        {
-            get
-            {
-                return this.maximumPoolSize;
-            }
-        }
+        public override int MaximumConcurrencyLevel => maximumPoolSize;
 
-        public bool IsShutdown
-        {
-            get { return shutdown; }
-        }
+        public bool IsShutdown => shutdown;
 
         protected virtual void Dispose(bool disposing)
         {
