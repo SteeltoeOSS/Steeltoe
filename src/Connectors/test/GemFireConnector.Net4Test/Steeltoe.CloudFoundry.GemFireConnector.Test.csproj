@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj" />
     <ProjectReference Include="..\..\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj" />
     <ProjectReference Include="..\..\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj" />
   </ItemGroup>
