@@ -23,11 +23,6 @@ jobs:
   pool:
     vmImage: 'Ubuntu-16.04'
   steps:
-  - task: PowerShell@2
-    displayName: 'Get GemFire NativeClient assemblies'
-    inputs:
-      filePath: src/Connectors/EnableGemFire.ps1
-      arguments: $(PivNetAPIToken)
   - task: UseDotNet@2
     displayName: 'Use .NET Core sdk'
     inputs:
@@ -52,11 +47,6 @@ jobs:
   pool:
     vmImage: 'macOS-10.14'
   steps:
-  - task: PowerShell@2
-    displayName: 'Get GemFire NativeClient assemblies'
-    inputs:
-      filePath: src/Connectors/EnableGemFire.ps1
-      arguments: $(PivNetAPIToken)
   - task: UseDotNet@2
     displayName: 'Use .NET Core sdk'
     inputs:
@@ -94,11 +84,6 @@ jobs:
     env:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
-  - task: PowerShell@2
-    displayName: 'Get GemFire NativeClient assemblies'
-    inputs:
-      filePath: src/Connectors/EnableGemFire.ps1
-      arguments: $(PivNetAPIToken)
   - task: UseDotNet@2
     displayName: 'Use .NET Core sdk'
     inputs:
@@ -130,7 +115,6 @@ jobs:
     inputs:
       command: test
       projects: 'src/Steeltoe.All.sln'
-#      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration&Category!=FlakyOnHostedAgents" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
       arguments: '-c $(buildConfiguration) -maxcpucount:1 /p:TreatWarningsAsErrors=True /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
   # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
   # First install the tool on the machine, then run it

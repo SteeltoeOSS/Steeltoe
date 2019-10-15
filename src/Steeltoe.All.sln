@@ -209,8 +209,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Conne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core.Test", "Connectors\test\Connector.EF6Core.Net4Test\Steeltoe.CloudFoundry.Connector.EF6Core.Test.csproj", "{66367BC6-62BD-4332-80FB-7AFF04689C1E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.GemFireConnector.Test", "Connectors\test\GemFireConnector.Net4Test\Steeltoe.CloudFoundry.GemFireConnector.Test.csproj", "{E0A4D89E-DF42-4617-BC6C-981B091D8772}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -525,10 +523,6 @@ Global
 		{66367BC6-62BD-4332-80FB-7AFF04689C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66367BC6-62BD-4332-80FB-7AFF04689C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66367BC6-62BD-4332-80FB-7AFF04689C1E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E0A4D89E-DF42-4617-BC6C-981B091D8772}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0A4D89E-DF42-4617-BC6C-981B091D8772}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0A4D89E-DF42-4617-BC6C-981B091D8772}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0A4D89E-DF42-4617-BC6C-981B091D8772}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -611,7 +605,6 @@ Global
 		{6D09B0D3-AF28-4FC4-A67D-424E7746682B} = {5128206A-242E-4069-AD30-910EDC40B165}
 		{C98FC8E6-2CD8-45E7-9453-92340A0129DF} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
 		{66367BC6-62BD-4332-80FB-7AFF04689C1E} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
-		{E0A4D89E-DF42-4617-BC6C-981B091D8772} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}
