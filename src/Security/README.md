@@ -1,72 +1,9 @@
-# ASP.NET Security Providers
+# Steeltoe Security
 
-This repository contains various security providers which simplify the process of using Security services on CloudFoundry.
+Authentication and DataProtection libraries which simplify interacting with CredHub and using security services on CloudFoundry.
 
-## .NET Runtime & Framework Support
-
-The components are intended to support both .NET 4.6.1+ and .NET Core (CoreCLR/CoreFX).
-
-Where appropriate, the components are built and unit tested on Windows, Linux and OSX.
-
-Where appropriate, the components and samples have been tested on .NET Core SDK, .NET 4.6.1+, and on ASP.NET Core 2.0.
-
-## Usage
-
-For more information on how to use these components see the online [Steeltoe documentation](https://steeltoe.io/).
-
-## Nuget Feeds
-
-All new development is done on the dev branch. More stable versions of the components can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
-
-- [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev)
-- [Master feed (Stable)](https://www.myget.org/gallery/steeltoemaster)
-- [Release or Release Candidate feed](https://www.nuget.org/)
-
-## Building Pre-requisites
-
-To build and run the unit tests:
-
-1. .NET Core SDK 2.0.3 or greater
-1. .NET Core Runtime 2.0.3
-
-## Building Packages & Running Tests - Windows
-
-To build the packages on windows:
-
-1. git clone ...
-1. cd clone directory
-1. cd src/project (e.g. cd src/Steeltoe.Security.Authentication.CloudFoundry)
-1. dotnet restore
-1. dotnet pack --configuration Release or Debug
-
-The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Security.Authentication.CloudFoundry/bin)
-
-To run the unit tests:
-
-1. git clone ...
-1. cd clone directory
-1. cd test/test project (e.g. cd test/Steeltoe.Security.Authentication.CloudFoundry.Test)
-1. dotnet restore
-1. dotnet xunit -verbose
-
-## Building Packages & Running Tests - Linux/OSX
-
-To build the packages on Linux/OSX:
-
-1. git clone ...
-1. cd clone directory
-1. cd src/project (e.g.. cd src/Steeltoe.Security.Authentication.CloudFoundry)
-1. dotnet pack --configuration Release or Debug
-
-The resulting artifacts can be found in the bin folder under the corresponding project. (e.g. src/Steeltoe.Security.Authentication.CloudFoundry/bin
-
-To run the unit tests:
-
-1. git clone ...
-1. cd clone directory
-1. cd test/test project (e.g. cd test/Steeltoe.Security.Authentication.CloudFoundry.Test)
-1. dotnet xunit -verbose -framework netcoreapp2.0
+For more information on how to use these components see the [Steeltoe documentation](https://steeltoe.io/).
 
 ## Sample Applications
 
-See the [Samples](https://github.com/SteeltoeOSS/Samples) repository for examples of how to use these packages.
+See the `Security` directory of the [Samples](https://github.com/SteeltoeOSS/Samples) repository for examples of how to use these packages.
