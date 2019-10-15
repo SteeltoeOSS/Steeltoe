@@ -54,6 +54,40 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
     }]
 }";
 
+        private readonly string openIdConfigResponse = @"
+        {
+            ""issuer"":""https://default_oauthserviceurl/oauth/token"",
+            ""authorization_endpoint"":""https://default_oauthserviceurl/oauth/authorize"",
+            ""token_endpoint"":""https://default_oauthserviceurl/oauth/token"",
+            ""token_endpoint_auth_methods_supported"":[""client_secret_basic"",""client_secret_post""],
+            ""token_endpoint_auth_signing_alg_values_supported"":[""RS256"",""HS256""],
+            ""userinfo_endpoint"":""https://default_oauthserviceurl/userinfo"",
+            ""jwks_uri"":""https://default_oauthserviceurl/token_keys"",
+            ""scopes_supported"":[""openid"",""profile"",""email"",""phone"",""roles"",""user_attributes""],
+            ""response_types_supported"":[""code"",""code id_token"",""id_token"",""token id_token""],
+            ""subject_types_supported"":[""public""],
+            ""id_token_signing_alg_values_supported"":[""RS256"",""HS256""],
+            ""id_token_encryption_alg_values_supported"":[""none""],
+            ""claim_types_supported"":[""normal""],
+            ""claims_supported"":[""sub"",""user_name"",""origin"",""iss"",""auth_time"",""amr"",""acr"",""client_id"",""aud"",""zid"",""grant_type"",""user_id"",""azp"",""scope"",""exp"",""iat"",""jti"",""rev_sig"",""cid"",""given_name"",""family_name"",""phone_number"",""email""],
+            ""claims_parameter_supported"":false,
+            ""service_documentation"":""http://docs.cloudfoundry.org/api/uaa/"",
+            ""ui_locales_supported"":[""en-US""]
+        }";
+
+        private readonly string jwksResponse = @"
+            {
+                ""keys"":[{
+                    ""kty"":""RSA"",
+                    ""e"":""AQAB"",
+                    ""use"":""sig"",
+                    ""kid"":""uaa-jwt-key-1"",
+                    ""alg"":""RS256"",
+                    ""value"":""-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDHtC5gUXxBKpEqZTLkNvFwNGnN\nIkggNOwOQVNbpO0WVHIivig5L39WqS9u0hnA+O7MCA/KlrAR4bXaeVVhwfUPYBKI\npaaTWFQR5cTR1UFZJL/OF9vAfpOwznoD66DDCnQVpbCjtDYWX+x6imxn8HCYxhMo\nl6ZnTbSsFW6VZjFMjQIDAQAB\n-----END PUBLIC KEY-----"",
+                    ""n"":""AMe0LmBRfEEqkSplMuQ28XA0ac0iSCA07A5BU1uk7RZUciK-KDkvf1apL27SGcD47swID8qWsBHhtdp5VWHB9Q9gEoilppNYVBHlxNHVQVkkv84X28B-k7DOegProMMKdBWlsKO0NhZf7HqKbGfwcJjGEyiXpmdNtKwVbpVmMUyN""
+                }]
+            }";
+
         [Fact]
         public async void AddCloudFoundryOAuthAuthentication_AddsIntoPipeline()
         {
@@ -100,9 +134,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             }
         }
 
-        [Fact(Skip = "This test would require injection of a mock http client/handler into the OpenIdConnectOptions")]
+        [Fact]
         public async void AddCloudFoundryOpenId_AddsIntoPipeline()
         {
+            Environment.SetEnvironmentVariable("openIdConfigResponse", openIdConfigResponse);
+            Environment.SetEnvironmentVariable("jwksResponse", jwksResponse);
+
             var builder = new WebHostBuilder().UseStartup<TestServerOpenIdStartup>().UseEnvironment("development");
             using (var server = new TestServer(builder))
             {
@@ -115,11 +152,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             }
         }
 
-        [Fact(Skip = "This test would require injection of a mock http client/handler into the OpenIdConnectOptions")]
+        [Fact]
         public async void AddCloudFoundryOpenId_AddsIntoPipeline_UsesSSOInfo()
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+            Environment.SetEnvironmentVariable("openIdConfigResponse", openIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com"));
+            Environment.SetEnvironmentVariable("jwksResponse", jwksResponse);
 
             var builder = new WebHostBuilder().UseStartup<TestServerOpenIdStartup>().UseEnvironment("development");
             using (var server = new TestServer(builder))
