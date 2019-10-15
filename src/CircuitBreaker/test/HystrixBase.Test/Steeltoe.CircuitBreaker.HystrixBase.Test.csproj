@@ -10,7 +10,7 @@
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <RetainVMGarbageCollection>true</RetainVMGarbageCollection>
-    <ThreadPoolMinThreads>50</ThreadPoolMinThreads>
+    <ThreadPoolMinThreads>150</ThreadPoolMinThreads>
     <ThreadPoolMaxThreads>1250</ThreadPoolMaxThreads>
     <!-- <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->

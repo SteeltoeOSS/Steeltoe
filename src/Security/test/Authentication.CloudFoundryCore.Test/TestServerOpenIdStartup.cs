@@ -20,8 +20,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RichardSzalay.MockHttp;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Net.Http;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
@@ -42,6 +44,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var openIdConfigResponse = Environment.GetEnvironmentVariable("openIdConfigResponse");
+            var jwksResponse = Environment.GetEnvironmentVariable("jwksResponse");
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+
             services.AddOptions();
             services.AddAuthentication((options) =>
             {
@@ -52,29 +58,17 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             {
                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
             })
-            .AddCloudFoundryOpenIdConnect(Configuration);
+            .AddCloudFoundryOpenIdConnect(Configuration, (options, config) =>
+            {
+                var configRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/.well-known/openid-configuration").Respond("application/json", openIdConfigResponse);
+                var jwksRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/token_keys").Respond("application/json", jwksResponse);
+                options.Backchannel = new HttpClient(mockHttpMessageHandler);
+            });
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerfactory)
         {
             loggerfactory.AddConsole(LogLevel.Debug);
-
-            app.Use(async (context, next) =>
-            {
-                try
-                {
-                    await next();
-                }
-                catch (Exception ex)
-                {
-                    if (context.Response.HasStarted)
-                    {
-                        throw;
-                    }
-                    context.Response.StatusCode = 500;
-                    await context.Response.WriteAsync(ex.ToString());
-                }
-            });
 
             app.UseAuthentication();
 

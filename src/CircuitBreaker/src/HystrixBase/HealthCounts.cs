@@ -16,45 +16,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public class HealthCounts
     {
-        private readonly long totalCount;
-        private readonly long errorCount;
-        private readonly int errorPercentage;
-
         internal HealthCounts(long total, long error)
         {
-            this.totalCount = total;
-            this.errorCount = error;
-            if (totalCount > 0)
+            TotalRequests = total;
+            ErrorCount = error;
+            if (TotalRequests > 0)
             {
-                this.errorPercentage = (int)((errorCount * 100) / totalCount);
+                ErrorPercentage = (int)((ErrorCount * 100) / TotalRequests);
             }
             else
             {
-                this.errorPercentage = 0;
+                ErrorPercentage = 0;
             }
         }
 
-        private static readonly HealthCounts EMPTY = new HealthCounts(0, 0);
+        public long TotalRequests { get; }
 
-        public long TotalRequests
-        {
-            get { return totalCount; }
-        }
+        public long ErrorCount { get; }
 
-        public long ErrorCount
-        {
-            get { return errorCount; }
-        }
-
-        public int ErrorPercentage
-        {
-            get { return errorPercentage; }
-        }
+        public int ErrorPercentage { get; }
 
         public HealthCounts Plus(long[] eventTypeCounts)
         {
-            long updatedTotalCount = totalCount;
-            long updatedErrorCount = errorCount;
+            long updatedTotalCount = TotalRequests;
+            long updatedErrorCount = ErrorCount;
 
             long successCount = eventTypeCounts[(int)HystrixEventType.SUCCESS];
             long failureCount = eventTypeCounts[(int)HystrixEventType.FAILURE];
@@ -67,14 +52,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return new HealthCounts(updatedTotalCount, updatedErrorCount);
         }
 
-        public static HealthCounts Empty
-        {
-            get { return EMPTY; }
-        }
+        public static HealthCounts Empty { get; } = new HealthCounts(0, 0);
 
         public override string ToString()
         {
-            return "HealthCounts[" + errorCount + " / " + totalCount + " : " + ErrorPercentage + "%]";
+            return $"HealthCounts[{ErrorCount} / {TotalRequests} : {ErrorPercentage}%]";
         }
     }
 }

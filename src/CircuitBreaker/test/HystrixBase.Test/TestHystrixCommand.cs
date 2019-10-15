@@ -14,11 +14,13 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using System;
+using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class TestHystrixCommand<T> : HystrixCommand<T>
     {
+        public ITestOutputHelper _output;
         private readonly TestCommandBuilder builder;
 
         public TestHystrixCommand(TestCommandBuilder builder)

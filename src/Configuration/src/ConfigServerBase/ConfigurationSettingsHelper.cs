@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -23,6 +24,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         private const string SPRING_APPLICATION_PREFIX = "spring:application";
         private const string VCAP_APPLICATION_PREFIX = "vcap:application";
         private const string VCAP_SERVICES_CONFIGSERVER_PREFIX = "vcap:services:p-config-server:0";
+        private const string VCAP_SERVICES_CONFIGSERVER30_PREFIX = "vcap:services:p.config-server:0";
 
         public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IConfiguration config)
         {
@@ -43,7 +45,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             var clientConfigsection = config.GetSection(configPrefix);
 
-            settings.Name = GetApplicationName(clientConfigsection, config, settings.Name);
+            settings.Name = GetApplicationName(configPrefix, config, settings.Name);
             settings.Environment = GetEnvironment(clientConfigsection, settings.Environment);
             settings.Label = GetLabel(clientConfigsection);
             settings.Username = GetUsername(clientConfigsection);
@@ -59,9 +61,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             settings.RetryAttempts = GetRetryMaxAttempts(clientConfigsection, settings.RetryAttempts);
             settings.Token = GetToken(clientConfigsection);
             settings.Timeout = GetTimeout(clientConfigsection, settings.Timeout);
-            settings.AccessTokenUri = GetAccessTokenUri(clientConfigsection, config);
-            settings.ClientId = GetClientId(clientConfigsection, config);
-            settings.ClientSecret = GetClientSecret(clientConfigsection, config);
+            settings.AccessTokenUri = GetAccessTokenUri(configPrefix, config);
+            settings.ClientId = GetClientId(configPrefix, config);
+            settings.ClientSecret = GetClientSecret(configPrefix, config);
             settings.TokenRenewRate = GetTokenRenewRate(clientConfigsection);
             settings.DisableTokenRenewal = GetDisableTokenRenewal(clientConfigsection);
             settings.TokenTtl = GetTokenTtl(clientConfigsection);
@@ -71,7 +73,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             settings.HealthTimeToLive = GetHealthTimeToLive(clientConfigsection, settings.HealthTimeToLive);
 
             // Override Config server URI
-            settings.Uri = GetCloudFoundryUri(clientConfigsection, config, settings.Uri);
+            settings.Uri = GetCloudFoundryUri(configPrefix, config, settings.Uri);
         }
 
         private static bool GetHealthEnabled(IConfigurationSection clientConfigsection, bool def)
@@ -184,63 +186,82 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return configServerSection.GetValue("tokenTtl", ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL);
         }
 
-        private static string GetClientSecret(IConfigurationSection configServerSection, IConfiguration config)
+        private static string GetClientSecret(string configPrefix, IConfiguration config)
         {
-            return GetSetting("credentials:client_secret", config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX), configServerSection, ConfigServerClientSettings.DEFAULT_CLIENT_SECRET);
+           return GetSetting(
+               "credentials:client_secret",
+               config,
+               ConfigServerClientSettings.DEFAULT_CLIENT_SECRET,
+               VCAP_SERVICES_CONFIGSERVER_PREFIX,
+               VCAP_SERVICES_CONFIGSERVER30_PREFIX,
+               configPrefix);
         }
 
-        private static string GetClientId(IConfigurationSection configServerSection, IConfiguration config)
+        private static string GetClientId(string configPrefix, IConfiguration config)
         {
-            return GetSetting("credentials:client_id", config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX), configServerSection, ConfigServerClientSettings.DEFAULT_CLIENT_ID);
+            return GetSetting(
+                "credentials:client_id",
+                config,
+                ConfigServerClientSettings.DEFAULT_CLIENT_ID,
+                VCAP_SERVICES_CONFIGSERVER_PREFIX,
+                VCAP_SERVICES_CONFIGSERVER30_PREFIX,
+                configPrefix);
         }
 
-        private static string GetAccessTokenUri(IConfigurationSection configServerSection, IConfiguration config)
+        private static string GetAccessTokenUri(string configPrefix, IConfiguration config)
         {
-            return GetSetting("credentials:access_token_uri", config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX), configServerSection, ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI);
+            return GetSetting(
+                "credentials:access_token_uri",
+                config,
+                ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI,
+                VCAP_SERVICES_CONFIGSERVER_PREFIX,
+                VCAP_SERVICES_CONFIGSERVER30_PREFIX,
+                configPrefix);
         }
 
-        private static string GetApplicationName(IConfigurationSection primary, IConfiguration config, string defName)
+        private static string GetApplicationName(string configPrefix, IConfiguration config, string defName)
         {
-            return GetSetting("name", primary, config.GetSection(SPRING_APPLICATION_PREFIX), config.GetSection(VCAP_APPLICATION_PREFIX), defName);
+            return GetSetting(
+                "name",
+                config,
+                defName,
+                configPrefix,
+                SPRING_APPLICATION_PREFIX,
+                VCAP_APPLICATION_PREFIX);
         }
 
-        private static string GetCloudFoundryUri(IConfiguration configServerSection, IConfiguration config, string def)
+        private static string GetCloudFoundryUri(string configPrefix, IConfiguration config, string def)
         {
-            return GetSetting("credentials:uri", config.GetSection(VCAP_SERVICES_CONFIGSERVER_PREFIX), configServerSection, def);
+            return GetSetting(
+                "credentials:uri",
+                config,
+                def,
+                configPrefix,
+                VCAP_SERVICES_CONFIGSERVER_PREFIX,
+                VCAP_SERVICES_CONFIGSERVER30_PREFIX);
         }
 
-        private static string GetSetting(string key, IConfiguration primary, IConfiguration secondary, string def)
+        /// <summary>
+        /// Get setting from config searching the given configPrefix keys in order. Returns the first element with key.
+        /// </summary>
+        /// <param name="key">The key of the element to return.</param>
+        /// <param name="config">IConfiguration to search through.</param>
+        /// <param name="defaultValue">The default Value if no configuration is found.</param>
+        /// <param name="configPrefixes">The prefixes to search for in given order.</param>
+        /// <returns>Config value</returns>
+        private static string GetSetting(string key, IConfiguration config, string defaultValue, params string[] configPrefixes)
         {
-            var result = primary.GetValue<string>(key);
-            if (!string.IsNullOrEmpty(result))
+            foreach (var prefix in configPrefixes)
             {
-                return result;
+                var section = config.GetSection(prefix);
+                var result = section.GetValue<string>(key);
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return result;
+                }
             }
 
-            result = secondary.GetValue<string>(key);
-            if (!string.IsNullOrEmpty(result))
-            {
-                return result;
-            }
-
-            return def;
-        }
-
-        private static string GetSetting(string key, IConfiguration primary, IConfiguration secondry, IConfiguration third, string def)
-        {
-            var result = GetSetting(key, primary, secondry, null);
-            if (!string.IsNullOrEmpty(result))
-            {
-                return result;
-            }
-
-            result = third.GetValue<string>(key);
-            if (!string.IsNullOrEmpty(result))
-            {
-                return result;
-            }
-
-            return def;
+            return defaultValue;
         }
     }
 }

@@ -83,11 +83,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             this.context.Dispose();
 
-            Assert.Throws<InvalidOperationException>(() => { HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1")).Get<Task<string>>("any");  });
+            Assert.Throws<InvalidOperationException>(() => { HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1")).Get<Task<string>>("any"); });
         }
 
         [Fact]
-    public void TestClearCache()
+        public void TestClearCache()
         {
             HystrixConcurrencyStrategy strategy = HystrixConcurrencyStrategyDefault.GetInstance();
             try

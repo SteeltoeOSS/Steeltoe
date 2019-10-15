@@ -59,7 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
             stream.Observe().Take(num).Subscribe(
                 (configuration) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Received data with : " + configuration.CommandConfig.Count + " commands");
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Received data with : " + configuration.CommandConfig.Count + " commands");
                     if (configuration.CommandConfig.ContainsKey(CommandKey))
                     {
                         commandShowsUp.Value = true;
@@ -71,12 +71,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                 },
                 (e) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
                     latch.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
                     latch.SignalEx();
                 });
 
@@ -104,17 +104,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                     .Subscribe(
                     (configuration) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
+                        output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
                         payloads1.IncrementAndGet();
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnError : " + e);
+                        output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnError : " + e);
                         latch1.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
+                        output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
                         latch1.SignalEx();
                     });
 
@@ -128,17 +128,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                 .Subscribe(
                 (configuration) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads2.IncrementAndGet();
                 },
                 (e) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnError : " + e);
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
                     latch2.SignalEx();
                 });
 
@@ -179,17 +179,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                 .Subscribe(
                 (configuration) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 1 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads1.IncrementAndGet();
                 },
                 (e) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1  OnError : " + e);
                     latch1.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 1 OnCompleted");
                     latch1.SignalEx();
                 });
 
@@ -203,17 +203,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                 .Subscribe(
                 (configuration) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Dashboard 2 OnNext : " + configuration.CommandConfig.Count + " commands");
                     payloads2.IncrementAndGet();
                 },
                 (e) =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2  OnError : " + e);
                     latch2.SignalEx();
                 },
                 () =>
                 {
-                    output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
+                    output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Dashboard 2 OnCompleted");
                     latch2.SignalEx();
                 });
 
@@ -276,17 +276,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                     .Subscribe(
                     (b) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " :  OnNext : " + b);
+                        output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " :  OnNext : " + b);
                     },
                     (e) =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
+                        output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnError : " + e);
                         foundError.Value = true;
                         latch.SignalEx();
                     },
                     () =>
                     {
-                        output.WriteLine((DateTime.Now.Ticks / 10000) + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
+                        output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " OnCompleted");
                         latch.SignalEx();
                     });
 

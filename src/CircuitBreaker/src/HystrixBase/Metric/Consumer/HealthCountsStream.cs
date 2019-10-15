@@ -56,12 +56,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static void Reset()
         {
+            foreach (var stream in Streams.Values)
+            {
+                stream.Unsubscribe();
+            }
+
+            HystrixCommandCompletionStream.Reset();
+
             Streams.Clear();
         }
 
         public static void RemoveByKey(IHystrixCommandKey key)
         {
             Streams.TryRemove(key.Name, out HealthCountsStream old);
+        }
+
+        internal static HealthCountsStream GetInstance(string commandKey)
+        {
+            Streams.TryGetValue(commandKey, out HealthCountsStream result);
+            return result;
         }
 
         private HealthCountsStream(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs, Func<long[], HystrixCommandCompletion, long[]> reduceCommandCompletion)

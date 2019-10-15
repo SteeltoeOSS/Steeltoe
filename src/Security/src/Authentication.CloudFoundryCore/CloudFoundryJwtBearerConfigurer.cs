@@ -34,11 +34,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             jwtOptions.ClaimsIssuer = options.ClaimsIssuer;
             jwtOptions.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
-            jwtOptions.TokenValidationParameters = jwtOptions.TokenValidationParameters ?? new TokenValidationParameters();
-            jwtOptions.TokenValidationParameters.ValidateAudience = options.TokenValidationParameters.ValidateAudience;
-            jwtOptions.TokenValidationParameters.ValidateIssuer = options.TokenValidationParameters.ValidateIssuer;
-            jwtOptions.TokenValidationParameters.ValidateLifetime = options.TokenValidationParameters.ValidateLifetime;
-            jwtOptions.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(jwtOptions.TokenValidationParameters, options.JwtKeyUrl, jwtOptions.BackchannelHttpHandler, options.ValidateCertificates);
+            jwtOptions.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(options.TokenValidationParameters, options.JwtKeyUrl, jwtOptions.BackchannelHttpHandler, options.ValidateCertificates);
             jwtOptions.SaveToken = options.SaveToken;
         }
     }

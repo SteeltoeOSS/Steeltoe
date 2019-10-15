@@ -29,32 +29,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     public class RollingThreadPoolMaxConcurrencyStreamTest : CommandStreamTest, IDisposable
     {
         private RollingThreadPoolMaxConcurrencyStream stream;
+        private IDisposable latchSubscription;
         private ITestOutputHelper output;
 
-        private class LatchedObserver : ObserverBase<int>
+        private class LatchedObserver : TestObserverBase<int>
         {
-            private CountdownEvent latch;
-            private ITestOutputHelper output;
-
             public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
+                : base(output, latch)
             {
-                this.latch = latch;
-                this.output = output;
-            }
-
-            protected override void OnCompletedCore()
-            {
-                latch.SignalEx();
-            }
-
-            protected override void OnErrorCore(Exception error)
-            {
-                Assert.False(true, error.Message);
-            }
-
-            protected override void OnNextCore(int maxConcurrency)
-            {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : Max of " + maxConcurrency);
             }
         }
 
@@ -69,26 +51,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         public override void Dispose()
         {
+            latchSubscription?.Dispose();
+            stream?.Unsubscribe();
+            latchSubscription = null;
+            stream = null;
             base.Dispose();
-
-            stream.Unsubscribe();
         }
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesZeros()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-A");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-A");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-A");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
 
-            // no writes
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
 
             Assert.Equal(0, stream.LatestRollingMax);
         }
@@ -100,20 +81,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-B");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-B");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-B");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 50);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 40);
 
-            cmd1.Observe();
-            Time.Wait(1);
-            cmd2.Observe();
+            Task t1 = cmd1.ExecuteAsync();
+            Task t2 = cmd2.ExecuteAsync();
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Task.WaitAll(t1, t2);
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
@@ -124,20 +106,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-C");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-C");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-C");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10, ExecutionIsolationStrategy.SEMAPHORE);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 14, ExecutionIsolationStrategy.SEMAPHORE);
 
-            cmd1.Observe();
-            Time.Wait(1);
-            cmd2.Observe();
+            Task t1 = cmd1.ExecuteAsync();
+            Task t2 = cmd2.ExecuteAsync();
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Task.WaitAll(t1, t2);
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
 
             // since commands run in semaphore isolation, they are not tracked by threadpool metrics
             Assert.Equal(0, stream.LatestRollingMax);
@@ -155,33 +138,36 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-D");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-D");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-D");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 560);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 50);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 75);
 
-            cmd1.Observe();
-            Time.Wait(150); // bucket roll
-            cmd2.Observe();
-            Time.Wait(1);
-            cmd3.Observe();
+            Task t1 = cmd1.ExecuteAsync();
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            // Time.Wait(150); // bucket roll
+            Assert.True(WaitForObservableToUpdate(stream.Observe(), 1, 500, output), "Stream update took to long");
+            Task t2 = cmd2.ExecuteAsync();
+            Task t3 = cmd3.ExecuteAsync();
+
+            Task.WaitAll(t1, t2, t3);
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
-         // BUCKETS
-         //      A    |    B    |    C    |    D    |    E    |
-         //  1:  [-------------------------------]
-         //  2:          [-------------------------------]
-         //  3:                      [--]
-         //  4:                              [--]
-         //  Max concurrency should be 3
+        // BUCKETS
+        //      A    |    B    |    C    |    D    |    E    |
+        //  1:  [-------------------------------]
+        //  2:          [-------------------------------]
+        //  3:                      [--]
+        //  4:                              [--]
+        //  Max concurrency should be 3
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleCommandsCarryOverMultipleBuckets()
@@ -189,36 +175,42 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-E");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-E");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-E");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
 
-            cmd1.Observe();
-            Time.Wait(100); // bucket roll
-            cmd2.Observe();
-            Time.Wait(100);
-            cmd3.Observe();
-            Time.Wait(100);
-            cmd4.Observe();
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Task t1 = cmd1.ExecuteAsync();
+
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
+            Task t2 = cmd2.ExecuteAsync();
+
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
+            Task t3 = cmd3.ExecuteAsync();
+
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
+            Task t4 = cmd4.ExecuteAsync();
+
+            Task.WaitAll(t1, t2, t3, t4);
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
             Assert.Equal(3, stream.LatestRollingMax);
         }
 
-         // BUCKETS
-         //      A    |    B    |    C    |    D    |    E    |
-         //  1:  [-------------------------------]              ThreadPool x
-         //  2:          [-------------------------------]                 y
-         //  3:                      [--]                                  x
-         //  4:                              [--]                          x
-         //  Same input data as above test, just that command 2 runs in a separate threadpool, so concurrency should not get tracked
-         //  Max concurrency should be 2 for x
+        // BUCKETS
+        //      A    |    B    |    C    |    D    |    E    |
+        //  1:  [-------------------------------]              ThreadPool x
+        //  2:          [-------------------------------]                 y
+        //  3:                      [--]                                  x
+        //  4:                              [--]                          x
+        //  Same input data as above test, just that command 2 runs in a separate threadpool, so concurrency should not get tracked
+        //  Max concurrency should be 2 for x
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleCommandsCarryOverMultipleBucketsForMultipleThreadPools()
@@ -228,34 +220,43 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-X");
             IHystrixCommandKey keyX = HystrixCommandKeyDefault.AsKey("RollingConcurrency-X");
             IHystrixCommandKey keyY = HystrixCommandKeyDefault.AsKey("RollingConcurrency-Y");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKeyX, keyX, HystrixEventType.SUCCESS, 300);
             Command cmd2 = Command.From(groupKeyY, keyY, HystrixEventType.SUCCESS, 300);
             Command cmd3 = Command.From(groupKeyX, keyY, HystrixEventType.SUCCESS, 10);
             Command cmd4 = Command.From(groupKeyX, keyY, HystrixEventType.SUCCESS, 10);
 
-            cmd1.Observe();
-            Time.Wait(100); // bucket roll
-            cmd2.Observe();
-            Time.Wait(100);
-            cmd3.Observe();
-            Time.Wait(100);
-            cmd4.Observe();
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Task t1 = cmd1.ExecuteAsync();
+
+            // Time.Wait(100); // bucket roll
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
+            Task t2 = cmd2.ExecuteAsync();
+
+            // Time.Wait(100); // bucket roll
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
+            Task t3 = cmd3.ExecuteAsync();
+
+            // Time.Wait(100); // bucket roll
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
+            Task t4 = cmd4.ExecuteAsync();
+
+            Task.WaitAll(t1, t2, t3, t4);
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
             Assert.Equal(2, stream.LatestRollingMax);
         }
 
-         // BUCKETS
-         //  1:  [-------------------------------]
-         //  2:          [-------------------------------]
-         //  3:                      [--]
-         //  4:                              [--]
-         //  Max concurrency should be 3, but by waiting for 30 bucket rolls, final max concurrency should be 0
+        // BUCKETS
+        //  1:  [-------------------------------]
+        //  2:          [-------------------------------]
+        //  3:                      [--]
+        //  4:                              [--]
+        //  Max concurrency should be 3, but by waiting for 30 bucket rolls, final max concurrency should be 0
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestMultipleCommandsCarryOverMultipleBucketsAndThenAgeOut()
@@ -263,24 +264,31 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-F");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-F");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-F");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(30).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 300);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 10);
 
-            cmd1.Observe();
-            Time.Wait(100); // bucket roll
-            cmd2.Observe();
-            Time.Wait(100);
-            cmd3.Observe();
-            Time.Wait(100);
-            cmd4.Observe();
+            Task t1 = cmd1.ExecuteAsync();
+
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
+            Task t2 = cmd2.ExecuteAsync();
+
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
+            Task t3 = cmd3.ExecuteAsync();
+
+            WaitForLatchedObserverToUpdate(observer, 1, 100, 125, output);
+            Task t4 = cmd4.ExecuteAsync();
+
+            Task.WaitAll(t1, t2, t3, t4);
+
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
             Assert.Equal(0, stream.LatestRollingMax);
         }
@@ -292,25 +300,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-G");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-G");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-G");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 40);
             Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
             Command cmd3 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
             Command cmd4 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
 
-            cmd1.Observe();
-            Time.Wait(5);
-            cmd2.Observe();
-            cmd3.Observe();
-            cmd4.Observe();
+            cmd1.Execute();
+            cmd2.Execute();
+            cmd3.Execute();
+            cmd4.Execute();
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.True(cmd2.IsResponseFromCache);
             Assert.True(cmd3.IsResponseFromCache);
             Assert.True(cmd4.IsResponseFromCache);
@@ -324,11 +331,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-H");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-H");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-H");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // after 3 failures, next command should short-circuit.
             // to prove short-circuited commands don't contribute to concurrency, execute 3 FAILURES in the first bucket sequentially
@@ -341,22 +349,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             for (int i = 0; i < 20; i++)
             {
-                shortCircuited.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 100));
+                shortCircuited.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 0));
             }
 
             failure1.Execute();
             failure2.Execute();
             failure3.Execute();
 
-            Time.Wait(150);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 500, output), "Health count stream update took to long");
 
+            List<Task<int>> shorts = new List<Task<int>>();
             foreach (Command cmd in shortCircuited)
             {
-                cmd.Observe();
+                 shorts.Add(cmd.ExecuteAsync());
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Task.WaitAll(shorts.ToArray());
+
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+
             foreach (Command cmd in shortCircuited)
             {
                 Assert.True(cmd.IsResponseShortCircuited);
@@ -367,16 +378,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
+        public async void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
         {
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-I");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-I");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-I");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands executed concurrently on different caller threads should saturate semaphore
             // once these are in-flight, execute 10 more concurrently on new caller threads.
@@ -384,35 +396,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             List<Command> saturators = new List<Command>();
             for (int i = 0; i < 10; i++)
             {
-                saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 400, ExecutionIsolationStrategy.SEMAPHORE));
+                saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
             List<Command> rejected = new List<Command>();
             for (int i = 0; i < 10; i++)
             {
-                rejected.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 100, ExecutionIsolationStrategy.SEMAPHORE));
+                rejected.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
+            List<Task> tasks = new List<Task>();
             foreach (Command saturatingCmd in saturators)
             {
-               Task t = new Task(
-               () =>
-                {
-                    saturatingCmd.Observe();
-                }, CancellationToken.None,
-                TaskCreationOptions.LongRunning);
-                t.Start();
+                tasks.Add(Task.Run(() => saturatingCmd.Execute()));
             }
 
-            Time.Wait(30);
+            await Task.Delay(50);
 
             foreach (Command rejectedCmd in rejected)
             {
-                Task.Run(() => rejectedCmd.Observe());
+                await Task.Run(() => rejectedCmd.Execute());
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Task.WaitAll(tasks.ToArray());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
 
             foreach (Command rejectedCmd in rejected)
             {
@@ -430,11 +437,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-J");
             IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-J");
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("RollingConcurrency-J");
-            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(new LatchedObserver(output, latch));
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, 10, 100);
+            latchSubscription = stream.Observe().Take(10 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands executed concurrently should saturate the Hystrix threadpool
             // once these are in-flight, execute 10 more concurrently
@@ -451,9 +459,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 rejected.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 100));
             }
 
+            List<Task> tasks = new List<Task>();
             foreach (Command saturatingCmd in saturators)
             {
-                saturatingCmd.Observe();
+                tasks.Add(saturatingCmd.ExecuteAsync());
             }
 
             Time.Wait(30);
@@ -463,8 +472,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 rejectedCmd.Observe();
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Task.WaitAll(tasks.ToArray());
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             foreach (Command rejectedCmd in rejected)
             {
                 Assert.True(rejectedCmd.IsResponseThreadPoolRejected);

@@ -124,7 +124,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
             }
 
-           // System.out.println(Thread.currentThread().getName() + " : " + System.currentTimeMillis() + " -> done with awaiting all observables");
+            // System.out.println(Thread.currentThread().getName() + " : " + System.currentTimeMillis() + " -> done with awaiting all observables");
             string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
             // strip the actual count so we can compare reliably
@@ -249,7 +249,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.useCache = false;
             }
 
-        protected override string Run()
+            protected override string Run()
             {
                 // output.WriteLine(Task.CurrentId + " : " + DateTime.Now.ToString());
                 if (fail)
@@ -276,7 +276,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 return value;
             }
 
-        protected override string RunFallback()
+            protected override string RunFallback()
             {
                 if (useFallback)
                 {
@@ -295,7 +295,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             }
 
-        protected override string CacheKey
+            protected override string CacheKey
             {
                 get
                 {

@@ -1,8 +1,5 @@
 <Project>
   <PropertyGroup>
-    <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
-    <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-
     <AspNetVersion>5.2.4</AspNetVersion>
     <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <AspNetCoreDataProtectionRedisVersion>2.2.0</AspNetCoreDataProtectionRedisVersion>
