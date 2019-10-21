@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
-  
   <PropertyGroup>
     <Description>Steeltoe Management Runtime Diagnostics</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.Diagnostics</AssemblyName>
     <PackageId>Steeltoe.Management.Diagnostics</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>

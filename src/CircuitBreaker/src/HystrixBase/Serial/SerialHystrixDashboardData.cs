@@ -37,28 +37,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             }
         }
 
-        public static List<string> ToMultipleJsonStrings(HystrixDashboardStream.DashboardData dashboardData)
-        {
-            List<string> jsonStrings = new List<string>();
-
-            foreach (HystrixCommandMetrics commandMetrics in dashboardData.CommandMetrics)
-            {
-                jsonStrings.Add(ToJsonString(commandMetrics));
-            }
-
-            foreach (HystrixThreadPoolMetrics threadPoolMetrics in dashboardData.ThreadPoolMetrics)
-            {
-                jsonStrings.Add(ToJsonString(threadPoolMetrics));
-            }
-
-            foreach (HystrixCollapserMetrics collapserMetrics in dashboardData.CollapserMetrics)
-            {
-                jsonStrings.Add(ToJsonString(collapserMetrics));
-            }
-
-            return jsonStrings;
-        }
-
         public static string ToJsonString(HystrixCommandMetrics commandMetrics)
         {
             using (StringWriter sw = new StringWriter())
@@ -93,6 +71,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
                     return sw.ToString();
                 }
             }
+        }
+
+        public static List<string> ToMultipleJsonStrings(HystrixDashboardStream.DashboardData dashboardData)
+        {
+            List<string> jsonStrings = new List<string>();
+
+            foreach (HystrixCommandMetrics commandMetrics in dashboardData.CommandMetrics)
+            {
+                jsonStrings.Add(ToJsonString(commandMetrics));
+            }
+
+            foreach (HystrixThreadPoolMetrics threadPoolMetrics in dashboardData.ThreadPoolMetrics)
+            {
+                jsonStrings.Add(ToJsonString(threadPoolMetrics));
+            }
+
+            foreach (HystrixCollapserMetrics collapserMetrics in dashboardData.CollapserMetrics)
+            {
+                jsonStrings.Add(ToJsonString(collapserMetrics));
+            }
+
+            return jsonStrings;
         }
 
         private static void WriteDashboardData(JsonTextWriter writer, HystrixDashboardStream.DashboardData data)

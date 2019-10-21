@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 var opts = new HeapDumpEndpointOptions();
-                var mopts = TestHelpers.GetManagementOptions(opts);
+                var mopts = TestHelper.GetManagementOptions(opts);
 
                 IServiceCollection serviceCollection = new ServiceCollection();
                 serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
@@ -112,7 +112,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         public void HeapDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new HeapDumpEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var obs = new HeapDumper(opts);
             var ep = new HeapDumpEndpoint(opts, obs);
             var middle = new HeapDumpEndpointMiddleware(null, ep, mopts);

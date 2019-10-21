@@ -108,6 +108,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
                     {
                         Thread.Sleep(10);
                     }
+
                     return Value;
                 });
                 return t;

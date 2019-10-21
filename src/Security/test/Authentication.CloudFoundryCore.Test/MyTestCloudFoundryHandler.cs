@@ -40,7 +40,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
         public async Task<OAuthTokenResponse> TestExchangeCodeAsync(string code, string redirectUri)
         {
-            return await this.ExchangeCodeAsync(code, redirectUri);
+#if NETCOREAPP3_0
+            return await ExchangeCodeAsync(new OAuthCodeExchangeContext(new AuthenticationProperties(), code, redirectUri));
+#else
+            return await ExchangeCodeAsync(code, redirectUri);
+#endif
         }
 
         public string TestBuildChallengeUrl(AuthenticationProperties properties, string redirectUri)

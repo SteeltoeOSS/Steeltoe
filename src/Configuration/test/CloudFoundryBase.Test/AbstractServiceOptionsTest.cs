@@ -36,49 +36,48 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         {
             // Arrange
             var configJson = @"
-{ 'vcap': {
-    'services' : {
-            'p-mysql': [
             {
-                'name': 'mySql1',
-                'label': 'p-mysql',
-                'tags': [
-                'mysql',
-                'relational'
-                ],
-                'plan': '100mb-dev',
-                'credentials': {
-                    'hostname': '192.168.0.97',
-                    'port': 3306,
-                    'name': 'cf_0f5dda44_e678_4727_993f_30e6d455cc31',
-                    'username': '9vD0Mtk3wFFuaaaY',
-                    'password': 'Cjn4HsAiKV8sImst',
-                    'uri': 'mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true',
-                    'jdbcUrl': 'jdbc:mysql://192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?user=9vD0Mtk3wFFuaaaY&password=Cjn4HsAiKV8sImst'
+                ""vcap"": {
+                    ""services"" : {
+                        ""p-mysql"": [{
+                            ""name"": ""mySql1"",
+                            ""label"": ""p-mysql"",
+                            ""tags"": [
+                                ""mysql"",
+                                ""relational""
+                            ],
+                            ""plan"": ""100mb-dev"",
+                            ""credentials"": {
+                                ""hostname"": ""192.168.0.97"",
+                                ""port"": 3306,
+                                ""name"": ""cf_0f5dda44_e678_4727_993f_30e6d455cc31"",
+                                ""username"": ""9vD0Mtk3wFFuaaaY"",
+                                ""password"": ""Cjn4HsAiKV8sImst"",
+                                ""uri"": ""mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true"",
+                                ""jdbcUrl"": ""jdbc:mysql://192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?user=9vD0Mtk3wFFuaaaY&password=Cjn4HsAiKV8sImst""
+                            }
+                        },
+                        {
+                            ""name"": ""mySql2"",
+                            ""label"": ""p-mysql"",
+                            ""tags"": [
+                                ""mysql"",
+                                ""relational""
+                            ],
+                            ""plan"": ""100mb-dev"",
+                            ""credentials"": {
+                                ""hostname"": ""192.168.0.97"",
+                                ""port"": 3306,
+                                ""name"": ""cf_0f5dda44_e678_4727_993f_30e6d455cc31"",
+                                ""username"": ""9vD0Mtk3wFFuaaaY"",
+                                ""password"": ""Cjn4HsAiKV8sImst"",
+                                ""uri"": ""mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true"",
+                                ""jdbcUrl"": ""jdbc:mysql://192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?user=9vD0Mtk3wFFuaaaY&password=Cjn4HsAiKV8sImst""
+                            }
+                        }]
+                    }
                 }
-            },
-            {
-                'name': 'mySql2',
-                'label': 'p-mysql',
-                'tags': [
-                'mysql',
-                'relational'
-                ],
-                'plan': '100mb-dev',
-                'credentials': {
-                    'hostname': '192.168.0.97',
-                    'port': 3306,
-                    'name': 'cf_0f5dda44_e678_4727_993f_30e6d455cc31',
-                    'username': '9vD0Mtk3wFFuaaaY',
-                    'password': 'Cjn4HsAiKV8sImst',
-                    'uri': 'mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true',
-                    'jdbcUrl': 'jdbc:mysql://192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?user=9vD0Mtk3wFFuaaaY&password=Cjn4HsAiKV8sImst'
-                }
-            }
-            ]
-        }
-    }
-}";
+            }";
             var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
             var jsonSource = new JsonStreamConfigurationSource(memStream);
             var builder = new ConfigurationBuilder().Add(jsonSource);
@@ -100,11 +99,12 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         {
             // Arrange
             var configJson = @"
-{ 'foo': {
-    'bar' : {
-        }
-    }
-}";
+            {
+                ""foo"": {
+                    ""bar"" : {
+                    }
+                }
+            }";
             var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
             var jsonSource = new JsonStreamConfigurationSource(memStream);
             var builder = new ConfigurationBuilder().Add(jsonSource);

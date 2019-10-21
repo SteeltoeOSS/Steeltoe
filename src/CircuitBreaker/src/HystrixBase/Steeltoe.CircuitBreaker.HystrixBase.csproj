@@ -2,7 +2,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Client - Base Package</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CircuitBreaker.HystrixBase</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.HystrixBase</PackageId>
     <PackageTags>Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
@@ -14,7 +14,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
     <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">

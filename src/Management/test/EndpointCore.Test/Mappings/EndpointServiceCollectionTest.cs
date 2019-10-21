@@ -12,16 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if !NETCOREAPP3_0
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
-#endif
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NETCOREAPP3_0
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.Internal;
-#endif
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -50,12 +43,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         public void AddMappingsActuator_AddsCorrectServices()
         {
             var services = new ServiceCollection();
-            var host = new HostingEnvironment();
-#if NETCOREAPP3_0
-            services.AddSingleton<IHostEnvironment>(host);
-#else
-            services.AddSingleton<IHostingEnvironment>(host);
-#endif
+            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
 
             var appSettings = new Dictionary<string, string>()
             {

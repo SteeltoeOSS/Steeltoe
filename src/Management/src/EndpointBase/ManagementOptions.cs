@@ -25,9 +25,6 @@ namespace Steeltoe.Management.Endpoint
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints";
         private static ManagementOptions _instance;
 
-        private bool? _enabled;
-        private bool? _sensitive;
-
         public ManagementOptions()
         {
             Path = DEFAULT_PATH;
@@ -49,31 +46,9 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        public bool? Enabled
-        {
-            get
-            {
-                return _enabled;
-            }
+        public bool? Enabled { get; set; }
 
-            set
-            {
-                _enabled = value;
-            }
-        }
-
-        public bool? Sensitive
-        {
-            get
-            {
-                return _sensitive;
-            }
-
-            set
-            {
-                _sensitive = value;
-            }
-        }
+        public bool? Sensitive { get; set; }
 
         public string Path { get; set; }
 
@@ -89,11 +64,6 @@ namespace Steeltoe.Management.Endpoint
             return _instance;
         }
 
-        public static void SetInstance(ManagementOptions mgmtOptions)
-        {
-            _instance = mgmtOptions;
-        }
-
         public static ManagementOptions GetInstance(IConfiguration config)
         {
             if (_instance == null)
@@ -102,6 +72,11 @@ namespace Steeltoe.Management.Endpoint
             }
 
             return _instance;
+        }
+
+        public static void SetInstance(ManagementOptions mgmtOptions)
+        {
+            _instance = mgmtOptions;
         }
 
         public static void Reset()

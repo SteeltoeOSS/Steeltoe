@@ -19,7 +19,8 @@ namespace Steeltoe.Common.Discovery
 {
     public enum DiscoveryClientType
     {
-        EUREKA, UNKNOWN
+        EUREKA,
+        UNKNOWN
     }
 
     public class DiscoveryOptions

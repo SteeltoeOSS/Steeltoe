@@ -38,6 +38,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             _valueFactory = valueFactory;
         }
 
+        internal static void Remove(HystrixRequestContext context, IHystrixRequestVariable<T> v)
+        {
+            if (context.State.TryRemove(v, out object oldValue))
+            {
+                v.Dispose();
+            }
+        }
+
         internal virtual void Remove()
         {
             if (HystrixRequestContext.ContextForCurrentThread != null)
@@ -64,14 +72,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        internal static void Remove(HystrixRequestContext context, IHystrixRequestVariable<T> v)
-        {
-            if (context.State.TryRemove(v, out object oldValue))
-            {
-                v.Dispose();
-            }
         }
 
         protected virtual void Dispose(bool disposing)

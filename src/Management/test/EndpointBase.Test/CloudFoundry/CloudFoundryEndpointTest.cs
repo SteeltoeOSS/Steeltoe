@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -54,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public void Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
         {
             var cloudOpts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelpers.GetManagementOptions(cloudOpts);
+            var mgmtOptions = TestHelper.GetManagementOptions(cloudOpts);
             var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
@@ -71,7 +72,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var infoOpts = new InfoEndpointOptions { Enabled = false };
             var cloudOpts = new CloudFoundryEndpointOptions();
 
-            var mgmtOptions = TestHelpers.GetManagementOptions(infoOpts, cloudOpts);
+            var mgmtOptions = TestHelper.GetManagementOptions(infoOpts, cloudOpts);
             var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
@@ -88,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         {
             var infoOpts = new InfoEndpointOptions { Enabled = true };
             var cloudOpts = new CloudFoundryEndpointOptions { Enabled = false };
-            var mgmtOptions = TestHelpers.GetManagementOptions(infoOpts, cloudOpts);
+            var mgmtOptions = TestHelper.GetManagementOptions(infoOpts, cloudOpts);
             var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");

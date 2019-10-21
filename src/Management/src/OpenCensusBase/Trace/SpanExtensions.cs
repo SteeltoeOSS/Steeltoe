@@ -110,15 +110,15 @@ namespace Steeltoe.Management.Census.Trace
             return span;
         }
 
-        public static ISpan PutHttpResponseHeadersAttribute(this ISpan span, List<KeyValuePair<string, IEnumerable<string>>> headers)
-        {
-            PutHeadersAttribute(span, "http.response.", headers);
-            return span;
-        }
-
         public static ISpan PutHttpRequestHeadersAttribute(this ISpan span, NameValueCollection headers)
         {
             PutHeadersAttribute(span, "http.request.", headers);
+            return span;
+        }
+
+        public static ISpan PutHttpResponseHeadersAttribute(this ISpan span, List<KeyValuePair<string, IEnumerable<string>>> headers)
+        {
+            PutHeadersAttribute(span, "http.response.", headers);
             return span;
         }
 

@@ -67,6 +67,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                     {
                         stdDeviation = 0.0;
                     }
+
                     results.Add(new Metric(GetMetricName(name, "stddev", tags), MetricType.GAUGE, timeStamp, unit, tags, stdDeviation));
                     return null;
                 },

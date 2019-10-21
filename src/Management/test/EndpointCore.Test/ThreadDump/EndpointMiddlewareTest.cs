@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 var opts = new ThreadDumpEndpointOptions();
-                var mopts = TestHelpers.GetManagementOptions(opts);
+                var mopts = TestHelper.GetManagementOptions(opts);
 
                 ThreadDumper obs = new ThreadDumper(opts);
                 var ep = new ThreadDumpEndpoint(opts, obs);

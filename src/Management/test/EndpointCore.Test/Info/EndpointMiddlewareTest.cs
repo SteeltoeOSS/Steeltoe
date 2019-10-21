@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         public async void HandleInfoRequestAsync_ReturnsExpected()
         {
             var opts = new InfoEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
             var ep = new TestInfoEndpoint(opts, contribs);
             var middle = new InfoEndpointMiddleware(null, ep, mopts);
@@ -110,7 +110,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         public void InfoEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new InfoEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
             var ep = new InfoEndpoint(opts, contribs);
             var middle = new InfoEndpointMiddleware(null, ep, mopts);

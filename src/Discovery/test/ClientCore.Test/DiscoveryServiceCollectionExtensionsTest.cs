@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CloudFoundry.Connector;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Consul.Discovery;
@@ -103,20 +104,20 @@ namespace Steeltoe.Discovery.Client.Test
         {
             // Arrange
             var appsettings = @"
-{
-    'spring': {
-        'application': {
-            'name': 'myName'
-        },
-    },
-    'eureka': {
-        'client': {
-            'shouldFetchRegistry': false,
-            'shouldRegisterWithEureka': false,
-            'serviceUrl': 'http://localhost:8761/eureka/'
-        }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""application"": {
+                            ""name"": ""myName""
+                        },
+                    },
+                    ""eureka"": {
+                        ""client"": {
+                            ""shouldFetchRegistry"": false,
+                            ""shouldRegisterWithEureka"": false,
+                            ""serviceUrl"": ""http://localhost:8761/eureka/""
+                        }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
             string directory = Path.GetDirectoryName(path);
@@ -141,13 +142,13 @@ namespace Steeltoe.Discovery.Client.Test
         {
             // Arrange
             var appsettings = @"
-{
-    'spring': {
-        'application': {
-            'name': 'myName'
-        },
-    }
-}";
+                {
+                    ""spring"": {
+                        ""application"": {
+                            ""name"": ""myName""
+                        },
+                    }
+                }";
             var path = TestHelpers.CreateTempFile(appsettings);
             string directory = Path.GetDirectoryName(path);
             string fileName = Path.GetFileName(path);
@@ -333,72 +334,69 @@ namespace Steeltoe.Discovery.Client.Test
         {
             // Arrange
             var env1 = @"
-{
-      'limits': {
-        'fds': 16384,
-        'mem': 1024,
-        'disk': 1024
-      },
-      'application_name': 'spring-cloud-broker',
-      'application_uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'name': 'spring-cloud-broker',
-      'space_name': 'p-spring-cloud-services',
-      'space_id': '65b73473-94cc-4640-b462-7ad52838b4ae',
-      'uris': [
-        'spring-cloud-broker.apps.testcloud.com'
-      ],
-      'users': null,
-      'version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_version': '07e112f7-2f71-4f5a-8a34-db51dbed30a3',
-      'application_id': '798c2495-fe75-49b1-88da-b81197f2bf06'
-    }
-}";
+                {
+                    ""limits"": {
+                    ""fds"": 16384,
+                    ""mem"": 1024,
+                    ""disk"": 1024
+                    },
+                    ""application_name"": ""spring-cloud-broker"",
+                    ""application_uris"": [
+                    ""spring-cloud-broker.apps.testcloud.com""
+                    ],
+                    ""name"": ""spring-cloud-broker"",
+                    ""space_name"": ""p-spring-cloud-services"",
+                    ""space_id"": ""65b73473-94cc-4640-b462-7ad52838b4ae"",
+                    ""uris"": [
+                    ""spring-cloud-broker.apps.testcloud.com""
+                    ],
+                    ""users"": null,
+                    ""version"": ""07e112f7-2f71-4f5a-8a34-db51dbed30a3"",
+                    ""application_version"": ""07e112f7-2f71-4f5a-8a34-db51dbed30a3"",
+                    ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
+                }";
             var env2 = @"
-{
-      'p-service-registry': [
-{
-    'credentials': {
-        'uri': 'https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com',
-        'client_id': 'p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe',
-        'client_secret': 'dCsdoiuklicS',
-        'access_token_uri': 'https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token'
-        },
-    'syslog_drain_url': null,
-    'label': 'p-service-registry',
-    'provider': null,
-    'plan': 'standard',
-    'name': 'myDiscoveryService',
-    'tags': [
-    'eureka',
-    'discovery',
-    'registry',
-    'spring-cloud'
-    ]
-},
-{
-    'credentials': {
-        'uri': 'https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com',
-        'client_id': 'p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe',
-        'client_secret': 'dCsdoiuklicS',
-        'access_token_uri': 'https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token'
-        },
-    'syslog_drain_url': null,
-    'label': 'p-service-registry',
-    'provider': null,
-    'plan': 'standard',
-    'name': 'myDiscoveryService2',
-    'tags': [
-    'eureka',
-    'discovery',
-    'registry',
-    'spring-cloud'
-    ]
-}
-]
-}
-";
+                {
+                    ""p-service-registry"": [
+                    {
+                        ""credentials"": {
+                            ""uri"": ""https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com"",
+                            ""client_id"": ""p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe"",
+                            ""client_secret"": ""dCsdoiuklicS"",
+                            ""access_token_uri"": ""https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-service-registry"",
+                        ""provider"": null,
+                        ""plan"": ""standard"",
+                        ""name"": ""myDiscoveryService"",
+                        ""tags"": [
+                            ""eureka"",
+                            ""discovery"",
+                            ""registry"",
+                            ""spring-cloud""
+                        ]
+                    },
+                    {
+                        ""credentials"": {
+                            ""uri"": ""https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com"",
+                            ""client_id"": ""p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe"",
+                            ""client_secret"": ""dCsdoiuklicS"",
+                            ""access_token_uri"": ""https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-service-registry"",
+                        ""provider"": null,
+                        ""plan"": ""standard"",
+                        ""name"": ""myDiscoveryService2"",
+                        ""tags"": [
+                            ""eureka"",
+                            ""discovery"",
+                            ""registry"",
+                            ""spring-cloud""
+                        ]
+                    }]
+                }";
 
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -420,22 +418,22 @@ namespace Steeltoe.Discovery.Client.Test
         {
             // Arrange
             var appsettings = @"
-{
-    'spring': {
-        'application': {
-            'name': 'myName'
-        },
-    },
-    'consul': {
-        'host': 'foo.bar',
-        'discovery': {
-            'register': false,
-            'deregister': false,
-            'instanceid': 'instanceid',
-            'port': 1234
-        }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""application"": {
+                            ""name"": ""myName""
+                        },
+                    },
+                    ""consul"": {
+                        ""host"": ""foo.bar"",
+                        ""discovery"": {
+                            ""register"": false,
+                            ""deregister"": false,
+                            ""instanceid"": ""instanceid"",
+                            ""port"": 1234
+                        }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
             string directory = Path.GetDirectoryName(path);

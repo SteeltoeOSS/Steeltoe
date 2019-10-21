@@ -12,48 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Steeltoe.Extensions.Configuration.ConfigServer;
-using System.IO;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
-    public class TestHelpers
+    public class TestHelper
     {
-        public static string CreateTempFile(string contents)
-        {
-            var tempFile = Path.GetTempFileName();
-            File.WriteAllText(tempFile, contents);
-            return tempFile;
-        }
-
-        public static Stream StringToStream(string str)
-        {
-            var memStream = new MemoryStream();
-            var textWriter = new StreamWriter(memStream);
-            textWriter.Write(str);
-            textWriter.Flush();
-            memStream.Seek(0, SeekOrigin.Begin);
-
-            return memStream;
-        }
-
-        public static string StreamToString(Stream stream)
-        {
-            stream.Seek(0, SeekOrigin.Begin);
-            var reader = new StreamReader(stream);
-
-            return reader.ReadToEnd();
-        }
-
         public static void VerifyDefaults(ConfigServerClientSettings settings)
         {
             Assert.Equal(ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED, settings.Enabled);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_FAILFAST, settings.FailFast);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_URI, settings.Uri);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI, settings.AccessTokenUri);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_CLIENT_ID, settings.ClientId);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_CLIENT_SECRET, settings.ClientSecret);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION, settings.ValidateCertificates);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL, settings.RetryInitialInterval);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS, settings.RetryAttempts);
@@ -65,6 +38,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Equal(ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL, settings.TokenTtl);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_DISCOVERY_ENABLED, settings.DiscoveryEnabled);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID, settings.DiscoveryServiceId);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_ENABLED, settings.HealthEnabled);
+            Assert.Equal(ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE, settings.HealthTimeToLive);
             Assert.Null(settings.Name);
             Assert.Null(settings.Label);
             Assert.Null(settings.Username);

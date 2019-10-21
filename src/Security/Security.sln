@@ -51,6 +51,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Commo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{321350A1-20CE-4672-B901-9C58F12B43A8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "..\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{507EDE3C-B9B1-4068-8525-EE477DFE6378}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -113,6 +115,10 @@ Global
 		{321350A1-20CE-4672-B901-9C58F12B43A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{321350A1-20CE-4672-B901-9C58F12B43A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{321350A1-20CE-4672-B901-9C58F12B43A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{507EDE3C-B9B1-4068-8525-EE477DFE6378}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{507EDE3C-B9B1-4068-8525-EE477DFE6378}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{507EDE3C-B9B1-4068-8525-EE477DFE6378}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{507EDE3C-B9B1-4068-8525-EE477DFE6378}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -132,6 +138,7 @@ Global
 		{495C7871-EE98-4B53-ABAE-26294046DDDC} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{E0BE23BB-47B5-4838-B845-254A6CE8F791} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{321350A1-20CE-4672-B901-9C58F12B43A8} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
+		{507EDE3C-B9B1-4068-8525-EE477DFE6378} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BED45957-EDAD-4686-B959-BD5DA962F7B0}

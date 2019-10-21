@@ -169,6 +169,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 {
                     v = v.Substring(v.Length - 16, 16);
                 }
+
                 if (c.Get(k) != null)
                 {
                     c.Remove(k);

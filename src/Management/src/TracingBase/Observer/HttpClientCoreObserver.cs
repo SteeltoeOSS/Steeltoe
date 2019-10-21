@@ -199,6 +199,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 {
                     v = v.Substring(v.Length - 16, 16);
                 }
+
                 c.Add(k, v);
             });
             if (parentSpan != null)

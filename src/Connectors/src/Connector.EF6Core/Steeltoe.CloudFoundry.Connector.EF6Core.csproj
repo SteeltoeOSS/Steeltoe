@@ -2,7 +2,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>CloudFoundry Connector Extensions for Entity Framework</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CloudFoundry.Connector.EF6Core</AssemblyName>
     <PackageId>Steeltoe.CloudFoundry.Connector.EF6Core</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Connectors;EntityFramework</PackageTags>

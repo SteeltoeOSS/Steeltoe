@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.Test;
 using System.IO;
 using Xunit;
@@ -32,7 +33,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
     'ipAddr':'192.168.56.1',
     
 ";
-            Stream stream = TestHelpers.StringToStream(json);
+            var stream = TestHelpers.StringToStream(json);
             var ex = Assert.Throws<JsonSerializationException>(() => JsonSerialization.Deserialize<JsonInstanceInfo>(stream));
         }
     }

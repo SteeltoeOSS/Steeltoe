@@ -95,7 +95,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
         /// <param name="httpClient">a HttpClient the provider uses to make requests of the server.</param>
         /// <param name="logFactory">optional logging factory</param>
-            public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
+        public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _client = httpClient ?? throw new ArgumentNullException(nameof(httpClient));

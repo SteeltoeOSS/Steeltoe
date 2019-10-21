@@ -2,7 +2,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Common Security Library</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Common.Security</AssemblyName>
     <PackageId>Steeltoe.Common.Security</PackageId>
     <PackageTags>NET Core;NET Framework</PackageTags>

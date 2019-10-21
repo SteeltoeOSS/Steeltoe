@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,36 +76,36 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
         public void AddPlaceholderResolver_HostBuilder_WrapsApplicationsConfiguration()
         {
             var appsettingsJson = @"
-{
-    'spring': {
-        'json': {
-            'name': 'myName'
-    },
-      'cloud': {
-        'config': {
-            'name' : '${spring:xml:name?noname}',
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""json"": {
+                            ""name"": ""myName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""name"" : ""${spring:xml:name?noname}"",
+                        }
+                      }
+                    }
+                }";
 
             var appsettingsXml = @"
-<settings>
-    <spring>
-        <xml>
-            <name>${spring:ini:name?noName}</name>
-        </xml>
-    </spring>
-</settings>";
+                <settings>
+                    <spring>
+                        <xml>
+                            <name>${spring:ini:name?noName}</name>
+                        </xml>
+                    </spring>
+                </settings>";
 
             var appsettingsIni = @"
 [spring:ini]
     name=${spring:line:name?noName}
 ";
             var appsettingsLine = new string[]
-    {
-                            "--spring:line:name=${spring:json:name?noName}"
-    };
+            {
+                "--spring:line:name=${spring:json:name?noName}"
+            };
             var jsonpath = TestHelpers.CreateTempFile(appsettingsJson);
             string jsonfileName = Path.GetFileName(jsonpath);
             var xmlpath = TestHelpers.CreateTempFile(appsettingsXml);

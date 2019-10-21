@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         public async void HandleLoggersRequestAsync_ReturnsExpected()
         {
             var opts = new LoggersEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var ep = new TestLoggersEndpoint(opts);
             var middle = new LoggersEndpointMiddleware(null, ep, mopts);
             var context = CreateRequest("GET", "/loggers");
@@ -158,7 +158,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         public void LoggersEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new LoggersEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var ep = new LoggersEndpoint(opts, null);
             var middle = new LoggersEndpointMiddleware(null, ep, mopts);
 

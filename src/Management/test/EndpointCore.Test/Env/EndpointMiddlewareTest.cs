@@ -13,18 +13,12 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
-#if !NETCOREAPP3_0
-using Microsoft.AspNetCore.Hosting.Internal;
-#endif
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-#if NETCOREAPP3_0
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.Internal;
-#endif
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
@@ -49,19 +43,21 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
+#if NETCOREAPP3_0
+        private IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
+#else
+        private Microsoft.Extensions.Hosting.IHostingEnvironment host = (Microsoft.Extensions.Hosting.IHostingEnvironment)HostingHelpers.GetHostingEnvironment();
+#endif
+
         [Fact]
         public async void HandleEnvRequestAsync_ReturnsExpected()
         {
             var opts = new EnvEndpointOptions();
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
-            var host = new HostingEnvironment()
-            {
-                EnvironmentName = "EnvironmentName"
-            };
-            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var ep = new EnvEndpoint(opts, config, host);
             var middle = new EnvEndpointMiddleware(null, ep, mgmtOptions);
 
@@ -81,13 +77,13 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var originalEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
             var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+                .ConfigureLogging((webhostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
@@ -105,10 +101,9 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         public void EnvEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new EnvEndpointOptions();
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
-            var host = new HostingEnvironment() { EnvironmentName = "EnvironmentName" };
             var ep = new EnvEndpoint(opts, config, host);
             var mgmt = new CloudFoundryManagementOptions() { Path = "/" };
             mgmt.EndpointOptions.Add(opts);

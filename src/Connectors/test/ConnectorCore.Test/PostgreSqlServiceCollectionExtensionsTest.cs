@@ -86,8 +86,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Act and Assert
             PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config);
 
-           var service = services.BuildServiceProvider().GetService<IHealthContributor>();
-           Assert.NotNull(service);
+            var service = services.BuildServiceProvider().GetService<IHealthContributor>();
+            Assert.NotNull(service);
         }
 
         [Fact]

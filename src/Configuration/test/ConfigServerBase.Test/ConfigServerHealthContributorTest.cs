@@ -37,6 +37,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
                 { "spring:cloud:config:label", "myLabel" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -57,6 +58,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 { "spring:cloud:config:uri", "http://localhost:8888/" },
                 { "spring:cloud:config:name", "myName" },
                 { "spring:cloud:config:label", "myLabel" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -77,6 +79,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 { "spring:cloud:config:name", "myName" },
                 { "spring:cloud:config:label", "myLabel" },
                 { "spring:cloud:config:health:timeToLive", "100000" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -97,6 +100,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 { "spring:cloud:config:name", "myName" },
                 { "spring:cloud:config:label", "myLabel" },
                 { "spring:cloud:config:health:enabled", "true" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -118,6 +122,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 { "spring:cloud:config:label", "myLabel" },
                 { "spring:cloud:config:health:enabled", "true" },
                 { "spring:cloud:config:health:timeToLive", "1" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -136,13 +141,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetPropertySources_ReturnsExpected()
         {
+            // this test does NOT expect to find a running config server
             var values = new Dictionary<string, string>()
             {
-                { "spring:cloud:config:uri", "http://localhost:8888/" },
+                { "spring:cloud:config:uri", "http://localhost:8887/" },
                 { "spring:cloud:config:name", "myName" },
                 { "spring:cloud:config:label", "myLabel" },
                 { "spring:cloud:config:health:enabled", "true" },
                 { "spring:cloud:config:health:timeToLive", "1" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -170,6 +177,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 { "spring:cloud:config:label", "myLabel" },
                 { "spring:cloud:config:health:enabled", "true" },
                 { "spring:cloud:config:health:timeToLive", "1" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -193,6 +201,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 { "spring:cloud:config:label", "myLabel" },
                 { "spring:cloud:config:health:enabled", "false" },
                 { "spring:cloud:config:health:timeToLive", "1" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -209,13 +218,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Health_NoPropertySources_ReturnsExpected()
         {
+            // this test does NOT expect to find a running config server
             var values = new Dictionary<string, string>()
             {
-                { "spring:cloud:config:uri", "http://localhost:8888/" },
+                { "spring:cloud:config:uri", "http://localhost:8887/" },
                 { "spring:cloud:config:name", "myName" },
                 { "spring:cloud:config:label", "myLabel" },
                 { "spring:cloud:config:health:enabled", "true" },
                 { "spring:cloud:config:health:timeToLive", "1" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -240,6 +251,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 { "spring:cloud:config:label", "myLabel" },
                 { "spring:cloud:config:health:enabled", "true" },
                 { "spring:cloud:config:health:timeToLive", "1" },
+                { "spring:cloud:config:timeout", "10" },
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -248,7 +260,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             var contributor = new ConfigServerHealthContributor(config);
             var health = new HealthCheckResult();
-            List<PropertySource> sources = new List<PropertySource>()
+            var sources = new List<PropertySource>()
             {
                 new PropertySource("foo", new Dictionary<string, object>()),
                 new PropertySource("bar", new Dictionary<string, object>()),
@@ -257,7 +269,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             Assert.Equal(HealthStatus.UP, health.Status);
             Assert.True(health.Details.ContainsKey("propertySources"));
-            IList<string> names = health.Details["propertySources"] as IList<string>;
+            var names = health.Details["propertySources"] as IList<string>;
             Assert.NotNull(names);
             Assert.Contains("foo", names);
             Assert.Contains("bar", names);
