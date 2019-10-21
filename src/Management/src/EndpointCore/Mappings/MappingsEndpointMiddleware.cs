@@ -207,6 +207,17 @@ namespace Steeltoe.Management.Endpoint.Mappings
             return routeDetails;
         }
 
+        protected internal IRouteDetails GetRouteDetails(Route route)
+        {
+            var routeDetails = new AspNetCoreRouteDetails
+            {
+                HttpMethods = GetHttpMethods(route),
+                RouteTemplate = route.RouteTemplate
+            };
+
+            return routeDetails;
+        }
+
         protected internal void AddRouteMappingsDescriptions(IRouteMappings routeMappings, IDictionary<string, IList<MappingDescription>> desc)
         {
             if (routeMappings == null)
@@ -231,17 +242,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
                     mapList.Add(mapDesc);
                 }
             }
-        }
-
-        protected internal IRouteDetails GetRouteDetails(Route route)
-        {
-            var routeDetails = new AspNetCoreRouteDetails
-            {
-                HttpMethods = GetHttpMethods(route),
-                RouteTemplate = route.RouteTemplate
-            };
-
-            return routeDetails;
         }
 
         private IList<string> GetHttpMethods(ApiDescription desc)

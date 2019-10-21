@@ -12,15 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if !NETCOREAPP3_0
-using Microsoft.AspNetCore.Hosting.Internal;
-#endif
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-#if NETCOREAPP3_0
-using Microsoft.Extensions.Hosting.Internal;
-#endif
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -48,11 +43,12 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void AddEnvActuator_AddsCorrectServices()
         {
-            ServiceCollection services = new ServiceCollection();
-            var host = new HostingEnvironment();
+            var services = new ServiceCollection();
 #if NETCOREAPP3_0
+            var host = HostingHelpers.GetHostingEnvironment();
             services.AddSingleton<IHostEnvironment>(host);
 #else
+            var host = (IHostingEnvironment)HostingHelpers.GetHostingEnvironment();
             services.AddSingleton<IHostingEnvironment>(host);
 #endif
 
@@ -61,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
             services.AddSingleton<IConfiguration>(config);

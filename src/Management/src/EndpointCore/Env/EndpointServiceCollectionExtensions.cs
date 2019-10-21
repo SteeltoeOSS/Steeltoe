@@ -44,18 +44,11 @@ namespace Steeltoe.Management.Endpoint.Env
             services.TryAddSingleton<IHostEnvironment>((provider) =>
             {
                 var service = provider.GetRequiredService<IHostEnvironment>();
-                return new GenericHostingEnvironment()
-                {
-                    EnvironmentName = service.EnvironmentName,
-                    ApplicationName = service.ApplicationName,
-                    ContentRootFileProvider = service.ContentRootFileProvider,
-                    ContentRootPath = service.ContentRootPath
-                };
-            });
 #else
             services.TryAddSingleton<IHostingEnvironment>((provider) =>
             {
                 var service = provider.GetRequiredService<IHostingEnvironment>();
+#endif
                 return new GenericHostingEnvironment()
                 {
                     EnvironmentName = service.EnvironmentName,
@@ -64,7 +57,6 @@ namespace Steeltoe.Management.Endpoint.Env
                     ContentRootPath = service.ContentRootPath
                 };
             });
-#endif
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
             var options = new EnvEndpointOptions(config);

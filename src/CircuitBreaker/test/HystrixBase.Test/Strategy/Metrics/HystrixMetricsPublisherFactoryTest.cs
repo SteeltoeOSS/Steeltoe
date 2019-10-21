@@ -42,12 +42,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             for (int i = 0; i < 20; i++)
             {
                 threads.Add(new Task(
-                () =>
-                {
-                    factory.GetPublisherForCommand(TestCommandKey.TEST_A, null, null, null, null);
-                    factory.GetPublisherForCommand(TestCommandKey.TEST_B, null, null, null, null);
-                    factory.GetPublisherForThreadPool(TestThreadPoolKey.TEST_A, null, null);
-                }, CancellationToken.None,
+                    () =>
+                    {
+                        factory.GetPublisherForCommand(TestCommandKey.TEST_A, null, null, null, null);
+                        factory.GetPublisherForCommand(TestCommandKey.TEST_B, null, null, null, null);
+                        factory.GetPublisherForThreadPool(TestThreadPoolKey.TEST_A, null, null);
+                    },
+                    CancellationToken.None,
                     TaskCreationOptions.LongRunning));
             }
 

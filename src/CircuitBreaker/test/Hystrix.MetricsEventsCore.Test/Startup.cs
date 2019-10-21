@@ -35,16 +35,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
         {
             services.AddHystrixMonitoringStreams(Configuration);
             var metricsAssembly = typeof(HystrixStreamBaseController).GetTypeInfo().Assembly;
-            var s = services.AddMvc().ConfigureApplicationPartManager(apm =>
-            {
-                apm.ApplicationParts.Add(new AssemblyPart(metricsAssembly));
-            });
+            var s = services
+                .AddMvc().ConfigureApplicationPartManager(apm =>
+                {
+                    apm.ApplicationParts.Add(new AssemblyPart(metricsAssembly));
+                });
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseHystrixRequestContext();
+#if NETCOREAPP3_0
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });
+#else
             app.UseMvc();
+#endif
         }
     }
 }

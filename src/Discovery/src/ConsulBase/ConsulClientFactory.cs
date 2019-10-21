@@ -45,6 +45,7 @@ namespace Steeltoe.Consul.Client
                 {
                     s.WaitTime = DateTimeConversions.ToTimeSpan(options.WaitTime);
                 }
+
                 if (!string.IsNullOrEmpty(options.Password) || !string.IsNullOrEmpty(options.Username))
                 {
 #pragma warning disable CS0618 // Type or member is obsolete

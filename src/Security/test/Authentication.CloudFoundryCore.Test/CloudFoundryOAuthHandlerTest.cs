@@ -15,18 +15,19 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+#if !NETCOREAPP3_0
 using Newtonsoft.Json.Linq;
-using System;
-using System.IO;
+#endif
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
+#if NETCOREAPP3_0
+using System.Text.Json;
+#endif
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
@@ -81,7 +82,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             };
 
             MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
-            var logger = new LoggerFactory().CreateLogger("ExchangeCodeAsync_SendsTokenRequest");
             var resp = await testHandler.TestExchangeCodeAsync("code", "http://redirectUri");
 
             Assert.NotNull(handler.LastRequest);
@@ -111,8 +111,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             };
             MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
-            var logger = new LoggerFactory().CreateLogger("ExchangeCodeAsync_SendsTokenRequest");
-
             AuthenticationProperties props = new AuthenticationProperties();
             string result = testHandler.TestBuildChallengeUrl(props, "https://foo.bar/redirect");
             Assert.Equal("http://Default_OAuthServiceUrl/oauth/authorize?response_type=code&client_id=Default_ClientId&redirect_uri=https%3A%2F%2Ffoo.bar%2Fredirect&scope=", result);
@@ -129,9 +127,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
+#if NETCOREAPP3_0
+            var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
+            var tokens = OAuthTokenResponse.Success(payload);
+#else
             var payload = JObject.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
-
+#endif
             var parameters = testHandler.GetTokenInfoRequestParameters(tokens);
             Assert.NotNull(parameters);
 
@@ -148,8 +150,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             };
             MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
+#if NETCOREAPP3_0
+            var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
+            var tokens = OAuthTokenResponse.Success(payload);
+#else
             var payload = JObject.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
+#endif
 
             var message = testHandler.GetTokenInfoRequestMessage(tokens);
             Assert.NotNull(message);
@@ -177,12 +184,15 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             };
             MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
-            var logger = new LoggerFactory().CreateLogger("CreateTicketAsync_SendsTokenRequest");
-
             ClaimsIdentity identity = new ClaimsIdentity();
 
+#if NETCOREAPP3_0
+            var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
+            var tokens = OAuthTokenResponse.Success(payload);
+#else
             var payload = JObject.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
+#endif
             var resp = await testHandler.TestCreateTicketAsync(identity, new AuthenticationProperties(), tokens);
 
             Assert.NotNull(handler.LastRequest);

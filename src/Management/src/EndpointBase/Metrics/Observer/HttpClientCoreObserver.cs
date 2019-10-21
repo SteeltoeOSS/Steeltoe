@@ -64,10 +64,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             view = View.Create(
                 ViewName.Create("http.client.request.count"),
-                    "Total request counts",
-                    clientCountMeasure,
-                    Sum.Create(),
-                    new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
+                "Total request counts",
+                clientCountMeasure,
+                Sum.Create(),
+                new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
 
             ViewManager.RegisterView(view);
         }

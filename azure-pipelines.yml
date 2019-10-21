@@ -37,17 +37,20 @@ jobs:
     displayName: 'Install .NET Core 3.x SDK'
     inputs:
       packageType: sdk
-      version: 3.0.100-preview8-013656
+      version: 3.0.100
   - task: DotNetCoreCLI@2
+    displayName: dotnet restore
     inputs:
       command: restore
       projects: 'src/Steeltoe.All.sln'
   - task: DotNetCoreCLI@2
+    displayName: dotnet build
     inputs:
       command: build
       projects: 'src/Steeltoe.All.sln'
       arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
   - task: DotNetCoreCLI@2
+    displayName: dotnet test
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
@@ -70,22 +73,26 @@ jobs:
     displayName: 'Install .NET Core 3.x SDK'
     inputs:
       packageType: sdk
-      version: 3.0.100-preview8-013656
+      version: 3.0.100
   - task: DotNetCoreCLI@2
+    displayName: dotnet restore
     inputs:
       command: restore
       projects: 'src/Steeltoe.All.sln'
   - task: DotNetCoreCLI@2
+    displayName: dotnet build
     inputs:
       command: build
       projects: 'src/Steeltoe.All.sln'
       arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
   - task: DotNetCoreCLI@2
+    displayName: dotnet test
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
       arguments: '-c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnMacOS"'
 - job: Windows_Build_Test_and_Package
+  timeoutInMinutes: 90
   pool:
     vmImage: 'windows-2019'
   steps:
@@ -99,6 +106,7 @@ jobs:
       $suffix = $env:PackageVersion.Split('-')[1]
       Write-Host "##vso[task.setvariable variable=VersionPrefix;]$prefix"
       Write-Host "##vso[task.setvariable variable=VersionSuffix;]$suffix"
+    displayName: Set Build Variables
     env:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
@@ -116,8 +124,9 @@ jobs:
     displayName: 'Install .NET Core 3.x SDK'
     inputs:
       packageType: sdk
-      version: 3.0.100-preview8-013656
+      version: 3.0.100
   - task: DotNetCoreCLI@2
+    displayName: dotnet restore
     inputs:
       command: 'restore'
       projects: 'src/Steeltoe.All.sln'
@@ -131,6 +140,7 @@ jobs:
         sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
         sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
   - task: DotNetCoreCLI@2
+    displayName: dotnet pack
     inputs:
       command: 'pack'
       feedsToUse: 'select'
@@ -139,6 +149,7 @@ jobs:
       versioningScheme: 'byEnvVar'
       versionEnvVar: PackageVersion
   - task: DotNetCoreCLI@2
+    displayName: dotnet test
     inputs:
       command: test
       projects: 'src/Steeltoe.All.sln'
@@ -166,12 +177,13 @@ jobs:
       codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $env:CodeCovToken
     env:
       CodeCovToken: $(CodeCovToken)
+    displayName: Install and Run CodeCov
     condition: always()
   - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
-    displayName: 'Run Code Analysis'
+    displayName: Run Code Analysis
     condition: always()
   - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
-    displayName: 'Publish Quality Gate Result'
+    displayName: Publish Quality Gate Result
     condition: always()
   - task: PowerShell@2
     displayName: Authenticode Sign Packages

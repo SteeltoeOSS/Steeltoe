@@ -89,8 +89,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             // Act and Assert
             MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
 
-           var service = services.BuildServiceProvider().GetService<IDbConnection>();
-           Assert.NotNull(service);
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
+            Assert.NotNull(service);
         }
 
         [Fact]

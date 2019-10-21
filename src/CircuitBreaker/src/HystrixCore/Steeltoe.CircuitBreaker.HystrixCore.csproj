@@ -4,7 +4,7 @@
  
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Client - ASPNET Core</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CircuitBreaker.HystrixCore</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.HystrixCore</PackageId>
     <PackageTags>ASPNET Core;Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
@@ -19,7 +19,10 @@
       <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 </Project>

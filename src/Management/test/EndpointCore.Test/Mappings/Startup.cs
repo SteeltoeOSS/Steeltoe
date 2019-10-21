@@ -31,24 +31,22 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         {
             services.AddMappingsActuator(Configuration);
             services
-                .AddMvc(o =>
-                {
-#if NETCOREAPP3_0
-                    o.EnableEndpointRouting = false;
-#endif
-                });
+                .AddMvc();
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseMappingsActuator();
 
-            app.UseMvc(routes =>
+#if NETCOREAPP3_0
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+#else
+            app.UseMvc();
+#endif
         }
     }
 }

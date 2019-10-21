@@ -78,6 +78,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                             SampleSubscription.Dispose();
                             SampleSubscription = null;
                         }
+
                         Dispose();
                     }
                 },
@@ -91,6 +92,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                         SampleSubscription.Dispose();
                         SampleSubscription = null;
                     }
+
                     Dispose();
                 },
                 () =>
@@ -103,6 +105,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                         SampleSubscription.Dispose();
                         SampleSubscription = null;
                     }
+
                     Dispose();
                 });
         }

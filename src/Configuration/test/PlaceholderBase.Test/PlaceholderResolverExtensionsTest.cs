@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -81,18 +82,18 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         {
             // Arrange
             var appsettings = @"
-{
-    'spring': {
-        'bar': {
-            'name': 'myName'
-    },
-      'cloud': {
-        'config': {
-            'name' : '${spring:bar:name?noname}',
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""bar"": {
+                            ""name"": ""myName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""name"" : ""${spring:bar:name?noname}"",
+                        }
+                      }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
             string directory = Path.GetDirectoryName(path);
@@ -190,18 +191,18 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         public void AddPlaceholderResolver_HandlesRecursivePlaceHolders()
         {
             var appsettingsJson = @"
-{
-    'spring': {
-        'json': {
-            'name': 'myName'
-    },
-      'cloud': {
-        'config': {
-            'name' : '${spring:xml:name?noname}',
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""json"": {
+                            ""name"": ""myName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""name"" : ""${spring:xml:name?noname}"",
+                        }
+                      }
+                    }
+                }";
 
             var appsettingsXml = @"
 <settings>

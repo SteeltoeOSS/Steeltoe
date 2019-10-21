@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using Xunit;
 
@@ -145,32 +142,32 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         {
             // Arrange
             var appsettings1 = @"
-{
-    'spring': {
-        'bar': {
-            'name': 'myName'
-    },
-      'cloud': {
-        'config': {
-            'name' : '${spring:bar:name?noname}',
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""bar"": {
+                            ""name"": ""myName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""name"" : ""${spring:bar:name?noname}"",
+                        }
+                      }
+                    }
+                }";
 
             var appsettings2 = @"
-{
-    'spring': {
-        'bar': {
-            'name': 'newMyName'
-    },
-      'cloud': {
-        'config': {
-            'name' : '${spring:bar:name?noname}',
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""bar"": {
+                            ""name"": ""newMyName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""name"" : ""${spring:bar:name?noname}"",
+                        }
+                      }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appsettings1);
             string directory = Path.GetDirectoryName(path);
@@ -229,32 +226,32 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         {
             // Arrange
             var appsettings1 = @"
-{
-    'spring': {
-        'bar': {
-            'name': 'myName'
-    },
-      'cloud': {
-        'config': {
-            'name' : '${spring:bar:name?noname}',
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""bar"": {
+                            ""name"": ""myName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""name"" : ""${spring:bar:name?noname}"",
+                        }
+                      }
+                    }
+                }";
 
             var appsettings2 = @"
-{
-    'spring': {
-        'bar': {
-            'name': 'newMyName'
-    },
-      'cloud': {
-        'config': {
-            'name' : '${spring:bar:name?noname}',
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""bar"": {
+                            ""name"": ""newMyName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""name"" : ""${spring:bar:name?noname}"",
+                        }
+                      }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appsettings1);
             string directory = Path.GetDirectoryName(path);

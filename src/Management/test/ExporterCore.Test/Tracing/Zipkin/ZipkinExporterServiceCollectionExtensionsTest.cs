@@ -12,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-#if NETCOREAPP3_0
 using Microsoft.Extensions.Hosting;
-#endif
 using OpenCensus.Exporter.Zipkin;
 using OpenCensus.Trace;
 using OpenCensus.Trace.Config;
 using OpenCensus.Trace.Export;
 using OpenCensus.Trace.Propagation;
+using Steeltoe.Common;
 using Steeltoe.Management.Census.Trace;
 using System;
 using System.Collections.Generic;
@@ -51,15 +48,11 @@ namespace Steeltoe.Management.Exporter.Tracing.Test
         [Fact]
         public void AddZipkinExporter_AddsCorrectServices()
         {
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             var config = GetConfiguration();
 
             services.AddOptions();
-#if NETCOREAPP3_0
-            services.AddSingleton<IHostEnvironment>(new TestHost());
-#else
-            services.AddSingleton<IHostingEnvironment>(new TestHost());
-#endif
+            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddSingleton<ITracing>(new TestTracing());
 
             services.AddZipkinExporter(config);
@@ -81,28 +74,9 @@ namespace Steeltoe.Management.Exporter.Tracing.Test
                 ["management:tracing:exporter:zipkin:endpoint"] = "https://foo.com/api/v2/spans"
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(settings);
             return builder.Build();
-        }
-
-#if NETCOREAPP3_0
-        private class TestHost : IHostEnvironment
-#else
-        private class TestHost : IHostingEnvironment
-#endif
-        {
-            public string EnvironmentName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public string ApplicationName { get => "foobar"; set => throw new NotImplementedException(); }
-
-            public string WebRootPath { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public IFileProvider WebRootFileProvider { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public string ContentRootPath { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public IFileProvider ContentRootFileProvider { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         }
 
         private class TestTracing : ITracing

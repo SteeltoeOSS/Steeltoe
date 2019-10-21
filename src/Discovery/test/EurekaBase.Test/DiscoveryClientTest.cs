@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
@@ -34,12 +35,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Constructor_TimersNotStarted()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldRegisterWithEureka = false,
                 ShouldFetchRegistry = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             Assert.Null(client.CacheRefreshTimer);
             Assert.Null(client.HeartBeatTimer);
         }
@@ -47,49 +48,51 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public async void FetchFullRegistryAsync_InvokesServer_ReturnsValidResponse()
         {
-            var json = @"{ 
-'applications': { 
-    'versions__delta':'1',
-    'apps__hashcode':'UP_1_',
-    'application':[
-        {
-        'name':'FOO',
-        'instance':[
-            { 
-            'instanceId':'localhost:foo',
-            'hostName':'localhost',
-            'app':'FOO',
-            'ipAddr':'192.168.56.1',
-            'status':'UP',
-            'overriddenstatus':'UNKNOWN',
-            'port':{'$':8080,'@enabled':'true'},
-            'securePort':{'$':443,'@enabled':'false'},
-            'countryId':1,
-            'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
-            'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':1457714988223,'lastRenewalTimestamp':1457716158319,'evictionTimestamp':0,'serviceUpTimestamp':1457714988223},
-            'metadata':{'@class':'java.util.Collections$EmptyMap'},
-            'homePageUrl':'http://localhost:8080/',
-            'statusPageUrl':'http://localhost:8080/info',
-            'healthCheckUrl':'http://localhost:8080/health',
-            'vipAddress':'foo',
-            'isCoordinatingDiscoveryServer':'false',
-            'lastUpdatedTimestamp':'1457714988223',
-            'lastDirtyTimestamp':'1457714988172',
-            'actionType':'ADDED'
-            }]
-        }]
-    }
-}";
+            var json = @"
+                { 
+                    ""applications"": { 
+                        ""versions__delta"":""1"",
+                        ""apps__hashcode"":""UP_1_"",
+                        ""application"":[{
+                            ""name"":""FOO"",
+                            ""instance"":[{ 
+                                ""instanceId"":""localhost:foo"",
+                                ""hostName"":""localhost"",
+                                ""app"":""FOO"",
+                                ""ipAddr"":""192.168.56.1"",
+                                ""status"":""UP"",
+                                ""overriddenstatus"":""UNKNOWN"",
+                                ""port"":{""$"":8080,""@enabled"":""true""},
+                                ""securePort"":{""$"":443,""@enabled"":""false""},
+                                ""countryId"":1,
+                                ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+                                ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
+                                ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
+                                ""homePageUrl"":""http://localhost:8080/"",
+                                ""statusPageUrl"":""http://localhost:8080/info"",
+                                ""healthCheckUrl"":""http://localhost:8080/health"",
+                                ""vipAddress"":""foo"",
+                                ""isCoordinatingDiscoveryServer"":""false"",
+                                ""lastUpdatedTimestamp"":""1457714988223"",
+                                ""lastDirtyTimestamp"":""1457714988172"",
+                                ""actionType"":""ADDED""
+                            }]
+                        }]
+                    }
+                }";
 
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = json;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
@@ -97,7 +100,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             };
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
-            DiscoveryClient client = new DiscoveryClient(config, httpClient);
+            var client = new DiscoveryClient(config, httpClient);
             var result = await client.FetchFullRegistryAsync();
             Assert.NotNull(result);
             Assert.Equal(1, result.Version);
@@ -112,15 +115,18 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void FetchFullRegistryAsync_ReturnsNull_IfFetchCounterMismatch()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
@@ -128,7 +134,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             };
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
-            DiscoveryClient client = new DiscoveryClient(config, httpClient);
+            var client = new DiscoveryClient(config, httpClient);
             var result = client.FetchFullRegistryAsync();
             client.RegistryFetchCounter = 100;
             var apps = result.GetAwaiter().GetResult();
@@ -138,48 +144,50 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public async void FetchRegistryDeltaAsync_InvokesServer_ReturnsValidResponse()
         {
-            var json = @"{ 
-'applications': { 
-    'versions__delta':'3',
-    'apps__hashcode':'UP_1_',
-    'application':[
-        {
-        'name':'FOO',
-        'instance':[
-            { 
-            'instanceId':'localhost:foo',
-            'hostName':'localhost',
-            'app':'FOO',
-            'ipAddr':'192.168.56.1',
-            'status':'UP',
-            'overriddenstatus':'UNKNOWN',
-            'port':{'$':8080,'@enabled':'true'},
-            'securePort':{'$':443,'@enabled':'false'},
-            'countryId':1,
-            'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
-            'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':1457714988223,'lastRenewalTimestamp':1457716158319,'evictionTimestamp':0,'serviceUpTimestamp':1457714988223},
-            'metadata':{'@class':'java.util.Collections$EmptyMap'},
-            'homePageUrl':'http://localhost:8080/',
-            'statusPageUrl':'http://localhost:8080/info',
-            'healthCheckUrl':'http://localhost:8080/health',
-            'vipAddress':'foo',
-            'isCoordinatingDiscoveryServer':'false',
-            'lastUpdatedTimestamp':'1457714988223',
-            'lastDirtyTimestamp':'1457714988172',
-            'actionType':'MODIFIED'
-            }]
-        }]
-    }
-}";
-            IHostingEnvironment envir = new HostingEnvironment();
+            var json = @"
+                { 
+                    ""applications"": { 
+                        ""versions__delta"":""3"",
+                        ""apps__hashcode"":""UP_1_"",
+                        ""application"":[{
+                            ""name"":""FOO"",
+                            ""instance"":[{ 
+                                ""instanceId"":""localhost:foo"",
+                                ""hostName"":""localhost"",
+                                ""app"":""FOO"",
+                                ""ipAddr"":""192.168.56.1"",
+                                ""status"":""UP"",
+                                ""overriddenstatus"":""UNKNOWN"",
+                                ""port"":{""$"":8080,""@enabled"":""true""},
+                                ""securePort"":{""$"":443,""@enabled"":""false""},
+                                ""countryId"":1,
+                                ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+                                ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
+                                ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
+                                ""homePageUrl"":""http://localhost:8080/"",
+                                ""statusPageUrl"":""http://localhost:8080/info"",
+                                ""healthCheckUrl"":""http://localhost:8080/health"",
+                                ""vipAddress"":""foo"",
+                                ""isCoordinatingDiscoveryServer"":""false"",
+                                ""lastUpdatedTimestamp"":""1457714988223"",
+                                ""lastDirtyTimestamp"":""1457714988172"",
+                                ""actionType"":""MODIFIED""
+                            }]
+                        }]
+                    }
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = json;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
@@ -187,10 +195,10 @@ namespace Steeltoe.Discovery.Eureka.Test
             };
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
-            DiscoveryClient client = new DiscoveryClient(config, httpClient);
-            Applications apps = new Applications();
-            Application app = new Application("FOO");
-            InstanceInfo inst = new InstanceInfo()
+            var client = new DiscoveryClient(config, httpClient);
+            var apps = new Applications();
+            var app = new Application("FOO");
+            var inst = new InstanceInfo()
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -217,15 +225,18 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void FetchRegistryDeltaAsync_ReturnsNull_IfFetchCounterMismatch()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
@@ -233,7 +244,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             };
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
-            DiscoveryClient client = new DiscoveryClient(config, httpClient);
+            var client = new DiscoveryClient(config, httpClient);
             var result = client.FetchRegistryDeltaAsync();
             client.RegistryFetchCounter = 100;
             var apps = result.GetAwaiter().GetResult();
@@ -243,21 +254,24 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public async void RegisterAsync_ReturnsFalse_WhenNotOKStatusReturned()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 404;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri.ToString()
             };
-            InstanceInfo inst = new InstanceInfo()
+            var inst = new InstanceInfo()
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -268,7 +282,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             ApplicationInfoManager.Instance.InstanceInfo = inst;
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
-            DiscoveryClient client = new DiscoveryClient(config, httpClient);
+            var client = new DiscoveryClient(config, httpClient);
             var result = await client.RegisterAsync();
             Assert.False(result);
 
@@ -282,22 +296,25 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public async void RegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 204;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri.ToString()
             };
 
-            InstanceInfo inst = new InstanceInfo()
+            var inst = new InstanceInfo()
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -308,7 +325,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             ApplicationInfoManager.Instance.InstanceInfo = inst;
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
-            DiscoveryClient client = new DiscoveryClient(config, httpClient);
+            var client = new DiscoveryClient(config, httpClient);
             var result = await client.RegisterAsync();
             Assert.True(result);
 
@@ -322,21 +339,24 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public async void RenewAsync_Registers_When404StatusReturned()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 404;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri.ToString()
             };
-            InstanceInfo inst = new InstanceInfo()
+            var inst = new InstanceInfo()
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -347,7 +367,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             ApplicationInfoManager.Instance.InstanceInfo = inst;
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
-            DiscoveryClient client = new DiscoveryClient(config, httpClient);
+            var client = new DiscoveryClient(config, httpClient);
             var result = await client.RenewAsync();
 
             // Verify Register done
@@ -363,22 +383,25 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public async void RenewAsync_ReturnsTrue_WhenOKStatusReturned()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri.ToString()
             };
 
-            InstanceInfo inst = new InstanceInfo()
+            var inst = new InstanceInfo()
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -389,7 +412,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             ApplicationInfoManager.Instance.InstanceInfo = inst;
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
-            DiscoveryClient client = new DiscoveryClient(config, httpClient);
+            var client = new DiscoveryClient(config, httpClient);
             var result = await client.RenewAsync();
             Assert.True(result);
         }
@@ -397,22 +420,25 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public async void UnRegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false,
                 EurekaServerServiceUrls = uri.ToString()
             };
 
-            InstanceInfo inst = new InstanceInfo()
+            var inst = new InstanceInfo()
             {
                 InstanceId = "localhost:foo",
                 HostName = "localhost",
@@ -423,7 +449,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             ApplicationInfoManager.Instance.InstanceInfo = inst;
 
             var httpClient = new EurekaHttpClient(config, server.CreateClient());
-            DiscoveryClient client = new DiscoveryClient(config, httpClient);
+            var client = new DiscoveryClient(config, httpClient);
             var result = await client.UnregisterAsync();
             Assert.True(result);
 
@@ -436,12 +462,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetNextServerFromEureka_Throws_WhenVIPAddressNull()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             var ex = Assert.Throws<ArgumentException>(() => client.GetNextServerFromEureka(null, false));
             Assert.Contains("vipAddress", ex.Message);
         }
@@ -449,12 +475,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesByVipAddress_Throws_WhenVIPAddressNull()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             var ex = Assert.Throws<ArgumentException>(() => client.GetInstancesByVipAddress(null, false));
             Assert.Contains("vipAddress", ex.Message);
         }
@@ -462,11 +488,11 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesByVipAddress_ReturnsExpected()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
 
@@ -474,12 +500,12 @@ namespace Steeltoe.Discovery.Eureka.Test
             apps.Add(app1);
             apps.Add(app2);
 
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config)
+            var client = new DiscoveryClient(config)
             {
                 Applications = apps
             };
@@ -503,11 +529,11 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetNextServerFromEureka_ReturnsExpected()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
 
@@ -515,12 +541,12 @@ namespace Steeltoe.Discovery.Eureka.Test
             apps.Add(app1);
             apps.Add(app2);
 
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config)
+            var client = new DiscoveryClient(config)
             {
                 Applications = apps
             };
@@ -540,12 +566,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesById_Throws_WhenIdNull()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             var ex = Assert.Throws<ArgumentException>(() => client.GetInstanceById(null));
             Assert.Contains("id", ex.Message);
         }
@@ -553,12 +579,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesById_Returns_EmptyListWhenNoApps()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             var result = client.GetInstanceById("myId");
             Assert.NotNull(result);
             Assert.Equal(0, result.Count);
@@ -567,11 +593,11 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstanceById_ReturnsExpected()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
 
@@ -579,12 +605,12 @@ namespace Steeltoe.Discovery.Eureka.Test
             apps.Add(app1);
             apps.Add(app2);
 
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config)
+            var client = new DiscoveryClient(config)
             {
                 Applications = apps
             };
@@ -604,12 +630,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetApplication_Throws_WhenAppNameNull()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             var ex = Assert.Throws<ArgumentException>(() => client.GetApplication(null));
             Assert.Contains("appName", ex.Message);
         }
@@ -617,11 +643,11 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetApplication_ReturnsExpected()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
 
@@ -629,12 +655,12 @@ namespace Steeltoe.Discovery.Eureka.Test
             apps.Add(app1);
             apps.Add(app2);
 
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config)
+            var client = new DiscoveryClient(config)
             {
                 Applications = apps
             };
@@ -650,12 +676,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetInstancesByVipAddressAndAppName_Throws_WhenAddressAndAppnameNull()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             var ex = Assert.Throws<ArgumentNullException>(() => client.GetInstancesByVipAddressAndAppName(null, null, false));
             Assert.Contains("appName", ex.Message);
         }
@@ -663,15 +689,15 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void RefreshInstanceInfo_CallsHealthCheckHandler_UpdatesInstanceStatus()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            EurekaInstanceConfig iconfig = new EurekaInstanceConfig();
+            var iconfig = new EurekaInstanceConfig();
             ApplicationInfoManager.Instance.Initialize(iconfig);
 
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             var myHandler = new MyHealthCheckHandler(InstanceStatus.DOWN);
             client.HealthCheckHandler = myHandler;
 
@@ -684,12 +710,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void StartTimer_StartsTimer()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             _timerFuncCount = 0;
             var result = client.StartTimer("MyTimer", 10, TimerFunc);
             Assert.NotNull(result);
@@ -701,12 +727,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void StartTimer_StartsTimer_KeepsRunningOnExceptions()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             _timerFuncCount = 0;
             var result = client.StartTimer("MyTimer", 10, TimerFuncThrows);
             Assert.NotNull(result);
@@ -718,12 +744,12 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void StartTimer_StartsTimer_StopsAfterDispose()
         {
-            EurekaClientConfig config = new EurekaClientConfig()
+            var config = new EurekaClientConfig()
             {
                 ShouldFetchRegistry = false,
                 ShouldRegisterWithEureka = false
             };
-            DiscoveryClient client = new DiscoveryClient(config);
+            var client = new DiscoveryClient(config);
             _timerFuncCount = 0;
             var result = client.StartTimer("MyTimer", 10, TimerFuncThrows);
             Assert.NotNull(result);

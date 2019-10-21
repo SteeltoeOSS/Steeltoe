@@ -22,8 +22,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         internal const int Default_MaximumSize = 10; // maximum size of thread pool
         internal const int Default_KeepAliveTimeMinutes = 1; // minutes to keep a thread alive
         internal const int Default_MaxQueueSize = -1; // size of queue (this can't be dynamically changed so we use 'queueSizeRejectionThreshold' to artificially limit and reject)
+
                                                       // -1 turns it off and makes us use SynchronousQueue
         internal const bool Default_AllowMaximumSizeToDivergeFromCoreSize = false; // should the maximumSize config value get read and used in configuring the threadPool
+
                                                                                    // turning this on should be a conscious decision by the user, so we default it to false
         internal const int Default_QueueSizeRejectionThreshold = 5; // number of items in queue
         internal const int Default_ThreadPoolRollingNumberStatisticalWindow = 10000; // milliseconds for rolling number

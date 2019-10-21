@@ -19,9 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using RichardSzalay.MockHttp;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Net.Http;
 
@@ -29,17 +27,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class TestServerOpenIdStartup
     {
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
-        public TestServerOpenIdStartup(IHostingEnvironment env)
+        public TestServerOpenIdStartup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-               .SetBasePath(env.ContentRootPath)
-               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-               .AddCloudFoundry()
-               .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -66,10 +58,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             });
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerfactory)
+        public void Configure(IApplicationBuilder app)
         {
-            loggerfactory.AddConsole(LogLevel.Debug);
-
             app.UseAuthentication();
 
             app.Run(async context =>

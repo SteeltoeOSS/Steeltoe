@@ -53,7 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                    }
+                }
             };
             RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
             Assert.True(factory.Accept(s));
@@ -74,7 +74,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("amqps://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                    }
+                }
             };
             RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
             Assert.True(factory.Accept(s));
@@ -97,7 +97,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                     { "http_api_uri", new Credential("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/") }
-                    }
+                }
             };
             RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
             Assert.True(factory.Accept(s));
@@ -121,7 +121,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                     { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                    }
+                }
             };
             RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
             Assert.False(factory.Accept(s));
@@ -142,14 +142,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                     {
                         "amqp", new Credential()
-                    {
-                        { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
-                        { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
-                        { "uri", new Credential("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
-                        { "ssl", new Credential("false") }
+                        {
+                            { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
+                            { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
+                            { "uri", new Credential("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
+                            { "ssl", new Credential("false") }
+                        }
                     }
-                    }
-                    }
+                }
             };
             RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
             Assert.False(factory.Accept(s));
@@ -182,78 +182,61 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         private static Service CreateRabbitMQService()
         {
             var environment = @"
-{
-      'p-rabbitmq': [
-        {
-          'credentials': {
-            'http_api_uris': [
-              'https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/'
-            ],
-            'ssl': false,
-            'dashboard_url': 'https://pivotal-rabbitmq.system.testcloud.com/#/login/03c7a684-6ff1-4bd0-ad45-d10374ffb2af/l5oq2q0unl35s6urfsuib0jvpo',
-            'password': 'l5oq2q0unl35s6urfsuib0jvpo',
-            'protocols': {
-              'management': {
-                'path': '/api/',
-                'ssl': false,
-                'hosts': [
-                  '192.168.0.81'
-                ],
-                'password': 'l5oq2q0unl35s6urfsuib0jvpo',
-                'username': '03c7a684-6ff1-4bd0-ad45-d10374ffb2af',
-                'port': 15672,
-                'host': '192.168.0.81',
-                'uri': 'https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/',
-                'uris': [
-                  'https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/'
-                ]
-              },
-              'amqp': {
-                'vhost': 'fb03d693-91fe-4dc5-8203-ff7a6390df66',
-                'username': '03c7a684-6ff1-4bd0-ad45-d10374ffb2af',
-                'password': 'l5oq2q0unl35s6urfsuib0jvpo',
-                'port': 5672,
-                'host': '192.168.0.81',
-                'hosts': [
-                  '192.168.0.81'
-                ],
-                'ssl': false,
-                'uri': 'amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66',
-                'uris': [
-                  'amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66'
-                ]
-              }
-            },
-            'username': '03c7a684-6ff1-4bd0-ad45-d10374ffb2af',
-            'hostname': '192.168.0.81',
-            'hostnames': [
-              '192.168.0.81'
-            ],
-            'vhost': 'fb03d693-91fe-4dc5-8203-ff7a6390df66',
-            'http_api_uri': 'https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/',
-            'uri': 'amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66',
-            'uris': [
-              'amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66'
-            ]
-          },
-          'syslog_drain_url': null,
-          'label': 'p-rabbitmq',
-          'provider': null,
-          'plan': 'standard',
-          'name': 'spring-cloud-broker-rmq',
-          'tags': [
-            'rabbitmq',
-            'messaging',
-            'message-queue',
-            'amqp',
-            'stomp',
-            'mqtt',
-            'pivotal'
-          ]
-        }
-      ]
-    }
-  }";
+                {
+                    ""p-rabbitmq"": [{
+                        ""credentials"": {
+                            ""http_api_uris"": [""https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/""],
+                            ""ssl"": false,
+                            ""dashboard_url"": ""https://pivotal-rabbitmq.system.testcloud.com/#/login/03c7a684-6ff1-4bd0-ad45-d10374ffb2af/l5oq2q0unl35s6urfsuib0jvpo"",
+                            ""password"": ""l5oq2q0unl35s6urfsuib0jvpo"",
+                            ""protocols"": {
+                                ""management"": {
+                                    ""path"": ""/api/"",
+                                    ""ssl"": false,
+                                    ""hosts"": [""192.168.0.81""],
+                                    ""password"": ""l5oq2q0unl35s6urfsuib0jvpo"",
+                                    ""username"": ""03c7a684-6ff1-4bd0-ad45-d10374ffb2af"",
+                                    ""port"": 15672,
+                                    ""host"": ""192.168.0.81"",
+                                    ""uri"": ""https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/"",
+                                    ""uris"": [""https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/""]
+                                },
+                                ""amqp"": {
+                                    ""vhost"": ""fb03d693-91fe-4dc5-8203-ff7a6390df66"",
+                                    ""username"": ""03c7a684-6ff1-4bd0-ad45-d10374ffb2af"",
+                                    ""password"": ""l5oq2q0unl35s6urfsuib0jvpo"",
+                                    ""port"": 5672,
+                                    ""host"": ""192.168.0.81"",
+                                    ""hosts"": [""192.168.0.81""],
+                                    ""ssl"": false,
+                                    ""uri"": ""amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66"",
+                                    ""uris"": [""amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66""]
+                                }
+                            },
+                            ""username"": ""03c7a684-6ff1-4bd0-ad45-d10374ffb2af"",
+                            ""hostname"": ""192.168.0.81"",
+                            ""hostnames"": [""192.168.0.81""],
+                            ""vhost"": ""fb03d693-91fe-4dc5-8203-ff7a6390df66"",
+                            ""http_api_uri"": ""https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/"",
+                            ""uri"": ""amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66"",
+                            ""uris"": [""amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66""]
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-rabbitmq"",
+                        ""provider"": null,
+                        ""plan"": ""standard"",
+                        ""name"": ""spring-cloud-broker-rmq"",
+                        ""tags"": [
+                            ""rabbitmq"",
+                            ""messaging"",
+                            ""message-queue"",
+                            ""amqp"",
+                            ""stomp"",
+                            ""mqtt"",
+                            ""pivotal""
+                        ]
+                    }]
+                }";
 
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
 

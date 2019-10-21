@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
  <Import Project="..\..\..\..\versions.props" />
-
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Metrics Event Stream ASP.NET Core</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore</PackageId>
     <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
@@ -23,9 +21,6 @@
 
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
-    <!-- These next two references were bumped to 2.2.0 to account for inclusion of AspNetCore Healthchecks in Steeltoe ConnectorCore -->
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(HealthChecksVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(HealthChecksVersion)" />
   </ItemGroup>
 
 </Project>

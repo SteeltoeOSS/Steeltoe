@@ -361,7 +361,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
         }
 
-       internal class CumulativeSum
+        internal class CumulativeSum
         {
             internal readonly LongAdder[] _adderForCounterType;
             internal readonly LongMaxUpdater[] _updaterForCounterType;

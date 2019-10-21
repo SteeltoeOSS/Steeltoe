@@ -128,6 +128,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     {
                         statistic = MetricStatistic.TOTAL;
                     }
+
                     results.Add(new MetricSample(statistic, arg.Sum));
                     return null;
                 },
@@ -137,6 +138,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     {
                         statistic = MetricStatistic.TOTAL;
                     }
+
                     results.Add(new MetricSample(statistic, arg.Sum));
                     return null;
                 },
@@ -146,6 +148,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     {
                         statistic = MetricStatistic.COUNT;
                     }
+
                     results.Add(new MetricSample(statistic, arg.Count));
                     return null;
                 },
@@ -156,6 +159,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     {
                         statistic = MetricStatistic.TOTAL;
                     }
+
                     results.Add(new MetricSample(statistic, arg.Mean * arg.Count));
                     return null;
                 },
@@ -167,6 +171,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     {
                         statistic = MetricStatistic.TOTAL;
                     }
+
                     results.Add(new MetricSample(statistic, arg.Mean * arg.Count));
                     return null;
                 },
@@ -176,6 +181,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     {
                         statistic = MetricStatistic.VALUE;
                     }
+
                     results.Add(new MetricSample(statistic, arg.LastValue));
                     return null;
                 },
@@ -185,6 +191,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     {
                         statistic = MetricStatistic.VALUE;
                     }
+
                     results.Add(new MetricSample(statistic, arg.LastValue));
                     return null;
                 },

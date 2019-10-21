@@ -89,8 +89,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             // Act and Assert
             SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
 
-           var service = services.BuildServiceProvider().GetService<IDbConnection>();
-           Assert.NotNull(service);
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
+            Assert.NotNull(service);
         }
 
         [Fact]

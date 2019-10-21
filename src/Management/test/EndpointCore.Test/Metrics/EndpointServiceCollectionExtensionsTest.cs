@@ -12,17 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if !NETCOREAPP3_0
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
-#endif
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-#if NETCOREAPP3_0
-using Microsoft.Extensions.Hosting.Internal;
-#endif
-using Microsoft.Extensions.FileProviders;
+using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Tags;
@@ -53,16 +46,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void AddMetricsActuator_AddsCorrectServices()
         {
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             var config = GetConfiguration();
 
             services.AddOptions();
             services.AddLogging();
-#if NETCOREAPP3_0
-            services.AddSingleton<IHostEnvironment>(new TestHost());
-#else
-            services.AddSingleton<Microsoft.AspNetCore.Hosting.IHostingEnvironment>(new TestHost());
-#endif
+            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddMetricsActuator(config);
 
             var serviceProvider = services.BuildServiceProvider();
@@ -94,27 +83,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
         private IConfiguration GetConfiguration()
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             return builder.Build();
-        }
-
-#if NETCOREAPP3_0
-        private class TestHost : IHostEnvironment
-#else
-        private class TestHost : Microsoft.AspNetCore.Hosting.IHostingEnvironment
-#endif
-        {
-            public string EnvironmentName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public string ApplicationName { get => "foobar"; set => throw new NotImplementedException(); }
-
-            public string WebRootPath { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public IFileProvider WebRootFileProvider { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public string ContentRootPath { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public IFileProvider ContentRootFileProvider { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         }
     }
 }

@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
@@ -84,7 +84,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider();
 
             // Act and Assert
-            TestHelpers.VerifyDefaults(provider.Settings);
+            TestHelper.VerifyDefaults(provider.Settings);
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(source);
 
             // Act and Assert
-            TestHelpers.VerifyDefaults(provider.Settings);
+            TestHelper.VerifyDefaults(provider.Settings);
         }
 
         [Fact]
@@ -221,21 +221,21 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange (propertySources array bad!)
             var environment = @"
-{
-    'name': 'testname',
-    'profiles': ['Production'],
-    'label': 'testlabel',
-    'version': 'testversion',
-    'propertySources': [ 
-        { 
-            'name': 'source',
-            'source': {
-                'key1': 'value1',
-                'key2': 10
-            }
-        }
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
+                        { 
+                            ""name"": ""source"",
+                            ""source"": {
+                                ""key1"": ""value1"",
+                                ""key2"": 10
+                            }
+                        }
     
-}";
+                }";
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
             Stream stream = TestHelpers.StringToStream(environment);
 
@@ -249,21 +249,21 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             var environment = @"
-{
-    'name': 'testname',
-    'profiles': ['Production'],
-    'label': 'testlabel',
-    'version': 'testversion',
-    'propertySources': [ 
-        { 
-            'name': 'source',
-            'source': {
-                'key1': 'value1',
-                'key2': 10
-            }
-        }
-    ]
-}";
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
+                        { 
+                            ""name"": ""source"",
+                            ""source"": {
+                                ""key1"": ""value1"",
+                                ""key2"": 10
+                            }
+                        }
+                    ]
+                }";
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
             Stream stream = TestHelpers.StringToStream(environment);
 
@@ -281,7 +281,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.NotNull(env.PropertySources[0].Source);
             Assert.Equal(2, env.PropertySources[0].Source.Count);
             Assert.Equal("value1", env.PropertySources[0].Source["key1"]);
-            Assert.Equal((long)10, env.PropertySources[0].Source["key2"]);
+            Assert.Equal(10L, env.PropertySources[0].Source["key2"]);
         }
 
         [Fact]
@@ -403,36 +403,42 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public async void RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500 };
-            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            ConfigServerClientSettings settings = new ConfigServerClientSettings
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
+            using (var server = new TestServer(builder))
             {
-                Uri = "http://localhost:8888",
-                Name = "myName"
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+#if NETCOREAPP3_0
+                server.AllowSynchronousIO = true;
+#endif
+                ConfigServerClientSettings settings = new ConfigServerClientSettings
+                {
+                    Uri = "http://localhost:8888",
+                    Name = "myName"
+                };
+                server.BaseAddress = new Uri(settings.Uri);
+                ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
-            // Act and Assert
-            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
+                // Act and Assert
+                HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
 
-            Assert.NotNull(TestConfigServerStartup.LastRequest);
-            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
+                Assert.NotNull(TestConfigServerStartup.LastRequest);
+                Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
+            }
         }
 
         [Fact]
         public async void RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 204 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -455,29 +461,31 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             var environment = @"
-{
-    'name': 'testname',
-    'profiles': ['Production'],
-    'label': 'testlabel',
-    'version': 'testversion',
-    'propertySources': [ 
-        { 
-            'name': 'source',
-            'source': {
-                'key1': 'value1',
-                'key2': 10
-            }
-        }
-    ]
-}";
-            IHostingEnvironment envir = new HostingEnvironment();
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
+                        { 
+                            ""name"": ""source"",
+                            ""source"": {
+                                ""key1"": ""value1"",
+                                ""key2"": 10
+                            }
+                        }
+                    ]
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.Response = environment;
             TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
             TestConfigServerStartup.Label = "testlabel";
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
                 Uri = "http://localhost:8888",
@@ -500,26 +508,29 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             var environment = @"
-{
-    'name': 'testname',
-    'profiles': ['Production'],
-    'label': 'testlabel',
-    'version': 'testversion',
-    'propertySources': [ 
-        { 
-            'name': 'source',
-            'source': {
-                'key1': 'value1',
-                'key2': 10
-            }
-        }
-    ]
-}";
-            IHostingEnvironment envir = new HostingEnvironment();
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
+                        { 
+                            ""name"": ""source"",
+                            ""source"": {
+                                ""key1"": ""value1"",
+                                ""key2"": 10
+                            }
+                        }
+                    ]
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.Response = environment;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -545,18 +556,21 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.NotNull(env.PropertySources[0].Source);
             Assert.Equal(2, env.PropertySources[0].Source.Count);
             Assert.Equal("value1", env.PropertySources[0].Source["key1"]);
-            Assert.Equal((long)10, env.PropertySources[0].Source["key2"]);
+            Assert.Equal(10L, env.PropertySources[0].Source["key2"]);
         }
 
         [Fact]
         public void Load_MultipleConfigServers_ReturnsGreaterThanEqualBadRequest_StopsChecking()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -577,11 +591,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -602,11 +619,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Load_ConfigServerReturnsNotFoundStatus()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 404 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -627,11 +647,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 404 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -650,11 +673,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -674,11 +700,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Load_ConfigServerReturnsBadStatus_FailFastEnabled()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -697,11 +726,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500, 500, 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -721,11 +753,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
         {
             // Arrange
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500, 500, 500, 500, 500, 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -747,26 +782,29 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             var environment = @"
-{
-    'name': 'testname',
-    'profiles': ['Production'],
-    'label': 'testlabel',
-    'version': 'testversion',
-    'propertySources': [ 
-        { 
-            'name': 'source',
-            'source': {
-                'key1': 'value1',
-                'key2': 10
-            }
-        }
-    ]
-}";
-            IHostingEnvironment envir = new HostingEnvironment();
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
+                        { 
+                            ""name"": ""source"",
+                            ""source"": {
+                                ""key1"": ""value1"",
+                                ""key2"": 10
+                            }
+                        }
+                    ]
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.Response = environment;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
+#if NETCOREAPP3_0
+            server.AllowSynchronousIO = true;
+#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
