@@ -96,6 +96,10 @@ The latest Steeltoe packages from each branch can be found on [MyGet](https://my
 
 The released and release candidates can be found on [NuGet](https://www.nuget.org/profiles/steeltoe).
 
+## Building from Source
+
+Steeltoe components can be built from source with a recent version of the [.NET Core SDK](https://dotnet.microsoft.com/download/visual-studio-sdks) on Windows, Linux or MacOS. Any IDE that supports .NET is expected to work - core contributors regularly use Visual Studio, Visual Studio Code and JetBrains Rider. Visual Studio Solution (`.sln`) files are provided for each component, along with a single `.sln` file that will load all components.
+
 ## Governance Model
 
 As a member of the [.NET Foundation](https://dotnetfoundation.org/), the Steeltoe project has adopted a [project governance](https://github.com/dotnet/home/blob/master/governance/project-governance.md) model in line with that recommended by the Foundation.
