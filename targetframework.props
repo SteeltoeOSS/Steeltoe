@@ -1,9 +1,0 @@
-<Project>
-    <PropertyGroup Condition="! $(OS.Contains('Win')) AND '$(TargetFramework)'== 'net461'">
-        <FrameworkPathOverride>$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.6.1/1.0.1/lib/net461/</FrameworkPathOverride>
-        <RestoreAdditionalProjectSources>https://dotnet.myget.org/F/dotnet-core/api/v3/index.json</RestoreAdditionalProjectSources>
-    </PropertyGroup>
-    <ItemGroup Condition="! $(OS.Contains('Win')) AND '$(TargetFramework)'== 'net461'">
-        <PackageReference Include="Microsoft.TargetingPack.NETFramework.v4.6.1"  Version="1.0.1" ExcludeAssets="All" PrivateAssets="All" />
-    </ItemGroup>
-</Project>

@@ -1,13 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
-  <PropertyGroup Condition="! $(OS.Contains('Win'))">
+  <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
-  <PropertyGroup Condition="$(OS.Contains('Win'))">
-    <TargetFrameworks>net461;netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
-  </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
-  <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TracingBase\Steeltoe.Management.TracingBase.csproj" />
