@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +31,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("CommandLatency");
         private RollingCommandLatencyDistributionStream stream;
+        private IDisposable latchSubscription;
         private ITestOutputHelper output;
+
+        private class LatchedObserver : TestObserverBase<CachedValuesHistogram>
+        {
+            public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
+                : base(output, latch)
+            {
+            }
+        }
 
         public RollingCommandLatencyDistributionStreamTest(ITestOutputHelper output)
             : base()
@@ -41,8 +52,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         public override void Dispose()
         {
+            latchSubscription?.Dispose();
+            stream?.Unsubscribe();
+            latchSubscription = null;
+            stream = null;
             base.Dispose();
-            stream.Unsubscribe();
         }
 
         [Fact]
@@ -50,70 +64,36 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestEmptyStreamProducesEmptyDistributions()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-A");
-            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(
-                (distribution) =>
-                {
-                    output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + Thread.CurrentThread.ManagedThreadId);
-                    Assert.Equal(0, distribution.GetTotalCount());
-                },
-                (e) =>
-                {
-                    Assert.True(false, e.Message);
-                },
-                () =>
-                {
-                    latch.SignalEx();
-                });
+            var observer = new LatchedObserver(output, latch);
+            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
 
-            // no writes
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void TestSingleBucketGetsStored()
+        public async void TestSingleBucketGetsStored()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-B");
-            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(
-            (distribution) =>
-            {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                if (distribution.GetTotalCount() == 1)
-                {
-                    AssertBetween(10, 50, distribution.GetMean());
-                }
-                else if (distribution.GetTotalCount() == 2)
-                {
-                    AssertBetween(300, 400, distribution.GetMean());
-                }
-            },
-            (e) =>
-            {
-                Assert.True(false, e.Message);
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd2 = Command.From(GroupKey, key, HystrixEventType.TIMEOUT); // latency = 600
-            cmd1.Observe();
-            cmd2.Observe();
+            await cmd1.Observe();
+            await cmd2.Observe();
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine($"ReqLog: {HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString()}");
-            AssertBetween(150, 400, stream.LatestMean);
-            AssertBetween(10, 50, stream.GetLatestPercentile(0.0));
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+
+            AssertBetween(100, 400, stream.LatestMean);
+            AssertBetween(10, 100, stream.GetLatestPercentile(0.0));
             AssertBetween(300, 800, stream.GetLatestPercentile(100.0));
         }
 
@@ -127,60 +107,42 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         // FAILURE
         // TIMEOUT
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void TestSingleBucketWithMultipleEventTypes()
+        public async void TestSingleBucketWithMultipleEventTypes()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-C");
-            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(
-            (distribution) =>
-            {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                if (distribution.GetTotalCount() < 4 && distribution.GetTotalCount() > 0)
-                {
-                    // buckets before timeout latency registers
-                    AssertBetween(10, 100, distribution.GetMean());
-                }
-                else if (distribution.GetTotalCount() == 4)
-                {
-                    AssertBetween(150, 300, distribution.GetMean()); // now timeout latency of 600ms is there
-                }
-            },
-            (e) =>
-            {
-                Assert.True(false, e.Message);
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd2 = Command.From(GroupKey, key, HystrixEventType.TIMEOUT); // latency = 600
             Command cmd3 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 30);
             Command cmd4 = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST, 40);
 
-            cmd1.Observe();
-            cmd2.Observe();
-            cmd3.Observe();
-            cmd4.Observe();
+            await cmd1.Observe();
+            await cmd3.Observe();
+            await Assert.ThrowsAsync<HystrixBadRequestException>(async () => await cmd4.Observe());
+            await cmd2.Observe();  // Timeout should run last
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            AssertBetween(150, 350, stream.LatestMean); // now timeout latency of 600ms is there
-            AssertBetween(10, 40, stream.GetLatestPercentile(0.0));
-            AssertBetween(600, 800, stream.GetLatestPercentile(100.0));
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            AssertBetween(100, 400, stream.LatestMean); // now timeout latency of 600ms is there
+            AssertBetween(10, 100, stream.GetLatestPercentile(0.0));
+            AssertBetween(300, 800, stream.GetLatestPercentile(100.0));
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void TestShortCircuitedCommandDoesNotGetLatencyTracked()
+        public async void TestShortCircuitedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");
+            CountdownEvent latch = new CountdownEvent(1);
+            var observer = new LatchedObserver(output, latch);
+
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 3 failures is enough to trigger short-circuit.  execute those, then wait for bucket to roll
             // next command should be a short-circuit
@@ -190,168 +152,104 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 commands.Add(Command.From(GroupKey, key, HystrixEventType.FAILURE, 0));
             }
 
-            CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(
-            (distribution) =>
-            {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                AssertBetween(0, 30, distribution.GetMean());
-            },
-            (e) =>
-            {
-                Assert.True(false, e.Message);
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
+            Command shortCircuit = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
 
             foreach (Command cmd in commands)
             {
-                cmd.Observe();
+                await cmd.Observe();
             }
 
-            Command shortCircuit = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+            Assert.True(WaitForHealthCountToUpdate(key.Name, 500, output), "health count took to long to update");
 
             try
             {
-                Time.Wait(200);
-                shortCircuit.Observe();
+                await shortCircuit.Observe();
             }
             catch (Exception ie)
             {
                 Assert.True(false, ie.Message);
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(3, stream.Latest.GetTotalCount());
-            AssertBetween(0, 30, stream.LatestMean);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            AssertBetween(0, 75, stream.LatestMean);
+
             Assert.True(shortCircuit.IsResponseShortCircuited);
         }
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public void TestThreadPoolRejectedCommandDoesNotGetLatencyTracked()
+        public async void TestThreadPoolRejectedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-E");
+            CountdownEvent latch = new CountdownEvent(1);
+            var observer = new LatchedObserver(output, latch);
+
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands with latency should occupy the entire threadpool.  execute those, then wait for bucket to roll
             // next command should be a thread-pool rejection
             List<Command> commands = new List<Command>();
             for (int i = 0; i < 10; i++)
             {
-                commands.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 200));
-            }
-
-            CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(
-            (distribution) =>
-            {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                if (distribution.GetTotalCount() > 0)
-                {
-                    AssertBetween(200, 250, distribution.GetMean());
-                }
-            },
-            (e) =>
-            {
-                Assert.True(false, e.Message);
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
-
-            foreach (Command cmd in commands)
-            {
-                cmd.Observe();
+                commands.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500));
             }
 
             Command threadPoolRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
 
-            try
+            List<Task> satTasks = new List<Task>();
+            foreach (Command cmd in commands)
             {
-                Time.Wait(40);
-                threadPoolRejected.Observe();
-            }
-            catch (Exception ie)
-            {
-                Assert.True(false, ie.Message);
+                satTasks.Add(cmd.ExecuteAsync());
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            await threadPoolRejected.Observe();
+            Task.WaitAll(satTasks.ToArray());
+
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(10, stream.Latest.GetTotalCount());
-            AssertBetween(200, 250, stream.LatestMean);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-            Assert.True(threadPoolRejected.IsResponseThreadPoolRejected, "Response NOT ThreadPoolRejected as expected");
+            AssertBetween(500, 750, stream.LatestMean);
+            Assert.True(threadPoolRejected.IsResponseThreadPoolRejected);
         }
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public void TestSemaphoreRejectedCommandDoesNotGetLatencyTracked()
+        public async void TestSemaphoreRejectedCommandDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-F");
+            CountdownEvent latch = new CountdownEvent(1);
+            var observer = new LatchedObserver(output, latch);
+
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // 10 commands with latency should occupy all semaphores.  execute those, then wait for bucket to roll
             // next command should be a semaphore rejection
             List<Command> commands = new List<Command>();
             for (int i = 0; i < 10; i++)
             {
-                commands.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 200, ExecutionIsolationStrategy.SEMAPHORE));
+                commands.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
-            CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(
-            (distribution) =>
+            Command semaphoreRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            List<Task> satTasks = new List<Task>();
+            foreach (Command saturator in commands)
             {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                if (distribution.GetTotalCount() > 0)
-                {
-                    AssertBetween(200, 250, distribution.GetMean());
-                }
-            },
-            (e) =>
-            {
-                Assert.True(false, e.Message);
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
-
-            foreach (Command cmd in commands)
-            {
-                Task t = new Task(
-                () =>
-                {
-                    cmd.Observe();
-                }, CancellationToken.None,
-                    TaskCreationOptions.LongRunning);
-                t.Start();
+                satTasks.Add(Task.Run(() => saturator.Execute()));
             }
 
-            Command semaphoreRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+            await Task.Delay(50);
 
-            try
-            {
-                Time.Wait(40);
-                semaphoreRejected.Observe();
-            }
-            catch (Exception ie)
-            {
-                Assert.True(false, ie.Message);
-            }
+            await Task.Run(() => semaphoreRejected.Execute());
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Task.WaitAll(satTasks.ToArray());
+
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(10, stream.Latest.GetTotalCount());
-            AssertBetween(200, 250, stream.LatestMean);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            AssertBetween(500, 750, stream.LatestMean);
             Assert.True(semaphoreRejected.IsResponseSemaphoreRejected);
         }
 
@@ -360,162 +258,98 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         public void TestResponseFromCacheDoesNotGetLatencyTracked()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-G");
+            CountdownEvent latch = new CountdownEvent(1);
+            var observer = new LatchedObserver(output, latch);
+
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // should get 1 SUCCESS and 1 RESPONSE_FROM_CACHE
             List<Command> commands = Command.GetCommandsWithResponseFromCache(GroupKey, key);
 
-            CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(
-            (distribution) =>
-            {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                Assert.True(distribution.GetTotalCount() <= 1);
-            },
-            (e) =>
-            {
-                Assert.True(false, e.Message);
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
-
             foreach (Command cmd in commands)
             {
-                cmd.Observe();
+                _ = cmd.ExecuteAsync();
             }
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
             Assert.Equal(1, stream.Latest.GetTotalCount());
-            AssertBetween(0, 30, stream.LatestMean);
-            output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            AssertBetween(0, 75, stream.LatestMean);
         }
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public void TestMultipleBucketsBothGetStored()
+        public async void TestMultipleBucketsBothGetStored()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-H");
-            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(10).Subscribe(
-            (distribution) =>
-            {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                if (distribution.GetTotalCount() == 2)
-                {
-                    AssertBetween(55, 90, distribution.GetMean());
-                }
-                if (distribution.GetTotalCount() == 5)
-                {
-                    AssertBetween(60, 90, distribution.GetMean());
-                }
-            },
-            (e) =>
-            {
-                Assert.True(false, e.Message);
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
+            latchSubscription = stream.Observe().Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 100);
-
-            cmd1.Observe();
-            cmd2.Observe();
-
-            try
-            {
-                Time.Wait(500);
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
 
             Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
             Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
             Command cmd5 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 70);
 
-            cmd3.Observe();
-            cmd4.Observe();
-            cmd5.Observe();
+            await cmd1.Observe();
+            await cmd2.Observe();
 
-            Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
-            AssertBetween(55, 90, stream.LatestMean);
-            AssertBetween(10, 50, stream.GetLatestPercentile(0.0));
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+
+            await cmd3.Observe();
+            await cmd4.Observe();
+            await cmd5.Observe();
+
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+            AssertBetween(50, 150, stream.LatestMean);
+            AssertBetween(10, 150, stream.GetLatestPercentile(0.0));
             AssertBetween(100, 150, stream.GetLatestPercentile(100.0));
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void TestMultipleBucketsBothGetStoredAndThenAgeOut()
+        public async void TestMultipleBucketsBothGetStoredAndThenAgeOut()
         {
             IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-I");
-            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-            stream.StartCachingStreamValuesIfUnstarted();
-
             CountdownEvent latch = new CountdownEvent(1);
-            stream.Observe().Take(30).Subscribe(
-            (distribution) =>
-            {
-                output.WriteLine("OnNext @ " + (DateTime.Now.Ticks / 10000) + " : " + distribution.GetMean() + "/" + distribution.GetTotalCount() + " " + Thread.CurrentThread.ManagedThreadId);
-                if (distribution.GetTotalCount() == 2)
-                {
-                    AssertBetween(55, 90, distribution.GetMean());
-                }
-                if (distribution.GetTotalCount() == 5)
-                {
-                    AssertBetween(60, 90, distribution.GetMean());
-                }
-            },
-            (e) =>
-            {
-                Assert.True(false, e.Message);
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
+            var observer = new LatchedObserver(output, latch);
+
+            stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
+            latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+            Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
             Command cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 100);
-
-            cmd1.Observe();
-            cmd2.Observe();
-
-            try
-            {
-                Time.Wait(500);
-            }
-            catch (Exception)
-            {
-                Assert.True(false, "Interrupted ex");
-            }
 
             Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
             Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
             Command cmd5 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 70);
 
-            cmd3.Observe();
-            cmd4.Observe();
-            cmd5.Observe();
+            await cmd1.Observe();
+            await cmd2.Observe();
+
+            Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, output), "Latch took to long to update");
+
+            await cmd3.Observe();
+            await cmd4.Observe();
+            await cmd5.Observe();
+
+            WaitForLatchedObserverToUpdate(observer, 1, 500, output);
 
             Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
+
             Assert.Equal(0, stream.Latest.GetTotalCount());
         }
 
         private void AssertBetween(int expectedLow, int expectedHigh, int value)
         {
             output.WriteLine("Low:" + expectedLow + " High:" + expectedHigh + " Value: " + value);
-            Assert.True(expectedLow <= value, $"Actual value {value} not more than {expectedLow}");
-            Assert.True(expectedHigh >= value, $"Actual value {value} not less than {expectedHigh}");
+            Assert.InRange(value, expectedLow, expectedHigh);
         }
     }
 }

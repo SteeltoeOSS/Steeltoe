@@ -20,18 +20,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public static class CollapserEventTypeHelper
     {
-        private static readonly IList<CollapserEventType> ValueList = new List<CollapserEventType>();
-
-        public static IList<CollapserEventType> Values
-        {
-            get { return ValueList; }
-        }
+        public static IList<CollapserEventType> Values { get; } = new List<CollapserEventType>();
 
         static CollapserEventTypeHelper()
         {
-            ValueList.Add(CollapserEventType.BATCH_EXECUTED);
-            ValueList.Add(CollapserEventType.ADDED_TO_BATCH);
-            ValueList.Add(CollapserEventType.RESPONSE_FROM_CACHE);
+            Values.Add(CollapserEventType.BATCH_EXECUTED);
+            Values.Add(CollapserEventType.ADDED_TO_BATCH);
+            Values.Add(CollapserEventType.RESPONSE_FROM_CACHE);
         }
 
         public static CollapserEventType From(this HystrixRollingNumberEvent @event)

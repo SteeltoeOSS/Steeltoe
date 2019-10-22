@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
     public class AtomicReference<T>
         where T : class
     {
-        private T _value;
+        private volatile T _value;
 
         public AtomicReference()
             : this(default(T))

@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 {
     public class AtomicBoolean
     {
-        private int _value;
+        private volatile int _value;
 
         public AtomicBoolean()
             : this(false)

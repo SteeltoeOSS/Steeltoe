@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <Authors>Pivotal,dtillman</Authors>
-    <VersionPrefix>$(SteeltoeVersion)</VersionPrefix>
+    <VersionPrefix>$(VersionPrefix)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>

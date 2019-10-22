@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
@@ -20,12 +21,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         public static void SignalEx(this CountdownEvent target)
         {
-            if (target.CurrentCount == 0)
+            try
             {
-                return;
+                target.Signal();
             }
-
-            target.Signal();
+            catch (Exception)
+            {
+            }
         }
     }
 }

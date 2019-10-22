@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2D89EF
 		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryAutofac", "src\CloudFoundryAutofac\Steeltoe.Extensions.Configuration.CloudFoundryAutofac.csproj", "{B5189734-AA9B-4B98-ADBE-16EF97F0C12D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{E65847A5-6D5C-4510-AFF6-D12FD3146555}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore.Test", "test\CloudFoundryCore.Test\Steeltoe.Extensions.Configuration.CloudFoundryCore.Test.csproj", "{30130916-223A-444F-B321-5FF023F5B73A}"
@@ -29,16 +27,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerCore.Test", "test\ConfigServerCore.Test\Steeltoe.Extensions.Configuration.ConfigServerCore.Test.csproj", "{03343080-05E7-4EF1-9262-3F5DD98C7F94}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerAutofac", "src\ConfigServerAutofac\Steeltoe.Extensions.Configuration.ConfigServerAutofac.csproj", "{4FEF04FD-CB3E-4313-9A94-FC0DC06F364B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCAA7882-AB30-4C61-9C14-989D77A69E33}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test", "test\CloudFoundryAutofac.Test\Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test.csproj", "{25EDCCCB-769D-47A5-840D-743536783C0C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test", "test\ConfigServerAutofac.Test\Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test.csproj", "{EDA41CA7-59FA-410C-B830-93822BE6A201}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{BC8D2130-282B-4360-ACBE-866A8D59E841}"
 EndProject
@@ -66,8 +58,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Commo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\Common\src\Common.Http\Steeltoe.Common.Http.csproj", "{6B3A7468-43CB-46B0-B286-BB78EA855776}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Autofac", "..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj", "{9F03157F-31DA-4A71-A14E-791860470C9A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.EurekaBase", "..\Discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj", "{734B6B26-188E-4008-A10F-46821D31ED61}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{FB365A0A-B38E-4858-B04B-BA7E5271E79C}"
@@ -78,10 +68,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B5189734-AA9B-4B98-ADBE-16EF97F0C12D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5189734-AA9B-4B98-ADBE-16EF97F0C12D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5189734-AA9B-4B98-ADBE-16EF97F0C12D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5189734-AA9B-4B98-ADBE-16EF97F0C12D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E65847A5-6D5C-4510-AFF6-D12FD3146555}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E65847A5-6D5C-4510-AFF6-D12FD3146555}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E65847A5-6D5C-4510-AFF6-D12FD3146555}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -102,18 +88,6 @@ Global
 		{03343080-05E7-4EF1-9262-3F5DD98C7F94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03343080-05E7-4EF1-9262-3F5DD98C7F94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03343080-05E7-4EF1-9262-3F5DD98C7F94}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4FEF04FD-CB3E-4313-9A94-FC0DC06F364B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4FEF04FD-CB3E-4313-9A94-FC0DC06F364B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4FEF04FD-CB3E-4313-9A94-FC0DC06F364B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4FEF04FD-CB3E-4313-9A94-FC0DC06F364B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25EDCCCB-769D-47A5-840D-743536783C0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25EDCCCB-769D-47A5-840D-743536783C0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25EDCCCB-769D-47A5-840D-743536783C0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25EDCCCB-769D-47A5-840D-743536783C0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EDA41CA7-59FA-410C-B830-93822BE6A201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EDA41CA7-59FA-410C-B830-93822BE6A201}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EDA41CA7-59FA-410C-B830-93822BE6A201}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EDA41CA7-59FA-410C-B830-93822BE6A201}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BC8D2130-282B-4360-ACBE-866A8D59E841}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BC8D2130-282B-4360-ACBE-866A8D59E841}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC8D2130-282B-4360-ACBE-866A8D59E841}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -162,10 +136,6 @@ Global
 		{6B3A7468-43CB-46B0-B286-BB78EA855776}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B3A7468-43CB-46B0-B286-BB78EA855776}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B3A7468-43CB-46B0-B286-BB78EA855776}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9F03157F-31DA-4A71-A14E-791860470C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9F03157F-31DA-4A71-A14E-791860470C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9F03157F-31DA-4A71-A14E-791860470C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9F03157F-31DA-4A71-A14E-791860470C9A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{734B6B26-188E-4008-A10F-46821D31ED61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{734B6B26-188E-4008-A10F-46821D31ED61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{734B6B26-188E-4008-A10F-46821D31ED61}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -179,15 +149,11 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B5189734-AA9B-4B98-ADBE-16EF97F0C12D} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
 		{E65847A5-6D5C-4510-AFF6-D12FD3146555} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
 		{30130916-223A-444F-B321-5FF023F5B73A} = {17EC73D7-89DD-4A26-BC01-F34900140409}
 		{CDFBDF7F-A64D-4B2C-A06C-1BF62B449918} = {17EC73D7-89DD-4A26-BC01-F34900140409}
 		{FBC24547-609E-4FEE-A21E-E91C1E931BEC} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
 		{03343080-05E7-4EF1-9262-3F5DD98C7F94} = {17EC73D7-89DD-4A26-BC01-F34900140409}
-		{4FEF04FD-CB3E-4313-9A94-FC0DC06F364B} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
-		{25EDCCCB-769D-47A5-840D-743536783C0C} = {17EC73D7-89DD-4A26-BC01-F34900140409}
-		{EDA41CA7-59FA-410C-B830-93822BE6A201} = {17EC73D7-89DD-4A26-BC01-F34900140409}
 		{BC8D2130-282B-4360-ACBE-866A8D59E841} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
 		{6D3D6602-D8C1-4E81-8044-74D4A32983BC} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
 		{9B3305D7-0814-4806-B071-12933F7E5E66} = {17EC73D7-89DD-4A26-BC01-F34900140409}
@@ -200,7 +166,6 @@ Global
 		{CF0D5CE0-ADAF-44B7-9AF9-C1C5644FC0B3} = {17EC73D7-89DD-4A26-BC01-F34900140409}
 		{03570766-26F8-4C25-AABB-A83FAC007CD8} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 		{6B3A7468-43CB-46B0-B286-BB78EA855776} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
-		{9F03157F-31DA-4A71-A14E-791860470C9A} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 		{734B6B26-188E-4008-A10F-46821D31ED61} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 		{FB365A0A-B38E-4858-B04B-BA7E5271E79C} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 	EndGlobalSection

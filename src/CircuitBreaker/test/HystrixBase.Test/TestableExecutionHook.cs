@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class TestableExecutionHook : HystrixCommandExecutionHook
     {
-        private ITestOutputHelper _output;
+        public ITestOutputHelper _output;
 
         public TestableExecutionHook()
         {

@@ -474,10 +474,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         /// </summary>
         public int UserThreadLatency { get; }
 
-        public long CommandRunStartTimeInNanos
-        {
-            get { return StartTimestamp * 1000 * 1000; }
-        }
+        public long CommandRunStartTimeInNanos => StartTimestamp * 1000 * 1000;
 
         public Exception Exception { get; }
 
@@ -485,20 +482,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public IHystrixCollapserKey CollapserKey { get; }
 
-        public bool IsResponseSemaphoreRejected
-        {
-            get { return Eventcounts.Contains(HystrixEventType.SEMAPHORE_REJECTED); }
-        }
+        public bool IsResponseSemaphoreRejected => Eventcounts.Contains(HystrixEventType.SEMAPHORE_REJECTED);
 
-        public bool IsResponseThreadPoolRejected
-        {
-            get { return Eventcounts.Contains(HystrixEventType.THREAD_POOL_REJECTED); }
-        }
+        public bool IsResponseThreadPoolRejected => Eventcounts.Contains(HystrixEventType.THREAD_POOL_REJECTED);
 
-        public bool IsResponseRejected
-        {
-            get { return IsResponseThreadPoolRejected || IsResponseSemaphoreRejected; }
-        }
+        public bool IsResponseRejected => IsResponseThreadPoolRejected || IsResponseSemaphoreRejected;
 
         public List<HystrixEventType> OrderedList
         {
@@ -521,10 +509,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public bool ExecutionOccurred { get; }
 
-        public bool ContainsTerminalEvent
-        {
-            get { return Eventcounts.ContainsAnyOf(TERMINAL_EVENTS); }
-        }
+        public bool ContainsTerminalEvent => Eventcounts.ContainsAnyOf(TERMINAL_EVENTS);
 
         public override string ToString()
         {

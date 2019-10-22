@@ -227,3 +227,7 @@ project.lock.json
 .idea
 .DS_Store
 .sonarqube/
+
+Pivotal.GemFire.dll
+pivnet.exe
+pivotal*.zip

@@ -30,21 +30,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             _listener = listener;
             _tokenSource = new CancellationTokenSource();
             _period = period;
+            _timerTask = new Task(() => { Run(_tokenSource); }, TaskCreationOptions.LongRunning);
         }
 
         public void Start()
         {
-            _timerTask = new Task(() => { Run(_tokenSource.Token); }, TaskCreationOptions.LongRunning);
             _timerTask.Start();
         }
 
-        public void Run(CancellationToken token)
+        public void Run(CancellationTokenSource tokenSource)
         {
-            while (!token.IsCancellationRequested)
+            while (!tokenSource.IsCancellationRequested)
             {
-                Time.WaitUntil(() => { return token.IsCancellationRequested; }, (int)_period.TotalMilliseconds);
+                Time.WaitUntil(() => { return tokenSource.IsCancellationRequested; }, (int)_period.TotalMilliseconds);
 
-                if (!token.IsCancellationRequested)
+                if (!tokenSource.IsCancellationRequested)
                 {
                     _listener.Tick();
                 }
