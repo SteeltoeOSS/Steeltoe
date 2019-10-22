@@ -25,7 +25,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Host = request.Host;
             Path = request.Path;
             QueryString = request.QueryString;
-            request.Body.CopyTo(Body);
+            request.Body.CopyToAsync(Body).GetAwaiter().GetResult();
             Body.Seek(0, SeekOrigin.Begin);
         }
 

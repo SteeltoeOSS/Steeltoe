@@ -408,9 +408,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
             using (var server = new TestServer(builder))
             {
-#if NETCOREAPP3_0
-                server.AllowSynchronousIO = true;
-#endif
                 ConfigServerClientSettings settings = new ConfigServerClientSettings
                 {
                     Uri = "http://localhost:8888",
@@ -436,9 +433,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 204 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -483,9 +477,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Label = "testlabel";
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
+
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
                 Uri = "http://localhost:8888",
@@ -528,9 +520,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Response = environment;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -568,9 +557,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 500, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -596,9 +582,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -624,9 +607,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 404 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -652,9 +632,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 404 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -678,9 +655,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -705,9 +679,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -731,9 +702,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 500, 500, 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -758,9 +726,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 500, 500, 500, 500, 500, 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
@@ -802,9 +767,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Response = environment;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
