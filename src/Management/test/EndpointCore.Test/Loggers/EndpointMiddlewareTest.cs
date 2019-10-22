@@ -105,10 +105,6 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 
             using (var server = new TestServer(builder))
             {
-#if NETCOREAPP3_0
-                server.AllowSynchronousIO = true;
-#endif
-
                 var client = server.CreateClient();
                 HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
                 var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Default", content);
@@ -135,9 +131,6 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 
             using (var server = new TestServer(builder))
             {
-#if NETCOREAPP3_0
-                server.AllowSynchronousIO = true;
-#endif
                 var client = server.CreateClient();
                 HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
                 var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Steeltoe", content);

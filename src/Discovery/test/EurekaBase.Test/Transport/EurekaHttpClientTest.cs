@@ -82,9 +82,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.ReturnStatus = 204;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -111,9 +108,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.ReturnStatus = 204;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -183,9 +177,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -253,9 +244,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -356,9 +344,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -430,9 +415,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.Host = "localhost:8888";
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -532,9 +514,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -600,9 +579,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.Host = "localhost:8888";
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -655,9 +631,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
+
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
 
@@ -712,9 +686,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
@@ -773,9 +744,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
             var server = new TestServer(builder);
-#if NETCOREAPP3_0
-            server.AllowSynchronousIO = true;
-#endif
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
