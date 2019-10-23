@@ -101,7 +101,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             }
 
             // Chain new loggers to the global loggers with its own switch
-            // taking into accound any "Overrides"
+            // taking into account any "Overrides"
             var levelSwitch = new LoggingLevelSwitch(eventLevel);
             _loggerSwitches.GetOrAdd(categoryName, levelSwitch);
             var serilogger = new Serilog.LoggerConfiguration()
@@ -134,10 +134,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                         var config = new LoggerConfiguration(name, configured, effective);
                         if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
-                            throw new InvalidProgramException("Shouldn't happen");
+                            Console.WriteLine($"Attempted to add duplicate Key {name} with value {config} clashes with {results[name]}");
                         }
-
-                        results[name] = config;
+                        else
+                        {
+                            results[name] = config;
+                        }
                     }
                 }
             }
