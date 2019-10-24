@@ -269,6 +269,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.GemFireConnector.Test", "Connectors\test\GemFireConnector.Net4Test\Steeltoe.CloudFoundry.GemFireConnector.Test.csproj", "{D5572167-00EB-48FA-8CC3-0394A399C289}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -699,10 +701,10 @@ Global
 		{D5572167-00EB-48FA-8CC3-0394A399C289}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5572167-00EB-48FA-8CC3-0394A399C289}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5572167-00EB-48FA-8CC3-0394A399C289}.Release|Any CPU.Build.0 = Release|Any CPU
-		{65CF716D-9215-475C-B37F-CA943F5CD6A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{65CF716D-9215-475C-B37F-CA943F5CD6A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{65CF716D-9215-475C-B37F-CA943F5CD6A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{65CF716D-9215-475C-B37F-CA943F5CD6A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -814,7 +816,7 @@ Global
 		{2162D3DB-A0C0-41AF-BFA8-7A29FCF8D533} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{A9F88613-375A-4CE8-9B34-D88799850570} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{D5572167-00EB-48FA-8CC3-0394A399C289} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
-		{65CF716D-9215-475C-B37F-CA943F5CD6A3} = {59874241-E276-4035-B31D-14924889A1C9}
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11} = {59874241-E276-4035-B31D-14924889A1C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

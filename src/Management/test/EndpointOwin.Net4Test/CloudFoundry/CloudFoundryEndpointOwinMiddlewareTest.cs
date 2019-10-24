@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         {
             // arrange
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOpts = TestHelpers.GetManagementOptions(opts);
+            var mgmtOpts = TestHelper.GetManagementOptions(opts);
             var middle = new CloudFoundryEndpointOwinMiddleware(null, new TestCloudFoundryEndpoint(opts, mgmtOpts), mgmtOpts);
             var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication");
 
@@ -70,7 +70,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var ep = new CloudFoundryEndpoint(opts, mgmtOptions);
             var middle = new CloudFoundryEndpointOwinMiddleware(null, ep, mgmtOptions);
 

@@ -73,6 +73,7 @@ namespace Steeltoe.Management.EndpointOwin.Hypermedia
                        {
                            contextPath += "/";
                        }
+
                        var fullPath = contextPath + _endpoint.Path;
                        return fullPath;
                    }));

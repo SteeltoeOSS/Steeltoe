@@ -85,6 +85,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                         {
                             contextPath += "/";
                         }
+
                         var fullPath = contextPath + _endpoint.Path;
                         return fullPath;
                     }));

@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
             // arrange
             var opts = new InfoEndpointOptions();
             var ep = new TestInfoEndpoint(opts, new List<IInfoContributor>() { new GitInfoContributor() });
-            var mgmtOpts = TestHelpers.GetManagementOptions(opts);
+            var mgmtOpts = TestHelper.GetManagementOptions(opts);
             var middle = new EndpointOwinMiddleware<Dictionary<string, object>>(null, ep, mgmtOpts);
             var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/info");
 
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
         public void InfoEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new InfoEndpointOptions();
-            var mgmtOpts = TestHelpers.GetManagementOptions(opts);
+            var mgmtOpts = TestHelper.GetManagementOptions(opts);
 
             var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
             var ep = new InfoEndpoint(opts, contribs);

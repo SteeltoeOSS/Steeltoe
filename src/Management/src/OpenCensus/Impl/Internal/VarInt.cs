@@ -62,21 +62,6 @@ namespace Steeltoe.Management.Census.Internal
             return offset;
         }
 
-        public static int PutVarInt(int v, byte[] sink, int offset)
-        {
-            uint uv = (uint)v;
-            do
-            {
-                // Encode next 7 bits + terminator bit
-                uint bits = uv & 0x7F;
-                uv >>= 7;
-                byte b = (byte)(bits + ((uv != 0) ? 0x80 : 0));
-                sink[offset++] = b;
-            }
-            while (uv != 0);
-            return offset;
-        }
-
         // public static int getVarInt(ByteBuffer src)
         // {
         //    int tmp;
@@ -160,6 +145,21 @@ namespace Steeltoe.Management.Census.Internal
             }
             while ((b & 0x80) != 0);
             return result;
+        }
+
+        public static int PutVarInt(int v, byte[] sink, int offset)
+        {
+            uint uv = (uint)v;
+            do
+            {
+                // Encode next 7 bits + terminator bit
+                uint bits = uv & 0x7F;
+                uv >>= 7;
+                byte b = (byte)(bits + ((uv != 0) ? 0x80 : 0));
+                sink[offset++] = b;
+            }
+            while (uv != 0);
+            return offset;
         }
 
         public static void PutVarInt(int v, Stream outputStream)

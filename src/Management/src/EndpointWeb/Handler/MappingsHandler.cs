@@ -168,6 +168,22 @@ namespace Steeltoe.Management.Endpoint.Handler
             return routeDetails;
         }
 
+        protected internal AspNetRouteDetails GetRouteDetails(Route route)
+        {
+            var routeDetails = new AspNetRouteDetails();
+
+            if (route.Url.StartsWith("/"))
+            {
+                routeDetails.RouteTemplate = route.Url;
+            }
+            else
+            {
+                routeDetails.RouteTemplate = "/" + route.Url;
+            }
+
+            return routeDetails;
+        }
+
         protected internal void AddRouteMappingsDescriptions(RouteCollection routes, IDictionary<string, IList<MappingDescription>> desc)
         {
             if (routes == null)
@@ -231,22 +247,6 @@ namespace Steeltoe.Management.Endpoint.Handler
             }
         }
 
-        protected internal AspNetRouteDetails GetRouteDetails(Route route)
-        {
-            var routeDetails = new AspNetRouteDetails();
-
-            if (route.Url.StartsWith("/"))
-            {
-                routeDetails.RouteTemplate = route.Url;
-            }
-            else
-            {
-                routeDetails.RouteTemplate = "/" + route.Url;
-            }
-
-            return routeDetails;
-        }
-
         protected bool PathMatch(string requestPath)
         {
             // TODO: Remove in 3.0
@@ -306,7 +306,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         private ReflectedActionDescriptor GetReflectedActionDescription(ActionDescriptor[] actionDesc)
         {
-           if (actionDesc.Length > 0)
+            if (actionDesc.Length > 0)
             {
                 return actionDesc[0] as ReflectedActionDescriptor;
             }
