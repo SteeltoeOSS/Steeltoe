@@ -84,8 +84,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             tierOneNamespace = configurations.First(n => n.Name == "A");
             var tierTwoNamespace = configurations.First(n => n.Name == "A.B");
 
-            // assert II: since Serilog doesnt expose filters, we can only change  at the granularity of configured filters
-            Assert.Equal(LogLevel.Trace, tierOneNamespace.EffectiveLevel);
+            // assert II:  base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
+            Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
             Assert.Equal(LogLevel.Trace, tierTwoNamespace.EffectiveLevel);
             Assert.True(childLogger.IsEnabled(LogLevel.Trace));
 
@@ -100,7 +100,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             Assert.Equal(LogLevel.Error, tierOneNamespace.EffectiveLevel);
             Assert.Equal(LogLevel.Error, tierTwoNamespace.EffectiveLevel);
             Assert.False(childLogger.IsEnabled(LogLevel.Warning));
-            Assert.False(grandchildLogger.IsEnabled(LogLevel.Debug));
+            Assert.False(grandchildLogger.IsEnabled(LogLevel.Warning));
         }
 
         [Fact]
@@ -123,8 +123,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             tierOneNamespace = configurations.First(n => n.Name == "A");
             var tierTwoNamespace = configurations.First(n => n.Name == "A.B");
 
-            // assert II: since Serilog doesnt expose filters, we can only change  at the granularity of configured overrides
-            Assert.Equal(LogLevel.Trace, tierOneNamespace.EffectiveLevel);
+            // assert II: base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
+            Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
             Assert.Equal(LogLevel.Trace, tierTwoNamespace.EffectiveLevel);
             Assert.True(firstLogger.IsEnabled(LogLevel.Trace));
 
@@ -193,7 +193,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Trace), logConfig);
             Assert.Contains(new LoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Trace), logConfig);
             Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Trace), logConfig);
+            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
         }
 
         [Fact]

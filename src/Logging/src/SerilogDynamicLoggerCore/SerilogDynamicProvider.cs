@@ -35,7 +35,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
         private ConcurrentDictionary<string, ILogger> _loggers = new ConcurrentDictionary<string, ILogger>();
         private ConcurrentDictionary<string, LoggingLevelSwitch> _loggerSwitches = new ConcurrentDictionary<string, LoggingLevelSwitch>();
-
+        private ConcurrentDictionary<string, LogEventLevel> _runningLevels = new ConcurrentDictionary<string, LogEventLevel>();
+        private LogEventLevel? _defaultLevel = null;
         private bool disposed = false;
 
         /// <summary>
@@ -53,8 +54,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
             _serilogOptions = options ?? new SerilogOptions(configuration);
 
+            SetFiltersFromOptions();
+
             // Add a level switch that controls the "Default" level at the root
-            var levelSwitch = new LoggingLevelSwitch(_serilogOptions.MinimumLevel.Default);
+            _defaultLevel = _serilogOptions.MinimumLevel.Default;
+            var levelSwitch = new LoggingLevelSwitch(_defaultLevel.Value);
             _loggerSwitches.GetOrAdd("Default", levelSwitch);
 
             // Add a global logger that will be the root of all other added loggers
@@ -81,7 +85,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
             _serilogOptions = options ?? new SerilogOptions(configuration);
 
+            SetFiltersFromOptions();
+
             // Add a level switch that controls the "Default" level at the root
+            _defaultLevel = loggingLevelSwitch.MinimumLevel;
             _loggerSwitches.GetOrAdd("Default", loggingLevelSwitch);
 
             // Add a global logger that will be the root of all other added loggers
@@ -90,20 +97,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
         public ILogger CreateLogger(string categoryName)
         {
-            LogEventLevel eventLevel = _serilogOptions.MinimumLevel.Default;
-
-            foreach (var overrideOption in _serilogOptions.MinimumLevel.Override)
-            {
-               if (categoryName.StartsWith(overrideOption.Key))
-               {
-                   eventLevel = overrideOption.Value;
-               }
-            }
-
-            // Chain new loggers to the global loggers with its own switch
-            // taking into account any "Overrides"
+            var eventLevel = GetLevel(categoryName);
             var levelSwitch = new LoggingLevelSwitch(eventLevel);
             _loggerSwitches.GetOrAdd(categoryName, levelSwitch);
+
             var serilogger = new Serilog.LoggerConfiguration()
                 .MinimumLevel.ControlledBy(levelSwitch)
                 .WriteTo.Logger(_globalLogger)
@@ -130,11 +127,13 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                     if (name != "Default")
                     {
                         LogLevel? configured = GetConfiguredLevel(name);
-                        LogLevel effective = GetEffectiveLevel(logger.Key);
+
+                        LogLevel effective = GetEffectiveLevel(name);
                         var config = new LoggerConfiguration(name, configured, effective);
                         if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
-                            Console.WriteLine($"Attempted to add duplicate Key {name} with value {config} clashes with {results[name]}");
+                            Console.WriteLine(
+                                $"Attempted to add duplicate Key {name} with value {config} clashes with {results[name]}");
                         }
                         else
                         {
@@ -149,13 +148,49 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
         public void SetLogLevel(string category, LogLevel? level)
         {
-            var filteredPairs = _loggerSwitches.Where(kvp => kvp.Key.StartsWith(category));
-            foreach (var kvp in filteredPairs)
+            var defaultLevel = _defaultLevel ?? _serilogOptions.MinimumLevel.Default;
+            var serilogLevel = ToSerilogLevel(level ?? GetConfiguredLevel(category) ?? (LogLevel)defaultLevel);
+
+            if (category == "Default")
             {
-                var currentLevel = level ?? GetConfiguredLevel(kvp.Key);
-                if (currentLevel != null)
+                if (level.HasValue)
                 {
-                    kvp.Value.MinimumLevel = ToSerilogLevel(currentLevel);
+                    _defaultLevel = serilogLevel;
+                }
+
+                if (_loggerSwitches.TryGetValue(category, out var levelSwitch))
+                {
+                    levelSwitch.MinimumLevel = serilogLevel;
+                }
+            }
+            else
+            {
+                // update the filter dictionary first so that loggers can inherit changes when we reset
+                if (_runningLevels.Any(entry => entry.Key.StartsWith(category)))
+                {
+                    foreach (var runningSwitch in _runningLevels.Where(entry => entry.Key.StartsWith(category)))
+                    {
+                        if (level.HasValue)
+                        {
+                            _runningLevels.TryUpdate(runningSwitch.Key, serilogLevel, runningSwitch.Value);
+                        }
+                        else
+                        {
+                            _runningLevels.TryRemove(runningSwitch.Key, out _);
+                        }
+                    }
+                }
+
+                // if setting filter level on a namespace (not actual logger) that hasn't previously been configured
+                if (!_runningLevels.Any(entry => entry.Key.Equals(category)) && level.HasValue)
+                {
+                    _runningLevels.TryAdd(category, serilogLevel);
+                }
+
+                // update existing loggers under this category, or reset them to what they inherit
+                foreach (var l in _loggerSwitches.Where(s => s.Key.StartsWith(category)))
+                {
+                    l.Value.MinimumLevel = serilogLevel;
                 }
             }
         }
@@ -187,6 +222,51 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             Dispose(false);
         }
 
+        private LogEventLevel GetLevel(string name)
+        {
+            var prefixes = GetKeyPrefixes(name);
+            LogEventLevel eventLevel = _serilogOptions.MinimumLevel.Default;
+
+            if (_defaultLevel.HasValue)
+            {
+                eventLevel = _defaultLevel.Value;
+            }
+
+            // check if there are any applicable filters
+            if (_runningLevels.Any())
+            {
+                foreach (var prefix in prefixes)
+                {
+                    if (_runningLevels.ContainsKey(prefix))
+                    {
+                        return _runningLevels.First(f => f.Key == prefix).Value;
+                    }
+                }
+            }
+
+            // check if there are any applicable settings
+            foreach (var overrideOption in _serilogOptions.MinimumLevel.Override)
+            {
+                if (name.StartsWith(overrideOption.Key))
+                {
+                    return overrideOption.Value;
+                }
+            }
+
+            return eventLevel;
+        }
+
+        private void SetFiltersFromOptions()
+        {
+            if (_serilogOptions != null && _serilogOptions.MinimumLevel != null)
+            {
+                foreach (var overrideLevel in _serilogOptions.MinimumLevel.Override)
+                {
+                    _runningLevels.TryAdd(overrideLevel.Key, overrideLevel.Value);
+                }
+            }
+        }
+
         private LogLevel? GetConfiguredLevel(string name)
         {
             LogLevel? returnValue = null;
@@ -210,8 +290,22 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
         private LogLevel GetEffectiveLevel(string name)
         {
-            _loggerSwitches.TryGetValue(name, out LoggingLevelSwitch levelSwitch);
-            return (LogLevel)levelSwitch.MinimumLevel;
+            var prefixes = GetKeyPrefixes(name);
+
+            foreach (var prefix in prefixes)
+            {
+                if (_loggerSwitches.TryGetValue(prefix, out LoggingLevelSwitch levelSwitch))
+                {
+                    return (LogLevel)levelSwitch.MinimumLevel;
+                }
+
+                if (_runningLevels.TryGetValue(prefix, out LogEventLevel level))
+                {
+                    return (LogLevel)level;
+                }
+            }
+
+            return LogLevel.None;
         }
 
         private IEnumerable<string> GetKeyPrefixes(string name)
