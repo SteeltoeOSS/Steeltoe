@@ -132,6 +132,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                         var config = new LoggerConfiguration(name, configured, effective);
                         if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
+
                             Console.WriteLine(
                                 $"Attempted to add duplicate Key {name} with value {config} clashes with {results[name]}");
                         }
