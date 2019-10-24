@@ -96,15 +96,11 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-#if NETCOREAPP3_0
-                await Assert.ThrowsAsync<NotImplementedException>(() => client.GetAsync("http://localhost/cloudfoundryapplication/mappings"));
-#else
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/mappings");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 var expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"Steeltoe.Management.EndpointCore.Mappings.Test.HomeController\":[{\"handler\":\"Steeltoe.Management.EndpointCore.Mappings.Test.Person Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]}\"}]}}}}}";
                 Assert.Equal(expected, json);
-#endif
             }
         }
 
