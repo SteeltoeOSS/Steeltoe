@@ -20,6 +20,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -791,7 +792,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void AddConfigServerClientSettings_ChangesDataDictionary()
         {
             // Arrange
-            ConfigServerClientSettings settings = new ConfigServerClientSettings
+            var settings = new ConfigServerClientSettings
             {
                 AccessTokenUri = "https://foo.bar/",
                 ClientId = "client_id",
@@ -807,54 +808,75 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 ValidateCertificates = false,
                 Token = "vaulttoken",
                 TokenRenewRate = 1,
-                TokenTtl = 2
+                TokenTtl = 2,
+                RetryMultiplier = 1.1
             };
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
 
-            // Act and Assert
-            provider.AddConfigServerClientSettings();
+            var provider = new ConfigServerConfigurationProvider(settings);
+            var initialCulture = GetAndSetCurrentCulture(new CultureInfo("ru-RU"));
 
-            Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out string value));
-            Assert.Equal("https://foo.bar/", value);
-            Assert.True(provider.TryGet("spring:cloud:config:client_id", out value));
-            Assert.Equal("client_id", value);
-            Assert.True(provider.TryGet("spring:cloud:config:client_secret", out value));
-            Assert.Equal("client_secret", value);
-            Assert.True(provider.TryGet("spring:cloud:config:env", out value));
-            Assert.Equal("environment", value);
-            Assert.True(provider.TryGet("spring:cloud:config:label", out value));
-            Assert.Equal("label", value);
-            Assert.True(provider.TryGet("spring:cloud:config:name", out value));
-            Assert.Equal("name", value);
-            Assert.True(provider.TryGet("spring:cloud:config:password", out value));
-            Assert.Equal("password", value);
-            Assert.True(provider.TryGet("spring:cloud:config:uri", out value));
-            Assert.Equal("https://foo.bar/", value);
-            Assert.True(provider.TryGet("spring:cloud:config:username", out value));
-            Assert.Equal("username", value);
+            try
+            {
+                // Act and Assert
+                provider.AddConfigServerClientSettings();
 
-            Assert.True(provider.TryGet("spring:cloud:config:enabled", out value));
-            Assert.Equal("True", value);
-            Assert.True(provider.TryGet("spring:cloud:config:failFast", out value));
-            Assert.Equal("False", value);
-            Assert.True(provider.TryGet("spring:cloud:config:validate_certificates", out value));
-            Assert.Equal("False", value);
-            Assert.True(provider.TryGet("spring:cloud:config:token", out value));
-            Assert.Equal("vaulttoken", value);
-            Assert.True(provider.TryGet("spring:cloud:config:timeout", out value));
-            Assert.Equal("6000", value);
-            Assert.True(provider.TryGet("spring:cloud:config:tokenRenewRate", out value));
-            Assert.Equal("1", value);
-            Assert.True(provider.TryGet("spring:cloud:config:tokenTtl", out value));
-            Assert.Equal("2", value);
-            Assert.True(provider.TryGet("spring:cloud:config:discovery:enabled", out value));
-            Assert.Equal("False", value);
-            Assert.True(provider.TryGet("spring:cloud:config:discovery:serviceId", out value));
-            Assert.Equal(ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID, value);
+                Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out string value));
+                Assert.Equal("https://foo.bar/", value);
+                Assert.True(provider.TryGet("spring:cloud:config:client_id", out value));
+                Assert.Equal("client_id", value);
+                Assert.True(provider.TryGet("spring:cloud:config:client_secret", out value));
+                Assert.Equal("client_secret", value);
+                Assert.True(provider.TryGet("spring:cloud:config:env", out value));
+                Assert.Equal("environment", value);
+                Assert.True(provider.TryGet("spring:cloud:config:label", out value));
+                Assert.Equal("label", value);
+                Assert.True(provider.TryGet("spring:cloud:config:name", out value));
+                Assert.Equal("name", value);
+                Assert.True(provider.TryGet("spring:cloud:config:password", out value));
+                Assert.Equal("password", value);
+                Assert.True(provider.TryGet("spring:cloud:config:uri", out value));
+                Assert.Equal("https://foo.bar/", value);
+                Assert.True(provider.TryGet("spring:cloud:config:username", out value));
+                Assert.Equal("username", value);
+
+                Assert.True(provider.TryGet("spring:cloud:config:enabled", out value));
+                Assert.Equal("True", value);
+                Assert.True(provider.TryGet("spring:cloud:config:failFast", out value));
+                Assert.Equal("False", value);
+                Assert.True(provider.TryGet("spring:cloud:config:validate_certificates", out value));
+                Assert.Equal("False", value);
+                Assert.True(provider.TryGet("spring:cloud:config:token", out value));
+                Assert.Equal("vaulttoken", value);
+                Assert.True(provider.TryGet("spring:cloud:config:timeout", out value));
+                Assert.Equal("6000", value);
+                Assert.True(provider.TryGet("spring:cloud:config:tokenRenewRate", out value));
+                Assert.Equal("1", value);
+                Assert.True(provider.TryGet("spring:cloud:config:tokenTtl", out value));
+                Assert.Equal("2", value);
+                Assert.True(provider.TryGet("spring:cloud:config:discovery:enabled", out value));
+                Assert.Equal("False", value);
+                Assert.True(provider.TryGet("spring:cloud:config:discovery:serviceId", out value));
+                Assert.Equal(ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID, value);
+                Assert.True(provider.TryGet("spring:cloud:config:retry:multiplier", out value));
+                Assert.Equal("1.1", value);
+            }
+            finally
+            {
+                GetAndSetCurrentCulture(initialCulture);
+            }
+        }
+
+        private static CultureInfo GetAndSetCurrentCulture(CultureInfo newCulture)
+        {
+            var oldCulture = CultureInfo.DefaultThreadCurrentCulture;
+            CultureInfo.DefaultThreadCurrentCulture = newCulture;
+            return oldCulture;
         }
 
         [Fact]
+#pragma warning disable SA1202 // Elements should be ordered by access
         public void GetLabels_Null()
+#pragma warning restore SA1202 // Elements should be ordered by access
         {
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
             ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings);
