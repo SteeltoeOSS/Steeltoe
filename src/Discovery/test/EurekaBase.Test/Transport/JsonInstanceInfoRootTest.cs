@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -25,37 +26,38 @@ namespace Steeltoe.Discovery.Eureka.Client.Test.Transport
         [Fact]
         public void Deserialize_GoodJson()
         {
-            var json = @"{ 
-'instance':
+            var json = @"
+{ 
+    ""instance"":
     {
-    'instanceId':'DESKTOP-GNQ5SUT',
-    'app':'FOOBAR',
-    'appGroupName':null,
-    'ipAddr':'192.168.0.147',
-    'sid':'na',
-    'port':{'@enabled':true,'$':80},
-    'securePort':{'@enabled':false,'$':443},
-    'homePageUrl':'http://DESKTOP-GNQ5SUT:80/',
-    'statusPageUrl':'http://DESKTOP-GNQ5SUT:80/Status',
-    'healthCheckUrl':'http://DESKTOP-GNQ5SUT:80/healthcheck',
-    'secureHealthCheckUrl':null,
-    'vipAddress':'DESKTOP-GNQ5SUT:80',
-    'secureVipAddress':'DESKTOP-GNQ5SUT:443',
-    'countryId':1,
-    'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
-    'hostName':'DESKTOP-GNQ5SUT',
-    'status':'UP',
-    'overriddenstatus':'UNKNOWN',
-    'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':0,'lastRenewalTimestamp':0,'renewalTimestamp':0,'evictionTimestamp':0,'serviceUpTimestamp':0},
-    'isCoordinatingDiscoveryServer':false,
-    'metadata':{'@class':'java.util.Collections$EmptyMap','metadata':null},
-    'lastUpdatedTimestamp':1458116137663,
-    'lastDirtyTimestamp':1458116137663,
-    'actionType':'ADDED',
-    'asgName':null
+        ""instanceId"":""DESKTOP-GNQ5SUT"",
+        ""app"":""FOOBAR"",
+        ""appGroupName"":null,
+        ""ipAddr"":""192.168.0.147"",
+        ""sid"":""na"",
+        ""port"":{""@enabled"":true,""$"":80},
+        ""securePort"":{""@enabled"":false,""$"":443},
+        ""homePageUrl"":""http://DESKTOP-GNQ5SUT:80/"",
+        ""statusPageUrl"":""http://DESKTOP-GNQ5SUT:80/Status"",
+        ""healthCheckUrl"":""http://DESKTOP-GNQ5SUT:80/healthcheck"",
+        ""secureHealthCheckUrl"":null,
+        ""vipAddress"":""DESKTOP-GNQ5SUT:80"",
+        ""secureVipAddress"":""DESKTOP-GNQ5SUT:443"",
+        ""countryId"":1,
+        ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+        ""hostName"":""DESKTOP-GNQ5SUT"",
+        ""status"":""UP"",
+        ""overriddenstatus"":""UNKNOWN"",
+        ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":0,""lastRenewalTimestamp"":0,""renewalTimestamp"":0,""evictionTimestamp"":0,""serviceUpTimestamp"":0},
+        ""isCoordinatingDiscoveryServer"":false,
+        ""metadata"":{""@class"":""java.util.Collections$EmptyMap"",""metadata"":null},
+        ""lastUpdatedTimestamp"":1458116137663,
+        ""lastDirtyTimestamp"":1458116137663,
+        ""actionType"":""ADDED"",
+        ""asgName"":null
     }
 }";
-            Stream stream = TestHelpers.StringToStream(json);
+            var stream = TestHelpers.StringToStream(json);
             var result = JsonInstanceInfoRoot.Deserialize(stream);
             Assert.NotNull(result);
             Assert.NotNull(result.Instance);

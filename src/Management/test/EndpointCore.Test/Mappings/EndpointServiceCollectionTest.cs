@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -43,17 +42,15 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         [Fact]
         public void AddMappingsActuator_AddsCorrectServices()
         {
-            ServiceCollection services = new ServiceCollection();
-            var host = new HostingEnvironment();
-            services.AddSingleton<IHostingEnvironment>(host);
-            services.AddSingleton<Microsoft.Extensions.Hosting.IHostingEnvironment>(host);
+            var services = new ServiceCollection();
+            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
 
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
             services.AddSingleton<IConfiguration>(config);

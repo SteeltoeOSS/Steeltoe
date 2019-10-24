@@ -359,6 +359,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                             time.Increment(1);
                         }
                     }
+
                     latch.SignalEx();
                 });
             }
@@ -395,16 +396,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             for (int i = 0; i < num_threads; i++)
             {
                 Task t = new Task(
-                () =>
-                {
-                    for (int j = 1; j < (num_iterations / num_threads) + 1; j++)
+                    () =>
                     {
-                        int nextInt = r.Next(100);
-                        p.AddValue(nextInt);
-                        added.GetAndIncrement();
-                    }
-                    latch.SignalEx();
-                }, CancellationToken.None,
+                        for (int j = 1; j < (num_iterations / num_threads) + 1; j++)
+                        {
+                            int nextInt = r.Next(100);
+                            p.AddValue(nextInt);
+                            added.GetAndIncrement();
+                        }
+
+                        latch.SignalEx();
+                    },
+                    CancellationToken.None,
                     TaskCreationOptions.LongRunning);
                 t.Start();
             }

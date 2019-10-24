@@ -40,9 +40,15 @@ namespace Steeltoe.Management.Endpoint.Env
                 throw new ArgumentNullException(nameof(config));
             }
 
+#if NETCOREAPP3_0
+            services.TryAddSingleton<IHostEnvironment>((provider) =>
+            {
+                var service = provider.GetRequiredService<IHostEnvironment>();
+#else
             services.TryAddSingleton<IHostingEnvironment>((provider) =>
             {
-                var service = provider.GetRequiredService<Microsoft.AspNetCore.Hosting.IHostingEnvironment>();
+                var service = provider.GetRequiredService<IHostingEnvironment>();
+#endif
                 return new GenericHostingEnvironment()
                 {
                     EnvironmentName = service.EnvironmentName,

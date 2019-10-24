@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using OpenCensus.Exporter.Zipkin;
 using System;
 
@@ -30,7 +30,11 @@ namespace Steeltoe.Management.Exporter.Tracing
             }
 
             var service = builder.ApplicationServices.GetRequiredService<ZipkinTraceExporter>();
+#if NETCOREAPP3_0
+            var lifetime = builder.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+#else
             var lifetime = builder.ApplicationServices.GetRequiredService<IApplicationLifetime>();
+#endif
 
             lifetime.ApplicationStopping.Register(() => service.Stop());
             service.Start();

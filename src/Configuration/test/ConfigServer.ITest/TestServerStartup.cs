@@ -13,12 +13,8 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Extensions.Configuration.ConfigServer.Test;
-using System.IO;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
@@ -42,15 +38,23 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         public void Configure(IApplicationBuilder app)
         {
             var config = app.ApplicationServices.GetServices<IConfiguration>();
-            app.UseMvc(routes =>
+#if NETCOREAPP3_0
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "VerifyAsInjectedOptions",
-                    template: "{controller=Home}/{action=VerifyAsInjectedOptions}");
-                routes.MapRoute(
-                    name: "Health",
-                    template: "{controller=Home}/{action=Health}");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+#else
+            app.UseMvc(routes =>
+                {
+                    routes.MapRoute(
+                        name: "VerifyAsInjectedOptions",
+                        template: "{controller=Home}/{action=VerifyAsInjectedOptions}");
+                    routes.MapRoute(
+                        name: "Health",
+                        template: "{controller=Home}/{action=Health}");
+                });
+#endif
         }
     }
 }

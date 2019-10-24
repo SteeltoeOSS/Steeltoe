@@ -28,7 +28,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
-    public class HystrixCollapserTest : HystrixTestBase, IDisposable
+    public class HystrixCollapserTest : HystrixTestBase
     {
         private readonly ITestOutputHelper output;
 
@@ -591,15 +591,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 int outerLoop = t;
                 Task th = new Task(
-                () =>
-                {
-                    for (int i = 0; i < 100; i++)
+                    () =>
                     {
-                        int uniqueInt = (outerLoop * 100) + i;
-                        Task<string> tsk = new TestRequestCollapser(output, timer, uniqueInt).ExecuteAsync();
-                        responses.TryAdd(tsk, tsk);
-                    }
-                }, CancellationToken.None,
+                        for (int i = 0; i < 100; i++)
+                        {
+                            int uniqueInt = (outerLoop * 100) + i;
+                            Task<string> tsk = new TestRequestCollapser(output, timer, uniqueInt).ExecuteAsync();
+                            responses.TryAdd(tsk, tsk);
+                        }
+                    },
+                    CancellationToken.None,
                     TaskCreationOptions.LongRunning);
                 th.Start();
                 threads.Add(th);

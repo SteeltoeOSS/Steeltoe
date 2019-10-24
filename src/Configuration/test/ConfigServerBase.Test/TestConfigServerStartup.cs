@@ -36,7 +36,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
         public static int[] ReturnStatus { get; set; } = new int[1] { 200 };
 
-        public static HttpRequest LastRequest { get; set; }
+        public static HttpRequestInfo LastRequest { get; set; }
 
         public static int RequestCount { get; set; } = 0;
 
@@ -50,7 +50,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             app.Run(async context =>
             {
-                LastRequest = context.Request;
+                LastRequest = new HttpRequestInfo(context.Request);
                 context.Response.StatusCode = GetStatusCode(context.Request.Path);
                 RequestCount++;
                 if (context.Response.StatusCode == 200)

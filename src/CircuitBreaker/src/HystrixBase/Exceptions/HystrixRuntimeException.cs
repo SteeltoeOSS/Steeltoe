@@ -36,12 +36,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
             FallbackException = fallbackException;
         }
 
-        public FailureType FailureType { get; }
-
-        public Exception FallbackException { get; }
-
-        public Type ImplementingClass { get; }
-
         public HystrixRuntimeException()
         {
         }
@@ -60,6 +54,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
             : base(info, context)
         {
         }
+
+        public FailureType FailureType { get; }
+
+        public Exception FallbackException { get; }
+
+        public Type ImplementingClass { get; }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {

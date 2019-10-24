@@ -798,6 +798,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_REJECTION, commandKey);
             _executionResult = _executionResult.AddEvent((int)latencyWithFallback, HystrixEventType.FALLBACK_REJECTION);
             logger?.LogDebug("HystrixCommand Fallback Rejection."); // debug only since we're throwing the exception and someone higher will do something with it
+
             // if we couldn't acquire a permit, we "fail fast" by throwing an exception
             tcs.TrySetException(new HystrixRuntimeException(
                 FailureType.REJECTED_SEMAPHORE_FALLBACK,
@@ -813,12 +814,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             _executionResult = _executionResult.SetExecutionException(semaphoreRejectionException);
             _eventNotifier.MarkEvent(HystrixEventType.SEMAPHORE_REJECTED, commandKey);
             logger?.LogDebug("HystrixCommand Execution Rejection by Semaphore."); // debug only since we're throwing the exception and someone higher will do something with it
+
             // retrieve a fallback or throw an exception if no fallback available
             HandleFallbackOrThrowException(
                 HystrixEventType.SEMAPHORE_REJECTED,
                 FailureType.REJECTED_SEMAPHORE_EXECUTION,
-                    "could not acquire a semaphore for execution",
-                    semaphoreRejectionException);
+                "could not acquire a semaphore for execution",
+                semaphoreRejectionException);
         }
 
         private void HandleShortCircuitViaFallback()
@@ -1132,12 +1134,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             if (options.ExecutionIsolationStrategy == ExecutionIsolationStrategy.THREAD)
             {
-                void threadExec(object command)
+                void ThreadExec(object command)
                 {
                     ExecuteCommandWithThreadAction();
                 }
 
-                _execThreadTask = new Task(threadExec, this, CancellationToken.None, TaskCreationOptions.LongRunning);
+                _execThreadTask = new Task(ThreadExec, this, CancellationToken.None, TaskCreationOptions.LongRunning);
             }
             else
             {

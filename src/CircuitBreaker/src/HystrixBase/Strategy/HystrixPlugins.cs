@@ -94,7 +94,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy
             }
         }
 
+#pragma warning disable S4136 // Method overloads should be grouped together
         public static void RegisterMetricsPublisher(HystrixMetricsPublisher impl)
+#pragma warning restore S4136 // Method overloads should be grouped together
         {
             if (!_metricsPublisher.CompareAndSet(null, impl))
             {

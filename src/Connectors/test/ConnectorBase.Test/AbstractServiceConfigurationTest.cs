@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Test
@@ -35,18 +35,10 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void Constructor_BindsValues()
         {
-            var appsettings = @"
-{
-    'test': 'myString'
-}";
+            var appsettings = new Dictionary<string, string> { { "test", "myString" } };
 
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(fileName);
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             var sconfig = new TestServiceConfiguration(config);

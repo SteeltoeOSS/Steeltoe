@@ -14,7 +14,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using System.IO;
 
 namespace Steeltoe.Discovery.Eureka.Test
 {
@@ -26,14 +25,11 @@ namespace Steeltoe.Discovery.Eureka.Test
 
         public static int ReturnStatus { get; set; } = 200;
 
-        public static HttpRequest LastRequest { get; set; }
-
-        public static Stream RequestBody { get; set; }
+        public static HttpRequestInfo LastRequest { get; set; }
 
         public TestConfigServerStartup()
         {
             LastRequest = null;
-            RequestBody = new MemoryStream();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -48,9 +44,8 @@ namespace Steeltoe.Discovery.Eureka.Test
                         return;
                     }
                 }
-                LastRequest = context.Request;
-                LastRequest.Body.CopyTo(RequestBody);
-                RequestBody.Seek(0, SeekOrigin.Begin);
+
+                LastRequest = new HttpRequestInfo(context.Request);
                 context.Response.StatusCode = ReturnStatus;
                 await context.Response.WriteAsync(Response);
             });

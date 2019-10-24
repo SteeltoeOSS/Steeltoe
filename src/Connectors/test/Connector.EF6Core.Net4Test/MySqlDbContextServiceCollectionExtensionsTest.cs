@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if NET461
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CloudFoundry.Connector.Test;
@@ -146,3 +147,4 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         }
     }
 }
+#endif

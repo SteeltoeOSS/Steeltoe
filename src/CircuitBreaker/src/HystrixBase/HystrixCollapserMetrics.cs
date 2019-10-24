@@ -43,6 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private static readonly IList<CollapserEventType> ALL_EVENT_TYPES = CollapserEventTypeHelper.Values;
 
+#pragma warning disable S1199 // Nested code blocks should not be used
         public static Func<long[], HystrixCollapserEvent, long[]> AppendEventToBucket { get; } = (initialCountArray, collapserEvent) =>
         {
             {
@@ -64,6 +65,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 return cumulativeEvents;
             }
         };
+#pragma warning restore S1199 // Nested code blocks should not be used
 
         internal static void Reset()
         {
@@ -97,6 +99,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return rollingCollapserEventCounterStream.GetLatest(collapserEventType);
         }
 
+        public override long GetRollingCount(HystrixRollingNumberEvent @event)
+        {
+            return GetRollingCount(CollapserEventTypeHelper.From(@event));
+        }
+
         public long GetCumulativeCount(CollapserEventType collapserEventType)
         {
             return cumulativeCollapserEventCounterStream.GetLatest(collapserEventType);
@@ -105,11 +112,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public override long GetCumulativeCount(HystrixRollingNumberEvent @event)
         {
             return GetCumulativeCount(CollapserEventTypeHelper.From(@event));
-        }
-
-        public override long GetRollingCount(HystrixRollingNumberEvent @event)
-        {
-            return GetRollingCount(CollapserEventTypeHelper.From(@event));
         }
 
         public int GetBatchSizePercentile(double percentile)

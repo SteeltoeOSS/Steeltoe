@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
 {
     public class MappingDescription
     {
-        private const string ALL_HTTP_METHODS = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
+        public const string ALL_HTTP_METHODS = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
 
         public MappingDescription(string routeHandler, IRouteDetails routeDetails)
         {

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.TestHost;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Util;
@@ -77,7 +77,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void RegisterAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 204;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
@@ -103,7 +103,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void RegisterAsync_SendsValidPOSTData()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 204;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
@@ -131,7 +131,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("/apps/FOOBAR", TestConfigServerStartup.LastRequest.Path.Value);
 
             // Check JSON payload
-            JsonInstanceInfoRoot recvJson = JsonInstanceInfoRoot.Deserialize(TestConfigServerStartup.RequestBody);
+            JsonInstanceInfoRoot recvJson = JsonInstanceInfoRoot.Deserialize(TestConfigServerStartup.LastRequest.Body);
             Assert.NotNull(recvJson);
             Assert.NotNull(recvJson.Instance);
 
@@ -172,7 +172,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void SendHeartBeatAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
@@ -207,40 +207,39 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void GetApplicationsAsync_InvokesServer_ReturnsExpectedApplications()
         {
-            var json = @"{ 
-'applications': { 
-    'versions__delta':'1',
-    'apps__hashcode':'UP_1_',
-    'application':[
-        {
-        'name':'FOO',
-        'instance':[
-            { 
-            'instanceId':'localhost:foo',
-            'hostName':'localhost',
-            'app':'FOO',
-            'ipAddr':'192.168.56.1',
-            'status':'UP',
-            'overriddenstatus':'UNKNOWN',
-            'port':{'$':8080,'@enabled':'true'},
-            'securePort':{'$':443,'@enabled':'false'},
-            'countryId':1,
-            'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
-            'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':1457714988223,'lastRenewalTimestamp':1457716158319,'evictionTimestamp':0,'serviceUpTimestamp':1457714988223},
-            'metadata':{'@class':'java.util.Collections$EmptyMap'},
-            'homePageUrl':'http://localhost:8080/',
-            'statusPageUrl':'http://localhost:8080/info',
-            'healthCheckUrl':'http://localhost:8080/health',
-            'vipAddress':'foo',
-            'isCoordinatingDiscoveryServer':'false',
-            'lastUpdatedTimestamp':'1457714988223',
-            'lastDirtyTimestamp':'1457714988172',
-            'actionType':'ADDED'
-            }]
-        }]
-    }
-}";
-            IHostingEnvironment envir = new HostingEnvironment();
+            var json = @"
+                { 
+                    ""applications"": { 
+                        ""versions__delta"":""1"",
+                        ""apps__hashcode"":""UP_1_"",
+                        ""application"":[{
+                            ""name"":""FOO"",
+                            ""instance"":[{ 
+                                ""instanceId"":""localhost:foo"",
+                                ""hostName"":""localhost"",
+                                ""app"":""FOO"",
+                                ""ipAddr"":""192.168.56.1"",
+                                ""status"":""UP"",
+                                ""overriddenstatus"":""UNKNOWN"",
+                                ""port"":{""$"":8080,""@enabled"":""true""},
+                                ""securePort"":{""$"":443,""@enabled"":""false""},
+                                ""countryId"":1,
+                                ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+                                ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
+                                ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
+                                ""homePageUrl"":""http://localhost:8080/"",
+                                ""statusPageUrl"":""http://localhost:8080/info"",
+                                ""healthCheckUrl"":""http://localhost:8080/health"",
+                                ""vipAddress"":""foo"",
+                                ""isCoordinatingDiscoveryServer"":""false"",
+                                ""lastUpdatedTimestamp"":""1457714988223"",
+                                ""lastDirtyTimestamp"":""1457714988172"",
+                                ""actionType"":""ADDED""
+                            }]
+                        }]
+                    }
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = json;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
@@ -312,36 +311,35 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void GetApplicationAsync_InvokesServer_ReturnsExpectedApplications()
         {
-            var json = @"{
-'application':
-    {
-    'name':'FOO',
-    'instance':[
-    {
-        'instanceId':'localhost:foo',
-        'hostName':'localhost',
-        'app':'FOO',
-        'ipAddr':'192.168.56.1',
-        'status':'UP',
-        'overriddenstatus':'UNKNOWN',
-        'port':{'$':8080,'@enabled':'true'},
-        'securePort':{'$':443,'@enabled':'false'},
-        'countryId':1,
-        'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
-        'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':1458152330783,'lastRenewalTimestamp':1458243422342,'evictionTimestamp':0,'serviceUpTimestamp':1458152330783},
-        'metadata':{'@class':'java.util.Collections$EmptyMap'},
-        'homePageUrl':'http://localhost:8080/',
-        'statusPageUrl':'http://localhost:8080/info',
-        'healthCheckUrl':'http://localhost:8080/health',
-        'vipAddress':'foo',
-        'isCoordinatingDiscoveryServer':'false',
-        'lastUpdatedTimestamp':'1458152330783',
-        'lastDirtyTimestamp':'1458152330696',
-        'actionType':'ADDED'
-    }]
-    }
-}";
-            IHostingEnvironment envir = new HostingEnvironment();
+            var json = @"
+                {
+                    ""application"": {
+                        ""name"":""FOO"",
+                        ""instance"":[ {
+                            ""instanceId"":""localhost:foo"",
+                            ""hostName"":""localhost"",
+                            ""app"":""FOO"",
+                            ""ipAddr"":""192.168.56.1"",
+                            ""status"":""UP"",
+                            ""overriddenstatus"":""UNKNOWN"",
+                            ""port"":{""$"":8080,""@enabled"":""true""},
+                            ""securePort"":{""$"":443,""@enabled"":""false""},
+                            ""countryId"":1,
+                            ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+                            ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1458152330783,""lastRenewalTimestamp"":1458243422342,""evictionTimestamp"":0,""serviceUpTimestamp"":1458152330783},
+                            ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
+                            ""homePageUrl"":""http://localhost:8080/"",
+                            ""statusPageUrl"":""http://localhost:8080/info"",
+                            ""healthCheckUrl"":""http://localhost:8080/health"",
+                            ""vipAddress"":""foo"",
+                            ""isCoordinatingDiscoveryServer"":""false"",
+                            ""lastUpdatedTimestamp"":""1458152330783"",
+                            ""lastDirtyTimestamp"":""1458152330696"",
+                            ""actionType"":""ADDED""
+                        }]
+                    }
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = json;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
@@ -383,36 +381,35 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void GetApplicationAsync__FirstServerFails_InvokesSecondServer_ReturnsExpectedApplications()
         {
-            var json = @"{
-'application':
-    {
-    'name':'FOO',
-    'instance':[
-    {
-        'instanceId':'localhost:foo',
-        'hostName':'localhost',
-        'app':'FOO',
-        'ipAddr':'192.168.56.1',
-        'status':'UP',
-        'overriddenstatus':'UNKNOWN',
-        'port':{'$':8080,'@enabled':'true'},
-        'securePort':{'$':443,'@enabled':'false'},
-        'countryId':1,
-        'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
-        'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':1458152330783,'lastRenewalTimestamp':1458243422342,'evictionTimestamp':0,'serviceUpTimestamp':1458152330783},
-        'metadata':{'@class':'java.util.Collections$EmptyMap'},
-        'homePageUrl':'http://localhost:8080/',
-        'statusPageUrl':'http://localhost:8080/info',
-        'healthCheckUrl':'http://localhost:8080/health',
-        'vipAddress':'foo',
-        'isCoordinatingDiscoveryServer':'false',
-        'lastUpdatedTimestamp':'1458152330783',
-        'lastDirtyTimestamp':'1458152330696',
-        'actionType':'ADDED'
-    }]
-    }
-}";
-            IHostingEnvironment envir = new HostingEnvironment();
+            var json = @"
+                {
+                    ""application"": {
+                        ""name"":""FOO"",
+                        ""instance"":[{
+                            ""instanceId"":""localhost:foo"",
+                            ""hostName"":""localhost"",
+                            ""app"":""FOO"",
+                            ""ipAddr"":""192.168.56.1"",
+                            ""status"":""UP"",
+                            ""overriddenstatus"":""UNKNOWN"",
+                            ""port"":{""$"":8080,""@enabled"":""true""},
+                            ""securePort"":{""$"":443,""@enabled"":""false""},
+                            ""countryId"":1,
+                            ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+                            ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1458152330783,""lastRenewalTimestamp"":1458243422342,""evictionTimestamp"":0,""serviceUpTimestamp"":1458152330783},
+                            ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
+                            ""homePageUrl"":""http://localhost:8080/"",
+                            ""statusPageUrl"":""http://localhost:8080/info"",
+                            ""healthCheckUrl"":""http://localhost:8080/health"",
+                            ""vipAddress"":""foo"",
+                            ""isCoordinatingDiscoveryServer"":""false"",
+                            ""lastUpdatedTimestamp"":""1458152330783"",
+                            ""lastDirtyTimestamp"":""1458152330696"",
+                            ""actionType"":""ADDED""
+                        }]
+                    }
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = json;
             TestConfigServerStartup.ReturnStatus = 200;
             TestConfigServerStartup.Host = "localhost:8888";
@@ -482,37 +479,37 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void GetInstanceAsync_InvokesServer_ReturnsExpectedInstances()
         {
-            var json = @"{ 
-'instance':
-    {
-    'instanceId':'DESKTOP-GNQ5SUT',
-    'app':'FOOBAR',
-    'appGroupName':null,
-    'ipAddr':'192.168.0.147',
-    'sid':'na',
-    'port':{'@enabled':true,'$':80},
-    'securePort':{'@enabled':false,'$':443},
-    'homePageUrl':'http://DESKTOP-GNQ5SUT:80/',
-    'statusPageUrl':'http://DESKTOP-GNQ5SUT:80/Status',
-    'healthCheckUrl':'http://DESKTOP-GNQ5SUT:80/healthcheck',
-    'secureHealthCheckUrl':null,
-    'vipAddress':'DESKTOP-GNQ5SUT:80',
-    'secureVipAddress':'DESKTOP-GNQ5SUT:443',
-    'countryId':1,
-    'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
-    'hostName':'DESKTOP-GNQ5SUT',
-    'status':'UP',
-    'overriddenstatus':'UNKNOWN',
-    'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':0,'lastRenewalTimestamp':0,'renewalTimestamp':0,'evictionTimestamp':0,'serviceUpTimestamp':0},
-    'isCoordinatingDiscoveryServer':false,
-    'metadata':{'@class':'java.util.Collections$EmptyMap','metadata':null},
-    'lastUpdatedTimestamp':1458116137663,
-    'lastDirtyTimestamp':1458116137663,
-    'actionType':'ADDED',
-    'asgName':null
-    }
-}";
-            IHostingEnvironment envir = new HostingEnvironment();
+            var json = @"
+                { 
+                    ""instance"": {
+                        ""instanceId"":""DESKTOP-GNQ5SUT"",
+                        ""app"":""FOOBAR"",
+                        ""appGroupName"":null,
+                        ""ipAddr"":""192.168.0.147"",
+                        ""sid"":""na"",
+                        ""port"":{""@enabled"":true,""$"":80},
+                        ""securePort"":{""@enabled"":false,""$"":443},
+                        ""homePageUrl"":""http://DESKTOP-GNQ5SUT:80/"",
+                        ""statusPageUrl"":""http://DESKTOP-GNQ5SUT:80/Status"",
+                        ""healthCheckUrl"":""http://DESKTOP-GNQ5SUT:80/healthcheck"",
+                        ""secureHealthCheckUrl"":null,
+                        ""vipAddress"":""DESKTOP-GNQ5SUT:80"",
+                        ""secureVipAddress"":""DESKTOP-GNQ5SUT:443"",
+                        ""countryId"":1,
+                        ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+                        ""hostName"":""DESKTOP-GNQ5SUT"",
+                        ""status"":""UP"",
+                        ""overriddenstatus"":""UNKNOWN"",
+                        ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":0,""lastRenewalTimestamp"":0,""renewalTimestamp"":0,""evictionTimestamp"":0,""serviceUpTimestamp"":0},
+                        ""isCoordinatingDiscoveryServer"":false,
+                        ""metadata"":{""@class"":""java.util.Collections$EmptyMap"",""metadata"":null},
+                        ""lastUpdatedTimestamp"":1458116137663,
+                        ""lastDirtyTimestamp"":1458116137663,
+                        ""actionType"":""ADDED"",
+                        ""asgName"":null
+                    }
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = json;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
@@ -546,37 +543,37 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void GetInstanceAsync_FirstServerFails_InvokesSecondServer_ReturnsExpectedInstances()
         {
-            var json = @"{ 
-'instance':
-    {
-    'instanceId':'DESKTOP-GNQ5SUT',
-    'app':'FOOBAR',
-    'appGroupName':null,
-    'ipAddr':'192.168.0.147',
-    'sid':'na',
-    'port':{'@enabled':true,'$':80},
-    'securePort':{'@enabled':false,'$':443},
-    'homePageUrl':'http://DESKTOP-GNQ5SUT:80/',
-    'statusPageUrl':'http://DESKTOP-GNQ5SUT:80/Status',
-    'healthCheckUrl':'http://DESKTOP-GNQ5SUT:80/healthcheck',
-    'secureHealthCheckUrl':null,
-    'vipAddress':'DESKTOP-GNQ5SUT:80',
-    'secureVipAddress':'DESKTOP-GNQ5SUT:443',
-    'countryId':1,
-    'dataCenterInfo':{'@class':'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo','name':'MyOwn'},
-    'hostName':'DESKTOP-GNQ5SUT',
-    'status':'UP',
-    'overriddenstatus':'UNKNOWN',
-    'leaseInfo':{'renewalIntervalInSecs':30,'durationInSecs':90,'registrationTimestamp':0,'lastRenewalTimestamp':0,'renewalTimestamp':0,'evictionTimestamp':0,'serviceUpTimestamp':0},
-    'isCoordinatingDiscoveryServer':false,
-    'metadata':{'@class':'java.util.Collections$EmptyMap','metadata':null},
-    'lastUpdatedTimestamp':1458116137663,
-    'lastDirtyTimestamp':1458116137663,
-    'actionType':'ADDED',
-    'asgName':null
-    }
-}";
-            IHostingEnvironment envir = new HostingEnvironment();
+            var json = @"
+                { 
+                    ""instance"":{
+                        ""instanceId"":""DESKTOP-GNQ5SUT"",
+                        ""app"":""FOOBAR"",
+                        ""appGroupName"":null,
+                        ""ipAddr"":""192.168.0.147"",
+                        ""sid"":""na"",
+                        ""port"":{""@enabled"":true,""$"":80},
+                        ""securePort"":{""@enabled"":false,""$"":443},
+                        ""homePageUrl"":""http://DESKTOP-GNQ5SUT:80/"",
+                        ""statusPageUrl"":""http://DESKTOP-GNQ5SUT:80/Status"",
+                        ""healthCheckUrl"":""http://DESKTOP-GNQ5SUT:80/healthcheck"",
+                        ""secureHealthCheckUrl"":null,
+                        ""vipAddress"":""DESKTOP-GNQ5SUT:80"",
+                        ""secureVipAddress"":""DESKTOP-GNQ5SUT:443"",
+                        ""countryId"":1,
+                        ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+                        ""hostName"":""DESKTOP-GNQ5SUT"",
+                        ""status"":""UP"",
+                        ""overriddenstatus"":""UNKNOWN"",
+                        ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":0,""lastRenewalTimestamp"":0,""renewalTimestamp"":0,""evictionTimestamp"":0,""serviceUpTimestamp"":0},
+                        ""isCoordinatingDiscoveryServer"":false,
+                        ""metadata"":{""@class"":""java.util.Collections$EmptyMap"",""metadata"":null},
+                        ""lastUpdatedTimestamp"":1458116137663,
+                        ""lastDirtyTimestamp"":1458116137663,
+                        ""actionType"":""ADDED"",
+                        ""asgName"":null
+                    }
+                }";
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = json;
             TestConfigServerStartup.ReturnStatus = 200;
             TestConfigServerStartup.Host = "localhost:8888";
@@ -629,7 +626,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void CancelAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
@@ -684,7 +681,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void StatusUpdateAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
@@ -742,7 +739,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public async void DeleteStatusOverrideAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
-            IHostingEnvironment envir = new HostingEnvironment();
+            var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
             TestConfigServerStartup.ReturnStatus = 200;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);

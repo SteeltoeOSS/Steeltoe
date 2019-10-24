@@ -14,8 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Census.Tags;
@@ -46,12 +46,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void AddMetricsActuator_AddsCorrectServices()
         {
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             var config = GetConfiguration();
 
             services.AddOptions();
             services.AddLogging();
-            services.AddSingleton<Microsoft.AspNetCore.Hosting.IHostingEnvironment>(new TestHost());
+            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddMetricsActuator(config);
 
             var serviceProvider = services.BuildServiceProvider();
@@ -83,23 +83,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
         private IConfiguration GetConfiguration()
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             return builder.Build();
-        }
-
-        private class TestHost : Microsoft.AspNetCore.Hosting.IHostingEnvironment
-        {
-            public string EnvironmentName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public string ApplicationName { get => "foobar"; set => throw new NotImplementedException(); }
-
-            public string WebRootPath { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public IFileProvider WebRootFileProvider { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public string ContentRootPath { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public IFileProvider ContentRootFileProvider { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         }
     }
 }

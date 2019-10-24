@@ -69,6 +69,26 @@ namespace Steeltoe.CloudFoundry.Connector
         }
 
         /// <summary>
+        /// Find a type from within an assembly
+        /// </summary>
+        /// <param name="assembly">The assembly to search</param>
+        /// <param name="typeName">The name of the type to retrieve</param>
+        /// <returns>The type</returns>
+        public static Type FindType(Assembly assembly, string typeName)
+        {
+            try
+            {
+                return assembly.GetType(typeName);
+            }
+            catch (Exception)
+            {
+                // Sometimes dependencies are missing... Should be handled later in framework code
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Search a list of assemblies for the first matching type
         /// </summary>
         /// <param name="assemblyNames">List of assembly names to search</param>
@@ -87,26 +107,6 @@ namespace Steeltoe.CloudFoundry.Connector
             }
 
             return type;
-        }
-
-        /// <summary>
-        /// Find a type from within an assembly
-        /// </summary>
-        /// <param name="assembly">The assembly to search</param>
-        /// <param name="typeName">The name of the type to retrieve</param>
-        /// <returns>The type</returns>
-        public static Type FindType(Assembly assembly, string typeName)
-        {
-            try
-            {
-                return assembly.GetType(typeName);
-            }
-            catch (Exception)
-            {
-                // Sometimes dependencies are missing... Should be handled later in framework code
-            }
-
-            return null;
         }
 
         /// <summary>

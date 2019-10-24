@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
                 client.BaseAddress = new Uri("http://localhost/");
                 var result = await client.SendAsync(
                     new HttpRequestMessage(HttpMethod.Get, "hystrix/utilization.stream"),
-                        HttpCompletionOption.ResponseHeadersRead);
+                    HttpCompletionOption.ResponseHeadersRead);
 
                 Assert.NotNull(result);
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);

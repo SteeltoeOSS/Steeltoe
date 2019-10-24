@@ -265,6 +265,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                         tcs.Commit();
                     }
                 }
+
                 return toStart;
             });
             return observable;

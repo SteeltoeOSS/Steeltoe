@@ -38,6 +38,31 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
+        private ExecutionResult(
+            EventCounts eventCounts,
+            long startTimestamp,
+            int executionLatency,
+            int userThreadLatency,
+            Exception failedExecutionException,
+            Exception executionException,
+            bool executionOccurred,
+            bool isExecutedInThread,
+            IHystrixCollapserKey collapserKey)
+        {
+            Eventcounts = eventCounts;
+            StartTimestamp = startTimestamp;
+            ExecutionLatency = executionLatency;
+            UserThreadLatency = userThreadLatency;
+            Exception = failedExecutionException;
+            ExecutionException = executionException;
+            ExecutionOccurred = executionOccurred;
+            IsExecutedInThread = isExecutedInThread;
+            CollapserKey = collapserKey;
+        }
+
+        // we can return a static version since it's immutable
+        internal static readonly ExecutionResult EMPTY = ExecutionResult.From();
+
         public sealed class EventCounts
         {
             private readonly BitArray events;
@@ -251,31 +276,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 return (int)((h >> 32) ^ h);
             }
         }
-
-        private ExecutionResult(
-            EventCounts eventCounts,
-            long startTimestamp,
-            int executionLatency,
-            int userThreadLatency,
-            Exception failedExecutionException,
-            Exception executionException,
-            bool executionOccurred,
-            bool isExecutedInThread,
-            IHystrixCollapserKey collapserKey)
-        {
-            Eventcounts = eventCounts;
-            StartTimestamp = startTimestamp;
-            ExecutionLatency = executionLatency;
-            UserThreadLatency = userThreadLatency;
-            Exception = failedExecutionException;
-            ExecutionException = executionException;
-            ExecutionOccurred = executionOccurred;
-            IsExecutedInThread = isExecutedInThread;
-            CollapserKey = collapserKey;
-        }
-
-        // we can return a static version since it's immutable
-        internal static readonly ExecutionResult EMPTY = ExecutionResult.From();
 
         public static ExecutionResult From(params HystrixEventType[] eventTypes)
         {

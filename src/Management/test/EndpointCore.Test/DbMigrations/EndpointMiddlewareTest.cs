@@ -15,7 +15,6 @@
 using FluentAssertions;
 using FluentAssertions.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
-            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var efContext = new MockDbContext();
             var container = Substitute.For<IServiceProvider>();
             container.GetService(typeof(MockDbContext)).Returns(efContext);
@@ -75,16 +74,16 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             var json = await reader.ReadToEndAsync();
             var expected = JToken.FromObject(
                 new Dictionary<string, DbMigrationsDescriptor>()
-            {
                 {
-                    nameof(MockDbContext), new DbMigrationsDescriptor()
                     {
-                        AppliedMigrations = new List<string> { "applied" },
-                        PendingMigrations = new List<string> { "pending" }
+                        nameof(MockDbContext), new DbMigrationsDescriptor()
+                        {
+                            AppliedMigrations = new List<string> { "applied" },
+                            PendingMigrations = new List<string> { "pending" }
+                        }
                     }
-                }
-            },
-            GetSerializer());
+                },
+                GetSerializer());
             var actual = JObject.Parse(json);
             actual.Should().BeEquivalentTo(expected);
         }

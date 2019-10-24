@@ -53,20 +53,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             }
         }
 
-        internal bool IsRequestCanceled()
-        {
-            foreach (var linkedToken in linkedTokens)
-            {
-                if (!linkedToken.IsCancellationRequested)
-                {
-                    return false;
-                }
-            }
-
-            // All linked tokens have been cancelled
-            return Token.IsCancellationRequested;
-        }
-
         internal Exception SetExceptionIfResponseNotReceived(Exception e, string exceptionMessage)
         {
             Exception newException = e;
@@ -83,6 +69,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
             // return any exception that was generated
             return newException;
+        }
+
+        internal bool IsRequestCanceled()
+        {
+            foreach (var linkedToken in linkedTokens)
+            {
+                if (!linkedToken.IsCancellationRequested)
+                {
+                    return false;
+                }
+            }
+
+            // All linked tokens have been cancelled
+            return Token.IsCancellationRequested;
         }
 
         #region ICollapsedRequest
