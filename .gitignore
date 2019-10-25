@@ -229,5 +229,5 @@ project.lock.json
 .sonarqube/
 
 Pivotal.GemFire.dll
-pivnet.exe
+pivnet*
 pivotal*.zip
