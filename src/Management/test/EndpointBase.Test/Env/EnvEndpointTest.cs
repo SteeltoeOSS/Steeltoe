@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,11 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         {
             IEnvOptions options = null;
             IConfiguration configuration = null;
+        #if NETCOREAPP3_0
+            IHostEnvironment env = null;
+        #else
             IHostingEnvironment env = null;
+        #endif
 
             Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env));
 
@@ -48,17 +52,18 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var builder = new ConfigurationBuilder();
             builder.AddEnvironmentVariables();
             var config = builder.Build();
-            var ep = new EnvEndpoint(opts, config, new TestHosting());
+            var env = HostingHelpers.GetHostingEnvironment();
+            var ep = new EnvEndpoint(opts, config, env);
 
             var provider = config.Providers.Single();
-            string name = ep.GetPropertySourceName(provider);
+            var name = ep.GetPropertySourceName(provider);
             Assert.Equal(provider.GetType().Name, name);
 
             builder = new ConfigurationBuilder();
             builder.AddJsonFile("foobar", true);
             config = builder.Build();
 
-            ep = new EnvEndpoint(opts, config, new TestHosting());
+            ep = new EnvEndpoint(opts, config, env);
 
             provider = config.Providers.Single();
             name = ep.GetPropertySourceName(provider);
@@ -88,12 +93,12 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["charSize"] = "should not duplicate"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             configurationBuilder.AddInMemoryCollection(otherAppsettings);
             var config = configurationBuilder.Build();
-
-            var ep = new EnvEndpoint(opts, config, new TestHosting());
+            var env = HostingHelpers.GetHostingEnvironment();
+            var ep = new EnvEndpoint(opts, config, env);
 
             var appsettingsProvider = config.Providers.ElementAt(0);
             var appsettingsDesc = ep.GetPropertySourceDescriptor(appsettingsProvider);
@@ -131,11 +136,11 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
-
-            var ep = new EnvEndpoint(opts, config, new TestHosting());
+            var env = HostingHelpers.GetHostingEnvironment();
+            var ep = new EnvEndpoint(opts, config, env);
             var result = ep.GetPropertySources(config);
             Assert.NotNull(result);
             Assert.Single(result);
@@ -166,11 +171,11 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
-
-            var ep = new EnvEndpoint(opts, config, new TestHosting());
+            var env = HostingHelpers.GetHostingEnvironment();
+            var ep = new EnvEndpoint(opts, config, env);
             var result = ep.DoInvoke(config);
             Assert.NotNull(result);
             Assert.Single(result.ActiveProfiles);
@@ -205,11 +210,11 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["my_credentialsof"] = "mysecret",
                 ["vcap_services"] = "mysecret"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
-
-            var ep = new EnvEndpoint(opts, config, new TestHosting());
+            var env = HostingHelpers.GetHostingEnvironment();
+            var ep = new EnvEndpoint(opts, config, env);
             var result = ep.DoInvoke(config);
             Assert.NotNull(result);
 
@@ -236,11 +241,12 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["password"] = "mysecret"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var opts = new EnvEndpointOptions(config);
-            var ep = new EnvEndpoint(opts, config, new TestHosting());
+            var env = HostingHelpers.GetHostingEnvironment();
+            var ep = new EnvEndpoint(opts, config, env);
             var result = ep.DoInvoke(config);
             Assert.NotNull(result);
 
@@ -251,17 +257,6 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Assert.Contains("password", props.Keys);
             Assert.NotNull(props["password"]);
             Assert.Equal("mysecret", props["password"].Value);
-        }
-
-        private class TestHosting : IHostingEnvironment
-        {
-            public string EnvironmentName { get => "EnvironmentName"; set => throw new NotImplementedException(); }
-
-            public string ApplicationName { get => "ApplicationName"; set => throw new NotImplementedException(); }
-
-            public string ContentRootPath { get => "ContentRootPath"; set => throw new NotImplementedException(); }
-
-            public IFileProvider ContentRootFileProvider { get => null; set => throw new NotImplementedException(); }
         }
     }
 }

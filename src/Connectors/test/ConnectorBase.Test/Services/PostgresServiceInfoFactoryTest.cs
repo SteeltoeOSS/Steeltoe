@@ -17,12 +17,12 @@ using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
-    public class PostgressServiceInfoFactory
+    public class PostgresServiceInfoFactoryTest
     {
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "elephantsql",
                 Tags = new string[] { "postgresql", "relational" },
@@ -37,16 +37,16 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                     { "jdbcUrl", new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                    }
+                }
             };
-            PostgresServiceInfoFactory factory = new PostgresServiceInfoFactory();
+            var factory = new PostgresServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Name = "postgresService",
                 Credentials = new Credential()
@@ -58,16 +58,16 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                     { "jdbcUrl", new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                    }
+                }
             };
-            PostgresServiceInfoFactory factory = new PostgresServiceInfoFactory();
+            var factory = new PostgresServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_AcceptsLabelNoTagsServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "elephantsql",
                 Name = "postgresService",
@@ -81,16 +81,16 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                     { "jdbcUrl", new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                    }
+                }
             };
-            PostgresServiceInfoFactory factory = new PostgresServiceInfoFactory();
+            var factory = new PostgresServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-foobar",
                 Tags = new string[] { "foobar", "relational" },
@@ -105,16 +105,16 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("foobar://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                     { "jdbcUrl", new Credential("jdbc:foobar://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                    }
+                }
             };
-            PostgresServiceInfoFactory factory = new PostgresServiceInfoFactory();
+            var factory = new PostgresServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "elephantsql",
                 Tags = new string[] { "postgresql", "relational" },
@@ -129,9 +129,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                     { "jdbcUrl", new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                    }
+                }
             };
-            PostgresServiceInfoFactory factory = new PostgresServiceInfoFactory();
+            var factory = new PostgresServiceInfoFactory();
             var info = factory.Create(s) as PostgresServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("postgresService", info.Id);
@@ -146,7 +146,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding_NoUri()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "elephantsql",
                 Tags = new string[] { "postgresql", "relational" },
@@ -159,9 +159,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                     { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                     { "password", new Credential("7E1LxXnlH2hhlPVt") }
-                    }
+                }
             };
-            PostgresServiceInfoFactory factory = new PostgresServiceInfoFactory();
+            var factory = new PostgresServiceInfoFactory();
             var info = factory.Create(s) as PostgresServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("postgresService", info.Id);

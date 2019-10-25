@@ -2,7 +2,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>NET Core CloudFoundry Environment Variable Configuration Provider</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Extensions.Configuration.CloudFoundryCore</AssemblyName>
     <PackageId>Steeltoe.Extensions.Configuration.CloudFoundryCore</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Spring;Spring Cloud</PackageTags>

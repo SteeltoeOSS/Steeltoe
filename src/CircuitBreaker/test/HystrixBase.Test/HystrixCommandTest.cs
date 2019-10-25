@@ -31,7 +31,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
-    public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<int>>, IDisposable
+    public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<int>>
     {
         private readonly ITestOutputHelper output;
 
@@ -1040,6 +1040,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertCommandExecutionEvents(command3, HystrixEventType.THREAD_POOL_REJECTED, HystrixEventType.FALLBACK_FAILURE);
             int numInFlight = circuitBreaker.Metrics.CurrentConcurrentExecutionCount;
             Assert.True(numInFlight <= 1, "Pool-filler NOT still going"); // pool-filler still going
+
                                                                           // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
             HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
             Assert.Equal(3, requestLog.AllExecutedCommands.Count);
@@ -1974,6 +1975,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(value);
             RequestCacheNullPointerExceptionCase command5 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
             Task<bool> f = command5.ExecuteAsync(); // return from cache #4
+
                                                     // the bug is that we're getting a null Future back, rather than a Future that returns false
             Assert.NotNull(f);
             Assert.False(f.Result);
@@ -2786,6 +2788,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                                     s.Release();
                                 }
                             }
+
                             latch.SignalEx();
                         });
                     task.Start();
@@ -2821,6 +2824,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // this should go through the queue and into the thread pool
             Task<bool> poolFiller = command1.ExecuteAsync();
             Time.Wait(30); // Let it start
+
             // this command will stay in the queue until the thread pool is empty
             IObservable<bool> cmdInQueue = command2.Observe();
             IDisposable s = cmdInQueue.Subscribe();
@@ -3563,6 +3567,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     {
                         output.WriteLine(ex.ToString());
                     }
+
                     return i;
                 });
 
@@ -3768,7 +3773,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 command.IsFallbackUserDefined = true;
                 return command;
             },
-             (command) =>
+            (command) =>
             {
                 TestableExecutionHook hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
@@ -3974,6 +3979,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     // fill the pool
                     GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 500, FallbackResultTest.UNIMPLEMENTED, circuitBreaker, pool, 600).Observe();
                     Time.Wait(10); // Let it start
+
                     // fill the queue
                     GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 500, FallbackResultTest.UNIMPLEMENTED, circuitBreaker, pool, 600).Observe();
                 }
@@ -3981,6 +3987,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     // ignore
                 }
+
                 return GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 500, FallbackResultTest.UNIMPLEMENTED, circuitBreaker, pool, 600);
             },
             (command) =>
@@ -4013,6 +4020,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     lat1.IsFallbackUserDefined = true;
                     lat1.Observe();
                     Time.Wait(30); // Let it start
+
                     // fill the queue
                     var lat2 = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 500, FallbackResultTest.SUCCESS, circuitBreaker, pool, 600);
                     lat2.IsFallbackUserDefined = true;
@@ -5269,7 +5277,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         public bool IsCommandRunningInThread
         {
-            get { return base.CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.THREAD); }
+            get { return CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.THREAD); }
         }
 
         protected override string Run()

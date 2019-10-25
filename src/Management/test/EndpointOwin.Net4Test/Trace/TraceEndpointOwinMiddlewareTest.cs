@@ -34,7 +34,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
         {
             // arrange
             var opts = new TraceEndpointOptions();
-            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var ep = new TestTraceEndpoint(opts, new TraceDiagnosticObserver(opts));
             var middle = new EndpointOwinMiddleware<List<TraceResult>>(null, ep, mgmtOptions);
             var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/trace");
@@ -74,7 +74,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
         public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var obs = new TraceDiagnosticObserver(opts);
             var ep = new TraceEndpoint(opts, obs);
             var middle = new EndpointOwinMiddleware<List<TraceResult>>(null, ep, mopts);

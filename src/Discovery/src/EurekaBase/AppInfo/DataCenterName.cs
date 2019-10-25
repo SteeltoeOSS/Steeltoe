@@ -16,6 +16,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public enum DataCenterName
     {
-        Netflix, Amazon, MyOwn
+        Netflix,
+        Amazon,
+        MyOwn
     }
 }

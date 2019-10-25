@@ -26,14 +26,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         public void Configure_SetsProperties()
         {
             var json = @"
-{
-    'hystrix' : {
-        'stream': {
-            'validate_certificates' : false
-        }
-    }
-}
-";
+                {
+                    ""hystrix"" : {
+                        ""stream"": {
+                            ""validate_certificates"" : false
+                        }
+                    }
+                }";
             string path = TestHelpers.CreateTempFile(json);
             string directory = Path.GetDirectoryName(path);
             string fileName = Path.GetFileName(path);

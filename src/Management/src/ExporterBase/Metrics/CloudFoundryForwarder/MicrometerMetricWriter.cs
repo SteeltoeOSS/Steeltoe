@@ -43,6 +43,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                     {
                         statistic = "total";
                     }
+
                     tags["statistic"] = statistic;
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Sum));
                     return null;
@@ -53,6 +54,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                     {
                         statistic = "total";
                     }
+
                     tags["statistic"] = statistic;
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Sum));
                     return null;
@@ -63,6 +65,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                     {
                         statistic = "count";
                     }
+
                     tags["statistic"] = statistic;
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.Count));
                     return null;
@@ -93,6 +96,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                     {
                         statistic = "total";
                     }
+
                     IDictionary<string, string> copy = new Dictionary<string, string>(tags);
                     copy["statistic"] = "count";
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, "count", copy, arg.Count));
@@ -116,6 +120,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                     {
                         statistic = "value";
                     }
+
                     tags["statistic"] = statistic;
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.LastValue));
                     return null;
@@ -126,6 +131,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                     {
                         statistic = "value";
                     }
+
                     tags["statistic"] = statistic;
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, tags, arg.LastValue));
                     return null;

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Owin;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.EndpointOwin.Test;
@@ -29,19 +29,26 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
 
         public void Configuration(IAppBuilder app)
         {
-            var builder = new ConfigurationBuilder();
+            var cfgBuilder = new ConfigurationBuilder();
 
             var appSettings = new Dictionary<string, string>(OwinTestHelpers.Appsettings)
             {
             };
 
-            builder.AddInMemoryCollection(appSettings);
-            builder.AddEnvironmentVariables();
-            var config = builder.Build();
+            cfgBuilder.AddInMemoryCollection(appSettings);
+            cfgBuilder.AddEnvironmentVariables();
+            var config = cfgBuilder.Build();
 
-            LoggerProvider = new DynamicLoggerProvider(new ConsoleLoggerSettings().FromConfiguration(config));
-            LoggerFactory = new LoggerFactory();
-            LoggerFactory.AddProvider(LoggerProvider);
+            var services = new ServiceCollection()
+                .AddLogging((logBuilder) =>
+                {
+                    logBuilder.AddConfiguration(config);
+                    logBuilder.AddDynamicConsole();
+                })
+                .BuildServiceProvider();
+
+            LoggerProvider = services.GetRequiredService<ILoggerProvider>() as DynamicConsoleLoggerProvider;
+            LoggerFactory = services.GetRequiredService<ILoggerFactory>();
 
             app.UseLoggersActuator(config, LoggerProvider, LoggerFactory);
         }

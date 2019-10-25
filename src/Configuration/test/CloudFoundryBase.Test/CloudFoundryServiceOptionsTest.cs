@@ -41,28 +41,24 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         {
             // Arrange
             var configJson = @"
-{ 'vcap': {
-    'services' : {
-            'p-config-server': [
-            {
-            'credentials': {
-                'access_token_uri': 'https://p-spring-cloud-services.uaa.wise.com/oauth/token',
-                'client_id': 'p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef',
-                'client_secret': 'e8KF1hXvAnGd',
-                'uri': 'http://localhost:8888'
-            },
-            'label': 'p-config-server',
-            'name': 'My Config Server',
-            'plan': 'standard',
-            'tags': [
-                'configuration',
-                'spring-cloud'
-                ]
-            }
-            ]
-        }
-    }
-}";
+                {
+                    ""vcap"": {
+                        ""services"" : {
+                            ""p-config-server"": [{
+                                ""credentials"": {
+                                    ""access_token_uri"": ""https://p-spring-cloud-services.uaa.wise.com/oauth/token"",
+                                    ""client_id"": ""p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef"",
+                                    ""client_secret"": ""e8KF1hXvAnGd"",
+                                    ""uri"": ""http://localhost:8888""
+                                },
+                                ""label"": ""p-config-server"",
+                                ""name"": ""My Config Server"",
+                                ""plan"": ""standard"",
+                                ""tags"": [""configuration"",""spring-cloud""]
+                            }]
+                        }
+                    }
+                }";
             var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
             var jsonSource = new JsonStreamConfigurationSource(memStream);
             var builder = new ConfigurationBuilder().Add(jsonSource);
@@ -100,78 +96,69 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         {
             // Arrange
             var configJson = @"
-{ 'vcap': {
-    'services' : {
-            'p-rabbitmq': [
-            {
-            'name': 'rabbitmq',
-            'label': 'p-rabbitmq',
-            'tags': [
-                'rabbitmq',
-                'messaging',
-                'message-queue',
-                'amqp',
-                'stomp',
-                'mqtt',
-                'pivotal'
-                ],
-            'plan': 'standard',
-            'credentials': {
-                'http_api_uris': [
-                    'https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@pivotal-rabbitmq.system.testcloud.com/api/'
-                ],
-                'ssl': false,
-                'dashboard_url': 'https://pivotal-rabbitmq.system.testcloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4',
-                'password': '3fnpvbqm0djq5jl9fp6fc697f4',
-                'protocols': {
-                    'management': {
-                        'path': '/api/',
-                        'ssl': false,
-                        'hosts': [
-                            '192.168.0.97'
-                            ],
-                        'password': '3fnpvbqm0djq5jl9fp6fc697f4',
-                        'username': '268371bd-07e5-46f3-aec7-d1633ae20bbb',
-                        'port': 15672,
-                        'host': '192.168.0.97',
-                        'uri': 'https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:15672/api/',
-                        'uris': [
-                            'https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:15672/api/'
-                            ]
-                    },
-                    'amqp': {
-                        'vhost': '2260a117-cf28-4725-86dd-37b3b8971052',
-                        'username': '268371bd-07e5-46f3-aec7-d1633ae20bbb',
-                        'password': '3fnpvbqm0djq5jl9fp6fc697f4',
-                        'port': 5672,
-                        'host': '192.168.0.97',
-                        'hosts': [
-                            '192.168.0.97'
-                            ],
-                        'ssl': false,
-                        'uri': 'amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052',
-                        'uris': [
-                            'amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052'
-                            ]
+                {
+                    ""vcap"": {
+                        ""services"" : {
+                            ""p-rabbitmq"": [{
+                                ""name"": ""rabbitmq"",
+                                ""label"": ""p-rabbitmq"",
+                                ""tags"": [
+                                    ""rabbitmq"",
+                                    ""messaging"",
+                                    ""message-queue"",
+                                    ""amqp"",
+                                    ""stomp"",
+                                    ""mqtt"",
+                                    ""pivotal""
+                                ],
+                                ""plan"": ""standard"",
+                                ""credentials"": {
+                                    ""http_api_uris"": [
+                                        ""https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@pivotal-rabbitmq.system.testcloud.com/api/""
+                                    ],
+                                    ""ssl"": false,
+                                    ""dashboard_url"": ""https://pivotal-rabbitmq.system.testcloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4"",
+                                    ""password"": ""3fnpvbqm0djq5jl9fp6fc697f4"",
+                                    ""protocols"": {
+                                        ""management"": {
+                                            ""path"": ""/api/"",
+                                            ""ssl"": false,
+                                            ""hosts"": [""192.168.0.97""],
+                                            ""password"": ""3fnpvbqm0djq5jl9fp6fc697f4"",
+                                            ""username"": ""268371bd-07e5-46f3-aec7-d1633ae20bbb"",
+                                            ""port"": 15672,
+                                            ""host"": ""192.168.0.97"",
+                                            ""uri"": ""https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:15672/api/"",
+                                            ""uris"": [""https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:15672/api/""]
+                                        },
+                                        ""amqp"": {
+                                            ""vhost"": ""2260a117-cf28-4725-86dd-37b3b8971052"",
+                                            ""username"": ""268371bd-07e5-46f3-aec7-d1633ae20bbb"",
+                                            ""password"": ""3fnpvbqm0djq5jl9fp6fc697f4"",
+                                            ""port"": 5672,
+                                            ""host"": ""192.168.0.97"",
+                                            ""hosts"": [ ""192.168.0.97""],
+                                            ""ssl"": false,
+                                            ""uri"": ""amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052"",
+                                            ""uris"": [""amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052""]
+                                        }
+                                    },
+                                    ""username"": ""268371bd-07e5-46f3-aec7-d1633ae20bbb"",
+                                    ""hostname"": ""192.168.0.97"",
+                                    ""hostnames"": [
+                                        ""192.168.0.97""
+                                        ],
+                                    ""vhost"": ""2260a117-cf28-4725-86dd-37b3b8971052"",
+                                    ""http_api_uri"": ""https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@pivotal-rabbitmq.system.testcloud.com/api/"",
+                                    ""uri"": ""amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97/2260a117-cf28-4725-86dd-37b3b8971052"",
+                                    ""uris"": [
+                                        ""amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97/2260a117-cf28-4725-86dd-37b3b8971052""
+                                    ]
+                                }
+                            }]
+                        }
                     }
-                },
-                'username': '268371bd-07e5-46f3-aec7-d1633ae20bbb',
-                'hostname': '192.168.0.97',
-                'hostnames': [
-                    '192.168.0.97'
-                    ],
-                'vhost': '2260a117-cf28-4725-86dd-37b3b8971052',
-                'http_api_uri': 'https://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@pivotal-rabbitmq.system.testcloud.com/api/',
-                'uri': 'amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97/2260a117-cf28-4725-86dd-37b3b8971052',
-                'uris': [
-                    'amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97/2260a117-cf28-4725-86dd-37b3b8971052'
-                    ]
-            }
-            }
-            ]
-        }
-    }
-}";
+                }";
             var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
             var jsonSource = new JsonStreamConfigurationSource(memStream);
             var builder = new ConfigurationBuilder().Add(jsonSource);
@@ -209,49 +196,43 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         {
             // Arrange
             var configJson = @"
-{ 'vcap': {
-    'services' : {
-            'p-mysql': [
-            {
-                'name': 'mySql1',
-                'label': 'p-mysql',
-                'tags': [
-                'mysql',
-                'relational'
-                ],
-                'plan': '100mb-dev',
-                'credentials': {
-                    'hostname': '192.168.0.97',
-                    'port': 3306,
-                    'name': 'cf_0f5dda44_e678_4727_993f_30e6d455cc31',
-                    'username': '9vD0Mtk3wFFuaaaY',
-                    'password': 'Cjn4HsAiKV8sImst',
-                    'uri': 'mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true',
-                    'jdbcUrl': 'jdbc:mysql://192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?user=9vD0Mtk3wFFuaaaY&password=Cjn4HsAiKV8sImst'
-                }
-            },
-            {
-                'name': 'mySql2',
-                'label': 'p-mysql',
-                'tags': [
-                'mysql',
-                'relational'
-                ],
-                'plan': '100mb-dev',
-                'credentials': {
-                    'hostname': '192.168.0.97',
-                    'port': 3306,
-                    'name': 'cf_0f5dda44_e678_4727_993f_30e6d455cc31',
-                    'username': '9vD0Mtk3wFFuaaaY',
-                    'password': 'Cjn4HsAiKV8sImst',
-                    'uri': 'mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true',
-                    'jdbcUrl': 'jdbc:mysql://192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?user=9vD0Mtk3wFFuaaaY&password=Cjn4HsAiKV8sImst'
-                }
-            }
-            ]
-        }
-    }
-}";
+                {
+                    ""vcap"": {
+                        ""services"" : {
+                            ""p-mysql"": [
+                            {
+                                ""name"": ""mySql1"",
+                                ""label"": ""p-mysql"",
+                                ""tags"": [""mysql"",""relational""],
+                                ""plan"": ""100mb-dev"",
+                                ""credentials"": {
+                                    ""hostname"": ""192.168.0.97"",
+                                    ""port"": 3306,
+                                    ""name"": ""cf_0f5dda44_e678_4727_993f_30e6d455cc31"",
+                                    ""username"": ""9vD0Mtk3wFFuaaaY"",
+                                    ""password"": ""Cjn4HsAiKV8sImst"",
+                                    ""uri"": ""mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true"",
+                                    ""jdbcUrl"": ""jdbc:mysql://192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?user=9vD0Mtk3wFFuaaaY&password=Cjn4HsAiKV8sImst""
+                                }
+                            },
+                            {
+                                ""name"": ""mySql2"",
+                                ""label"": ""p-mysql"",
+                                ""tags"": [""mysql"",""relational""],
+                                ""plan"": ""100mb-dev"",
+                                ""credentials"": {
+                                    ""hostname"": ""192.168.0.97"",
+                                    ""port"": 3306,
+                                    ""name"": ""cf_0f5dda44_e678_4727_993f_30e6d455cc31"",
+                                    ""username"": ""9vD0Mtk3wFFuaaaY"",
+                                    ""password"": ""Cjn4HsAiKV8sImst"",
+                                    ""uri"": ""mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true"",
+                                    ""jdbcUrl"": ""jdbc:mysql://192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?user=9vD0Mtk3wFFuaaaY&password=Cjn4HsAiKV8sImst""
+                                }
+                            }]
+                        }
+                    }
+                }";
             var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
             var jsonSource = new JsonStreamConfigurationSource(memStream);
             var builder = new ConfigurationBuilder().Add(jsonSource);
@@ -285,25 +266,24 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         {
             // Arrange
             var configJson = @"
-{ 'vcap': {
-    'services' : {
-            'p-config-server': [
-            {
-            'credentials': {
-                'access_token_uri': 'https://p-spring-cloud-services.uaa.wise.com/oauth/token',
-                'client_id': 'p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef',
-                'client_secret': 'e8KF1hXvAnGd',
-                'uri': 'http://localhost:8888'
-            },
-            'label': 'p-config-server',
-            'name': 'My Config Server',
-            'plan': 'standard',
-            'tags': [
-                'configuration',
-                'spring-cloud'
+{
+    ""vcap"": {
+        ""services"" : {
+            ""p-config-server"": [{
+                ""credentials"": {
+                    ""access_token_uri"": ""https://p-spring-cloud-services.uaa.wise.com/oauth/token"",
+                    ""client_id"": ""p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef"",
+                    ""client_secret"": ""e8KF1hXvAnGd"",
+                    ""uri"": ""http://localhost:8888""
+                },
+                ""label"": ""p-config-server"",
+                ""name"": ""My Config Server"",
+                ""plan"": ""standard"",
+                ""tags"": [
+                    ""configuration"",
+                    ""spring-cloud""
                 ]
-            }
-            ]
+            }]
         }
     }
 }";
@@ -342,28 +322,27 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         {
             // Arrange
             var configJson = @"
-{ 'vcap': {
-    'services' : {
-            'p-config-server': [
-            {
-            'credentials': {
-                'access_token_uri': 'https://p-spring-cloud-services.uaa.wise.com/oauth/token',
-                'client_id': 'p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef',
-                'client_secret': 'e8KF1hXvAnGd',
-                'uri': 'http://localhost:8888'
-            },
-            'label': 'p-config-server',
-            'name': 'My Config Server',
-            'plan': 'standard',
-            'tags': [
-                'configuration',
-                'spring-cloud'
-                ]
-            }
-            ]
-        }
-    }
-}";
+                {
+                    ""vcap"": {
+                        ""services"" : {
+                            ""p-config-server"": [{
+                                ""credentials"": {
+                                    ""access_token_uri"": ""https://p-spring-cloud-services.uaa.wise.com/oauth/token"",
+                                    ""client_id"": ""p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef"",
+                                    ""client_secret"": ""e8KF1hXvAnGd"",
+                                    ""uri"": ""http://localhost:8888""
+                                },
+                                ""label"": ""p-config-server"",
+                                ""name"": ""My Config Server"",
+                                ""plan"": ""standard"",
+                                ""tags"": [
+                                    ""configuration"",
+                                    ""spring-cloud""
+                                ]
+                            }]
+                        }
+                    }
+                }";
             var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
             var jsonSource = new JsonStreamConfigurationSource(memStream);
             var builder = new ConfigurationBuilder().Add(jsonSource);

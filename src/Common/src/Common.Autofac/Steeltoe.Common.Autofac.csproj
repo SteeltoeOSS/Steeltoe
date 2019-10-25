@@ -2,7 +2,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Common Library for Autofac</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Common.Autofac</AssemblyName>
     <PackageId>Steeltoe.Common.Autofac</PackageId>
     <PackageTags>NET Core;NET Framework;Autofac</PackageTags>

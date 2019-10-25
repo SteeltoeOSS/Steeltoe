@@ -13,16 +13,8 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
-using Serilog.Core;
 using Serilog.Events;
 using Serilog.Exceptions;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
@@ -36,17 +28,17 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             var testSink = new TestSink();
 
             // act
-            new WebHostBuilder()
-            .UseStartup<TestServerStartup>()
-            .UseSerilogDynamicConsole((context, loggerConfiguration) =>
-            {
-                loggerConfiguration
-                .MinimumLevel.Error()
-                .Enrich.WithExceptionDetails()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .WriteTo.Sink(testSink, LogEventLevel.Error);
-            })
-            .Build();
+            var host = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .UseSerilogDynamicConsole((context, loggerConfiguration) =>
+                {
+                    loggerConfiguration
+                    .MinimumLevel.Error()
+                    .Enrich.WithExceptionDetails()
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                    .WriteTo.Sink(testSink, LogEventLevel.Error);
+                })
+                .Build();
 
             // assert
             var logs = testSink.GetLogs();

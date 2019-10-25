@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
-
+using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -44,14 +43,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Initialize_WithDefaultSettings()
         {
             // Arrange
-            string prefix = "spring:cloud:config";
-            ConfigServerClientSettings settings = new ConfigServerClientSettings();
-            HostingEnvironment env = new HostingEnvironment();
+            var prefix = "spring:cloud:config";
+            var settings = new ConfigServerClientSettings();
             IConfiguration config = new ConfigurationRoot(new List<IConfigurationProvider>());
 
             // Act and Assert
             ConfigurationSettingsHelper.Initialize(prefix, settings, config);
-            TestHelpers.VerifyDefaults(settings);
+            TestHelper.VerifyDefaults(settings);
         }
     }
 }

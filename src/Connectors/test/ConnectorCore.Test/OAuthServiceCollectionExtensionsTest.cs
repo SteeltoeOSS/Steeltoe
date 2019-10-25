@@ -104,37 +104,34 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         {
             // Arrange
             var env2 = @"
-{
-        'p-identity': [
-        {
-        'credentials': {
-            'client_id': 'cb3efc76-bd22-46b3-a5ca-3aaa21c96073',
-            'client_secret': '92b5ebf0-c67b-4671-98d3-8e316fb11e30',
-            'auth_domain': 'https://sso.login.system.testcloud.com'
-            },
-        'syslog_drain_url': null,
-        'label': 'p-identity',
-        'provider': null,
-        'plan': 'sso',
-        'name': 'mySSO',
-        'tags': []
-        },
-        {
-        'credentials': {
-            'client_id': 'cb3efc76-bd22-46b3-a5ca-3aaa21c96073',
-            'client_secret': '92b5ebf0-c67b-4671-98d3-8e316fb11e30',
-            'auth_domain': 'https://sso.login.system.testcloud.com'
-            },
-        'syslog_drain_url': null,
-        'label': 'p-identity',
-        'provider': null,
-        'plan': 'sso',
-        'name': 'mySSO2',
-        'tags': []
-        }
-      ]
-}
-        ";
+                {
+                    ""p-identity"": [{
+                        ""credentials"": {
+                            ""client_id"": ""cb3efc76-bd22-46b3-a5ca-3aaa21c96073"",
+                            ""client_secret"": ""92b5ebf0-c67b-4671-98d3-8e316fb11e30"",
+                            ""auth_domain"": ""https://sso.login.system.testcloud.com""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-identity"",
+                        ""provider"": null,
+                        ""plan"": ""sso"",
+                        ""name"": ""mySSO"",
+                        ""tags"": []
+                    },
+                    {
+                        ""credentials"": {
+                            ""client_id"": ""cb3efc76-bd22-46b3-a5ca-3aaa21c96073"",
+                            ""client_secret"": ""92b5ebf0-c67b-4671-98d3-8e316fb11e30"",
+                            ""auth_domain"": ""https://sso.login.system.testcloud.com""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-identity"",
+                        ""provider"": null,
+                        ""plan"": ""sso"",
+                        ""name"": ""mySSO2"",
+                        ""tags"": []
+                    }]
+                }";
 
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -156,24 +153,21 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         {
             // Arrange
             var env2 = @"
-        {
-        'p-identity': [
-            {
-            'credentials': {
-                'client_id': 'cb3efc76-bd22-46b3-a5ca-3aaa21c96073',
-                'client_secret': '92b5ebf0-c67b-4671-98d3-8e316fb11e30',
-                'auth_domain': 'https://sso.login.system.testcloud.com'
-            },
-            'syslog_drain_url': null,
-            'label': 'p-identity',
-            'provider': null,
-            'plan': 'sso',
-            'name': 'mySSO',
-            'tags': []
-            }
-      ]
-        }
-        ";
+                {
+                    ""p-identity"": [{
+                        ""credentials"": {
+                            ""client_id"": ""cb3efc76-bd22-46b3-a5ca-3aaa21c96073"",
+                            ""client_secret"": ""92b5ebf0-c67b-4671-98d3-8e316fb11e30"",
+                            ""auth_domain"": ""https://sso.login.system.testcloud.com""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-identity"",
+                        ""provider"": null,
+                        ""plan"": ""sso"",
+                        ""name"": ""mySSO"",
+                        ""tags"": []
+                    }]
+                }";
 
             // Arrange
             IServiceCollection services = new ServiceCollection();

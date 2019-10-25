@@ -34,7 +34,7 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
         {
             // arrange
             var opts = new ThreadDumpEndpointOptions();
-            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var middle = new EndpointOwinMiddleware<List<ThreadInfo>>(null, new ThreadDumpEndpoint(opts, new ThreadDumper(opts)), mgmtOptions);
             var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/dump");
 
@@ -78,7 +78,7 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
         public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new ThreadDumpEndpointOptions();
-            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var mgmtOptions = TestHelper.GetManagementOptions(opts);
             ThreadDumper obs = new ThreadDumper(opts);
             var ep = new ThreadDumpEndpoint(opts, obs);
             var middle = new EndpointOwinMiddleware<List<ThreadInfo>>(null, ep, mgmtOptions);

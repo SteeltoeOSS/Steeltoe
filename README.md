@@ -45,32 +45,21 @@ Steeltoe is fully open source and is found under the SteeltoeOSS organization on
 These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) repository:
 
 * Configuration - configuration providers which extend the reach of [.NET Configuration](https://github.com/aspnet/Configuration) services
-
 * Common - Common packages to other Steeltoe components
-
 * CircuitBreaker - monitor and isolate requests to remote dependent services with latency and fault tolerance logic
-
 * Connectors - simplify the process of configuring and using back-end services locally and in the cloud
-
 * Discovery - provide the ability to register and discover services locally and in the cloud
-
 * Logging - adds logging extensions
-
 * Management - add monitoring and management to production based application
-
 * Security - simplify integration of security services provided by the cloud platform
 
 #### Other Repositories
+
 * [Samples](https://github.com/SteeltoeOSS/Samples) - Our collection of Sample applications used as a reference for Steeltoe .NET Application development
-
-* [Initializr](https://github.com/SteeltoeOSS/initializr) - The [Steeltoe Initializr](https://start.steeltoe.io) source code 
-
+* [Initializr](https://github.com/SteeltoeOSS/initializr) - The [Steeltoe Initializr](https://start.steeltoe.io) source code
 * [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling
-
 * [Dockerfiles](https://github.com/SteeltoeOSS/Dockerfiles) - Our collection of docker files we have on dockerhub
-
 * [eShopOnContainers](https://github.com/SteeltoeOSS/eShopOnContainers) - Sample reference microservice and container based application with added Steeltoe capabilities (Forked and updated from dotnet-architecture org)
-
 * [Steeltoe-site](https://github.com/SteeltoeOSS/steeltoe-site) - All of the steeltoe.io website and documentation artifacts
 
 ## Roadmaps
@@ -82,23 +71,9 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 
 ## Getting Started
 
-1. Perform any of the several [Quick Starts](https://steeltoe.io/docs/steeltoe-configuration/#1-1-quick-start) you will find throughout the [Steeltoe documentation](https://steeltoe.io/docs/).
-
-1. Review, run, and modify the extensive collection of [Samples](https://github.com/SteeltoeOSS/Samples) available on Github.
-
-1. To get down into the details of any Steeltoe project, read the [documentation](https://steeltoe.io/docs/).
-
-## Getting the Code
-
-The development of the core components of Steeltoe is done out of the [steeltoe](/) repository on the `master` branch.
-
-Maintenance branches are created after each major release (i.e. 2.x) and minor branches (i.e. 2.2.x) are created as needed for regressions, and/or security issues.
-
-All release and release candidate packages are listed under the tags section on GitHub (e.g. 2.2.0).
-
-The latest Steeltoe packages from each branch can be found on [MyGet](https://www.myget.org/).
-
-The released and release candidates can be found on [NuGet](https://www.nuget.org/).
+1. Follow any "Get Started" link on the [Steeltoe site](https://steeltoe.io/)
+1. Review, run, and modify the extensive collection of [Samples](https://github.com/SteeltoeOSS/Samples) available on Github
+1. To get down into the details of any Steeltoe project, read the [documentation](https://steeltoe.io/docs/)
 
 ## Contributing
 
@@ -108,6 +83,22 @@ Check out the [contributing guidelines](https://github.com/SteeltoeOSS/.github/b
 
 Also its worth noting, the Steeltoe project has adopted the code of conduct defined by the [Contributor Covenant](https://contributor-covenant.org/).
 If you'd like more information, see the [.NET Foundation Code of Conduct](https://www.dotnetfoundation.org/code-of-conduct) write-up.
+
+## Getting the Code
+
+The development of the core components of Steeltoe is done out of the [steeltoe](/) repository on the `master` branch.
+
+Maintenance branches are created after each major release (i.e. 2.x) and minor branches (i.e. 2.2.x) are created as needed for regressions, and/or security issues.
+
+All release and release candidate packages are listed under the tags section on GitHub (e.g. 2.2.0).
+
+The latest Steeltoe packages from each branch can be found on [MyGet](https://myget.org/gallery/steeltoedev).
+
+The released and release candidates can be found on [NuGet](https://www.nuget.org/profiles/steeltoe).
+
+## Building from Source
+
+Steeltoe components can be built from source with a recent version of the [.NET Core SDK](https://dotnet.microsoft.com/download/visual-studio-sdks) on Windows, Linux or MacOS. Any IDE that supports .NET is expected to work - core contributors regularly use Visual Studio, Visual Studio Code and JetBrains Rider. Visual Studio Solution (`.sln`) files are provided for each component, along with a single `.sln` file that will load all components.
 
 ## Governance Model
 

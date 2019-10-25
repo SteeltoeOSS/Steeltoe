@@ -71,7 +71,7 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
                 new byte[]
                 {
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0
-                    },
+                },
                 binaryFormat.ToByteArray(SpanContext.INVALID));
         }
 
@@ -109,7 +109,7 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
         {
             Assert.Equal(
                 SpanContext.Create(TraceId.INVALID, SpanId.INVALID, TraceOptions.DEFAULT),
-                    binaryFormat.FromByteArray(
+                binaryFormat.FromByteArray(
                         new byte[]
                         {
                   0, 4, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 1, 97, 98,
@@ -126,7 +126,7 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
                             new byte[] { 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }),
                         SpanId.INVALID,
                         TraceOptions.DEFAULT),
-                    binaryFormat.FromByteArray(
+                 binaryFormat.FromByteArray(
                         new byte[]
                         {
                   0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 3, 97, 98,

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.Test;
 using System.IO;
 using Xunit;

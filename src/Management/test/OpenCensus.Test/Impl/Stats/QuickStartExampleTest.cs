@@ -197,6 +197,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                         return false;
                     }
                 }
+
                 return true;
             });
 

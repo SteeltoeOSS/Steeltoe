@@ -163,6 +163,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return rollingCounterStream.GetLatestCount(@event);
         }
 
+        public override long GetRollingCount(HystrixRollingNumberEvent @event)
+        {
+            return rollingCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
+        }
+
         public long GetCumulativeCount(ThreadPoolEventType @event)
         {
             return cumulativeCounterStream.GetLatestCount(@event);
@@ -171,11 +176,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public override long GetCumulativeCount(HystrixRollingNumberEvent @event)
         {
             return cumulativeCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
-        }
-
-        public override long GetRollingCount(HystrixRollingNumberEvent @event)
-        {
-            return rollingCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
         }
 
         public void MarkThreadCompletion()

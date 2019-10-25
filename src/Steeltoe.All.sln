@@ -12,6 +12,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security", "Common\src\Common.Security\Steeltoe.Common.Security.csproj", "{DFE642E6-1CD0-4485-AC86-43CEBC451484}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{59874241-E276-4035-B31D-14924889A1C9}"
+	ProjectSection(SolutionItems) = preProject
+		Common\README.md = Common\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http.Test", "Common\test\Common.Http.Test\Steeltoe.Common.Http.Test.csproj", "{C67D2028-D637-4D81-84A2-5D64F2E389DA}"
 EndProject
@@ -22,6 +25,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security.Test", "Common\test\Common.Security.Test\Steeltoe.Common.Security.Test.csproj", "{880208DF-05C6-4763-A447-744D6C8DBDEA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CircuitBreaker", "CircuitBreaker", "{43870F18-E788-433B-A41D-7C98174BA402}"
+	ProjectSection(SolutionItems) = preProject
+		CircuitBreaker\README.md = CircuitBreaker\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore", "CircuitBreaker\src\Hystrix.MetricsEventsCore\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.csproj", "{137F6F0A-04A4-402D-A452-4634DEBC6B7C}"
 EndProject
@@ -41,8 +47,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hys
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{DC1BC61A-E0FA-4CF9-9F24-D4C564A07836}"
 	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
 		..\.gitignore = ..\.gitignore
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		..\codecov.yml = ..\codecov.yml
 		..\nuget.config = ..\nuget.config
 		..\sharedproject.props = ..\sharedproject.props
 		..\sharedtest.props = ..\sharedtest.props
@@ -52,16 +60,34 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{DC1B
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{4AB95F47-0C93-4C88-B87F-231262CD0E89}"
+	ProjectSection(SolutionItems) = preProject
+		Configuration\README.md = Configuration\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", "{3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}"
+	ProjectSection(SolutionItems) = preProject
+		Connectors\README.md = Connectors\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Discovery", "Discovery", "{31BAEBB1-696E-44A1-B1EF-0D150E6D2559}"
+	ProjectSection(SolutionItems) = preProject
+		Discovery\README.md = Discovery\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logging", "Logging", "{DDB99068-891F-4937-98B0-E72CC3F4964B}"
+	ProjectSection(SolutionItems) = preProject
+		Logging\README.md = Logging\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Management", "Management", "{8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}"
+	ProjectSection(SolutionItems) = preProject
+		Management\README.md = Management\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Security", "Security", "{5128206A-242E-4069-AD30-910EDC40B165}"
+	ProjectSection(SolutionItems) = preProject
+		Security\README.md = Security\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{3084B070-6F72-4673-889F-EF00DADB468B}"
 EndProject
@@ -242,6 +268,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus.Test", "Management\test\OpenCensus.Test\Steeltoe.Management.OpenCensus.Test.csproj", "{A9F88613-375A-4CE8-9B34-D88799850570}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.GemFireConnector.Test", "Connectors\test\GemFireConnector.Net4Test\Steeltoe.CloudFoundry.GemFireConnector.Test.csproj", "{D5572167-00EB-48FA-8CC3-0394A399C289}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -673,6 +701,10 @@ Global
 		{D5572167-00EB-48FA-8CC3-0394A399C289}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5572167-00EB-48FA-8CC3-0394A399C289}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5572167-00EB-48FA-8CC3-0394A399C289}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -784,6 +816,7 @@ Global
 		{2162D3DB-A0C0-41AF-BFA8-7A29FCF8D533} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{A9F88613-375A-4CE8-9B34-D88799850570} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{D5572167-00EB-48FA-8CC3-0394A399C289} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
+		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11} = {59874241-E276-4035-B31D-14924889A1C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

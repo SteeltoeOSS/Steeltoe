@@ -144,7 +144,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                     VIEW_DESCRIPTION,
                     MEASURE_DOUBLE,
                     DISTRIBUTION,
-                   new List<ITagKey>() { KEY });
+                    new List<ITagKey>() { KEY });
             viewManager.RegisterView(view1);
             ISet<IView> exported = viewManager.AllExportedViews;
 
@@ -154,7 +154,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                     VIEW_DESCRIPTION,
                     MEASURE_DOUBLE,
                     DISTRIBUTION,
-                   new List<ITagKey>() { KEY });
+                    new List<ITagKey>() { KEY });
             Assert.Throws<NotSupportedException>(() => exported.Add(view2));
         }
 
@@ -360,7 +360,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 { tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 10.0) },
                 { tv2, StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 30.0, 50.0) }
                 },
-            EPSILON);
+                EPSILON);
         }
 
         // This test checks that MeasureMaper.Record(...) does not throw an exception when no views are
@@ -394,7 +394,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                         tv,
 
                     // Should Record stats with default tag value: "KEY" : "unknown/not set".
-                    StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 10.0)
+                        StatsTestUtil.CreateAggregationData(DISTRIBUTION, MEASURE_DOUBLE, 10.0)
                     }
                 },
                 EPSILON);
@@ -596,10 +596,10 @@ namespace Steeltoe.Management.Census.Stats.Test
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData1.AggregationMap,
-                 new Dictionary<TagValues, IAggregationData>()
+                new Dictionary<TagValues, IAggregationData>()
                 {
                     { tv, StatsTestUtil.CreateAggregationData(DISTRIBUTION, measure1, value1) }
-                 },
+                },
                 EPSILON);
 
             StatsTestUtil.AssertAggregationMapEquals(

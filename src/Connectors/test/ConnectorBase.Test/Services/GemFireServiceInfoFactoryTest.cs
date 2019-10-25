@@ -27,86 +27,86 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Name = "myPCCService",
             Plan = "dev-plan",
             Credentials = new Credential()
+            {
+                { "distributed_system_id", new Credential("0") },
                 {
-                    { "distributed_system_id", new Credential("0") },
+                    "locators",
+                    new Credential()
                     {
-                        "locators",
-                        new Credential()
-                        {
-                            { "0", new Credential("10.194.45.168[55221]") }
-                        }
-                    },
+                        { "0", new Credential("10.194.45.168[55221]") }
+                    }
+                },
+                {
+                    "urls",
+                    new Credential()
                     {
-                        "urls",
-                        new Credential()
-                        {
-                            { "gfsh", new Credential("https://cloudcache-4126e12a-508a-40f3-8df6-2cf7157f3095.cf.beet.springapps.io/gemfire/v1") },
-                            { "pulse", new Credential("https://cloudcache-4126e12a-508a-40f3-8df6-2cf7157f3095.cf.beet.springapps.io/pulse") }
-                        }
-                    },
+                        { "gfsh", new Credential("https://cloudcache-4126e12a-508a-40f3-8df6-2cf7157f3095.cf.beet.springapps.io/gemfire/v1") },
+                        { "pulse", new Credential("https://cloudcache-4126e12a-508a-40f3-8df6-2cf7157f3095.cf.beet.springapps.io/pulse") }
+                    }
+                },
+                {
+                    "users",
+                    new Credential()
                     {
-                        "users",
-                        new Credential()
                         {
+                            "0",
+                            new Credential()
                             {
-                                "0",
-                                new Credential()
+                                { "username", new Credential("cluster_operator_ftqmv76NgWDu8q8vNvxuQQ") },
                                 {
-                                    { "username", new Credential("cluster_operator_ftqmv76NgWDu8q8vNvxuQQ") },
+                                    "roles",
+                                    new Credential()
                                     {
-                                        "roles",
-                                        new Credential()
                                         {
-                                            {
-                                                "0",
-                                                new Credential("cluster_operator")
-                                            }
+                                            "0",
+                                            new Credential("cluster_operator")
                                         }
-                                    },
-                                    { "password", new Credential("nOVqiwOmLL6O54lGmlcfw") }
-                                }
-                            },
+                                    }
+                                },
+                                { "password", new Credential("nOVqiwOmLL6O54lGmlcfw") }
+                            }
+                        },
+                        {
+                            "1",
+                            new Credential()
                             {
-                                "1",
-                                new Credential()
+                                { "username", new Credential("developer_G5XmmQBfhIXyz0vgcAOEg") },
                                 {
-                                    { "username", new Credential("developer_G5XmmQBfhIXyz0vgcAOEg") },
+                                    "roles",
+                                    new Credential()
                                     {
-                                        "roles",
-                                        new Credential()
                                         {
-                                            {
-                                                "0",
-                                                new Credential("developer")
-                                            }
+                                            "0",
+                                            new Credential("developer")
                                         }
-                                    },
-                                    { "password", new Credential("a04RMKLFPjYmYS4M5GvY0A") }
-                                }
+                                    }
+                                },
+                                { "password", new Credential("a04RMKLFPjYmYS4M5GvY0A") }
                             }
                         }
-                    },
+                    }
+                },
+                {
+                    "wan",
+                    new Credential()
                     {
-                        "wan",
-                        new Credential()
                         {
+                            "sender_credentials",
+                            new Credential()
                             {
-                                "sender_credentials",
-                                new Credential()
                                 {
+                                    "active",
+                                    new Credential()
                                     {
-                                        "active",
-                                        new Credential()
-                                        {
-                                            { "password", new Credential("INFbDQVjvxunZ1nl9ObSQ") },
-                                            { "username", new Credential("gateway_sender_gaogaWQwOlJbSg4qItqEg") }
-                                        }
+                                        { "password", new Credential("INFbDQVjvxunZ1nl9ObSQ") },
+                                        { "username", new Credential("gateway_sender_gaogaWQwOlJbSg4qItqEg") }
                                     }
                                 }
                             }
                         }
-                    },
-             }
+                    }
+                },
+            }
         };
 
         [Fact]

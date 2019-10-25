@@ -181,6 +181,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             return rollingCommandEventCounterStream.GetLatest(eventType);
         }
 
+        public override long GetRollingCount(HystrixRollingNumberEvent @event)
+        {
+            return GetRollingCount(HystrixEventTypeHelper.From(@event));
+        }
+
         public long GetCumulativeCount(HystrixEventType eventType)
         {
             return cumulativeCommandEventCounterStream.GetLatest(eventType);
@@ -189,11 +194,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public override long GetCumulativeCount(HystrixRollingNumberEvent @event)
         {
             return GetCumulativeCount(HystrixEventTypeHelper.From(@event));
-        }
-
-        public override long GetRollingCount(HystrixRollingNumberEvent @event)
-        {
-            return GetRollingCount(HystrixEventTypeHelper.From(@event));
         }
 
         public int GetExecutionTimePercentile(double percentile)

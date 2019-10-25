@@ -38,7 +38,7 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var opts = new RefreshEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var middle = new EndpointOwinMiddleware<IList<string>>(null, new RefreshEndpoint(opts, configurationBuilder.Build()), mopts);
             var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/refresh");
 
@@ -76,7 +76,7 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
         public void RefreshEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new RefreshEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var config = configurationBuilder.Build();

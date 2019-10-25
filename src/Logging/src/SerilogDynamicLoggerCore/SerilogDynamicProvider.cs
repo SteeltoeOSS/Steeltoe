@@ -117,7 +117,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             // get the default first
             LogLevel configuredDefault = GetConfiguredLevel("Default") ?? LogLevel.None;
             LogLevel effectiveDefault = GetEffectiveLevel("Default");
-            results.Add("Default", new LoggerConfiguration("Default", configuredDefault, effectiveDefault));
+            results.Add("Default", new DynamicLoggerConfiguration("Default", configuredDefault, effectiveDefault));
 
             // then get all running loggers
             foreach (var logger in _loggers)
@@ -127,12 +127,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                     if (name != "Default")
                     {
                         LogLevel? configured = GetConfiguredLevel(name);
-
                         LogLevel effective = GetEffectiveLevel(name);
-                        var config = new LoggerConfiguration(name, configured, effective);
+                        var config = new DynamicLoggerConfiguration(name, configured, effective);
                         if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
-
                             Console.WriteLine(
                                 $"Attempted to add duplicate Key {name} with value {config} clashes with {results[name]}");
                         }

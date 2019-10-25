@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="..\..\..\..\versions.props" />
-
   <PropertyGroup>
     <Description>Base Security Provider for CloudFoundry</Description>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Security.Authentication.CloudFoundryBase</AssemblyName>
     <PackageId>Steeltoe.Security.Authentication.CloudFoundryBase</PackageId>
     <PackageTags>CloudFoundry;ASPNET;ASPNET Core;Security;OAuth2;SSO;OpenID</PackageTags>

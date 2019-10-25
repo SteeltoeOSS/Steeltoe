@@ -13,15 +13,20 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+#if NETSTANDARD2_0
 using Microsoft.AspNetCore.Mvc.Internal;
+#endif
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,7 +94,8 @@ namespace Steeltoe.Management.Endpoint.Mappings
             var serialInfo = Serialize(result);
 
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
+
+            context.HandleContentNegotiation(_logger);
             await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
 
@@ -159,6 +165,29 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 mapList.Add(mapDesc);
             }
 
+            foreach (var desc in apiContext.Actions)
+            {
+                if (desc is ControllerActionDescriptor cdesc)
+                {
+                    if (apiContext.Results.Any() && mappingDescriptions.Any(description => description.Value.Any(n => n.Handler.Equals(cdesc.MethodInfo.ToString()))))
+                    {
+                        continue;
+                    }
+
+                    var details = GetRouteDetails(desc);
+                    mappingDescriptions.TryGetValue(cdesc.ControllerTypeInfo.FullName, out IList<MappingDescription> mapList);
+
+                    if (mapList == null)
+                    {
+                        mapList = new List<MappingDescription>();
+                        mappingDescriptions.Add(cdesc.ControllerTypeInfo.FullName, mapList);
+                    }
+
+                    var mapDesc = new MappingDescription(cdesc.MethodInfo, details);
+                    mapList.Add(mapDesc);
+                }
+            }
+
             return mappingDescriptions;
         }
 
@@ -193,10 +222,59 @@ namespace Steeltoe.Management.Endpoint.Mappings
             List<string> consumes = new List<string>();
             foreach (var reqTypes in desc.SupportedRequestFormats)
             {
-                 consumes.Add(reqTypes.MediaType);
+                consumes.Add(reqTypes.MediaType);
             }
 
             routeDetails.Consumes = consumes;
+
+            return routeDetails;
+        }
+
+        protected internal IRouteDetails GetRouteDetails(ActionDescriptor desc)
+        {
+            var routeDetails = new AspNetCoreRouteDetails
+            {
+                HttpMethods = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string> { MappingDescription.ALL_HTTP_METHODS },
+                Consumes = new List<string>(),
+                Produces = new List<string>()
+            };
+
+            if (desc.AttributeRouteInfo?.Template != null)
+            {
+                routeDetails.RouteTemplate = desc.AttributeRouteInfo.Template;
+            }
+            else
+            {
+                var cdesc = desc as ControllerActionDescriptor;
+                routeDetails.RouteTemplate = $"/{cdesc.ControllerName}/{cdesc.ActionName}";
+            }
+
+            foreach (var filter in desc.FilterDescriptors.Where(f => f.Filter is ProducesAttribute).Select(f => (ProducesAttribute)f.Filter))
+            {
+                foreach (var format in filter.ContentTypes)
+                {
+                    routeDetails.Produces.Add(format);
+                }
+            }
+
+            foreach (var filter in desc.FilterDescriptors.Where(f => f.Filter is ConsumesAttribute).Select(f => (ConsumesAttribute)f.Filter))
+            {
+                foreach (var format in filter.ContentTypes)
+                {
+                    routeDetails.Consumes.Add(format);
+                }
+            }
+
+            return routeDetails;
+        }
+
+        protected internal IRouteDetails GetRouteDetails(Route route)
+        {
+            var routeDetails = new AspNetCoreRouteDetails
+            {
+                HttpMethods = GetHttpMethods(route),
+                RouteTemplate = route.RouteTemplate
+            };
 
             return routeDetails;
         }
@@ -227,17 +305,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
             }
         }
 
-        protected internal IRouteDetails GetRouteDetails(Route route)
-        {
-            var routeDetails = new AspNetCoreRouteDetails
-            {
-                HttpMethods = GetHttpMethods(route),
-                RouteTemplate = route.RouteTemplate
-            };
-
-            return routeDetails;
-        }
-
         private IList<string> GetHttpMethods(ApiDescription desc)
         {
             if (!string.IsNullOrEmpty(desc.HttpMethod))
@@ -266,6 +333,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 return new ApiDescriptionProviderContext(new List<ActionDescriptor>());
             }
 
+#if NETSTANDARD2_0
             foreach (var action in actionDescriptors)
             {
                 // This is required in order for OnProvidersExecuting() to work
@@ -273,9 +341,9 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 {
                     GroupName = "Steeltoe"
                 };
-
                 action.SetProperty(apiExplorerActionData);
             }
+#endif
 
             var context = new ApiDescriptionProviderContext(actionDescriptors);
 

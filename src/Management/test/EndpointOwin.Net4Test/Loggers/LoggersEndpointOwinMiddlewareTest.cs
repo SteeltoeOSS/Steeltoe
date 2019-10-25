@@ -37,7 +37,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
         public async void LoggersInvoke_ReturnsExpected()
         {
             var opts = new LoggersEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var ep = new TestLoggersEndpoint(opts);
             var middle = new LoggersEndpointOwinMiddleware(null, ep, mopts);
             var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/loggers");
@@ -115,7 +115,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
         public void LoggersEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new LoggersEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var ep = new LoggersEndpoint(opts, (IDynamicLoggerProvider)null);
             var middle = new LoggersEndpointOwinMiddleware(null, ep, mopts);
 

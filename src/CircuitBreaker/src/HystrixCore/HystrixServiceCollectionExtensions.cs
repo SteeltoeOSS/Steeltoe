@@ -235,7 +235,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static void AddHystrixCommand<TService, TImplementation>(this IServiceCollection services, string groupKey, string commandKey, IConfiguration config)
              where TService : class
-            where TImplementation : class, TService
+             where TImplementation : class, TService
         {
             if (services == null)
             {

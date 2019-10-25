@@ -117,39 +117,36 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         {
             // Arrange
             var env2 = @"
-{
-      'p-rabbitmq': [
-        {
-            'credentials': {
-                'uri': 'amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355'
-            },
-          'syslog_drain_url': null,
-          'label': 'p-rabbitmq',
-          'provider': null,
-          'plan': 'standard',
-          'name': 'myRabbitMQService1',
-          'tags': [
-            'rabbitmq',
-            'amqp'
-          ]
-        }, 
-        {
-            'credentials': {
-                'uri': 'amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355'
-            },
-          'syslog_drain_url': null,
-          'label': 'p-Rabbit',
-          'provider': null,
-          'plan': 'standard',
-          'name': 'myRabbitMQService2',
-          'tags': [
-            'rabbitmq',
-            'amqp'
-          ]
-        } 
-      ]
-}
-";
+                {
+                    ""p-rabbitmq"": [{
+                        ""credentials"": {
+                            ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-rabbitmq"",
+                        ""provider"": null,
+                        ""plan"": ""standard"",
+                        ""name"": ""myRabbitMQService1"",
+                        ""tags"": [
+                            ""rabbitmq"",
+                            ""amqp""
+                        ]
+                    }, 
+                    {
+                        ""credentials"": {
+                            ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-Rabbit"",
+                        ""provider"": null,
+                        ""plan"": ""standard"",
+                        ""name"": ""myRabbitMQService2"",
+                        ""tags"": [
+                            ""rabbitmq"",
+                            ""amqp""
+                        ]
+                    }]
+                }";
 
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -173,39 +170,36 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         {
             // Arrange
             var env2 = @"
-{
-      'p-rabbitmq': [
-        {
-            'credentials': {
-                'uri': 'amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355'
-            },
-          'syslog_drain_url': null,
-          'label': 'p-rabbitmq',
-          'provider': null,
-          'plan': 'standard',
-          'name': 'myRabbitMQService1',
-          'tags': [
-            'rabbitmq',
-            'amqp'
-          ]
-        }, 
-        {
-            'credentials': {
-                'uri': 'amqp://a:b@192.168.0.91:3306/asdf'
-            },
-          'syslog_drain_url': null,
-          'label': 'p-Rabbit',
-          'provider': null,
-          'plan': 'standard',
-          'name': 'myRabbitMQService2',
-          'tags': [
-            'rabbitmq',
-            'amqp'
-          ]
-        } 
-      ]
-}
-";
+                {
+                    ""p-rabbitmq"": [{
+                        ""credentials"": {
+                            ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-rabbitmq"",
+                        ""provider"": null,
+                        ""plan"": ""standard"",
+                        ""name"": ""myRabbitMQService1"",
+                        ""tags"": [
+                            ""rabbitmq"",
+                            ""amqp""
+                        ]
+                    }, 
+                    {
+                        ""credentials"": {
+                            ""uri"": ""amqp://a:b@192.168.0.91:3306/asdf""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-Rabbit"",
+                        ""provider"": null,
+                        ""plan"": ""standard"",
+                        ""name"": ""myRabbitMQService2"",
+                        ""tags"": [
+                            ""rabbitmq"",
+                            ""amqp""
+                        ]
+                    }]
+                }";
 
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -233,25 +227,22 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         {
             // Arrange
             var env2 = @"
-{
-      'p-rabbitmq': [
-        {
-          'credentials': {
-            'uri': 'amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355'
-          },
-          'syslog_drain_url': null,
-          'label': 'p-rabbitmq',
-          'provider': null,
-          'plan': 'standard',
-          'name': 'myRabbitMQService',
-          'tags': [
-            'rabbitmq',
-            'amqp'
-          ]
-        }
-      ]
-}
-";
+                {
+                    ""p-rabbitmq"": [{
+                        ""credentials"": {
+                            ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""label"": ""p-rabbitmq"",
+                        ""provider"": null,
+                        ""plan"": ""standard"",
+                        ""name"": ""myRabbitMQService"",
+                        ""tags"": [
+                            ""rabbitmq"",
+                            ""amqp""
+                        ]
+                    }]
+                }";
 
             // Arrange
             IServiceCollection services = new ServiceCollection();

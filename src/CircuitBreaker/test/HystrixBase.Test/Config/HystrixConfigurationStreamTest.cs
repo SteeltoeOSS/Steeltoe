@@ -64,6 +64,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config.Test
                     {
                         commandShowsUp.Value = true;
                     }
+
                     if (configuration.ThreadPoolConfig.Count != 0)
                     {
                         threadPoolShowsUp.Value = true;

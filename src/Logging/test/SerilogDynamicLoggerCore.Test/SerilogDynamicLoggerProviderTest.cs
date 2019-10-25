@@ -153,12 +153,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 
             var logConfig = provider.GetLoggerConfigurations();
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
         }
 
         [Fact]
@@ -175,12 +175,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 
             // assert I
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
 
             // act II
             provider.SetLogLevel("A.B", LogLevel.Trace);
@@ -188,12 +188,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 
             // assert II
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C.D", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A.B", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new LoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Trace), logConfig);
         }
 
         [Fact]
@@ -210,8 +210,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             var updatedLogConfig = provider.GetLoggerConfigurations();
 
             // assert
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
         }
 
         [Fact]
@@ -230,9 +230,9 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             var resetConfig = provider.GetLoggerConfigurations();
 
             // assert
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
-            Assert.Contains(new LoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), resetConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), resetConfig);
         }
 
         [Fact]
@@ -240,12 +240,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
              var provider = new SerilogDynamicProvider(GetConfiguration());
-           LoggerFactory fac = new LoggerFactory();
-            fac.AddProvider(provider);
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+             LoggerFactory fac = new LoggerFactory();
+             fac.AddProvider(provider);
+             ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
             // act I - log at all levels, expect Info and above to work
-            using (var unConsole = new ConsoleOutputBorrower())
+             using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -264,8 +264,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act II - adjust rules, expect Error and above to work
-            provider.SetLogLevel("A.B.C.D", LogLevel.Error);
-            using (var unConsole = new ConsoleOutputBorrower())
+             provider.SetLogLevel("A.B.C.D", LogLevel.Error);
+             using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -284,8 +284,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act III - adjust rules, expect Trace and above to work
-            provider.SetLogLevel("A", LogLevel.Trace);
-            using (var unConsole = new ConsoleOutputBorrower())
+             provider.SetLogLevel("A", LogLevel.Trace);
+             using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -304,8 +304,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act IV - adjust rules, expect nothing to work
-            provider.SetLogLevel("A", LogLevel.None);
-            using (var unConsole = new ConsoleOutputBorrower())
+             provider.SetLogLevel("A", LogLevel.None);
+             using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -324,8 +324,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act V - reset the rules, expect Info and above to work
-            provider.SetLogLevel("A", LogLevel.Information); // Only works with serilog for configured values
-            using (var unConsole = new ConsoleOutputBorrower())
+             provider.SetLogLevel("A", LogLevel.Information); // Only works with serilog for configured values
+             using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 

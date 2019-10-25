@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "client_secret", new Credential("clientSecret") },
                     { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token") },
                     { "uri", new Credential("https://username:password@192.168.0.90:1111/") },
-                    }
+                }
             };
             EurekaServiceInfoFactory factory = new EurekaServiceInfoFactory();
             Assert.True(factory.Accept(s));
@@ -58,7 +58,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                     { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                    }
+                }
             };
             EurekaServiceInfoFactory factory = new EurekaServiceInfoFactory();
             Assert.False(factory.Accept(s));
@@ -79,7 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "client_secret", new Credential("clientSecret") },
                     { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token") },
                     { "uri", new Credential("https://username:password@192.168.0.90:1111/") },
-                    }
+                }
             };
             EurekaServiceInfoFactory factory = new EurekaServiceInfoFactory();
             var info = factory.Create(s) as EurekaServiceInfo;

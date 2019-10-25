@@ -12,8 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if !NETCOREAPP3_0
 using Newtonsoft.Json.Linq;
+#endif
 using System.Security.Claims;
+#if NETCOREAPP3_0
+using System.Text.Json;
+#endif
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
@@ -24,7 +29,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void Run_AddsClaims()
         {
             string resp = TestHelpers.GetValidTokenInfoRequestResponse();
+#if NETCOREAPP3_0
+            var payload = JsonDocument.Parse(resp).RootElement;
+#else
             var payload = JObject.Parse(resp);
+#endif
             var action = new CloudFoundryScopeClaimAction("scope", ClaimValueTypes.String);
             var ident = new ClaimsIdentity();
             action.Run(payload, ident, "Issuer");

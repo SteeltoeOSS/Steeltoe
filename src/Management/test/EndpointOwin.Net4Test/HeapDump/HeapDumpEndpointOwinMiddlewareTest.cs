@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin.Testing;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
@@ -38,9 +39,8 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 var opts = new HeapDumpEndpointOptions();
-                var mopts = TestHelpers.GetManagementOptions(opts);
-                LoggerFactory loggerFactory = new LoggerFactory();
-                loggerFactory.AddConsole(minLevel: LogLevel.Debug);
+                var mopts = TestHelper.GetManagementOptions(opts);
+                var loggerFactory = TestHelpers.GetLoggerFactory();
                 var logger1 = loggerFactory.CreateLogger<HeapDumper>();
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointOwinMiddleware>();
@@ -91,7 +91,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
         public void HeapDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new HeapDumpEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             HeapDumper obs = new HeapDumper(opts);
             var ep = new HeapDumpEndpoint(opts, obs);
             var middle = new HeapDumpEndpointOwinMiddleware(null, ep, mopts);

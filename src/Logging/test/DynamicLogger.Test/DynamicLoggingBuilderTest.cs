@@ -88,7 +88,7 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should NOT be enabled yet");
 
             // change the log level and confirm it worked
-            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
+            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicConsoleLoggerProvider;
             provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
             Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
         }
@@ -104,24 +104,6 @@ namespace Steeltoe.Extensions.Logging.Test
                     builder.AddConfiguration(configuration.GetSection("Logging"));
                     builder.AddConsole();
                 }).BuildServiceProvider();
-
-            // act
-            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
-
-            // assert
-            Assert.NotNull(logger);
-            Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
-            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
-        }
-
-        [Fact]
-        public void AddDynamicConsole_Works_WithConfigurationParam()
-        {
-            // arrange
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-            var services = new ServiceCollection()
-                .AddLogging(builder => builder.AddDynamicConsole(configuration))
-                .BuildServiceProvider();
 
             // act
             var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
@@ -176,35 +158,7 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
 
             // change the log level and confirm it worked
-            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
-            provider.SetLogLevel("Steeltoe.Extensions.Logging.Test", LogLevel.Trace);
-            Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
-        }
-
-        [Fact]
-        public void DynamicLevelSetting_WithParmsAddDynamic_NotBrokenByAddConfiguration()
-        {
-            // arrange
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-            var services = new ServiceCollection()
-                .AddLogging(builder =>
-                {
-                    builder.AddConfiguration(configuration.GetSection("Logging"));
-                    builder.AddDynamicConsole(configuration);
-                })
-                .BuildServiceProvider();
-
-            // act
-            var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
-
-            // assert
-            Assert.NotNull(logger);
-            Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
-            Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
-            Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
-
-            // change the log level and confirm it worked
-            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicLoggerProvider;
+            var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicConsoleLoggerProvider;
             provider.SetLogLevel("Steeltoe.Extensions.Logging.Test", LogLevel.Trace);
             Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
         }
@@ -278,7 +232,7 @@ namespace Steeltoe.Extensions.Logging.Test
             Assert.NotNull(dlogProvider);
             Assert.NotEmpty(logProviders);
             Assert.Single(logProviders);
-            Assert.IsType<DynamicLoggerProvider>(logProviders.SingleOrDefault());
+            Assert.IsType<DynamicConsoleLoggerProvider>(logProviders.SingleOrDefault());
         }
 
         [Fact]
@@ -301,26 +255,6 @@ namespace Steeltoe.Extensions.Logging.Test
             // assert
             services.Dispose();
             dlogProvider.Dispose();
-        }
-
-        [Fact]
-        public void AddDynamicConsole_WithConfigurationParam_AddsServices()
-        {
-            // arrange
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-            var services = new ServiceCollection()
-                .AddLogging(builder => builder.AddDynamicConsole(configuration))
-                .BuildServiceProvider();
-
-            // act
-            var dlogProvider = services.GetService<IDynamicLoggerProvider>();
-            var logProviders = services.GetServices<ILoggerProvider>();
-
-            // assert
-            Assert.NotNull(dlogProvider);
-            Assert.NotEmpty(logProviders);
-            Assert.Single(logProviders);
-            Assert.IsType<DynamicLoggerProvider>(logProviders.SingleOrDefault());
         }
     }
 }

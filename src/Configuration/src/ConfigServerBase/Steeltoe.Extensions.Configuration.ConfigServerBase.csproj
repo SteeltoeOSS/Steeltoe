@@ -2,15 +2,12 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Spring Cloud Config Server Configuration Provider - Base Package</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Extensions.Configuration.ConfigServerBase</AssemblyName>
     <PackageId>Steeltoe.Extensions.Configuration.ConfigServerBase</PackageId>
     <PackageTags>Spring Cloud;Spring Cloud Config Server</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
-  
-  <ItemGroup>
-  </ItemGroup>
   
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />

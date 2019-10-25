@@ -31,8 +31,11 @@ namespace Steeltoe.Management.EndpointWeb.Test
             Context = mockContext;
         }
 
+#pragma warning disable CA2235 // Mark all non-serializable fields
         public Mock<HttpContextBase> Context { get; }
+#pragma warning restore CA2235 // Mark all non-serializable fields
 
+        [NonSerialized]
         private readonly ActuatorModule _module;
 
         public NameValueCollection RequestHeaders { get; set; }
@@ -59,7 +62,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
 
             Context.Setup(ctx => ctx.Response.Write(It.IsAny<string>())).Callback((string s) => response = s);
 
-             await _module.FilterAndPreProcessRequest(Context.Object, () => { });
+            await _module.FilterAndPreProcessRequest(Context.Object, () => { });
 
             return new TestResponse(response, statusCode, responseHeaders);
         }

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -24,22 +24,55 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     /// </summary>
     public static class ConfigServerConfigurationBuilderExtensionsCore
     {
+#if NETCOREAPP3_0
+        [Obsolete("IHostingEnvironment is obsolete")]
+#endif
         public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostingEnvironment environment, ILoggerFactory logFactory = null)
+        {
+            if (environment == null)
+            {
+                throw new ArgumentNullException(nameof(environment));
+            }
+
+            return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
+        }
+
+#if NETCOREAPP3_0
+        [Obsolete("IHostingEnvironment is obsolete")]
+#endif
+        public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, Microsoft.AspNetCore.Hosting.IHostingEnvironment environment, ILoggerFactory logFactory = null)
+        {
+            if (environment == null)
+            {
+                throw new ArgumentNullException(nameof(environment));
+            }
+
+            return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
+        }
+
+#if NETCOREAPP3_0
+        public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment, ILoggerFactory logFactory = null)
+        {
+            if (environment == null)
+            {
+                throw new ArgumentNullException(nameof(environment));
+            }
+
+            return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
+        }
+#endif
+
+        private static IConfigurationBuilder DoAddConfigServer(IConfigurationBuilder configurationBuilder, string applicationName, string environmentName, ILoggerFactory logFactory)
         {
             if (configurationBuilder == null)
             {
                 throw new ArgumentNullException(nameof(configurationBuilder));
             }
 
-            if (environment == null)
-            {
-                throw new ArgumentNullException(nameof(environment));
-            }
-
             var settings = new ConfigServerClientSettings()
             {
-                Name = environment.ApplicationName,
-                Environment = environment.EnvironmentName
+                Name = applicationName,
+                Environment = environmentName
             };
 
             return configurationBuilder.AddConfigServer(settings, logFactory);

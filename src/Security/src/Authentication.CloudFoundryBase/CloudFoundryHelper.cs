@@ -13,10 +13,15 @@
 // limitations under the License.
 
 using Microsoft.IdentityModel.Tokens;
+#if NETSTANDARD2_0
 using Newtonsoft.Json.Linq;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+#if NETCOREAPP3_0
+using System.Text.Json;
+#endif
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
@@ -24,6 +29,25 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
     {
         private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
+#if NETCOREAPP3_0
+        public static List<string> GetScopes(JsonElement user)
+        {
+            var result = new List<string>();
+            var scopes = user.GetProperty("scope");
+
+            if (scopes.ValueKind is JsonValueKind.Array)
+            {
+                foreach (var value in scopes.EnumerateArray())
+                {
+                    result.Add(value.GetString());
+                }
+
+                return result;
+            }
+
+            return result;
+        }
+#else
         public static List<string> GetScopes(JObject user)
         {
             if (user == null)
@@ -54,6 +78,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             return result;
         }
+#endif
 
         public static HttpMessageHandler GetBackChannelHandler(bool validateCertificates)
         {
@@ -91,21 +116,44 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             return parameters;
         }
 
+#if NETCOREAPP3_0
+        /// <summary>
+        /// Retrieves the time at which a token was issued
+        /// </summary>
+        /// <param name="payload">Contents of a JWT</param>
+        /// <returns>The <see cref="DateTime"/> representation of a token's issued-at time</returns>
+        public static DateTime GetIssueTime(JsonElement payload)
+        {
+            var time = payload.GetProperty("iat").GetInt64();
+            return ToAbsoluteUTC(time);
+        }
+
+        /// <summary>
+        /// Retrieves expiration time property (exp) in a <see cref="JsonDocument"/>
+        /// </summary>
+        /// <param name="payload">Contents of a JWT</param>
+        /// <returns>The <see cref="DateTime"/> representation of a token's expiration</returns>
+        public static DateTime GetExpTime(JsonElement payload)
+        {
+            var time = payload.GetProperty("exp").GetInt64();
+            return ToAbsoluteUTC(time);
+        }
+#else
         /// <summary>
         /// Retrieves the time at which a token was issued
         /// </summary>
         /// <param name="payload">Contents of a JWT</param>
         /// <returns>The <see cref="DateTime"/> representation of a token's issued-at time</returns>
         public static DateTime GetIssueTime(JObject payload)
+        {
+            if (payload == null)
             {
-                if (payload == null)
-                {
-                    throw new ArgumentNullException(nameof(payload));
-                }
-
-                var time = payload.Value<long>("iat");
-                return ToAbsoluteUTC(time);
+                throw new ArgumentNullException(nameof(payload));
             }
+
+            var time = payload.Value<long>("iat");
+            return ToAbsoluteUTC(time);
+        }
 
         /// <summary>
         /// Retrieves expiration time property (exp) in a <see cref="JObject"/>
@@ -122,6 +170,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             var time = payload.Value<long>("exp");
             return ToAbsoluteUTC(time);
         }
+#endif
 
         private static DateTime ToAbsoluteUTC(long secondsPastEpoch)
         {

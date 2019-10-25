@@ -400,11 +400,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
             return GetInstanceAsyncInternal(id);
         }
 
-        private async Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsyncInternal(string id)
-        {
-            return await DoGetInstanceAsync("instances/" + id).ConfigureAwait(false);
-        }
-
         public virtual Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string appName, string id)
         {
             if (string.IsNullOrEmpty(appName))
@@ -418,6 +413,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
 
             return GetInstanceAsyncInternal(appName, id);
+        }
+
+        private async Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsyncInternal(string id)
+        {
+            return await DoGetInstanceAsync("instances/" + id).ConfigureAwait(false);
         }
 
         private async Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsyncInternal(string appName, string id)
@@ -861,11 +861,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                         _logger?.LogDebug(
                             "DoGetInstanceAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}, retry: {retry}",
-                           requestUri.ToMaskedString(),
-                           response.StatusCode,
-                           (infoResp != null) ? infoResp.ToString() : "null",
-                           retry);
-                        int statusCode = (int)response.StatusCode;
+                            requestUri.ToMaskedString(),
+                            response.StatusCode,
+                            (infoResp != null) ? infoResp.ToString() : "null",
+                            retry);
+                        var statusCode = (int)response.StatusCode;
                         if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
                         {
                             Interlocked.Exchange(ref _serviceUrl, serviceUrl);

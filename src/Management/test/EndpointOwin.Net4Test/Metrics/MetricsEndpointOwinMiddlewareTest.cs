@@ -38,7 +38,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
         public void ParseTag_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
@@ -54,7 +54,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
         public void ParseTags_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
         public void GetMetricName_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
@@ -108,7 +108,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
         public async void HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
@@ -127,7 +127,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
         public async void HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
 
             var ep = new MetricsEndpoint(opts, stats);
@@ -143,7 +143,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
         public async void HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
             var tagsComponent = new TagsComponent();
             var tagger = tagsComponent.Tagger;
@@ -168,7 +168,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
         public void MetricsEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var stats = new OpenCensusStats();
             var ep = new MetricsEndpoint(opts, stats);
             var middle = new MetricsEndpointOwinMiddleware(null, ep, mopts);

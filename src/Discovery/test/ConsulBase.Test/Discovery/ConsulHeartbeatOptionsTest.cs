@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
 {
     public class ConsulHeartbeatOptionsTest
     {
-         [Fact]
+        [Fact]
         public void Constructor_InitsDefaults()
         {
             ConsulHeartbeatOptions opts = new ConsulHeartbeatOptions();

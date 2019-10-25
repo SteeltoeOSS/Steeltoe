@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if NET461
 using MySql.Data.EntityFramework;
 using System.Data.Entity;
 
@@ -25,3 +26,4 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         }
     }
 }
+#endif

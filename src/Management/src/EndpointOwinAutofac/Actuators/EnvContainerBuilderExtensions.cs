@@ -51,6 +51,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 {
                     mgmt.EndpointOptions.Add(envOptions);
                 }
+
                 return envOptions;
             }).As<IEnvOptions>().IfNotRegistered(typeof(IEnvOptions));
 

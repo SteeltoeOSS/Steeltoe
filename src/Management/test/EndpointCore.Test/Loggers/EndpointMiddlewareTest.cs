@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         public async void HandleLoggersRequestAsync_ReturnsExpected()
         {
             var opts = new LoggersEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var ep = new TestLoggersEndpoint(opts);
             var middle = new LoggersEndpointMiddleware(null, ep, mopts);
             var context = CreateRequest("GET", "/loggers");
@@ -63,7 +63,11 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-               .ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddDynamicConsole(context.Configuration));
+               .ConfigureLogging((context, loggingBuilder) =>
+               {
+                   loggingBuilder.AddConfiguration(context.Configuration);
+                   loggingBuilder.AddDynamicConsole();
+               });
 
             using (var server = new TestServer(builder))
             {
@@ -147,8 +151,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         public void LoggersEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new LoggersEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
-            var ep = new LoggersEndpoint(opts, (IDynamicLoggerProvider)null);
+            var mopts = TestHelper.GetManagementOptions(opts);
+            var ep = new LoggersEndpoint(opts, null);
             var middle = new LoggersEndpointMiddleware(null, ep, mopts);
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/loggers"));
@@ -168,7 +172,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
                .ConfigureLogging((context, loggingBuilder) =>
                {
-                   loggingBuilder.AddDynamicConsole(context.Configuration);
+                   loggingBuilder.AddConfiguration(context.Configuration);
+                   loggingBuilder.AddDynamicConsole();
                    loggingBuilder.AddDebug();
                });
 

@@ -86,7 +86,7 @@ namespace Steeltoe.Discovery.Eureka
         /// will handle the request directly, If set to true, it may send HTTP redirect to the client, with a new server location.
         ///  Configuration property: eureka:client:allowRedirects
         /// </summary>
-       [Obsolete("Eureka client does not support this feature, will be removed in next release")]
+        [Obsolete("Eureka client does not support this feature, will be removed in next release")]
         bool AllowRedirects { get; set; }
 
         /// <summary>

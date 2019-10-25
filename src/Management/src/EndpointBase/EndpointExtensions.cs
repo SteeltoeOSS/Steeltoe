@@ -38,6 +38,11 @@ namespace Steeltoe.Management.Endpoint
             return endpointOptions.DefaultEnabled;
         }
 
+        public static bool IsEnabled(this IEndpoint endpoint, IManagementOptions mgmtContext)
+        {
+            return mgmtContext == null ? endpoint.Enabled : endpoint.Options.IsEnabled(mgmtContext);
+        }
+
         public static bool IsExposed(this IEndpointOptions options, IManagementOptions mgmtOptions)
         {
             if (!string.IsNullOrEmpty(options.Id)
@@ -62,22 +67,17 @@ namespace Steeltoe.Management.Endpoint
             return true;
         }
 
+        public static bool IsExposed(this IEndpoint endpoint, IManagementOptions mgmtContext)
+        {
+            return mgmtContext == null || endpoint.Options.IsExposed(mgmtContext);
+        }
+
         public static bool RequestVerbAndPathMatch(this IEndpoint endpoint, string httpMethod, string requestPath, IEnumerable<HttpMethod> allowedMethods, IEnumerable<IManagementOptions> mgmtOptions, bool exactMatch)
         {
             return endpoint.RequestPathMatches(requestPath, mgmtOptions, out IManagementOptions matchingMgmtContext, exactMatch)
                 && endpoint.IsEnabled(matchingMgmtContext)
                 && endpoint.IsExposed(matchingMgmtContext)
                 && allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
-
-        public static bool IsEnabled(this IEndpoint endpoint, IManagementOptions mgmtContext)
-        {
-            return mgmtContext == null ? endpoint.Enabled : endpoint.Options.IsEnabled(mgmtContext);
-        }
-
-        public static bool IsExposed(this IEndpoint endpoint, IManagementOptions mgmtContext)
-        {
-            return mgmtContext == null || endpoint.Options.IsExposed(mgmtContext);
         }
 
         private static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)

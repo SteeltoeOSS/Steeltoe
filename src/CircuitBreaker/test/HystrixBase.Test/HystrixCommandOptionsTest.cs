@@ -56,7 +56,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             HystrixCommandOptions properties = new HystrixCommandOptions(
                 HystrixCommandKeyDefault.AsKey("TEST"),
-                    new HystrixCommandOptions() { CircuitBreakerForceClosed = true });
+                new HystrixCommandOptions() { CircuitBreakerForceClosed = true });
 
             // the builder override should take precedence over the default
             Assert.True(properties.CircuitBreakerForceClosed);
@@ -67,7 +67,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             HystrixCommandOptions properties = new HystrixCommandOptions(
                 HystrixCommandKeyDefault.AsKey("TEST"),
-                          new HystrixCommandOptions() { CircuitBreakerForceClosed = false });
+                new HystrixCommandOptions() { CircuitBreakerForceClosed = false });
 
             // the builder override should take precedence over the default
             Assert.False(properties.CircuitBreakerForceClosed);
@@ -85,11 +85,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var configSettings = @"
             {
-                'hystrix': {
-                    'command': {
-                        'default': {
-                            'circuitBreaker': {
-                                'forceClosed': true
+                ""hystrix"": {
+                    ""command"": {
+                        ""default"": {
+                            ""circuitBreaker"": {
+                                ""forceClosed"": true
                             }
                         }
                     }
@@ -113,11 +113,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var configSettings = @"
             {
-                'hystrix': {
-                    'command': {
-                        'default': {
-                            'circuitBreaker': {
-                                'forceClosed': false
+                ""hystrix"": {
+                    ""command"": {
+                        ""default"": {
+                            ""circuitBreaker"": {
+                                ""forceClosed"": false
                             }
                         }
                     }
@@ -140,11 +140,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var configSettings = @"
             {
-                'hystrix': {
-                    'command': {
-                        'default': {
-                            'circuitBreaker': {
-                                'forceClosed': true
+                ""hystrix"": {
+                    ""command"": {
+                        ""default"": {
+                            ""circuitBreaker"": {
+                                ""forceClosed"": true
                             }
                         }
                     }
@@ -167,16 +167,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var configSettings = @"
             {
-                'hystrix': {
-                    'command': {
-                        'default': {
-                            'circuitBreaker': {
-                                'forceClosed': false
+                ""hystrix"": {
+                    ""command"": {
+                        ""default"": {
+                            ""circuitBreaker"": {
+                                ""forceClosed"": false
                             }
                         },
-                        'TEST': {
-                            'circuitBreaker': {
-                                'forceClosed': true
+                        ""TEST"": {
+                            ""circuitBreaker"": {
+                                ""forceClosed"": true
                             }
                         }
                     }
@@ -200,7 +200,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             HystrixCommandOptions properties = new HystrixCommandOptions(
                 HystrixCommandKeyDefault.AsKey("TEST"),
-        new HystrixCommandOptions() { MetricsRollingStatisticalWindowInMilliseconds = 5000 });
+                new HystrixCommandOptions() { MetricsRollingStatisticalWindowInMilliseconds = 5000 });
 
             // the builder override should take precedence over the default
             Assert.Equal(5000, properties.MetricsRollingStatisticalWindowInMilliseconds);
@@ -220,12 +220,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var configSettings = @"
             {
-                'hystrix': {
-                    'command': {
-                        'default': {
-                            'metrics': {
-                                'rollingStats': {
-                                    'timeInMilliseconds': 1234
+                ""hystrix"": {
+                    ""command"": {
+                        ""default"": {
+                            ""metrics"": {
+                                ""rollingStats"": {
+                                    ""timeInMilliseconds"": 1234
                                 }
                             }
                         }
@@ -249,12 +249,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var configSettings = @"
             {
-                'hystrix': {
-                    'command': {
-                        'default': {
-                            'metrics': {
-                                'rollingStats': {
-                                    'timeInMilliseconds': 3456
+                ""hystrix"": {
+                    ""command"": {
+                        ""default"": {
+                            ""metrics"": {
+                                ""rollingStats"": {
+                                    ""timeInMilliseconds"": 3456
                                 }
                             }
                         }
@@ -279,19 +279,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             var configSettings = @"
             {
-                'hystrix': {
-                    'command': {
-                        'default': {
-                            'metrics': {
-                                'rollingStats': {
-                                    'timeInMilliseconds': 1234
+                ""hystrix"": {
+                    ""command"": {
+                        ""default"": {
+                            ""metrics"": {
+                                ""rollingStats"": {
+                                    ""timeInMilliseconds"": 1234
                                 }
                             }
                         },
-                        'TEST': {
-                            'metrics': {
-                                'rollingStats': {
-                                    'timeInMilliseconds': 3456
+                        ""TEST"": {
+                            ""metrics"": {
+                                ""rollingStats"": {
+                                    ""timeInMilliseconds"": 3456
                                 }
                             }
                         }

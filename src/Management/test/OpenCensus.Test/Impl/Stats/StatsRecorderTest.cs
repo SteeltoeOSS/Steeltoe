@@ -79,7 +79,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                     "description",
                     MEASURE_DOUBLE,
                     Sum.Create(),
-               new List<ITagKey>() { KEY });
+                    new List<ITagKey>() { KEY });
             viewManager.RegisterView(view);
             var orig = AsyncLocalContext.CurrentTagContext;
             AsyncLocalContext.CurrentTagContext = new SimpleTagContext(Tag.Create(KEY, VALUE));
@@ -169,7 +169,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                     "description",
                     MEASURE_DOUBLE,
                     Sum.Create(),
-              new List<ITagKey>() { KEY });
+                    new List<ITagKey>() { KEY });
 
             viewManager.RegisterView(view);
             statsComponent.State = StatsCollectionState.DISABLED;
