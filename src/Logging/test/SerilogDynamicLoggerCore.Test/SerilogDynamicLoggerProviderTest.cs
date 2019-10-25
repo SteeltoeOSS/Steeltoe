@@ -193,7 +193,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Trace), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Trace), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B", null, LogLevel.Trace), logConfig);
-            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("A", LogLevel.Information, LogLevel.Information), logConfig);
         }
 
         [Fact]
