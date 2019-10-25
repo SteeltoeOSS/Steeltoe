@@ -33,7 +33,11 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         {
             var addresses = ExpectedAddresses;
             Assert.Equal(addresses, app.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses);
+#if NETCOREAPP3_0
+            app.UseRouting();
+#else
             app.UseMvc();
+#endif
         }
     }
 }

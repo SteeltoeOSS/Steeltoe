@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.IO;
@@ -33,8 +34,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                LoggerFactory loggerFactory = new LoggerFactory();
-                loggerFactory.AddConsole(minLevel: LogLevel.Debug);
+                var loggerFactory = TestHelpers.GetLoggerFactory();
                 var logger1 = loggerFactory.CreateLogger<HeapDumper>();
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
 

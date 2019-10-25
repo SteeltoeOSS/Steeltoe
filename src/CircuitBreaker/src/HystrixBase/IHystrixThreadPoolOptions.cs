@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         int MaximumSize { get; set; }
 
-       int KeepAliveTimeMinutes { get; set; }
+        int KeepAliveTimeMinutes { get; set; }
 
         int MaxQueueSize { get; set; }
 

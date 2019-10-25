@@ -64,6 +64,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metrix.Sample.Test
                     {
                         commandShowsUp.Value = true;
                     }
+
                     if (utilization.ThreadPoolUtilizationMap.Count != 0)
                     {
                         threadPoolShowsUp.Value = true;

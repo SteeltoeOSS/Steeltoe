@@ -2,7 +2,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Common Library</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Common.Http</AssemblyName>
     <PackageId>Steeltoe.Common.Http</PackageId>
     <PackageTags>NET Core;NET Framework</PackageTags>

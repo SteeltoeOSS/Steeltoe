@@ -134,6 +134,7 @@ namespace Steeltoe.Management.Census.Stats
                             {
                                 throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
                             }
+
                             return null;
                         },
                         (arg1) =>
@@ -142,6 +143,7 @@ namespace Steeltoe.Management.Census.Stats
                             {
                                 throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
                             }
+
                             return null;
                         },
                         (arg1) =>
@@ -156,6 +158,7 @@ namespace Steeltoe.Management.Census.Stats
                     {
                         throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
                     }
+
                     return null;
                 },
                 (arg) =>
@@ -164,6 +167,7 @@ namespace Steeltoe.Management.Census.Stats
                     {
                         throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
                     }
+
                     return null;
                 },
                 (arg) =>
@@ -172,6 +176,7 @@ namespace Steeltoe.Management.Census.Stats
                     {
                         throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
                     }
+
                     return null;
                 },
                 (arg) =>
@@ -183,6 +188,7 @@ namespace Steeltoe.Management.Census.Stats
                             {
                                 throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
                             }
+
                             return null;
                         },
                         (arg1) =>
@@ -191,6 +197,7 @@ namespace Steeltoe.Management.Census.Stats
                             {
                                 throw new ArgumentException(CreateErrorMessageForAggregation(aggregation, aggregationData));
                             }
+
                             return null;
                         },
                         (arg1) =>

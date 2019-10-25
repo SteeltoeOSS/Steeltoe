@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Health
             }
         }
 
-        public static Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult ToHealthCheckResult(this Common.HealthChecks.HealthCheckResult result)
+        public static Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult ToHealthCheckResult(this HealthCheckResult result)
         {
             return new Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult(result.Status.ToHealthStatus(), result.Description, null, result.Details);
         }

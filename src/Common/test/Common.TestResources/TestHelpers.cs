@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.IO;
-using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
+namespace Steeltoe.Common
 {
     public class TestHelpers
     {
@@ -43,6 +44,18 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
             var reader = new StreamReader(stream);
 
             return reader.ReadToEnd();
+        }
+
+        public static ILoggerFactory GetLoggerFactory()
+        {
+            IServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
+            serviceCollection.AddLogging(builder => builder.AddConsole((opts) =>
+            {
+                opts.DisableColors = true;
+            }));
+            serviceCollection.AddLogging(builder => builder.AddDebug());
+            return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
         }
     }
 }

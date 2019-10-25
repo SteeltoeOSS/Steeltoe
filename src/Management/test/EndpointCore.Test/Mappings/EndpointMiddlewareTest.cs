@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -45,15 +45,12 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         public void IsMappingsRequest_ReturnsExpected()
         {
             var opts = new MappingsEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
-            var host = new HostingEnvironment()
-            {
-                EnvironmentName = "EnvironmentName"
-            };
+            var host = HostingHelpers.GetHostingEnvironment();
             var middle = new MappingsEndpointMiddleware(null, opts, mopts);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
@@ -68,15 +65,12 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         public async void HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
         {
             var opts = new MappingsEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
-            var host = new HostingEnvironment()
-            {
-                EnvironmentName = "EnvironmentName"
-            };
+            var host = HostingHelpers.GetHostingEnvironment();
             var middle = new MappingsEndpointMiddleware(null, opts, mopts);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/mappings");

@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Extensions.Configuration.ConfigServer.Test;
+using Steeltoe.Common;
+using Steeltoe.Extensions.Configuration.ConfigServer;
 using System.IO;
 using Xunit;
 
@@ -42,32 +42,32 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         {
             // Arrange
             var appsettings = @"
-{
-    'spring': {
-      'application': {
-        'name' : 'foo'
-      },
-      'cloud': {
-        'config': {
-            'uri': 'http://localhost:8888',
-            'env': 'development'
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                      ""application"": {
+                        ""name"" : ""foo""
+                      },
+                      ""cloud"": {
+                        ""config"": {
+                            ""uri"": ""http://localhost:8888"",
+                            ""env"": ""development""
+                        }
+                      }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var hostingEnv = new HostingEnvironment();
+            var hostingEnv = HostingHelpers.GetHostingEnvironment();
             configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert (expects Spring Cloud Config server to be running)
             configurationBuilder.AddConfigServer(hostingEnv);
-            IConfigurationRoot root = configurationBuilder.Build();
+            var root = configurationBuilder.Build();
 
             Assert.Equal("spam", root["bar"]);
             Assert.Equal("from foo development", root["foo"]);
@@ -82,25 +82,25 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         {
             // These settings match the default java config server
             var appsettings = @"
-{
-    'spring': {
-      'application': {
-        'name': 'foo'
-      },
-      'cloud': {
-        'config': {
-            'uri': 'http://localhost:8888',
-            'env': 'development',
-            'health': {
-                'enabled': true
-            }
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                      ""application"": {
+                        ""name"": ""foo""
+                      },
+                      ""cloud"": {
+                        ""config"": {
+                            ""uri"": ""http://localhost:8888"",
+                            ""env"": ""development"",
+                            ""health"": {
+                                ""enabled"": true
+                            }
+                        }
+                      }
+                    }
+                }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
             var builder = new WebHostBuilder()
                 .UseEnvironment("development")
                 .UseStartup<TestServerStartup>()
@@ -115,7 +115,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+                var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                 Assert.Equal(
                     "spam" +
@@ -131,68 +131,65 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         {
             // Arrange
             var vcap_application = @" 
-{
-
-    'application_id': 'fa05c1a9-0fc1-4fbd-bae1-139850dec7a3',
-    'application_name': 'foo',
-    'application_uris': [
-    'foo.10.244.0.34.xip.io'
-    ],
-    'application_version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca',
-    'limits': {
-    'disk': 1024,
-    'fds': 16384,
-    'mem': 256
-    },
-    'name': 'foo',
-    'space_id': '06450c72-4669-4dc6-8096-45f9777db68a',
-    'space_name': 'my-space',
-    'uris': [
-    'foo.10.244.0.34.xip.io',
-    'foo.10.244.0.34.xip.io'
-    ],
-    'users': null,
-    'version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca'
-}";
+                {
+                    ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
+                    ""application_name"": ""foo"",
+                    ""application_uris"": [
+                        ""foo.10.244.0.34.xip.io""
+                    ],
+                    ""application_version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"",
+                    ""limits"": {
+                        ""disk"": 1024,
+                        ""fds"": 16384,
+                        ""mem"": 256
+                    },
+                    ""name"": ""foo"",
+                    ""space_id"": ""06450c72-4669-4dc6-8096-45f9777db68a"",
+                    ""space_name"": ""my-space"",
+                    ""uris"": [
+                        ""foo.10.244.0.34.xip.io"",
+                        ""foo.10.244.0.34.xip.io""
+                    ],
+                    ""users"": null,
+                    ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
+                }";
 
             var vcap_services = @"
-{
-    'p-config-server': [
-    {
-    'credentials': {
-        'access_token_uri': null,
-        'client_id': null,
-        'client_secret': null,
-        'uri': 'http://localhost:8888'
-    },
-    'label': 'p-config-server',
-    'name': 'My Config Server',
-    'plan': 'standard',
-    'tags': [
-        'configuration',
-        'spring-cloud'
-        ]
-    }
-    ]
-}";
+                {
+                    ""p-config-server"": [{
+                        ""credentials"": {
+                            ""access_token_uri"": null,
+                            ""client_id"": null,
+                            ""client_secret"": null,
+                            ""uri"": ""http://localhost:8888""
+                        },
+                        ""label"": ""p-config-server"",
+                        ""name"": ""My Config Server"",
+                        ""plan"": ""standard"",
+                        ""tags"": [
+                            ""configuration"",
+                            ""spring-cloud""
+                        ]
+                    }]
+                }";
 
             System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
             System.Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
 
             var appSettings = @"
-{
-    spring: {
-        cloud: {
-            config: {
-                validate_certificates: false
-            }
-        }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""cloud"": {
+                            ""config"": {
+                                ""validateCertificates"": false
+                            }
+                        }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appSettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
             var builder = new WebHostBuilder()
                 .UseEnvironment("development")
                 .UseStartup<TestServerStartup>()
@@ -208,7 +205,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                 using (var server = new TestServer(builder))
                 {
                     var client = server.CreateClient();
-                    string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+                    var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                     Assert.Equal(
                         "spam" +
@@ -230,65 +227,65 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         {
             // Arrange
             var vcap_application = @" 
-{
-    'limits': {
-    'mem': 1024,
-    'disk': 1024,
-    'fds': 16384
-    },
-    'application_id': 'c2e03250-62e3-4494-82fb-1bc6e2e25ad0',
-    'application_version': 'ef087dfd-2955-4854-86c1-4a2cf30e05b3',
-    'application_name': 'test',
-    'application_uris': [
-    'test.apps.testcloud.com'
-    ],
-    'version': 'ef087dfd-2955-4854-86c1-4a2cf30e05b3',
-    'name': 'test',
-    'space_name': 'development',
-    'space_id': 'ff257d70-eeed-4487-9d6c-4ac709f76aea',
-    'uris': [
-    'test.apps.testcloud.com'
-    ],
-    'users': null
-}";
+                {
+                    ""limits"": {
+                    ""mem"": 1024,
+                    ""disk"": 1024,
+                    ""fds"": 16384
+                    },
+                    ""application_id"": ""c2e03250-62e3-4494-82fb-1bc6e2e25ad0"",
+                    ""application_version"": ""ef087dfd-2955-4854-86c1-4a2cf30e05b3"",
+                    ""application_name"": ""test"",
+                    ""application_uris"": [
+                    ""test.apps.testcloud.com""
+                    ],
+                    ""version"": ""ef087dfd-2955-4854-86c1-4a2cf30e05b3"",
+                    ""name"": ""test"",
+                    ""space_name"": ""development"",
+                    ""space_id"": ""ff257d70-eeed-4487-9d6c-4ac709f76aea"",
+                    ""uris"": [
+                    ""test.apps.testcloud.com""
+                    ],
+                    ""users"": null
+                }";
 
             var vcap_services = @"
-{
-    'p-config-server': [
-    {
-        'name': 'myConfigServer',
-        'label': 'p-config-server',
-        'tags': [
-        'configuration',
-        'spring-cloud'
-        ],
-        'plan': 'standard',
-        'credentials': {
-        'uri': 'https://config-5b3af2c9-754f-4eb6-9d4b-da50d33d5a5f.apps.testcloud.com',
-        'client_id': 'p-config-server-690772bc-2820-4a2c-9c76-6d8ccf8e8de5',
-        'client_secret': 'Ib9RFhVPuLub',
-        'access_token_uri': 'https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token'
-        }
-    }
-    ]
-}";
+                {
+                    ""p-config-server"": [
+                    {
+                        ""name"": ""myConfigServer"",
+                        ""label"": ""p-config-server"",
+                        ""tags"": [
+                        ""configuration"",
+                        ""spring-cloud""
+                        ],
+                        ""plan"": ""standard"",
+                        ""credentials"": {
+                        ""uri"": ""https://config-5b3af2c9-754f-4eb6-9d4b-da50d33d5a5f.apps.testcloud.com"",
+                        ""client_id"": ""p-config-server-690772bc-2820-4a2c-9c76-6d8ccf8e8de5"",
+                        ""client_secret"": ""Ib9RFhVPuLub"",
+                        ""access_token_uri"": ""https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token""
+                        }
+                    }
+                    ]
+                }";
 
             System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
             System.Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
 
             var appSettings = @"
-{
-    spring: {
-        cloud: {
-            config: {
-                validate_certificates: false
-            }
-        }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""cloud"": {
+                            ""config"": {
+                                ""validate_certificates"": false
+                            }
+                        }
+                    }
+                }";
             var path = TestHelpers.CreateTempFile(appSettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
             var builder = new WebHostBuilder()
                 .UseEnvironment("development")
                 .UseStartup<TestServerStartup>()
@@ -304,7 +301,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                 using (var server = new TestServer(builder))
                 {
                     var client = server.CreateClient();
-                    string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+                    var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                     Assert.Equal(
                         "spam" +
@@ -372,40 +369,40 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         {
             // Arrange
             var appsettings = @"
-{
-    'spring': {
-      'application': {
-        'name' : 'foo'
-      },
-      'cloud': {
-        'config': {
-            'uri': 'https://foo.bar:8888',
-            'env': 'development',
-            'discovery': {
-                'enabled': true
-            }
-        }
-      }
-    },
-    'eureka': {
-        'client': {
-            'serviceUrl': 'http://localhost:8761/eureka/'
-        }
-    }
-}";
+                {
+                    ""spring"": {
+                      ""application"": {
+                        ""name"" : ""foo""
+                      },
+                      ""cloud"": {
+                        ""config"": {
+                            ""uri"": ""http://localhost:8888"",
+                            ""env"": ""development"",
+                            ""discovery"": {
+                                ""enabled"": true
+                            }
+                        }
+                      }
+                    },
+                    ""eureka"": {
+                        ""client"": {
+                            ""serviceUrl"": ""http://localhost:8761/eureka/""
+                        }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var hostingEnv = new HostingEnvironment();
+            var hostingEnv = HostingHelpers.GetHostingEnvironment("development");
             configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert (expects Spring Cloud Config server to be running)
             configurationBuilder.AddConfigServer(hostingEnv);
-            IConfigurationRoot root = configurationBuilder.Build();
+            var root = configurationBuilder.Build();
 
             Assert.Equal("spam", root["bar"]);
             Assert.Equal("from foo development", root["foo"]);
@@ -420,25 +417,25 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         {
             // These settings match the default java config server
             var appsettings = @"
-{
-    'spring': {
-      'application': {
-        'name': 'foo'
-      },
-      'cloud': {
-        'config': {
-            'uri': 'http://localhost:8888',
-            'env': 'development',
-            'health': {
-                'enabled': true
-            }
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                      ""application"": {
+                        ""name"": ""foo""
+                      },
+                      ""cloud"": {
+                        ""config"": {
+                            ""uri"": ""http://localhost:8888"",
+                            ""env"": ""development"",
+                            ""health"": {
+                                ""enabled"": true
+                            }
+                        }
+                      }
+                    }
+                }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
             var builder = new WebHostBuilder()
                 .UseStartup<TestServerStartup>()
                 .ConfigureAppConfiguration((context, config) =>
@@ -452,8 +449,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                string result = await client.GetStringAsync("http://localhost/Home/Health");
-                Assert.Equal("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/application.yml (document #0),", result);
+                var result = await client.GetStringAsync("http://localhost/Home/Health");
+                Assert.Equal("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/application.yml,", result);
             }
         }
     }

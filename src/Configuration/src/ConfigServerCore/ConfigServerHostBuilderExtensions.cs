@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,28 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
         /// <returns><see cref="IWebHostBuilder"/> with config server and Cloud Foundry Config Provider attached</returns>
         public static IWebHostBuilder AddConfigServer(this IWebHostBuilder hostBuilder, ILoggerFactory loggerFactory = null)
+        {
+            hostBuilder.ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddConfigServer(context.HostingEnvironment, loggerFactory);
+            });
+
+            hostBuilder.ConfigureServices((services) =>
+            {
+                services.AddConfigServerHealthContributor();
+            });
+
+            return hostBuilder;
+        }
+
+        /// <summary>
+        /// Add Config Server and Cloud Foundry as application configuration sources. Add Config Server health check
+        /// contributor to the service container.
+        /// </summary>
+        /// <param name="hostBuilder"><see cref="IHostBuilder"/></param>
+        /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
+        /// <returns><see cref="IHostBuilder"/> with config server and Cloud Foundry Config Provider attached</returns>
+        public static IHostBuilder AddConfigServer(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory = null)
         {
             hostBuilder.ConfigureAppConfiguration((context, config) =>
             {

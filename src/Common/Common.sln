@@ -42,6 +42,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net.Test", "test\Common.Net.Test\Steeltoe.Common.Net.Test.csproj", "{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{4D43ED78-15CC-4439-9407-FF5AF1AB85FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DE7FECF-6A0A-4221-A3C1-165B5DB83506}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D43ED78-15CC-4439-9407-FF5AF1AB85FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D43ED78-15CC-4439-9407-FF5AF1AB85FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D43ED78-15CC-4439-9407-FF5AF1AB85FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D43ED78-15CC-4439-9407-FF5AF1AB85FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +109,7 @@ Global
 		{8D322AD5-ED49-4D40-952C-B38FD97D21EF} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
 		{6E2CBAC4-3FF1-4DC9-9B9B-D0ADFE80218D} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
 		{1DE7FECF-6A0A-4221-A3C1-165B5DB83506} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
+		{4D43ED78-15CC-4439-9407-FF5AF1AB85FB} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4A85F9DA-2C2D-48E9-A28C-9B35C473C150}

@@ -38,12 +38,15 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         {
             app.UseMappingsActuator();
 
-            app.UseMvc(routes =>
+#if NETCOREAPP3_0
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+#else
+            app.UseMvc();
+#endif
         }
     }
 }

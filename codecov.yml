@@ -4,3 +4,4 @@ codecov:
 
 ignore:
   - "src/Management/src/Diagnostics/Microsoft"
+  - "test/.*"

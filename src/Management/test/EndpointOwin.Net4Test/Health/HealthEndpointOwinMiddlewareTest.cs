@@ -39,7 +39,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         {
             // arrange
             var opts = new HealthEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
             var middle = new HealthEndpointOwinMiddleware(null, ep, mopts);
@@ -81,7 +81,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         public void HealthEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new HealthEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
             var middle = new HealthEndpointOwinMiddleware(null, ep, mopts);

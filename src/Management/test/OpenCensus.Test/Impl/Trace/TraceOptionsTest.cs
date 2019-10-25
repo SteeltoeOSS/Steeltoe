@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Census.Trace.Test
         {
             Assert.Equal(
                 6 | 1,
-                    TraceOptions.Builder(TraceOptions.FromBytes(ThirdBytes)).SetIsSampled(true).Build().Options);
+                TraceOptions.Builder(TraceOptions.FromBytes(ThirdBytes)).SetIsSampled(true).Build().Options);
         }
 
         ////[Fact]

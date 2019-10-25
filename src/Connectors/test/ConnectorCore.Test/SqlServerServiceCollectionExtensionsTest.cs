@@ -86,8 +86,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             // Act and Assert
             SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config);
 
-           var service = services.BuildServiceProvider().GetService<IHealthContributor>();
-           Assert.NotNull(service);
+            var service = services.BuildServiceProvider().GetService<IHealthContributor>();
+            Assert.NotNull(service);
         }
 
         [Fact]

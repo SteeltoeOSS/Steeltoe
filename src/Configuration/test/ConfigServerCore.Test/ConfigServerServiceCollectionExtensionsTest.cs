@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Extensions.Configuration.ConfigServer;
+using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 using System;
-
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
@@ -55,7 +55,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             var services = new ServiceCollection();
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
 
             // Act and Assert
             var builder = new ConfigurationBuilder().AddConfigServer(environment);
@@ -67,7 +67,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.NotNull(service);
             var options = service.Value;
             Assert.NotNull(options);
-            TestHelpers.VerifyDefaults(options.Settings);
+            TestHelper.VerifyDefaults(options.Settings);
 
             Assert.Equal(ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED, options.Enabled);
             Assert.Equal(ConfigServerClientSettings.DEFAULT_FAILFAST, options.FailFast);
@@ -95,7 +95,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             var services = new ServiceCollection();
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment();
 
             // Act and Assert
             var builder = new ConfigurationBuilder().AddConfigServer(environment);

@@ -25,7 +25,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             ConfigServerClientSettings settings = new ConfigServerClientSettings();
 
             // Act and Assert
-            TestHelpers.VerifyDefaults(settings);
+            TestHelper.VerifyDefaults(settings);
         }
 
         [Fact]

@@ -69,6 +69,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 {
                     mgmt.EndpointOptions.Add(options);
                 }
+
                 return options;
             }).As<ITraceOptions>().IfNotRegistered(typeof(ITraceOptions)).SingleInstance();
 
@@ -89,6 +90,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 {
                     mgmt.EndpointOptions.Add(options);
                 }
+
                 return options;
             }).As<ITraceOptions>().IfNotRegistered(typeof(ITraceOptions)).SingleInstance();
 

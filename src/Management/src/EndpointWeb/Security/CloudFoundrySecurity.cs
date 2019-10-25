@@ -124,6 +124,7 @@ namespace Steeltoe.Management.Endpoint.Security
         private async Task ReturnError(HttpContextBase context, SecurityResult error)
         {
             LogError(context, error);
+
             context.Response.Headers.Set("Content-Type",  "application/json;charset=UTF-8");
             context.Response.StatusCode = (int)error.Code;
             await context.Response.Output.WriteAsync(_base.Serialize(error)).ConfigureAwait(false);

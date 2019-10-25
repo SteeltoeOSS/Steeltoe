@@ -26,7 +26,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         int CircuitBreakerErrorThresholdPercentage { get; set; }
 
-       bool CircuitBreakerForceClosed { get; set; }
+        bool CircuitBreakerForceClosed { get; set; }
 
         bool CircuitBreakerForceOpen { get; set; }
 
@@ -62,7 +62,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         int MetricsRollingStatisticalWindowInMilliseconds { get; set; }
 
-         int MetricsRollingStatisticalWindowBuckets { get; set; }
+        int MetricsRollingStatisticalWindowBuckets { get; set; }
 
         bool RequestCacheEnabled { get; set; }
 

@@ -19,29 +19,27 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using RichardSzalay.MockHttp;
 using System;
+using System.Net.Http;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class TestServerOpenIdStartup
     {
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
-        public TestServerOpenIdStartup(IHostingEnvironment env)
+        public TestServerOpenIdStartup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-               .SetBasePath(env.ContentRootPath)
-               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-               .AddCloudFoundry()
-               .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var openIdConfigResponse = Environment.GetEnvironmentVariable("openIdConfigResponse");
+            var jwksResponse = Environment.GetEnvironmentVariable("jwksResponse");
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+
             services.AddOptions();
             services.AddAuthentication((options) =>
             {
@@ -52,30 +50,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             {
                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
             })
-            .AddCloudFoundryOpenIdConnect(Configuration);
+            .AddCloudFoundryOpenIdConnect(Configuration, (options, config) =>
+            {
+                var configRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/.well-known/openid-configuration").Respond("application/json", openIdConfigResponse);
+                var jwksRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/token_keys").Respond("application/json", jwksResponse);
+                options.Backchannel = new HttpClient(mockHttpMessageHandler);
+            });
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerfactory)
+        public void Configure(IApplicationBuilder app)
         {
-            loggerfactory.AddConsole(LogLevel.Debug);
-
-            app.Use(async (context, next) =>
-            {
-                try
-                {
-                    await next();
-                }
-                catch (Exception ex)
-                {
-                    if (context.Response.HasStarted)
-                    {
-                        throw;
-                    }
-                    context.Response.StatusCode = 500;
-                    await context.Response.WriteAsync(ex.ToString());
-                }
-            });
-
             app.UseAuthentication();
 
             app.Run(async context =>

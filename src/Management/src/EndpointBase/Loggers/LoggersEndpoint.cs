@@ -13,13 +13,18 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+#if NETSTANDARD2_0
 using Newtonsoft.Json;
+#endif
 using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if NETSTANDARD2_1
+using System.Text.Json;
+#endif
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
@@ -96,7 +101,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             if (provider == null)
             {
-                _logger?.LogInformation("Unable to access Cloud Foundry Logging provider, log configuration unavailable");
+                _logger?.LogInformation("Unable to access the Dynamic Logging provider, log configuration unavailable");
                 return new List<ILoggerConfiguration>();
             }
 
@@ -107,7 +112,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             if (provider == null)
             {
-                _logger?.LogInformation("Unable to access Cloud Foundry Logging provider, log level not changed");
+                _logger?.LogInformation("Unable to access the Dynamic Logging provider, log level not changed");
                 return;
             }
 
@@ -123,8 +128,10 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             try
             {
+#if NETSTANDARD2_1
+                return (Dictionary<string, string>)JsonSerializer.DeserializeAsync(stream, typeof(Dictionary<string, string>)).GetAwaiter().GetResult();
+#else
                 var serializer = new JsonSerializer();
-
                 using (var sr = new StreamReader(stream))
                 {
                     using (var jsonTextReader = new JsonTextReader(sr))
@@ -132,6 +139,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                         return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
                     }
                 }
+#endif
             }
             catch (Exception e)
             {

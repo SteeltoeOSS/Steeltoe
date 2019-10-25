@@ -13,10 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Console;
 using Microsoft.Owin.Builder;
 using Owin;
-using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
@@ -30,8 +28,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-            var provider = new DynamicLoggerProvider(new ConsoleLoggerSettings());
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersActuator(config, provider));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersActuator(config, null));
             Assert.Equal("builder", exception.ParamName);
         }
 
@@ -39,8 +36,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
         public void UseLoggersActuator_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var provider = new DynamicLoggerProvider(new ConsoleLoggerSettings());
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersActuator(null, provider));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseLoggersActuator(null, null));
             Assert.Equal("config", exception.ParamName);
         }
 

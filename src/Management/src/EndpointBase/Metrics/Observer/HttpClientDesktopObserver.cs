@@ -57,17 +57,17 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                     ViewName.Create("http.desktop.client.request.time"),
                     "Total request time",
                     clientTimeMeasure,
-                     Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
+                    Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
                     new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
 
             ViewManager.RegisterView(view);
 
             view = View.Create(
                     ViewName.Create("http.desktop.client.request.count"),
-                        "Total request counts",
-                        clientCountMeasure,
-                        Sum.Create(),
-                         new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
+                    "Total request counts",
+                    clientCountMeasure,
+                    Sum.Create(),
+                    new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
             ViewManager.RegisterView(view);
         }
 

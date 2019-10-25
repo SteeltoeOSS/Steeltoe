@@ -19,10 +19,12 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointBase;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http.Headers;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia.Test
@@ -105,7 +107,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         }
 
         [Fact]
-        public void ActuatoHypermediaEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        public void ActuatorHypermediaEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new HypermediaEndpointOptions();
             var actmOpts = new ActuatorManagementOptions();

@@ -142,6 +142,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                             {
                                 throw req.Exception;
                             }
+
                             return req.Response;
                         }
                         else

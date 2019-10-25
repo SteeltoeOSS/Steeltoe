@@ -20,24 +20,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class TestServerStartup
     {
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
-        public TestServerStartup(IHostingEnvironment env)
+        public TestServerStartup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-               .SetBasePath(env.ContentRootPath)
-               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-               .AddCloudFoundry()
-               .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -55,10 +48,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             .AddCloudFoundryOAuth(Configuration);
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerfactory)
+        public void Configure(IApplicationBuilder app)
         {
-            loggerfactory.AddConsole(LogLevel.Debug);
-
             app.Use(async (context, next) =>
             {
                 try
@@ -71,6 +62,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                     {
                         throw;
                     }
+
                     context.Response.StatusCode = 500;
                     await context.Response.WriteAsync(ex.ToString());
                 }

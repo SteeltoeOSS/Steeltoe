@@ -1,16 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
-
   <PropertyGroup>
     <Description>Steeltoe Management Extensions for Cloud Foundry with Microsoft DI</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.CloudFoundryCore</AssemblyName>
     <PackageId>Steeltoe.Management.CloudFoundryCore</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring;CloudFoundry</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 

@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var ep = new TestCloudFoundryEndpoint(opts, mgmtOptions);
 
             var middle = new CloudFoundryEndpointMiddleware(null, ep, mgmtOptions);
@@ -111,7 +111,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var ep = new CloudFoundryEndpoint(opts, mgmtOptions);
             var middle = new CloudFoundryEndpointMiddleware(null, ep, mgmtOptions);
 
@@ -124,7 +124,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public void HypermediaEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new HypermediaEndpointOptions();
-            var mgmtOptions = TestHelpers.GetManagementOptions(opts);
+            var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var ep = new ActuatorEndpoint(opts, mgmtOptions);
             var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, mgmtOptions);
 

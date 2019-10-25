@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if NET461
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
 using Xunit;
@@ -66,3 +67,4 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         }
     }
 }
+#endif

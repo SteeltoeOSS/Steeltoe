@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "client_id", new Credential("clientId") },
                     { "client_secret", new Credential("clientSecret") },
                     { "auth_domain", new Credential("https://sso.login.system.testcloud.com") }
-                    }
+                }
             };
             SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
             Assert.True(factory.Accept(s));
@@ -53,7 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "client_id", new Credential("clientId") },
                     { "client_secret", new Credential("clientSecret") },
                     { "uri", new Credential("uaa://sso.login.system.testcloud.com") }
-                    }
+                }
             };
             SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
             Assert.True(factory.Accept(s));
@@ -77,7 +77,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "password", new Credential("7E1LxXnlH2hhlPVt") },
                     { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                     { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                    }
+                }
             };
             SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
             Assert.False(factory.Accept(s));
@@ -97,7 +97,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "client_id", new Credential("clientId") },
                     { "client_secret", new Credential("clientSecret") },
                     { "auth_domain", new Credential("https://sso.login.system.testcloud.com") }
-                    }
+                }
             };
             SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
             var info = factory.Create(s) as SsoServiceInfo;
@@ -121,7 +121,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "client_id", new Credential("clientId") },
                     { "client_secret", new Credential("clientSecret") },
                     { "uri", new Credential("uaa://sso.login.system.testcloud.com") }
-                    }
+                }
             };
             SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
             var info = factory.Create(s) as SsoServiceInfo;

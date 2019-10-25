@@ -155,6 +155,7 @@ namespace Steeltoe.Management.Census.Stats
                             {
                                 return LastValueDataLong.Create(0);
                             }
+
                             return LastValueDataLong.Create((long)Math.Round(mlval.LastValue));
                         },
                         (invalid) =>

@@ -54,11 +54,13 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 {
                     options.Id = "threaddump";
                 }
+
                 var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
                 foreach (var mgmt in mgmtOptions)
                 {
                     mgmt.EndpointOptions.Add(options);
                 }
+
                 return options;
             }).As<IThreadDumpOptions>().IfNotRegistered(typeof(IThreadDumpOptions));
 

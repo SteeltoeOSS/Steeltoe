@@ -89,8 +89,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             // Act and Assert
             PostgresProviderServiceCollectionExtensions.AddPostgresConnection(services, config);
 
-           var service = services.BuildServiceProvider().GetService<IDbConnection>();
-           Assert.NotNull(service);
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
+            Assert.NotNull(service);
         }
 
         [Fact]

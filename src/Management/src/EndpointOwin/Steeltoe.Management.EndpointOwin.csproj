@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>Steeltoe Management Endpoint Support for ASP.NET 4x via OWIN</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.EndpointOwin</AssemblyName>
     <PackageId>Steeltoe.Management.EndpointOwin</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>

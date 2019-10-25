@@ -76,6 +76,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 {
                     mgmt.EndpointOptions.Add(options);
                 }
+
                 return options;
             }).As<IInfoOptions>().IfNotRegistered(typeof(IInfoOptions)).SingleInstance();
             container.RegisterType<InfoEndpoint>().IfNotRegistered(typeof(InfoEndpoint)).As<IEndpoint<Dictionary<string, object>>>().SingleInstance();

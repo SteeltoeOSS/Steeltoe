@@ -108,6 +108,7 @@ namespace Steeltoe.Management.Census.Stats
                     {
                         sum.Add(arg.Sum);
                     }
+
                     return null;
                 },
                 (arg) =>
@@ -117,6 +118,7 @@ namespace Steeltoe.Management.Census.Stats
                     {
                         sum.Add(arg.Sum);
                     }
+
                     return null;
                 },
                 (arg) =>
@@ -126,6 +128,7 @@ namespace Steeltoe.Management.Census.Stats
                     {
                         count.Add(arg.Count);
                     }
+
                     return null;
                 },
                 (arg) =>
@@ -139,11 +142,13 @@ namespace Steeltoe.Management.Census.Stats
                         {
                             mean.Min = arg.Min;
                         }
+
                         if (arg.Max > mean.Max)
                         {
                             mean.Max = arg.Max;
                         }
                     }
+
                     return null;
                 },
                 (arg) =>
@@ -173,6 +178,7 @@ namespace Steeltoe.Management.Census.Stats
                         {
                             dist.Min = arg.Min;
                         }
+
                         if (arg.Max > dist.Max)
                         {
                             dist.Max = arg.Max;
@@ -184,6 +190,7 @@ namespace Steeltoe.Management.Census.Stats
                             dist.BucketCounts[i] += bucketCounts[i];
                         }
                     }
+
                     return null;
                 },
                 (arg) =>
@@ -201,6 +208,7 @@ namespace Steeltoe.Management.Census.Stats
                             lastValue.LastValue += arg.LastValue;
                         }
                     }
+
                     return null;
                 },
                 (arg) =>
@@ -218,6 +226,7 @@ namespace Steeltoe.Management.Census.Stats
                             lastValue.LastValue += arg.LastValue;
                         }
                     }
+
                     return null;
                 },
                 (arg) =>

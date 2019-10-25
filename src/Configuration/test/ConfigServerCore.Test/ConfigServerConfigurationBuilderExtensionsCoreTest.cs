@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
 using System.IO;
@@ -31,7 +31,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = null;
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment();
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(environment));
@@ -43,11 +43,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            IHostingEnvironment environment = null;
+#if NETCOREAPP3_0
+            IHostEnvironment env = null;
+#else
+            IHostingEnvironment env = null;
+#endif
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(environment));
-            Assert.Contains(nameof(environment), ex.Message);
+            var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(env));
+            Assert.Contains("environment", ex.Message);
         }
 
         [Fact]
@@ -55,7 +59,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment();
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
@@ -72,7 +76,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
             var loggerFactory = new LoggerFactory();
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment, loggerFactory);
@@ -88,35 +92,35 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             var appsettings = @"
-{
-    'spring': {
-        'application': {
-            'name': 'myName'
-    },
-      'cloud': {
-        'config': {
-            'uri': 'https://user:password@foo.com:9999',
-            'enabled': false,
-            'failFast': false,
-            'label': 'myLabel',
-            'username': 'myUsername',
-            'password': 'myPassword',
-            'timeout': 10000,
-            'token' : 'vaulttoken',
-            'tokenRenewRate': 50000,
-            'disableTokenRenewal': true,    
-            'tokenTtl': 50000,
-            'retry': {
-                'enabled':'false',
-                'initialInterval':55555,
-                'maxInterval': 55555,
-                'multiplier': 5.5,
-                'maxAttempts': 55555
-            }
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""application"": {
+                            ""name"": ""myName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""uri"": ""https://user:password@foo.com:9999"",
+                            ""enabled"": false,
+                            ""failFast"": false,
+                            ""label"": ""myLabel"",
+                            ""username"": ""myUsername"",
+                            ""password"": ""myPassword"",
+                            ""timeout"": 10000,
+                            ""token"" : ""vaulttoken"",
+                            ""tokenRenewRate"": 50000,
+                            ""disableTokenRenewal"": true,    
+                            ""tokenTtl"": 50000,
+                            ""retry"": {
+                                ""enabled"":""false"",
+                                ""initialInterval"":55555,
+                                ""maxInterval"": 55555,
+                                ""multiplier"": 5.5,
+                                ""maxAttempts"": 55555
+                            }
+                        }
+                      }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
             string directory = Path.GetDirectoryName(path);
@@ -124,7 +128,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
             configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert
@@ -163,22 +167,22 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             var appsettings = @"
-{
-    'spring': {
-      'cloud': {
-        'config': {
-            'validateCertificates': false
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                      ""cloud"": {
+                        ""config"": {
+                            ""validateCertificates"": false
+                        }
+                      }
+                    }
+                }";
             var path = TestHelpers.CreateTempFile(appsettings);
             string directory = Path.GetDirectoryName(path);
             string fileName = Path.GetFileName(path);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
             configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert
@@ -198,22 +202,22 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             var appsettings = @"
-{
-    'spring': {
-      'cloud': {
-        'config': {
-            'validate_certificates': false
-        }
-      }
-    }
-}";
+                {
+                    ""spring"": {
+                      ""cloud"": {
+                        ""config"": {
+                            ""validate_certificates"": false
+                        }
+                      }
+                    }
+                }";
             var path = TestHelpers.CreateTempFile(appsettings);
             string directory = Path.GetDirectoryName(path);
             string fileName = Path.GetFileName(path);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
             configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert
@@ -254,7 +258,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
             configurationBuilder.AddXmlFile(fileName);
 
             // Act and Assert
@@ -298,7 +302,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
             configurationBuilder.AddIniFile(fileName);
 
             // Act and Assert
@@ -339,7 +343,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                 };
 
             var configurationBuilder = new ConfigurationBuilder();
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
             configurationBuilder.AddCommandLine(appsettings);
 
             // Act and Assert
@@ -369,29 +373,29 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             var appsettings = @"
-{
-    'foo': {
-        'bar': {
-            'name': 'testName'
-        },
-    },
-    'spring': {
-        'application': {
-            'name': 'myName'
-        },
-      'cloud': {
-        'config': {
-            'uri': 'https://user:password@foo.com:9999',
-            'enabled': false,
-            'failFast': false,
-            'name': '${foo:bar:name?foobar}',
-            'label': 'myLabel',
-            'username': 'myUsername',
-            'password': 'myPassword'
-        }
-      }
-    }
-}";
+                {
+                    ""foo"": {
+                        ""bar"": {
+                            ""name"": ""testName""
+                        },
+                    },
+                    ""spring"": {
+                        ""application"": {
+                            ""name"": ""myName""
+                        },
+                      ""cloud"": {
+                        ""config"": {
+                            ""uri"": ""https://user:password@foo.com:9999"",
+                            ""enabled"": false,
+                            ""failFast"": false,
+                            ""name"": ""${foo:bar:name?foobar}"",
+                            ""label"": ""myLabel"",
+                            ""username"": ""myUsername"",
+                            ""password"": ""myPassword""
+                        }
+                      }
+                    }
+                }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
 
@@ -400,7 +404,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
             configurationBuilder.AddJsonFile(fileName);
 
             // Act and Assert
@@ -426,67 +430,64 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             var vcap_application = @" 
-{
-'vcap': {
-    'application': 
-        {
-          'application_id': 'fa05c1a9-0fc1-4fbd-bae1-139850dec7a3',
-          'application_name': 'my-app',
-          'application_uris': [
-            'my-app.10.244.0.34.xip.io'
-          ],
-          'application_version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca',
-          'limits': {
-            'disk': 1024,
-            'fds': 16384,
-            'mem': 256
-          },
-          'name': 'my-app',
-          'space_id': '06450c72-4669-4dc6-8096-45f9777db68a',
-          'space_name': 'my-space',
-          'uris': [
-            'my-app.10.244.0.34.xip.io',
-            'my-app2.10.244.0.34.xip.io'
-          ],
-          'users': null,
-          'version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca'
-        }
-    }
-}";
+                {
+                    ""vcap"": {
+                        ""application"": {
+                          ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
+                          ""application_name"": ""my-app"",
+                          ""application_uris"": [
+                            ""my-app.10.244.0.34.xip.io""
+                          ],
+                          ""application_version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"",
+                          ""limits"": {
+                            ""disk"": 1024,
+                            ""fds"": 16384,
+                            ""mem"": 256
+                          },
+                          ""name"": ""my-app"",
+                          ""space_id"": ""06450c72-4669-4dc6-8096-45f9777db68a"",
+                          ""space_name"": ""my-space"",
+                          ""uris"": [
+                            ""my-app.10.244.0.34.xip.io"",
+                            ""my-app2.10.244.0.34.xip.io""
+                          ],
+                          ""users"": null,
+                          ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
+                        }
+                    }
+                }";
 
             var vcap_services = @"
-{
-'vcap': {
-    'services': {
-        'p-config-server': [
-        {
-        'credentials': {
-         'access_token_uri': 'https://p-spring-cloud-services.uaa.wise.com/oauth/token',
-         'client_id': 'p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef',
-         'client_secret': 'e8KF1hXvAnGd',
-         'uri': 'https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com'
-        },
-        'label': 'p-config-server',
-        'name': 'My Config Server',
-        'plan': 'standard',
-        'tags': [
-         'configuration',
-         'spring-cloud'
-            ]
-        }
-        ]
-    }
-}
-}";
+                {
+                    ""vcap"": {
+                        ""services"": {
+                            ""p-config-server"": [{
+                                ""credentials"": {
+                                    ""access_token_uri"": ""https://p-spring-cloud-services.uaa.wise.com/oauth/token"",
+                                    ""client_id"": ""p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef"",
+                                    ""client_secret"": ""e8KF1hXvAnGd"",
+                                    ""uri"": ""https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com""
+                                },
+                                ""label"": ""p-config-server"",
+                                ""name"": ""My Config Server"",
+                                ""plan"": ""standard"",
+                                ""tags"": [
+                                    ""configuration"",
+                                    ""spring-cloud""
+                                ]
+                            }]
+                        }
+                    }
+                }";
 
             var appsettings = @"
-{
-    'spring': {
-        'application': {
-            'name': '${vcap:application:name?foobar}'   
-        }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""application"": {
+                            ""name"": ""${vcap:application:name?foobar}""   
+                        }
+                    }
+                }";
             var tempPath = Path.GetTempPath();
             var appsettingsPath = TestHelpers.CreateTempFile(appsettings);
             string appsettingsfileName = Path.GetFileName(appsettingsPath);
@@ -497,7 +498,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             var vcapServicesPath = TestHelpers.CreateTempFile(vcap_services);
             string vcapServicesfileName = Path.GetFileName(vcapServicesPath);
 
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
 
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(tempPath);
@@ -532,71 +533,69 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             var vcap_application = @" 
-{
-'vcap': {
-    'application': 
-        {
-          'application_id': 'fa05c1a9-0fc1-4fbd-bae1-139850dec7a3',
-          'application_name': 'my-app',
-          'application_uris': [
-            'my-app.10.244.0.34.xip.io'
-          ],
-          'application_version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca',
-          'limits': {
-            'disk': 1024,
-            'fds': 16384,
-            'mem': 256
-          },
-          'name': 'my-app',
-          'space_id': '06450c72-4669-4dc6-8096-45f9777db68a',
-          'space_name': 'my-space',
-          'uris': [
-            'my-app.10.244.0.34.xip.io',
-            'my-app2.10.244.0.34.xip.io'
-          ],
-          'users': null,
-          'version': 'fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca'
-        }
-    }
-}";
+                {
+                    ""vcap"": {
+                        ""application"": {
+                            ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
+                            ""application_name"": ""my-app"",
+                            ""application_uris"": [
+                                ""my-app.10.244.0.34.xip.io""
+                            ],
+                            ""application_version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"",
+                            ""limits"": {
+                                ""disk"": 1024,
+                                ""fds"": 16384,
+                                ""mem"": 256
+                            },
+                            ""name"": ""my-app"",
+                            ""space_id"": ""06450c72-4669-4dc6-8096-45f9777db68a"",
+                            ""space_name"": ""my-space"",
+                            ""uris"": [
+                                ""my-app.10.244.0.34.xip.io"",
+                                ""my-app2.10.244.0.34.xip.io""
+                            ],
+                            ""users"": null,
+                            ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
+                        }
+                    }
+                }";
 
             var vcap_services = @"
-{
-    'vcap': {
-        'services': {
-            'p.config-server': [{
-                'binding_name':'',
-                'credentials': {
-                     'client_secret':'e8KF1hXvAnGd',
-                     'uri':'https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com',
-                     'client_id':'config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f',
-                     'access_token_uri':'https://p-spring-cloud-services.uaa.wise.com/oauth/token'
-                    },
-                    'instance_name': 'myConfigServer',
-                    'label': 'p.config-server',
-                    'name': 'myConfigServer',
-                    'plan': 'standard',
-                    'provider': null,
-                    'syslog_drain_url': null,
-                    'tags': [
-                        'configuration',
-                        'spring-cloud'
-                    ],
-                    'volume_mounts': []
-                }
-            ]}
-        }
-    }
-}";
+                {
+                    ""vcap"": {
+                        ""services"": {
+                            ""p.config-server"": [{
+                                ""binding_name"":"""",
+                                ""credentials"": {
+                                     ""client_secret"":""e8KF1hXvAnGd"",
+                                     ""uri"":""https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com"",
+                                     ""client_id"":""config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f"",
+                                     ""access_token_uri"":""https://p-spring-cloud-services.uaa.wise.com/oauth/token""
+                                },
+                                ""instance_name"": ""myConfigServer"",
+                                ""label"": ""p.config-server"",
+                                ""name"": ""myConfigServer"",
+                                ""plan"": ""standard"",
+                                ""provider"": null,
+                                ""syslog_drain_url"": null,
+                                ""tags"": [
+                                    ""configuration"",
+                                    ""spring-cloud""
+                                ],
+                                ""volume_mounts"": []
+                            }]
+                         }
+                    }
+                }";
 
             var appsettings = @"
-{
-    'spring': {
-        'application': {
-            'name': '${vcap:application:name?foobar}'   
-        }
-    }
-}";
+                {
+                    ""spring"": {
+                        ""application"": {
+                            ""name"": ""${vcap:application:name?foobar}""   
+                        }
+                    }
+                }";
             var tempPath = Path.GetTempPath();
             var appsettingsPath = TestHelpers.CreateTempFile(appsettings);
             string appsettingsfileName = Path.GetFileName(appsettingsPath);
@@ -607,7 +606,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             var vcapServicesPath = TestHelpers.CreateTempFile(vcap_services);
             string vcapServicesfileName = Path.GetFileName(vcapServicesPath);
 
-            var environment = new HostingEnvironment();
+            var environment = HostingHelpers.GetHostingEnvironment("Production");
 
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(tempPath);

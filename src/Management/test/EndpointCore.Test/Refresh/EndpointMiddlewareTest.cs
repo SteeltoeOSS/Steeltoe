@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         public async void HandleRefreshRequestAsync_ReturnsExpected()
         {
             var opts = new RefreshEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
@@ -92,7 +92,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         public void RefreshEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new RefreshEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();

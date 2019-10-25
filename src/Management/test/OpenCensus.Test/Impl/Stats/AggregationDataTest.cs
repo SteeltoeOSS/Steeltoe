@@ -124,7 +124,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                     DistributionData.Create(1, 1, 1, 1, 0, new List<long>() { 0L, 10L, 0L }),
                     LastValueDataDouble.Create(20.0),
                     LastValueDataLong.Create(200000000L)
-                    };
+                };
 
             List<object> actual = new List<object>();
             foreach (IAggregationData aggregation in aggregations)

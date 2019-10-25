@@ -88,6 +88,16 @@ namespace Steeltoe.CloudFoundry.Connector
         }
 
         /// <summary>
+        /// Get all Service Infos of type
+        /// </summary>
+        /// <param name="type">Service Info Type to retrieve</param>
+        /// <returns>List of matching Service Infos</returns>
+        public List<IServiceInfo> GetServiceInfos(Type type)
+        {
+            return ServiceInfos.Where((info) => info.GetType() == type).ToList();
+        }
+
+        /// <summary>
         /// Get a named service
         /// </summary>
         /// <typeparam name="SI">Service Info type</typeparam>
@@ -107,16 +117,6 @@ namespace Steeltoe.CloudFoundry.Connector
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Get all Service Infos of type
-        /// </summary>
-        /// <param name="type">Service Info Type to retrieve</param>
-        /// <returns>List of matching Service Infos</returns>
-        public List<IServiceInfo> GetServiceInfos(Type type)
-        {
-            return ServiceInfos.Where((info) => info.GetType() == type).ToList();
         }
 
         /// <summary>
