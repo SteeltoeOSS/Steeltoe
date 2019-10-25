@@ -47,9 +47,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             settings.Name = GetApplicationName(configPrefix, config, settings.Name);
             settings.Environment = GetEnvironment(clientConfigsection, settings.Environment);
-            settings.Label = GetLabel(clientConfigsection);
-            settings.Username = GetUsername(clientConfigsection);
-            settings.Password = GetPassword(clientConfigsection);
+            settings.Label = GetLabel(clientConfigsection, settings.Label);
+            settings.Username = GetUsername(clientConfigsection, settings.Username);
+            settings.Password = GetPassword(clientConfigsection, settings.Password);
             settings.Uri = GetUri(clientConfigsection, settings.Uri);
             settings.Enabled = GetEnabled(clientConfigsection, settings.Enabled);
             settings.FailFast = GetFailFast(clientConfigsection, settings.FailFast);
@@ -146,19 +146,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return clientConfigsection.GetValue("uri", def);
         }
 
-        private static string GetPassword(IConfigurationSection clientConfigsection)
+        private static string GetPassword(IConfigurationSection clientConfigsection, string defaultPassword)
         {
-            return clientConfigsection.GetValue<string>("password");
+            return clientConfigsection.GetValue<string>("password", defaultPassword);
         }
 
-        private static string GetUsername(IConfigurationSection clientConfigsection)
+        private static string GetUsername(IConfigurationSection clientConfigsection, string defaultUser)
         {
-            return clientConfigsection.GetValue<string>("username");
+            return clientConfigsection.GetValue<string>("username", defaultUser);
         }
 
-        private static string GetLabel(IConfigurationSection clientConfigsection)
+        private static string GetLabel(IConfigurationSection clientConfigsection, string defaultLabel)
         {
-            return clientConfigsection.GetValue<string>("label");
+            return clientConfigsection.GetValue("label", defaultLabel);
         }
 
         private static string GetEnvironment(IConfigurationSection section, string def)

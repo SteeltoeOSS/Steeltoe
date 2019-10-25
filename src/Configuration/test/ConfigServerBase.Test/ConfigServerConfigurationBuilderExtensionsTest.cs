@@ -58,8 +58,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             configurationBuilder.AddConfigServer(settings);
 
-            ConfigServerConfigurationSource configServerSource =
-                configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+            var configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
             Assert.NotNull(configServerSource);
         }
 
@@ -74,8 +73,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             configurationBuilder.AddConfigServer(settings, loggerFactory);
 
-            ConfigServerConfigurationSource configServerSource =
-                configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+            var configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
 
             Assert.NotNull(configServerSource);
             Assert.NotNull(configServerSource.LogFactory);
@@ -114,9 +112,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var csettings = new ConfigServerClientSettings();
@@ -126,11 +124,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             configurationBuilder.AddConfigServer(csettings);
             var config = configurationBuilder.Build();
 
-            ConfigServerConfigurationProvider configServerProvider =
+            var configServerProvider =
                 config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
             Assert.NotNull(configServerProvider);
 
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
@@ -170,9 +168,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
     </spring>
 </settings>";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var csettings = new ConfigServerClientSettings();
@@ -180,12 +178,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(csettings);
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
             var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
@@ -212,9 +210,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
     password=myPassword
 ";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var csettings = new ConfigServerClientSettings();
@@ -222,13 +220,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(csettings);
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
-            ConfigServerConfigurationProvider configServerProvider =
+            var configServerProvider =
                 config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             // Act and Assert
             Assert.False(settings.Enabled);
@@ -262,12 +260,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(csettings);
-            IConfigurationRoot config = configurationBuilder.Build();
-            ConfigServerConfigurationProvider configServerProvider =
+            var config = configurationBuilder.Build();
+            var configServerProvider =
                 config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
@@ -310,9 +308,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             var path = TestHelpers.CreateTempFile(appsettings);
 
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var csettings = new ConfigServerClientSettings();
@@ -320,13 +318,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(csettings);
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
-            ConfigServerConfigurationProvider configServerProvider =
+            var configServerProvider =
                 config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
@@ -411,6 +409,33 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // reset to avoid breaking other tests
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
+        }
+
+        [Fact]
+        public void AddConfigServer_PaysAttentionToSettings()
+        {
+            // Arrange
+            var configServerClientSettings = new ConfigServerClientSettings()
+            {
+                Name = "testConfigName",
+                Label = "testConfigLabel",
+                Environment = "testEnv",
+                Username = "testUser",
+                Password = "testPassword"
+            };
+            var builder = new ConfigurationBuilder().AddConfigServer(configServerClientSettings);
+
+            // Act
+            var config = builder.Build();
+            var provider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+
+            // Assert
+            Assert.NotNull(provider);
+            Assert.Equal("testConfigLabel", provider.Settings.Label);
+            Assert.Equal("testConfigName", provider.Settings.Name);
+            Assert.Equal("testEnv", provider.Settings.Environment);
+            Assert.Equal("testUser", provider.Settings.Username);
+            Assert.Equal("testPassword", provider.Settings.Password);
         }
 
         [Fact]
