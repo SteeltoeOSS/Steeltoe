@@ -5,6 +5,7 @@
     <TargetFrameworks Condition="$(OS) != 'Windows_NT'">netstandard2.0</TargetFrameworks>
     <Description>OpenCensus .NET API</Description>
     <IncludeSymbols>True</IncludeSymbols>
+    <PackageId>Steeltoe.Management.OpenCensus</PackageId>
     <PackageTags>Tracing;OpenCensus;Management;Monitoring</PackageTags>
     <PackageIconUrl>https://opencensus.io/images/opencensus-logo.png</PackageIconUrl>
     <PackageProjectUrl>https://opencensus.io</PackageProjectUrl>
