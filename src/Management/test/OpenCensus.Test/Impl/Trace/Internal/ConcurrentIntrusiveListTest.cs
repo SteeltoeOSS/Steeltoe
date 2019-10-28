@@ -1,24 +1,25 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="ConcurrentIntrusiveListTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Utils;
-using System;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Trace.Internal.Test
+namespace OpenCensus.Trace.Internal.Test
 {
-    [Obsolete]
+    using System;
+    using OpenCensus.Utils;
+    using Xunit;
+
     public class ConcurrentIntrusiveListTest
     {
         private readonly ConcurrentIntrusiveList<FakeElement> intrusiveList = new ConcurrentIntrusiveList<FakeElement>();
@@ -43,7 +44,7 @@ namespace Steeltoe.Management.Census.Trace.Internal.Test
         }
 
         [Fact]
-        public void AddAndRemoveElements()
+        public void addAndRemoveElements()
         {
             FakeElement element1 = new FakeElement();
             FakeElement element2 = new FakeElement();
@@ -56,14 +57,12 @@ namespace Steeltoe.Management.Census.Trace.Internal.Test
             Assert.Equal(element3, copy[0]);
             Assert.Equal(element2, copy[1]);
             Assert.Equal(element1, copy[2]);
-
             // Remove element from the middle of the list.
             intrusiveList.RemoveElement(element2);
             Assert.Equal(2, intrusiveList.Count);
             copy = intrusiveList.Copy();
             Assert.Equal(element3, copy[0]);
             Assert.Equal(element1, copy[1]);
-
             // Remove element from the tail of the list.
             intrusiveList.RemoveElement(element1);
             Assert.Equal(1, intrusiveList.Count);
@@ -75,13 +74,11 @@ namespace Steeltoe.Management.Census.Trace.Internal.Test
             copy = intrusiveList.Copy();
             Assert.Equal(element1, copy[0]);
             Assert.Equal(element3, copy[1]);
-
             // Remove element from the head of the list when there are other elements after.
             intrusiveList.RemoveElement(element1);
             Assert.Equal(1, intrusiveList.Count);
             copy = intrusiveList.Copy();
             Assert.Equal(element3, copy[0]);
-
             // Remove element from the head of the list when no more other elements in the list.
             intrusiveList.RemoveElement(element3);
             Assert.Equal(0, intrusiveList.Count);
@@ -98,11 +95,12 @@ namespace Steeltoe.Management.Census.Trace.Internal.Test
         }
 
         [Fact]
-        public void RemoveNotAddedElement()
+        public void removeNotAddedElement()
         {
             FakeElement element = new FakeElement();
             Assert.Throws<ArgumentOutOfRangeException>(() => intrusiveList.RemoveElement(element));
         }
+
 
         private sealed class FakeElement : IElement<FakeElement>
         {

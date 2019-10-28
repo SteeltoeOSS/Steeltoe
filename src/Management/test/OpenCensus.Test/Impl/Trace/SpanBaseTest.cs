@@ -1,32 +1,33 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="SpanBaseTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Moq;
-using Steeltoe.Management.Census.Trace.Internal;
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Trace.Test
+namespace OpenCensus.Trace.Test
 {
-    [Obsolete]
+    using System;
+    using System.Collections.Generic;
+    using Moq;
+    using OpenCensus.Trace.Internal;
+    using Xunit;
+
     public class SpanBaseTest
     {
-        private readonly RandomGenerator random;
-        private readonly ISpanContext spanContext;
-        private readonly ISpanContext notSampledSpanContext;
-        private readonly SpanOptions spanOptions;
+        private RandomGenerator random;
+        private ISpanContext spanContext;
+        private ISpanContext notSampledSpanContext;
+        private SpanOptions spanOptions;
 
         public SpanBaseTest()
         {
@@ -35,13 +36,13 @@ namespace Steeltoe.Management.Census.Trace.Test
                 SpanContext.Create(
                     TraceId.GenerateRandomId(random),
                     SpanId.GenerateRandomId(random),
-                    TraceOptions.Builder().SetIsSampled(true).Build());
+                    TraceOptions.Builder().SetIsSampled(true).Build(), Tracestate.Empty);
             notSampledSpanContext =
                 SpanContext.Create(
                     TraceId.GenerateRandomId(random),
                     SpanId.GenerateRandomId(random),
-                    TraceOptions.DEFAULT);
-            spanOptions = SpanOptions.RECORD_EVENTS;
+                    TraceOptions.Default, Tracestate.Empty);
+            spanOptions = SpanOptions.RecordEvents;
         }
 
         [Fact]
@@ -50,11 +51,12 @@ namespace Steeltoe.Management.Census.Trace.Test
             Assert.Throws<ArgumentNullException>(() => new NoopSpan(null, default(SpanOptions)));
         }
 
+
         [Fact]
         public void GetOptions_WhenNullOptions()
         {
             ISpan span = new NoopSpan(notSampledSpanContext, default(SpanOptions));
-            Assert.Equal(SpanOptions.NONE, span.Options);
+            Assert.Equal(SpanOptions.None, span.Options);
         }
 
         [Fact]
@@ -74,6 +76,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             span.PutAttribute("MyKey", val);
             span.End();
             mockSpan.Verify((s) => s.PutAttributes(It.Is<IDictionary<string, IAttributeValue>>((d) => d.ContainsKey("MyKey"))));
+    
         }
 
         [Fact]
@@ -82,7 +85,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             var mockSpan = new Mock<NoopSpan>(spanContext, spanOptions) { CallBase = true };
             var span = mockSpan.Object;
             span.End();
-            mockSpan.Verify((s) => s.End(EndSpanOptions.DEFAULT));
+            mockSpan.Verify((s) => s.End(EndSpanOptions.Default));
         }
 
         [Fact]
@@ -92,7 +95,7 @@ namespace Steeltoe.Management.Census.Trace.Test
             var span = mockSpan.Object;
 
             IMessageEvent messageEvent =
-                MessageEvent.Builder(MessageEventType.SENT, 123)
+                MessageEvent.Builder(MessageEventType.Sent, 123)
                     .SetUncompressedMessageSize(456)
                     .SetCompressedMessageSize(789)
                     .Build();

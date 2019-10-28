@@ -1,24 +1,24 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="TraceConfigTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Trace.Sampler;
-using System;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Trace.Config.Test
+namespace OpenCensus.Trace.Config.Test
 {
-    [Obsolete]
+    using OpenCensus.Trace.Sampler;
+    using Xunit;
+
     public class TraceConfigTest
     {
         private readonly TraceConfig traceConfig = new TraceConfig();
@@ -26,26 +26,25 @@ namespace Steeltoe.Management.Census.Trace.Config.Test
         [Fact]
         public void DefaultActiveTraceParams()
         {
-            Assert.Equal(TraceParams.DEFAULT, traceConfig.ActiveTraceParams);
+            Assert.Equal(TraceParams.Default, traceConfig.ActiveTraceParams);
         }
 
         [Fact]
         public void UpdateTraceParams()
         {
             TraceParams traceParams =
-                TraceParams.DEFAULT
+                TraceParams.Default
                     .ToBuilder()
                     .SetSampler(Samplers.AlwaysSample)
                     .SetMaxNumberOfAttributes(8)
                     .SetMaxNumberOfAnnotations(9)
-
                     // .SetMaxNumberOfNetworkEvents(10)
                     .SetMaxNumberOfLinks(11)
                     .Build();
             traceConfig.UpdateActiveTraceParams(traceParams);
             Assert.Equal(traceParams, traceConfig.ActiveTraceParams);
-            traceConfig.UpdateActiveTraceParams(TraceParams.DEFAULT);
-            Assert.Equal(TraceParams.DEFAULT, traceConfig.ActiveTraceParams);
+            traceConfig.UpdateActiveTraceParams(TraceParams.Default);
+            Assert.Equal(TraceParams.Default, traceConfig.ActiveTraceParams);
         }
     }
 }

@@ -1,30 +1,31 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="MessageEventTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using System;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Trace.Test
+namespace OpenCensus.Trace.Test
 {
-    [Obsolete]
+    using Xunit;
+
     public class MessageEventTest
     {
+
         [Fact]
         public void BuildMessageEvent_WithRequiredFields()
         {
-            IMessageEvent messageEvent = MessageEvent.Builder(MessageEventType.SENT, 1L).Build();
-            Assert.Equal(MessageEventType.SENT, messageEvent.Type);
+            IMessageEvent messageEvent = MessageEvent.Builder(MessageEventType.Sent, 1L).Build();
+            Assert.Equal(MessageEventType.Sent, messageEvent.Type);
             Assert.Equal(1L, messageEvent.MessageId);
             Assert.Equal(0L, messageEvent.UncompressedMessageSize);
         }
@@ -33,8 +34,8 @@ namespace Steeltoe.Management.Census.Trace.Test
         public void BuildMessageEvent_WithUncompressedMessageSize()
         {
             IMessageEvent messageEvent =
-                MessageEvent.Builder(MessageEventType.SENT, 1L).SetUncompressedMessageSize(123L).Build();
-            Assert.Equal(MessageEventType.SENT, messageEvent.Type);
+                MessageEvent.Builder(MessageEventType.Sent, 1L).SetUncompressedMessageSize(123L).Build();
+            Assert.Equal(MessageEventType.Sent, messageEvent.Type);
             Assert.Equal(1L, messageEvent.MessageId);
             Assert.Equal(123L, messageEvent.UncompressedMessageSize);
         }
@@ -43,8 +44,8 @@ namespace Steeltoe.Management.Census.Trace.Test
         public void BuildMessageEvent_WithCompressedMessageSize()
         {
             IMessageEvent messageEvent =
-                MessageEvent.Builder(MessageEventType.SENT, 1L).SetCompressedMessageSize(123L).Build();
-            Assert.Equal(MessageEventType.SENT, messageEvent.Type);
+                MessageEvent.Builder(MessageEventType.Sent, 1L).SetCompressedMessageSize(123L).Build();
+            Assert.Equal(MessageEventType.Sent, messageEvent.Type);
             Assert.Equal(1L, messageEvent.MessageId);
             Assert.Equal(123L, messageEvent.CompressedMessageSize);
         }
@@ -53,11 +54,11 @@ namespace Steeltoe.Management.Census.Trace.Test
         public void BuildMessageEvent_WithAllValues()
         {
             IMessageEvent messageEvent =
-                MessageEvent.Builder(MessageEventType.RECEIVED, 1L)
+                MessageEvent.Builder(MessageEventType.Received, 1L)
                     .SetUncompressedMessageSize(123L)
                     .SetCompressedMessageSize(63L)
                     .Build();
-            Assert.Equal(MessageEventType.RECEIVED, messageEvent.Type);
+            Assert.Equal(MessageEventType.Received, messageEvent.Type);
             Assert.Equal(1L, messageEvent.MessageId);
             Assert.Equal(123L, messageEvent.UncompressedMessageSize);
             Assert.Equal(63L, messageEvent.CompressedMessageSize);
@@ -67,14 +68,15 @@ namespace Steeltoe.Management.Census.Trace.Test
         public void MessageEvent_ToString()
         {
             IMessageEvent messageEvent =
-                MessageEvent.Builder(MessageEventType.SENT, 1L)
+                MessageEvent.Builder(MessageEventType.Sent, 1L)
                     .SetUncompressedMessageSize(123L)
                     .SetCompressedMessageSize(63L)
                     .Build();
-            Assert.Contains("type=SENT", messageEvent.ToString());
+            Assert.Contains("type=Sent", messageEvent.ToString());
             Assert.Contains("messageId=1", messageEvent.ToString());
             Assert.Contains("compressedMessageSize=63", messageEvent.ToString());
             Assert.Contains("uncompressedMessageSize=123", messageEvent.ToString());
         }
     }
 }
+

@@ -11,9 +11,8 @@
     <RootNamespace>Steeltoe.Management.Census</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
-
   <ItemGroup>
-    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
+    <ProjectReference Include="..\OpenCensus\Steeltoe.Management.OpenCensus.csproj" />
   </ItemGroup>
 
 </Project>

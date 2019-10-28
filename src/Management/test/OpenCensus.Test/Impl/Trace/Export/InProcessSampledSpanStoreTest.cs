@@ -1,35 +1,36 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="InProcessSampledSpanStoreTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Common;
-using Steeltoe.Management.Census.Internal;
-using Steeltoe.Management.Census.Testing.Common;
-using Steeltoe.Management.Census.Trace.Config;
-using Steeltoe.Management.Census.Trace.Internal;
-using Steeltoe.Management.Census.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Trace.Export.Test
+namespace OpenCensus.Trace.Export.Test
 {
-    [Obsolete]
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using OpenCensus.Common;
+    using OpenCensus.Internal;
+    using OpenCensus.Testing.Common;
+    using OpenCensus.Trace.Config;
+    using OpenCensus.Trace.Internal;
+    using OpenCensus.Utils;
+    using Xunit;
+
     public class InProcessSampledSpanStoreTest
     {
-        private static readonly string REGISTERED_SPAN_NAME = "MySpanName/1";
-        private static readonly string NOT_REGISTERED_SPAN_NAME = "MySpanName/2";
+        private static readonly String REGISTERED_SPAN_NAME = "MySpanName/1";
+        private static readonly String NOT_REGISTERED_SPAN_NAME = "MySpanName/2";
         private static readonly long NUM_NANOS_PER_SECOND = 1000000000L;
         private readonly RandomGenerator random = new RandomGenerator(1234);
         private readonly ISpanContext sampledSpanContext;
@@ -37,20 +38,23 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         private readonly ISpanContext notSampledSpanContext;
 
         private readonly ISpanId parentSpanId;
-        private readonly SpanOptions recordSpanOptions = SpanOptions.RECORD_EVENTS;
+        private readonly SpanOptions recordSpanOptions = SpanOptions.RecordEvents;
         private readonly TestClock testClock = TestClock.Create(Timestamp.Create(12345, 54321));
         private readonly InProcessSampledSpanStore sampleStore = new InProcessSampledSpanStore(new SimpleEventQueue());
 
         private readonly IStartEndHandler startEndHandler;
 
+
         public InProcessSampledSpanStoreTest()
         {
-            sampledSpanContext = SpanContext.Create(TraceId.GenerateRandomId(random), SpanId.GenerateRandomId(random), TraceOptions.Builder().SetIsSampled(true).Build());
-            notSampledSpanContext = SpanContext.Create(TraceId.GenerateRandomId(random), SpanId.GenerateRandomId(random), TraceOptions.DEFAULT);
+            sampledSpanContext = SpanContext.Create(TraceId.GenerateRandomId(random), SpanId.GenerateRandomId(random), TraceOptions.Builder().SetIsSampled(true).Build(), Tracestate.Empty);
+            notSampledSpanContext = SpanContext.Create(TraceId.GenerateRandomId(random), SpanId.GenerateRandomId(random), TraceOptions.Default, Tracestate.Empty);
             parentSpanId = SpanId.GenerateRandomId(random);
             startEndHandler = new TestStartEndHandler(sampleStore);
             sampleStore.RegisterSpanNamesForCollection(new List<string>() { REGISTERED_SPAN_NAME });
         }
+
+
 
         [Fact]
         public void AddSpansWithRegisteredNamesInAllLatencyBuckets()
@@ -83,7 +87,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
 
             sampleStore.RegisterSpanNamesForCollection(new List<string>() { NOT_REGISTERED_SPAN_NAME });
 
-            Assert.Contains(REGISTERED_SPAN_NAME, sampleStore.RegisteredSpanNamesForCollection);
+            Assert.Contains(REGISTERED_SPAN_NAME,  sampleStore.RegisteredSpanNamesForCollection);
             Assert.Contains(NOT_REGISTERED_SPAN_NAME, sampleStore.RegisteredSpanNamesForCollection);
             Assert.Equal(2, sampleStore.RegisteredSpanNamesForCollection.Count);
 
@@ -104,6 +108,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Assert.Contains(REGISTERED_SPAN_NAME, sampleStore.RegisteredSpanNamesForCollection);
             Assert.Contains(NOT_REGISTERED_SPAN_NAME, sampleStore.RegisteredSpanNamesForCollection);
             Assert.Equal(2, sampleStore.RegisteredSpanNamesForCollection.Count);
+
         }
 
         [Fact]
@@ -135,12 +140,12 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         {
             Span span = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 1000));
-            span.End(EndSpanOptions.Builder().SetStatus(Status.CANCELLED).Build());
-            IList<ISpanData> samples =
+            span.End(EndSpanOptions.Builder().SetStatus(Status.Cancelled).Build());
+            var samples =
                 sampleStore.GetErrorSampledSpans(
-                    SampledSpanStoreErrorFilter.Create(REGISTERED_SPAN_NAME, CanonicalCode.CANCELLED, 0));
-            Assert.Equal(1, samples.Count);
-            Assert.True(samples.Contains(span.ToSpanData()));
+                    SampledSpanStoreErrorFilter.Create(REGISTERED_SPAN_NAME, CanonicalCode.Cancelled, 0));
+            Assert.Single(samples);
+            Assert.Contains(span.ToSpanData(), samples);
         }
 
         [Fact]
@@ -148,18 +153,16 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         {
             Span span1 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 1000));
-            span1.End(EndSpanOptions.Builder().SetStatus(Status.CANCELLED).Build());
-
+            span1.End(EndSpanOptions.Builder().SetStatus(Status.Cancelled).Build());
             // Advance time to allow other spans to be sampled.
             testClock.AdvanceTime(Duration.Create(5, 0));
             Span span2 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 1000));
-            span2.End(EndSpanOptions.Builder().SetStatus(Status.CANCELLED).Build());
-            IList<ISpanData> samples =
+            span2.End(EndSpanOptions.Builder().SetStatus(Status.Cancelled).Build());
+            var samples =
                 sampleStore.GetErrorSampledSpans(
-                    SampledSpanStoreErrorFilter.Create(REGISTERED_SPAN_NAME, CanonicalCode.CANCELLED, 1));
-            Assert.Equal(1, samples.Count);
-
+                    SampledSpanStoreErrorFilter.Create(REGISTERED_SPAN_NAME, CanonicalCode.Cancelled, 1));
+            Assert.Single(samples);
             // No order guaranteed so one of the spans should be in the list.
             Assert.True(samples.Contains(span1.ToSpanData()) || samples.Contains(span2.ToSpanData()));
         }
@@ -169,13 +172,13 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         {
             Span span1 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 1000));
-            span1.End(EndSpanOptions.Builder().SetStatus(Status.CANCELLED).Build());
+            span1.End(EndSpanOptions.Builder().SetStatus(Status.Cancelled).Build());
             Span span2 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 1000));
-            span2.End(EndSpanOptions.Builder().SetStatus(Status.UNKNOWN).Build());
-            IList<ISpanData> samples =
+            span2.End(EndSpanOptions.Builder().SetStatus(Status.Unknown).Build());
+            var samples =
                 sampleStore.GetErrorSampledSpans(SampledSpanStoreErrorFilter.Create(REGISTERED_SPAN_NAME, null, 0));
-            Assert.Equal(2, samples.Count);
+            Assert.Equal(2, samples.Count());
             Assert.Contains(span1.ToSpanData(), samples);
             Assert.Contains(span2.ToSpanData(), samples);
         }
@@ -185,13 +188,13 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         {
             Span span1 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 1000));
-            span1.End(EndSpanOptions.Builder().SetStatus(Status.CANCELLED).Build());
+            span1.End(EndSpanOptions.Builder().SetStatus(Status.Cancelled).Build());
             Span span2 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 1000));
-            span2.End(EndSpanOptions.Builder().SetStatus(Status.UNKNOWN).Build());
-            IList<ISpanData> samples =
+            span2.End(EndSpanOptions.Builder().SetStatus(Status.Unknown).Build());
+            var samples =
                 sampleStore.GetErrorSampledSpans(SampledSpanStoreErrorFilter.Create(REGISTERED_SPAN_NAME, null, 1));
-            Assert.Equal(1, samples.Count);
+            Assert.Single(samples);
             Assert.True(samples.Contains(span1.ToSpanData()) || samples.Contains(span2.ToSpanData()));
         }
 
@@ -201,15 +204,15 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Span span = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 20000)); // 20 microseconds
             span.End();
-            IList<ISpanData> samples =
+            var samples =
                 sampleStore.GetLatencySampledSpans(
                     SampledSpanStoreLatencyFilter.Create(
                         REGISTERED_SPAN_NAME,
                         15000,
                         25000,
                         0));
-            Assert.Equal(1, samples.Count);
-            Assert.True(samples.Contains(span.ToSpanData()));
+            Assert.Single(samples);
+            Assert.Contains(span.ToSpanData(), samples);
         }
 
         [Fact]
@@ -218,14 +221,14 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Span span = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 20000)); // 20 microseconds
             span.End();
-            IList<ISpanData> samples =
+            var samples =
                 sampleStore.GetLatencySampledSpans(
                     SampledSpanStoreLatencyFilter.Create(
                         REGISTERED_SPAN_NAME,
                         15000,
                         20000,
                         0));
-            Assert.Equal(0, samples.Count);
+            Assert.Empty(samples);
         }
 
         [Fact]
@@ -234,15 +237,15 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Span span = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 20000)); // 20 microseconds
             span.End();
-            IList<ISpanData> samples =
+            var samples =
                 sampleStore.GetLatencySampledSpans(
                     SampledSpanStoreLatencyFilter.Create(
                         REGISTERED_SPAN_NAME,
                         15000,
                         25000,
                         0));
-            Assert.Equal(1, samples.Count);
-            Assert.True(samples.Contains(span.ToSpanData()));
+            Assert.Single(samples);
+            Assert.Contains(span.ToSpanData(), samples);
         }
 
         [Fact]
@@ -251,20 +254,19 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Span span1 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 20000)); // 20 microseconds
             span1.End();
-
             // Advance time to allow other spans to be sampled.
             testClock.AdvanceTime(Duration.Create(5, 0));
             Span span2 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 200000)); // 200 microseconds
             span2.End();
-            IList<ISpanData> samples =
+            var samples =
                 sampleStore.GetLatencySampledSpans(
                     SampledSpanStoreLatencyFilter.Create(
                         REGISTERED_SPAN_NAME,
                         15000,
                         250000,
                         0));
-            Assert.Equal(2, samples.Count);
+            Assert.Equal(2, samples.Count());
             Assert.Contains(span1.ToSpanData(), samples);
             Assert.Contains(span2.ToSpanData(), samples);
         }
@@ -275,21 +277,20 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Span span1 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 20000)); // 20 microseconds
             span1.End();
-
             // Advance time to allow other spans to be sampled.
             testClock.AdvanceTime(Duration.Create(5, 0));
             Span span2 = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, 200000)); // 200 microseconds
             span2.End();
-            IList<ISpanData> samples =
+            var samples =
                 sampleStore.GetLatencySampledSpans(
                     SampledSpanStoreLatencyFilter.Create(
                         REGISTERED_SPAN_NAME,
                         15000,
                         250000,
                         1));
-            Assert.Equal(1, samples.Count);
-            Assert.True(samples.Contains(span1.ToSpanData()));
+            Assert.Single(samples);
+            Assert.Contains(span1.ToSpanData(), samples);
         }
 
         [Fact]
@@ -298,10 +299,10 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Span span = CreateSampledSpan(REGISTERED_SPAN_NAME) as Span;
             testClock.AdvanceTime(Duration.Create(0, -20000));
             span.End();
-            IList<ISpanData> samples =
+            var samples =
                 sampleStore.GetLatencySampledSpans(
-                    SampledSpanStoreLatencyFilter.Create(REGISTERED_SPAN_NAME, 0, long.MaxValue, 0));
-            Assert.Equal(0, samples.Count);
+                    SampledSpanStoreLatencyFilter.Create(REGISTERED_SPAN_NAME, 0, Int64.MaxValue, 0));
+            Assert.Empty(samples);
         }
 
         private ISpan CreateSampledSpan(string spanName)
@@ -312,7 +313,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
                 spanName,
                 parentSpanId,
                 false,
-                TraceParams.DEFAULT,
+                TraceParams.Default,
                 startEndHandler,
                 null,
                 testClock);
@@ -326,7 +327,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
                 spanName,
                 parentSpanId,
                 false,
-                TraceParams.DEFAULT,
+                TraceParams.Default,
                 startEndHandler,
                 null,
                 testClock);
@@ -349,17 +350,16 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
                             boundaries.LatencyLowerNs / NUM_NANOS_PER_SECOND,
                             (int)(boundaries.LatencyLowerNs % NUM_NANOS_PER_SECOND)));
                 }
-
                 sampledSpan.End();
                 notSampledSpan.End();
             }
         }
 
-        private void AddSpanNameToAllErrorBuckets(string spanName)
+        private void AddSpanNameToAllErrorBuckets(String spanName)
         {
             foreach (CanonicalCode code in Enum.GetValues(typeof(CanonicalCode)).Cast<CanonicalCode>())
             {
-                if (code != CanonicalCode.OK)
+                if (code != CanonicalCode.Ok)
                 {
                     ISpan sampledSpan = CreateSampledSpan(spanName);
                     ISpan notSampledSpan = CreateNotSampledSpan(spanName);
@@ -370,21 +370,21 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             }
         }
 
-        private class TestStartEndHandler : IStartEndHandler
+        class TestStartEndHandler : IStartEndHandler
         {
-            private readonly InProcessSampledSpanStore sampleStore;
+            InProcessSampledSpanStore sampleStore;
 
             public TestStartEndHandler(InProcessSampledSpanStore store)
             {
                 sampleStore = store;
             }
 
-            public void OnStart(SpanBase span)
+            public void OnStart(ISpan span)
             {
                 // Do nothing.
             }
 
-            public void OnEnd(SpanBase span)
+            public void OnEnd(ISpan span)
             {
                 sampleStore.ConsiderForSampling(span);
             }

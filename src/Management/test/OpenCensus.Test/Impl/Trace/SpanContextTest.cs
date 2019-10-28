@@ -1,88 +1,88 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="SpanContextTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using System;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Trace.Test
+namespace OpenCensus.Trace.Test
 {
-    [Obsolete]
+    using Xunit;
+
     public class SpanContextTest
     {
-        private static readonly byte[] FirstTraceIdBytes =
+        private static readonly byte[] firstTraceIdBytes =
          new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (byte)'a' };
 
-        private static readonly byte[] SecondTraceIdBytes =
+        private static readonly byte[] secondTraceIdBytes =
             new byte[] { 0, 0, 0, 0, 0, 0, 0, (byte)'0', 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        private static readonly byte[] FirstSpanIdBytes = new byte[] { 0, 0, 0, 0, 0, 0, 0, (byte)'a' };
-        private static readonly byte[] SecondSpanIdBytes = new byte[] { (byte)'0', 0, 0, 0, 0, 0, 0, 0 };
-        private static readonly ISpanContext First =
+        private static readonly byte[] firstSpanIdBytes = new byte[] { 0, 0, 0, 0, 0, 0, 0, (byte)'a' };
+        private static readonly byte[] secondSpanIdBytes = new byte[] { (byte)'0', 0, 0, 0, 0, 0, 0, 0 };
+        private static readonly ISpanContext first =
       SpanContext.Create(
-          TraceId.FromBytes(FirstTraceIdBytes),
-          SpanId.FromBytes(FirstSpanIdBytes),
-          TraceOptions.DEFAULT);
+          TraceId.FromBytes(firstTraceIdBytes),
+          SpanId.FromBytes(firstSpanIdBytes),
+          TraceOptions.Default, Tracestate.Empty);
 
-        private static readonly ISpanContext Second =
+        private static readonly ISpanContext second =
       SpanContext.Create(
-          TraceId.FromBytes(SecondTraceIdBytes),
-          SpanId.FromBytes(SecondSpanIdBytes),
-          TraceOptions.Builder().SetIsSampled(true).Build());
+          TraceId.FromBytes(secondTraceIdBytes),
+          SpanId.FromBytes(secondSpanIdBytes),
+          TraceOptions.Builder().SetIsSampled(true).Build(), Tracestate.Empty);
 
         [Fact]
         public void InvalidSpanContext()
         {
-            Assert.Equal(TraceId.INVALID, SpanContext.INVALID.TraceId);
-            Assert.Equal(SpanId.INVALID, SpanContext.INVALID.SpanId);
-            Assert.Equal(TraceOptions.DEFAULT, SpanContext.INVALID.TraceOptions);
+            Assert.Equal(TraceId.Invalid, SpanContext.Invalid.TraceId);
+            Assert.Equal(SpanId.Invalid, SpanContext.Invalid.SpanId);
+            Assert.Equal(TraceOptions.Default, SpanContext.Invalid.TraceOptions);
         }
 
         [Fact]
         public void IsValid()
         {
-            Assert.False(SpanContext.INVALID.IsValid);
+            Assert.False(SpanContext.Invalid.IsValid);
             Assert.False(
                     SpanContext.Create(
-                            TraceId.FromBytes(FirstTraceIdBytes), SpanId.INVALID, TraceOptions.DEFAULT)
+                            TraceId.FromBytes(firstTraceIdBytes), SpanId.Invalid, TraceOptions.Default, Tracestate.Empty)
                         .IsValid);
             Assert.False(
                     SpanContext.Create(
-                            TraceId.INVALID, SpanId.FromBytes(FirstSpanIdBytes), TraceOptions.DEFAULT)
+                            TraceId.Invalid, SpanId.FromBytes(firstSpanIdBytes), TraceOptions.Default, Tracestate.Empty)
                         .IsValid);
-            Assert.True(First.IsValid);
-            Assert.True(Second.IsValid);
+            Assert.True(first.IsValid);
+            Assert.True(second.IsValid);
         }
 
         [Fact]
         public void GetTraceId()
         {
-            Assert.Equal(TraceId.FromBytes(FirstTraceIdBytes), First.TraceId);
-            Assert.Equal(TraceId.FromBytes(SecondTraceIdBytes), Second.TraceId);
+            Assert.Equal(TraceId.FromBytes(firstTraceIdBytes), first.TraceId);
+            Assert.Equal(TraceId.FromBytes(secondTraceIdBytes), second.TraceId);
         }
 
         [Fact]
         public void GetSpanId()
         {
-            Assert.Equal(SpanId.FromBytes(FirstSpanIdBytes), First.SpanId);
-            Assert.Equal(SpanId.FromBytes(SecondSpanIdBytes), Second.SpanId);
+            Assert.Equal(SpanId.FromBytes(firstSpanIdBytes), first.SpanId);
+            Assert.Equal(SpanId.FromBytes(secondSpanIdBytes), second.SpanId);
         }
 
         [Fact]
         public void GetTraceOptions()
         {
-            Assert.Equal(TraceOptions.DEFAULT, First.TraceOptions);
-            Assert.Equal(TraceOptions.Builder().SetIsSampled(true).Build(), Second.TraceOptions);
+            Assert.Equal(TraceOptions.Default, first.TraceOptions);
+            Assert.Equal(TraceOptions.Builder().SetIsSampled(true).Build(), second.TraceOptions);
         }
 
         [Fact]
@@ -111,12 +111,12 @@ namespace Steeltoe.Management.Census.Trace.Test
         [Fact]
         public void SpanContext_ToString()
         {
-            Assert.Contains(TraceId.FromBytes(FirstTraceIdBytes).ToString(), First.ToString());
-            Assert.Contains(SpanId.FromBytes(FirstSpanIdBytes).ToString(), First.ToString());
-            Assert.Contains(TraceOptions.DEFAULT.ToString(), First.ToString());
-            Assert.Contains(TraceId.FromBytes(SecondTraceIdBytes).ToString(), Second.ToString());
-            Assert.Contains(SpanId.FromBytes(SecondSpanIdBytes).ToString(), Second.ToString());
-            Assert.Contains(TraceOptions.Builder().SetIsSampled(true).Build().ToString(), Second.ToString());
+            Assert.Contains(TraceId.FromBytes(firstTraceIdBytes).ToString(), first.ToString());
+            Assert.Contains(SpanId.FromBytes(firstSpanIdBytes).ToString(), first.ToString());
+            Assert.Contains(TraceOptions.Default.ToString(), first.ToString());
+            Assert.Contains(TraceId.FromBytes(secondTraceIdBytes).ToString(), second.ToString());
+            Assert.Contains(SpanId.FromBytes(secondSpanIdBytes).ToString(), second.ToString());
+            Assert.Contains(TraceOptions.Builder().SetIsSampled(true).Build().ToString(), second.ToString());
         }
     }
 }

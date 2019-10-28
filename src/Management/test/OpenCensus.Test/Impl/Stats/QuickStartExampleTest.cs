@@ -1,33 +1,32 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="QuickStartExampleTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Stats.Aggregations;
-using Steeltoe.Management.Census.Stats.Measures;
-using Steeltoe.Management.Census.Tags;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Steeltoe.Management.Census.Stats.Test
+namespace OpenCensus.Stats.Test
 {
-#pragma warning disable SA1312 // Variable names must begin with lower-case letter
-    [Obsolete]
+    using System.Collections.Generic;
+    using System.Linq;
+    using OpenCensus.Stats.Aggregations;
+    using OpenCensus.Stats.Measures;
+    using OpenCensus.Tags;
+    using Xunit;
+    using Xunit.Abstractions;
+
     public class QuickStartExampleTest
     {
-        private readonly ITestOutputHelper output;
+        ITestOutputHelper output;
 
         public QuickStartExampleTest(ITestOutputHelper output)
         {
@@ -55,7 +54,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                                         "processed video size over time",
                                         VIDEO_SIZE,
                                         Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 256.0, 65536.0 })),
-                                        new List<ITagKey>() { FRONTEND_KEY });
+                                        new List<ITagKey>() { FRONTEND_KEY});
 
             IViewName VIDEO_SIZE_ALL_VIEW_NAME = ViewName.Create("my.org/views/video_size_all");
             IView VIDEO_SIZE_VIEW_ALL = View.Create(
@@ -65,13 +64,14 @@ namespace Steeltoe.Management.Census.Stats.Test
                             Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 256.0, 65536.0 })),
                             new List<ITagKey>() { });
 
+
             IViewName VIDEO_SIZE_TOTAL_VIEW_NAME = ViewName.Create("my.org/views/video_size_total");
             IView VIDEO_SIZE_TOTAL = View.Create(
                                   VIDEO_SIZE_TOTAL_VIEW_NAME,
                                   "total video size over time",
                                   VIDEO_SIZE,
                                   Sum.Create(),
-                                  new List<ITagKey>() { FRONTEND_KEY });
+                                  new List<ITagKey>() { FRONTEND_KEY});
 
             IViewName VIDEOS_PROCESSED_VIEW_NAME = ViewName.Create("my.org/views/videos_processed");
             IView VIDEOS_PROCESSED = View.Create(
@@ -102,8 +102,7 @@ namespace Steeltoe.Management.Census.Stats.Test
                 if (i % 2 == 0)
                 {
                     statsRecorder.NewMeasureMap().Put(VIDEO_SIZE, 25648 * i).Record(context1);
-                }
-                else
+                } else
                 {
                     statsRecorder.NewMeasureMap().Put(VIDEO_SIZE, 25648 * i).Record(context2);
                 }
@@ -151,7 +150,9 @@ namespace Steeltoe.Management.Census.Stats.Test
                                         Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 256.0, 65536.0 })),
                                         new List<ITagKey>() { FRONTEND_KEY, FRONTEND_OS_KEY, FRONTEND_OS_VERSION_KEY });
 
+
             viewManager.RegisterView(VIDEO_SIZE_VIEW);
+    
 
             ITagContext context1 = tagger
                 .EmptyBuilder
@@ -197,7 +198,6 @@ namespace Steeltoe.Management.Census.Stats.Test
                         return false;
                     }
                 }
-
                 return true;
             });
 
@@ -217,9 +217,8 @@ namespace Steeltoe.Management.Census.Stats.Test
                     result += val.AsString;
                 }
             }
-
             return result;
         }
+
     }
 }
-#pragma warning restore SA1312 // Variable names must begin with lower-case letter

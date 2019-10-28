@@ -1,25 +1,26 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="AggregationTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Stats.Aggregations;
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Stats.Test
+namespace OpenCensus.Stats.Test
 {
-    [Obsolete]
+    using System;
+    using System.Collections.Generic;
+    using OpenCensus.Stats.Aggregations;
+    using Xunit;
+
     public class AggregationTest
     {
         [Fact]
@@ -33,7 +34,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         [Fact]
         public void TestNullBucketBoundaries()
         {
-            Assert.Throws<ArgumentNullException>(() => Distribution.Create(null));
+            Assert.Throws<ArgumentNullException>(() => Distribution.Create(null)); ;
         }
 
         [Fact]
@@ -63,21 +64,20 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.Equal(a7, a8);
             Assert.Equal(a9, a10);
             Assert.Equal(a11, a12);
+
         }
 
         [Fact]
         public void TestMatch()
         {
             List<IAggregation> aggregations =
-                new List<IAggregation>()
-                {
+                new List<IAggregation>() {
                                 Sum.Create(),
                                 Count.Create(),
                                 Mean.Create(),
-                                Distribution.Create(BucketBoundaries.Create(new List<double>() { -10.0, 1.0, 5.0 })),
-                                LastValue.Create()
-                };
-            List<string> actual = new List<string>();
+                                Distribution.Create(BucketBoundaries.Create(new List<double>() {-10.0, 1.0, 5.0 })),
+                                LastValue.Create(),};
+            List<String> actual = new List<String>();
             foreach (IAggregation aggregation in aggregations)
             {
                 actual.Add(
@@ -106,8 +106,8 @@ namespace Steeltoe.Management.Census.Stats.Test
                         {
                             throw new ArgumentException();
                         }));
-            }
 
+            }
             Assert.Equal(new List<string>() { "SUM", "COUNT", "MEAN", "DISTRIBUTION", "LASTVALUE" }, actual);
         }
     }

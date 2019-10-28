@@ -1,44 +1,45 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="MeasureTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Stats.Measures;
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Stats.Test
+namespace OpenCensus.Stats.Test
 {
-    [Obsolete]
+    using System;
+    using System.Collections.Generic;
+    using OpenCensus.Stats.Measures;
+    using Xunit;
+
     public class MeasureTest
     {
         [Fact]
         public void TestConstants()
         {
-            Assert.Equal(255, Measure.NAME_MAX_LENGTH);
+            Assert.Equal(255, Measure.NameMaxLength);
         }
 
         [Fact]
         public void PreventTooLongMeasureName()
         {
-            char[] chars = new char[Measure.NAME_MAX_LENGTH + 1];
+            char[] chars = new char[Measure.NameMaxLength + 1];
 
             for (int i = 0; i < chars.Length; i++)
             {
                 chars[i] = 'a';
             }
 
-            string longName = new string(chars);
+            String longName = new string(chars);
             Assert.Throws<ArgumentOutOfRangeException>(() => MeasureDouble.Create(longName, "description", "1"));
         }
 
@@ -84,12 +85,10 @@ namespace Steeltoe.Management.Census.Stats.Test
         public void TestMatch()
         {
             List<IMeasure> measures =
-                new List<IMeasure>()
-                {
+                new List<IMeasure>() {
                     MeasureDouble.Create("measure1", "description", "1"),
-                    MeasureLong.Create("measure2", "description", "1")
-                };
-            List<string> outputs = new List<string>();
+                    MeasureLong.Create("measure2", "description", "1"),};
+            List<String> outputs = new List<string>();
             foreach (IMeasure measure in measures)
             {
                 outputs.Add(
@@ -114,7 +113,7 @@ namespace Steeltoe.Management.Census.Stats.Test
         [Fact]
         public void TestMeasureDoubleIsNotEqualToMeasureLong()
         {
-            Assert.NotEqual((IMeasure)MeasureDouble.Create("name", "description", "bit/s"), (IMeasure)MeasureLong.Create("name", "description", "bit/s"));
+            Assert.NotEqual(MeasureDouble.Create("name", "description", "bit/s"), (IMeasure)MeasureLong.Create("name", "description", "bit/s"));
         }
     }
 }

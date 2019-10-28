@@ -1,23 +1,27 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="CurrentStatsStateTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using System;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Stats.Test
+namespace OpenCensus.Stats.Test
 {
-    [Obsolete]
+    using System;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Xunit;
+
     public class CurrentStatsStateTest
     {
         [Fact]
@@ -37,12 +41,66 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.False(state.Set(StatsCollectionState.ENABLED));
         }
 
+
+
         [Fact]
         public void PreventSettingStateAfterReadingState()
         {
             CurrentStatsState state = new CurrentStatsState();
             var st = state.Value;
             Assert.Throws<ArgumentException>(() => state.Set(StatsCollectionState.DISABLED));
+        }
+
+        [Fact]
+
+        public async Task PreventSettingStateAfterReadingState_IsThreadSafe()
+        {
+            // This test relies on timing, and as such may not FAIL reliably under some conditions
+            // (e.g. more/less machine load, faster/slower processors).
+            // It will not incorrectly fail transiently though.
+
+            for (int i = 0; i < 10; i ++)
+            {
+                var state = new CurrentStatsState();
+
+                using (var cts = new CancellationTokenSource())
+                {
+                    var _ = Task.Run(
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+                        async () =>
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+                        {
+                            while (!cts.IsCancellationRequested)
+                            {
+                                try
+                                {
+                                    state.Set(StatsCollectionState.DISABLED);
+                                    state.Set(StatsCollectionState.ENABLED);
+                                }
+                                catch
+                                {
+                                    // Throw is expected after the read is performed
+                                }
+                            }
+                        },
+                        cts.Token);
+
+                    await Task.Delay(10);
+
+                    // Read the value a bunch of times
+                    var values = Enumerable.Range(0, 20)
+                        .Select(__ => state.Value)
+                        .ToList();
+
+                    // They should all be the same
+                    foreach (var item in values)
+                    {
+                        Assert.Equal(item, values[0]);
+                    }
+
+                    cts.Cancel();
+                }
+            }
         }
     }
 }

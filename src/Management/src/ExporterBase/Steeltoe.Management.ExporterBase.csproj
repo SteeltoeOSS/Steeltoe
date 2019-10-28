@@ -22,8 +22,4 @@
     <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
-  </ItemGroup>
 </Project>

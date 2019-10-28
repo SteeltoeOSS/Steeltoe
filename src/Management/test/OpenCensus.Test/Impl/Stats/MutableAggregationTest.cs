@@ -1,24 +1,25 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="MutableAggregationTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Stats.Test
+namespace OpenCensus.Stats.Test
 {
-    [Obsolete]
+    using System;
+    using System.Collections.Generic;
+    using Xunit;
+
     public class MutableAggregationTest
     {
         private const double TOLERANCE = 1e-6;
@@ -30,7 +31,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.InRange(MutableSum.Create().Sum, 0 - TOLERANCE, 0 + TOLERANCE);
             Assert.Equal(0, MutableCount.Create().Count);
             Assert.InRange(MutableMean.Create().Mean, 0 - TOLERANCE, 0 + TOLERANCE);
-            Assert.True(double.IsNaN(MutableLastValue.Create().LastValue));
+            Assert.True(Double.IsNaN(MutableLastValue.Create().LastValue));
 
             IBucketBoundaries bucketBoundaries = BucketBoundaries.Create(new List<double>() { 0.1, 2.2, 33.3 });
             MutableDistribution mutableDistribution = MutableDistribution.Create(bucketBoundaries);
@@ -45,13 +46,14 @@ namespace Steeltoe.Management.Census.Stats.Test
         [Fact]
         public void TestNullBucketBoundaries()
         {
+
             Assert.Throws<ArgumentNullException>(() => MutableDistribution.Create(null));
         }
 
         [Fact]
         public void TestNoBoundaries()
         {
-            List<double> buckets = new List<double>();
+            List<Double> buckets = new List<double>();
             MutableDistribution noBoundaries = MutableDistribution.Create(BucketBoundaries.Create(buckets));
             Assert.Single(noBoundaries.BucketCounts);
             Assert.Equal(0, noBoundaries.BucketCounts[0]);
@@ -61,14 +63,12 @@ namespace Steeltoe.Management.Census.Stats.Test
         public void TestAdd()
         {
             List<MutableAggregation> aggregations =
-                new List<MutableAggregation>()
-                {
+                new List<MutableAggregation>(){
                 MutableSum.Create(),
                 MutableCount.Create(),
                 MutableMean.Create(),
                 MutableDistribution.Create(BUCKET_BOUNDARIES),
-                MutableLastValue.Create()
-                };
+                MutableLastValue.Create(),};
 
             List<double> values = new List<double>() { -1.0, 1.0, -5.0, 20.0, 5.0 };
 
@@ -89,16 +89,20 @@ namespace Steeltoe.Management.Census.Stats.Test
                         return null;
                     },
                     (arg) =>
+
                     {
                         Assert.Equal(5, arg.Count);
                         return null;
+
                     },
                     (arg) =>
+
                     {
                         Assert.InRange(arg.Mean, 4.0 - TOLERANCE, 4.0 + TOLERANCE);
                         Assert.InRange(arg.Max, 20.0 - TOLERANCE, 20 + TOLERANCE);
                         Assert.InRange(arg.Min, -5.0 - TOLERANCE, -5.0 + TOLERANCE);
                         return null;
+
                     },
                     (arg) =>
                     {
@@ -109,7 +113,8 @@ namespace Steeltoe.Management.Census.Stats.Test
                     {
                         Assert.InRange(arg.LastValue, 5.0 - TOLERANCE, 5.0 + TOLERANCE);
                         return null;
-                    });
+                    }
+                    );
             }
         }
 
@@ -117,16 +122,14 @@ namespace Steeltoe.Management.Census.Stats.Test
         public void TestMatch()
         {
             List<MutableAggregation> aggregations =
-                new List<MutableAggregation>()
-                {
+                new List<MutableAggregation>(){
                 MutableSum.Create(),
                 MutableCount.Create(),
                 MutableMean.Create(),
                 MutableDistribution.Create(BUCKET_BOUNDARIES),
-                MutableLastValue.Create()
-                };
+                MutableLastValue.Create(),};
 
-            List<string> actual = new List<string>();
+            List<String> actual = new List<String>();
             foreach (MutableAggregation aggregation in aggregations)
             {
                 actual.Add(
@@ -134,8 +137,10 @@ namespace Steeltoe.Management.Census.Stats.Test
                         (arg) =>
                         {
                             return "SUM";
+
                         },
                         (arg) =>
+
                         {
                             return "COUNT";
                         },
@@ -150,7 +155,9 @@ namespace Steeltoe.Management.Census.Stats.Test
                         (arg) =>
                         {
                             return "LASTVALUE";
-                        }));
+                        }
+                        )
+                        );
             }
 
             Assert.Equal(new List<string>() { "SUM", "COUNT", "MEAN", "DISTRIBUTION", "LASTVALUE" }, actual);
@@ -172,7 +179,6 @@ namespace Steeltoe.Management.Census.Stats.Test
                     aggregation.Add(val);
                 }
             }
-
             foreach (double val in new List<double>() { 10.0, 50.0 })
             {
                 foreach (MutableAggregation aggregation in aggregations2)
@@ -208,12 +214,10 @@ namespace Steeltoe.Management.Census.Stats.Test
             {
                 distribution1.Add(val);
             }
-
             foreach (double val in new List<double>() { 10.0, 20.0 })
             {
                 distribution2.Add(val);
             }
-
             foreach (double val in new List<double>() { -10.0, 15.0, -15.0, -20.0 })
             {
                 distribution3.Add(val);

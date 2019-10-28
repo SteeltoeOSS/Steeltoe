@@ -9,10 +9,6 @@
     <PackageTags>Asp.NET Core, Management;Monitoring;Metrics;Distributed Trace</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
-
-  <ItemGroup>
-    <PackageReference Include="OpenCensus.Exporter.Zipkin" Version="$(OpenCensusVersion)" />
-  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
@@ -26,5 +22,10 @@
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Management.ExporterBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpenCensus.Exporter.Zipkin\OpenCensus.Exporter.Zipkin.csproj" />
+    <ProjectReference Include="..\OpenCensus\Steeltoe.Management.OpenCensus.csproj" />
   </ItemGroup>
 </Project>
