@@ -14,11 +14,19 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>OpenCensus authors</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <VersionPrefix>$(VersionPrefix)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OpenCensus.Abstractions\Steeltoe.Management.OpenCensus.Abstractions.csproj" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\OpenCensus.Abstractions\Steeltoe.Management.OpenCensus.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Management.OpenCensus.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">

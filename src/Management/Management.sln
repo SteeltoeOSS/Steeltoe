@@ -89,7 +89,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Commo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "..\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{092BADE5-4E56-4EB4-BA0F-3EA6ECA08943}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenCensus.Exporter.Zipkin", "src\OpenCensus.Exporter.Zipkin\OpenCensus.Exporter.Zipkin.csproj", "{019FB8A8-8FFB-433D-AFA3-46AC797ABE63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus.Exporter.Zipkin", "src\OpenCensus.Exporter.Zipkin\Steeltoe.Management.OpenCensus.Exporter.Zipkin.csproj", "{019FB8A8-8FFB-433D-AFA3-46AC797ABE63}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus.Abstractions", "src\OpenCensus.Abstractions\Steeltoe.Management.OpenCensus.Abstractions.csproj", "{A681F1FC-EA6F-49D8-A358-41886DFAF8B9}"
 EndProject

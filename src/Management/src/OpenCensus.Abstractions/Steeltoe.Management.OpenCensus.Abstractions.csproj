@@ -12,6 +12,8 @@
     <Authors>OpenCensus authors</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RootNamespace>OpenCensus</RootNamespace>
+    <VersionPrefix>$(VersionPrefix)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">

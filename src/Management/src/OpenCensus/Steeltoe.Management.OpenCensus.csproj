@@ -11,6 +11,8 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>OpenCensus authors</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <VersionPrefix>$(VersionPrefix)</VersionPrefix>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -27,7 +29,12 @@
   <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="1.6.0" />
   </ItemGroup>
-  <ItemGroup>
+  
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\OpenCensus.Abstractions\Steeltoe.Management.OpenCensus.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Management.OpenCensus.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>
