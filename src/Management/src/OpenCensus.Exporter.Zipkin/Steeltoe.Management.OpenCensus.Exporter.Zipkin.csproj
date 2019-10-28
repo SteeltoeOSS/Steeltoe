@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <PackageId>Steeltoe.Management.OpenCensus.ZipkinExporter</PackageId>
     <Description>Zipkin exporter for OpenCensus</Description>
     <PackageTags>Tracing;OpenCensus;Management;Monitoring;Zipkin;distributed-tracing</PackageTags>
     <PackageIconUrl>https://opencensus.io/images/opencensus-logo.png</PackageIconUrl>
