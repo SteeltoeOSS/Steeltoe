@@ -1,24 +1,24 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="NoopSampledSpanStoreTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Trace.Export.Test
+namespace OpenCensus.Trace.Export.Test
 {
-    [Obsolete]
+    using System.Collections.Generic;
+    using Xunit;
+
     public class NoopSampledSpanStoreTest
     {
         // @Rule public final ExpectedException thrown = ExpectedException.none();
@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Assert.Contains(summary.PerSpanNameSummary, (item) =>
             {
                 return (item.Key == "TestSpan1" || item.Key == "TestSpan2" || item.Key == "TestSpan3") &&
-                item.Value.Equals(EMPTY_PER_SPAN_NAME_SUMMARY);
+                item.Value.Equals(EMPTY_PER_SPAN_NAME_SUMMARY); 
             });
 
             // should unregister specific spanNames
@@ -53,13 +53,14 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             {
                 return (item.Key == "TestSpan2") && item.Value.Equals(EMPTY_PER_SPAN_NAME_SUMMARY);
             });
+
         }
 
         [Fact]
         public void NoopSampledSpanStore_GetLatencySampledSpans()
         {
             ISampledSpanStore sampledSpanStore = ExportComponentBase.NewNoopExportComponent.SampledSpanStore;
-            IList<ISpanData> latencySampledSpans =
+            var latencySampledSpans =
                 sampledSpanStore.GetLatencySampledSpans(
                     SampledSpanStoreLatencyFilter.Create("TestLatencyFilter", 0, 0, 0));
             Assert.Empty(latencySampledSpans);
@@ -69,7 +70,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
         public void NoopSampledSpanStore_GetErrorSampledSpans()
         {
             ISampledSpanStore sampledSpanStore = ExportComponentBase.NewNoopExportComponent.SampledSpanStore;
-            IList<ISpanData> errorSampledSpans =
+            var errorSampledSpans =
                 sampledSpanStore.GetErrorSampledSpans(
                     SampledSpanStoreErrorFilter.Create("TestErrorFilter", null, 0));
             Assert.Empty(errorSampledSpans);
@@ -84,7 +85,7 @@ namespace Steeltoe.Management.Census.Trace.Export.Test
             Assert.Equal(2, registeredSpanNames.Count);
             Assert.Contains(registeredSpanNames, (item) =>
             {
-                return item == "TestSpan3" || item == "TestSpan4";
+                return (item == "TestSpan3" || item == "TestSpan4");
             });
         }
     }

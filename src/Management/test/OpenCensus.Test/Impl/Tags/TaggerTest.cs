@@ -1,34 +1,32 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="TaggerTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Common;
-using Steeltoe.Management.Census.Tags.Unsafe;
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Tags.Test
+namespace OpenCensus.Tags.Test
 {
-    [Obsolete]
+    using System.Collections.Generic;
+    using OpenCensus.Common;
+    using OpenCensus.Tags.Unsafe;
+    using Xunit;
+
     public class TaggerTest
     {
         private readonly TagsComponent tagsComponent = new TagsComponent();
         private readonly ITagger tagger;
 
-#pragma warning disable SA1204 // Static elements must appear before instance elements
         private static readonly ITagKey K1 = TagKey.Create("k1");
-#pragma warning restore SA1204 // Static elements must appear before instance elements
         private static readonly ITagKey K2 = TagKey.Create("k2");
         private static readonly ITagKey K3 = TagKey.Create("k3");
 
@@ -52,13 +50,13 @@ namespace Steeltoe.Management.Census.Tags.Test
             Assert.IsType<TagContext>(tagger.Empty);
         }
 
-        //// [Fact]
-        //// public void Empty_TaggingDisabled()
-        //// {
-        ////    tagsComponent.State =TaggingState.DISABLED);
-        ////    Assert.Empty(TagsTestUtil.TagContextToList(tagger.Empty)).isEmpty();
-        ////    Assert.IsType<TagContext>(tagger.Empty);
-        //// }
+        // [Fact]
+        // public void Empty_TaggingDisabled()
+        // {
+        //    tagsComponent.State =TaggingState.DISABLED);
+        //    Assert.Empty(TagsTestUtil.TagContextToList(tagger.Empty)).isEmpty();
+        //    Assert.IsType<TagContext>(tagger.Empty);
+        // }
 
         [Fact]
         public void EmptyBuilder()
@@ -68,23 +66,23 @@ namespace Steeltoe.Management.Census.Tags.Test
             Assert.Empty(TagsTestUtil.TagContextToList(builder.Build()));
         }
 
-        //// [Fact]
-        //// public void EmptyBuilder_TaggingDisabled()
-        //// {
-        ////    tagsComponent.setState(TaggingState.DISABLED);
-        ////    Assert.Equal(tagger.EmptyBuilder).isSameAs(NoopTagContextBuilder.INSTANCE);
-        //// }
+        // [Fact]
+        // public void EmptyBuilder_TaggingDisabled()
+        // {
+        //    tagsComponent.setState(TaggingState.DISABLED);
+        //    Assert.Equal(tagger.EmptyBuilder).isSameAs(NoopTagContextBuilder.Instance);
+        // }
 
-        //// [Fact]
-        //// public void EmptyBuilder_TaggingReenabled()
-        //// {
-        ////    tagsComponent.setState(TaggingState.DISABLED);
-        ////    Assert.Equal(tagger.EmptyBuilder).isSameAs(NoopTagContextBuilder.INSTANCE);
-        ////    tagsComponent.setState(TaggingState.ENABLED);
-        ////    TagContextBuilder builder = tagger.EmptyBuilder;
-        ////    Assert.Equal(builder).isInstanceOf(TagContextBuilder);
-        ////    Assert.Equal(TagsTestUtil.TagContextToList(builder.put(K1, V1).Build())).containsExactly(Tag.Create(K1, V1));
-        //// }
+        // [Fact]
+        // public void EmptyBuilder_TaggingReenabled()
+        // {
+        //    tagsComponent.setState(TaggingState.DISABLED);
+        //    Assert.Equal(tagger.EmptyBuilder).isSameAs(NoopTagContextBuilder.Instance);
+        //    tagsComponent.setState(TaggingState.ENABLED);
+        //    TagContextBuilder builder = tagger.EmptyBuilder;
+        //    Assert.Equal(builder).isInstanceOf(TagContextBuilder);
+        //    Assert.Equal(TagsTestUtil.TagContextToList(builder.put(K1, V1).Build())).containsExactly(Tag.Create(K1, V1));
+        // }
 
         [Fact]
         public void CurrentBuilder()
@@ -121,27 +119,27 @@ namespace Steeltoe.Management.Census.Tags.Test
             Assert.Equal(new List<ITag>() { TAG1, TAG2 }, TagsTestUtil.TagContextToList(result.Build()));
         }
 
-        //// [Fact]
-        //// public void CurrentBuilder_TaggingDisabled()
-        //// {
-        ////    tagsComponent.setState(TaggingState.DISABLED);
-        ////    Assert.Equal(getResultOfCurrentBuilder(new SimpleTagContext(TAG1)))
-        ////        .isSameAs(NoopTagContextBuilder.INSTANCE);
-        //// }
+        // [Fact]
+        // public void CurrentBuilder_TaggingDisabled()
+        // {
+        //    tagsComponent.setState(TaggingState.DISABLED);
+        //    Assert.Equal(getResultOfCurrentBuilder(new SimpleTagContext(TAG1)))
+        //        .isSameAs(NoopTagContextBuilder.Instance);
+        // }
 
-        //// [Fact]
-        //// public void currentBuilder_TaggingReenabled()
-        //// {
-        ////    TagContext tags = new SimpleTagContext(TAG1);
-        ////    tagsComponent.setState(TaggingState.DISABLED);
-        ////    Assert.Equal(getResultOfCurrentBuilder(tags)).isSameAs(NoopTagContextBuilder.INSTANCE);
-        ////    tagsComponent.setState(TaggingState.ENABLED);
-        ////    TagContextBuilder builder = getResultOfCurrentBuilder(tags);
-        ////    Assert.Equal(builder).isInstanceOf(TagContextBuilder);
-        ////    Assert.Equal(TagsTestUtil.TagContextToList(builder.Build())).containsExactly(TAG1);
-        //// }
+        // [Fact]
+        // public void currentBuilder_TaggingReenabled()
+        // {
+        //    TagContext tags = new SimpleTagContext(TAG1);
+        //    tagsComponent.setState(TaggingState.DISABLED);
+        //    Assert.Equal(getResultOfCurrentBuilder(tags)).isSameAs(NoopTagContextBuilder.Instance);
+        //    tagsComponent.setState(TaggingState.ENABLED);
+        //    TagContextBuilder builder = getResultOfCurrentBuilder(tags);
+        //    Assert.Equal(builder).isInstanceOf(TagContextBuilder);
+        //    Assert.Equal(TagsTestUtil.TagContextToList(builder.Build())).containsExactly(TAG1);
+        // }
 
-        public ITagContextBuilder GetResultOfCurrentBuilder(ITagContext tagsToSet)
+        private ITagContextBuilder GetResultOfCurrentBuilder(ITagContext tagsToSet)
         {
             ITagContext orig = AsyncLocalContext.CurrentTagContext;  // Context.current().withValue(ContextUtils.TAG_CONTEXT_KEY, tagsToSet).attach();
             AsyncLocalContext.CurrentTagContext = tagsToSet;
@@ -182,25 +180,25 @@ namespace Steeltoe.Management.Census.Tags.Test
             Assert.Equal(new List<ITag>() { TAG1, TAG2 }, TagsTestUtil.TagContextToList(newTagContext));
         }
 
-        //// [Fact]
-        //// public void ToBuilder_TaggingDisabled()
-        //// {
-        ////    tagsComponent.setState(TaggingState.DISABLED);
-        ////    Assert.Equal(tagger.ToBuilder(new SimpleTagContext(TAG1)))
-        ////        .isSameAs(NoopTagContextBuilder.INSTANCE);
-        //// }
+        // [Fact]
+        // public void ToBuilder_TaggingDisabled()
+        // {
+        //    tagsComponent.setState(TaggingState.DISABLED);
+        //    Assert.Equal(tagger.ToBuilder(new SimpleTagContext(TAG1)))
+        //        .isSameAs(NoopTagContextBuilder.Instance);
+        // }
 
-        //// [Fact]
-        //// public void ToBuilder_TaggingReenabled()
-        //// {
-        ////    TagContext tags = new SimpleTagContext(TAG1);
-        ////    tagsComponent.setState(TaggingState.DISABLED);
-        ////    Assert.Equal(tagger.ToBuilder(tags)).isSameAs(NoopTagContextBuilder.INSTANCE);
-        ////    tagsComponent.setState(TaggingState.ENABLED);
-        ////    TagContextBuilder builder = tagger.ToBuilder(tags);
-        ////    Assert.Equal(builder).isInstanceOf(TagContextBuilder);
-        ////    Assert.Equal(TagsTestUtil.TagContextToList(builder.Build())).containsExactly(TAG1);
-        //// }
+        // [Fact]
+        // public void ToBuilder_TaggingReenabled()
+        // {
+        //    TagContext tags = new SimpleTagContext(TAG1);
+        //    tagsComponent.setState(TaggingState.DISABLED);
+        //    Assert.Equal(tagger.ToBuilder(tags)).isSameAs(NoopTagContextBuilder.Instance);
+        //    tagsComponent.setState(TaggingState.ENABLED);
+        //    TagContextBuilder builder = tagger.ToBuilder(tags);
+        //    Assert.Equal(builder).isInstanceOf(TagContextBuilder);
+        //    Assert.Equal(TagsTestUtil.TagContextToList(builder.Build())).containsExactly(TAG1);
+        // }
 
         [Fact]
         public void GetCurrentTagContext_DefaultIsEmptyTagContext()
@@ -237,29 +235,28 @@ namespace Steeltoe.Management.Census.Tags.Test
             Assert.Equal(new List<ITag>() { TAG1, TAG2 }, TagsTestUtil.TagContextToList(result));
         }
 
-        //// [Fact]
-        //// public void GetCurrentTagContext_TaggingDisabled()
-        //// {
-        ////    tagsComponent.setState(TaggingState.DISABLED);
-        ////    Assert.Equal(TagsTestUtil.TagContextToList(getResultOfGetCurrentTagContext(new SimpleTagContext(TAG1))))
-        ////        .isEmpty();
-        //// }
+        // [Fact]
+        // public void GetCurrentTagContext_TaggingDisabled()
+        // {
+        //    tagsComponent.setState(TaggingState.DISABLED);
+        //    Assert.Equal(TagsTestUtil.TagContextToList(getResultOfGetCurrentTagContext(new SimpleTagContext(TAG1))))
+        //        .isEmpty();
+        // }
 
-        //// [Fact]
-        //// public void getCurrentTagContext_TaggingReenabled()
-        //// {
-        ////    TagContext tags = new SimpleTagContext(TAG1);
-        ////    tagsComponent.setState(TaggingState.DISABLED);
-        ////    Assert.Equal(TagsTestUtil.TagContextToList(getResultOfGetCurrentTagContext(tags))).isEmpty();
-        ////    tagsComponent.setState(TaggingState.ENABLED);
-        ////    Assert.Equal(TagsTestUtil.TagContextToList(getResultOfGetCurrentTagContext(tags))).containsExactly(TAG1);
-        //// }
+        // [Fact]
+        // public void getCurrentTagContext_TaggingReenabled()
+        // {
+        //    TagContext tags = new SimpleTagContext(TAG1);
+        //    tagsComponent.setState(TaggingState.DISABLED);
+        //    Assert.Equal(TagsTestUtil.TagContextToList(getResultOfGetCurrentTagContext(tags))).isEmpty();
+        //    tagsComponent.setState(TaggingState.ENABLED);
+        //    Assert.Equal(TagsTestUtil.TagContextToList(getResultOfGetCurrentTagContext(tags))).containsExactly(TAG1);
+        // }
 
-        public ITagContext GetResultOfGetCurrentTagContext(ITagContext tagsToSet)
+        private ITagContext GetResultOfGetCurrentTagContext(ITagContext tagsToSet)
         {
             ITagContext orig = AsyncLocalContext.CurrentTagContext;
             AsyncLocalContext.CurrentTagContext = tagsToSet;
-
             // Context orig = Context.current().withValue(ContextUtils.TAG_CONTEXT_KEY, tagsToSet).attach();
             try
             {
@@ -320,7 +317,7 @@ namespace Steeltoe.Management.Census.Tags.Test
         //    Assert.Equal(TagsTestUtil.TagContextToList(getResultOfWithTagContext(tags))).isEmpty();
         //    tagsComponent.setState(TaggingState.ENABLED);
         //    Assert.Equal(TagsTestUtil.TagContextToList(getResultOfWithTagContext(tags))).containsExactly(TAG1);
-        //// }
+        // }
 
         private ITagContext GetResultOfWithTagContext(ITagContext tagsToSet)
         {
@@ -335,7 +332,7 @@ namespace Steeltoe.Management.Census.Tags.Test
             }
         }
 
-        private class SimpleTagContext : TagContextBase
+        class SimpleTagContext : TagContextBase
         {
             private readonly List<ITag> tags;
 

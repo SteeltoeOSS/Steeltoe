@@ -1,23 +1,25 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="BinaryFormatTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using System;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Trace.Propagation.Test
+namespace OpenCensus.Trace.Propagation.Test
 {
-    [Obsolete]
+    using OpenCensus.Trace.Propagation.Implementation;
+    using System;
+    using Xunit;
+
     public class BinaryFormatTest
     {
         private static readonly byte[] TRACE_ID_BYTES = new byte[] { 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 };
@@ -27,13 +29,9 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
         private static readonly byte[] TRACE_OPTIONS_BYTES = new byte[] { 1 };
         private static readonly TraceOptions TRACE_OPTIONS = TraceOptions.FromBytes(TRACE_OPTIONS_BYTES);
         private static readonly byte[] EXAMPLE_BYTES =
-            new byte[]
-            {
-            0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 1, 97, 98, 99, 100,
-            101, 102, 103, 104, 2, 1
-            };
+            new byte[] {0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 1, 97, 98, 99, 100,101, 102, 103, 104, 2, 1};
 
-        private static readonly ISpanContext EXAMPLE_SPAN_CONTEXT = SpanContext.Create(TRACE_ID, SPAN_ID, TRACE_OPTIONS);
+        private static readonly ISpanContext EXAMPLE_SPAN_CONTEXT = SpanContext.Create(TRACE_ID, SPAN_ID, TRACE_OPTIONS, Tracestate.Empty);
 
         private readonly BinaryFormat binaryFormat = new BinaryFormat();
 
@@ -44,18 +42,16 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
         }
 
         [Fact]
-#pragma warning disable SA1202 // Elements must be ordered by access
         public void Propagate_SpanContextTracingEnabled()
-#pragma warning restore SA1202 // Elements must be ordered by access
         {
             TestSpanContextConversion(
-            SpanContext.Create(TRACE_ID, SPAN_ID, TraceOptions.Builder().SetIsSampled(true).Build()));
+            SpanContext.Create(TRACE_ID, SPAN_ID, TraceOptions.Builder().SetIsSampled(true).Build(), Tracestate.Empty));
         }
 
         [Fact]
         public void Propagate_SpanContextNoTracing()
         {
-            TestSpanContextConversion(SpanContext.Create(TRACE_ID, SPAN_ID, TraceOptions.DEFAULT));
+            TestSpanContextConversion(SpanContext.Create(TRACE_ID, SPAN_ID, TraceOptions.Default, Tracestate.Empty));
         }
 
         [Fact]
@@ -68,11 +64,9 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
         public void ToBinaryValue_InvalidSpanContext()
         {
             Assert.Equal(
-                new byte[]
-                {
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0
-                },
-                binaryFormat.ToByteArray(SpanContext.INVALID));
+                new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0},
+                binaryFormat.ToByteArray(SpanContext.Invalid));
+
         }
 
         [Fact]
@@ -90,17 +84,18 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
         [Fact]
         public void FromBinaryValue_EmptyInput()
         {
+
             Assert.Throws<SpanContextParseException>(() => binaryFormat.FromByteArray(new byte[0]));
         }
 
         [Fact]
         public void FromBinaryValue_UnsupportedVersionId()
         {
+
             Assert.Throws<SpanContextParseException>(() => binaryFormat.FromByteArray(
-                new byte[]
-                {
+                new byte[] {
           66, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 97, 98, 99, 100, 101,
-          102, 103, 104, 1
+          102, 103, 104, 1,
                 }));
         }
 
@@ -108,12 +103,11 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
         public void FromBinaryValue_UnsupportedFieldIdFirst()
         {
             Assert.Equal(
-                SpanContext.Create(TraceId.INVALID, SpanId.INVALID, TraceOptions.DEFAULT),
+                SpanContext.Create(TraceId.Invalid, SpanId.Invalid, TraceOptions.Default, Tracestate.Empty),
                 binaryFormat.FromByteArray(
-                        new byte[]
-                        {
+                        new byte[] {
                   0, 4, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 1, 97, 98,
-                  99, 100, 101, 102, 103, 104, 2, 1
+                  99, 100, 101, 102, 103, 104, 2, 1,
                         }));
         }
 
@@ -124,19 +118,20 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
                  SpanContext.Create(
                         TraceId.FromBytes(
                             new byte[] { 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }),
-                        SpanId.INVALID,
-                        TraceOptions.DEFAULT),
+                        SpanId.Invalid,
+                        TraceOptions.Default, Tracestate.Empty),
                  binaryFormat.FromByteArray(
-                        new byte[]
-                        {
+                        new byte[] {
                   0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 3, 97, 98,
-                  99, 100, 101, 102, 103, 104, 2, 1
+                  99, 100, 101, 102, 103, 104, 2, 1,
                         }));
+
         }
 
         [Fact]
         public void FromBinaryValue_ShorterTraceId()
         {
+
             Assert.Throws<SpanContextParseException>(() => binaryFormat.FromByteArray(
                 new byte[] { 0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76 }));
         }
@@ -144,18 +139,18 @@ namespace Steeltoe.Management.Census.Trace.Propagation.Test
         [Fact]
         public void FromBinaryValue_ShorterSpanId()
         {
+
             Assert.Throws<SpanContextParseException>(() => binaryFormat.FromByteArray(new byte[] { 0, 1, 97, 98, 99, 100, 101, 102, 103 }));
         }
 
         [Fact]
         public void FromBinaryValue_ShorterTraceOptions()
         {
+
             Assert.Throws<SpanContextParseException>(() => binaryFormat.FromByteArray(
-                new byte[]
-                {
-          0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 1, 97, 98, 99, 100,
-          101, 102, 103, 104, 2
-                }));
+                new byte[] {
+                    0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 1, 97, 98, 99, 100,
+                    101, 102, 103, 104, 2,}));
         }
     }
 }

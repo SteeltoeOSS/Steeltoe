@@ -1,31 +1,31 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="StatsRecorderTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Common;
-using Steeltoe.Management.Census.Internal;
-using Steeltoe.Management.Census.Stats.Aggregations;
-using Steeltoe.Management.Census.Stats.Measures;
-using Steeltoe.Management.Census.Tags;
-using Steeltoe.Management.Census.Tags.Unsafe;
-using Steeltoe.Management.Census.Testing.Common;
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Stats.Test
+namespace OpenCensus.Stats.Test
 {
-    [Obsolete]
+    using System.Collections.Generic;
+    using OpenCensus.Common;
+    using OpenCensus.Internal;
+    using OpenCensus.Stats.Aggregations;
+    using OpenCensus.Stats.Measures;
+    using OpenCensus.Tags;
+    using OpenCensus.Tags.Unsafe;
+    using OpenCensus.Testing.Common;
+    using Xunit;
+
     public class StatsRecorderTest
     {
         private static readonly ITagKey KEY = TagKey.Create("KEY");
@@ -36,13 +36,11 @@ namespace Steeltoe.Management.Census.Stats.Test
         private static readonly IMeasureDouble MEASURE_DOUBLE_NO_VIEW_2 = MeasureDouble.Create("my measurement no view 2", "description", "us");
         private static readonly IViewName VIEW_NAME = ViewName.Create("my view");
 
-        private readonly StatsComponent statsComponent;
-        private readonly IViewManager viewManager;
-        private readonly IStatsRecorder statsRecorder;
+        private StatsComponent statsComponent;
+        private IViewManager viewManager;
+        private IStatsRecorder statsRecorder;
 
-#pragma warning disable SA1204 // Static elements must appear before instance elements
-        private static readonly ITimestamp ZERO_TIMESTAMP = Timestamp.Create(0, 0);
-#pragma warning restore SA1204 // Static elements must appear before instance elements
+        static readonly ITimestamp ZERO_TIMESTAMP = Timestamp.Create(0, 0);
 
         public StatsRecorderTest()
         {
@@ -68,6 +66,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             // record() should have used the default TagContext, so the tag value should be null.
             ICollection<TagValues> expected = new List<TagValues>() { TagValues.Create(new List<ITagValue>() { null }) };
             Assert.Equal(expected, viewData.AggregationMap.Keys);
+          
         }
 
         [Fact]
@@ -83,7 +82,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             viewManager.RegisterView(view);
             var orig = AsyncLocalContext.CurrentTagContext;
             AsyncLocalContext.CurrentTagContext = new SimpleTagContext(Tag.Create(KEY, VALUE));
-
+ 
             try
             {
                 statsRecorder.NewMeasureMap().Put(MEASURE_DOUBLE, 1.0).Record();
@@ -92,7 +91,6 @@ namespace Steeltoe.Management.Census.Stats.Test
             {
                 AsyncLocalContext.CurrentTagContext = orig;
             }
-
             IViewData viewData = viewManager.GetView(VIEW_NAME);
 
             // record() should have used the given TagContext.
@@ -124,7 +122,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData.AggregationMap,
-                new Dictionary<TagValues, IAggregationData>() { { tv, StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 2.0) } },
+                new Dictionary<TagValues, IAggregationData>() {{ tv, StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 2.0) }},
                 1e-6);
         }
 
@@ -149,14 +147,12 @@ namespace Steeltoe.Management.Census.Stats.Test
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             var tv2 = TagValues.Create(new List<ITagValue>() { VALUE_2 });
 
-            Dictionary<TagValues, IAggregationData> expected = new Dictionary<TagValues, IAggregationData>()
-                {
-                    { tv, StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 1.0) },
-                    { tv2, StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 1.0) }
-                };
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData.AggregationMap,
-                expected,
+                new Dictionary<TagValues, IAggregationData>() {
+                    { tv, StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 1.0) },
+                    { tv2, StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 1.0) },
+                },
                 1e-6);
         }
 
@@ -202,7 +198,6 @@ namespace Steeltoe.Management.Census.Stats.Test
 
             statsComponent.State = StatsCollectionState.ENABLED;
             Assert.Empty(viewManager.GetView(VIEW_NAME).AggregationMap);
-
             // assertThat(viewManager.getView(VIEW_NAME).getWindowData())
             //    .isNotEqualTo(CumulativeData.Create(ZERO_TIMESTAMP, ZERO_TIMESTAMP));
             statsRecorder
@@ -212,17 +207,24 @@ namespace Steeltoe.Management.Census.Stats.Test
             TagValues tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewManager.GetView(VIEW_NAME).AggregationMap,
-                new Dictionary<TagValues, IAggregationData>() { { tv, StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 4.0) } },
+                new Dictionary<TagValues, IAggregationData>()
+                {
+                    { tv,  StatsTestUtil.CreateAggregationData(Sum.Create(), MEASURE_DOUBLE, 4.0) },
+                },
                 1e-6);
         }
 
         // Create an empty ViewData with the given View.
-        private static IViewData CreateEmptyViewData(IView view)
+        static IViewData CreateEmptyViewData(IView view)
         {
-            return ViewData.Create(view, new Dictionary<TagValues, IAggregationData>(), ZERO_TIMESTAMP, ZERO_TIMESTAMP);
+            return ViewData.Create(
+                view,
+                new Dictionary<TagValues, IAggregationData>(),
+                ZERO_TIMESTAMP, ZERO_TIMESTAMP);
+
         }
 
-        private class SimpleTagContext : TagContextBase
+        class SimpleTagContext : TagContextBase
         {
             private readonly IList<ITag> tags;
 
@@ -235,6 +237,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             {
                 return tags.GetEnumerator();
             }
+
         }
     }
 }

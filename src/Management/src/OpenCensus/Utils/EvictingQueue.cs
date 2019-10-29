@@ -1,36 +1,29 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="EvictingQueue.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-namespace Steeltoe.Management.Census.Utils
+namespace OpenCensus.Utils
 {
-    [Obsolete("Use OpenCensus project packages")]
-    public class EvictingQueue<T> : IEnumerable<T>, IEnumerable
-    {
-        private readonly Queue<T> _delegate;
-        private readonly int _maxSize;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
 
-        public int Count
-        {
-            get
-            {
-                return _delegate.Count;
-            }
-        }
+    internal class EvictingQueue<T> : IEnumerable<T>, IEnumerable
+    {
+        private readonly Queue<T> @delegate;
+        private readonly int maxSize;
 
         public EvictingQueue(int maxSize)
         {
@@ -39,18 +32,26 @@ namespace Steeltoe.Management.Census.Utils
                 throw new ArgumentOutOfRangeException("maxSize must be >= 0");
             }
 
-            _maxSize = maxSize;
-            _delegate = new Queue<T>(maxSize);
+            this.maxSize = maxSize;
+            this.@delegate = new Queue<T>(maxSize);
+        }
+
+        public int Count
+        {
+            get
+            {
+                return this.@delegate.Count;
+            }
         }
 
         public int RemainingCapacity()
         {
-            return _maxSize - _delegate.Count;
+            return this.maxSize - this.@delegate.Count;
         }
 
         public bool Offer(T e)
         {
-            return Add(e);
+            return this.Add(e);
         }
 
         public bool Add(T e)
@@ -60,17 +61,17 @@ namespace Steeltoe.Management.Census.Utils
                 throw new ArgumentNullException();
             }
 
-            if (_maxSize == 0)
+            if (this.maxSize == 0)
             {
                 return true;
             }
 
-            if (_delegate.Count == _maxSize)
+            if (this.@delegate.Count == this.maxSize)
             {
-                _delegate.Dequeue();
+                this.@delegate.Dequeue();
             }
 
-            _delegate.Enqueue(e);
+            this.@delegate.Enqueue(e);
             return true;
         }
 
@@ -78,7 +79,7 @@ namespace Steeltoe.Management.Census.Utils
         {
             foreach (var e in collection)
             {
-                Add(e);
+                this.Add(e);
             }
 
             return true;
@@ -91,22 +92,22 @@ namespace Steeltoe.Management.Census.Utils
                 throw new ArgumentNullException();
             }
 
-            return _delegate.Contains(e);
+            return this.@delegate.Contains(e);
         }
 
         public T[] ToArray()
         {
-            return _delegate.ToArray();
+            return this.@delegate.ToArray();
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return _delegate.GetEnumerator();
+            return this.@delegate.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _delegate.GetEnumerator();
+            return this.@delegate.GetEnumerator();
         }
     }
 }

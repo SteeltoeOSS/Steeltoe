@@ -1,30 +1,32 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="MutableViewDataTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Common;
-using Steeltoe.Management.Census.Stats.Aggregations;
-using Steeltoe.Management.Census.Stats.Measures;
-using Steeltoe.Management.Census.Tags;
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Stats.Test
+namespace OpenCensus.Stats.Test
 {
-    [Obsolete]
+    using System;
+    using System.Collections.Generic;
+    using OpenCensus.Common;
+    using OpenCensus.Stats.Aggregations;
+    using OpenCensus.Stats.Measures;
+    using OpenCensus.Tags;
+    using Xunit;
+
     public class MutableViewDataTest
     {
+
         private const double EPSILON = 1e-7;
 
         private static readonly ITagKey ORIGINATOR = TagKey.Create("originator");
@@ -38,8 +40,8 @@ namespace Steeltoe.Management.Census.Stats.Test
         [Fact]
         public void TestConstants()
         {
-            Assert.Null(MutableViewData.UNKNOWN_TAG_VALUE);
-            Assert.Equal(Timestamp.Create(0, 0), MutableViewData.ZERO_TIMESTAMP);
+            Assert.Null(MutableViewData.UnknownTagValue);
+            Assert.Equal(Timestamp.Create(0, 0), MutableViewData.ZeroTimestamp);
         }
 
         [Fact]
@@ -48,9 +50,9 @@ namespace Steeltoe.Management.Census.Stats.Test
             List<ITagKey> columns = new List<ITagKey>() { CALLER, METHOD, ORIGINATOR };
             IDictionary<ITagKey, ITagValue> tags = new Dictionary<ITagKey, ITagValue>() { { CALLER, CALLER_V }, { METHOD, METHOD_V } };
 
-            Assert.Equal(
-                new List<ITagValue>() { CALLER_V, METHOD_V, MutableViewData.UNKNOWN_TAG_VALUE },
+            Assert.Equal(new List<ITagValue>() { CALLER_V, METHOD_V, MutableViewData.UnknownTagValue },
                 MutableViewData.GetTagValues(tags, columns));
+
         }
 
         [Fact]
@@ -61,7 +63,7 @@ namespace Steeltoe.Management.Census.Stats.Test
             Assert.InRange(((MutableSum)MutableViewData.CreateMutableAggregation(Sum.Create())).Sum, 0.0 - EPSILON, 0.0 + EPSILON);
             Assert.Equal(0, ((MutableCount)MutableViewData.CreateMutableAggregation(Count.Create())).Count);
             Assert.InRange(((MutableMean)MutableViewData.CreateMutableAggregation(Mean.Create())).Mean, 0.0 - EPSILON, 0.0 + EPSILON);
-            Assert.True(double.IsNaN(((MutableLastValue)MutableViewData.CreateMutableAggregation(LastValue.Create())).LastValue));
+            Assert.True(Double.IsNaN( ((MutableLastValue)MutableViewData.CreateMutableAggregation(LastValue.Create())).LastValue));
 
             MutableDistribution mutableDistribution =
                 (MutableDistribution)MutableViewData.CreateMutableAggregation(Distribution.Create(bucketBoundaries));
@@ -76,42 +78,39 @@ namespace Steeltoe.Management.Census.Stats.Test
         {
             IBucketBoundaries bucketBoundaries = BucketBoundaries.Create(new List<double>() { -1.0, 0.0, 1.0 });
             List<MutableAggregation> mutableAggregations =
-                new List<MutableAggregation>()
-                {
+                new List<MutableAggregation>() {
                     MutableCount.Create(),
                     MutableMean.Create(),
-                    MutableDistribution.Create(bucketBoundaries)
-                };
-            List<IAggregationData> aggregates = new List<IAggregationData>
-            {
-                MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_DOUBLE),
-                MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_LONG),
-                MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_DOUBLE),
-                MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_LONG)
-            };
+                    MutableDistribution.Create(bucketBoundaries),};
+            List<IAggregationData> aggregates = new List<IAggregationData>();
+
+            aggregates.Add(MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_DOUBLE));
+            aggregates.Add(MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_LONG));
+            aggregates.Add(MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_DOUBLE));
+            aggregates.Add(MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_LONG));
 
             foreach (MutableAggregation mutableAggregation in mutableAggregations)
             {
                 aggregates.Add(MutableViewData.CreateAggregationData(mutableAggregation, MEASURE_DOUBLE));
             }
-
             List<IAggregationData> expected = new List<IAggregationData>()
             {
                 SumDataDouble.Create(0),
                 SumDataLong.Create(0),
-                LastValueDataDouble.Create(double.NaN),
+                LastValueDataDouble.Create(Double.NaN),
                 LastValueDataLong.Create(0),
                 CountData.Create(0),
-                MeanData.Create(0, 0, double.MaxValue, double.MinValue),
+                MeanData.Create(0, 0, Double.MaxValue, Double.MinValue),
                 DistributionData.Create(
                         0,
                         0,
-                        double.PositiveInfinity,
-                        double.NegativeInfinity,
+                        Double.PositiveInfinity,
+                        Double.NegativeInfinity,
                         0,
-                        new List<long>() { 0L, 0L, 0L, 0L })
+                        new List<long>() { 0L, 0L, 0L, 0L }),
             };
             Assert.Equal(expected, aggregates);
+
         }
 
         [Fact]

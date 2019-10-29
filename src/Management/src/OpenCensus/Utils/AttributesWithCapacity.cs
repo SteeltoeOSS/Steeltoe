@@ -1,38 +1,43 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="AttributesWithCapacity.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Trace;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-
-namespace Steeltoe.Management.Census.Utils
+namespace OpenCensus.Utils
 {
-    [Obsolete("Use OpenCensus project packages")]
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Linq;
+    using OpenCensus.Trace;
+
     internal class AttributesWithCapacity : IDictionary<string, IAttributeValue>
     {
-        private readonly OrderedDictionary _delegate = new OrderedDictionary();
+        private readonly OrderedDictionary @delegate = new OrderedDictionary();
         private readonly int capacity;
         private int totalRecordedAttributes;
+
+        public AttributesWithCapacity(int capacity)
+        {
+            this.capacity = capacity;
+        }
 
         public int NumberOfDroppedAttributes
         {
             get
             {
-                return totalRecordedAttributes - Count;
+                return this.totalRecordedAttributes - this.Count;
             }
         }
 
@@ -40,7 +45,7 @@ namespace Steeltoe.Management.Census.Utils
         {
             get
             {
-                return (ICollection<string>)_delegate.Keys;
+                return (ICollection<string>)this.@delegate.Keys;
             }
         }
 
@@ -48,7 +53,7 @@ namespace Steeltoe.Management.Census.Utils
         {
             get
             {
-                return (ICollection<IAttributeValue>)_delegate.Values;
+                return (ICollection<IAttributeValue>)this.@delegate.Values;
             }
         }
 
@@ -56,7 +61,7 @@ namespace Steeltoe.Management.Census.Utils
         {
             get
             {
-                return _delegate.Count;
+                return this.@delegate.Count;
             }
         }
 
@@ -64,7 +69,7 @@ namespace Steeltoe.Management.Census.Utils
         {
             get
             {
-                return _delegate.IsReadOnly;
+                return this.@delegate.IsReadOnly;
             }
         }
 
@@ -72,27 +77,22 @@ namespace Steeltoe.Management.Census.Utils
         {
             get
             {
-                return (IAttributeValue)_delegate[key];
+                return (IAttributeValue)this.@delegate[key];
             }
 
             set
             {
-                _delegate[key] = value;
+                this.@delegate[key] = value;
             }
-        }
-
-        public AttributesWithCapacity(int capacity)
-        {
-            this.capacity = capacity;
         }
 
         public void PutAttribute(string key, IAttributeValue value)
         {
-            totalRecordedAttributes += 1;
+            this.totalRecordedAttributes += 1;
             this[key] = value;
-            if (Count > capacity)
+            if (this.Count > this.capacity)
             {
-                _delegate.RemoveAt(0);
+                this.@delegate.RemoveAt(0);
             }
         }
 
@@ -102,25 +102,25 @@ namespace Steeltoe.Management.Census.Utils
         {
             foreach (var kvp in attributes)
             {
-                PutAttribute(kvp.Key, kvp.Value);
+                this.PutAttribute(kvp.Key, kvp.Value);
             }
         }
 
         public void Add(string key, IAttributeValue value)
         {
-            _delegate.Add(key, value);
+            this.@delegate.Add(key, value);
         }
 
         public bool ContainsKey(string key)
         {
-            return _delegate.Contains(key);
+            return this.@delegate.Contains(key);
         }
 
         public bool Remove(string key)
         {
-            if (_delegate.Contains(key))
+            if (this.@delegate.Contains(key))
             {
-                _delegate.Remove(key);
+                this.@delegate.Remove(key);
                 return true;
             }
             else
@@ -132,9 +132,9 @@ namespace Steeltoe.Management.Census.Utils
         public bool TryGetValue(string key, out IAttributeValue value)
         {
             value = null;
-            if (ContainsKey(key))
+            if (this.ContainsKey(key))
             {
-                value = (IAttributeValue)_delegate[key];
+                value = (IAttributeValue)this.@delegate[key];
                 return true;
             }
 
@@ -143,17 +143,17 @@ namespace Steeltoe.Management.Census.Utils
 
         public void Add(KeyValuePair<string, IAttributeValue> item)
         {
-            _delegate.Add(item.Key, item.Value);
+            this.@delegate.Add(item.Key, item.Value);
         }
 
         public void Clear()
         {
-            _delegate.Clear();
+            this.@delegate.Clear();
         }
 
         public bool Contains(KeyValuePair<string, IAttributeValue> item)
         {
-            var result = TryGetValue(item.Key, out IAttributeValue value);
+            var result = this.TryGetValue(item.Key, out IAttributeValue value);
             if (result)
             {
                 return value.Equals(item.Value);
@@ -164,8 +164,8 @@ namespace Steeltoe.Management.Census.Utils
 
         public void CopyTo(KeyValuePair<string, IAttributeValue>[] array, int arrayIndex)
         {
-            DictionaryEntry[] entries = new DictionaryEntry[_delegate.Count];
-            _delegate.CopyTo(entries, 0);
+            DictionaryEntry[] entries = new DictionaryEntry[this.@delegate.Count];
+            this.@delegate.CopyTo(entries, 0);
 
             for (int i = 0; i < entries.Length; i++)
             {
@@ -175,19 +175,19 @@ namespace Steeltoe.Management.Census.Utils
 
         public bool Remove(KeyValuePair<string, IAttributeValue> item)
         {
-            return Remove(item.Key);
+            return this.Remove(item.Key);
         }
 
         public IEnumerator<KeyValuePair<string, IAttributeValue>> GetEnumerator()
         {
-            var array = new KeyValuePair<string, IAttributeValue>[_delegate.Count];
-            CopyTo(array, 0);
+            var array = new KeyValuePair<string, IAttributeValue>[this.@delegate.Count];
+            this.CopyTo(array, 0);
             return array.ToList().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _delegate.GetEnumerator();
+            return this.@delegate.GetEnumerator();
         }
     }
 }

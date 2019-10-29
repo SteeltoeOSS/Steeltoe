@@ -16,7 +16,7 @@ trigger:
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  PackageVersion: $[format('2.3.1-ci{0}', variables['Build.BuildId'])]
+  PackageVersion: $[format('2.4.0-ci{0}', variables['Build.BuildId'])]
 
 jobs:
 - job: Linux_Build_and_Test
@@ -139,6 +139,7 @@ jobs:
       extraProperties: |
         sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
         sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
+        sonar.exclusions=$(Build.SourcesDirectory)/src/Management/OpenCensus, $(Build.SourcesDirectory)/src/Management/OpenCensus.*
   - task: DotNetCoreCLI@2
     displayName: dotnet pack
     inputs:

@@ -31,7 +31,6 @@
     
     <PackageReference Include="Microsoft.DiaSymReader" Version="$(SymReaderVersion)" />
     <PackageReference Include="Microsoft.DiaSymReader.PortablePdb" Version="$(SymReaderPortableVersion)" />
-    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
     <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="$(DriveInfoVersion)" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">

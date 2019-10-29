@@ -1,23 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
-  <PropertyGroup Condition="! $(OS.Contains('Win'))">
-    <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(OS.Contains('Win'))">
-    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
-  </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>Steeltoe.Management.Census</RootNamespace>
-    <!-- <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\..\steeltoe.snk</AssemblyOriginatorKeyFile> -->
+    <Description>Unit test project for OpenCensus</Description>
+    <TargetFrameworks>net46;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition="$(OS) != 'Windows_NT'">netcoreapp2.0</TargetFrameworks>
+    <AssemblyName>OpenCensus.Tests</AssemblyName>
+    <PackageId>OpenCensus.Tests</PackageId>
+    <PackageTags>OpenCensus;Tracing;Management;Monitoring</PackageTags>
+    <PackageProjectUrl>http://opencensus.io</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RootNamespace>OpenCensus</RootNamespace>
   </PropertyGroup>
-  <Import Project="..\..\..\..\sharedtest.props" />
-  <Import Project="..\..\..\..\targetframework.props" />
-  
+
   <ItemGroup>
-    <None Update="xunit.runner.json">
+    <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +22,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="Moq" Version="4.10.1" />
+
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
 </Project>

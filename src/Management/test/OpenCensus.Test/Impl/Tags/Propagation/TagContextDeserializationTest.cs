@@ -1,26 +1,27 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="TagContextDeserializationTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using Steeltoe.Management.Census.Internal;
-using System;
-using System.IO;
-using System.Text;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Tags.Propagation.Test
+namespace OpenCensus.Tags.Propagation.Test
 {
-    [Obsolete]
+    using System;
+    using System.IO;
+    using System.Text;
+    using OpenCensus.Internal;
+    using Xunit;
+
     public class TagContextDeserializationTest
     {
         private readonly TagsComponent tagsComponent = new TagsComponent();
@@ -37,16 +38,16 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestConstants()
         {
             // Refer to the JavaDoc on SerializationUtils for the definitions on these constants.
-            Assert.Equal(0, SerializationUtils.VERSION_ID);
-            Assert.Equal(0, SerializationUtils.TAG_FIELD_ID);
-            Assert.Equal(8192, SerializationUtils.TAGCONTEXT_SERIALIZED_SIZE_LIMIT);
+            Assert.Equal(0, SerializationUtils.VersionId);
+            Assert.Equal(0, SerializationUtils.TagFieldId);
+            Assert.Equal(8192, SerializationUtils.TagContextSerializedSizeLimit);
         }
 
         [Fact]
         public void TestDeserializeNoTags()
         {
             ITagContext expected = tagger.Empty;
-            ITagContext actual = serializer.FromByteArray(new byte[] { SerializationUtils.VERSION_ID }); // One byte that represents Version ID.
+            ITagContext actual = serializer.FromByteArray(new byte[] { SerializationUtils.VersionId }); // One byte that represents Version ID.
             Assert.Equal(expected, actual);
         }
 
@@ -60,11 +61,10 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeTooLargeByteArrayThrowException()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
-            for (int i = 0; i < (SerializationUtils.TAGCONTEXT_SERIALIZED_SIZE_LIMIT / 8) - 1; i++)
-            {
+            output.WriteByte(SerializationUtils.VersionId);
+            for (int i = 0; i < SerializationUtils.TagContextSerializedSizeLimit / 8 - 1; i++) {
                 // Each tag will be with format {key : "0123", value : "0123"}, so the length of it is 8.
-                string str;
+                String str;
                 if (i < 10)
                 {
                     str = "000" + i;
@@ -81,10 +81,8 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
                 {
                     str = i.ToString();
                 }
-
                 EncodeTagToOutPut(str, str, output);
             }
-
             // The last tag will be of size 9, so the total size of the TagContext (8193) will be one byte
             // more than limit.
             EncodeTagToOutPut("last", "last1", output);
@@ -100,11 +98,10 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeTooLargeByteArrayThrowException_WithDuplicateTagKeys()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
-            for (int i = 0; i < (SerializationUtils.TAGCONTEXT_SERIALIZED_SIZE_LIMIT / 8) - 1; i++)
-            {
+            output.WriteByte(SerializationUtils.VersionId);
+            for (int i = 0; i < SerializationUtils.TagContextSerializedSizeLimit / 8 - 1; i++) {
                 // Each tag will be with format {key : "key_", value : "0123"}, so the length of it is 8.
-                string str;
+                String str;
                 if (i < 10)
                 {
                     str = "000" + i;
@@ -121,10 +118,8 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
                 {
                     str = i.ToString();
                 }
-
                 EncodeTagToOutPut("key_", str, output);
             }
-
             // The last tag will be of size 9, so the total size of the TagContext (8193) will be one byte
             // more than limit.
             EncodeTagToOutPut("key_", "last1", output);
@@ -138,11 +133,12 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeInvalidTagKey()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
 
             // Encode an invalid tag key and a valid tag value:
             EncodeTagToOutPut("\u0002key", "value", output);
             byte[] bytes = output.ToArray();
+
 
             Assert.Throws<TagContextDeserializationException>(() => serializer.FromByteArray(bytes));
         }
@@ -151,11 +147,12 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeInvalidTagValue()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
 
             // Encode a valid tag key and an invalid tag value:
             EncodeTagToOutPut("my key", "val\u0003", output);
             byte[] bytes = output.ToArray();
+
 
             Assert.Throws<TagContextDeserializationException>(() => serializer.FromByteArray(bytes));
         }
@@ -164,7 +161,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeOneTag()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
             EncodeTagToOutPut("Key", "Value", output);
             ITagContext expected = tagger.EmptyBuilder.Put(TagKey.Create("Key"), TagValue.Create("Value")).Build();
             Assert.Equal(expected, serializer.FromByteArray(output.ToArray()));
@@ -174,7 +171,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeMultipleTags()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
             EncodeTagToOutPut("Key1", "Value1", output);
             EncodeTagToOutPut("Key2", "Value2", output);
             ITagContext expected =
@@ -190,7 +187,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeDuplicateKeys()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
             EncodeTagToOutPut("Key1", "Value1", output);
             EncodeTagToOutPut("Key1", "Value2", output);
             ITagContext expected =
@@ -203,7 +200,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeNonConsecutiveDuplicateKeys()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
             EncodeTagToOutPut("Key1", "Value1", output);
             EncodeTagToOutPut("Key2", "Value2", output);
             EncodeTagToOutPut("Key3", "Value3", output);
@@ -223,7 +220,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeDuplicateTags()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
             EncodeTagToOutPut("Key1", "Value1", output);
             EncodeTagToOutPut("Key1", "Value1", output);
             ITagContext expected =
@@ -235,7 +232,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void TestDeserializeNonConsecutiveDuplicateTags()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
             EncodeTagToOutPut("Key1", "Value1", output);
             EncodeTagToOutPut("Key2", "Value2", output);
             EncodeTagToOutPut("Key3", "Value3", output);
@@ -255,7 +252,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void StopParsingAtUnknownField()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
             EncodeTagToOutPut("Key1", "Value1", output);
             EncodeTagToOutPut("Key2", "Value2", output);
 
@@ -279,7 +276,7 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         public void StopParsingAtUnknownTagAtStart()
         {
             MemoryStream output = new MemoryStream();
-            output.WriteByte(SerializationUtils.VERSION_ID);
+            output.WriteByte(SerializationUtils.VersionId);
 
             // Write unknown field ID 1.
             output.WriteByte(1);
@@ -299,13 +296,14 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         [Fact]
         public void TestDeserializeWrongVersionId()
         {
-            Assert.Throws<TagContextDeserializationException>(() => serializer.FromByteArray(new byte[] { (byte)(SerializationUtils.VERSION_ID + 1) }));
+
+            Assert.Throws<TagContextDeserializationException>(() => serializer.FromByteArray(new byte[] { SerializationUtils.VersionId + 1 }));
         }
 
         [Fact]
         public void TestDeserializeNegativeVersionId()
         {
-            Assert.Throws<TagContextDeserializationException>(() => serializer.FromByteArray(new byte[] { (byte)0xff }));
+            Assert.Throws<TagContextDeserializationException>(() => serializer.FromByteArray(new byte[] { 0xff }));
         }
 
         // <tag_encoding> ==
@@ -314,14 +312,14 @@ namespace Steeltoe.Management.Census.Tags.Propagation.Test
         //         <tag_key> == tag_key_len bytes comprising tag key name
         //         <tag_val_len> == varint encoded integer
         //         <tag_val> == tag_val_len bytes comprising UTF-8 string
-        private static void EncodeTagToOutPut(string key, string value, MemoryStream output)
+        private static void EncodeTagToOutPut(String key, String value, MemoryStream output)
         {
-            output.WriteByte(SerializationUtils.TAG_FIELD_ID);
+            output.WriteByte(SerializationUtils.TagFieldId);
             EncodeString(key, output);
             EncodeString(value, output);
         }
 
-        private static void EncodeString(string input, MemoryStream output)
+        private static void EncodeString(String input, MemoryStream output)
         {
             int length = input.Length;
             byte[] bytes = new byte[VarInt.VarIntSize(length)];

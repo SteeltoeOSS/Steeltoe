@@ -1,45 +1,45 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="TagContextTest.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Steeltoe.Management.Census.Tags.Test
+namespace OpenCensus.Tags.Test
 {
-    [Obsolete]
+    using System;
+    using System.Collections.Generic;
+    using Xunit;
+
     public class TagContextTest
     {
         private readonly ITagger tagger = new Tagger(new CurrentTaggingState());
 
-#pragma warning disable SA1204 // Static elements must appear before instance elements
         private static readonly ITagKey K1 = TagKey.Create("k1");
-#pragma warning restore SA1204 // Static elements must appear before instance elements
         private static readonly ITagKey K2 = TagKey.Create("k2");
 
         private static readonly ITagValue V1 = TagValue.Create("v1");
         private static readonly ITagValue V2 = TagValue.Create("v2");
 
+
         [Fact]
-        public void GetTags_empty()
+        public void getTags_empty()
         {
             TagContext tags = new TagContext(new Dictionary<ITagKey, ITagValue>());
             Assert.Empty(tags.Tags);
         }
 
         [Fact]
-        public void GetTags_nonEmpty()
+        public void getTags_nonEmpty()
         {
             TagContext tags = new TagContext(new Dictionary<ITagKey, ITagValue>() { { K1, V1 }, { K2, V2 } });
             Assert.Equal(new Dictionary<ITagKey, ITagValue>() { { K1, V1 }, { K2, V2 } }, tags.Tags);
@@ -49,8 +49,7 @@ namespace Steeltoe.Management.Census.Tags.Test
         public void Put_NewKey()
         {
             TagContext tags = new TagContext(new Dictionary<ITagKey, ITagValue>() { { K1, V1 } });
-            Assert.Equal(
-                new Dictionary<ITagKey, ITagValue>() { { K1, V1 }, { K2, V2 } },
+            Assert.Equal(new Dictionary<ITagKey, ITagValue>() { { K1, V1 }, { K2, V2 } },
                 ((TagContext)tagger.ToBuilder(tags).Put(K2, V2).Build()).Tags);
         }
 
@@ -58,8 +57,7 @@ namespace Steeltoe.Management.Census.Tags.Test
         public void Put_ExistingKey()
         {
             TagContext tags = new TagContext(new Dictionary<ITagKey, ITagValue>() { { K1, V1 } });
-            Assert.Equal(
-                new Dictionary<ITagKey, ITagValue>() { { K1, V2 } },
+            Assert.Equal(new Dictionary<ITagKey, ITagValue>() { { K1, V2 } },
                 ((TagContext)tagger.ToBuilder(tags).Put(K1, V2).Build()).Tags);
         }
 
@@ -111,8 +109,11 @@ namespace Steeltoe.Management.Census.Tags.Test
             Assert.True(i.MoveNext());
             ITag tag2 = i.Current;
             Assert.False(i.MoveNext());
-            Assert.Equal(new List<ITag>() { Tag.Create(K1, V1), Tag.Create(K2, V2) }, new List<ITag>() { tag1, tag2 });
+            Assert.Equal(new List<ITag>() { Tag.Create(K1, V1), Tag.Create(K2, V2)}, new List<ITag>() { tag1, tag2 });
+
         }
+
+
 
         [Fact]
         public void TestEquals()
@@ -123,6 +124,7 @@ namespace Steeltoe.Management.Census.Tags.Test
             var t2 = tagger.EmptyBuilder.Put(K1, V1).Put(K2, V2).Build();
             var t3 = tagger.EmptyBuilder.Put(K2, V2).Put(K1, V1).Build();
             var t4 = new TestTagContext();
+
 
             var t5 = tagger.EmptyBuilder.Put(K1, V1).Put(K2, V1).Build();
             var t6 = tagger.EmptyBuilder.Put(K1, V2).Put(K2, V1).Build();
@@ -138,9 +140,10 @@ namespace Steeltoe.Management.Census.Tags.Test
             Assert.False(t6.Equals(t5));
 
             Assert.False(t5.Equals(t6));
+
         }
 
-        private class TestTagContext : TagContextBase
+        class TestTagContext : TagContextBase
         {
             public override IEnumerator<ITag> GetEnumerator()
             {

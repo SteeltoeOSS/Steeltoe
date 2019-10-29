@@ -1,75 +1,83 @@
-﻿// Copyright 2017 the original author or authors.
+﻿// <copyright file="ConcurrentIntrusiveList.cs" company="OpenCensus Authors">
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </copyright>
 
-using System;
-using System.Collections.Generic;
-
-namespace Steeltoe.Management.Census.Utils
+namespace OpenCensus.Utils
 {
-    [Obsolete("Use OpenCensus project packages")]
-    internal sealed class ConcurrentIntrusiveList<T>
-        where T : IElement<T>
+    using System;
+    using System.Collections.Generic;
+
+    internal sealed class ConcurrentIntrusiveList<T> where T : IElement<T>
     {
+        private readonly object lck = new object();
         private int size = 0;
         private T head = default(T);
-        private readonly object _lck = new object();
 
         public ConcurrentIntrusiveList()
         {
         }
 
+        public int Count
+        {
+            get
+            {
+                return this.size;
+            }
+        }
+
         public void AddElement(T element)
         {
-            lock (_lck)
+            lock (this.lck)
             {
-                if (element.Next != null || element.Previous != null || element.Equals(head))
+                if (element.Next != null || element.Previous != null || element.Equals(this.head))
                 {
                     throw new ArgumentOutOfRangeException("Element already in a list");
                 }
 
-                size++;
-                if (head == null)
+                this.size++;
+                if (this.head == null)
                 {
-                    head = element;
+                    this.head = element;
                 }
                 else
                 {
-                    head.Previous = element;
-                    element.Next = head;
-                    head = element;
+                    this.head.Previous = element;
+                    element.Next = this.head;
+                    this.head = element;
                 }
             }
         }
 
         public void RemoveElement(T element)
         {
-            lock (_lck)
+            lock (this.lck)
             {
-                if (element.Next == null && element.Previous == null && !element.Equals(head))
+                if (element.Next == null && element.Previous == null && !element.Equals(this.head))
                 {
                     throw new ArgumentOutOfRangeException("Element not in the list");
                 }
 
-                size--;
+                this.size--;
                 if (element.Previous == null)
                 {
                     // This is the first element
-                    head = element.Next;
-                    if (head != null)
+                    this.head = element.Next;
+                    if (this.head != null)
                     {
                         // If more than one element in the list.
-                        head.Previous = default(T);
+                        this.head.Previous = default(T);
                         element.Next = default(T);
                     }
                 }
@@ -90,20 +98,12 @@ namespace Steeltoe.Management.Census.Utils
             }
         }
 
-        public int Count
-        {
-            get
-            {
-                return size;
-            }
-        }
-
         public IList<T> Copy()
         {
-            lock (_lck)
+            lock (this.lck)
             {
-                List<T> all = new List<T>(size);
-                for (T e = head; e != null; e = e.Next)
+                List<T> all = new List<T>(this.size);
+                for (T e = this.head; e != null; e = e.Next)
                 {
                     all.Add(e);
                 }

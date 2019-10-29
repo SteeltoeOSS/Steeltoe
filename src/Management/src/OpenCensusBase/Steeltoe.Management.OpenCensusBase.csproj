@@ -12,8 +12,12 @@
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 
-  <ItemGroup>
-    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\OpenCensus\Steeltoe.Management.OpenCensus.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Management.OpenCensus" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
 </Project>
