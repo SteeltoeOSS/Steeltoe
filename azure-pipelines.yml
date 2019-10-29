@@ -16,7 +16,7 @@ trigger:
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  PackageVersion: $[format('2.3.1-ci{0}', variables['Build.BuildId'])]
+  PackageVersion: $[format('2.4.0-ci{0}', variables['Build.BuildId'])]
 
 jobs:
 - job: Linux_Build_and_Test
