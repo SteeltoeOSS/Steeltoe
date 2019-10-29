@@ -4,4 +4,6 @@ codecov:
 
 ignore:
   - "src/Management/src/Diagnostics/Microsoft"
+  - "src/Management/src/OpenCensus"
+  - "src/Management/src/OpenCensus.*"
   - "test/.*"

@@ -139,6 +139,7 @@ jobs:
       extraProperties: |
         sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
         sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
+        sonar.exclusions=$(Build.SourcesDirectory)/src/Management/OpenCensus, $(Build.SourcesDirectory)/src/Management/OpenCensus.*
   - task: DotNetCoreCLI@2
     displayName: dotnet pack
     inputs:
