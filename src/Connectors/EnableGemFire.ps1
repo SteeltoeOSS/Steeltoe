@@ -16,7 +16,7 @@ if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
     if ($IsWindows -Or $PSVersionTable.PSVersion.Major -lt 6)
     {
         Write-Host "Running on Windows, use WebClient"
-        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest -UseBasicParsing).Content).Content | jq  '.assets[].browser_download_url | select(contains(\"windows\"))' -r
+        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest -UseBasicParsing).Content | jq  '.assets[].browser_download_url | select(contains(\"windows\"))' -r
         (New-Object System.Net.WebClient).DownloadFile($pivnetClientUri, "$PSScriptRoot\pivnet.exe")  
         Write-Host "Adding alias 'pivnet' for .\pivnet.exe"
         Set-Alias -Name pivnet -Value ".\pivnet.exe"
@@ -29,7 +29,7 @@ if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
     elseif ($IsLinux)
     {
         Write-Host "Running on Linux"
-        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest -UseBasicParsing).Content).Content | jq  '.assets[].browser_download_url | select(contains(\"linux\"))' -r
+        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest -UseBasicParsing).Content | jq  '.assets[].browser_download_url | select(contains(\"linux\"))' -r
         wget -O pivnet $pivnetClientUri
         chmod +x ./pivnet
         Write-Host "Adding alias 'pivnet' for ./pivnet"
