@@ -273,6 +273,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus.Abstractions", "Management\src\OpenCensus.Abstractions\Steeltoe.Management.OpenCensus.Abstractions.csproj", "{5B7AC8DA-3351-4306-A979-5653A3356C7E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus.Exporter.Zipkin", "Management\src\OpenCensus.Exporter.Zipkin\Steeltoe.Management.OpenCensus.Exporter.Zipkin.csproj", "{39651DE1-EA05-496C-B79E-FDDDCB1B5600}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -711,6 +713,10 @@ Global
 		{5B7AC8DA-3351-4306-A979-5653A3356C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B7AC8DA-3351-4306-A979-5653A3356C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B7AC8DA-3351-4306-A979-5653A3356C7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39651DE1-EA05-496C-B79E-FDDDCB1B5600}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39651DE1-EA05-496C-B79E-FDDDCB1B5600}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39651DE1-EA05-496C-B79E-FDDDCB1B5600}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39651DE1-EA05-496C-B79E-FDDDCB1B5600}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -824,6 +830,7 @@ Global
 		{1EF487C4-B40B-40DC-8EAF-37E4FA18FC11} = {59874241-E276-4035-B31D-14924889A1C9}
 		{AE85FA2B-8A1F-4A25-8C17-503088F1A2A1} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{5B7AC8DA-3351-4306-A979-5653A3356C7E} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
+		{39651DE1-EA05-496C-B79E-FDDDCB1B5600} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}
