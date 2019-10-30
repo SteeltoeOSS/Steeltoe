@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -54,11 +55,11 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
                 var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
-                var logger1 = loggerFactory.CreateLogger<HeapDumper>();
+                var logger1 = loggerFactory.CreateLogger<WindowsHeapDumper>();
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
-                var obs = new HeapDumper(opts, logger: logger1);
+                var obs = new WindowsHeapDumper(opts, logger: logger1);
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
                 var middle = new HeapDumpEndpointMiddleware(null, ep, mopts, logger3);
                 var context = CreateRequest("GET", "/heapdump");
@@ -68,12 +69,20 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 await context.Response.Body.ReadAsync(buffer, 0, 1024);
                 Assert.NotEqual(0, buffer[0]);
             }
+            else if (Platform.IsLinux)
+            {
+                // TODO: Make a request and verify
+            }
+            else
+            {
+                return;
+            }
         }
 
         [Fact]
         public async void HeapDumpActuator_ReturnsExpectedData()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
             {
                 var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -113,7 +122,20 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         {
             var opts = new HeapDumpEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
-            var obs = new HeapDumper(opts);
+            IHeapDumper obs;
+            if (Platform.IsWindows)
+            {
+                obs = new WindowsHeapDumper(opts);
+            }
+            else if (Platform.IsLinux)
+            {
+                obs = new LinuxHeapDumper(opts);
+            }
+            else
+            {
+                return;
+            }
+
             var ep = new HeapDumpEndpoint(opts, obs);
             var middle = new HeapDumpEndpointMiddleware(null, ep, mopts);
 

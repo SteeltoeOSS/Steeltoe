@@ -22,14 +22,14 @@ using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
-    public class HeapDumper : IHeapDumper
+    public class WindowsHeapDumper : IHeapDumper
     {
         private readonly string _basePathOverride;
 
-        private readonly ILogger<HeapDumper> _logger;
+        private readonly ILogger<WindowsHeapDumper> _logger;
         private readonly IHeapDumpOptions _options;
 
-        public HeapDumper(IHeapDumpOptions options, string basePathOverride = null, ILogger<HeapDumper> logger = null)
+        public WindowsHeapDumper(IHeapDumpOptions options, string basePathOverride = null, ILogger<WindowsHeapDumper> logger = null)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;

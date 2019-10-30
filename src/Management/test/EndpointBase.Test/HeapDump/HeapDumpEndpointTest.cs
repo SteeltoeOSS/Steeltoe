@@ -1,4 +1,4 @@
-﻿// Copyright 2017 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.HeapDump.Test
@@ -35,16 +36,33 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 var loggerFactory = TestHelpers.GetLoggerFactory();
-                var logger1 = loggerFactory.CreateLogger<HeapDumper>();
+                var logger1 = loggerFactory.CreateLogger<WindowsHeapDumper>();
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
 
-                var dumper = new HeapDumper(new HeapDumpEndpointOptions(), logger: logger1);
+                var dumper = new WindowsHeapDumper(new HeapDumpEndpointOptions(), logger: logger1);
                 var ep = new HeapDumpEndpoint(new HeapDumpEndpointOptions(), dumper, logger2);
 
                 var result = ep.Invoke();
                 Assert.NotNull(result);
                 Assert.True(File.Exists(result));
                 File.Delete(result);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                if (typeof(object).Assembly.GetType("System.Index") != null)
+                {
+                    var loggerFactory = TestHelpers.GetLoggerFactory();
+                    var logger1 = loggerFactory.CreateLogger<LinuxHeapDumper>();
+                    var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
+
+                    var dumper = new LinuxHeapDumper(new HeapDumpEndpointOptions(), logger: logger1);
+                    var ep = new HeapDumpEndpoint(new HeapDumpEndpointOptions(), dumper, logger2);
+
+                    var result = ep.Invoke();
+                    Assert.NotNull(result);
+                    Assert.True(File.Exists(result));
+                    File.Delete(result);
+                }
             }
         }
     }
