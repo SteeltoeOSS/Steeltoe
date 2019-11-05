@@ -26,15 +26,13 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// </summary>
         /// <param name="credentialName">Name of credential</param>
         /// <param name="parameters">Optional parameters (defaults to key length 2048 and no SSH Comment)</param>
-        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
         /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
-        public SshGenerationRequest(string credentialName, SshGenerationParameters parameters = null, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
+        public SshGenerationRequest(string credentialName, SshGenerationParameters parameters = null, OverwiteMode overwriteMode = OverwiteMode.converge)
         {
             Name = credentialName;
             Type = CredentialType.SSH;
             Parameters = parameters ?? defaultParams;
             Mode = overwriteMode;
-            AdditionalPermissions = additionalPermissions;
         }
     }
 }
