@@ -1,8 +1,12 @@
 # Require a PivNet API Token
 Param(
-    [Parameter(Mandatory=$true)]
     [string]$PivNetAPIToken
  )
+
+ if (!$PivNetAPIToken)
+ {
+    Write-Host "No PivNet API token provided, proceeding with assumption that you're already logged in..."
+ }
 
  Set-Location $PSScriptRoot
  
@@ -12,7 +16,7 @@ if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
     if ($IsWindows -Or $PSVersionTable.PSVersion.Major -lt 6)
     {
         Write-Host "Running on Windows, use WebClient"
-        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest).Content | jq  '.assets[].browser_download_url | select(contains(\"windows\"))' -r
+        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest -UseBasicParsing).Content | jq  '.assets[].browser_download_url | select(contains(\"windows\"))' -r
         (New-Object System.Net.WebClient).DownloadFile($pivnetClientUri, "$PSScriptRoot\pivnet.exe")  
         Write-Host "Adding alias 'pivnet' for .\pivnet.exe"
         Set-Alias -Name pivnet -Value ".\pivnet.exe"
@@ -25,7 +29,7 @@ if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
     elseif ($IsLinux)
     {
         Write-Host "Running on Linux"
-        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest).Content | jq  '.assets[].browser_download_url | select(contains(\"linux\"))' -r
+        $pivnetClientUri = (Invoke-WebRequest -Uri https://api.github.com/repos/pivotal-cf/pivnet-cli/releases/latest -UseBasicParsing).Content | jq  '.assets[].browser_download_url | select(contains(\"linux\"))' -r
         wget -O pivnet $pivnetClientUri
         chmod +x ./pivnet
         Write-Host "Adding alias 'pivnet' for ./pivnet"
@@ -40,10 +44,19 @@ if (-Not (Get-Command "pivnet" -ErrorAction SilentlyContinue))
 
 # login with API token (deprecated!)
 # New way is to use Refresh token (1 hr life) to get access token -- doesn't appear possible in CI Process ???
-pivnet login --api-token=$PivNetAPIToken
+if ($PivNetAPIToken)
+{
+    pivnet login --api-token=$PivNetAPIToken
+}
 
 # Find latest (file) version - requires jq
 $gemfireReleases = pivnet releases -p pivotal-gemfire --format=json
+if (!$gemfireReleases)
+{
+    Write-Host "See this page for authentication instructions: https://network.pivotal.io/docs/api#how-to-authenticate"
+    return
+}
+
 $gemfireReleaseVersion = $gemfireReleases | jq '[.[]|select(.version | startswith(\"Native Client 10\"))][0].version'
 Write-Host "Looking for Native Client version $gemfireReleaseVersion"
 $productFile = pivnet product-files -p pivotal-gemfire -r $gemfireReleaseVersion --format=json | jq '[.[]|select(.name|contains(\"Windows\"))][0]'
@@ -79,5 +92,5 @@ if (Get-Command "7z" -ErrorAction SilentlyContinue)
 else
 {    
     Write-Host "7zip not found, manually extract Pivotal.GemFire.dll from $fileName to continue!"
-	return 1
+    return 1
 }
