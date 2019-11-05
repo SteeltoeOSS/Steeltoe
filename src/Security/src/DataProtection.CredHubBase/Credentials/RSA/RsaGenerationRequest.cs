@@ -24,14 +24,12 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// </summary>
         /// <param name="credentialName">Name of credential</param>
         /// <param name="keyLength">Optional Key Length (default: 2048)</param>
-        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
         /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
-        public RsaGenerationRequest(string credentialName, CertificateKeyLength keyLength = CertificateKeyLength.Length_2048, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
+        public RsaGenerationRequest(string credentialName, CertificateKeyLength keyLength = CertificateKeyLength.Length_2048, OverwiteMode overwriteMode = OverwiteMode.converge)
         {
             Name = credentialName;
             Type = CredentialType.RSA;
             Parameters = new KeyParameters { KeyLength = keyLength };
-            AdditionalPermissions = additionalPermissions;
             Mode = overwriteMode;
         }
     }

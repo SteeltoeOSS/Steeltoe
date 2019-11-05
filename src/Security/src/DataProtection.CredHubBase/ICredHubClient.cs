@@ -92,12 +92,6 @@ namespace Steeltoe.Security.DataProtection.CredHub
         Task<List<FoundCredential>> FindByPathAsync(string path);
 
         /// <summary>
-        /// Retrieves a list of all paths which contain credentials
-        /// </summary>
-        /// <returns>List of paths that contain credentials</returns>
-        Task<List<CredentialPath>> FindAllPathsAsync();
-
-        /// <summary>
         /// Delete a credential by its full name.
         /// </summary>
         /// <param name="name">the name of the credential; must not be <see langword="null" /></param>

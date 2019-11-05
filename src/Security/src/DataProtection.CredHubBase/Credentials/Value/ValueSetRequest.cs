@@ -23,15 +23,11 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// </summary>
         /// <param name="credentialName">Name of credential</param>
         /// <param name="value">Value of the credential to set</param>
-        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
-        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
-        public ValueSetRequest(string credentialName, string value, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
+        public ValueSetRequest(string credentialName, string value)
         {
             Name = credentialName;
             Type = CredentialType.Value;
             Value = new ValueCredential(value);
-            AdditionalPermissions = additionalPermissions;
-            Mode = overwriteMode;
         }
     }
 }
