@@ -23,6 +23,11 @@ namespace Steeltoe.Extensions.Logging.DynamicLogger
 {
     public static class DynamicLoggerHostBuilderExtensions
     {
+        /// <summary>
+        /// Adds Dynamic Console Logging to your application. Removes ConsoleLoggerProvider if found (to prevent duplicate console log entries)<para />
+        /// Also calls ILoggingBuilder.AddConfiguration() if not previously called.
+        /// </summary>
+        /// <param name="hostBuilder">Your HostBuilder</param>
         public static IHostBuilder AddDynamicLogging(this IHostBuilder hostBuilder)
         {
             return hostBuilder
