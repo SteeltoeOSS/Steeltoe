@@ -26,7 +26,7 @@ namespace Steeltoe.Extensions.Configuration
     /// Configuration provider that resolves placeholders
     /// A placeholder takes the form of <code> ${some:config:reference?default_if_not_present}></code>
     /// </summary>
-    public class PlaceholderResolverProvider : IConfigurationProvider
+    public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     {
         internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
         internal ILogger<PlaceholderResolverProvider> _logger;
@@ -69,6 +69,11 @@ namespace Steeltoe.Extensions.Configuration
 
             _providers = providers;
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
+        }
+
+        public IList<IConfigurationProvider> Providers
+        {
+            get { return _providers; }
         }
 
         /// <summary>
