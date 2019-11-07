@@ -14,7 +14,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj" />
   </ItemGroup>

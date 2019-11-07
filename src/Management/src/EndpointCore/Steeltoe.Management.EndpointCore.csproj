@@ -7,6 +7,7 @@
     <AssemblyName>Steeltoe.Management.EndpointCore</AssemblyName>
     <PackageId>Steeltoe.Management.EndpointCore</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
+    <RootNamespace>Steeltoe.Management.Endpoint</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
