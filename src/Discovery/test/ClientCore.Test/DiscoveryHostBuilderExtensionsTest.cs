@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,6 +22,7 @@ using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Eureka;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test
@@ -57,6 +59,25 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.NotNull(filter);
             Assert.IsType<DiscoveryClientStartupFilter>(filter);
         }
+
+#if NETCOREAPP3_0
+        [Fact]
+        public async Task AddServiceDiscovery_IHostBuilder_IStartupFilterFires()
+        {
+            // Arrange
+            var hostBuilder = new HostBuilder()
+                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }))
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(eurekaSettings));
+
+            // Act
+            var host = await hostBuilder.AddServiceDiscovery().StartAsync();
+
+            // Assert general success...
+            //   not sure how to actually validate the StartupFilter worked,
+            //   but debug through and you'll see it. Also the code coverage report should provide validation
+            Assert.True(true);
+        }
+#endif
 
         [Fact]
         public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Consul()
