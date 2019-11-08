@@ -53,13 +53,13 @@ namespace Steeltoe.Management.CloudFoundry.Test
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                Assert.NotNull(host.Services.GetServices<ThreadDumpEndpoint>());
-                Assert.NotNull(host.Services.GetServices<HeapDumpEndpoint>());
+                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
             }
             else
             {
-                Assert.Null(host.Services.GetServices<ThreadDumpEndpoint>());
-                Assert.Null(host.Services.GetServices<HeapDumpEndpoint>());
+                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
             }
 
             Assert.NotNull(filter);
