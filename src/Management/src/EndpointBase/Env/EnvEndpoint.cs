@@ -98,7 +98,6 @@ namespace Steeltoe.Management.Endpoint.Env
 
             foreach (var key in GetFullKeyNames(provider, null, new HashSet<string>()))
             {
-
                 if (provider.TryGet(key, out var value))
                 {
                     if (provider is IPlaceholderResolverProvider placeHolderProvider && !placeHolderProvider.ResolvedKeys.Contains(key))
