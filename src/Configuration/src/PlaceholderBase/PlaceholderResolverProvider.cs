@@ -26,10 +26,11 @@ namespace Steeltoe.Extensions.Configuration
     /// Configuration provider that resolves placeholders
     /// A placeholder takes the form of <code> ${some:config:reference?default_if_not_present}></code>
     /// </summary>
-    public class PlaceholderResolverProvider : IConfigurationProvider
+    public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     {
         internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
         internal ILogger<PlaceholderResolverProvider> _logger;
+        private IList<string> _resolvedKeys = new List<string>();
 
         /// <summary>
         /// Gets the configuration this placeholder resolver wraps
@@ -71,6 +72,16 @@ namespace Steeltoe.Extensions.Configuration
             _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
         }
 
+        public IList<IConfigurationProvider> Providers
+        {
+            get { return _providers; }
+        }
+
+        public IList<string> ResolvedKeys
+        {
+            get { return _resolvedKeys; }
+        }
+
         /// <summary>
         /// Tries to get a configuration value for the specified key. If the value is a placeholder
         /// it will try to resolve the placeholder before returning it.
@@ -81,8 +92,14 @@ namespace Steeltoe.Extensions.Configuration
         public bool TryGet(string key, out string value)
         {
             EnsureInitialized();
-            value = Configuration[key];
-            value = PropertyPlaceholderHelper.ResolvePlaceholders(value, Configuration);
+            var originalValue = Configuration[key];
+            value = PropertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration);
+
+            if (value != originalValue && !_resolvedKeys.Contains(key))
+            {
+                _resolvedKeys.Add(key);
+            }
+
             return !string.IsNullOrEmpty(value);
         }
 

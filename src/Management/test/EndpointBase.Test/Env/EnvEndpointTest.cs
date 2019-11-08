@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
+using Steeltoe.Extensions.Configuration.Placeholder;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -156,6 +157,29 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Assert.NotNull(prop);
             Assert.Equal("true", prop.Value);
             Assert.Null(prop.Origin);
+        }
+
+        [Fact]
+        public void GetPropertySources_ReturnsExpected_WithPlaceholders()
+        {
+            // arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:path"] = "/cloudfoundryapplication",
+                ["appsManagerBase"] = "${management:endpoints:path}"
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPlaceholderResolver().Build();
+            var endpoint = new EnvEndpoint(new EnvEndpointOptions(), config, HostingHelpers.GetHostingEnvironment());
+
+            // act
+            var result = endpoint.GetPropertySources(config);
+            var testProp = config["appsManagerBase"];
+
+            // assert
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.NotNull(testProp);
+            Assert.Equal("/cloudfoundryapplication", testProp);
         }
 
         [Fact]

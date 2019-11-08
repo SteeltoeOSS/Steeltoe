@@ -93,6 +93,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensus.Abstractions", "src\OpenCensus.Abstractions\Steeltoe.Management.OpenCensus.Abstractions.csproj", "{A681F1FC-EA6F-49D8-A358-41886DFAF8B9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.PlaceholderBase", "..\Configuration\src\PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj", "{BF78F310-5016-4380-BC3E-06F475C65BAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -227,6 +229,10 @@ Global
 		{092BADE5-4E56-4EB4-BA0F-3EA6ECA08943}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{092BADE5-4E56-4EB4-BA0F-3EA6ECA08943}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{092BADE5-4E56-4EB4-BA0F-3EA6ECA08943}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF78F310-5016-4380-BC3E-06F475C65BAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF78F310-5016-4380-BC3E-06F475C65BAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF78F310-5016-4380-BC3E-06F475C65BAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF78F310-5016-4380-BC3E-06F475C65BAA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{019FB8A8-8FFB-433D-AFA3-46AC797ABE63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{019FB8A8-8FFB-433D-AFA3-46AC797ABE63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{019FB8A8-8FFB-433D-AFA3-46AC797ABE63}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -274,6 +280,7 @@ Global
 		{092BADE5-4E56-4EB4-BA0F-3EA6ECA08943} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 		{019FB8A8-8FFB-433D-AFA3-46AC797ABE63} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{A681F1FC-EA6F-49D8-A358-41886DFAF8B9} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+		{BF78F310-5016-4380-BC3E-06F475C65BAA} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7949396C-4BFF-4834-9BC2-F3A345E9CCE5}
