@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using Xunit;
 
@@ -25,7 +26,7 @@ namespace Steeltoe.Management.TaskCore.Test
     public class TaskRunTest
     {
         [Fact]
-        public void DelegatingTask_ExecutesRun()
+        public void DelegatingTask_WebHost_ExecutesRun()
         {
             var args = new[] { "runtask=test" };
 
@@ -36,9 +37,19 @@ namespace Steeltoe.Management.TaskCore.Test
                     .RunWithTasks());
         }
 
-        public class PassException : Exception
+#if NETCOREAPP3_0
+        [Fact]
+        public void DelegatingTask_GenericHost_ExecutesRun()
         {
+            var args = new[] { "runtask=test" };
+
+            Assert.Throws<PassException>(() =>
+                Host.CreateDefaultBuilder(args)
+                    .ConfigureWebHost(configure => configure.UseStartup<TestStartup>())
+                    .Build()
+                    .RunWithTasks());
         }
+#endif
 
         public class TestStartup
         {
@@ -57,6 +68,10 @@ namespace Steeltoe.Management.TaskCore.Test
             public void Configure(IApplicationBuilder app)
             {
             }
+        }
+
+        internal class PassException : Exception
+        {
         }
     }
 }

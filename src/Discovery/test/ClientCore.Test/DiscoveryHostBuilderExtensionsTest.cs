@@ -43,6 +43,24 @@ namespace Steeltoe.Discovery.Client.Test
         };
 
         [Fact]
+        public void AddServiceDiscovery_IWebHostBuilder_AddsServiceDiscovery_Eureka()
+        {
+            // Arrange
+            var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(eurekaSettings));
+
+            // Act
+            var host = hostBuilder.AddServiceDiscovery().Build();
+            var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
+            var filters = host.Services.GetServices<IStartupFilter>();
+
+            // Assert
+            Assert.Single(discoveryClient);
+            Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
+            Assert.NotEmpty(filters);
+            Assert.Contains(filters, f => f.GetType() == typeof(DiscoveryClientStartupFilter));
+        }
+
+        [Fact]
         public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Eureka()
         {
             // Arrange
