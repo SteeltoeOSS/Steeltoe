@@ -70,12 +70,12 @@ namespace Steeltoe.Management.Endpoint.Env
             List<PropertySourceDescriptor> results = new List<PropertySourceDescriptor>();
             if (configuration is IConfigurationRoot root)
             {
-                var providers = root.Providers;
+                var providers = root.Providers.ToList();
 
                 if (providers.Any(p => p is IPlaceholderResolverProvider))
                 {
                     var placeholderProvider = providers.First(p => p is IPlaceholderResolverProvider);
-                    providers = ((IPlaceholderResolverProvider)placeholderProvider).Providers;
+                    providers.InsertRange(0, ((IPlaceholderResolverProvider)placeholderProvider).Providers);
                 }
 
                 foreach (var provider in providers)
@@ -98,8 +98,14 @@ namespace Steeltoe.Management.Endpoint.Env
 
             foreach (var key in GetFullKeyNames(provider, null, new HashSet<string>()))
             {
+
                 if (provider.TryGet(key, out var value))
                 {
+                    if (provider is IPlaceholderResolverProvider placeHolderProvider && !placeHolderProvider.ResolvedKeys.Contains(key))
+                    {
+                        continue;
+                    }
+
                     var sanitized = _sanitizer.Sanitize(new KeyValuePair<string, string>(key, value));
                     properties.Add(sanitized.Key, new PropertyValueDescriptor(sanitized.Value));
                 }

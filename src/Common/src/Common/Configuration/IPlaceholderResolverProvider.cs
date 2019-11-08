@@ -8,5 +8,7 @@ namespace Steeltoe.Common.Configuration
     public interface IPlaceholderResolverProvider : IConfigurationProvider
     {
         public IList<IConfigurationProvider> Providers { get; }
+
+        public IList<string> ResolvedKeys { get; }
     }
 }
