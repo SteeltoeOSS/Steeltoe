@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,15 @@ namespace Steeltoe.Management.Endpoint.Env
             List<PropertySourceDescriptor> results = new List<PropertySourceDescriptor>();
             if (configuration is IConfigurationRoot root)
             {
-                foreach (var provider in root.Providers)
+                var providers = root.Providers.ToList();
+
+                if (providers.Any(p => p is IPlaceholderResolverProvider))
+                {
+                    var placeholderProvider = providers.First(p => p is IPlaceholderResolverProvider);
+                    providers.InsertRange(0, ((IPlaceholderResolverProvider)placeholderProvider).Providers);
+                }
+
+                foreach (var provider in providers)
                 {
                     var psd = GetPropertySourceDescriptor(provider);
                     if (psd != null)
@@ -91,6 +100,11 @@ namespace Steeltoe.Management.Endpoint.Env
             {
                 if (provider.TryGet(key, out var value))
                 {
+                    if (provider is IPlaceholderResolverProvider placeHolderProvider && !placeHolderProvider.ResolvedKeys.Contains(key))
+                    {
+                        continue;
+                    }
+
                     var sanitized = _sanitizer.Sanitize(new KeyValuePair<string, string>(key, value));
                     properties.Add(sanitized.Key, new PropertyValueDescriptor(sanitized.Value));
                 }
