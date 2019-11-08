@@ -258,28 +258,25 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void Subscribe_Listener_StopActivity_AddsToQueue()
         {
-            DiagnosticListener listener = new DiagnosticListener("Microsoft.AspNetCore");
-            var option = new TraceEndpointOptions();
-
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
+            // arrange
+            var listener = new DiagnosticListener("Microsoft.AspNetCore");
+            var obs = new TraceDiagnosticObserver(new TraceEndpointOptions());
             obs.Subscribe(listener);
 
             var context = CreateRequest();
-            string activityName = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
-            Activity current = new Activity(activityName);
+            var activityName = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
+            var current = new Activity(activityName);
 
+            // act
             listener.StartActivity(current, new { HttpContext = context });
-
             Thread.Sleep(1000);
-
             listener.StopActivity(current, new { HttpContext = context });
 
+            // assert
             Assert.Single(obs._queue);
-
-            Assert.True(obs._queue.TryPeek(out TraceResult result));
+            Assert.True(obs._queue.TryPeek(out var result));
             Assert.NotNull(result.Info);
             Assert.NotEqual(0, result.TimeStamp);
             Assert.True(result.Info.ContainsKey("method"));
@@ -292,9 +289,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.NotNull(headers);
             Assert.True(headers.ContainsKey("request"));
             Assert.True(headers.ContainsKey("response"));
-            var timeTaken = result.Info["timeTaken"] as string;
-            Assert.NotNull(timeTaken);
-            Assert.StartsWith("10", timeTaken);
+            var timeTaken = short.Parse(result.Info["timeTaken"] as string);
+            Assert.InRange(timeTaken, 1000, 1300);
 
             obs.Dispose();
             listener.Dispose();
