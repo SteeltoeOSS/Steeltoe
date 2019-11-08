@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
-using Microsoft.Extensions.Logging.Console;
-using System.Linq;
+using System;
 
 namespace Steeltoe.Extensions.Logging.DynamicLogger
 {
@@ -30,24 +26,12 @@ namespace Steeltoe.Extensions.Logging.DynamicLogger
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IHostBuilder AddDynamicLogging(this IHostBuilder hostBuilder)
         {
-            return hostBuilder
-                .ConfigureLogging(ilb =>
-                {
-                    // remove the original ConsoleLoggerProvider to prevent duplicate logging
-                    var serviceDescriptor = ilb.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
-                    if (serviceDescriptor != null)
-                    {
-                        ilb.Services.Remove(serviceDescriptor);
-                    }
+            if (hostBuilder is null)
+            {
+                throw new ArgumentNullException(nameof(hostBuilder));
+            }
 
-                    // make sure logger provider configurations are available
-                    if (!ilb.Services.Any(descriptor => descriptor.ServiceType == typeof(ILoggerProviderConfiguration<ConsoleLoggerProvider>)))
-                    {
-                        ilb.AddConfiguration();
-                    }
-
-                    ilb.AddDynamicConsole();
-                });
+            return hostBuilder.ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole(true));
         }
     }
 }
