@@ -13,12 +13,8 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using Xunit;
 
 namespace Steeltoe.Management.TaskCore.Test
@@ -32,9 +28,22 @@ namespace Steeltoe.Management.TaskCore.Test
 
             Assert.Throws<PassException>(() =>
                 WebHost.CreateDefaultBuilder(args)
-                    .UseStartup<TestStartup>()
+                    .UseStartup<TestServerStartup>()
                     .Build()
                     .RunWithTasks());
+        }
+
+        [Fact]
+        public void DelegatingTask_WebHost_StopsIfNoTask()
+        {
+            var args = new[] { "runtask=test" };
+
+            WebHost.CreateDefaultBuilder(args)
+                .Configure(c => { })
+                .Build()
+                .RunWithTasks();
+
+            Assert.True(true, "If we reached this assertion, the app stopped without throwing anything");
         }
 
 #if NETCOREAPP3_0
@@ -45,33 +54,22 @@ namespace Steeltoe.Management.TaskCore.Test
 
             Assert.Throws<PassException>(() =>
                 Host.CreateDefaultBuilder(args)
-                    .ConfigureWebHost(configure => configure.UseStartup<TestStartup>())
+                    .ConfigureWebHost(configure => configure.UseStartup<TestServerStartup>().UseKestrel())
                     .Build()
                     .RunWithTasks());
         }
+
+        [Fact]
+        public void DelegatingTask_GenericHost_StopsIfNoTask()
+        {
+            var args = new[] { "runtask=test" };
+
+            Host.CreateDefaultBuilder(args)
+                .Build()
+                .RunWithTasks();
+
+            Assert.True(true, "If we reached this assertion, the app stopped without throwing anything");
+        }
 #endif
-
-        public class TestStartup
-        {
-            public TestStartup(IConfiguration configuration)
-            {
-                Configuration = configuration;
-            }
-
-            public IConfiguration Configuration { get; }
-
-            public void ConfigureServices(IServiceCollection services)
-            {
-                services.AddTask("test", _ => throw new PassException());
-            }
-
-            public void Configure(IApplicationBuilder app)
-            {
-            }
-        }
-
-        internal class PassException : Exception
-        {
-        }
     }
 }
