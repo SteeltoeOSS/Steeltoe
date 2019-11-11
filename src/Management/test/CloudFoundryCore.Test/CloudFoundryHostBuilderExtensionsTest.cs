@@ -38,6 +38,35 @@ namespace Steeltoe.Management.CloudFoundry.Test
         };
 
         [Fact]
+        public void AddCloudFoundryActuators_IWebHostBuilder()
+        {
+            // Arrange
+            var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings)).Configure(configureApp => { });
+
+            // Act
+            var host = hostBuilder.AddCloudFoundryActuators().Build();
+            var managementOptions = host.Services.GetServices<IManagementOptions>();
+
+            var filters = host.Services.GetServices<IStartupFilter>();
+
+            // Assert
+            Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
+            }
+            else
+            {
+                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
+            }
+
+            Assert.NotNull(filters);
+            Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
+        }
+
+        [Fact]
         public void AddCloudFoundryActuators_IHostBuilder()
         {
             // Arrange
