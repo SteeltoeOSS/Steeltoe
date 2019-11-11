@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
@@ -45,15 +46,25 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="app">AppBuilder needing actuators added</param>
         /// <param name="version">Mediatype version of the response</param>
         /// <param name="context">Actuator context for endpoints</param>
-        public static void UseCloudFoundryActuators(this IApplicationBuilder app, MediaTypeVersion version, ActuatorContext context)
+        /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
+        public static void UseCloudFoundryActuators(this IApplicationBuilder app, MediaTypeVersion version, ActuatorContext context, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             if (context != ActuatorContext.Actuator)
             {
                 app.UseCors(builder =>
                 {
-                    builder.AllowAnyOrigin()
-                    .WithMethods("GET", "POST")
-                    .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
+                    builder
+                        .WithMethods("GET", "POST")
+                        .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
+
+                    if (buildCorsPolicy != null)
+                    {
+                        buildCorsPolicy(builder);
+                    }
+                    else
+                    {
+                        builder.AllowAnyOrigin();
+                    }
                 });
 
                 app.UseCloudFoundrySecurity();
