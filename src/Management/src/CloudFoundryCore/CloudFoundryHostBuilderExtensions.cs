@@ -13,19 +13,31 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Hypermedia;
+using System;
 using System.Linq;
 
 namespace Steeltoe.Management.CloudFoundry
 {
     public static class CloudFoundryHostBuilderExtensions
     {
+        /// <summary>
+        /// Adds all Actuators supported by Apps Manager. Also configures DynamicLogging if not previously setup.
+        /// </summary>
+        /// <param name="webHostBuilder">Your Hostbuilder</param>
+        public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder)
+        {
+            return webHostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.CloudFoundry);
+        }
+
         /// <summary>
         /// Adds all Actuators supported by Apps Manager. Also configures DynamicLogging if not previously setup.
         /// </summary>
@@ -38,34 +50,51 @@ namespace Steeltoe.Management.CloudFoundry
         /// <summary>
         /// Adds all Actuators supported by Apps Manager. Also configures DynamicLogging if not previously setup.
         /// </summary>
+        /// <param name="webHostBuilder">Your Hostbuilder</param>
+        /// <param name="mediaTypeVersion">Spring Boot media type version to use with responses</param>
+        /// <param name="actuatorContext">Select how targeted to Apps Manager actuators should be</param>
+        public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion, ActuatorContext actuatorContext)
+        {
+            return webHostBuilder
+                .ConfigureLogging(ConfigureDynamicLogging)
+                .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, actuatorContext));
+        }
+
+        /// <summary>
+        /// Adds all Actuators supported by Apps Manager. Also configures DynamicLogging if not previously setup.
+        /// </summary>
         /// <param name="hostBuilder">Your Hostbuilder</param>
         /// <param name="mediaTypeVersion">Spring Boot media type version to use with responses</param>
         /// <param name="actuatorContext">Select how targeted to Apps Manager actuators should be</param>
         public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion, ActuatorContext actuatorContext)
         {
             return hostBuilder
-                .ConfigureLogging(ilb =>
-                {
-                    // remove the original ConsoleLoggerProvider to prevent duplicate logging
-                    var serviceDescriptor = ilb.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
-                    if (serviceDescriptor != null)
-                    {
-                        ilb.Services.Remove(serviceDescriptor);
-                    }
+                .ConfigureLogging(ConfigureDynamicLogging)
+                .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, actuatorContext));
+        }
 
-                    // make sure logger provider configurations are available
-                    if (!ilb.Services.Any(descriptor => descriptor.ServiceType == typeof(ILoggerProviderConfiguration<ConsoleLoggerProvider>)))
-                    {
-                        ilb.AddConfiguration();
-                    }
+        private static readonly Action<ILoggingBuilder> ConfigureDynamicLogging = (logbuilder) =>
+        {
+            // remove the original ConsoleLoggerProvider to prevent duplicate logging
+            var serviceDescriptor = logbuilder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
+            if (serviceDescriptor != null)
+            {
+                logbuilder.Services.Remove(serviceDescriptor);
+            }
 
-                    ilb.AddDynamicConsole();
-                })
-                .ConfigureServices((context, collection) =>
-                {
-                    collection.AddCloudFoundryActuators(context.Configuration, mediaTypeVersion, actuatorContext);
-                    collection.AddSingleton<IStartupFilter>(new CloudFoundryActuatorsStartupFilter(mediaTypeVersion, actuatorContext));
-                });
+            // make sure logger provider configurations are available
+            if (!logbuilder.Services.Any(descriptor => descriptor.ServiceType == typeof(ILoggerProviderConfiguration<ConsoleLoggerProvider>)))
+            {
+                logbuilder.AddConfiguration();
+            }
+
+            logbuilder.AddDynamicConsole();
+        };
+
+        private static void ConfigureServices(IServiceCollection collection, IConfiguration configuration, MediaTypeVersion mediaTypeVersion, ActuatorContext actuatorContext)
+        {
+            collection.AddCloudFoundryActuators(configuration, mediaTypeVersion, actuatorContext);
+            collection.AddSingleton<IStartupFilter>(new CloudFoundryActuatorsStartupFilter(mediaTypeVersion, actuatorContext));
         }
     }
 }

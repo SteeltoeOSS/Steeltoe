@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
         public void ConfigurePlaceholderResolver_ConfiguresIConfiguration_ReplacesExisting()
         {
             // Arrange
-            Dictionary<string, string> settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>()
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -73,7 +74,7 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
         }
 
         [Fact]
-        public void AddPlaceholderResolver_HostBuilder_WrapsApplicationsConfiguration()
+        public void AddPlaceholderResolver_WebHostBuilder_WrapsApplicationsConfiguration()
         {
             var appsettingsJson = @"
                 {
@@ -107,25 +108,25 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
                 "--spring:line:name=${spring:json:name?noName}"
             };
             var jsonpath = TestHelpers.CreateTempFile(appsettingsJson);
-            string jsonfileName = Path.GetFileName(jsonpath);
+            var jsonfileName = Path.GetFileName(jsonpath);
             var xmlpath = TestHelpers.CreateTempFile(appsettingsXml);
-            string xmlfileName = Path.GetFileName(xmlpath);
+            var xmlfileName = Path.GetFileName(xmlpath);
             var inipath = TestHelpers.CreateTempFile(appsettingsIni);
-            string inifileName = Path.GetFileName(inipath);
+            var inifileName = Path.GetFileName(inipath);
 
-            string directory = Path.GetDirectoryName(jsonpath);
+            var directory = Path.GetDirectoryName(jsonpath);
 
             var hostBuilder = new WebHostBuilder()
-             .UseStartup<TestServerStartup1>()
-             .ConfigureAppConfiguration((configurationBuilder) =>
-             {
-                 configurationBuilder.SetBasePath(directory);
-                 configurationBuilder.AddJsonFile(jsonfileName);
-                 configurationBuilder.AddXmlFile(xmlfileName);
-                 configurationBuilder.AddIniFile(inifileName);
-                 configurationBuilder.AddCommandLine(appsettingsLine);
-             })
-             .AddPlaceholderResolver();
+                .UseStartup<TestServerStartup1>()
+                .ConfigureAppConfiguration((configurationBuilder) =>
+                {
+                    configurationBuilder.SetBasePath(directory);
+                    configurationBuilder.AddJsonFile(jsonfileName);
+                    configurationBuilder.AddXmlFile(xmlfileName);
+                    configurationBuilder.AddIniFile(inifileName);
+                    configurationBuilder.AddCommandLine(appsettingsLine);
+                })
+                .AddPlaceholderResolver();
 
             using (var server = new TestServer(hostBuilder))
             {
@@ -134,5 +135,51 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
                 Assert.Equal("myName", config["spring:cloud:config:name"]);
             }
         }
+
+#if NETCOREAPP3_0
+        [Fact]
+        public void AddPlaceholderResolver_HostBuilder_WrapsApplicationsConfiguration()
+        {
+            var appsettingsJson = @"
+                {
+                    ""spring"": {
+                        ""json"": {
+                            ""name"": ""myName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""name"" : ""${spring:xml:name?noname}"",
+                        }
+                      }
+                    }
+                }";
+            var appsettingsXml = @"
+                <settings>
+                    <spring>
+                        <xml>
+                            <name>${spring:json:name?noName}</name>
+                        </xml>
+                    </spring>
+                </settings>";
+            var jsonpath = TestHelpers.CreateTempFile(appsettingsJson);
+            var jsonfileName = Path.GetFileName(jsonpath);
+            var xmlpath = TestHelpers.CreateTempFile(appsettingsXml);
+            var xmlfileName = Path.GetFileName(xmlpath);
+            var directory = Path.GetDirectoryName(jsonpath);
+
+            var hostBuilder = new HostBuilder().ConfigureWebHost(configure => configure.UseTestServer())
+                 .ConfigureAppConfiguration((configurationBuilder) =>
+                 {
+                     configurationBuilder.SetBasePath(directory);
+                     configurationBuilder.AddJsonFile(jsonfileName);
+                     configurationBuilder.AddXmlFile(xmlfileName);
+                 })
+                 .AddPlaceholderResolver();
+
+            using var server = hostBuilder.Build().GetTestServer();
+            var config = server.Services.GetServices<IConfiguration>().SingleOrDefault();
+            Assert.Equal("myName", config["spring:cloud:config:name"]);
+        }
+#endif
     }
 }

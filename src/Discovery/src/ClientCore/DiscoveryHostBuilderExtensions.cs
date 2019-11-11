@@ -24,6 +24,20 @@ namespace Steeltoe.Discovery.Client
         /// Adds service discovery to your application based on app configuration. This method can be used in place of configuration via your Startup class.
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
+        public static IWebHostBuilder AddServiceDiscovery(this IWebHostBuilder hostBuilder)
+        {
+            return hostBuilder
+                .ConfigureServices((context, collection) =>
+                {
+                    collection.AddDiscoveryClient(context.Configuration);
+                    collection.AddTransient<IStartupFilter, DiscoveryClientStartupFilter>();
+                });
+        }
+
+        /// <summary>
+        /// Adds service discovery to your application based on app configuration. This method can be used in place of configuration via your Startup class.
+        /// </summary>
+        /// <param name="hostBuilder">Your HostBuilder</param>
         public static IHostBuilder AddServiceDiscovery(this IHostBuilder hostBuilder)
         {
             return hostBuilder

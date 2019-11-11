@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using System;
 using Xunit;
 
@@ -21,7 +22,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
     public class CloudFoundryHostBuilderExtensionsTest
     {
         [Fact]
-        public void UseCloudFoundryHosting_ThrowsIfHostBuilderNull()
+        public void UseCloudFoundryHosting_Web_ThrowsIfHostBuilderNull()
         {
             // Arrange
             IWebHostBuilder webHostBuilder = null;
@@ -64,5 +65,47 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                 // No-Op
             }
         }
+
+#if NETCOREAPP3_0
+        [Fact]
+        public void UseCloudFoundryHosting_GenericHost_DoNotSetUrlsIfNull()
+        {
+            // Arrange
+            Environment.SetEnvironmentVariable("PORT", null);
+            var hostBuilder = new HostBuilder()
+                .ConfigureWebHost(configure =>
+                {
+                    configure.UseStartup<TestServerStartup>();
+                    configure.UseKestrel();
+                });
+
+            // Act and Assert
+            hostBuilder.UseCloudFoundryHosting();
+            using (hostBuilder.Build())
+            {
+                // No-Op
+            }
+        }
+
+        [Fact]
+        public void UseCloudFoundryHosting_GenericHost_MakeSureThePortIsSet()
+        {
+            // Arrange
+            Environment.SetEnvironmentVariable("PORT", "42");
+            var hostBuilder = new HostBuilder()
+                .ConfigureWebHost(configure =>
+                {
+                    configure.UseStartup<TestServerStartup42>();
+                    configure.UseKestrel();
+                });
+
+            // Act and Assert
+            hostBuilder.UseCloudFoundryHosting();
+            using (hostBuilder.Build())
+            {
+                // No-Op
+            }
+        }
+#endif
     }
 }
