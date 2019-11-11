@@ -3,7 +3,7 @@
     <Authors>Pivotal,dtillman</Authors>
     <VersionPrefix>$(VersionPrefix)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
-    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -23,7 +23,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
- </PropertyGroup>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="SonarAnalyzer.CSharp" Version="$(SonarAnalyzerVersion)">
@@ -39,5 +39,8 @@
       <Link>stylecop.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\build\icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>
