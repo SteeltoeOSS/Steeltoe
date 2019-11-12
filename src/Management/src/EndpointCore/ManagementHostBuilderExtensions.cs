@@ -172,7 +172,7 @@ namespace Steeltoe.Management.Endpoint
         public static IHostBuilder AddLoggersActuator(this IHostBuilder hostBuilder)
         {
             return hostBuilder
-                .ConfigureLogging((context, configureLogging) => Extensions.Logging.DynamicLoggingBuilder.AddDynamicConsole(configureLogging, true))
+                .AddDynamicLogging()
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddLoggersActuator(context.Configuration);

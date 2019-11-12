@@ -80,20 +80,24 @@ namespace Steeltoe.Management.CloudFoundry
 
         private static readonly Action<ILoggingBuilder> ConfigureDynamicLogging = (logbuilder) =>
         {
-            // remove the original ConsoleLoggerProvider to prevent duplicate logging
-            var serviceDescriptor = logbuilder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
-            if (serviceDescriptor != null)
+            var dynamicDescriptor = logbuilder.Services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IDynamicLoggerProvider));
+            if (dynamicDescriptor == null)
             {
-                logbuilder.Services.Remove(serviceDescriptor);
-            }
+                // remove the original ConsoleLoggerProvider to prevent duplicate logging
+                var serviceDescriptor = logbuilder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
+                if (serviceDescriptor != null)
+                {
+                    logbuilder.Services.Remove(serviceDescriptor);
+                }
 
-            // make sure logger provider configurations are available
-            if (!logbuilder.Services.Any(descriptor => descriptor.ServiceType == typeof(ILoggerProviderConfiguration<ConsoleLoggerProvider>)))
-            {
-                logbuilder.AddConfiguration();
-            }
+                // make sure logger provider configurations are available
+                if (!logbuilder.Services.Any(descriptor => descriptor.ServiceType == typeof(ILoggerProviderConfiguration<ConsoleLoggerProvider>)))
+                {
+                    logbuilder.AddConfiguration();
+                }
 
-            logbuilder.AddDynamicConsole();
+                logbuilder.AddDynamicConsole();
+            }
         };
 
         private static void ConfigureServices(IServiceCollection collection, IConfiguration configuration, MediaTypeVersion mediaTypeVersion, ActuatorContext actuatorContext, Action<CorsPolicyBuilder> buildCorsPolicy)
