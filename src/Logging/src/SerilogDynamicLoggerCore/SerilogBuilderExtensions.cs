@@ -37,6 +37,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
         public static ILoggingBuilder AddSerilogDynamicConsole(this ILoggingBuilder builder)
         {
+            if (builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider)))
+            {
+                throw new InvalidOperationException("An IDynamicLoggerProvider has already been configured! Call 'AddSerilogDynamicConsole' earlier in program.cs (Before AddCloudFoundryActuators()) or remove duplicate IDynamicLoggerProvider entries.");
+            }
+
             builder.Services.AddSingleton<ISerilogOptions, SerilogOptions>();
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, SerilogDynamicProvider>());
 
