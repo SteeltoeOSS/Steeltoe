@@ -152,10 +152,10 @@ namespace Steeltoe.Management.CloudFoundry.Test
         {
             // Arrange
             var hostBuilder = Host.CreateDefaultBuilder()
-                .AddCloudFoundryActuators()
                 .ConfigureLogging(logging => logging.AddSerilogDynamicConsole())
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings))
-                .ConfigureWebHost(configureApp => configureApp.UseTestServer());
+                .ConfigureWebHost(configureApp => configureApp.UseTestServer())
+                .AddCloudFoundryActuators();
 
             // Act
             var host = hostBuilder.Build();
