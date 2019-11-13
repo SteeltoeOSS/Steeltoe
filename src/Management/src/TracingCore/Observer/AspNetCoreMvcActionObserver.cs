@@ -73,7 +73,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
                 HandleAfterActionEvent();
 
-                Logger?.LogTrace("HandleAfterActionEvent finsih {thread}", Thread.CurrentThread.ManagedThreadId);
+                Logger?.LogTrace("HandleAfterActionEvent finish {thread}", Thread.CurrentThread.ManagedThreadId);
             }
         }
 

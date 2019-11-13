@@ -10,8 +10,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+    <PackageReference Include="Microsoft.AspNetCore" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Logging\src\SerilogDynamicLoggerCore\Steeltoe.Extensions.Logging.SerilogDynamicLoggerCore.csproj" />
     <ProjectReference Include="..\..\src\CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj" />
   </ItemGroup>
 </Project>

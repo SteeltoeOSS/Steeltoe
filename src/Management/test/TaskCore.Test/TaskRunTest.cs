@@ -13,11 +13,8 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace Steeltoe.Management.TaskCore.Test
@@ -25,38 +22,54 @@ namespace Steeltoe.Management.TaskCore.Test
     public class TaskRunTest
     {
         [Fact]
-        public void DelegatingTask_ExecutesRun()
+        public void DelegatingTask_WebHost_ExecutesRun()
         {
             var args = new[] { "runtask=test" };
 
             Assert.Throws<PassException>(() =>
                 WebHost.CreateDefaultBuilder(args)
-                    .UseStartup<TestStartup>()
+                    .UseStartup<TestServerStartup>()
                     .Build()
                     .RunWithTasks());
         }
 
-        public class PassException : Exception
+        [Fact]
+        public void DelegatingTask_WebHost_StopsIfNoTask()
         {
+            var args = new[] { "runtask=test" };
+
+            WebHost.CreateDefaultBuilder(args)
+                .Configure(c => { })
+                .Build()
+                .RunWithTasks();
+
+            Assert.True(true, "If we reached this assertion, the app stopped without throwing anything");
         }
 
-        public class TestStartup
+#if NETCOREAPP3_0
+        [Fact]
+        public void DelegatingTask_GenericHost_ExecutesRun()
         {
-            public TestStartup(IConfiguration configuration)
-            {
-                Configuration = configuration;
-            }
+            var args = new[] { "runtask=test" };
 
-            public IConfiguration Configuration { get; }
-
-            public void ConfigureServices(IServiceCollection services)
-            {
-                services.AddTask("test", _ => throw new PassException());
-            }
-
-            public void Configure(IApplicationBuilder app)
-            {
-            }
+            Assert.Throws<PassException>(() =>
+                Host.CreateDefaultBuilder(args)
+                    .ConfigureWebHost(configure => configure.UseStartup<TestServerStartup>().UseKestrel())
+                    .Build()
+                    .RunWithTasks());
         }
+
+        [Fact]
+        public void DelegatingTask_GenericHost_StopsIfNoTask()
+        {
+            var args = new[] { "runtask=test" };
+
+            Host.CreateDefaultBuilder(args)
+                .Build()
+                .RunWithTasks();
+
+            Assert.True(true, "If we reached this assertion, the app stopped without throwing anything");
+        }
+#endif
     }
 }

@@ -24,15 +24,11 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// </summary>
         /// <param name="credentialName">Name of credential</param>
         /// <param name="value">Value of the credential to set</param>
-        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
-        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
-        public JsonSetRequest(string credentialName, JObject value, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
+        public JsonSetRequest(string credentialName, JObject value)
         {
             Name = credentialName;
             Type = CredentialType.JSON;
             Value = new JsonCredential(value);
-            AdditionalPermissions = additionalPermissions;
-            Mode = overwriteMode;
         }
 
         /// <summary>
@@ -40,15 +36,11 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// </summary>
         /// <param name="credentialName">Name of credential</param>
         /// <param name="value">Value of the credential to set</param>
-        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
-        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
-        public JsonSetRequest(string credentialName, string value, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
+        public JsonSetRequest(string credentialName, string value)
         {
             Name = credentialName;
             Type = CredentialType.JSON;
             Value = new JsonCredential(value);
-            AdditionalPermissions = additionalPermissions;
-            Mode = overwriteMode;
         }
     }
 }

@@ -60,11 +60,10 @@ namespace Steeltoe.Common.Security.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void AddPemFiles_NotifiesOnChange()
         {
-            var tempFile1 = CreateTempFile("cert");
-            var tempFile2 = CreateTempFile("key");
+            var tempFile1 = CreateTempFile("cert1");
+            var tempFile2 = CreateTempFile("key1");
 
             var config = new ConfigurationBuilder()
                 .AddPemFiles(tempFile1, tempFile2)
@@ -73,13 +72,13 @@ namespace Steeltoe.Common.Security.Test
             bool changeCalled = false;
             var token = config.GetReloadToken();
             token.RegisterChangeCallback((o) => changeCalled = true, "state");
-            Assert.Equal("cert", config["certificate"]);
-            Assert.Equal("key", config["privateKey"]);
+            Assert.Equal("cert1", config["certificate"]);
+            Assert.Equal("key1", config["privateKey"]);
 
             File.WriteAllText(tempFile1, "barfoo");
             Thread.Sleep(2000);
             Assert.Equal("barfoo", config["certificate"]);
-            Assert.Equal("key", config["privateKey"]);
+            Assert.Equal("key1", config["privateKey"]);
             Assert.True(changeCalled);
 
             token = config.GetReloadToken();

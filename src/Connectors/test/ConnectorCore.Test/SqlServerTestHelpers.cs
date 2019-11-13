@@ -99,8 +99,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
                     ""binding_name"": null,
                     ""credentials"": {
                         ""db"": ""testdb"",
-                        ""uri"": ""sqlserver://ajaganathansqlserver:1433"",
-                        ""username"":"""",""password"": """"
+                        ""URI"": ""sqlserver://ajaganathansqlserver:1433/testdb""
                     },
                     ""syslog_drain_url"": """",
                     ""volume_mounts"": [],

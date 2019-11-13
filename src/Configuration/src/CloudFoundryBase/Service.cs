@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
@@ -26,6 +27,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         public string Plan { get; set; }
 
-        public Dictionary<string, Credential> Credentials { get; set; }
+        public Dictionary<string, Credential> Credentials { get; set; } = new Dictionary<string, Credential>(StringComparer.InvariantCultureIgnoreCase);
     }
 }

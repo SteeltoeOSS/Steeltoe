@@ -49,12 +49,7 @@ namespace Steeltoe.Management.CloudFoundry
         {
             if (context != ActuatorContext.Actuator)
             {
-                app.UseCors(builder =>
-                {
-                    builder.AllowAnyOrigin()
-                    .WithMethods("GET", "POST")
-                    .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
-                });
+                app.UseCors("SteeltoeManagement");
 
                 app.UseCloudFoundrySecurity();
                 app.UseCloudFoundryActuator();

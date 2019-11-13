@@ -7,11 +7,11 @@
     <AssemblyName>Steeltoe.Management.EndpointCore</AssemblyName>
     <PackageId>Steeltoe.Management.EndpointCore</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
+    <RootNamespace>Steeltoe.Management.Endpoint</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(ExtensionsVersion)" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsVersion)" />

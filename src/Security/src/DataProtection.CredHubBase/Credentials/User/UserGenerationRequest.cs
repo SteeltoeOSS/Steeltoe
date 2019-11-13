@@ -24,14 +24,12 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// </summary>
         /// <param name="credentialName">Name of credential</param>
         /// <param name="parameters">Variables for username and password generation</param>
-        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
         /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
-        public UserGenerationRequest(string credentialName, UserGenerationParameters parameters, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
+        public UserGenerationRequest(string credentialName, UserGenerationParameters parameters, OverwiteMode overwriteMode = OverwiteMode.converge)
         {
             Name = credentialName;
             Type = CredentialType.User;
             Parameters = parameters;
-            AdditionalPermissions = additionalPermissions;
             Mode = overwriteMode;
         }
     }

@@ -2,7 +2,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>NET Core CloudFoundry Environment Variable Configuration Provider</Description>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Extensions.Configuration.CloudFoundryCore</AssemblyName>
     <PackageId>Steeltoe.Extensions.Configuration.CloudFoundryCore</PackageId>
     <PackageTags>CloudFoundry;ASPNET Core;Spring;Spring Cloud</PackageTags>
@@ -11,7 +11,12 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">

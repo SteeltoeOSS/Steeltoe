@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Tasks;
 using System;
@@ -37,10 +38,44 @@ namespace Steeltoe.Management.TaskCore
                 throw new ArgumentNullException(nameof(webHost));
             }
 
-            var config = webHost.Services.GetRequiredService<IConfiguration>();
-            var taskName = config.GetValue<string>("runtask");
-            var scope = webHost.Services.CreateScope().ServiceProvider;
+            if (FindAndRunTask(webHost.Services))
+            {
+                webHost.Dispose();
+            }
+            else
+            {
+                webHost.Run();
+            }
+        }
 
+        /// <summary>
+        /// Runs a web application, blocking the calling thread until the host shuts down.<para />
+        /// To execute your task, invoke the application with argument "runtask=taskname", where "taskname" is your task's name.<para/>
+        /// Command line arguments should be registered as a configuration source for this functionality to work.
+        /// </summary>
+        /// <param name="host">The <see cref="T:Microsoft.AspNetCore.Hosting.IWebHost" /> to run.</param>
+        public static void RunWithTasks(this IHost host)
+        {
+            if (host == null)
+            {
+                throw new ArgumentNullException(nameof(host));
+            }
+
+            if (FindAndRunTask(host.Services))
+            {
+                host.Dispose();
+            }
+            else
+            {
+                host.Run();
+            }
+        }
+
+        private static bool FindAndRunTask(IServiceProvider services)
+        {
+            var config = services.GetRequiredService<IConfiguration>();
+            var taskName = config.GetValue<string>("runtask");
+            var scope = services.CreateScope().ServiceProvider;
             if (taskName != null)
             {
                 var task = scope.GetServices<IApplicationTask>().FirstOrDefault(x => x.Name.ToLower() == taskName.ToLower());
@@ -55,12 +90,10 @@ namespace Steeltoe.Management.TaskCore
                     logger.LogError($"No task with name {taskName} is found registered in service container");
                 }
 
-                webHost.Dispose();
+                return true;
             }
-            else
-            {
-                webHost.Run();
-            }
+
+            return false;
         }
     }
 }

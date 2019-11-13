@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -37,17 +38,26 @@ namespace Steeltoe.Management.CloudFoundry
         /// </summary>
         /// <param name="services">Service collection</param>
         /// <param name="config">Application Configuration</param>
-        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config)
+        /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
+        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddCloudFoundryActuators(config, MediaTypeVersion.V1, ActuatorContext.CloudFoundry);
+            services.AddCloudFoundryActuators(config, MediaTypeVersion.V1, ActuatorContext.CloudFoundry, buildCorsPolicy);
         }
 
-        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version, ActuatorContext context)
+        /// <summary>
+        /// Add Actuators to Microsoft DI
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <param name="config">Application Configuration</param>
+        /// <param name="version">Set response type version</param>
+        /// <param name="context">The context in which to run the actuators</param>
+        /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
+        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version, ActuatorContext context, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             if (services == null)
             {
@@ -64,7 +74,24 @@ namespace Steeltoe.Management.CloudFoundry
                 var managementOptions = new CloudFoundryManagementOptions(config);
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managementOptions));
 
-                services.AddCors();
+                services.AddCors(setup =>
+                {
+                    setup.AddPolicy("SteeltoeManagement", (policy) =>
+                        {
+                            policy
+                                .WithMethods("GET", "POST")
+                                .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
+
+                            if (buildCorsPolicy != null)
+                            {
+                                buildCorsPolicy(policy);
+                            }
+                            else
+                            {
+                                policy.AllowAnyOrigin();
+                            }
+                        });
+                });
                 services.AddCloudFoundryActuator(config);
             }
 

@@ -149,6 +149,30 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         }
 
         [Fact]
+        public void AddSqlServerConnection_WithUserVCAP_AddsSqlServerConnection()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPIgnoreName);
+
+            var builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act and Assert
+            SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
+
+            var service = services.BuildServiceProvider().GetService<IDbConnection>();
+            Assert.NotNull(service);
+            var connString = service.ConnectionString;
+            Assert.Contains("Initial Catalog=testdb", connString);
+            Assert.Contains("1433", connString);
+            Assert.Contains("Data Source=ajaganathansqlserver", connString);
+        }
+
+        [Fact]
         public void AddSqlServerConnection_WithAzureBrokerVCAPs_AddsSqlServerConnection()
         {
             // Arrange
