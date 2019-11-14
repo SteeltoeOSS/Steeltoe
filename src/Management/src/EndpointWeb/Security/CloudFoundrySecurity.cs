@@ -48,11 +48,11 @@ namespace Steeltoe.Management.Endpoint.Security
         public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            bool isEnabled = _managementOptions == null ? _options.IsEnabled : _options.IsEnabled(_managementOptions);
+            bool isEndpointEnabled = _managementOptions == null ? _options.IsEnabled : _options.IsEnabled(_managementOptions);
 #pragma warning restore CS0618 // Type or member is obsolete
-
+            bool isEndpointExposed = _managementOptions == null ? true : _options.IsExposed(_managementOptions);
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
-            if (Platform.IsCloudFoundry && isEnabled)
+            if (Platform.IsCloudFoundry && isEndpointEnabled && isEndpointExposed && _base.IsCloudFoundryRequest(context.Request.Path))
             {
                 _logger?.LogTrace("Beginning Cloud Foundry Security Processing");
 
