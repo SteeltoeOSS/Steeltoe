@@ -51,6 +51,7 @@ namespace Steeltoe.Management.Endpoint.Security
             bool isEndpointEnabled = _managementOptions == null ? _options.IsEnabled : _options.IsEnabled(_managementOptions);
 #pragma warning restore CS0618 // Type or member is obsolete
             bool isEndpointExposed = _managementOptions == null ? true : _options.IsExposed(_managementOptions);
+
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && isEndpointEnabled && isEndpointExposed && _base.IsCloudFoundryRequest(context.Request.Path))
             {
