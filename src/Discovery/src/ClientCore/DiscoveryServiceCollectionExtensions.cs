@@ -179,7 +179,7 @@ namespace Steeltoe.Discovery.Client
 
         private static void AddConsulServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)
         {
-            services.AddSingleton<IConsulClient>((p) =>
+            services.AddSingleton((p) =>
             {
                 var consulOptions = p.GetRequiredService<IOptions<ConsulOptions>>();
                 return ConsulClientFactory.CreateClient(consulOptions.Value);
@@ -194,6 +194,7 @@ namespace Steeltoe.Discovery.Client
             });
             services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();
             services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
+            services.AddSingleton<IServiceInstanceProvider, ConsulDiscoveryClient>();
             services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
         }
         #endregion Consul
@@ -252,6 +253,7 @@ namespace Steeltoe.Discovery.Client
                 return eurekaService;
             });
 
+            services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<EurekaDiscoveryClient>());
             services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
         }
 
