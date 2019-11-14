@@ -200,7 +200,7 @@ namespace Steeltoe.Discovery.Client
             }).As<IConsulRegistration>().SingleInstance();
 
             container.RegisterType<ConsulServiceRegistrar>().As<IConsulServiceRegistrar>().SingleInstance();
-            container.RegisterType<ConsulDiscoveryClient>().As<IDiscoveryClient>().SingleInstance();
+            container.RegisterType<ConsulDiscoveryClient>().As<IDiscoveryClient>().As<IServiceInstanceProvider>().SingleInstance();
 
             container.RegisterType<ConsulHealthContributor>().As<IHealthContributor>().SingleInstance();
         }
@@ -237,7 +237,7 @@ namespace Steeltoe.Discovery.Client
         {
             container.RegisterType<EurekaApplicationInfoManager>().SingleInstance();
             container.RegisterType<EurekaDiscoveryManager>().SingleInstance();
-            container.RegisterType<EurekaDiscoveryClient>().AsSelf().As<IDiscoveryClient>().SingleInstance();
+            container.RegisterType<EurekaDiscoveryClient>().AsSelf().As<IDiscoveryClient>().As<IServiceInstanceProvider>().SingleInstance();
 
             if (lifecycle == null)
             {
