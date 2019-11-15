@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using Xunit;
@@ -21,6 +22,11 @@ namespace Steeltoe.Management.EndpointWeb.Test
     public class ActuatorHandlerTest
     {
         private readonly Settings _defaultSettings = DefaultTestSettingsConfig.DefaultSettings;
+
+        public ActuatorHandlerTest()
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        }
 
         [Fact]
         public async void CloudFoundryCorsHandler_ReturnsExpected()

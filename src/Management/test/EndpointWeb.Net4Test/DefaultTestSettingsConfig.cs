@@ -30,7 +30,9 @@ namespace Steeltoe.Management.EndpointWeb.Test
             ["info:NET:type"] = "Core",
             ["info:NET:version"] = "2.0.0",
             ["info:NET:ASPNET:type"] = "Core",
-            ["info:NET:ASPNET:version"] = "2.0.0"
+            ["info:NET:ASPNET:version"] = "2.0.0",
+            ["vcap:application:application_id"] = "foobar",
+            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
     }
 }

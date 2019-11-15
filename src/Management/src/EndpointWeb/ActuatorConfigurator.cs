@@ -69,7 +69,8 @@ namespace Steeltoe.Management.Endpoint
                 UseCloudFoundrySecurity(configuration, null, loggerFactory);
                 UseCloudFoundryActuator(configuration, loggerFactory);
             }
-            else
+
+            if (context != ActuatorContext.CloudFoundry)
             {
                 UseHypermediaActuator(configuration, loggerFactory);
             }
@@ -334,6 +335,7 @@ namespace Steeltoe.Management.Endpoint
         public static void ClearManagementOptions()
         {
             _mgmtOptions.Clear();
+            SecurityServices.Clear();
         }
 
         private static void RegisterEndpointOptions(this IEnumerable<IManagementOptions> mgmtOptions, IConfiguration configuration, IEndpointOptions options)
