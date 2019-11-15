@@ -42,9 +42,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             {
                foreach (string s in schemes)
                 {
-                    UriKeys.Add(s + "Uri");
                     UriKeys.Add(s + "uri");
-                    UriKeys.Add(s + "Url");
                     UriKeys.Add(s + "url");
                 }
             }
@@ -109,7 +107,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             {
                 foreach (string uriScheme in UriSchemes)
                 {
-                    if (uri.StartsWith(uriScheme + "://"))
+                    if (uri.StartsWith(uriScheme + "://", StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }

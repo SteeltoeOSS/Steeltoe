@@ -24,15 +24,11 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// <param name="credentialName">Name of credential</param>
         /// <param name="privateKey">Private key for the credential</param>
         /// <param name="publicKey">Public key for the credential</param>
-        /// <param name="additionalPermissions">List of additional permissions to set on credential</param>
-        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
-        public RsaSetRequest(string credentialName, string privateKey, string publicKey, List<CredentialPermission> additionalPermissions = null, OverwiteMode overwriteMode = OverwiteMode.noOverwrite)
+        public RsaSetRequest(string credentialName, string privateKey, string publicKey)
         {
             Name = credentialName;
             Type = CredentialType.RSA;
             Value = new RsaCredential { PrivateKey = privateKey, PublicKey = publicKey };
-            AdditionalPermissions = additionalPermissions;
-            Mode = overwriteMode;
         }
     }
 }

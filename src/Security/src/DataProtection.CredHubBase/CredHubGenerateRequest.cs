@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-using System.Collections.Generic;
-
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     public abstract class CredHubGenerateRequest : CredHubBaseObject
@@ -22,17 +19,11 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// <summary>
         /// Gets or sets a value indicating the overwrite interaction mode
         /// </summary>
-        public OverwiteMode Mode { get; set; } = OverwiteMode.noOverwrite;
+        public OverwiteMode Mode { get; set; } = OverwiteMode.converge;
 
         /// <summary>
         /// Gets or sets parameters for generating credential
         /// </summary>
         public object Parameters { get; set; }
-
-        /// <summary>
-        /// Gets or sets optionally set permissions on the credential
-        /// </summary>
-        [JsonProperty("additional_permissions")]
-        public List<CredentialPermission> AdditionalPermissions { get; set; }
     }
 }

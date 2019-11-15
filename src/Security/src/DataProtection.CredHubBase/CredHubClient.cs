@@ -334,21 +334,6 @@ namespace Steeltoe.Security.DataProtection.CredHub
             }
         }
 
-        public async Task<List<CredentialPath>> FindAllPathsAsync()
-        {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
-            try
-            {
-                _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?paths=true");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?paths=true").ConfigureAwait(false);
-                return (await HandleErrorParseResponse<CredentialPathsResponse>(response, "Find all Paths").ConfigureAwait(false)).Paths;
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(_validateCertificates, protocolType, prevValidator);
-            }
-        }
-
         public Task<bool> DeleteByNameAsync(string name)
         {
             if (string.IsNullOrEmpty(name))
