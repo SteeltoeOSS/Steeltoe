@@ -731,5 +731,76 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(ActionType.ADDED, info.Actiontype);
             Assert.Equal("AsgName", info.AsgName);
         }
+
+        [Fact]
+        public void FromJsonApplications_WithMissingInstanceId()
+        {
+            JsonInstanceInfo jinfo = new JsonInstanceInfo()
+            {
+                // InstanceId = "InstanceId",
+                AppName = "myApp",
+                AppGroupName = "AppGroupName",
+                IpAddr = "IpAddr",
+                Sid = "Sid",
+                Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
+                SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
+                HomePageUrl = "HomePageUrl",
+                StatusPageUrl = "StatusPageUrl",
+                HealthCheckUrl = "HealthCheckUrl",
+                SecureHealthCheckUrl = "SecureHealthCheckUrl",
+                VipAddress = "VipAddress",
+                SecureVipAddress = "SecureVipAddress",
+                CountryId = 1,
+                DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo(string.Empty, "MyOwn"),
+                HostName = "HostName",
+                Status = InstanceStatus.DOWN,
+                OverriddenStatus = InstanceStatus.OUT_OF_SERVICE,
+                LeaseInfo = new JsonLeaseInfo()
+                {
+                    RenewalIntervalInSecs = 1,
+                    DurationInSecs = 2,
+                    RegistrationTimestamp = 1457973741708,
+                    LastRenewalTimestamp = 1457973741708,
+                    LastRenewalTimestampLegacy = 1457973741708,
+                    EvictionTimestamp = 1457973741708,
+                    ServiceUpTimestamp = 1457973741708
+                },
+                IsCoordinatingDiscoveryServer = false,
+                Metadata = new Dictionary<string, string>() { { "@class", "java.util.Collections$EmptyMap" } },
+                LastUpdatedTimestamp = 1457973741708,
+                LastDirtyTimestamp = 1457973741708,
+                Actiontype = ActionType.ADDED,
+                AsgName = "AsgName"
+            };
+            JsonApplication japp = new JsonApplication()
+            {
+                Name = "myApp",
+                Instances = new List<JsonInstanceInfo> { jinfo }
+            };
+
+            JsonApplications japps = new JsonApplications()
+            {
+                AppsHashCode = "AppsHashCode",
+                VersionDelta = 1L,
+                Applications = new List<JsonApplication>() { japp }
+            };
+
+            Applications apps = Applications.FromJsonApplications(japps);
+
+            Assert.Equal("AppsHashCode", apps.AppsHashCode);
+            Assert.Equal(1, apps.Version);
+            Assert.NotNull(apps.ApplicationMap);
+            Assert.Single(apps.ApplicationMap);
+
+            Application app = apps.GetRegisteredApplication("myApp");
+
+            // Verify
+            Assert.NotNull(app);
+            Assert.Equal("myApp", app.Name);
+            Assert.NotNull(app.Instances);
+            Assert.Equal(1, app.Count);
+            Assert.Equal(1, app.Instances.Count);
+            Assert.Null(app.GetInstance("InstanceId"));
+        }
     }
 }
