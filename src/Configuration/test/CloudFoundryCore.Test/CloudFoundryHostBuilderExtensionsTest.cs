@@ -43,10 +43,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             // Act and Assert
             hostBuilder.UseCloudFoundryHosting();
-            using (hostBuilder.Build())
-            {
-                // No-Op
-            }
+            using var host = hostBuilder.Build();
+            host.Start();
         }
 
         [Fact]
@@ -60,10 +58,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             // Act and Assert
             hostBuilder.UseCloudFoundryHosting();
-            using (hostBuilder.Build())
-            {
-                // No-Op
-            }
+            using var host = hostBuilder.Build();
+            host.Start();
         }
 
 #if NETCOREAPP3_0
@@ -81,10 +77,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             // Act and Assert
             hostBuilder.UseCloudFoundryHosting();
-            using (hostBuilder.Build())
-            {
-                // No-Op
-            }
+            using var host = hostBuilder.Build();
+            host.Start();
         }
 
         [Fact]
@@ -101,10 +95,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             // Act and Assert
             hostBuilder.UseCloudFoundryHosting();
-            using (hostBuilder.Build())
-            {
-                // No-Op
-            }
+            using var host = hostBuilder.Build();
+            host.Start();
         }
 #endif
     }
