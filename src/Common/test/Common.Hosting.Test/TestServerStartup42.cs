@@ -18,7 +18,7 @@ namespace Steeltoe.Common.Hosting.Test
     {
         public TestServerStartup42()
         {
-            ExpectedAddresses.Add("http://*:42");
+            ExpectedAddresses.Add("http://*:5042");
         }
     }
 }

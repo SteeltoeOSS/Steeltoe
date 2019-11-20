@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using System;
 using Xunit;
@@ -39,13 +42,16 @@ namespace Steeltoe.Common.Hosting.Test
             Environment.SetEnvironmentVariable("PORT", null);
             Environment.SetEnvironmentVariable("SERVER_PORT", null);
             var hostBuilder = new WebHostBuilder()
-                                .UseStartup<TestServerStartupDefault>()
+                                .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act and Assert
+            // Act
             hostBuilder.UseCloudHosting();
-            using var host = hostBuilder.Build();
-            host.Start();
+            var server = hostBuilder.Build();
+
+            // Assert
+            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+            Assert.Contains("http://*:8080", addresses.Addresses);
         }
 
         [Fact]
@@ -54,13 +60,16 @@ namespace Steeltoe.Common.Hosting.Test
             // Arrange
             Environment.SetEnvironmentVariable("PORT", "42");
             var hostBuilder = new WebHostBuilder()
-                                .UseStartup<TestServerStartup42>()
+                                .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act and Assert
+            // Act
             hostBuilder.UseCloudHosting();
-            using var host = hostBuilder.Build();
-            host.Start();
+            var server = hostBuilder.Build();
+
+            // Assert
+            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+            Assert.Contains("http://*:42", addresses.Addresses);
         }
 
         [Fact]
@@ -69,13 +78,18 @@ namespace Steeltoe.Common.Hosting.Test
             // Arrange
             Environment.SetEnvironmentVariable("SERVER_PORT", "42");
             var hostBuilder = new WebHostBuilder()
-                                .UseStartup<TestServerStartup42>()
+                                .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act and Assert
+            // Act
             hostBuilder.UseCloudHosting();
-            using var host = hostBuilder.Build();
-            host.Start();
+            var server = hostBuilder.Build();
+
+            // Assert
+            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+            Assert.Contains("http://*:42", addresses.Addresses);
+
+            Environment.SetEnvironmentVariable("SERVER_PORT", null);
         }
 
         [Fact]
@@ -85,13 +99,17 @@ namespace Steeltoe.Common.Hosting.Test
             Environment.SetEnvironmentVariable("PORT", null);
             Environment.SetEnvironmentVariable("SERVER_PORT", null);
             var hostBuilder = new WebHostBuilder()
-                                .UseStartup<TestServerStartupLocals>()
+                                .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act and Assert
+            // Act
             hostBuilder.UseCloudHosting(5000, 5001);
-            using var host = hostBuilder.Build();
-            host.Start();
+            var server = hostBuilder.Build();
+
+            // Assert
+            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+            Assert.Contains("http://*:5000", addresses.Addresses);
+            Assert.Contains("https://*:5001", addresses.Addresses);
         }
 
 #if NETCOREAPP3_0
@@ -118,7 +136,7 @@ namespace Steeltoe.Common.Hosting.Test
         public void UseCloudHosting_GenericHost_MakeSureThePortIsSet()
         {
             // Arrange
-            Environment.SetEnvironmentVariable("PORT", "42");
+            Environment.SetEnvironmentVariable("PORT", "5042");
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHost(configure =>
                 {

@@ -13,17 +13,12 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
     public class TestServerStartup
     {
-        public List<string> ExpectedAddresses { get; set; } = new List<string>();
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -31,8 +26,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
         public void Configure(IApplicationBuilder app)
         {
-            var addresses = ExpectedAddresses;
-            Assert.Equal(addresses, app.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses);
 #if NETCOREAPP3_0
             app.UseRouting();
 #else

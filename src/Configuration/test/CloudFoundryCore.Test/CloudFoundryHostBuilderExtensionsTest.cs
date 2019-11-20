@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using System;
 using Xunit;
@@ -42,10 +44,13 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                                 .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act and Assert
+            // Act
             hostBuilder.UseCloudFoundryHosting();
-            using var host = hostBuilder.Build();
-            host.Start();
+            var server = new TestServer(hostBuilder);
+
+            // Assert
+            var addresses = server.Host.ServerFeatures.Get<IServerAddressesFeature>();
+            Assert.Null(addresses);
         }
 
         [Fact]
@@ -54,13 +59,16 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             // Arrange
             Environment.SetEnvironmentVariable("PORT", "42");
             var hostBuilder = new WebHostBuilder()
-                                .UseStartup<TestServerStartup42>()
+                                .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act and Assert
+            // Act
             hostBuilder.UseCloudFoundryHosting();
-            using var host = hostBuilder.Build();
-            host.Start();
+            var server = hostBuilder.Build();
+
+            // Assert
+            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+            Assert.Contains("http://*:42", addresses.Addresses);
         }
 
 #if NETCOREAPP3_0
@@ -86,11 +94,11 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         public void UseCloudFoundryHosting_GenericHost_MakeSureThePortIsSet()
         {
             // Arrange
-            Environment.SetEnvironmentVariable("PORT", "42");
+            Environment.SetEnvironmentVariable("PORT", "5042");
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHost(configure =>
                 {
-                    configure.UseStartup<TestServerStartup42>();
+                    configure.UseStartup<TestServerStartup>();
                     configure.UseKestrel();
                 });
 
