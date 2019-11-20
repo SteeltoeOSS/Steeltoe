@@ -14,8 +14,6 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using System;
 using Xunit;
