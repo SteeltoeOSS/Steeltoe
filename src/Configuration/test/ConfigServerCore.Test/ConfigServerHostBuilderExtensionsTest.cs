@@ -75,6 +75,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UseCloudFoundryHosting_ThrowsIfHostBuilderNull()
         {
             // Arrange
@@ -86,6 +87,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UseCloudFoundryHosting_DoNotSetUrlsIfNull()
         {
             // Arrange
@@ -102,6 +104,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UseCloudFoundryHosting_MakeSureThePortIsSet()
         {
             // Arrange

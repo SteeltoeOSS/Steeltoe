@@ -19,6 +19,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
+    [Obsolete]
     public class CloudFoundryHostBuilderExtensionsTest
     {
         [Fact]

@@ -73,6 +73,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <param name="runLocalPort">Set the port number with code so you don't need to set environment variables locally</param>
         /// <returns>Your WebHostBuilder, now listening on port(s) found in the environment or passed in</returns>
         /// <remarks>runLocalPort parameter will not be used if an environment variable PORT is found</remarks>
+        [Obsolete("This extension will be removed in a future release. Please use Steeltoe.Common.Hosting.UseCloudHosting() instead")]
         public static IWebHostBuilder UseCloudFoundryHosting(this IWebHostBuilder webHostBuilder, int? runLocalPort = null)
         {
             if (webHostBuilder == null)
