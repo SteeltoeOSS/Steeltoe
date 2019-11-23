@@ -15,13 +15,21 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
+using System.Net.Sockets;
+using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
     public static class EndpointServiceCollectionExtensions
     {
+        public static bool IsHeapDumpSupported()
+        {
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && typeof(object).Assembly.GetType("System.Index") != null);
+        }
+
         /// <summary>
         /// Adds components of the Heap Dump actuator to Microsoft-DI
         /// </summary>
@@ -39,14 +47,25 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            if (IsHeapDumpSupported())
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
-            var options = new HeapDumpEndpointOptions(config);
-            services.TryAddSingleton<IHeapDumpOptions>(options);
-            services.RegisterEndpointOptions(options);
+                var options = new HeapDumpEndpointOptions(config);
+                services.TryAddSingleton<IHeapDumpOptions>(options);
+                services.RegisterEndpointOptions(options);
 
-            services.TryAddSingleton<IHeapDumper, HeapDumper>();
-            services.TryAddSingleton<HeapDumpEndpoint>();
+                if (Platform.IsWindows)
+                {
+                    services.TryAddSingleton<IHeapDumper, WindowsHeapDumper>();
+                }
+                else if (Platform.IsLinux)
+                {
+                    services.TryAddSingleton<IHeapDumper, LinuxHeapDumper>();
+                }
+
+                services.TryAddSingleton<HeapDumpEndpoint>();
+            }
         }
     }
 }
