@@ -28,7 +28,16 @@ namespace Steeltoe.Common.Http.LoadBalancer
     public class LoadBalancerDelegatingHandler : DelegatingHandler
     {
         private readonly ILoadBalancer _loadBalancer;
-        private readonly ILogger _logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
+        /// For use with <see cref="IHttpClientBuilder"/>
+        /// </summary>
+        /// <param name="loadBalancer">Load balancer to use</param>
+        public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer)
+        {
+            _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
@@ -36,10 +45,10 @@ namespace Steeltoe.Common.Http.LoadBalancer
         /// </summary>
         /// <param name="loadBalancer">Load balancer to use</param>
         /// <param name="logger">For logging</param>
-        public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer, ILogger logger = null)
+        [Obsolete("Please remove ILogger parameter")]
+        public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer, ILogger logger)
         {
             _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
-            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -47,47 +56,31 @@ namespace Steeltoe.Common.Http.LoadBalancer
         {
             // record the original request
             var originalUri = request.RequestUri;
-            Uri resolvedUri = null;
-            DateTime startTime = default(DateTime);
-            DateTime endTime = default(DateTime);
 
+            // look up a service instance and update the request
+            var resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
+            request.RequestUri = resolvedUri;
+
+            // allow other handlers to operate and the request to continue
+            var startTime = DateTime.UtcNow;
+
+            Exception exception = null;
             try
             {
-                // look up a service instance and update the request
-                resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
-                request.RequestUri = resolvedUri;
-
-                // allow other handlers to operate and the request to continue
-                startTime = DateTime.UtcNow;
-                var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                endTime = DateTime.UtcNow;
-
-                // track stats
-                await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, endTime - startTime, null).ConfigureAwait(false);
-                return response;
+                return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                if (endTime == default(DateTime))
-                {
-                    endTime = DateTime.UtcNow;
-                }
-
-                _logger?.LogDebug(exception, "Exception during SendAsync()");
-                if (resolvedUri != null)
-                {
-                    await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, endTime - startTime, exception).ConfigureAwait(false);
-                }
-                else
-                {
-                    _logger?.LogWarning("resolvedUri was null. This might be an issue with your service discovery provider.");
-                }
+                exception = ex;
 
                 throw;
             }
             finally
             {
                 request.RequestUri = originalUri;
+
+                // track stats
+                await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception).ConfigureAwait(false);
             }
         }
     }
