@@ -78,7 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             httpClientBuilder.Services.TryAddTransient<LoadBalancerDelegatingHandler>();
-            httpClientBuilder.AddHttpMessageHandler((services) => new LoadBalancerDelegatingHandler(services.GetRequiredService<T>(), services.GetService<ILogger>()));
+            httpClientBuilder.AddHttpMessageHandler((services) => new LoadBalancerDelegatingHandler(services.GetRequiredService<T>()));
             return httpClientBuilder;
         }
     }
