@@ -61,6 +61,7 @@ namespace Steeltoe.Common.LoadBalancer
             }
 
             serviceInstance = availableServiceInstances[nextInstanceIndex];
+            _logger?.LogDebug("Resolved {url} to {service}", request.Host, serviceInstance.Host);
             await SetNextIndex(cacheKey, nextInstanceIndex).ConfigureAwait(false);
             return new Uri(serviceInstance.Uri, request.PathAndQuery);
         }
