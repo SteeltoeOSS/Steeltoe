@@ -264,6 +264,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
                         if (updateDictionary)
                         {
+                            Data.Clear();
+
                             if (!string.IsNullOrEmpty(env.State))
                             {
                                 Data["spring:cloud:config:client:state"] = env.State;
