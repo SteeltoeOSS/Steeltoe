@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Connector.Services;
 using System.Collections.Generic;
 using Xunit;
 
@@ -22,16 +23,16 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_CreatesExpected()
         {
-            string uri = "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66";
-            List<string> uris = new List<string>() { "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66" };
-            string managementUri = "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/";
-            List<string> managementUris = new List<string>() { "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/" };
+            var uri = "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66";
+            var uris = new List<string>() { "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66" };
+            var managementUri = "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/";
+            var managementUris = new List<string>() { "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/" };
 
-            RabbitMQServiceInfo r1 = new RabbitMQServiceInfo("myId", uri);
-            RabbitMQServiceInfo r2 = new RabbitMQServiceInfo("myId", uri, managementUri);
-            RabbitMQServiceInfo r3 = new RabbitMQServiceInfo("myId", uri, managementUri, uris, managementUris);
-            RabbitMQServiceInfo r4 = new RabbitMQServiceInfo("myId", "192.168.0.81", 5672, "03c7a684-6ff1-4bd0-ad45-d10374ffb2af", "l5oq2q0unl35s6urfsuib0jvpo", "fb03d693-91fe-4dc5-8203-ff7a6390df66");
-            RabbitMQServiceInfo r5 = new RabbitMQServiceInfo("myId", "192.168.0.81", 5672, "03c7a684-6ff1-4bd0-ad45-d10374ffb2af", "l5oq2q0unl35s6urfsuib0jvpo", "fb03d693-91fe-4dc5-8203-ff7a6390df66", "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/");
+            var r1 = new RabbitMQServiceInfo("myId", uri);
+            var r2 = new RabbitMQServiceInfo("myId", uri, managementUri);
+            var r3 = new RabbitMQServiceInfo("myId", uri, managementUri, uris, managementUris);
+            var r4 = new RabbitMQServiceInfo("myId", "192.168.0.81", 5672, "03c7a684-6ff1-4bd0-ad45-d10374ffb2af", "l5oq2q0unl35s6urfsuib0jvpo", "fb03d693-91fe-4dc5-8203-ff7a6390df66");
+            var r5 = new RabbitMQServiceInfo("myId", "192.168.0.81", 5672, "03c7a684-6ff1-4bd0-ad45-d10374ffb2af", "l5oq2q0unl35s6urfsuib0jvpo", "fb03d693-91fe-4dc5-8203-ff7a6390df66", "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/");
 
             Assert.Equal("myId", r1.Id);
             Assert.Equal("amqp", r1.Scheme);

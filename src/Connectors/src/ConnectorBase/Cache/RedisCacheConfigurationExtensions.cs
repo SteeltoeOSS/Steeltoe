@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
-using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
@@ -28,7 +28,6 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var redisConfig = new RedisCacheConnectorOptions(config);
             return config.CreateRedisServiceConnectorFactory(config, serviceName);
         }
 
@@ -60,13 +59,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(connectorOptions));
             }
 
-            string[] redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName", "Microsoft.Extensions.Caching.Redis" };
-            string[] redisTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer", "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
-            string[] redisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions", "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
+            var redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName", "Microsoft.Extensions.Caching.Redis" };
+            var redisTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer", "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
+            var redisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions", "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
 
-            Type redisConnection = ConnectorHelpers.FindType(redisAssemblies, redisTypeNames);
-            Type redisOptions = ConnectorHelpers.FindType(redisAssemblies, redisOptionNames);
-            MethodInfo initializer = ConnectorHelpers.FindMethod(redisConnection, "Connect");
+            var redisConnection = ReflectionHelpers.FindType(redisAssemblies, redisTypeNames);
+            var redisOptions = ReflectionHelpers.FindType(redisAssemblies, redisOptionNames);
+            var initializer = ReflectionHelpers.FindMethod(redisConnection, "Connect");
 
             var info = serviceName == null ? config.GetSingletonServiceInfo<RedisServiceInfo>() : config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
             return new RedisServiceConnectorFactory(info, connectorOptions, redisConnection, redisOptions, initializer ?? null);

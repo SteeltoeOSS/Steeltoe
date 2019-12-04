@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
+using HealthStatus = Steeltoe.Common.HealthStatus;
 
 namespace Steeltoe.Discovery.Consul.Discovery.Test
 {

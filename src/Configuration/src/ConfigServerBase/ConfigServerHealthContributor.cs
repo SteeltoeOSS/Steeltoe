@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 

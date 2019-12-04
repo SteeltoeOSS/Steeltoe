@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using MySql.Data.MySqlClient;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
@@ -36,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         [Fact]
         public void Create_ReturnsMySqlConnection()
         {
-            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
+            var config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 3306,
@@ -44,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
                 Username = "username",
                 Database = "database"
             };
-            MySqlServiceInfo si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            var si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var factory = new MySqlProviderConnectorFactory(si, config, typeof(MySqlConnection));
             var connection = factory.Create(null);
             Assert.NotNull(connection);

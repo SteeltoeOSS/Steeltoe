@@ -45,7 +45,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             if (tags != null && Values != null)
             {
-                foreach (string value in Values)
+                foreach (var value in Values)
                 {
                     if (tags.Contains(value))
                     {
@@ -71,7 +71,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             if (tag != null && Values != null)
             {
-                foreach (string t in Values)
+                foreach (var t in Values)
                 {
                     if (tag.StartsWith(t))
                     {

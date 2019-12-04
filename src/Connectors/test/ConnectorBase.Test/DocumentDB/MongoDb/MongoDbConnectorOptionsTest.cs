@@ -45,7 +45,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
                 ["mongodb:client:username"] = "username"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -69,7 +69,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
                 ["mongodb:client:options:yetOneMoreKey"] = "yetOneMoreValue"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -93,7 +93,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
                 ["mongodb:client:options:someOtherKey"] = "someOtherValue"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -112,7 +112,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             {
                 ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -137,7 +137,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_a9s_SingleServer_VCAP);
 
             // add settings to config
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             configurationBuilder.AddEnvironmentVariables();
             configurationBuilder.AddCloudFoundry();
@@ -164,7 +164,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleServer_Enterprise_VCAP);
 
             // add settings to config
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             configurationBuilder.AddEnvironmentVariables();
             configurationBuilder.AddCloudFoundry();

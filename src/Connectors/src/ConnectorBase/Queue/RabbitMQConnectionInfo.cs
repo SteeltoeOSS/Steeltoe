@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.MySql;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector;
+using Steeltoe.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {

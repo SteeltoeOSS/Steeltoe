@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace Steeltoe.CloudFoundry.Connector
         public static List<SI> GetServiceInfos<SI>(this IConfiguration config)
             where SI : class
         {
-            CloudFoundryServiceInfoCreator factory = CloudFoundryServiceInfoCreator.Instance(config);
+            var factory = CloudFoundryServiceInfoCreator.Instance(config);
             return factory.GetServiceInfos<SI>();
         }
 
@@ -43,7 +43,7 @@ namespace Steeltoe.CloudFoundry.Connector
         /// <returns>A list of relevant <see cref="IServiceInfo"/></returns>
         public static List<IServiceInfo> GetServiceInfos(this IConfiguration config, Type infoType)
         {
-            CloudFoundryServiceInfoCreator factory = CloudFoundryServiceInfoCreator.Instance(config);
+            var factory = CloudFoundryServiceInfoCreator.Instance(config);
             return factory.GetServiceInfos(infoType);
         }
 
@@ -55,7 +55,7 @@ namespace Steeltoe.CloudFoundry.Connector
         /// <returns>Requested implementation of <see cref="IServiceInfo"/></returns>
         public static IServiceInfo GetServiceInfo(this IConfiguration config, string id)
         {
-            CloudFoundryServiceInfoCreator factory = CloudFoundryServiceInfoCreator.Instance(config);
+            var factory = CloudFoundryServiceInfoCreator.Instance(config);
             return factory.GetServiceInfo(id);
         }
 
@@ -69,7 +69,7 @@ namespace Steeltoe.CloudFoundry.Connector
         public static SI GetServiceInfo<SI>(this IConfiguration config, string id)
             where SI : class
         {
-            CloudFoundryServiceInfoCreator factory = CloudFoundryServiceInfoCreator.Instance(config);
+            var factory = CloudFoundryServiceInfoCreator.Instance(config);
             return factory.GetServiceInfo<SI>(id);
         }
 
@@ -83,7 +83,7 @@ namespace Steeltoe.CloudFoundry.Connector
         public static SI GetSingletonServiceInfo<SI>(this IConfiguration config)
             where SI : class
         {
-            List<SI> results = GetServiceInfos<SI>(config);
+            var results = GetServiceInfos<SI>(config);
             if (results.Count > 0)
             {
                 if (results.Count != 1)

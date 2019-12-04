@@ -18,6 +18,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Serial;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery;
 using System;
 using System.Collections.Generic;
 using System.IO;

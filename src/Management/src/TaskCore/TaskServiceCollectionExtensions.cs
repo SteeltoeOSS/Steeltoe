@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Tasks;
+using Steeltoe.Common;
 using System;
 
 namespace Steeltoe.Management.TaskCore

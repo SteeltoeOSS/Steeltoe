@@ -17,9 +17,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Relational;
-using Steeltoe.CloudFoundry.Connector.Relational.SqlServer;
-using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
+using Steeltoe.Connector.Services;
 using System;
 using System.Data;
 using System.Linq;
@@ -34,10 +33,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logger factory</param>
         /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -49,7 +47,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
 
             return services;
@@ -62,10 +60,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logger factory</param>
         /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -82,7 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
 
             return services;
@@ -90,7 +87,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
         {
-            Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
+            var sqlServerConnection = SqlServerTypeLocator.SqlConnection;
             var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));

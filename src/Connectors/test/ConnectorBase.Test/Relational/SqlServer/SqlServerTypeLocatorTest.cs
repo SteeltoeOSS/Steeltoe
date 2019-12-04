@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
@@ -38,7 +39,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             SqlServerTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
             // act
-            var exception = Assert.Throws<ConnectorException>(() => SqlServerTypeLocator.SqlConnection);
+            var exception = Assert.Throws<TypeLoadException>(() => SqlServerTypeLocator.SqlConnection);
 
             // assert
             Assert.Equal("Unable to find SqlConnection, are you missing a Microsoft SQL Server ADO.NET assembly?", exception.Message);

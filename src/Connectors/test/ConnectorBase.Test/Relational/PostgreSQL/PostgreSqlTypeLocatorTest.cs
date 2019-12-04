@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
@@ -38,7 +39,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
             PostgreSqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
             // act
-            var exception = Assert.Throws<ConnectorException>(() => PostgreSqlTypeLocator.NpgsqlConnection);
+            var exception = Assert.Throws<TypeLoadException>(() => PostgreSqlTypeLocator.NpgsqlConnection);
 
             // assert
             Assert.Equal("Unable to find NpgsqlConnection, are you missing a PostgreSQL ADO.NET assembly?", exception.Message);

@@ -14,11 +14,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
@@ -81,7 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act
             services.AddMongoClient(config);
@@ -96,7 +94,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => services.AddMongoClient(config, "foobar"));
@@ -112,7 +110,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBinding_Enterprise_VCAP);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -128,7 +126,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_Enterprise_VCAP);
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -153,7 +151,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_a9s_SingleServer_VCAP);
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -177,7 +175,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_a9s_WithReplicas_VCAP);
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -199,7 +197,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -220,7 +218,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_Enterprise_VCAP);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -245,7 +243,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_Enterprise_VCAP);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 

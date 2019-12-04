@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\versions.props" />
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <RootNamespace>Steeltoe.Common</RootNamespace>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+</Project>

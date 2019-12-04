@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Reflection;
 using System;
 using System.Globalization;
 using System.Net;
@@ -84,7 +85,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         // You can use this instead of configuring each option seperately
         // If a connection string is provided, the string will be used and
-        // the optioons above will be ignored
+        // the options above will be ignored
         public string ConnectionString { get; set; }
 
         // This configuration option specfic to https://github.com/aspnet/Caching
@@ -101,10 +102,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 return ConnectionString;
             }
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             if (!string.IsNullOrEmpty(EndPoints))
             {
-                string endpoints = EndPoints.Trim();
+                var endpoints = EndPoints.Trim();
                 sb.Append(endpoints);
                 sb.Append(',');
             }
@@ -182,7 +183,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             // to remove this comma workaround, follow up on https://github.com/StackExchange/StackExchange.Redis/issues/680
             var tempPassword = Password;
-            bool resetPassword = false;
+            var resetPassword = false;
             if (Password?.Contains(",") == true)
             {
                 Password = string.Empty;
@@ -195,7 +196,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             if (resetPassword)
             {
-                ConnectorHelpers.TrySetProperty(config, "Password", tempPassword);
+                ReflectionHelpers.TrySetProperty(config, "Password", tempPassword);
             }
 
             return config;
@@ -235,7 +236,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             string host;
             int port;
-            int i = endpoint.IndexOf(':');
+            var i = endpoint.IndexOf(':');
             if (i < 0)
             {
                 host = endpoint;
@@ -266,7 +267,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         internal static EndPoint ParseEndPoint(string host, int port)
         {
-            if (IPAddress.TryParse(host, out IPAddress ip))
+            if (IPAddress.TryParse(host, out var ip))
             {
                 return new IPEndPoint(ip, port);
             }

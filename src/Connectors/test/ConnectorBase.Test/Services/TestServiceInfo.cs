@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CloudFoundry.Connector.App;
+using Steeltoe.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {

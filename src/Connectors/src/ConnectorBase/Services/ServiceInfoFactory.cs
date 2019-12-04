@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
@@ -40,7 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             UriSchemes = schemes;
             if (schemes != null)
             {
-               foreach (string s in schemes)
+                foreach (var s in schemes)
                 {
                     UriKeys.Add(s + "uri");
                     UriKeys.Add(s + "url");
@@ -85,7 +86,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         protected internal virtual bool LabelStartsWithTag(Service binding)
         {
-            string label = binding.Label;
+            var label = binding.Label;
             return ServiceInfoTags.StartsWith(label);
         }
 
@@ -102,10 +103,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return false;
             }
 
-            string uri = GetStringFromCredentials(binding.Credentials, UriKeys);
+            var uri = GetStringFromCredentials(binding.Credentials, UriKeys);
             if (uri != null)
             {
-                foreach (string uriScheme in UriSchemes)
+                foreach (var uriScheme in UriSchemes)
                 {
                     if (uri.StartsWith(uriScheme + "://", StringComparison.OrdinalIgnoreCase))
                     {
@@ -130,7 +131,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return false;
             }
 
-            foreach (string uriScheme in UriSchemes)
+            foreach (var uriScheme in UriSchemes)
             {
                 if (credentials.ContainsKey(uriScheme + "Uri") || credentials.ContainsKey(uriScheme + "uri") || credentials.ContainsKey(uriScheme + "Url") || credentials.ContainsKey(uriScheme + "url"))
                 {
@@ -195,7 +196,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             if (credentials != null)
             {
-                foreach (string key in keys)
+                foreach (var key in keys)
                 {
                     if (credentials.ContainsKey(key))
                     {
@@ -209,7 +210,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         protected internal virtual bool GetBoolFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
-            bool result = false;
+            var result = false;
             if (credentials != null && credentials.ContainsKey(key))
             {
                 bool.TryParse(credentials[key].Value, out result);
@@ -225,11 +226,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
         {
-            int result = 0;
+            var result = 0;
 
             if (credentials != null)
             {
-                foreach (string key in keys)
+                foreach (var key in keys)
                 {
                     if (credentials.ContainsKey(key))
                     {
@@ -243,13 +244,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         protected internal virtual List<string> GetListFromCredentials(Dictionary<string, Credential> credentials, string key)
         {
-            List<string> result = new List<string>();
+            var result = new List<string>();
             if (credentials != null && credentials.ContainsKey(key))
             {
-                Credential keyVal = credentials[key];
+                var keyVal = credentials[key];
                 if (keyVal.Count > 0)
                 {
-                    foreach (KeyValuePair<string, Credential> kvp in keyVal)
+                    foreach (var kvp in keyVal)
                     {
                         if (kvp.Value.Count != 0 || string.IsNullOrEmpty(kvp.Value.Value))
                         {

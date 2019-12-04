@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Health

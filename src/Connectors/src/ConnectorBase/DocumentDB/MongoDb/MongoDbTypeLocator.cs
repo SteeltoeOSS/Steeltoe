@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Reflection;
 using System;
 using System.Reflection;
 using System.Threading;
@@ -47,19 +48,19 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
         /// Gets IMongoClient from MongoDB Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type IMongoClient => ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames, "IMongoClient", "a MongoDB driver");
+        public static Type IMongoClient => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionInterfaceTypeNames, "IMongoClient", "a MongoDB driver");
 
         /// <summary>
         /// Gets MongoClient from MongoDB Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type MongoClient => ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "MongoClient", "a MongoDB driver");
+        public static Type MongoClient => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "MongoClient", "a MongoDB driver");
 
         /// <summary>
         /// Gets MongoUrl from MongoDB Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type MongoUrl => ConnectorHelpers.FindTypeOrThrow(Assemblies, MongoConnectionInfo, "MongoUrl", "a MongoDB driver");
+        public static Type MongoUrl => ReflectionHelpers.FindTypeOrThrow(Assemblies, MongoConnectionInfo, "MongoUrl", "a MongoDB driver");
 
         /// <summary>
         /// Gets a method that lists databases available in a MongoClient
@@ -68,7 +69,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
 
         private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
         {
-            var returnType = ConnectorHelpers.FindMethod(type, methodName, parameters);
+            var returnType = ReflectionHelpers.FindMethod(type, methodName, parameters);
             if (returnType == null)
             {
                 throw new ConnectorException("Unable to find required MongoDb type or method, are you missing a MongoDb Nuget package?");

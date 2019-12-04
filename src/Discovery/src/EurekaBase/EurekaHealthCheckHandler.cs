@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 using System.Collections.Generic;

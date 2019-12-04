@@ -16,8 +16,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
 
@@ -45,7 +46,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MongoDbServiceInfo info = config.GetSingletonServiceInfo<MongoDbServiceInfo>();
+            var info = config.GetSingletonServiceInfo<MongoDbServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -77,7 +78,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MongoDbServiceInfo info = config.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -85,7 +86,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
 
         private static void DoAdd(IServiceCollection services, MongoDbServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks = false)
         {
-            Type mongoClient = MongoDbTypeLocator.MongoClient;
+            var mongoClient = MongoDbTypeLocator.MongoClient;
             var mongoOptions = new MongoDbConnectorOptions(config);
             var clientFactory = new MongoDbConnectorFactory(info, mongoOptions, mongoClient);
             services.Add(new ServiceDescriptor(MongoDbTypeLocator.IMongoClient, clientFactory.Create, contextLifetime));
@@ -95,7 +96,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
                 services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new MongoDbHealthContributor(clientFactory, ctx.GetService<ILogger<MongoDbHealthContributor>>()), ServiceLifetime.Singleton));
             }
 
-            Type mongoInfo = ConnectorHelpers.FindType(MongoDbTypeLocator.Assemblies, MongoDbTypeLocator.MongoConnectionInfo);
+            var mongoInfo = ReflectionHelpers.FindType(MongoDbTypeLocator.Assemblies, MongoDbTypeLocator.MongoConnectionInfo);
             var urlFactory = new MongoDbConnectorFactory(info, mongoOptions, mongoInfo);
             services.Add(new ServiceDescriptor(mongoInfo, urlFactory.Create, contextLifetime));
         }

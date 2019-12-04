@@ -10,13 +10,11 @@
   <Import Project="..\..\..\..\sharedproject.props" />
   
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
     <ProjectReference Include="..\ConsulBase\Steeltoe.Discovery.ConsulBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Discovery.EurekaBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Discovery.ConsulBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Reflection;
 using System;
 
 namespace Steeltoe.CloudFoundry.Connector.EFCore
@@ -35,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// Gets the type used to configure EntityFramework Core with MySql
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type MySqlDbContextOptionsType => ConnectorHelpers.FindTypeOrThrow(MySqlEntityAssemblies, MySqlEntityTypeNames, "DbContextOptionsBuilder", "a MySql EntityFramework Core assembly");
+        public static Type MySqlDbContextOptionsType => ReflectionHelpers.FindTypeOrThrow(MySqlEntityAssemblies, MySqlEntityTypeNames, "DbContextOptionsBuilder", "a MySql EntityFramework Core assembly");
 
         /// <summary>
         /// Gets a list of supported PostgreSQL Entity Framework Core Assemblies
@@ -51,7 +52,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// Gets the type used to configure EntityFramework Core with PostgreSQL
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type PostgreSqlDbContextOptionsType => ConnectorHelpers.FindTypeOrThrow(PostgreSqlEntityAssemblies, PostgreSqlEntityTypeNames, "DbContextOptionsBuilder", "a PostgreSql EntityFramework Core assembly");
+        public static Type PostgreSqlDbContextOptionsType => ReflectionHelpers.FindTypeOrThrow(PostgreSqlEntityAssemblies, PostgreSqlEntityTypeNames, "DbContextOptionsBuilder", "a PostgreSql EntityFramework Core assembly");
 
         /// <summary>
         /// Gets a list of supported Microsoft SQL Server Entity Framework Core Assemblies
@@ -67,7 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// Gets the type used to configure EntityFramework Core with Microsoft SQL Server
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type SqlServerDbContextOptionsType => ConnectorHelpers.FindTypeOrThrow(SqlServerEntityAssemblies, SqlServerEntityTypeNames, "DbContextOptionsBuilder", "a Microsoft SQL Server EntityFramework Core assembly");
+        public static Type SqlServerDbContextOptionsType => ReflectionHelpers.FindTypeOrThrow(SqlServerEntityAssemblies, SqlServerEntityTypeNames, "DbContextOptionsBuilder", "a Microsoft SQL Server EntityFramework Core assembly");
 
         /// <summary>
         /// Gets a list of supported Oracle Entity Framework Core Assemblies
@@ -83,6 +84,6 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// Gets the type used to configure EntityFramework Core with Oracle
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type OracleDbContextOptionsType => ConnectorHelpers.FindTypeOrThrow(OracleEntityAssemblies, OracleEntityTypeNames, "DbContextOptionsBuilder", "a Oracle EntityFramework Core assembly");
+        public static Type OracleDbContextOptionsType => ReflectionHelpers.FindTypeOrThrow(OracleEntityAssemblies, OracleEntityTypeNames, "DbContextOptionsBuilder", "a Oracle EntityFramework Core assembly");
     }
 }

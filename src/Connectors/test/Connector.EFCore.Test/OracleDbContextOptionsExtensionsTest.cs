@@ -48,8 +48,8 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore.Test
         public void UseOracle_ThrowsIfConfigurationNull()
         {
             // Arrange
-            DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
-            DbContextOptionsBuilder<GoodDbContext> goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
+            var optionsBuilder = new DbContextOptionsBuilder();
+            var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             IConfigurationRoot config = null;
 
             // Act and Assert
@@ -70,9 +70,9 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore.Test
         public void UseOracle_ThrowsIfServiceNameNull()
         {
             // Arrange
-            DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
-            DbContextOptionsBuilder<GoodDbContext> goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var optionsBuilder = new DbContextOptionsBuilder();
+            var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
+            var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
             // Act and Assert

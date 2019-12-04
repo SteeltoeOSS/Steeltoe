@@ -60,9 +60,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.EurekaBase", "..\Discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj", "{734B6B26-188E-4008-A10F-46821D31ED61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{FB365A0A-B38E-4858-B04B-BA7E5271E79C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "..\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{E56065C1-8400-4308-8145-F22DE901DD6A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.Abstractions", "src\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj", "{74220B81-17A4-41A6-970F-666B3E46F08B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Abstractions", "..\Connectors\src\Abstractions\Steeltoe.Connector.Abstractions.csproj", "{E4ECFA96-F9C1-4097-9FD4-4C818C8867CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -142,14 +144,18 @@ Global
 		{734B6B26-188E-4008-A10F-46821D31ED61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{734B6B26-188E-4008-A10F-46821D31ED61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{734B6B26-188E-4008-A10F-46821D31ED61}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB365A0A-B38E-4858-B04B-BA7E5271E79C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB365A0A-B38E-4858-B04B-BA7E5271E79C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB365A0A-B38E-4858-B04B-BA7E5271E79C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB365A0A-B38E-4858-B04B-BA7E5271E79C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E56065C1-8400-4308-8145-F22DE901DD6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E56065C1-8400-4308-8145-F22DE901DD6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E56065C1-8400-4308-8145-F22DE901DD6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E56065C1-8400-4308-8145-F22DE901DD6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74220B81-17A4-41A6-970F-666B3E46F08B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74220B81-17A4-41A6-970F-666B3E46F08B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74220B81-17A4-41A6-970F-666B3E46F08B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74220B81-17A4-41A6-970F-666B3E46F08B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4ECFA96-F9C1-4097-9FD4-4C818C8867CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4ECFA96-F9C1-4097-9FD4-4C818C8867CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4ECFA96-F9C1-4097-9FD4-4C818C8867CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4ECFA96-F9C1-4097-9FD4-4C818C8867CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,8 +179,9 @@ Global
 		{03570766-26F8-4C25-AABB-A83FAC007CD8} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 		{6B3A7468-43CB-46B0-B286-BB78EA855776} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 		{734B6B26-188E-4008-A10F-46821D31ED61} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
-		{FB365A0A-B38E-4858-B04B-BA7E5271E79C} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 		{E56065C1-8400-4308-8145-F22DE901DD6A} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
+		{74220B81-17A4-41A6-970F-666B3E46F08B} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
+		{E4ECFA96-F9C1-4097-9FD4-4C818C8867CD} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF622C8D-0862-46BD-806B-1624BEC226E5}

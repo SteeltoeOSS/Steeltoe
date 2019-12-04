@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using Steeltoe.CloudFoundry.Connector.Test;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = null;
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config));
@@ -58,7 +58,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
-            IConfigurationRoot connectionConfig = new ConfigurationBuilder().Build();
+            var connectionConfig = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config));
@@ -76,7 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
             // Act and Assert
@@ -89,7 +89,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act
             RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config);
@@ -105,7 +105,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -122,7 +122,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -143,7 +143,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -164,7 +164,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, "foobar"));
@@ -183,7 +183,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVCAP);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -200,7 +200,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = null;
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config));
@@ -219,7 +219,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
-            IConfigurationRoot connectionConfig = new ConfigurationBuilder().Build();
+            var connectionConfig = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config));
@@ -258,7 +258,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 ["redis:client:connectTimeout"] = "1"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -286,7 +286,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -310,7 +310,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 ["redis:client:connectTimeout"] = "1"
             };
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
@@ -339,7 +339,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 ["redis:client:urlEncodedCredentials"] = "true"
             };
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
@@ -368,7 +368,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 ["redis:client:connectTimeout"] = "1"
             };
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
@@ -397,7 +397,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 ["redis:client:urlEncodedCredentials"] = "true"
             };
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
@@ -420,7 +420,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, "foobar"));

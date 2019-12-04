@@ -15,7 +15,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.EFCore;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
@@ -77,7 +78,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 
             var connection = GetConnection(config);
 
-            return DoUseNpgsql<TContext>(optionsBuilder, connection, npgsqlOptionsAction);
+            return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
         }
 
         public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object npgsqlOptionsAction = null)
@@ -100,7 +101,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return DoUseNpgsql<TContext>(optionsBuilder, connection, npgsqlOptionsAction);
+            return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
         }
 
         public static MethodInfo FindUseNpgsqlMethod(Type type, Type[] parameterTypes)
@@ -108,7 +109,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
             var typeInfo = type.GetTypeInfo();
             var declaredMethods = typeInfo.DeclaredMethods;
 
-            foreach (MethodInfo ci in declaredMethods)
+            foreach (var ci in declaredMethods)
             {
                 var parameters = ci.GetParameters();
 
@@ -126,27 +127,27 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
-            PostgresServiceInfo info = string.IsNullOrEmpty(serviceName)
+            var info = string.IsNullOrEmpty(serviceName)
                 ? config.GetSingletonServiceInfo<PostgresServiceInfo>()
                 : config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
-            PostgresProviderConnectorOptions postgresConfig = new PostgresProviderConnectorOptions(config);
+            var postgresConfig = new PostgresProviderConnectorOptions(config);
 
-            PostgresProviderConnectorFactory factory = new PostgresProviderConnectorFactory(info, postgresConfig, null);
+            var factory = new PostgresProviderConnectorFactory(info, postgresConfig, null);
             return factory.CreateConnectionString();
         }
 
         private static DbContextOptionsBuilder DoUseNpgsql(DbContextOptionsBuilder builder, string connection, object npgsqlOptionsAction = null)
         {
-            Type extensionType = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
+            var extensionType = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
 
-            MethodInfo useMethod = FindUseNpgsqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
+            var useMethod = FindUseNpgsqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)
             {
                 throw new ConnectorException("Unable to find UseNpgsql extension, are you missing Postgres EntityFramework Core assembly");
             }
 
-            object result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, npgsqlOptionsAction });
+            var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { builder, connection, npgsqlOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException(string.Format("Failed to invoke UseNpgsql extension, connection: {0}", connection));

@@ -58,6 +58,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             TERMINAL
         }
 
+        // we can return a static version since it's immutable
+        internal static readonly ExecutionResult EMPTY = ExecutionResult.From();
+
         protected class AtomicCommandState : AtomicInteger
         {
             public AtomicCommandState(CommandState state)
@@ -210,7 +213,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected internal CancellationTokenSource _timeoutTcs;
         protected internal CancellationToken _token;
         protected internal CancellationToken _usersToken;
-        protected internal volatile ExecutionResult _executionResult = ExecutionResult.EMPTY; // state on shared execution
+        protected internal volatile ExecutionResult _executionResult = EMPTY; // state on shared execution
         protected internal volatile ExecutionResult _executionResultAtTimeOfCancellation;
 
         protected readonly AtomicCommandState commandState = new AtomicCommandState(CommandState.NOT_STARTED);

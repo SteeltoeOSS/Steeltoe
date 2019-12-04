@@ -45,7 +45,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
                     ["sqlserver:credentials:pw"] = "password"
                 };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -65,7 +65,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             {
                 ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -91,7 +91,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP);
 
             // add settings to config
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             configurationBuilder.AddEnvironmentVariables();
             configurationBuilder.AddCloudFoundry();
@@ -112,7 +112,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPNoTag);
 
             // add settings to config
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddEnvironmentVariables();
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
@@ -135,7 +135,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPIgnoreName);
 
             // add settings to config
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddEnvironmentVariables();
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
@@ -165,7 +165,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP_CredsInUrl);
 
             // add settings to config
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             configurationBuilder.AddEnvironmentVariables();
             configurationBuilder.AddCloudFoundry();

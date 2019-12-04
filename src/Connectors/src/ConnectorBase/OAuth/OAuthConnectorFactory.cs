@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 
 namespace Steeltoe.CloudFoundry.Connector.OAuth

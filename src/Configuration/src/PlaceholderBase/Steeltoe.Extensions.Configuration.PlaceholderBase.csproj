@@ -13,10 +13,12 @@
   </ItemGroup>
  
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Extensions.Configuration.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

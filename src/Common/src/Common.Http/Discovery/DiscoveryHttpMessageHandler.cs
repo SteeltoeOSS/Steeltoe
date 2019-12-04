@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery;
 using System;
 using System.Net.Http;
 using System.Threading;

@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
-using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
+using HealthCheckResult = Steeltoe.Common.HealthCheckResult;
+using HealthStatus = Steeltoe.Common.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health
 {

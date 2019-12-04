@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Linq;
@@ -31,17 +33,17 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            Service s = CreateHystrixService();
+            var s = CreateHystrixService();
             Assert.NotNull(s);
 
-            HystrixRabbitMQServiceInfoFactory factory = new HystrixRabbitMQServiceInfoFactory();
+            var factory = new HystrixRabbitMQServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsNoLabelNoTagsServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Name = "myHystrixService",
                 Plan = "standard",
@@ -61,14 +63,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
 
-            HystrixRabbitMQServiceInfoFactory factory = new HystrixRabbitMQServiceInfoFactory();
+            var factory = new HystrixRabbitMQServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsNoLabelNoTagsSecureUriServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Name = "myHystrixService",
                 Plan = "standard",
@@ -87,14 +89,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     }
                 }
             };
-            HystrixRabbitMQServiceInfoFactory factory = new HystrixRabbitMQServiceInfoFactory();
+            var factory = new HystrixRabbitMQServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsWithLabelNoTagsServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-circuit-breaker-dashboard",
                 Name = "myHystrixService",
@@ -115,14 +117,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
 
-            HystrixRabbitMQServiceInfoFactory factory = new HystrixRabbitMQServiceInfoFactory();
+            var factory = new HystrixRabbitMQServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsMySQLServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-mysql",
                 Tags = new string[] { "foobar", "relational" },
@@ -139,14 +141,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            HystrixRabbitMQServiceInfoFactory factory = new HystrixRabbitMQServiceInfoFactory();
+            var factory = new HystrixRabbitMQServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsRabbitMQServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "rabbitmq",
                 Tags = new string[] { "rabbitmq", "rabbit" },
@@ -163,15 +165,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "http_api_uri", new Credential("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/") }
                 }
             };
-            HystrixRabbitMQServiceInfoFactory factory = new HystrixRabbitMQServiceInfoFactory();
+            var factory = new HystrixRabbitMQServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            Service s = CreateHystrixService();
-            HystrixRabbitMQServiceInfoFactory factory = new HystrixRabbitMQServiceInfoFactory();
+            var s = CreateHystrixService();
+            var factory = new HystrixRabbitMQServiceInfoFactory();
             var info = factory.Create(s) as HystrixRabbitMQServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("myHystrixService", info.Id);
@@ -250,7 +252,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
             var opt = new CloudFoundryServicesOptions();

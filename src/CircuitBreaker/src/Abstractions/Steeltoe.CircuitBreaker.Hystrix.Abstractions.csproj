@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\versions.props" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Steeltoe.CircuitBreaker.Hystrix</RootNamespace>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
+  <ItemGroup>
+    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
+    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
+  </ItemGroup>
+</Project>

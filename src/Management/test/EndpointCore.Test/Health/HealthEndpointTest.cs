@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;

@@ -15,11 +15,11 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using HealthCheckResult = Steeltoe.Common.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Health
 {

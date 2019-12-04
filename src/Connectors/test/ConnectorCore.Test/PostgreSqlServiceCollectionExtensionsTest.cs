@@ -15,7 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CloudFoundry.Connector.Relational;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
@@ -81,7 +81,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config);
@@ -95,7 +95,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config, "foobar"));
@@ -107,7 +107,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 

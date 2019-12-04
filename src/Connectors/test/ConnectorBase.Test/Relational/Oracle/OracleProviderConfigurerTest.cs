@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
@@ -22,8 +22,8 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
         [Fact]
         public void UpdateConfiguration_WithNullOracleServiceInfo_ReturnsExpected()
         {
-            OracleProviderConfigurer configurer = new OracleProviderConfigurer();
-            OracleProviderConnectorOptions config = new OracleProviderConnectorOptions()
+            var configurer = new OracleProviderConfigurer();
+            var config = new OracleProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -44,8 +44,8 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
         [Fact]
         public void UpdateConfiguration_WithOracleServiceInfo_ReturnsExpected()
         {
-            OracleProviderConfigurer configurer = new OracleProviderConfigurer();
-            OracleProviderConnectorOptions config = new OracleProviderConnectorOptions()
+            var configurer = new OracleProviderConfigurer();
+            var config = new OracleProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -53,7 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
                 Password = "password",
                 ServiceName = "orcl"
             };
-            OracleServiceInfo si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
+            var si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
 
             configurer.UpdateConfiguration(si, config);
 
@@ -67,7 +67,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            OracleProviderConnectorOptions config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -76,16 +76,16 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
                 ServiceName = "orcl"
             };
 
-            OracleProviderConfigurer configurer = new OracleProviderConfigurer();
+            var configurer = new OracleProviderConfigurer();
             var opts = configurer.Configure(null, config);
-            string connectionString = string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};", config.Username, config.Password, config.Server, config.Port, config.ServiceName);
+            var connectionString = string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};", config.Username, config.Password, config.Server, config.Port, config.ServiceName);
             Assert.Equal(connectionString, opts);
         }
 
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            OracleProviderConnectorOptions config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -94,8 +94,8 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
                 ServiceName = "orcl"
             };
 
-            OracleProviderConfigurer configurer = new OracleProviderConfigurer();
-            OracleServiceInfo si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
+            var configurer = new OracleProviderConfigurer();
+            var si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
 
             _ = configurer.Configure(si, config);
 

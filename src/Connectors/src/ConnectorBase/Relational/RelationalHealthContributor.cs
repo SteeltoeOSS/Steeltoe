@@ -17,9 +17,10 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.MySql;
 using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.PostgreSql;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
 using System.Data;
 
@@ -35,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational
             }
 
             var info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
-            Type mySqlConnection = ConnectorHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
+            var mySqlConnection = ReflectionHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
             var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
             var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
             var connection = factory.Create(null) as IDbConnection;
@@ -50,7 +51,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational
             }
 
             var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
-            Type postgresConnection = ConnectorHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
+            var postgresConnection = ReflectionHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
             var postgresConfig = new PostgresProviderConnectorOptions(configuration);
             var factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
             var connection = factory.Create(null) as IDbConnection;
@@ -65,7 +66,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational
             }
 
             var info = configuration.GetSingletonServiceInfo<SqlServerServiceInfo>();
-            Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
+            var sqlServerConnection = SqlServerTypeLocator.SqlConnection;
             var sqlServerConfig = new SqlServerProviderConnectorOptions(configuration);
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
             var connection = factory.Create(null) as IDbConnection;
@@ -80,7 +81,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational
             }
 
             var info = configuration.GetSingletonServiceInfo<OracleServiceInfo>();
-            Type oracleConnection = ConnectorHelpers.FindType(OracleTypeLocator.Assemblies, OracleTypeLocator.ConnectionTypeNames);
+            var oracleConnection = ReflectionHelpers.FindType(OracleTypeLocator.Assemblies, OracleTypeLocator.ConnectionTypeNames);
             var oracleConfig = new OracleProviderConnectorOptions(configuration);
             var factory = new OracleProviderConnectorFactory(info, oracleConfig, oracleConnection);
             var connection = factory.Create(null) as IDbConnection;

@@ -17,9 +17,16 @@
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(DiagnosticSourceVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Diagnostics\" />
-    <Folder Include="Reflection\" />
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Abstractions\Steeltoe.Common.Abstractions.csproj" />
+    <!--<ProjectReference Include="..\..\..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\Abstractions\Steeltoe.Management.Abstractions.csproj" />-->
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Common.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Discovery.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
 </Project>

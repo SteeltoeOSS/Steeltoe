@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test

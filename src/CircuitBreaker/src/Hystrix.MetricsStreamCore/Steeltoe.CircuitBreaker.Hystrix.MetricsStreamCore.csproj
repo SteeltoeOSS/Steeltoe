@@ -11,6 +11,7 @@
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
     <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
   </ItemGroup>
 

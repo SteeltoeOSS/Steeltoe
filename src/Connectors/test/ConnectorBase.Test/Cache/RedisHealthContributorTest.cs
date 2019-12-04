@@ -15,8 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Redis;
-using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
+using Steeltoe.Connector.Services;
 using System.Collections.Generic;
 using Xunit;
 
@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Cache
                 ["redis:client:port"] = "1234",
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var contrib = RedisHealthContributor.GetRedisContributor(config);

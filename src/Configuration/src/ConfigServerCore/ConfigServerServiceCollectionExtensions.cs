@@ -15,7 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common;
 using System;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer

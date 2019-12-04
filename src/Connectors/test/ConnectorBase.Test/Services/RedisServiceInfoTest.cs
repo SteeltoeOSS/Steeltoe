@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Test.Services
@@ -22,9 +22,9 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         [Fact]
         public void Constructor_CreatesExpected()
         {
-            string uri = "redis://joe:joes_password@localhost:1527/";
-            RedisServiceInfo r1 = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "localhost", 1527, "joes_password");
-            RedisServiceInfo r2 = new RedisServiceInfo("myId", uri);
+            var uri = "redis://joe:joes_password@localhost:1527/";
+            var r1 = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "localhost", 1527, "joes_password");
+            var r2 = new RedisServiceInfo("myId", uri);
 
             Assert.Equal("myId", r1.Id);
             Assert.Equal("redis", r1.Scheme);
@@ -47,9 +47,9 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         [Fact]
         public void Constructor_CreatesExpected_withSecure()
         {
-            string uri = "rediss://:joes_password@localhost:6380/";
-            RedisServiceInfo r1 = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "localhost", 1527, "joes_password");
-            RedisServiceInfo r2 = new RedisServiceInfo("myId", uri);
+            var uri = "rediss://:joes_password@localhost:6380/";
+            var r1 = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "localhost", 1527, "joes_password");
+            var r2 = new RedisServiceInfo("myId", uri);
 
             Assert.Equal("myId", r1.Id);
             Assert.Equal("redis", r1.Scheme);
@@ -73,8 +73,8 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         [InlineData("rediss")]
         public void Constructor_CreatesExpected_WithSchema(string scheme)
         {
-            string uri = $"{scheme}://:joes_password@localhost:6380/";
-            RedisServiceInfo redisInfo = new RedisServiceInfo("myId", scheme, "localhost", 1527, "joes_password");
+            _ = $"{scheme}://:joes_password@localhost:6380/";
+            var redisInfo = new RedisServiceInfo("myId", scheme, "localhost", 1527, "joes_password");
 
             Assert.Equal("myId", redisInfo.Id);
             Assert.Equal(scheme, redisInfo.Scheme);

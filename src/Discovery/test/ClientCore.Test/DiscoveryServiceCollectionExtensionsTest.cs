@@ -22,7 +22,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Discovery;
 using System;
 using System.Net.Http;
 using System.Threading;

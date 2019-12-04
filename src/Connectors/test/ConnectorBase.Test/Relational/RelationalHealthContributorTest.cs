@@ -17,10 +17,9 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.MySql;
 using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.PostgreSql;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
-using Steeltoe.Common.HealthChecks;
-using System;
+using Steeltoe.Common;
+using Steeltoe.Connector.Services;
 using System.Collections.Generic;
 using System.Data;
 using Xunit;
@@ -41,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
                 ["mysql:client:username"] = "username"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var contrib = RelationalHealthContributor.GetMySqlContributor(config);
@@ -61,7 +60,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
                 ["postgres:client:username"] = "username"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var contrib = RelationalHealthContributor.GetPostgreSqlContributor(config);
@@ -82,7 +81,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
                 ["sqlserver:credentials:pw"] = "password"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var contrib = RelationalHealthContributor.GetSqlServerContributor(config);
@@ -103,7 +102,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
                 ["oracle:client:username"] = "username"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var contrib = RelationalHealthContributor.GetOracleContributor(config);
@@ -116,7 +115,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         public void Sql_Not_Connected_Returns_Down_Status()
         {
             // arrange
-            Type implementationType = SqlServerTypeLocator.SqlConnection;
+            var implementationType = SqlServerTypeLocator.SqlConnection;
             var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1 };
             var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=invalidDatabaseName", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
             var logrFactory = new LoggerFactory();
@@ -135,7 +134,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         public void Sql_Is_Connected_Returns_Up_Status()
         {
             // arrange
-            Type implementationType = SqlServerTypeLocator.SqlConnection;
+            var implementationType = SqlServerTypeLocator.SqlConnection;
             var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1 };
             var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=master", "steeltoe", "steeltoe");
             var logrFactory = new LoggerFactory();
@@ -153,7 +152,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         public void MySql_Not_Connected_Returns_Down_Status()
         {
             // arrange
-            Type implementationType = MySqlTypeLocator.MySqlConnection;
+            var implementationType = MySqlTypeLocator.MySqlConnection;
             var sqlConfig = new MySqlProviderConnectorOptions() { ConnectionTimeout = 1 };
             var sInfo = new MySqlServiceInfo("MyId", "mysql://localhost:80;databaseName=invalidDatabaseName");
             var logrFactory = new LoggerFactory();
@@ -172,7 +171,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         public void MySql_Is_Connected_Returns_Up_Status()
         {
             // arrange
-            Type implementationType = MySqlTypeLocator.MySqlConnection;
+            var implementationType = MySqlTypeLocator.MySqlConnection;
             var sqlConfig = new MySqlProviderConnectorOptions() { ConnectionTimeout = 1 };
             var sInfo = new MySqlServiceInfo("MyId", "mysql://steeltoe:steeltoe@localhost:3306");
             var logrFactory = new LoggerFactory();
@@ -190,7 +189,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         public void PostgreSql_Not_Connected_Returns_Down_Status()
         {
             // arrange
-            Type implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
+            var implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
             var sqlConfig = new PostgresProviderConnectorOptions();
             var sInfo = new PostgresServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var logrFactory = new LoggerFactory();
@@ -209,7 +208,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         public void PostgreSql_Is_Connected_Returns_Up_Status()
         {
             // arrange
-            Type implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
+            var implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
             var sqlConfig = new PostgresProviderConnectorOptions();
             var sInfo = new PostgresServiceInfo("MyId", "postgres://steeltoe:steeltoe@localhost:5432/postgres");
             var logrFactory = new LoggerFactory();
@@ -227,7 +226,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         public void Oracle_Not_Connected_Returns_Down_Status()
         {
             // arrange
-            Type implementationType = OracleTypeLocator.OracleConnection;
+            var implementationType = OracleTypeLocator.OracleConnection;
             var sqlConfig = new OracleProviderConnectorOptions();
             var sInfo = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/someService");
             var logrFactory = new LoggerFactory();
@@ -246,7 +245,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         public void Oracle_Is_Connected_Returns_Up_Status()
         {
             // arrange
-            Type implementationType = OracleTypeLocator.OracleConnection;
+            var implementationType = OracleTypeLocator.OracleConnection;
             var sqlConfig = new OracleProviderConnectorOptions();
             var sInfo = new OracleServiceInfo("MyId", "oracle://hr:hr@localhost:1521/orclpdb1");
             var logrFactory = new LoggerFactory();

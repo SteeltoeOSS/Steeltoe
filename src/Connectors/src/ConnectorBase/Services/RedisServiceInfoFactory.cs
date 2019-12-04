@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
@@ -25,14 +26,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public override IServiceInfo Create(Service binding)
         {
-            string uri = GetUriFromCredentials(binding.Credentials);
+            var uri = GetUriFromCredentials(binding.Credentials);
             if (string.IsNullOrEmpty(uri))
             {
-                string host = GetHostFromCredentials(binding.Credentials);
-                string password = GetPasswordFromCredentials(binding.Credentials);
-                int port = GetPortFromCredentials(binding.Credentials);
-                int tlsPort = GetTlsPortFromCredentials(binding.Credentials);
-                bool tlsEnabled = tlsPort != 0;
+                var host = GetHostFromCredentials(binding.Credentials);
+                var password = GetPasswordFromCredentials(binding.Credentials);
+                var port = GetPortFromCredentials(binding.Credentials);
+                var tlsPort = GetTlsPortFromCredentials(binding.Credentials);
+                var tlsEnabled = tlsPort != 0;
 
                 return new RedisServiceInfo(
                         binding.Name,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
@@ -22,12 +22,12 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         [Fact]
         public void Update_WithDefaultConnectorOptions_UpdatesOAuthOptions_AsExpected()
         {
-            OAuthServiceOptions opts = new OAuthServiceOptions();
-            OAuthConnectorOptions config = new OAuthConnectorOptions()
+            var opts = new OAuthServiceOptions();
+            var config = new OAuthConnectorOptions()
             {
                 ValidateCertificates = false
             };
-            OAuthConfigurer configurer = new OAuthConfigurer();
+            var configurer = new OAuthConfigurer();
             configurer.UpdateOptions(config, opts);
 
             Assert.Equal(OAuthConnectorDefaults.Default_OAuthServiceUrl + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
@@ -45,10 +45,10 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         [Fact]
         public void Update_WithServiceInfo_UpdatesOAuthOptions_AsExpected()
         {
-            OAuthServiceOptions opts = new OAuthServiceOptions();
-            SsoServiceInfo si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
+            var opts = new OAuthServiceOptions();
+            var si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
 
-            OAuthConfigurer configurer = new OAuthConfigurer();
+            var configurer = new OAuthConfigurer();
             configurer.UpdateOptions(si, opts);
 
             Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
@@ -66,8 +66,8 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            OAuthConnectorOptions config = new OAuthConnectorOptions();
-            OAuthConfigurer configurer = new OAuthConfigurer();
+            var config = new OAuthConnectorOptions();
+            var configurer = new OAuthConfigurer();
             var result = configurer.Configure(null, config);
 
             Assert.NotNull(result);
@@ -89,9 +89,9 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            SsoServiceInfo si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
-            OAuthConnectorOptions config = new OAuthConnectorOptions();
-            OAuthConfigurer configurer = new OAuthConfigurer();
+            var si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
+            var config = new OAuthConnectorOptions();
+            var configurer = new OAuthConfigurer();
             var result = configurer.Configure(si, config);
 
             Assert.NotNull(result);

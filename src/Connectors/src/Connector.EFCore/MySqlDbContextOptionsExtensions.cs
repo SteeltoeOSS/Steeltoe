@@ -15,7 +15,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.EFCore;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
@@ -108,7 +109,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
             var typeInfo = type.GetTypeInfo();
             var declaredMethods = typeInfo.DeclaredMethods;
 
-            foreach (MethodInfo ci in declaredMethods)
+            foreach (var ci in declaredMethods)
             {
                 var parameters = ci.GetParameters();
                 if (parameters.Length == 3 &&
@@ -126,28 +127,28 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
 
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
-            MySqlServiceInfo info = string.IsNullOrEmpty(serviceName)
+            var info = string.IsNullOrEmpty(serviceName)
                 ? config.GetSingletonServiceInfo<MySqlServiceInfo>()
                 : config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
-            MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
+            var mySqlConfig = new MySqlProviderConnectorOptions(config);
 
-            MySqlProviderConnectorFactory factory = new MySqlProviderConnectorFactory(info, mySqlConfig, null);
+            var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, null);
 
             return factory.CreateConnectionString();
         }
 
         private static DbContextOptionsBuilder DoUseMySql(DbContextOptionsBuilder builder, string connection, object mySqlOptionsAction = null)
         {
-            Type extensionType = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
+            var extensionType = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
-            MethodInfo useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
+            var useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)
             {
                 throw new ConnectorException("Unable to find UseMySql extension, are you missing MySql EntityFramework Core assembly");
             }
 
-            object result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, mySqlOptionsAction });
+            var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { builder, connection, mySqlOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException(string.Format("Failed to invoke UseMySql extension, connection: {0}", connection));

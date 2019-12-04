@@ -14,8 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 
 namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
@@ -29,9 +28,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
         /// <param name="services">Service Collection</param>
         /// <param name="config">Application Configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -43,7 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
+            var info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -57,9 +55,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
         /// <param name="config">Application Configuration</param>
         /// <param name="serviceName">Name of service binding in Cloud Foundry</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -76,7 +73,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -84,9 +81,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 
         private static void DoAdd(IServiceCollection services, IConfiguration config, MySqlServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
-            MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
+            var mySqlConfig = new MySqlProviderConnectorOptions(config);
 
-            MySqlDbContextConnectorFactory factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
+            var factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
     }

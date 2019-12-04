@@ -17,7 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2BFFFB
 		..\..\sharedproject.props = ..\..\sharedproject.props
 		..\..\sharedtest.props = ..\..\sharedtest.props
 		..\..\stylecop.json = ..\..\stylecop.json
-		..\..\targetframework.props = ..\..\targetframework.props
 		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
@@ -33,6 +32,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{6F22E520-D148-4A22-9B56-64840656D1F8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "..\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{B78BAA02-862A-4DD3-8E9F-407FEDA3C950}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.Abstractions", "src\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj", "{7B2CDBAF-E516-4453-A380-2757A5E334A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +61,10 @@ Global
 		{B78BAA02-862A-4DD3-8E9F-407FEDA3C950}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B78BAA02-862A-4DD3-8E9F-407FEDA3C950}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B78BAA02-862A-4DD3-8E9F-407FEDA3C950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B2CDBAF-E516-4453-A380-2757A5E334A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B2CDBAF-E516-4453-A380-2757A5E334A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B2CDBAF-E516-4453-A380-2757A5E334A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B2CDBAF-E516-4453-A380-2757A5E334A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +75,7 @@ Global
 		{DF66D833-EAC4-4C84-A80F-74CFBD2BF78F} = {EEF15943-96DB-44B5-BA4A-1D11171AD74F}
 		{8F0B1896-E147-4516-A032-1043A4C1EB23} = {26E1A61B-FA79-41BF-9C3B-5A04299F356A}
 		{B78BAA02-862A-4DD3-8E9F-407FEDA3C950} = {6F22E520-D148-4A22-9B56-64840656D1F8}
+		{7B2CDBAF-E516-4453-A380-2757A5E334A7} = {26E1A61B-FA79-41BF-9C3B-5A04299F356A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F03D9805-6C7E-411E-A8D5-191ABE8D2F66}

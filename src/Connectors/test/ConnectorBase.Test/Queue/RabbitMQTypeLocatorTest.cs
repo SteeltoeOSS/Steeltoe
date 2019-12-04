@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
@@ -42,7 +43,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
             RabbitMQTypeLocator.ConnectionInterfaceTypeNames = new string[] { "something-Wrong" };
 
             // act
-            var exception = Assert.Throws<ConnectorException>(() => RabbitMQTypeLocator.IConnectionFactory);
+            var exception = Assert.Throws<TypeLoadException>(() => RabbitMQTypeLocator.IConnectionFactory);
 
             // assert
             Assert.Equal("Unable to find IConnectionFactory, are you missing the RabbitMQ.Client assembly?", exception.Message);
