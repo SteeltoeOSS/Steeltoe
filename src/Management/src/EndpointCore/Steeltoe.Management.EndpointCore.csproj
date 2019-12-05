@@ -12,8 +12,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(HealthChecksVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsVersion)" />
   </ItemGroup>

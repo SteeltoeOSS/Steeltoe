@@ -22,6 +22,7 @@ namespace Steeltoe.Common
         public const string NET_FRAMEWORK = ".NET Framework";
         public const string NET_CORE = ".NET Core";
         public const string VCAP_APPLICATION = "VCAP_APPLICATION";
+        public const string KUBERNETES_HOST = "KUBERNETES_SERVICE_HOST";
 
         public static bool IsFullFramework => RuntimeInformation.FrameworkDescription.StartsWith(NET_FRAMEWORK);
 
@@ -30,5 +31,12 @@ namespace Steeltoe.Common
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
         public static bool IsCloudFoundry => Environment.GetEnvironmentVariable(VCAP_APPLICATION) != null;
+
+        public static bool IsKubernetes => Environment.GetEnvironmentVariable(KUBERNETES_HOST) != null;
+
+        /// <summary>
+        /// Gets a value indicating whether an app is running on a cloud provider. Currently supports Cloud Foundry and Kubernetes
+        /// </summary>
+        public static bool IsCloudHosted => IsCloudFoundry || IsKubernetes;
     }
 }
