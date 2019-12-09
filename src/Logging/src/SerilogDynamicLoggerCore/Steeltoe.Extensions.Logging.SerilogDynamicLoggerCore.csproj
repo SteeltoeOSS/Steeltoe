@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Steeltoe library for enabling dynamic management of Serilog</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Extensions.Logging.SerilogDynamicLogger</AssemblyName>
-    <PackageId>Steeltoe.Extensions.Logging.SerilogDynamicLogger</PackageId>
-    <PackageTags>Spring Cloud;Logging;Management</PackageTags>
+    <Description>Steeltoe library for enabling dynamic management of Serilog</Description>
+    <PackageTags>logging;dynamic logging;serilog;aspnetcore;management;monitoring;Spring Cloud;</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 
@@ -16,6 +14,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
   </ItemGroup>
+
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj" />
   </ItemGroup>

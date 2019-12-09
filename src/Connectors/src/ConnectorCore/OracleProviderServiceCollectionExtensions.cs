@@ -16,8 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
@@ -26,7 +24,7 @@ using System;
 using System.Data;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
+namespace Steeltoe.CloudFoundry.Connector.Oracle
 {
     public static class OracleProviderServiceCollectionExtensions
     {

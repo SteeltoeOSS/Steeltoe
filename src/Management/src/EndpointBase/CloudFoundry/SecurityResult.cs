@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
-using Steeltoe.Management.Endpoint.Security;
 using System.Net;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry

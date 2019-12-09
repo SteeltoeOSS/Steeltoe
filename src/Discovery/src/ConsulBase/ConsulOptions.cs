@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Consul.Client
+namespace Steeltoe.Discovery.Consul
 {
     /// <summary>
     /// Configuration options to use in creating a Consul client. See the documentation

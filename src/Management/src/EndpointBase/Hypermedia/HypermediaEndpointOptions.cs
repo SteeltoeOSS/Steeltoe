@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using System;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
@@ -31,8 +30,5 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             : base(MANAGEMENT_INFO_PREFIX, config)
         {
         }
-
-        [Obsolete("Use Exposure Options instead.")]
-        public override bool DefaultSensitive => false;
     }
 }

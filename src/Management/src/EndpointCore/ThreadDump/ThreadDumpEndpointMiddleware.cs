@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -28,13 +27,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         public ThreadDumpEndpointMiddleware(RequestDelegate next, ThreadDumpEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ThreadDumpEndpointMiddleware> logger = null)
            : base(endpoint, mgmtOptions, logger: logger)
-        {
-            _next = next;
-        }
-
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public ThreadDumpEndpointMiddleware(RequestDelegate next, ThreadDumpEndpoint endpoint, ILogger<ThreadDumpEndpointMiddleware> logger = null)
-            : base(endpoint, logger: logger)
         {
             _next = next;
         }

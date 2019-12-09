@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Serial;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.CircuitBreaker.Util;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery;
 using System;

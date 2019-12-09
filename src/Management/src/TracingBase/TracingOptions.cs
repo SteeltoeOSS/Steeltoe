@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Management.Census.Trace;
 using System;
 
@@ -81,17 +80,17 @@ namespace Steeltoe.Management.Tracing
 
         internal string GetApplicationName(string defaultName, IConfiguration config)
         {
-            var section = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
-            if (section != null)
-            {
-                CloudFoundryApplicationOptions appOptions = new CloudFoundryApplicationOptions(section);
-                if (!string.IsNullOrEmpty(appOptions.Name))
-                {
-                    return appOptions.Name;
-                }
-            }
-
-            section = config.GetSection(SPRING_APPLICATION_PREFIX);
+            // TODO: This functionality needs to be considered, but TracingBase shouldn't depend on CloudFoundryConfig
+            // var section = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
+            // if (section != null)
+            // {
+            //    CloudFoundryApplicationOptions appOptions = new CloudFoundryApplicationOptions(section);
+            //    if (!string.IsNullOrEmpty(appOptions.Name))
+            //    {
+            //        return appOptions.Name;
+            //    }
+            // }
+            var section = config.GetSection(SPRING_APPLICATION_PREFIX);
             if (section != null)
             {
                 var name = section["name"];

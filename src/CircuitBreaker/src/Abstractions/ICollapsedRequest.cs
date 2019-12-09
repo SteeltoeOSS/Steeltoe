@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker
 {
 #pragma warning disable S3246 // Generic type parameters should be co/contravariant when possible
     public interface ICollapsedRequest<RequestResponseType, RequestArgumentType>

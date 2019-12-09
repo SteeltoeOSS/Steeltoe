@@ -14,11 +14,10 @@
 
 using Consul;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Consul.Util;
 using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Util;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Registry.Test

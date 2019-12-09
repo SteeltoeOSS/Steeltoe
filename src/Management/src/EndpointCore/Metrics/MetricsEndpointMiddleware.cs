@@ -34,13 +34,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             _next = next;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, ILogger<MetricsEndpointMiddleware> logger = null)
-            : base(endpoint, null, false, logger)
-        {
-            _next = next;
-        }
-
         public async Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
@@ -61,12 +54,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal async Task HandleMetricsRequestAsync(HttpContext context)
         {
-            HttpRequest request = context.Request;
-            HttpResponse response = context.Response;
+            var request = context.Request;
+            var response = context.Response;
 
             _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
-            string metricName = GetMetricName(request);
+            var metricName = GetMetricName(request);
             if (!string.IsNullOrEmpty(metricName))
             {
                 // GET /metrics/{metricName}?tag=key:value&tag=key:value
@@ -118,7 +111,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal List<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
         {
-            List<KeyValuePair<string, string>> results = new List<KeyValuePair<string, string>>();
+            var results = new List<KeyValuePair<string, string>>();
             if (query == null)
             {
                 return results;
@@ -155,8 +148,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         private string GetMetricName(HttpRequest request, string path)
         {
-            PathString epPath = new PathString(path);
-            if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+            var epPath = new PathString(path);
+            if (request.Path.StartsWithSegments(epPath, out var remaining) && remaining.HasValue)
             {
                 return remaining.Value.TrimStart('/');
             }

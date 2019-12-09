@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.CircuitBreaker.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 {

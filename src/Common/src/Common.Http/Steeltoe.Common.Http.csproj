@@ -1,21 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Steeltoe Common Library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Common.Http</AssemblyName>
-    <PackageId>Steeltoe.Common.Http</PackageId>
+    <Description>Steeltoe common library for HTTP</Description>
     <PackageTags>NET Core;NET Framework</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="$(HttpExtensionsVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Net.Http" Version="$(HttpVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="$(HttpExtensionsVersion)" />
-   <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>    
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">

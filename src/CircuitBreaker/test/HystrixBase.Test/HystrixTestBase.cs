@@ -19,10 +19,9 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.CircuitBreaker.Util;
 using System;
 using System.Text;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test

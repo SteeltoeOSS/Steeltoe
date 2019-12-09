@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.Placeholder
 {
     /// <summary>
     /// Configuration source used in creating a <see cref="PlaceholderResolverProvider"/> that resolves placeholders

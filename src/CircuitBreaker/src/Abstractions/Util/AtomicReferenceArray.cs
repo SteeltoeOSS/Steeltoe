@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util
+namespace Steeltoe.CircuitBreaker.Util
 {
     public class AtomicReferenceArray<T>
     {

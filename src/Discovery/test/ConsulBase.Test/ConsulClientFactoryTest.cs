@@ -16,7 +16,7 @@ using Consul;
 using System;
 using Xunit;
 
-namespace Steeltoe.Consul.Client.Test
+namespace Steeltoe.Discovery.Consul.Client.Test
 {
     public class ConsulClientFactoryTest
     {

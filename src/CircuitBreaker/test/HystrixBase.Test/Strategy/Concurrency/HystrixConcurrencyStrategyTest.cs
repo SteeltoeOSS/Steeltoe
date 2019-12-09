@@ -15,6 +15,7 @@
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.CircuitBreaker.Util;
 using System;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;

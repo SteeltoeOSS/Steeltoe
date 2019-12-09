@@ -67,8 +67,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'netcoreapp2.1'">
     <AspNetVersion>5.2.4</AspNetVersion>
-    <OwinVersion>4.0.0</OwinVersion>
-    <OwinOAuthVersion>4.0.0</OwinOAuthVersion>
     <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
     <EF6Version>6.2.0</EF6Version>
     <ExtensionsVersion>2.2.0</ExtensionsVersion>

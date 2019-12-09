@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
@@ -51,7 +52,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             section = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
             if (section != null)
             {
-                CloudFoundryApplicationOptions appOptions = new CloudFoundryApplicationOptions(section);
+                var appOptions = new CloudFoundryApplicationOptions(section);
                 if (string.IsNullOrEmpty(ApplicationId))
                 {
                     ApplicationId = appOptions.ApplicationId;
@@ -71,8 +72,8 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             section = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
             if (section != null)
             {
-                CloudFoundryServicesOptions servOptions = new CloudFoundryServicesOptions(section);
-                if (servOptions.Services.TryGetValue(FORWARDER_NAME, out Service[] services))
+                var servOptions = new CloudFoundryServicesOptions(section);
+                if (servOptions.Services.TryGetValue(FORWARDER_NAME, out var services))
                 {
                     ConfigureServiceCredentials(services[0].Credentials);
                 }
@@ -99,12 +100,12 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         private void ConfigureServiceCredentials(Dictionary<string, Credential> credentials)
         {
-            if (string.IsNullOrEmpty(Endpoint) && credentials.TryGetValue(ENDPOINT_KEY, out Credential endpoint))
+            if (string.IsNullOrEmpty(Endpoint) && credentials.TryGetValue(ENDPOINT_KEY, out var endpoint))
             {
                 Endpoint = endpoint.Value;
             }
 
-            if (string.IsNullOrEmpty(AccessToken) && credentials.TryGetValue(ACCESS_KEY, out Credential token))
+            if (string.IsNullOrEmpty(AccessToken) && credentials.TryGetValue(ACCESS_KEY, out var token))
             {
                 AccessToken = token.Value;
             }

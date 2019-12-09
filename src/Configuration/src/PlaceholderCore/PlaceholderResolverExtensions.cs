@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
 
-namespace Steeltoe.Extensions.Configuration.PlaceholderCore
+namespace Steeltoe.Extensions.Configuration.Placeholder
 {
     public static class PlaceholderResolverExtensions
     {

@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Discovery</RootNamespace>
+    <Description>Service registration and discovery abstractions</Description>
+    <PackageTags>service discovery;service registry;Spring Cloud;</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 
@@ -16,5 +18,4 @@
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Common.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
-
 </Project>

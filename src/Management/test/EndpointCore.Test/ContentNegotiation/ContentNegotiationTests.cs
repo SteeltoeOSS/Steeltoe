@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.EndpointBase;
+using Steeltoe.Management.Endpoint;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Headers;

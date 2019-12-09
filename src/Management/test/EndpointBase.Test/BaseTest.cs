@@ -22,18 +22,8 @@ namespace Steeltoe.Management.Endpoint.Test
 {
     public class BaseTest : IDisposable
     {
-        public BaseTest()
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ManagementOptions.SetInstance(null);
-#pragma warning restore CS0618 // Type or member is obsolete
-        }
-
         public virtual void Dispose()
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ManagementOptions.SetInstance(null);
-#pragma warning restore CS0618 // Type or member is obsolete
             DiagnosticsManager.Instance.Dispose();
         }
 

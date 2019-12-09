@@ -61,31 +61,5 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             return services;
         }
-
-        [Obsolete("No longer necessary; IConfiguration added by default")]
-        public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration config)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            services.AddOptions();
-
-            services.TryAddSingleton<IConfiguration>(config);
-
-            var root = config as IConfigurationRoot;
-            if (root != null)
-            {
-                services.TryAddSingleton<IConfigurationRoot>(root);
-            }
-
-            return services;
-        }
     }
 }

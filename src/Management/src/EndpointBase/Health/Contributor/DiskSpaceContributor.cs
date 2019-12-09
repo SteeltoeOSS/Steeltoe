@@ -14,7 +14,6 @@
 
 using Steeltoe.Common;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor
 {

@@ -1,16 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Configuration Placeholder Resolver - Base Package</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.Extensions.Configuration.PlaceholderBase</AssemblyName>
-    <PackageId>Steeltoe.Extensions.Configuration.PlaceholderBase</PackageId>
-    <PackageTags>Configuration;Placeholders</PackageTags>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <RootNamespace>Steeltoe.Extensions.Configuration.Placeholder</RootNamespace>
+    <Description>Configuration provider for resolving property placeholders in configuration values</Description>
+    <PackageTags>configuration;placeholders;spring boot</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
-  
-  <ItemGroup>
-  </ItemGroup>
  
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj" />

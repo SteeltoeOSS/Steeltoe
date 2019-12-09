@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
+using Steeltoe.CircuitBreaker.Util;
 using System;
 using System.Threading.Tasks;
 using Xunit;

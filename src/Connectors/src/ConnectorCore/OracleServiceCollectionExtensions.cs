@@ -15,15 +15,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 using System;
 using System.Data;
 
-namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
+namespace Steeltoe.CloudFoundry.Connector.Oracle
 {
     public static class OracleServiceCollectionExtensions
     {

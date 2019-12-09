@@ -19,16 +19,13 @@ namespace Steeltoe.Discovery.Eureka.Test
     public class EurekaClientConfigTest : AbstractBaseTest
     {
         [Fact]
-        [System.Obsolete]
         public void DefaultConstructor_InitializedWithDefaults()
         {
-            EurekaClientConfig config = new EurekaClientConfig();
+            var config = new EurekaClientConfig();
             Assert.Equal(EurekaClientConfig.Default_RegistryFetchIntervalSeconds, config.RegistryFetchIntervalSeconds);
-            Assert.Equal(EurekaClientConfig.Default_InstanceInfoReplicationIntervalSeconds, config.InstanceInfoReplicationIntervalSeconds);
             Assert.True(config.ShouldGZipContent);
             Assert.Equal(EurekaClientConfig.Default_EurekaServerConnectTimeoutSeconds, config.EurekaServerConnectTimeoutSeconds);
             Assert.True(config.ShouldRegisterWithEureka);
-            Assert.False(config.AllowRedirects);
             Assert.False(config.ShouldDisableDelta);
             Assert.True(config.ShouldFilterOnlyUpInstances);
             Assert.True(config.ShouldFetchRegistry);

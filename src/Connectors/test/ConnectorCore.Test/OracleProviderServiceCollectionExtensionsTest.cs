@@ -20,7 +20,7 @@ using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle.Test
+namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
 {
     public class OracleProviderServiceCollectionExtensionsTest
     {

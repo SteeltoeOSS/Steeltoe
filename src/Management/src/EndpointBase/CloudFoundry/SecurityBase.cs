@@ -16,7 +16,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
-using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -47,13 +46,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             _options = options;
             _mgmtOptions = mgmtOptions;
-            _logger = logger;
-        }
-
-        [Obsolete("Use Exposure Options instead.")]
-        public SecurityBase(ICloudFoundryOptions options, ILogger logger = null)
-        {
-            _options = options;
             _logger = logger;
         }
 

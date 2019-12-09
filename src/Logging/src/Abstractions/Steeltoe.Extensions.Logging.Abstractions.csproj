@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Logging</RootNamespace>
+    <Description>Abstractions used in dynamic logging</Description>
+    <PackageTags>logging;dynamiclogging;management;monitoring;Spring Boot</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 

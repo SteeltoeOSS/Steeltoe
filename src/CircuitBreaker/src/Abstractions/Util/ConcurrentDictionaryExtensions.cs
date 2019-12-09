@@ -15,7 +15,7 @@
 using System;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util
+namespace Steeltoe.CircuitBreaker.Util
 {
     public static class ConcurrentDictionaryExtensions
     {

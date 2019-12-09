@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Steeltoe Common Library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Common</AssemblyName>
-    <PackageId>Steeltoe.Common</PackageId>
+    <Description>Steeltoe common library</Description>
     <PackageTags>NET Core;NET Framework</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />

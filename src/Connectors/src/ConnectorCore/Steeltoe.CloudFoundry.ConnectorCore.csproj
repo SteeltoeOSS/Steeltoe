@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>.NET Core CloudFoundry Connector Extensions</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.CloudFoundry.ConnectorCore</AssemblyName>
-    <PackageId>Steeltoe.CloudFoundry.ConnectorCore</PackageId>
-    <PackageTags>CloudFoundry;ASPNET Core;Connectors</PackageTags>
+    <RootNamespace>Steeltoe.CloudFoundry.Connector</RootNamespace>
+    <Description>Package for using Connectors in your ASP.NET Core application</Description>
+    <PackageTags>connectors;aspnetcore;CloudFoundry;vcap</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 

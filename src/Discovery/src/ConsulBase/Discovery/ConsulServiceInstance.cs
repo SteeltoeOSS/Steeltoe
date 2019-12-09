@@ -14,7 +14,7 @@
 
 using Consul;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Consul.Util;
+using Steeltoe.Discovery.Consul.Util;
 using System;
 using System.Collections.Generic;
 

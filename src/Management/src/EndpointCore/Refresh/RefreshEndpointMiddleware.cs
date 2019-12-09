@@ -32,13 +32,6 @@ namespace Steeltoe.Management.Endpoint.Refresh
             _next = next;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, ILogger<RefreshEndpointMiddleware> logger = null)
-            : base(endpoint, logger: logger)
-        {
-            _next = next;
-        }
-
         public async Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))

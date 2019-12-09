@@ -44,16 +44,8 @@ namespace Steeltoe.Discovery.Eureka
         // Configuration property: eureka:client:registryFetchIntervalSeconds
         public int RegistryFetchIntervalSeconds { get; set; }
 
-        // Configuration property: eureka:client:instanceInfoReplicationIntervalSeconds
-        [Obsolete("Eureka client does not use this value, will be removed in next release")]
-        public int InstanceInfoReplicationIntervalSeconds { get; set; } = Default_InstanceInfoReplicationIntervalSeconds;
-
         // Configuration property: eureka:client:shouldRegisterWithEureka
         public bool ShouldRegisterWithEureka { get; set; }
-
-        // Configuration property: eureka:client:allowRedirects
-        [Obsolete("Eureka client does not support this feature, will be removed in next release")]
-        public bool AllowRedirects { get; set; } = false;
 
         // Configuration property: eureka:client:shouldDisableDelta
         public bool ShouldDisableDelta { get; set; }

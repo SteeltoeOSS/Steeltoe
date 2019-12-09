@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Steeltoe.Discovery.Eureka
 {
     public interface IEurekaClientConfig
@@ -23,12 +21,6 @@ namespace Steeltoe.Discovery.Eureka
         /// Configuration property: eureka:client:registryFetchIntervalSeconds
         /// </summary>
         int RegistryFetchIntervalSeconds { get; set; }
-
-        /// <summary>
-        /// Gets or sets indicates how often(in seconds) to replicate instance changes to be replicated to the eureka server.
-        /// Configuration property: eureka:client:instanceInfoReplicationIntervalSeconds
-        /// </summary>
-        int InstanceInfoReplicationIntervalSeconds { get; set; }
 
         /// <summary>
         /// Gets or sets the proxy host to the eureka server if any.
@@ -80,14 +72,6 @@ namespace Steeltoe.Discovery.Eureka
         ///  Configuration property: eureka:client:shouldRegisterWithEureka
         /// </summary>
         bool ShouldRegisterWithEureka { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether indicates whether server can redirect a client request to a backup server/cluster.If set to false, the server
-        /// will handle the request directly, If set to true, it may send HTTP redirect to the client, with a new server location.
-        ///  Configuration property: eureka:client:allowRedirects
-        /// </summary>
-        [Obsolete("Eureka client does not support this feature, will be removed in next release")]
-        bool AllowRedirects { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether indicates whether the eureka client should disable fetching of delta and should rather resort to getting the full

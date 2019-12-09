@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>ASP.NET Core Extensions for CredHub Client</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Security.DataProtection.CredHubCore</AssemblyName>
-    <PackageId>Steeltoe.Security.DataProtection.CredHubCore</PackageId>
-    <PackageTags>CloudFoundry;ASPNET Core;Security;DataProtection;CredHub</PackageTags>
+    <RootNamespace>Steeltoe.Security.DataProtection.CredHub</RootNamespace>
+    <Description>ASP.NET Core Extensions for CredHub Client</Description>
+    <PackageTags>CloudFoundry;aspnetcore;Security;DataProtection;CredHub</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 

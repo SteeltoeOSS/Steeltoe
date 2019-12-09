@@ -18,112 +18,40 @@ namespace Steeltoe.Connector.Services
 {
     public class HystrixRabbitMQServiceInfo : ServiceInfo
     {
-    public class HystrixRabbitMQServiceInfo : ServiceInfo
-    {
-        private RabbitMQServiceInfo rabbitInfo;
-        private bool sslEnabled = false;
-
         public HystrixRabbitMQServiceInfo(string id, string uri, bool sslEnabled)
-            : base(id)
+        : base(id)
         {
-            this.sslEnabled = sslEnabled;
-            rabbitInfo = new RabbitMQServiceInfo(id, uri);
+            IsSslEnabled = sslEnabled;
+            RabbitInfo = new RabbitMQServiceInfo(id, uri);
         }
 
         public HystrixRabbitMQServiceInfo(string id, string uri, List<string> uris, bool sslEnabled)
             : base(id)
         {
-            rabbitInfo = new RabbitMQServiceInfo(id, uri, null, uris, null);
-            this.sslEnabled = sslEnabled;
+            RabbitInfo = new RabbitMQServiceInfo(id, uri, null, uris, null);
+            IsSslEnabled = sslEnabled;
         }
 
-        public RabbitMQServiceInfo RabbitInfo
-        {
-            get
-            {
-                return rabbitInfo;
-            }
-        }
+        public RabbitMQServiceInfo RabbitInfo { get; }
 
-        public string Scheme
-        {
-            get
-            {
-                return rabbitInfo.Scheme;
-            }
-        }
+        public string Scheme => RabbitInfo.Scheme;
 
-        public string Query
-        {
-            get
-            {
-                return rabbitInfo.Query;
-            }
-        }
+        public string Query => RabbitInfo.Query;
 
-        public string Path
-        {
-            get
-            {
-                return rabbitInfo.Path;
-            }
-        }
+        public string Path => RabbitInfo.Path;
 
-        public string Uri
-        {
-            get
-            {
-                return rabbitInfo.Uri;
-            }
-        }
+        public string Uri => RabbitInfo.Uri;
 
-        public List<string> Uris
-        {
-            get
-            {
-                return rabbitInfo.Uris;
-            }
-        }
+        public List<string> Uris => RabbitInfo.Uris;
 
-        public string Host
-        {
-            get
-            {
-                return rabbitInfo.Host;
-            }
-        }
+        public string Host => RabbitInfo.Host;
 
-        public int Port
-        {
-            get
-            {
-                return rabbitInfo.Port;
-            }
-        }
+        public int Port => RabbitInfo.Port;
 
-        public string UserName
-        {
-            get
-            {
-                return rabbitInfo.UserName;
-            }
-        }
+        public string UserName => RabbitInfo.UserName;
 
-        public string Password
-        {
-            get
-            {
-                return rabbitInfo.Password;
-            }
-        }
+        public string Password => RabbitInfo.Password;
 
-        public bool IsSslEnabled
-        {
-            get
-            {
-                return this.sslEnabled;
-            }
-        }
-
+        public bool IsSslEnabled { get; } = false;
     }
 }

@@ -14,8 +14,6 @@
 
 using Consul;
 using Steeltoe.Common.Discovery;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Consul.Registry
 {

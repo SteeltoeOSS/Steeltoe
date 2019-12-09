@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.CircuitBreaker.Util;
 using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Util
@@ -37,10 +38,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
         }
 
-        public long Max
-        {
-            get { return _value.Value;  }
-        }
+        public long Max => _value.Value;
 
         public void Reset()
         {

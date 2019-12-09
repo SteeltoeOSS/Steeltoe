@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.CircuitBreaker.Util;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
+namespace Steeltoe.CircuitBreaker
 {
     public interface ICollapserTimer
     {

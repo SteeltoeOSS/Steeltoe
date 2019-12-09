@@ -32,13 +32,6 @@ namespace Steeltoe.Management.Endpoint.Info
             _next = next;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger = null)
-            : base(endpoint, logger: logger)
-        {
-            _next = next;
-        }
-
         public async Task Invoke(HttpContext context)
         {
             _logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);

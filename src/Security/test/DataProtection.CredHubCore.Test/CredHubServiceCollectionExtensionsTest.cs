@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Security.DataProtection.CredHubCore.Test
+namespace Steeltoe.Security.DataProtection.CredHub.Test
 {
     public class CredHubServiceCollectionExtensionsTest
     {

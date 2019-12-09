@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System;
@@ -28,23 +29,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
     /// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled.
     /// When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware"/> is added.
     /// </summary>
-#pragma warning disable CS0618 // Type or member is obsolete
     public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
-#pragma warning restore CS0618 // Type or member is obsolete
     {
         private readonly ICloudFoundryOptions _options;
         private readonly RequestDelegate _next;
 
         public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)
-        {
-            _next = next;
-            _options = endpoint.Options as ICloudFoundryOptions;
-        }
-
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointMiddleware> logger = null)
-            : base(endpoint, logger: logger)
         {
             _next = next;
             _options = endpoint.Options as ICloudFoundryOptions;
@@ -75,7 +66,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         protected internal string GetRequestUri(HttpRequest request)
         {
-            string scheme = request.Scheme;
+            var scheme = request.Scheme;
 
             if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))
             {

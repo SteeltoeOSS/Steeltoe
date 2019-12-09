@@ -19,7 +19,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Steeltoe.Consul.Util
+namespace Steeltoe.Discovery.Consul.Util
 {
     public static class ConsulServerUtils
     {

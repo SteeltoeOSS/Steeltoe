@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Configuration Placeholder Resolver - Core Package</Description>
     <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Extensions.Configuration.PlaceholderCore</AssemblyName>
-    <PackageId>Steeltoe.Extensions.Configuration.PlaceholderCore</PackageId>
-    <PackageTags>Configuration;Placeholders</PackageTags>
+    <RootNamespace>Steeltoe.Extensions.Configuration.Placeholder</RootNamespace>
+    <Description>Packing for adding property placeholder resolving config provider to ASP.NET Core applications</Description>
+    <PackageTags>configuration;placeholders;aspnetcore;spring boot</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
@@ -19,7 +18,6 @@
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Extensions.Configuration.PlaceholderBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>

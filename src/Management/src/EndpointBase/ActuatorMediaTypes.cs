@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Management.EndpointBase
+namespace Steeltoe.Management.Endpoint
 {
     public static class ActuatorMediaTypes
     {

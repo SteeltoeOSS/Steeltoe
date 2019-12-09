@@ -14,7 +14,7 @@
 
 using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util
+namespace Steeltoe.CircuitBreaker.Util
 {
     public class AtomicLong
     {

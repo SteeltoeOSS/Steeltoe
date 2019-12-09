@@ -15,8 +15,8 @@
 using Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Consul.Util;
 using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;

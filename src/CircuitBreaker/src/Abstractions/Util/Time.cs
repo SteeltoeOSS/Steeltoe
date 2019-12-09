@@ -15,7 +15,7 @@
 using System;
 using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util
+namespace Steeltoe.CircuitBreaker.Util
 {
     public static class Time
     {

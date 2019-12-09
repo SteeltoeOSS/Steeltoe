@@ -54,7 +54,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResourc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Abstractions", "..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj", "{58355112-3E96-4514-9D91-715B7DA8A2ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Hystrix.Abstractions", "src\Abstractions\Steeltoe.CircuitBreaker.Hystrix.Abstractions.csproj", "{1AA025FD-8417-4755-B0D2-E60D003C7659}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Abstractions", "src\Abstractions\Steeltoe.CircuitBreaker.Abstractions.csproj", "{1AA025FD-8417-4755-B0D2-E60D003C7659}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

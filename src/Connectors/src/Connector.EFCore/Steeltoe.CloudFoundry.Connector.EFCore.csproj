@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>CloudFoundry Connector Extensions for Entity Framework Core</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.CloudFoundry.Connector.EFCore</AssemblyName>
-    <PackageId>Steeltoe.CloudFoundry.Connector.EFCore</PackageId>
-    <PackageTags>CloudFoundry;ASPNET Core;Connectors;EntityFrameworkCore</PackageTags>
+    <Description>Package for using CloudFoundry Connectors with Entity Framework Core</Description>
+    <PackageTags>connectors;EFCore;EntityFrameworkCore;EF;Entity Framework Core;entity-framework-core;aspetcore;CloudFoundry;vcap</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 
