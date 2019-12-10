@@ -16,19 +16,18 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
 {
     public class Link
     {
-#pragma warning disable SA1307 // Accessible fields must begin with upper-case letter
-        public string href;
-        public bool templated;
-#pragma warning restore SA1307 // Accessible fields must begin with upper-case letter
+#pragma warning disable SA1300 // Accessible fields must begin with upper-case letter
+#pragma warning disable IDE1006 // Naming Styles
+        public string href { get; private set; }
 
-        public Link()
-        {
-        }
+        public bool templated { get; }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore SA1300 // Accessible fields must begin with upper-case letter
 
         public Link(string href)
         {
             this.href = href;
-            this.templated = href.Contains("{");
+            templated = href.Contains("{");
         }
     }
 }

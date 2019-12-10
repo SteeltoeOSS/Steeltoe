@@ -19,6 +19,7 @@
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.CloudFoundry.ConnectorCore" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Discovery.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

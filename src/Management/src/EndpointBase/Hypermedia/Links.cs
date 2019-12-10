@@ -16,10 +16,21 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
+    /// <summary>
+    /// A typed collection of links
+    /// </summary>
     public class Links
     {
-        public string Type = "steeltoe";
+        /// <summary>
+        /// Gets or sets the type of links contained in this collection
+        /// </summary>
+        public string Type { get; set; } = "steeltoe";
 
-        public Dictionary<string, Link> _links = new Dictionary<string, Link>();
+        /// <summary>
+        /// Gets or sets the list of links contained in this collection
+        /// </summary>
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+        public Dictionary<string, Link> _links { get; set; } = new Dictionary<string, Link>();
+#pragma warning restore SA1300 // Element should begin with upper-case letter
     }
 }
