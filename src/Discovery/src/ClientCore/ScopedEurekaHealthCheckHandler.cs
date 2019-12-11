@@ -15,6 +15,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Linq;

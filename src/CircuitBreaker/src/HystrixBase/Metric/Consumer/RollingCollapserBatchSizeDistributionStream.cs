@@ -13,8 +13,7 @@
 // limitations under the License.
 
 using HdrHistogram;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
-using Steeltoe.CircuitBreaker.Util;
+using Steeltoe.Common;
 using System;
 using System.Collections.Concurrent;
 

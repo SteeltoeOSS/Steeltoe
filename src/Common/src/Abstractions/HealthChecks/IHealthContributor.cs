@@ -12,29 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Concurrent;
-
-namespace Steeltoe.CircuitBreaker.Util
+namespace Steeltoe.Common.HealthChecks
 {
-    public static class ConcurrentDictionaryExtensions
+    /// <summary>
+    /// Implement this interface and add to DI to be included in health checks
+    /// </summary>
+    public interface IHealthContributor
     {
-        public static V GetOrAddEx<K, V>(this ConcurrentDictionary<K, V> dict, K key, Func<K, V> factory)
-        {
-            if (dict.TryGetValue(key, out V value))
-            {
-                return value;
-            }
+        /// <summary>
+        /// Gets an identifier for the type of check being performed
+        /// </summary>
+        string Id { get; }
 
-            lock (dict)
-            {
-                if (dict.TryGetValue(key, out value))
-                {
-                    return value;
-                }
-
-                return dict.GetOrAdd(key, factory);
-            }
-        }
+        /// <summary>
+        /// Check the health of a resource
+        /// </summary>
+        /// <returns>The result of checking the health of a resource</returns>
+        HealthCheckResult Health();
     }
 }

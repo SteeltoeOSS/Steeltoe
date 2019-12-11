@@ -12,12 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Common
-{
-    public interface IHealthAggregator
-    {
-        HealthCheckResult Aggregate(IList<IHealthContributor> contributors);
-    }
-}
+[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.HystrixBase.Test")]

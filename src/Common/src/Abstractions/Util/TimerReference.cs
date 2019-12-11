@@ -16,7 +16,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.CircuitBreaker.Util
+namespace Steeltoe.Common.Util
 {
     public class TimerReference : IDisposable
     {

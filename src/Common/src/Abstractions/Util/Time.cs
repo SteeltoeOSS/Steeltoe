@@ -15,7 +15,7 @@
 using System;
 using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Util
+namespace Steeltoe.Common.Util
 {
     public static class Time
     {

@@ -16,8 +16,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using HealthCheckResult = Steeltoe.Common.HealthCheckResult;
-using HealthStatus = Steeltoe.Common.HealthStatus;
+using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health

@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common.Util
 {
-    public enum HealthStatus
+    public interface ITimerListener
     {
-        UNKNOWN,
-        UP,
-        WARNING,
-        OUT_OF_SERVICE,
-        DOWN,
+        void Tick();
+
+        int IntervalTimeInMilliseconds { get; }
     }
 }

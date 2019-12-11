@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Util;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {

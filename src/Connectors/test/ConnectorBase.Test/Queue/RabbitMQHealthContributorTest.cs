@@ -15,9 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.RabbitMQ;
-using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
-using System;
 using System.Collections.Generic;
 using Xunit;
 

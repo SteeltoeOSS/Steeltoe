@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CircuitBreaker.Util
+namespace Steeltoe.Common.Util
 {
-    public class AtomicIntegerArray : AtomicReferenceArray<int>
+    public class ActualTime : ITime
     {
-        public AtomicIntegerArray(int length)
-            : base(length)
-        {
-        }
+        public long CurrentTimeInMillis => Time.CurrentTimeMillis;
     }
 }

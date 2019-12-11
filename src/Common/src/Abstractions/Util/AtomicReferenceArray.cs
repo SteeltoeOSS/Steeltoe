@@ -12,46 +12,53 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
-
-namespace Steeltoe.CircuitBreaker.Util
+namespace Steeltoe.Common.Util
 {
-    public class AtomicReference<T>
-        where T : class
+    public class AtomicReferenceArray<T>
     {
-        private volatile T _value;
+        private readonly T[] _array;
 
-        public AtomicReference()
-            : this(default(T))
+        public AtomicReferenceArray(int length)
         {
+            _array = new T[length];
         }
 
-        public AtomicReference(T value)
-        {
-            _value = value;
-        }
-
-        public T Value
+        public T this[int index]
         {
             get
             {
-                return _value;
+                lock (_array)
+                {
+                    return _array[index];
+                }
             }
 
             set
             {
-                _value = value;
+                lock (_array)
+                {
+                    _array[index] = value;
+                }
             }
         }
 
-        public bool CompareAndSet(T expected, T update)
+        public T[] ToArray()
         {
-            return Interlocked.CompareExchange(ref this._value, update, expected) == expected;
+            lock (_array)
+            {
+                return (T[])_array.Clone();
+            }
         }
 
-        public T GetAndSet(T value)
+        public int Length
         {
-            return Interlocked.Exchange(ref this._value, value);
+            get
+            {
+                lock (_array)
+                {
+                    return _array.Length;
+                }
+            }
         }
     }
 }

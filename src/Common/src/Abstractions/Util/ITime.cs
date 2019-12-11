@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Util;
-
-namespace Steeltoe.CircuitBreaker.Hystrix.Util
+namespace Steeltoe.Common.Util
 {
-    public class ActualTime : ITime
+    public interface ITime
     {
-        public long CurrentTimeInMillis => Time.CurrentTimeMillis;
+        long CurrentTimeInMillis
+        {
+            get;
+        }
     }
 }

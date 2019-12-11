@@ -14,8 +14,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using System;
+using Steeltoe.Common.HealthChecks;
 using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest

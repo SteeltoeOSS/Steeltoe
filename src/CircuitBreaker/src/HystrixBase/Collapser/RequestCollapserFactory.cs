@@ -15,7 +15,7 @@
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
-using Steeltoe.CircuitBreaker.Util;
+using Steeltoe.Common;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser

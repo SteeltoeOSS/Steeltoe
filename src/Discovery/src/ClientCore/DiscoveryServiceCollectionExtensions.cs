@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Consul;

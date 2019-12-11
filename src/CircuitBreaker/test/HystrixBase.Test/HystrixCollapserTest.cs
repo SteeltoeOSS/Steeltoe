@@ -14,7 +14,7 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Collapser;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
-using Steeltoe.CircuitBreaker.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

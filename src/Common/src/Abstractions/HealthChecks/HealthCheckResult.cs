@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common.HealthChecks
 {
     /// <summary>
     /// The result of a health check

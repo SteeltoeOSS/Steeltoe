@@ -13,8 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 using System.Collections.Generic;

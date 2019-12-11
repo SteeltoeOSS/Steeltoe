@@ -12,12 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CircuitBreaker.Util
-{
-    public interface ITimerListener
-    {
-        void Tick();
+using System;
+using System.Collections.Concurrent;
 
-        int IntervalTimeInMilliseconds { get; }
+namespace Steeltoe.Common
+{
+    public static class ConcurrentDictionaryExtensions
+    {
+        public static V GetOrAddEx<K, V>(this ConcurrentDictionary<K, V> dict, K key, Func<K, V> factory)
+        {
+            if (dict.TryGetValue(key, out var value))
+            {
+                return value;
+            }
+
+            lock (dict)
+            {
+                if (dict.TryGetValue(key, out value))
+                {
+                    return value;
+                }
+
+                return dict.GetOrAdd(key, factory);
+            }
+        }
     }
 }

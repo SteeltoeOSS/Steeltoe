@@ -18,7 +18,7 @@ using Steeltoe.CloudFoundry.Connector.MySql;
 using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.PostgreSql;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
-using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
 using System.Collections.Generic;
 using System.Data;

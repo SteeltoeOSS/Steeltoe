@@ -12,21 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.Common.HealthChecks
 {
-    public abstract class HysrixCollapserBase
+    public enum HealthStatus
     {
-        // this is a micro-optimization but saves about 1-2microseconds (on 2011 MacBook Pro)
-        // on the repetitive string processing that will occur on the same classes over and over again
-        protected static readonly ConcurrentDictionary<Type, string> _defaultNameCache = new ConcurrentDictionary<Type, string>();
-
-        protected HysrixCollapserBase()
-        {
-        }
+        UNKNOWN,
+        UP,
+        WARNING,
+        OUT_OF_SERVICE,
+        DOWN,
     }
 }

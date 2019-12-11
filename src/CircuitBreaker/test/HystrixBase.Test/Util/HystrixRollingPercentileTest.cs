@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using Steeltoe.CircuitBreaker.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

@@ -16,7 +16,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
-using Steeltoe.CircuitBreaker.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

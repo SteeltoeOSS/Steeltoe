@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Health.Test

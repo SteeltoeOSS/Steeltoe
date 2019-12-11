@@ -14,7 +14,7 @@
 
 using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Util
+namespace Steeltoe.Common.Util
 {
     public class AtomicBoolean
     {

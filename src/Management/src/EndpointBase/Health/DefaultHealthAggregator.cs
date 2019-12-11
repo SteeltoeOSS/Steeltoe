@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HealthCheckResult = Steeltoe.Common.HealthCheckResult;
+using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Health
 {

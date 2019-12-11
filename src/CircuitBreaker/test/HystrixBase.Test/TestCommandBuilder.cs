@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public IHystrixCommandGroupKey Owner = CommandGroupForUnitTest.OWNER_ONE;
         public IHystrixCommandKey DependencyKey = null;
         public IHystrixThreadPoolKey ThreadPoolKey = null;
-        public IHystrixCircuitBreaker CircuitBreaker;
+        public ICircuitBreaker CircuitBreaker;
         public IHystrixThreadPool ThreadPool = null;
         public IHystrixCommandOptions CommandPropertiesDefaults = HystrixCommandOptionsTest.GetUnitTestOptions();
         public IHystrixThreadPoolOptions ThreadPoolPropertiesDefaults = HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder();

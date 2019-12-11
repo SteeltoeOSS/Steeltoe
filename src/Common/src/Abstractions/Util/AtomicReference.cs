@@ -14,48 +14,44 @@
 
 using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Util
+namespace Steeltoe.Common.Util
 {
-    public class AtomicLong
+    public class AtomicReference<T>
+        where T : class
     {
-        private long _value;
+        private volatile T _value;
 
-        public AtomicLong()
-            : this(0)
+        public AtomicReference()
+            : this(default(T))
         {
         }
 
-        public AtomicLong(long value)
+        public AtomicReference(T value)
         {
             _value = value;
         }
 
-        public long Value
+        public T Value
         {
             get
             {
-                return Interlocked.Read(ref _value);
+                return _value;
             }
 
             set
             {
-                Interlocked.Exchange(ref _value, value);
+                _value = value;
             }
         }
 
-        public bool CompareAndSet(long expected, long update)
+        public bool CompareAndSet(T expected, T update)
         {
-            return Interlocked.CompareExchange(ref _value, update, expected) == expected;
+            return Interlocked.CompareExchange(ref this._value, update, expected) == expected;
         }
 
-        public long GetAndSet(long value)
+        public T GetAndSet(T value)
         {
-            return Interlocked.Exchange(ref _value, value);
-        }
-
-        public long AddAndGet(long value)
-        {
-            return Interlocked.Add(ref _value, value);
+            return Interlocked.Exchange(ref this._value, value);
         }
     }
 }

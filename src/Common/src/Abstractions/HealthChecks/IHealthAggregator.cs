@@ -12,22 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Common
-{
-    /// <summary>
-    /// Implement this interface and add to DI to be included in health checks
-    /// </summary>
-    public interface IHealthContributor
-    {
-        /// <summary>
-        /// Gets an identifier for the type of check being performed
-        /// </summary>
-        string Id { get; }
+using System.Collections.Generic;
 
-        /// <summary>
-        /// Check the health of a resource
-        /// </summary>
-        /// <returns>The result of checking the health of a resource</returns>
-        HealthCheckResult Health();
+namespace Steeltoe.Common.HealthChecks
+{
+    public interface IHealthAggregator
+    {
+        HealthCheckResult Aggregate(IList<IHealthContributor> contributors);
     }
 }

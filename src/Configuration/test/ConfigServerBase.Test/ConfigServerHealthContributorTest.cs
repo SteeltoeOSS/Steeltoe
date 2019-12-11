@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
 using System.Collections.Generic;

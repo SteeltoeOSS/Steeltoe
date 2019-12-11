@@ -14,7 +14,7 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using Steeltoe.CircuitBreaker.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;

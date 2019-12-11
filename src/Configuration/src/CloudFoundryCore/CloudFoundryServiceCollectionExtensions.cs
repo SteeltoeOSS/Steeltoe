@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.HealthChecks;
 using System;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry

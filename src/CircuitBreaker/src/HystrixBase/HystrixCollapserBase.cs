@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CircuitBreaker.Util
+using System;
+using System.Collections.Concurrent;
+
+namespace Steeltoe.CircuitBreaker.Hystrix
 {
-    public interface ITime
+    public abstract class HystrixCollapserBase
     {
-        long CurrentTimeInMillis
+        // this is a micro-optimization but saves about 1-2microseconds (on 2011 MacBook Pro)
+        // on the repetitive string processing that will occur on the same classes over and over again
+        protected static readonly ConcurrentDictionary<Type, string> _defaultNameCache = new ConcurrentDictionary<Type, string>();
+
+        protected HystrixCollapserBase()
         {
-            get;
         }
     }
 }

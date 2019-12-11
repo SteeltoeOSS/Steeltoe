@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 
@@ -22,6 +22,6 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public interface IHealthRegistrationsAggregator : IHealthAggregator
     {
-        Common.HealthCheckResult Aggregate(IList<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider);
+        Common.HealthChecks.HealthCheckResult Aggregate(IList<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider);
     }
 }
