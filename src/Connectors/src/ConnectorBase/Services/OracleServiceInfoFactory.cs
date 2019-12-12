@@ -17,7 +17,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     public class OracleServiceInfoFactory : RelationalServiceInfoFactory
     {
         public OracleServiceInfoFactory()
-            : base(new Tags(), OracleServiceInfo.ORACLE_SCHEME)
+            : base(new Tags("oracle"), OracleServiceInfo.ORACLE_SCHEME)
         {
         }
 
