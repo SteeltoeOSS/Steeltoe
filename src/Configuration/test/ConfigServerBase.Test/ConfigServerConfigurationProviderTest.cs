@@ -789,6 +789,79 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
+        public void ReLoad_DataDictionary_With_New_Configurations()
+        {
+            // Arrange
+            var environment = @"
+                    {
+                        'name': 'testname',
+                        'profiles': ['Production'],
+                        'label': 'testlabel',
+                        'version': 'testversion',
+                        'propertySources': [ 
+                            { 
+                                'name': 'source',
+                                'source': {
+                                            'featureToggles.ShowModule[0]': 'FT1',
+                                            'featureToggles.ShowModule[1]': 'FT2',
+                                            'featureToggles.ShowModule[2]': 'FT3',
+                                            'enableSettings':'true'
+                                    }
+                            }
+                        ]
+                    }";
+
+            var envir = HostingHelpers.GetHostingEnvironment();
+            TestConfigServerStartup.Reset();
+            TestConfigServerStartup.Response = environment;
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            var server = new TestServer(builder);
+
+            ConfigServerClientSettings settings = new ConfigServerClientSettings
+            {
+                Uri = "http://localhost:8888",
+                Name = "myName"
+            };
+            server.BaseAddress = new Uri(settings.Uri);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+
+            // Act and Assert
+            provider.Load();
+            Assert.NotNull(TestConfigServerStartup.LastRequest);
+            Assert.True(provider.TryGet("featureToggles:ShowModule:0", out string value));
+            Assert.Equal("FT1", value);
+            Assert.True(provider.TryGet("featureToggles:ShowModule:1", out value));
+            Assert.Equal("FT2", value);
+            Assert.True(provider.TryGet("featureToggles:ShowModule:2", out value));
+            Assert.Equal("FT3", value);
+            Assert.True(provider.TryGet("enableSettings", out value));
+            Assert.Equal("true", value);
+
+            TestConfigServerStartup.Reset();
+            TestConfigServerStartup.Response = @"
+                {
+                    'name': 'testname',
+                    'profiles': ['Production'],
+                    'label': 'testlabel',
+                    'version': 'testversion',
+                    'propertySources': [ 
+                        { 
+                            'name': 'source',
+                            'source': {
+                                'featureToggles.ShowModule[0]': 'none'
+                            }
+                        }
+                    ]
+                }";
+            provider.Load();
+            Assert.True(provider.TryGet("featureToggles:ShowModule:0", out string val));
+            Assert.Equal("none", val);
+            Assert.False(provider.TryGet("featureToggles:ShowModule:1", out val));
+            Assert.False(provider.TryGet("featureToggles:ShowModule:2", out val));
+            Assert.False(provider.TryGet("enableSettings", out val));
+        }
+
+        [Fact]
         public void AddConfigServerClientSettings_ChangesDataDictionary()
         {
             // Arrange
