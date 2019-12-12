@@ -164,6 +164,7 @@ namespace Steeltoe.Connector.Services.Test
             };
             var factory = new OracleServiceInfoFactory();
             var info = factory.Create(s) as OracleServiceInfo;
+            Assert.True(factory.Accept(s));
             Assert.NotNull(info);
             Assert.Equal("oracleService", info.Id);
             Assert.Equal("7E1LxXnlH2hhlPVt", info.Password);
