@@ -66,7 +66,8 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 ## Roadmaps
 
 * [3.0.0](roadmaps/3.0.0.md) - In Progress
-* [2.4.0](roadmaps/2.4.0.md) - In Progress
+* [2.5.0](roadmaps/2.5.0.md) - In Progress
+* [2.4.0](roadmaps/2.4.0.md) - Released
 * [2.3.0](roadmaps/2.3.0.md) - Released
 * [2.2.0](roadmaps/2.2.0.md) - Released
 * [2.1.0](roadmaps/2.1.0.md) - Released

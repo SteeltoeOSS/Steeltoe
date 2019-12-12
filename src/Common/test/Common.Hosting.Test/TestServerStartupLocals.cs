@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Common.Hosting.Test
 {
-    public class TestServerStartup42 : TestServerStartup
+    public class TestServerStartupLocals : TestServerStartup
     {
-        public TestServerStartup42()
+        public TestServerStartupLocals()
         {
-            this.ExpectedAddresses.Add("http://*:42");
+            ExpectedAddresses.Add("http://*:5000");
+            ExpectedAddresses.Add("https://*:5001");
         }
     }
 }
