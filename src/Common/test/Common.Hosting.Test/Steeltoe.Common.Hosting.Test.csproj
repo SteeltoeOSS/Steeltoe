@@ -7,7 +7,6 @@
     <TargetFrameworks>netcoreapp3.0;net461;netcoreapp2.1;</TargetFrameworks>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
-  <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
     <None Update="xunit.runner.json">
