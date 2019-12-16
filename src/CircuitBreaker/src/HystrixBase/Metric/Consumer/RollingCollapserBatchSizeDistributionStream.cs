@@ -68,7 +68,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
                 stream.Unsubscribe();
             }
 
-            HystrixCollapserEventStream.Reset(); Streams.Clear();
+            HystrixCollapserEventStream.Reset();
+            Streams.Clear();
         }
 
         private RollingCollapserBatchSizeDistributionStream(IHystrixCollapserKey collapserKey, int numPercentileBuckets, int percentileBucketSizeInMs)

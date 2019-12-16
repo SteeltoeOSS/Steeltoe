@@ -49,6 +49,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             }
 
             HystrixCommandStartStream.Reset();
+
             Streams.Clear();
         }
 
