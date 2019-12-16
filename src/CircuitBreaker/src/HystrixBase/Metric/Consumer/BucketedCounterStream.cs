@@ -16,7 +16,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
@@ -51,7 +50,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             {
                 return inputEventStream
                     .Observe()
-                    .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), NewThreadScheduler.Default) // bucket it by the counter window so we can emit to the next operator in time chunks, not on every OnNext
+                    .Window(TimeSpan.FromMilliseconds(bucketSizeInMs)) // bucket it by the counter window so we can emit to the next operator in time chunks, not on every OnNext
                     .SelectMany((b) =>
                     {
                         return reduceBucketToSummary(b);

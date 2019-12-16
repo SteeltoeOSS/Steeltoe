@@ -51,7 +51,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             }
 
             HystrixThreadPoolCompletionStream.Reset();
-
             Streams.Clear();
         }
 
