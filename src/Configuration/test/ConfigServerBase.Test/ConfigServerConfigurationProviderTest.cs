@@ -286,6 +286,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
+        [Obsolete]
         public void AddPropertySource_ChangesDataDictionary()
         {
             // Arrange
