@@ -12,25 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Common.Hosting.Test
 {
-    public class TestServerStartup
+    public class TestServerStartupDefault : TestServerStartup
     {
-        public void ConfigureServices(IServiceCollection services)
+        public TestServerStartupDefault()
         {
-            services.AddMvc();
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-#if NETCOREAPP3_0
-            app.UseRouting();
-#else
-            app.UseMvc();
-#endif
+            ExpectedAddresses.Add("http://*:8080");
         }
     }
 }

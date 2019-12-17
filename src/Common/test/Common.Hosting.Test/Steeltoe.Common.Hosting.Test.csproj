@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\versions.props" />
+  <PropertyGroup Condition="! $(OS.Contains('Win'))">
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(OS.Contains('Win'))">
+    <TargetFrameworks>netcoreapp3.0;net461;netcoreapp2.1;</TargetFrameworks>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedtest.props" />
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Common.Hosting\Steeltoe.Common.Hosting.csproj" />
+  </ItemGroup>
+</Project>

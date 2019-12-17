@@ -73,48 +73,5 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
             Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
         }
-
-        [Fact]
-        public void UseCloudFoundryHosting_ThrowsIfHostBuilderNull()
-        {
-            // Arrange
-            IWebHostBuilder webHostBuilder = null;
-
-            // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerHostBuilderExtensions.UseCloudFoundryHosting(webHostBuilder));
-            Assert.Contains(nameof(webHostBuilder), ex.Message);
-        }
-
-        [Fact]
-        public void UseCloudFoundryHosting_DoNotSetUrlsIfNull()
-        {
-            // Arrange
-            Environment.SetEnvironmentVariable("PORT", null);
-            var hostBuilder = WebHost.CreateDefaultBuilder().UseStartup<TestConfigServerStartup>();
-
-            // Act
-            hostBuilder.UseCloudFoundryHosting();
-            var server = new TestServer(hostBuilder);
-
-            // Assert
-            var addresses = server.Host.ServerFeatures.Get<IServerAddressesFeature>();
-            Assert.Null(addresses);
-        }
-
-        [Fact]
-        public void UseCloudFoundryHosting_MakeSureThePortIsSet()
-        {
-            // Arrange
-            Environment.SetEnvironmentVariable("PORT", "42");
-            var hostBuilder = WebHost.CreateDefaultBuilder().UseStartup<TestConfigServerStartup>();
-
-            // Act
-            hostBuilder.UseCloudFoundryHosting();
-            var server = hostBuilder.Build();
-
-            // Assert
-            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-            Assert.Contains("http://*:42", addresses.Addresses);
-        }
     }
 }
