@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -26,12 +27,7 @@ namespace Steeltoe.Discovery.Client
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddServiceDiscovery(this IWebHostBuilder hostBuilder)
         {
-            return hostBuilder
-                .ConfigureServices((context, collection) =>
-                {
-                    collection.AddDiscoveryClient(context.Configuration);
-                    collection.AddTransient<IStartupFilter, DiscoveryClientStartupFilter>();
-                });
+            return hostBuilder.ConfigureServices((context, collection) => AddServices(collection, context.Configuration));
         }
 
         /// <summary>
@@ -40,12 +36,15 @@ namespace Steeltoe.Discovery.Client
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IHostBuilder AddServiceDiscovery(this IHostBuilder hostBuilder)
         {
-            return hostBuilder
-                .ConfigureServices((context, collection) =>
-                {
-                    collection.AddDiscoveryClient(context.Configuration);
-                    collection.AddTransient<IStartupFilter, DiscoveryClientStartupFilter>();
-                });
+            return hostBuilder.ConfigureServices((context, collection) => AddServices(collection, context.Configuration));
+        }
+
+        private static void AddServices(IServiceCollection collection, IConfiguration config)
+        {
+            collection.AddDiscoveryClient(config);
+            collection.AddTransient<IStartupFilter, DiscoveryClientStartupFilter>();
+            collection.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
+            collection.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
         }
     }
 }

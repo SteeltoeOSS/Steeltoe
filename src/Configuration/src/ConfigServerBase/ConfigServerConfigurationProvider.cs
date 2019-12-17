@@ -265,14 +265,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
                         if (updateDictionary)
                         {
+                            IDictionary<string, string> newData = new Dictionary<string, string>();
+
                             if (!string.IsNullOrEmpty(env.State))
                             {
-                                Data["spring:cloud:config:client:state"] = env.State;
+                                newData["spring:cloud:config:client:state"] = env.State;
                             }
 
                             if (!string.IsNullOrEmpty(env.Version))
                             {
-                                Data["spring:cloud:config:client:version"] = env.Version;
+                                newData["spring:cloud:config:client:version"] = env.Version;
                             }
 
                             var sources = env.PropertySources;
@@ -281,9 +283,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                                 int index = sources.Count - 1;
                                 for (; index >= 0; index--)
                                 {
-                                    AddPropertySource(sources[index]);
+                                    AddPropertySource(sources[index], newData);
                                 }
                             }
+
+                            Data = newData;
                         }
 
                         return env;
@@ -660,7 +664,18 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// by this provider
         /// </summary>
         /// <param name="source">a property source to add</param>
+        [Obsolete("Will be removed in next release.")]
         protected internal virtual void AddPropertySource(PropertySource source)
+        {
+            AddPropertySource(source, Data);
+        }
+
+        /// <summary>
+        /// Adds values from a PropertySource to the provided dictionary.
+        /// </summary>
+        /// <param name="source">a property source to add</param>
+        /// <param name="data">the dictionary to add the property source to</param>
+        protected internal void AddPropertySource(PropertySource source, IDictionary<string, string> data)
         {
             if (source == null || source.Source == null)
             {
@@ -673,7 +688,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 {
                     string key = ConvertKey(kvp.Key);
                     string value = ConvertValue(kvp.Value);
-                    Data[key] = value;
+                    data[key] = value;
                 }
                 catch (Exception e)
                 {
