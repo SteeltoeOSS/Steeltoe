@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.App;
-using Steeltoe.CloudFoundry.Connector.App.Test;
+using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
@@ -34,7 +35,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_InitializesValues()
         {
-            var info = new ApplicationInstanceInfo(ApplicationInstanceInfoTest.MakeCloudFoundryApplicationOptions());
+            var info = new ApplicationInstanceInfo(TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>()));
             var si = new TestServiceInfo("id", info);
             Assert.Equal("id", si.Id);
             Assert.Equal(info, si.ApplicationInfo);

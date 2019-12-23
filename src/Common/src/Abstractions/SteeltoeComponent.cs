@@ -12,26 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
-
-namespace Steeltoe.Extensions.Configuration.CloudFoundry
+namespace Steeltoe.Common
 {
-    public class CloudFoundryServicesOptions : ServicesOptions
+    public enum SteeltoeComponent
     {
-        public const string CONFIGURATION_PREFIX = "vcap";
-
-        public CloudFoundryServicesOptions()
-        {
-        }
-
-        public CloudFoundryServicesOptions(IConfigurationRoot root)
-            : base(root, CONFIGURATION_PREFIX)
-        {
-        }
-
-        public CloudFoundryServicesOptions(IConfiguration config)
-            : base(config, CONFIGURATION_PREFIX)
-        {
-        }
+        Discovery,
+        CircuitBreaker,
+        Configuration,
+        Connectors,
+        Management,
+        Security
     }
 }

@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
@@ -26,9 +27,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var builder = new ConfigurationBuilder();
             var config = builder.Build();
 
-            var options = new CloudFoundryApplicationOptions();
-            var appSection = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
-            appSection.Bind(options);
+            var options = new CloudFoundryApplicationOptions(config);
 
             Assert.Null(options.CF_Api);
             Assert.Null(options.ApplicationId);
@@ -101,9 +100,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var builder = new ConfigurationBuilder().Add(jsonSource);
             var config = builder.Build();
 
-            var options = new CloudFoundryApplicationOptions();
-            var appSection = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
-            appSection.Bind(options);
+            var options = new CloudFoundryApplicationOptions(config);
 
             Assert.Equal("https://api.system.testcloud.com", options.CF_Api);
             Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);
@@ -115,8 +112,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.NotNull(options.Application_Uris);
             Assert.Single(options.ApplicationUris);
             Assert.Single(options.Application_Uris);
-            Assert.Equal("my-app.10.244.0.34.xip.io", options.ApplicationUris[0]);
-            Assert.Equal("my-app.10.244.0.34.xip.io", options.Application_Uris[0]);
+            Assert.Equal("my-app.10.244.0.34.xip.io", options.ApplicationUris.First());
+            Assert.Equal("my-app.10.244.0.34.xip.io", options.Application_Uris.First());
 
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.ApplicationVersion);
             Assert.Equal("my-app", options.Name);
@@ -126,9 +123,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("my-space", options.Space_Name);
 
             Assert.NotNull(options.Uris);
-            Assert.Equal(2, options.Uris.Length);
-            Assert.Equal("my-app.10.244.0.34.xip.io", options.Uris[0]);
-            Assert.Equal("my-app2.10.244.0.34.xip.io", options.Uris[1]);
+            Assert.Equal(2, options.Uris.Count());
+            Assert.Contains("my-app.10.244.0.34.xip.io", options.Uris);
+            Assert.Contains("my-app2.10.244.0.34.xip.io", options.Uris);
 
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
         }
@@ -183,8 +180,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.NotNull(options.Application_Uris);
             Assert.Single(options.ApplicationUris);
             Assert.Single(options.Application_Uris);
-            Assert.Equal("my-app.10.244.0.34.xip.io", options.ApplicationUris[0]);
-            Assert.Equal("my-app.10.244.0.34.xip.io", options.Application_Uris[0]);
+            Assert.Equal("my-app.10.244.0.34.xip.io", options.ApplicationUris.First());
+            Assert.Equal("my-app.10.244.0.34.xip.io", options.Application_Uris.First());
 
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.ApplicationVersion);
             Assert.Equal("my-app", options.Name);
@@ -194,9 +191,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("my-space", options.Space_Name);
 
             Assert.NotNull(options.Uris);
-            Assert.Equal(2, options.Uris.Length);
-            Assert.Equal("my-app.10.244.0.34.xip.io", options.Uris[0]);
-            Assert.Equal("my-app2.10.244.0.34.xip.io", options.Uris[1]);
+            Assert.Equal(2, options.Uris.Count());
+            Assert.Contains("my-app.10.244.0.34.xip.io", options.Uris);
+            Assert.Contains("my-app2.10.244.0.34.xip.io", options.Uris);
 
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
         }
@@ -239,8 +236,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var builder = new ConfigurationBuilder().Add(jsonSource);
             var config = builder.Build();
 
-            var section = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
-            var options = new CloudFoundryApplicationOptions(section);
+            var options = new CloudFoundryApplicationOptions(config);
 
             Assert.Equal("https://api.system.testcloud.com", options.CF_Api);
             Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);
@@ -252,8 +248,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.NotNull(options.Application_Uris);
             Assert.Single(options.ApplicationUris);
             Assert.Single(options.Application_Uris);
-            Assert.Equal("my-app.10.244.0.34.xip.io", options.ApplicationUris[0]);
-            Assert.Equal("my-app.10.244.0.34.xip.io", options.Application_Uris[0]);
+            Assert.Equal("my-app.10.244.0.34.xip.io", options.ApplicationUris.First());
+            Assert.Equal("my-app.10.244.0.34.xip.io", options.Application_Uris.First());
 
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.ApplicationVersion);
             Assert.Equal("my-app", options.Name);
@@ -263,9 +259,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("my-space", options.Space_Name);
 
             Assert.NotNull(options.Uris);
-            Assert.Equal(2, options.Uris.Length);
-            Assert.Equal("my-app.10.244.0.34.xip.io", options.Uris[0]);
-            Assert.Equal("my-app2.10.244.0.34.xip.io", options.Uris[1]);
+            Assert.Equal(2, options.Uris.Count());
+            Assert.Contains("my-app.10.244.0.34.xip.io", options.Uris);
+            Assert.Contains("my-app2.10.244.0.34.xip.io", options.Uris);
 
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
         }

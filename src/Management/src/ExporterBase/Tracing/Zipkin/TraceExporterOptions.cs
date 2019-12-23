@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Common;
 using System;
 
 namespace Steeltoe.Management.Exporter.Tracing.Zipkin
@@ -24,16 +24,21 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
         internal const string DEFAULT_ENDPOINT = "http://localhost:9411/api/v2/spans";
 
         private const string CONFIG_PREFIX = "management:tracing:exporter:zipkin";
-        private const string SPRING_APPLICATION_PREFIX = "spring:application";
+        private IApplicationInstanceInfo applicationInstanceInfo;
 
         public TraceExporterOptions()
         {
             Endpoint = DEFAULT_ENDPOINT;
         }
 
-        public TraceExporterOptions(string defaultServiceName, IConfiguration config)
+        public TraceExporterOptions(IApplicationInstanceInfo appInfo, IConfiguration config)
             : this()
         {
+            if (appInfo is null)
+            {
+                throw new ArgumentNullException(nameof(appInfo));
+            }
+
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
@@ -45,10 +50,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 section.Bind(this);
             }
 
-            if (string.IsNullOrEmpty(ServiceName))
-            {
-                ServiceName = GetApplicationName(defaultServiceName, config);
-            }
+            applicationInstanceInfo = appInfo;
+            ServiceName ??= applicationInstanceInfo.ApplicationNameInContext(SteeltoeComponent.Management, CONFIG_PREFIX + ":serviceName");
         }
 
         public string Endpoint { get; set; }
@@ -60,35 +63,5 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
         public string ServiceName { get; set; }
 
         public bool UseShortTraceIds { get; set; } = true;
-
-        internal string GetApplicationName(string defaultName, IConfiguration config)
-        {
-            var section = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
-            if (section != null)
-            {
-                CloudFoundryApplicationOptions appOptions = new CloudFoundryApplicationOptions(section);
-                if (!string.IsNullOrEmpty(appOptions.Name))
-                {
-                    return appOptions.Name;
-                }
-            }
-
-            section = config.GetSection(SPRING_APPLICATION_PREFIX);
-            if (section != null)
-            {
-                var name = section["name"];
-                if (!string.IsNullOrEmpty(name))
-                {
-                    return name;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(defaultName))
-            {
-                return defaultName;
-            }
-
-            return "Unknown";
-        }
     }
 }

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
@@ -169,14 +169,8 @@ namespace Steeltoe.CloudFoundry.Connector
         {
             ServiceInfos.Clear();
 
-            var appOpts = new CloudFoundryApplicationOptions();
-            var aopSection = _config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
-            aopSection.Bind(appOpts);
-
-            var appInfo = new ApplicationInstanceInfo(appOpts);
-            var serviceSection = _config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
-            var serviceOpts = new CloudFoundryServicesOptions();
-            serviceSection.Bind(serviceOpts);
+            var appInfo = new CloudFoundryApplicationOptions(_config);
+            var serviceOpts = new CloudFoundryServicesOptions(_config);
 
             foreach (var serviceopt in serviceOpts.Services)
             {

@@ -13,21 +13,34 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Options;
 using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration
 {
-    public abstract class AbstractServiceOptions
+    public abstract class AbstractServiceOptions : AbstractOptions
     {
-        public const string CONFIGURATION_PREFIX = "vcap:services";
+        public string CONFIGURATION_PREFIX { get; protected set; } = "services";
 
+        /// <summary>
+        /// Gets or sets the name of the service instance
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets a label describing the type of service
+        /// </summary>
         public string Label { get; set; }
 
-        public List<string> Tags { get; set; }
+        /// <summary>
+        /// Gets or sets the plan level at which the service is provisoned
+        /// </summary>
+        public IEnumerable<string> Tags { get; set; }
 
+        /// <summary>
+        /// Gets or sets a list of tags describing the service
+        /// </summary>
         public string Plan { get; set; }
 
         public void Bind(IConfiguration configuration, string serviceName)

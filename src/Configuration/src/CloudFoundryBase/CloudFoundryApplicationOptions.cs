@@ -13,86 +13,78 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Options;
+using Steeltoe.Common;
+using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
-    public class CloudFoundryApplicationOptions : AbstractOptions
+    public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
     {
-        public const string CONFIGURATION_PREFIX = "vcap:application";
+        public static string PlatformConfigRoot => "vcap";
+
+        public static readonly string ApplicationConfigRoot = PlatformConfigRoot + ":application";
 
         public CloudFoundryApplicationOptions()
         {
         }
 
-        public CloudFoundryApplicationOptions(IConfigurationRoot root)
-            : base(root, CONFIGURATION_PREFIX)
-        {
-        }
-
         public CloudFoundryApplicationOptions(IConfiguration config)
-            : base(config)
+            : base(config, PlatformConfigRoot)
         {
         }
 
         public string CF_Api { get; set; }
 
-        public string Application_Id { get; set; }
-
-        public string Application_Name { get; set; }
-
-        public string[] Application_Uris { get; set; }
-
-        public string Application_Version { get; set; }
-
-        public string Instance_Id { get; set; }
-
-        public int Instance_Index { get; set; } = -1;
-
-        public Limits Limits { get; set; }
-
         public string Name { get; set; }
-
-        public int Port { get; set; } = -1;
-
-        public string Space_Id { get; set; }
-
-        public string Space_Name { get; set; }
 
         public string Start { get; set; }
 
-        public string[] Uris { get; set; }
+        public string Application_Id { get; set; }
 
-        public string Version { get; set; }
+        public override string ApplicationId => Application_Id;
 
-        public string Instance_IP { get; set; }
+        public string Application_Name { get; set; }
 
-        public string Internal_IP { get; set; }
+        public override string ApplicationName => Application_Name;
 
-        public string ApplicationId => Application_Id;
+        public IEnumerable<string> Application_Uris { get; set; }
 
-        public string ApplicationName => Application_Name;
+        public override IEnumerable<string> ApplicationUris => Application_Uris;
 
-        public string[] ApplicationUris => Application_Uris;
+        public string Application_Version { get; set; }
 
-        public string ApplicationVersion => Application_Version;
+        public override string ApplicationVersion => Application_Version;
 
-        public string InstanceId => Instance_Id;
+        public string Instance_Id { get; set; }
 
-        public int InstanceIndex => Instance_Index;
+        public override string InstanceId => Instance_Id;
+
+        public int Instance_Index { get; set; } = -1;
+
+        public override int InstanceIndex => Instance_Index;
+
+        public string Space_Id { get; set; }
 
         public string SpaceId => Space_Id;
 
+        public string Space_Name { get; set; }
+
         public string SpaceName => Space_Name;
 
-        public string InstanceIP => Instance_IP;
+        public string Instance_IP { get; set; }
 
-        public string InternalIP => Internal_IP;
+        public override string InstanceIP => Instance_IP;
 
-        public int DiskLimit => Limits == null ? -1 : Limits.Disk;
+        public string Internal_IP { get; set; }
 
-        public int MemoryLimit => Limits == null ? -1 : Limits.Mem;
+        public override string InternalIP => Internal_IP;
 
-        public int FileDescriptorLimit => Limits == null ? -1 : Limits.Fds;
+        public Limits Limits { get; set; }
+
+        public override int DiskLimit => Limits == null ? -1 : Limits.Disk;
+
+        public override int MemoryLimit => Limits == null ? -1 : Limits.Mem;
+
+        public override int FileDescriptorLimit => Limits == null ? -1 : Limits.Fds;
     }
 }

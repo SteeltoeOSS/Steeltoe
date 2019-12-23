@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
-using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.Connector.Services;
 using System.Net;
 using Xunit;
@@ -61,13 +60,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         {
             var configurer = new RedisCacheConfigurer();
             var connOptions = new RedisCacheConnectorOptions();
-            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
-            {
-                ApplicationInfo = new ApplicationInstanceInfo()
-                {
-                    ApplicationId = "applicationId"
-                }
-            };
+            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
             configurer.UpdateOptions(si, connOptions);
 
             Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
@@ -105,13 +98,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 Password = "password",
                 InstanceName = "instanceId"
             };
-            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
-            {
-                ApplicationInfo = new ApplicationInstanceInfo()
-                {
-                    InstanceId = "instanceId"
-                }
-            };
+            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
             var connectionSettings = configurer.Configure(si, config);
             Assert.NotNull(connectionSettings);
 
@@ -155,13 +142,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 Port = 1234,
                 Password = "password"
             };
-            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
-            {
-                ApplicationInfo = new ApplicationInstanceInfo()
-                {
-                    InstanceId = "instanceId"
-                }
-            };
+            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
 
             // act
             var opts = configurer.Configure(si, config);

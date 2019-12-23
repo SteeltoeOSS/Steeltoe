@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
+using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -24,7 +25,8 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new CloudFoundryForwarderOptions();
+            var emptyConfig = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>());
+            var opts = new CloudFoundryForwarderOptions(new ApplicationInstanceInfo(emptyConfig), new ServicesOptions(emptyConfig), emptyConfig);
             Assert.Equal(CloudFoundryForwarderOptions.DEFAULT_RATE, opts.RateMilli);
             Assert.True(opts.ValidateCertificates);
             Assert.Equal(CloudFoundryForwarderOptions.DEFAULT_TIMEOUT, opts.TimeoutSeconds);
@@ -32,14 +34,21 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             Assert.Null(opts.AccessToken);
             Assert.Null(opts.ApplicationId);
             Assert.Null(opts.InstanceId);
-            Assert.Null(opts.InstanceIndex);
+            Assert.Equal("-1", opts.InstanceIndex);
         }
 
         [Fact]
-        public void Constructor_ThrowsIfConfigNull()
+        public void Constructor_ThrowsForNulls()
         {
-            IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new CloudFoundryForwarderOptions(config));
+            var emptyConfig = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>());
+            var appInfo = new ApplicationInstanceInfo(emptyConfig);
+            var serviceInfo = new ServicesOptions(emptyConfig);
+            var ex = Assert.Throws<ArgumentNullException>(() => new CloudFoundryForwarderOptions(null, serviceInfo, emptyConfig));
+            Assert.Equal("appInfo", ex.ParamName);
+            ex = Assert.Throws<ArgumentNullException>(() => new CloudFoundryForwarderOptions(appInfo, null, emptyConfig));
+            Assert.Equal("serviceInfo", ex.ParamName);
+            ex = Assert.Throws<ArgumentNullException>(() => new CloudFoundryForwarderOptions(appInfo, serviceInfo, null));
+            Assert.Equal("config", ex.ParamName);
         }
 
         [Fact]
@@ -54,13 +63,11 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
                 ["management:metrics:exporter:cloudfoundry:timeoutSeconds"] = "5",
                 ["management:metrics:exporter:cloudfoundry:applicationId"] = "applicationId",
                 ["management:metrics:exporter:cloudfoundry:instanceId"] = "instanceId",
-                ["management:metrics:exporter:cloudfoundry:instanceIndex"] = "instanceIndex",
+                ["management:metrics:exporter:cloudfoundry:instanceIndex"] = "1",
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
+            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
 
-            var opts = new CloudFoundryForwarderOptions(config);
+            var opts = new CloudFoundryForwarderOptions(new ApplicationInstanceInfo(config), new ServicesOptions(config), config);
             Assert.Equal(1000, opts.RateMilli);
             Assert.False(opts.ValidateCertificates);
             Assert.Equal(5, opts.TimeoutSeconds);
@@ -68,7 +75,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             Assert.Equal("token", opts.AccessToken);
             Assert.Equal("applicationId", opts.ApplicationId);
             Assert.Equal("instanceId", opts.InstanceId);
-            Assert.Equal("instanceIndex", opts.InstanceIndex);
+            Assert.Equal("1", opts.InstanceIndex);
         }
     }
 }

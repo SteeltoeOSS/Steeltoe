@@ -19,11 +19,11 @@ namespace Steeltoe.Common.Options
 {
     public abstract class AbstractOptions
     {
-        public AbstractOptions()
+        protected AbstractOptions()
         {
         }
 
-        public AbstractOptions(IConfigurationRoot root, string sectionPrefix = null)
+        protected AbstractOptions(IConfiguration root, string sectionPrefix = null)
         {
             if (root == null)
             {
@@ -39,16 +39,6 @@ namespace Steeltoe.Common.Options
             {
                 root.Bind(this);
             }
-        }
-
-        public AbstractOptions(IConfiguration config)
-        {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            config.Bind(this);
         }
     }
 }

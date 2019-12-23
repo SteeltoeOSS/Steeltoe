@@ -250,7 +250,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             section.Bind(opt);
             Assert.Single(opt.Services);
 
-            return opt.Services.First().Value[0];
+            return opt.Services.First().Value.First();
         }
     }
 }

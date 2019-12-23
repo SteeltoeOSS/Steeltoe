@@ -17,16 +17,14 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration
 {
-    public class Service
+    /// <summary>
+    /// Represents a service instance bound to an application
+    /// </summary>
+    public class Service : AbstractServiceOptions
     {
-        public string Name { get; set; }
-
-        public string Label { get; set; }
-
-        public string[] Tags { get; set; }
-
-        public string Plan { get; set; }
-
+        /// <summary>
+        /// Gets or sets the connection information and credentials for using the service
+        /// </summary>
         public Dictionary<string, Credential> Credentials { get; set; } = new Dictionary<string, Credential>(StringComparer.InvariantCultureIgnoreCase);
     }
 }

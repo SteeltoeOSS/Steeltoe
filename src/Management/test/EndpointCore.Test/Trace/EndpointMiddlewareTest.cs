@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public async void HandleTraceRequestAsync_ReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
@@ -61,7 +61,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public async void HandleTraceRequestAsync_OtherPathReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
@@ -100,7 +100,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = TestHelper.GetManagementOptions(opts);
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TraceEndpoint(opts, obs);
             var middle = new TraceEndpointMiddleware(null, ep, mopts);

@@ -255,12 +255,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
-            var opt = new CloudFoundryServicesOptions();
-            var section = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
-            section.Bind(opt);
+            var opt = new CloudFoundryServicesOptions(config);
+
             Assert.Single(opt.Services);
 
-            return opt.Services.First().Value[0];
+            return opt.Services.First().Value.First();
         }
     }
 }

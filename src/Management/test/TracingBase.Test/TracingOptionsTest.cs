@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test
@@ -24,10 +26,10 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void InitializedWithDefaults()
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var config = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>());
+            var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
 
-            Assert.Equal("Unknown", opts.Name);
+            Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, opts.Name);
             Assert.Equal(TracingOptions.DEFAULT_INGRESS_IGNORE_PATTERN, opts.IngressIgnorePattern);
             Assert.False(opts.AlwaysSample);
             Assert.False(opts.NeverSample);
@@ -63,9 +65,8 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:useShortTraceIds"] = "true",
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
 
             Assert.Equal("foobar", opts.Name);
             Assert.Equal("pattern", opts.IngressIgnorePattern);
@@ -82,65 +83,43 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void ApplicationName_ReturnsExpected()
         {
-            // Finds spring app name
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["spring:application:name"] = "foobar"
-            };
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var appsettings = new Dictionary<string, string>();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
-            TracingOptions opts = new TracingOptions("default", config);
-            Assert.Equal("foobar", opts.Name);
+            var appInstanceInfo = new ApplicationInstanceInfo(config);
 
-            // Management name overrides spring name
-            appsettings = new Dictionary<string, string>()
-            {
-                ["spring:application:name"] = "foobar",
-                ["management:tracing:name"] = "foobar2"
-            };
-            builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
+            // Uses Assembly name as default
+            var opts = new TracingOptions(appInstanceInfo, config);
+            Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, opts.Name);
+
+            // Finds Spring app name
+            appsettings.Add("spring:application:name", "SpringApplicationName");
             config = builder.Build();
-            opts = new TracingOptions(null, config);
-            Assert.Equal("foobar2", opts.Name);
+            appInstanceInfo = new ApplicationInstanceInfo(config);
+            opts = new TracingOptions(appInstanceInfo, config);
+            Assert.Equal("SpringApplicationName", opts.Name);
 
-            // Default name returned
-            appsettings = new Dictionary<string, string>();
-            builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
+            // Platform app name overrides spring name
+            appsettings.Add("application:name", "PlatformName");
             config = builder.Build();
-            opts = new TracingOptions("default", config);
-            Assert.Equal("default", opts.Name);
+            appInstanceInfo = new ApplicationInstanceInfo(config);
+            opts = new TracingOptions(appInstanceInfo, config);
+            Assert.Equal("PlatformName", opts.Name);
 
-            // No default name, returns unknown
-            opts = new TracingOptions(null, config);
-            Assert.Equal("Unknown", opts.Name);
-
-            // vcap app name overrides spring name
-            appsettings = new Dictionary<string, string>()
-            {
-                ["vcap:application:name"] = "foobar",
-                ["spring:application:name"] = "foobar",
-            };
-            builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
+            // Finds and uses management name
+            appsettings.Add("management:name", "ManagementName");
             config = builder.Build();
-            opts = new TracingOptions(null, config);
-            Assert.Equal("foobar", opts.Name);
+            appInstanceInfo = new ApplicationInstanceInfo(config);
+            opts = new TracingOptions(appInstanceInfo, config);
+            Assert.Equal("ManagementName", opts.Name);
 
-            // Management name overrides everything
-            appsettings = new Dictionary<string, string>()
-            {
-                ["management:tracing:name"] = "foobar",
-                ["vcap:application:name"] = "foobar1",
-                ["spring:application:name"] = "foobar2",
-            };
-            builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
+            // management:tracing name trumps all else
+            appsettings.Add("management:tracing:name", "ManagementTracingName");
             config = builder.Build();
-            opts = new TracingOptions(null, config);
-            Assert.Equal("foobar", opts.Name);
+            appInstanceInfo = new ApplicationInstanceInfo(config);
+            opts = new TracingOptions(appInstanceInfo, config);
+            Assert.Equal("ManagementTracingName", opts.Name);
         }
     }
 }

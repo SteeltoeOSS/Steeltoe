@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.App;
+using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
     internal class TestServiceInfo : ServiceInfo
     {
-        public TestServiceInfo(string id, ApplicationInstanceInfo info)
+        public TestServiceInfo(string id, IApplicationInstanceInfo info)
             : base(id, info)
         {
         }
