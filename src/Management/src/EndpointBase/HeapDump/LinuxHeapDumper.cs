@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Diagnostics.Tools.RuntimeClient;
+using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
@@ -40,15 +40,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 fileName = _basePathOverride + fileName;
             }
 
-            // TODO: Honor option with respect to dump type (how? - IHeapDumpOptions don't seems to have the information)
-            int hr = DiagnosticsHelpers.GenerateCoreDump(Process.GetCurrentProcess().Id, fileName, DiagnosticsHelpers.DumpType.Full, false);
-            if (hr == 0)
+            try
             {
+                // TODO: Honor option with respect to dump type (how? - IHeapDumpOptions don't seems to have the information)
+                new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump(DumpType.Full, fileName, false);
                 return fileName;
             }
-            else
+            catch (DiagnosticsClientException dcex)
             {
-                _logger?.LogError(string.Format("Could not create core dump to process. Error {0}.", hr));
+                _logger?.LogError(string.Format("Could not create core dump to process. Error {0}.", dcex));
                 return null;
             }
         }
