@@ -49,7 +49,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         public IEnumerable<string> Application_Uris { get; set; }
 
-        public override IEnumerable<string> ApplicationUris => Application_Uris;
+        public IEnumerable<string> ApplicationUris => Application_Uris;
 
         public string Application_Version { get; set; }
 

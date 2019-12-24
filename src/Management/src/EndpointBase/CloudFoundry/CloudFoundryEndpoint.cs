@@ -47,47 +47,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public override Links Invoke(string baseUrl)
         {
-            if (_mgmtOption != null)
-            {
-                HypermediaService hypermediaService = new HypermediaService(_mgmtOption, options, _logger);
-                return hypermediaService.Invoke(baseUrl);
-            }
-
-            throw new NotImplementedException();
-
-            // TODO: The below code will be removed in 3.0 @Hananiel
-            // else
-            // {
-            //    var endpointOptions = Options.Global.EndpointOptions; <-- "Use EndPointExtensions instead"
-            //    var links = new Links();
-            //    if (!Options.Enabled.Value)
-            //    {
-            //        return links;
-            //    }
-            //    foreach (var opt in endpointOptions)
-            //    {
-            //        if (!opt.Enabled.Value)
-            //        {
-            //            continue;
-            //        }
-            //        if (opt == Options)
-            //        {
-            //            links._links.Add("self", new Link(baseUrl));
-            //        }
-            //        else
-            //        {
-            //            if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
-            //            {
-            //                links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Id));
-            //            }
-            //            else if (links._links.ContainsKey(opt.Id))
-            //            {
-            //                _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
-            //            }
-            //        }
-            //    }
-            //    return links;
-            // }
+            var hypermediaService = new HypermediaService(_mgmtOption, options, _logger);
+            return hypermediaService.Invoke(baseUrl);
         }
     }
 }

@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace Steeltoe
 {
@@ -66,6 +67,8 @@ namespace Steeltoe
             builder.AddInMemoryCollection(collection);
             return builder.Build();
         }
+
+        public static string EntryAssemblyName => Assembly.GetEntryAssembly().GetName().Name;
 
         public static string VCAP_APPLICATION = @"
             {

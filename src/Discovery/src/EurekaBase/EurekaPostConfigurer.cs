@@ -51,7 +51,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (!uri.EndsWith(EUREKA_URI_SUFFIX))
             {
-                uri = uri + EUREKA_URI_SUFFIX;
+                uri += EUREKA_URI_SUFFIX;
             }
 
             clientOptions.EurekaServerServiceUrls = uri;
@@ -166,17 +166,17 @@ namespace Steeltoe.Discovery.Eureka
             instOptions.NonSecurePort = DEFAULT_NONSECUREPORT;
             instOptions.SecurePort = DEFAULT_SECUREPORT;
 
-            if (si.ApplicationInfo.ApplicationUris.Any())
+            if (si.ApplicationInfo.Uris.Any())
             {
-                instOptions.InstanceId = si.ApplicationInfo.ApplicationUris.First() + ":" + si.ApplicationInfo.InstanceId;
+                instOptions.InstanceId = si.ApplicationInfo.Uris.First() + ":" + si.ApplicationInfo.InstanceId;
             }
         }
 
         private static void UpdateWithDefaults(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
         {
-            if (si.ApplicationInfo.ApplicationUris != null && si.ApplicationInfo.ApplicationUris.Any())
+            if (si.ApplicationInfo.Uris != null && si.ApplicationInfo.Uris.Any())
             {
-                instOptions.HostName = si.ApplicationInfo.ApplicationUris.First();
+                instOptions.HostName = si.ApplicationInfo.Uris.First();
             }
 
             instOptions.IpAddress = si.ApplicationInfo.InternalIP;

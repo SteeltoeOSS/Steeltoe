@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             var config = new ConfigurationBuilder().Build();
             var opts = new TraceExporterOptions(new ApplicationInstanceInfo(config), config);
 
-            Assert.Equal("testhost.x86", opts.ServiceName);
+            Assert.Equal(TestHelpers.EntryAssemblyName, opts.ServiceName);
             Assert.True(opts.ValidateCertificates);
             Assert.Equal(TraceExporterOptions.DEFAULT_TIMEOUT, opts.TimeoutSeconds);
             Assert.True(opts.UseShortTraceIds);
@@ -90,7 +90,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             appsettings = new Dictionary<string, string>();
             config = TestHelpers.GetConfigurationFromDictionary(appsettings);
             opts = new TraceExporterOptions(new ApplicationInstanceInfo(config), config);
-            Assert.Equal("testhost.x86", opts.ServiceName);
+            Assert.Equal(TestHelpers.EntryAssemblyName, opts.ServiceName);
 
             // vcap app name overrides spring name
             appsettings = new Dictionary<string, string>()

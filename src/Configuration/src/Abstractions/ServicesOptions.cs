@@ -13,13 +13,10 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Options;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration
 {
-    public class ServicesOptions : AbstractOptions, IServicesInfo
+    public class ServicesOptions : AbstractServiceOptions
     {
         public ServicesOptions()
         {
@@ -33,28 +30,6 @@ namespace Steeltoe.Extensions.Configuration
         public ServicesOptions(IConfiguration config, string configPrefix = "")
             : base(config, configPrefix)
         {
-        }
-
-        public Dictionary<string, IEnumerable<Service>> Services { get; set; } = new Dictionary<string, IEnumerable<Service>>();
-
-        public IEnumerable<Service> GetServicesList()
-        {
-            var results = new List<Service>();
-            if (Services != null)
-            {
-                foreach (var kvp in Services)
-                {
-                    results.AddRange(kvp.Value);
-                }
-            }
-
-            return results;
-        }
-
-        public IEnumerable<Service> GetInstancesOfType(string serviceType)
-        {
-            Services.TryGetValue(serviceType, out var services);
-            return services ?? new List<Service>();
         }
     }
 }

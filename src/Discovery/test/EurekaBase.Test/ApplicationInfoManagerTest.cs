@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Initialize_Initializes_InstanceInfo()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
+            var config = new EurekaInstanceConfig();
             ApplicationInfoManager.Instance.Initialize(config);
 
             Assert.NotNull(ApplicationInfoManager.Instance.InstanceConfig);
@@ -71,7 +71,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void StatusChanged_ChangesStatus()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
+            var config = new EurekaInstanceConfig();
             ApplicationInfoManager.Instance.Initialize(config);
 
             Assert.Equal(InstanceStatus.STARTING, ApplicationInfoManager.Instance.InstanceStatus);
@@ -81,7 +81,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void StatusChanged_ChangesStatus_SendsEvents()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
+            var config = new EurekaInstanceConfig();
             ApplicationInfoManager.Instance.Initialize(config);
             Assert.Equal(InstanceStatus.STARTING, ApplicationInfoManager.Instance.InstanceStatus);
 
@@ -98,7 +98,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void StatusChanged_RemovesEventHandler()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
+            var config = new EurekaInstanceConfig();
             ApplicationInfoManager.Instance.Initialize(config);
             Assert.Equal(InstanceStatus.STARTING, ApplicationInfoManager.Instance.InstanceStatus);
 
@@ -118,11 +118,11 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void RefreshLeaseInfo_UpdatesLeaseInfo()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
+            var config = new EurekaInstanceConfig();
             ApplicationInfoManager.Instance.Initialize(config);
 
             ApplicationInfoManager.Instance.RefreshLeaseInfo();
-            InstanceInfo info = ApplicationInfoManager.Instance.InstanceInfo;
+            var info = ApplicationInfoManager.Instance.InstanceInfo;
 
             Assert.False(info.IsDirty);
             Assert.Equal(config.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
@@ -138,7 +138,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
         private void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
         {
-            this.eventArg = args;
+            eventArg = args;
         }
     }
 }

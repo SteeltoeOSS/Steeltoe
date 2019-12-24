@@ -87,8 +87,6 @@ namespace Steeltoe.Common
             };
         }
 
-        public virtual IEnumerable<string> ApplicationUris { get; set; }
-
         public virtual string ApplicationVersion { get; set; }
 
         public virtual int InstanceIndex { get; set; } = -1;

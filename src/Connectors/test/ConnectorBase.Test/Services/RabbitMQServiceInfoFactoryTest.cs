@@ -245,8 +245,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
-            var opt = new CloudFoundryServicesOptions();
-            var section = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
+            var opt = new CloudFoundryServicesOptions(config);
+            var section = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
             section.Bind(opt);
             Assert.Single(opt.Services);
 

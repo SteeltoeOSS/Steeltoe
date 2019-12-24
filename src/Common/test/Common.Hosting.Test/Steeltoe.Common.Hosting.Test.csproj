@@ -4,7 +4,7 @@
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="$(OS.Contains('Win'))">
-    <TargetFrameworks>netcoreapp3.0;net461;netcoreapp2.1;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;netcoreapp2.1;</TargetFrameworks>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedtest.props" />
 

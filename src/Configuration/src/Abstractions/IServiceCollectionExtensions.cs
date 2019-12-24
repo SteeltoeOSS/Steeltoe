@@ -29,15 +29,15 @@ namespace Steeltoe.Extensions.Configuration
         public static IServicesInfo GetServicesInfo(this IServiceCollection serviceCollection)
         {
             var sp = serviceCollection.BuildServiceProvider();
-            var appInfo = sp.GetServices<IServicesInfo>();
-            if (!appInfo.Any())
+            var servicesInfo = sp.GetServices<IServicesInfo>();
+            if (!servicesInfo.Any())
             {
                 var config = sp.GetRequiredService<IConfiguration>();
-                var newAppInfo = new ServicesOptions(config);
-                serviceCollection.AddSingleton(typeof(IServicesInfo), newAppInfo);
+                var newServicesInfo = new ServicesOptions(config);
+                serviceCollection.AddSingleton(typeof(IServicesInfo), newServicesInfo);
             }
 
-            return appInfo.First();
+            return servicesInfo.First();
         }
     }
 }

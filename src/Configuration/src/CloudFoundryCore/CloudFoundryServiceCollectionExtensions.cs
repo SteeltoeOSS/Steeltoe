@@ -48,7 +48,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             var appSection = config.GetSection(CloudFoundryApplicationOptions.ApplicationConfigRoot);
             services.Configure<CloudFoundryApplicationOptions>(appSection);
 
-            var serviceSection = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
+            var serviceSection = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
             services.Configure<CloudFoundryServicesOptions>(serviceSection);
 
             return services;
@@ -65,7 +65,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         /// <param name="serviceName">the Cloud Foundry service name to bind to the options type</param>
         /// <returns>service container</returns>
         public static IServiceCollection ConfigureCloudFoundryService<TOption>(this IServiceCollection services, IConfiguration config, string serviceName)
-            where TOption : AbstractServiceOptions
+            where TOption : CloudFoundryServicesOptions
         {
             if (services == null)
             {
@@ -101,7 +101,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         /// <param name="serviceLabel">the Cloud Foundry service label to use to bind to the options type</param>
         /// <returns>serice container</returns>
         public static IServiceCollection ConfigureCloudFoundryServices<TOption>(this IServiceCollection services, IConfiguration config, string serviceLabel)
-               where TOption : AbstractServiceOptions
+               where TOption : CloudFoundryServicesOptions
         {
             if (services == null)
             {

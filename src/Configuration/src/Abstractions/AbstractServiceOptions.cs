@@ -19,9 +19,24 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration
 {
-    public abstract class AbstractServiceOptions : AbstractOptions
+    public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
     {
-        public string CONFIGURATION_PREFIX { get; protected set; } = "services";
+        public virtual string CONFIGURATION_PREFIX { get; protected set; } = "services";
+
+        // This constructor is for use with IOptions
+        protected AbstractServiceOptions()
+        {
+        }
+
+        protected AbstractServiceOptions(IConfigurationRoot root, string sectionPrefix = "")
+            : base(root, sectionPrefix)
+        {
+        }
+
+        protected AbstractServiceOptions(IConfiguration config, string sectionPrefix = "")
+            : base(config, sectionPrefix)
+        {
+        }
 
         /// <summary>
         /// Gets or sets the name of the service instance
@@ -42,6 +57,28 @@ namespace Steeltoe.Extensions.Configuration
         /// Gets or sets a list of tags describing the service
         /// </summary>
         public string Plan { get; set; }
+
+        public Dictionary<string, IEnumerable<Service>> Services { get; set; } = new Dictionary<string, IEnumerable<Service>>();
+
+        public IEnumerable<Service> GetServicesList()
+        {
+            var results = new List<Service>();
+            if (Services != null)
+            {
+                foreach (var kvp in Services)
+                {
+                    results.AddRange(kvp.Value);
+                }
+            }
+
+            return results;
+        }
+
+        public IEnumerable<Service> GetInstancesOfType(string serviceType)
+        {
+            Services.TryGetValue(serviceType, out var services);
+            return services ?? new List<Service>();
+        }
 
         public void Bind(IConfiguration configuration, string serviceName)
         {

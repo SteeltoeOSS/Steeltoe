@@ -27,12 +27,6 @@ namespace Steeltoe.Discovery.Eureka
             Initialize(InstanceConfig, logFactory);
         }
 
-        public override IEurekaInstanceConfig InstanceConfig
-        {
-            get
-            {
-                return _instConfig.CurrentValue;
-            }
-        }
+        public override IEurekaInstanceConfig InstanceConfig => _instConfig.CurrentValue;
     }
 }

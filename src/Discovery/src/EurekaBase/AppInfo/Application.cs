@@ -21,35 +21,21 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class Application
     {
-        private ConcurrentDictionary<string, InstanceInfo> _instanceMap = new ConcurrentDictionary<string, InstanceInfo>();
-
         public string Name { get; internal set; }
 
-        public int Count
-        {
-            get
-            {
-                return _instanceMap.Count;
-            }
-        }
+        public int Count => InstanceMap.Count;
 
-        public IList<InstanceInfo> Instances
-        {
-            get
-            {
-                return new List<InstanceInfo>(_instanceMap.Values);
-            }
-        }
+        public IList<InstanceInfo> Instances => new List<InstanceInfo>(InstanceMap.Values);
 
         public InstanceInfo GetInstance(string instanceId)
         {
-            _instanceMap.TryGetValue(instanceId, out InstanceInfo result);
+            InstanceMap.TryGetValue(instanceId, out var result);
             return result;
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("Application[");
+            var sb = new StringBuilder("Application[");
             sb.Append("Name=" + Name);
             sb.Append(",Instances=");
             foreach (var inst in Instances)
@@ -70,7 +56,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         internal Application(string name, IList<InstanceInfo> instances)
         {
             Name = name;
-            foreach (InstanceInfo info in instances)
+            foreach (var info in instances)
             {
                 Add(info);
             }
@@ -80,29 +66,23 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         {
             if (!string.IsNullOrEmpty(info.InstanceId))
             {
-                _instanceMap[info.InstanceId] = info;
+                InstanceMap[info.InstanceId] = info;
             }
             else if (!string.IsNullOrEmpty(info.HostName))
             {
-                _instanceMap[info.HostName] = info;
+                InstanceMap[info.HostName] = info;
             }
         }
 
         internal void Remove(InstanceInfo info)
         {
-            if (!_instanceMap.TryRemove(info.InstanceId, out InstanceInfo removed))
+            if (!InstanceMap.TryRemove(info.InstanceId, out var removed))
             {
-                _instanceMap.TryRemove(info.HostName, out removed);
+                InstanceMap.TryRemove(info.HostName, out removed);
             }
         }
 
-        internal ConcurrentDictionary<string, InstanceInfo> InstanceMap
-        {
-            get
-            {
-                return _instanceMap;
-            }
-        }
+        internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new ConcurrentDictionary<string, InstanceInfo>();
 
         internal static Application FromJsonApplication(JsonApplication japp)
         {
@@ -111,7 +91,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return null;
             }
 
-            Application app = new Application(japp.Name);
+            var app = new Application(japp.Name);
             if (japp.Instances != null)
             {
                 foreach (var instance in japp.Instances)

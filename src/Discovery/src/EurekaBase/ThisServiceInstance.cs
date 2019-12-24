@@ -41,52 +41,22 @@ namespace Steeltoe.Discovery.Eureka
             return InstConfig.GetHostName(false);
         }
 
-        public bool IsSecure
-        {
-            get
-            {
-                return InstConfig.SecurePortEnabled;
-            }
-        }
+        public bool IsSecure => InstConfig.SecurePortEnabled;
 
-        public IDictionary<string, string> Metadata
-        {
-            get
-            {
-                return InstConfig.MetadataMap;
-            }
-        }
+        public IDictionary<string, string> Metadata => InstConfig.MetadataMap;
 
-        public int Port
-        {
-            get
-            {
-                return (InstConfig.NonSecurePort == -1) ? EurekaInstanceConfig.Default_NonSecurePort : InstConfig.NonSecurePort;
-            }
-        }
+        public int Port => (InstConfig.NonSecurePort == -1) ? EurekaInstanceConfig.Default_NonSecurePort : InstConfig.NonSecurePort;
 
-        public int SecurePort
-        {
-            get
-            {
-                return (InstConfig.SecurePort == -1) ? EurekaInstanceConfig.Default_SecurePort : InstConfig.SecurePort;
-            }
-        }
+        public int SecurePort => (InstConfig.SecurePort == -1) ? EurekaInstanceConfig.Default_SecurePort : InstConfig.SecurePort;
 
-        public string ServiceId
-        {
-            get
-            {
-                return InstConfig.AppName;
-            }
-        }
+        public string ServiceId => InstConfig.AppName;
 
         public Uri Uri
         {
             get
             {
-                string scheme = IsSecure ? "https" : "http";
-                int uriPort = IsSecure ? SecurePort : Port;
+                var scheme = IsSecure ? "https" : "http";
+                var uriPort = IsSecure ? SecurePort : Port;
                 var uri = new Uri(scheme + "://" + GetHost() + ":" + uriPort.ToString());
                 return uri;
             }

@@ -19,6 +19,7 @@ namespace Steeltoe.Common.Options
 {
     public abstract class AbstractOptions
     {
+        // This constructor is for use with IOptions
         protected AbstractOptions()
         {
         }
