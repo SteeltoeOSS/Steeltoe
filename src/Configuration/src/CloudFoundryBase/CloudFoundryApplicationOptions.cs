@@ -22,30 +22,44 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
     {
         public static string PlatformConfigRoot => "vcap";
 
-        public static readonly string ApplicationConfigRoot = PlatformConfigRoot + ":application";
+        protected override string PlatformRoot => PlatformConfigRoot;
 
         public CloudFoundryApplicationOptions()
         {
+            SecondChanceSetIdProperties();
         }
 
         public CloudFoundryApplicationOptions(IConfiguration config)
             : base(config, PlatformConfigRoot)
         {
+            SetIdPropertiesFromVCAP(config);
+        }
+
+        private void SetIdPropertiesFromVCAP(IConfiguration config = null)
+        {
+            if (config != null)
+            {
+                var vcapInstanceId = config.GetValue<string>(PlatformConfigRoot + ":application:instance_id");
+                if (!string.IsNullOrEmpty(vcapInstanceId))
+                {
+                    Instance_Id = vcapInstanceId;
+                }
+
+                var vcapAppId = config.GetValue<string>(PlatformConfigRoot + ":application:id");
+                if (!string.IsNullOrEmpty(vcapAppId))
+                {
+                    Application_Id = vcapAppId;
+                }
+            }
         }
 
         public string CF_Api { get; set; }
 
         public string Name { get; set; }
 
+        public override string ApplicationName => Name;
+
         public string Start { get; set; }
-
-        public string Application_Id { get; set; }
-
-        public override string ApplicationId => Application_Id;
-
-        public string Application_Name { get; set; }
-
-        public override string ApplicationName => Application_Name;
 
         public IEnumerable<string> Application_Uris { get; set; }
 
@@ -54,10 +68,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         public string Application_Version { get; set; }
 
         public override string ApplicationVersion => Application_Version;
-
-        public string Instance_Id { get; set; }
-
-        public override string InstanceId => Instance_Id;
 
         public int Instance_Index { get; set; } = -1;
 

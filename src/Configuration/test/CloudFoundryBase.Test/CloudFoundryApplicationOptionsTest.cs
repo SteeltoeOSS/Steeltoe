@@ -31,15 +31,12 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             Assert.Null(options.CF_Api);
             Assert.Null(options.ApplicationId);
-            Assert.Null(options.Application_Id);
             Assert.Null(options.ApplicationName);
-            Assert.Null(options.Application_Name);
             Assert.Null(options.ApplicationUris);
             Assert.Null(options.Application_Uris);
             Assert.Null(options.ApplicationVersion);
             Assert.Null(options.Application_Version);
             Assert.Null(options.InstanceId);
-            Assert.Null(options.Instance_Id);
             Assert.Equal(-1, options.InstanceIndex);
             Assert.Equal(-1, options.Instance_Index);
             Assert.Null(options.Limits);
@@ -104,9 +101,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             Assert.Equal("https://api.system.testcloud.com", options.CF_Api);
             Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);
-            Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.Application_Id);
             Assert.Equal("my-app", options.ApplicationName);
-            Assert.Equal("my-app", options.Application_Name);
 
             Assert.NotNull(options.ApplicationUris);
             Assert.NotNull(options.Application_Uris);
@@ -172,9 +167,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             Assert.Equal("https://api.system.testcloud.com", options.CF_Api);
             Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);
-            Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.Application_Id);
             Assert.Equal("my-app", options.ApplicationName);
-            Assert.Equal("my-app", options.Application_Name);
 
             Assert.NotNull(options.ApplicationUris);
             Assert.NotNull(options.Application_Uris);
@@ -240,9 +233,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             Assert.Equal("https://api.system.testcloud.com", options.CF_Api);
             Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);
-            Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.Application_Id);
             Assert.Equal("my-app", options.ApplicationName);
-            Assert.Equal("my-app", options.Application_Name);
 
             Assert.NotNull(options.ApplicationUris);
             Assert.NotNull(options.Application_Uris);

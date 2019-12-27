@@ -23,7 +23,7 @@ namespace Steeltoe.Common
     public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
     {
         public static readonly string ApplicationRoot = "application";
-        public readonly string AppInfoRoot = "spring:application";
+        public readonly string SpringApplicationRoot = "spring:application";
         public readonly string ServicesRoot = "services";
         public readonly string EurekaRoot = "eureka";
         public readonly string ConfigServerRoot = "spring:cloud:config";
@@ -32,7 +32,9 @@ namespace Steeltoe.Common
 
         public string DefaultAppName => Assembly.GetEntryAssembly().GetName().Name;
 
-        public string AppNameKey => AppInfoRoot + ":name";
+        public string AppNameKey => SpringApplicationRoot + ":name";
+
+        public string AppInstanceIdKey => SpringApplicationRoot + ":instance_id";
 
         public string ConfigServerNameKey => ConfigServerRoot + ":name";
 
@@ -44,7 +46,16 @@ namespace Steeltoe.Common
 
         public string PlatformNameKey => BuildConfigString(PlatformRoot, ApplicationRoot + ":name");
 
-        protected static string PlatformRoot => string.Empty;
+        protected virtual string PlatformRoot => string.Empty;
+
+        protected void SecondChanceSetIdProperties(IConfiguration config = null)
+        {
+            if (config != null)
+            {
+                Instance_Id ??= config.GetValue<string>(AppInstanceIdKey);
+                Application_Id ??= config.GetValue<string>(SpringApplicationRoot + ":id");
+            }
+        }
 
         private static string BuildConfigString(string prefix, string key)
         {
@@ -62,17 +73,31 @@ namespace Steeltoe.Common
 
         public ApplicationInstanceInfo()
         {
+            SecondChanceSetIdProperties();
         }
 
         public ApplicationInstanceInfo(IConfiguration configuration, string configPrefix = "")
             : base(configuration, BuildConfigString(configPrefix, "application"))
         {
             this.configuration = configuration;
+            SecondChanceSetIdProperties(this.configuration);
         }
 
-        public virtual string InstanceId { get; set; }
+        public string Instance_Id { get; set; }
 
-        public virtual string ApplicationId { get; set; }
+        public virtual string InstanceId
+        {
+            get { return Instance_Id; }
+            set { Instance_Id = value; }
+        }
+
+        public string Application_Id { get; set; }
+
+        public virtual string ApplicationId
+        {
+            get { return Application_Id; }
+            set { Application_Id = value; }
+        }
 
         public virtual string ApplicationName => configuration?.GetValue(AppNameKey, DefaultAppName);
 

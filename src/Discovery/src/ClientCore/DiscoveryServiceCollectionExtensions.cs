@@ -190,7 +190,8 @@ namespace Steeltoe.Discovery.Client
             services.AddSingleton<IConsulRegistration>((p) =>
             {
                 var opts = p.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
-                return ConsulRegistration.CreateRegistration(config, opts.Value);
+                var appInfo = services.GetApplicationInstanceInfo();
+                return ConsulRegistration.CreateRegistration(opts.Value, appInfo);
             });
             services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();
             services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();

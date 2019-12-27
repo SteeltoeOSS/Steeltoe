@@ -14,33 +14,31 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using System.Linq;
 
-namespace Steeltoe.Common
+namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
     public static class IServiceCollectionExtensions
     {
         /// <summary>
-        /// If an instance of <see cref="IApplicationInstanceInfo"/> is found, it is returned.
-        /// Otherwise a default instance is added to the collection and then returned.
+        /// Removes any existing <see cref="IApplicationInstanceInfo"/> if found. Registers a <see cref="CloudFoundryApplicationOptions" />
         /// </summary>
         /// <param name="serviceCollection">Collection of configured services</param>
-        /// <returns>Relevant <see cref="IApplicationInstanceInfo" /></returns>
-        public static IApplicationInstanceInfo GetApplicationInstanceInfo(this IServiceCollection serviceCollection)
+        public static IServiceCollection RegisterCloudFoundryApplicationInstanceInfo(this IServiceCollection serviceCollection)
         {
+            var appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
+            if (appInfo != null)
+            {
+                serviceCollection.Remove(appInfo);
+            }
+
             var sp = serviceCollection.BuildServiceProvider();
-            var appInfo = sp.GetServices<IApplicationInstanceInfo>();
-            if (!appInfo.Any())
-            {
-                var config = sp.GetRequiredService<IConfiguration>();
-                var newAppInfo = new ApplicationInstanceInfo(config);
-                serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo), newAppInfo);
-                return newAppInfo;
-            }
-            else
-            {
-                return appInfo.First();
-            }
+            var config = sp.GetRequiredService<IConfiguration>();
+            var newAppInfo = new CloudFoundryApplicationOptions(config);
+            serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo), newAppInfo);
+
+            return serviceCollection;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var root = builder.Build();
 
             var instOpts = new EurekaInstanceOptions();
-            EurekaPostConfigurer.UpdateConfiguration(root, instOpts);
+            EurekaPostConfigurer.UpdateConfiguration(root, instOpts, new ApplicationInstanceInfo(root));
 
             Assert.Equal("bar", instOpts.AppName);
             Assert.Equal("instance", instOpts.InstanceId);
@@ -69,7 +69,7 @@ namespace Steeltoe.Discovery.Eureka.Test
                 RegistrationMethod = "dontChange"
             };
 
-            EurekaPostConfigurer.UpdateConfiguration(root, instOpts);
+            EurekaPostConfigurer.UpdateConfiguration(root, instOpts, null);
 
             Assert.Equal("dontChange", instOpts.AppName);
             Assert.Equal("dontChange", instOpts.InstanceId);
@@ -92,7 +92,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var instOpts = new EurekaInstanceOptions();
 
-            EurekaPostConfigurer.UpdateConfiguration(root, instOpts);
+            EurekaPostConfigurer.UpdateConfiguration(root, instOpts, new ApplicationInstanceInfo(root));
 
             Assert.Equal("bar", instOpts.AppName);
             Assert.EndsWith("bar:80", instOpts.InstanceId, StringComparison.OrdinalIgnoreCase);
@@ -120,7 +120,7 @@ namespace Steeltoe.Discovery.Eureka.Test
                 RegistrationMethod = "dontChange"
             };
 
-            EurekaPostConfigurer.UpdateConfiguration(root, instOpts);
+            EurekaPostConfigurer.UpdateConfiguration(root, instOpts, null);
 
             Assert.Equal("dontChange", instOpts.AppName);
             Assert.Equal("dontChange", instOpts.InstanceId);

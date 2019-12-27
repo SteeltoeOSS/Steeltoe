@@ -14,8 +14,10 @@
 
 using Consul;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Util;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -78,29 +80,44 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         }
 
         [Fact]
-        public void GetAppName_ReturnsExpected()
+        public void AppName_SetAsExpected()
         {
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
-            {
-                ServiceName = "serviceName"
-            };
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-                {
-                    { "spring:application:name", "foobar" }
-                })
-                .Build();
+            var options = new ConsulDiscoveryOptions();
+            var appsettings = new Dictionary<string, string>();
+            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            var appInstanceInfo = new ApplicationInstanceInfo(config);
 
-            var result = ConsulRegistration.GetAppName(options, config);
-            Assert.Equal("serviceName", result);
+            // default value is assembly name
+            var result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
+            Assert.Equal(TestHelpers.EntryAssemblyName.Replace(".", "-"), result.Service.Name);
 
-            options.ServiceName = null;
-            result = ConsulRegistration.GetAppName(options, config);
-            Assert.Equal("foobar", result);
+            // followed by spring:application:name
+            appsettings.Add("spring:application:name", "SpringApplicationName");
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            appInstanceInfo = new ApplicationInstanceInfo(config);
+            result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
+            Assert.Equal("SpringApplicationName", result.Service.Name);
 
-            config = new ConfigurationBuilder().Build();
-            result = ConsulRegistration.GetAppName(options, config);
-            Assert.Equal("application", result);
+            // Platform app name overrides spring name
+            appsettings.Add("application:name", "PlatformName");
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            appInstanceInfo = new ApplicationInstanceInfo(config);
+            result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
+            Assert.Equal("PlatformName", result.Service.Name);
+
+            // Consul-specific value beats generic value
+            appsettings.Add("consul:serviceName", "ConsulServiceName");
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            appInstanceInfo = new ApplicationInstanceInfo(config);
+            result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
+            Assert.Equal("ConsulServiceName", result.Service.Name);
+
+            // Consul-discovery is highest priority
+            appsettings.Add("consul:discovery:serviceName", "ConsulDiscoveryServiceName");
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            appInstanceInfo = new ApplicationInstanceInfo(config);
+            result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
+            Assert.Equal("ConsulDiscoveryServiceName", result.Service.Name);
         }
 
         [Fact]
@@ -134,37 +151,27 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void GetDefaultInstanceId_ReturnsExpected()
         {
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
-            {
-                ServiceName = "serviceName"
-            };
-            var config = new ConfigurationBuilder().Build();
-            var result = ConsulRegistration.GetDefaultInstanceId(options, config);
+            var options = new ConsulDiscoveryOptions();
+            var appsettings = new Dictionary<string, string>() { { "consul:discovery:serviceName", "serviceName" } };
+            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            var result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(config));
             Assert.StartsWith("serviceName:", result);
 
-            config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-                {
-                    { "vcap:application:instance_id", "vcapid" }
-                })
-                .Build();
-            result = ConsulRegistration.GetDefaultInstanceId(options, config);
-            Assert.Equal("serviceName:vcapid", result);
-
-            config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-                {
-                    { "spring:application:instance_id", "springid" }
-                })
-                .Build();
-            result = ConsulRegistration.GetDefaultInstanceId(options, config);
+            appsettings.Add("spring:application:instance_id", "springid");
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(config));
             Assert.Equal("serviceName:springid", result);
+
+            appsettings.Add("vcap:application:instance_id", "vcapid");
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            result = ConsulRegistration.GetDefaultInstanceId(new CloudFoundryApplicationOptions(config));
+            Assert.Equal("serviceName:vcapid", result);
         }
 
         [Fact]
         public void GetInstanceId_ReturnsExpected()
         {
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions()
             {
                 InstanceId = "instanceId"
             };
@@ -176,12 +183,12 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 })
                 .Build();
 
-            var result = ConsulRegistration.GetInstanceId(options, config);
+            var result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(config));
             Assert.Equal("instanceId", result);
 
             options.InstanceId = null;
 
-            result = ConsulRegistration.GetInstanceId(options, config);
+            result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(config));
             Assert.StartsWith("foobar-", result);
         }
 
@@ -234,7 +241,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 })
                 .Build();
 
-            var reg = ConsulRegistration.CreateRegistration(config, options);
+            var reg = ConsulRegistration.CreateRegistration(options, new ApplicationInstanceInfo(config));
 
             Assert.StartsWith("foobar-", reg.InstanceId);
             Assert.False(reg.IsSecure);
