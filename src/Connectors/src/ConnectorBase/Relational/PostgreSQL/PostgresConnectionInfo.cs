@@ -17,7 +17,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 {
-    public class PostgresConnectionInfo : IConnectionInfo
+    public class PostgresConnectionInfo : Connection, IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
@@ -27,11 +27,23 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             var postgresConfig = new PostgresProviderConnectorOptions(configuration);
             var configurer = new PostgresProviderConfigurer();
-            return new Connection
-            {
-                ConnectionString = configurer.Configure(info, postgresConfig),
-                Name = "Postgres" + serviceName?.Insert(0, "-")
-            };
+
+            var connectionString = configurer.Configure(info, postgresConfig);
+
+            ClientCertificate = postgresConfig.ClientCertificate;
+            ClientKey = postgresConfig.ClientKey;
+            SslRootCertificate = postgresConfig.SslRootCertificate;
+
+            ConnectionString = connectionString;
+            Name = "Postgres" + serviceName?.Insert(0, "-");
+
+            return this;
         }
+
+        public string ClientCertificate { get; set; }
+
+        public string ClientKey { get; set; }
+
+        public string SslRootCertificate { get; set; }
     }
 }
