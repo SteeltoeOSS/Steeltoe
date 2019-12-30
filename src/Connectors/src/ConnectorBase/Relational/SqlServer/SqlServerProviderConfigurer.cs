@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.Extensions;
 using System;
 using System.Net;
 
@@ -44,24 +45,23 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
                 if (si.Query != null)
                 {
-                    foreach (var piece in si.Query.Split('&'))
+                    foreach (var kvp in UriExtensions.ParseQuerystring(si.Query))
                     {
-                        var kvp = piece.Split('=');
-                        if (kvp[0].EndsWith("database", StringComparison.InvariantCultureIgnoreCase) || kvp[0].EndsWith("databaseName", StringComparison.InvariantCultureIgnoreCase))
+                        if (kvp.Key.EndsWith("database", StringComparison.InvariantCultureIgnoreCase) || kvp.Key.EndsWith("databaseName", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            configuration.Database = kvp[1];
+                            configuration.Database = kvp.Value;
                         }
-                        else if (kvp[0].EndsWith("instancename", StringComparison.InvariantCultureIgnoreCase))
+                        else if (kvp.Key.EndsWith("instancename", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            configuration.InstanceName = kvp[1];
+                            configuration.InstanceName = kvp.Value;
                         }
-                        else if (kvp[0].StartsWith("hostnameincertificate", StringComparison.InvariantCultureIgnoreCase))
+                        else if (kvp.Key.StartsWith("hostnameincertificate", StringComparison.InvariantCultureIgnoreCase))
                         {
                             // adding this key could result in "System.ArgumentException : Keyword not supported: 'hostnameincertificate'" later
                         }
                         else
                         {
-                            configuration.Options.Add(kvp[0], kvp[1]);
+                            configuration.Options.Add(kvp.Key, kvp.Value);
                         }
                     }
                 }
