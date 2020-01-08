@@ -15,8 +15,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.EndpointBase;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -29,13 +27,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
-        {
-            _next = next;
-        }
-
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpointMiddleware> logger = null)
-            : base(endpoint, logger: logger)
         {
             _next = next;
         }
@@ -64,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 return;
             }
 
-            string gzFilename = filename + ".gz";
+            var gzFilename = filename + ".gz";
             var result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
 
             if (result != null)

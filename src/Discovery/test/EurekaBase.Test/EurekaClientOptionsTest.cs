@@ -22,27 +22,24 @@ namespace Steeltoe.Discovery.Eureka.Test
     public class EurekaClientOptionsTest : AbstractBaseTest
     {
         [Fact]
-        [System.Obsolete]
         public void Constructor_Intializes_Defaults()
         {
-            EurekaClientOptions opts = new EurekaClientOptions();
+            var opts = new EurekaClientOptions();
             Assert.True(opts.Enabled);
-            Assert.Equal(EurekaClientOptions.Default_RegistryFetchIntervalSeconds, opts.RegistryFetchIntervalSeconds);
-            Assert.Equal(EurekaClientOptions.Default_InstanceInfoReplicationIntervalSeconds, opts.InstanceInfoReplicationIntervalSeconds);
+            Assert.Equal(EurekaClientConfig.Default_RegistryFetchIntervalSeconds, opts.RegistryFetchIntervalSeconds);
             Assert.Null(opts.ProxyHost);
             Assert.Equal(0, opts.ProxyPort);
             Assert.Null(opts.ProxyUserName);
             Assert.Null(opts.ProxyPassword);
             Assert.True(opts.ShouldGZipContent);
-            Assert.Equal(EurekaClientOptions.Default_EurekaServerConnectTimeoutSeconds, opts.EurekaServerConnectTimeoutSeconds);
+            Assert.Equal(EurekaClientConfig.Default_EurekaServerConnectTimeoutSeconds, opts.EurekaServerConnectTimeoutSeconds);
             Assert.True(opts.ShouldRegisterWithEureka);
-            Assert.False(opts.AllowRedirects);
             Assert.False(opts.ShouldDisableDelta);
             Assert.True(opts.ShouldFilterOnlyUpInstances);
             Assert.True(opts.ShouldFetchRegistry);
             Assert.Null(opts.RegistryRefreshSingleVipAddress);
             Assert.True(opts.ShouldOnDemandUpdateStatusChange);
-            Assert.Equal(EurekaClientOptions.Default_ServerServiceUrl, opts.EurekaServerServiceUrls);
+            Assert.Equal(EurekaClientConfig.Default_ServerServiceUrl, opts.EurekaServerServiceUrls);
             Assert.NotNull(opts.Health);
             Assert.True(opts.Health.Enabled); // Health contrib enabled
             Assert.True(opts.Health.CheckEnabled); // Health check enabled
@@ -108,9 +105,9 @@ namespace Steeltoe.Discovery.Eureka.Test
                     }
                 }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
@@ -124,8 +121,6 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(100, co.ProxyPort);
             Assert.Equal("proxyPassword", co.ProxyPassword);
             Assert.Equal("proxyUserName", co.ProxyUserName);
-            Assert.True(co.AllowRedirects);
-            Assert.Equal(100, co.InstanceInfoReplicationIntervalSeconds);
             Assert.Equal(100, co.EurekaServerConnectTimeoutSeconds);
             Assert.Equal("https://foo.bar:8761/eureka/", co.EurekaServerServiceUrls);
             Assert.Equal(100, co.RegistryFetchIntervalSeconds);

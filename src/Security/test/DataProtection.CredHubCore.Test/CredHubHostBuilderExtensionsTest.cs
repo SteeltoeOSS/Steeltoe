@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Security.DataProtection.CredHubCore.Test
+namespace Steeltoe.Security.DataProtection.CredHub.Test
 {
     public class CredHubHostBuilderExtensionsTest
     {

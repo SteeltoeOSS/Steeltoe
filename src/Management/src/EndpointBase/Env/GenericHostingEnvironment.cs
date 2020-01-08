@@ -17,7 +17,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Management.Endpoint.Env
 {
-#if NETSTANDARD2_1
+#if NETCOREAPP3_0
     public class GenericHostingEnvironment : IHostEnvironment
 #else
     public class GenericHostingEnvironment : IHostingEnvironment

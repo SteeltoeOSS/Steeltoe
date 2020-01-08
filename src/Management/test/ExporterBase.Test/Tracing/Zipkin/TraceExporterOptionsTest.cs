@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -24,10 +25,10 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
         [Fact]
         public void InitializedWithDefaults()
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            TraceExporterOptions opts = new TraceExporterOptions(null, builder.Build());
+            var config = new ConfigurationBuilder().Build();
+            var opts = new TraceExporterOptions(new ApplicationInstanceInfo(config), config);
 
-            Assert.Equal("Unknown", opts.ServiceName);
+            Assert.Equal(TestHelpers.EntryAssemblyName, opts.ServiceName);
             Assert.True(opts.ValidateCertificates);
             Assert.Equal(TraceExporterOptions.DEFAULT_TIMEOUT, opts.TimeoutSeconds);
             Assert.True(opts.UseShortTraceIds);
@@ -53,9 +54,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 ["management:tracing:exporter:zipkin:endpoint"] = "https://foo.com/api/v2/spans"
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
-            TraceExporterOptions opts = new TraceExporterOptions(null, builder.Build());
+            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            var opts = new TraceExporterOptions(new ApplicationInstanceInfo(config), config);
 
             Assert.Equal("foobar", opts.ServiceName);
             Assert.False(opts.ValidateCertificates);
@@ -72,10 +72,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             {
                 ["spring:application:name"] = "foobar"
             };
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
-            var config = builder.Build();
-            TraceExporterOptions opts = new TraceExporterOptions("default", config);
+            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            var opts = new TraceExporterOptions(new ApplicationInstanceInfo(config), config);
             Assert.Equal("foobar", opts.ServiceName);
 
             // Management name overrides spring name
@@ -84,23 +82,15 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 ["spring:application:name"] = "foobar",
                 ["management:tracing:exporter:zipkin:serviceName"] = "foobar2"
             };
-            builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
-            config = builder.Build();
-            opts = new TraceExporterOptions(null, config);
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            opts = new TraceExporterOptions(new ApplicationInstanceInfo(config), config);
             Assert.Equal("foobar2", opts.ServiceName);
 
             // Default name returned
             appsettings = new Dictionary<string, string>();
-            builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
-            config = builder.Build();
-            opts = new TraceExporterOptions("default", config);
-            Assert.Equal("default", opts.ServiceName);
-
-            // No default name, returns unknown
-            opts = new TraceExporterOptions(null, config);
-            Assert.Equal("Unknown", opts.ServiceName);
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            opts = new TraceExporterOptions(new ApplicationInstanceInfo(config), config);
+            Assert.Equal(TestHelpers.EntryAssemblyName, opts.ServiceName);
 
             // vcap app name overrides spring name
             appsettings = new Dictionary<string, string>()
@@ -108,10 +98,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 ["vcap:application:name"] = "foobar",
                 ["spring:application:name"] = "foobar",
             };
-            builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
-            config = builder.Build();
-            opts = new TraceExporterOptions(null, config);
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            opts = new TraceExporterOptions(new ApplicationInstanceInfo(config), config);
             Assert.Equal("foobar", opts.ServiceName);
 
             // Management name overrides everything
@@ -121,10 +109,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 ["vcap:application:name"] = "foobar1",
                 ["spring:application:name"] = "foobar2",
             };
-            builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
-            config = builder.Build();
-            opts = new TraceExporterOptions(null, config);
+            config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            opts = new TraceExporterOptions(new ApplicationInstanceInfo(config), config);
             Assert.Equal("foobar", opts.ServiceName);
         }
     }

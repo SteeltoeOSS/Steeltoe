@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Net;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Sockets;
 
 namespace Steeltoe.Discovery.Consul.Discovery
 {
@@ -27,15 +27,12 @@ namespace Steeltoe.Discovery.Consul.Discovery
         public const string CONSUL_DISCOVERY_CONFIGURATION_PREFIX = "consul:discovery";
 
         private string _hostName;
-        private string _hostAddress;
         private string _scheme = "http";
 
         public ConsulDiscoveryOptions()
         {
-#pragma warning disable S1699 // Constructors should only call non-overridable methods
-            _hostName = ResolveHostName();
-            _hostAddress = ResolveHostAddress(_hostName);
-#pragma warning restore S1699 // Constructors should only call non-overridable methods
+            _hostName = DnsTools.ResolveHostName();
+            IpAddress = DnsTools.ResolveHostAddress(_hostName);
         }
 
         /// <summary>
@@ -120,18 +117,14 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// </summary>
         public string HostName
         {
-            get => PreferIpAddress ? _hostAddress : _hostName;
+            get => PreferIpAddress ? IpAddress : _hostName;
             set => _hostName = value;
         }
 
         /// <summary>
         /// Gets or sets IP address to use when accessing service (must also set preferIpAddress to use)
         /// </summary>
-        public string IpAddress
-        {
-            get => _hostAddress;
-            set => _hostAddress = value;
-        }
+        public string IpAddress { get; set; }
 
         /// <summary>
         /// Gets or sets Port to register the service under (defaults to listening port)
@@ -194,74 +187,12 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <summary>
         /// Gets a value indicating whether heart beat is enabled
         /// </summary>
-        public bool IsHeartBeatEnabled
-        {
-            get
-            {
-                return Heartbeat != null ? Heartbeat.Enabled : false;
-            }
-        }
+        public bool IsHeartBeatEnabled => Heartbeat != null && Heartbeat.Enabled;
 
         /// <summary>
         /// Gets a value indicating whether retry is enabled
         /// </summary>
-        public bool IsRetryEnabled
-        {
-            get
-            {
-                return Retry != null ? Retry.Enabled : false;
-            }
-        }
-
-        // TODO: This code lifted from Eureka, refactor into common
-        protected virtual string ResolveHostAddress(string hostName)
-        {
-            string result = null;
-            try
-            {
-                var results = Dns.GetHostAddresses(hostName);
-                if (results != null && results.Length > 0)
-                {
-                    foreach (var addr in results)
-                    {
-                        if (addr.AddressFamily.Equals(AddressFamily.InterNetwork))
-                        {
-                            result = addr.ToString();
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // Ignore
-            }
-
-            return result;
-        }
-
-        protected virtual string ResolveHostName()
-        {
-            string result = null;
-            try
-            {
-                result = Dns.GetHostName();
-                if (!string.IsNullOrEmpty(result))
-                {
-                    var response = Dns.GetHostEntry(result);
-                    if (response != null)
-                    {
-                        return response.HostName;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // Ignore
-            }
-
-            return result;
-        }
+        public bool IsRetryEnabled => Retry != null && Retry.Enabled;
 
         // public int CatalogServicesWatchDelay { get; set; } = 1000;
 

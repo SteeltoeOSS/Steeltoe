@@ -16,7 +16,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointBase.Test.CloudFoundry
+namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
 {
     public class SecurityBaseTest : BaseTest
     {

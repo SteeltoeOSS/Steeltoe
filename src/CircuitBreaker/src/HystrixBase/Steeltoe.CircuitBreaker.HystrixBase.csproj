@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Steeltoe Neflix Hystrix Client - Base Package</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.CircuitBreaker.HystrixBase</AssemblyName>
-    <PackageId>Steeltoe.CircuitBreaker.HystrixBase</PackageId>
+    <RootNamespace>Steeltoe.CircuitBreaker.Hystrix</RootNamespace>
+    <Description>An implementation of Neflix's Hystrix, for .NET</Description>
     <PackageTags>Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
@@ -12,15 +11,16 @@
   <ItemGroup>
     <PackageReference Include="HdrHistogram" Version="$(HdrHistogramVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
-    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Abstractions\Steeltoe.CircuitBreaker.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.CircuitBreaker.Hystrix.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Discovery.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
-
 </Project>

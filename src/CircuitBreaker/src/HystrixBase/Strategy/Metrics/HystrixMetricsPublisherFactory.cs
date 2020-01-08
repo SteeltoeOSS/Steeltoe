@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
@@ -26,7 +26,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
             return singleton.GetPublisherForThreadPool(threadPoolKey, metrics, properties);
         }
 
-        public static IHystrixMetricsPublisherCommand CreateOrRetrievePublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, IHystrixCircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+        public static IHystrixMetricsPublisherCommand CreateOrRetrievePublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
         {
             return singleton.GetPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
         }
@@ -50,7 +50,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
 
         private readonly ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> commandPublishers = new ConcurrentDictionary<string, IHystrixMetricsPublisherCommand>();
 
-        internal IHystrixMetricsPublisherCommand GetPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, IHystrixCircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+        internal IHystrixMetricsPublisherCommand GetPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
         {
             return CommandPublishers.GetOrAddEx(commandKey.Name, (k) =>
             {

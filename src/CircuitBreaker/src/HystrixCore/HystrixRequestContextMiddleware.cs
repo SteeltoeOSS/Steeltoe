@@ -14,8 +14,6 @@
 
 using Microsoft.AspNetCore.Http;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix

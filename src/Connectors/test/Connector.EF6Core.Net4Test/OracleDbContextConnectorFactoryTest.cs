@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
@@ -24,7 +24,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EF6.Test
         public void Constructor_ThrowsIfTypeNull()
         {
             // Arrange
-            OracleProviderConnectorOptions config = new OracleProviderConnectorOptions();
+            var config = new OracleProviderConnectorOptions();
             OracleServiceInfo si = null;
             Type dbContextType = null;
 
@@ -37,9 +37,9 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EF6.Test
         public void Create_ThrowsIfNoValidConstructorFound()
         {
             // Arrange
-            OracleProviderConnectorOptions config = new OracleProviderConnectorOptions();
+            var config = new OracleProviderConnectorOptions();
             OracleServiceInfo si = null;
-            Type dbContextType = typeof(BadOracleDbContext);
+            var dbContextType = typeof(BadOracleDbContext);
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => new OracleDbContextConnectorFactory(si, config, dbContextType).Create(null));
@@ -49,7 +49,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EF6.Test
         [Fact]
         public void Create_ReturnsDbContext()
         {
-            OracleProviderConnectorOptions config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1521,
@@ -57,11 +57,11 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EF6.Test
                 Username = "SYSTEM",
                 ServiceName = "ORCLCDB"
             };
-            OracleServiceInfo si = new OracleServiceInfo("MyId", "Oracle://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            var si = new OracleServiceInfo("MyId", "Oracle://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var factory = new OracleDbContextConnectorFactory(si, config, typeof(GoodOracleDbContext));
             var context = factory.Create(null);
             Assert.NotNull(context);
-            GoodOracleDbContext gcontext = context as GoodOracleDbContext;
+            var gcontext = context as GoodOracleDbContext;
             Assert.NotNull(gcontext);
         }
     }

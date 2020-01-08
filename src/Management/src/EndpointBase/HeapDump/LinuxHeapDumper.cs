@@ -14,11 +14,8 @@
 
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Diagnostics;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {

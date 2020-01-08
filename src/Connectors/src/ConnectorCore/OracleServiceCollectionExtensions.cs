@@ -15,15 +15,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.Relational;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.Services;
 using System;
 using System.Data;
 
-namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
+namespace Steeltoe.CloudFoundry.Connector.Oracle
 {
     public static class OracleServiceCollectionExtensions
     {
@@ -33,9 +31,8 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddOracleHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddOracleHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
             {
@@ -47,7 +44,7 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = config.GetSingletonServiceInfo<OracleServiceInfo>();
+            var info = config.GetSingletonServiceInfo<OracleServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime);
             return services;
@@ -60,9 +57,8 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddOracleHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddOracleHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
             {
@@ -79,7 +75,7 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;

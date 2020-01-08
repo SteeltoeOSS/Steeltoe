@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 {
-    internal class HystrixCircuitBreakerImpl : IHystrixCircuitBreaker
+    internal class HystrixCircuitBreakerImpl : ICircuitBreaker
     {
         private readonly IHystrixCommandOptions options;
         private readonly HystrixCommandMetrics metrics;

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\versions.props" />
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <RootNamespace>Steeltoe.Extensions.Configuration</RootNamespace>
+    <Description>Application configuration abstractions</Description>
+    <PackageTags>configuration</PackageTags>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
+
+    <!-- !!! -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+    <!-- !!! -->
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Common.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+</Project>

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Reflection;
 using System;
 
 namespace Steeltoe.CloudFoundry.Connector.Oracle
@@ -35,6 +36,6 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
         /// Gets SqlConnection from a Oracle Library
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type OracleConnection => ConnectorHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "OracleConnection", "a Oracle ODP.NET assembly");
+        public static Type OracleConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "OracleConnection", "a Oracle ODP.NET assembly");
     }
 }

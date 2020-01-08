@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Oracle.ManagedDataAccess.Client;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
@@ -36,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
         [Fact]
         public void Create_ReturnsMySqlConnection()
         {
-            OracleProviderConnectorOptions config = new OracleProviderConnectorOptions()
+            var config = new OracleProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 3306,
@@ -44,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
                 Username = "username",
                 ServiceName = "database"
             };
-            OracleServiceInfo si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
+            var si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
             var factory = new OracleProviderConnectorFactory(si, config, typeof(OracleConnection));
             var connection = factory.Create(null);
             Assert.NotNull(connection);

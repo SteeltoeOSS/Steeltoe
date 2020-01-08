@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using Consul;
-using Steeltoe.Consul.Util;
+using Steeltoe.Discovery.Consul.Util;
 using System;
 using System.Net;
 
-namespace Steeltoe.Consul.Client
+namespace Steeltoe.Discovery.Consul
 {
     /// <summary>
     /// A factory to use in configuring and creating a Consul client

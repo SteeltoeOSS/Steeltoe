@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Threading.Tasks;
 
@@ -114,7 +114,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             {
                 shutdown = true;
 
-                Time.WaitUntil(() => { return runningThreads <= 0; }, 500);
+                _ = Time.WaitUntil(() => { return runningThreads <= 0; }, 500);
             }
         }
 

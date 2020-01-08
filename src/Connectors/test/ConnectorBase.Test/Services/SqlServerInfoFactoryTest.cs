@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
@@ -22,7 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "sqlserver",
                 Tags = new string[] { "sqlserver", "relational" },
@@ -39,17 +40,17 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            SqlServerServiceInfoFactory factory = new SqlServerServiceInfoFactory();
+            var factory = new SqlServerServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_AcceptsValidCUPServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "user-provided",
-                Tags = new string[] { },
+                Tags = System.Array.Empty<string>(),
                 Name = "sqlserverService",
                 Plan = "free",
                 Credentials = new Credential()
@@ -59,14 +60,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "uri", new Credential("jdbc:sqlserver://10.194.59.187:1433;databaseName=d07833038adb541bba1bb6dc77df7a724") }
                 }
             };
-            SqlServerServiceInfoFactory factory = new SqlServerServiceInfoFactory();
+            var factory = new SqlServerServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Name = "sqlserverService",
                 Credentials = new Credential()
@@ -80,14 +81,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            SqlServerServiceInfoFactory factory = new SqlServerServiceInfoFactory();
+            var factory = new SqlServerServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_AcceptsLabelNoTagsServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "sqlserver",
                 Name = "sqlserverService",
@@ -103,14 +104,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            SqlServerServiceInfoFactory factory = new SqlServerServiceInfoFactory();
+            var factory = new SqlServerServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-foobar",
                 Tags = new string[] { "foobar", "relational" },
@@ -127,14 +128,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:foobar://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            SqlServerServiceInfoFactory factory = new SqlServerServiceInfoFactory();
+            var factory = new SqlServerServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "sqlserver",
                 Tags = new string[] { "sqlserver", "relational" },
@@ -151,7 +152,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            SqlServerServiceInfoFactory factory = new SqlServerServiceInfoFactory();
+            var factory = new SqlServerServiceInfoFactory();
             var info = factory.Create(s) as SqlServerServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("sqlserverService", info.Id);
@@ -166,7 +167,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBinding_NoUri()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "sqlserver",
                 Tags = new string[] { "sqlserver", "relational" },
@@ -181,7 +182,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") }
                 }
             };
-            SqlServerServiceInfoFactory factory = new SqlServerServiceInfoFactory();
+            var factory = new SqlServerServiceInfoFactory();
             var info = factory.Create(s) as SqlServerServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("sqlserverService", info.Id);

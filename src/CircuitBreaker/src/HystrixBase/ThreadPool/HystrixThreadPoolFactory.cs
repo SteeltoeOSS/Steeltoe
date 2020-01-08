@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
 {
     internal static class HystrixThreadPoolFactory
     {
-        private static readonly ConcurrentDictionary<string, IHystrixThreadPool> _threadPools = new ConcurrentDictionary<string, IHystrixThreadPool>();
-
         internal static IHystrixThreadPool GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions propertiesBuilder)
         {
             // get the key to use instead of using the object itself so that if people forget to implement equals/hashcode things will still work
@@ -32,7 +30,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
 
         private static object shutdownLock = new object();
 
-        internal static ConcurrentDictionary<string, IHystrixThreadPool> ThreadPools => _threadPools;
+        internal static ConcurrentDictionary<string, IHystrixThreadPool> ThreadPools { get; } = new ConcurrentDictionary<string, IHystrixThreadPool>();
 
         internal static void Shutdown()
         {

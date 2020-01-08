@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Threading;
 
@@ -22,27 +22,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
     public class RequestCollapser<BatchReturnType, RequestResponseType, RequestArgumentType>
     {
         private readonly HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser;
-
-        // batch can be null once shutdown
-        private readonly AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>> batch = new AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>>();
         private readonly AtomicReference<TimerReference> timerListenerReference = new AtomicReference<TimerReference>();
         private readonly AtomicBoolean timerListenerRegistered = new AtomicBoolean();
         private readonly ICollapserTimer timer;
-        private readonly IHystrixCollapserOptions properties;
         private readonly HystrixConcurrencyStrategy concurrencyStrategy;
 
-        public AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>> Batch => batch;
+        public AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>> Batch { get; } = new AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>>();
 
-        public IHystrixCollapserOptions Properties => properties;
+        public IHystrixCollapserOptions Properties { get; }
 
         internal RequestCollapser(HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser, IHystrixCollapserOptions properties, ICollapserTimer timer, HystrixConcurrencyStrategy concurrencyStrategy)
         {
             // the command with implementation of abstract methods we need
             this.commandCollapser = commandCollapser;
             this.concurrencyStrategy = concurrencyStrategy;
-            this.properties = properties;
+            this.Properties = properties;
             this.timer = timer;
-            batch.Value = new RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>(properties, commandCollapser, properties.MaxRequestsInBatch);
+            Batch.Value = new RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>(properties, commandCollapser, properties.MaxRequestsInBatch);
         }
 
         public CollapsedRequest<RequestResponseType, RequestArgumentType> SubmitRequest(RequestArgumentType arg, CancellationToken token)

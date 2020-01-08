@@ -42,8 +42,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             int curProcessId = Process.GetCurrentProcess().Id;
             Process process = Process.GetProcessById(curProcessId);
 
-            IntPtr snapshotHandle = default(IntPtr);
-            MiniDumper.Result result = default(MiniDumper.Result);
+            IntPtr snapshotHandle = default;
+            MiniDumper.Result result = default;
 
             try
             {

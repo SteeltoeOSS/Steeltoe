@@ -25,7 +25,6 @@ using NSubstitute;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointBase.DbMigrations;
 using System;
 using System.Collections.Generic;
 using System.IO;

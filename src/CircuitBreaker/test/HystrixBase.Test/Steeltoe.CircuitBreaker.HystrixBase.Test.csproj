@@ -20,6 +20,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Abstractions\Steeltoe.CircuitBreaker.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
   </ItemGroup>
   

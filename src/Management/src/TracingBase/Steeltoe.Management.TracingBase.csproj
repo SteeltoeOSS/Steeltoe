@@ -1,30 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
-  
   <PropertyGroup>
-    <Description>Steeltoe Management TracingBase - Base Package</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.Management.TracingBase</AssemblyName>
-    <PackageId>Steeltoe.Management.TracingBase</PackageId>
-    <PackageTags>Management;Monitoring;Distributed Trace</PackageTags>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <RootNamespace>Steeltoe.Management.Tracing</RootNamespace>
+    <Description>Base package for enabling request tracing in distributed systems</Description>
+    <PackageTags>management;monitoring;distributed trace</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
+  <ItemGroup>
+    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
+  </ItemGroup>
+  
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
-    <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Extensions.Logging.DynamicLogger" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Extensions.Logging.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
   </ItemGroup>
 </Project>

@@ -15,7 +15,7 @@
 using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -195,7 +195,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
         private static void WriteCommandMetrics(JsonTextWriter writer, HystrixCommandMetrics commandMetrics)
         {
             IHystrixCommandKey key = commandMetrics.CommandKey;
-            IHystrixCircuitBreaker circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(key);
+            ICircuitBreaker circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(key);
 
             writer.WriteStartObject();
             writer.WriteStringField("type", "HystrixCommand");

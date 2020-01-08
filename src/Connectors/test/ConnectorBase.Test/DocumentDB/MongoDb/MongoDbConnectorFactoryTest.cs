@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
@@ -22,8 +22,8 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         [Fact]
         public void UpdateConfiguration_WithNullMongoDbServiceInfo_ReturnsExpected()
         {
-            MongoDbProviderConfigurer configurer = new MongoDbProviderConfigurer();
-            MongoDbConnectorOptions config = new MongoDbConnectorOptions()
+            var configurer = new MongoDbProviderConfigurer();
+            var config = new MongoDbConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -44,8 +44,8 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         [Fact]
         public void UpdateConfiguration_WithMongoDbServiceInfo_ReturnsExpected()
         {
-            MongoDbProviderConfigurer configurer = new MongoDbProviderConfigurer();
-            MongoDbConnectorOptions config = new MongoDbConnectorOptions()
+            var configurer = new MongoDbProviderConfigurer();
+            var config = new MongoDbConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -53,7 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
                 Password = "password",
                 Database = "database"
             };
-            MongoDbServiceInfo si = new MongoDbServiceInfo("MyId", "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            var si = new MongoDbServiceInfo("MyId", "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
             configurer.UpdateConfiguration(si, config);
 
@@ -67,7 +67,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            MongoDbConnectorOptions config = new MongoDbConnectorOptions()
+            var config = new MongoDbConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -76,7 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
                 Database = "database"
             };
 
-            MongoDbProviderConfigurer configurer = new MongoDbProviderConfigurer();
+            var configurer = new MongoDbProviderConfigurer();
             var opts = configurer.Configure(null, config);
             Assert.Equal("mongodb://username:password@localhost:1234/database", opts);
         }
@@ -84,7 +84,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            MongoDbConnectorOptions config = new MongoDbConnectorOptions()
+            var config = new MongoDbConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -93,8 +93,8 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
                 Database = "database"
             };
 
-            MongoDbProviderConfigurer configurer = new MongoDbProviderConfigurer();
-            MongoDbServiceInfo si = new MongoDbServiceInfo("MyId", "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            var configurer = new MongoDbProviderConfigurer();
+            var si = new MongoDbServiceInfo("MyId", "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
             var opts = configurer.Configure(si, config);
 

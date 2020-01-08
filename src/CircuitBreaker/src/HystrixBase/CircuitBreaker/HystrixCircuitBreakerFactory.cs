@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 {
     public static class HystrixCircuitBreakerFactory
     {
-        private static ConcurrentDictionary<string, IHystrixCircuitBreaker> circuitBreakersByCommand = new ConcurrentDictionary<string, IHystrixCircuitBreaker>();
+        private static ConcurrentDictionary<string, ICircuitBreaker> circuitBreakersByCommand = new ConcurrentDictionary<string, ICircuitBreaker>();
 
-        public static IHystrixCircuitBreaker GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey group, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
+        public static ICircuitBreaker GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey group, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
         {
             return circuitBreakersByCommand.GetOrAddEx(key.Name, (k) => new HystrixCircuitBreakerImpl(key, group, options, metrics));
         }
 
-        public static IHystrixCircuitBreaker GetInstance(IHystrixCommandKey key)
+        public static ICircuitBreaker GetInstance(IHystrixCommandKey key)
         {
-            circuitBreakersByCommand.TryGetValue(key.Name, out IHystrixCircuitBreaker previouslyCached);
+            circuitBreakersByCommand.TryGetValue(key.Name, out ICircuitBreaker previouslyCached);
             return previouslyCached;
         }
 

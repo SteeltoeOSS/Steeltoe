@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -134,10 +135,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             currentPercentileSnapshot = new PercentileSnapshot(_buckets.Array);
         }
 
-        private PercentileSnapshot CurrentPercentileSnapshot
-        {
-            get { return currentPercentileSnapshot; }
-        }
+        private PercentileSnapshot CurrentPercentileSnapshot => currentPercentileSnapshot;
 
         private object newBucketLock = new object();
 
@@ -371,10 +369,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
 
             /* package for testing */
-            public int Mean
-            {
-                get { return mean; }
-            }
+            public int Mean => mean;
 
             public int GetPercentile(double percentile)
             {
@@ -604,10 +599,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 get { return state.Value._size; }
             }
 
-            public Bucket PeekLast
-            {
-                get { return state.Value.Tail; }
-            }
+            public Bucket PeekLast => state.Value.Tail;
 
             IEnumerator IEnumerable.GetEnumerator()
             {
@@ -620,10 +612,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 return list.AsReadOnly().GetEnumerator();
             }
 
-            public Bucket[] Array
-            {
-                get { return state.Value.Array; }
-            }
+            public Bucket[] Array => state.Value.Array;
         }
 
         internal class Bucket

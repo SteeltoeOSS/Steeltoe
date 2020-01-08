@@ -14,8 +14,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
@@ -30,13 +31,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
-            Type redisOptions = RedisTypeLocator.StackExchangeOptions;
-            MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
+            var redisImplementation = RedisTypeLocator.StackExchangeImplementation;
+            var redisOptions = RedisTypeLocator.StackExchangeOptions;
+            var initializer = RedisTypeLocator.StackExchangeInitializer;
 
             var info = configuration.GetSingletonServiceInfo<RedisServiceInfo>();
-            RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(configuration);
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
+            var redisConfig = new RedisCacheConnectorOptions(configuration);
+            var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
             return new RedisHealthContributor(factory, redisImplementation, logger);
         }
 
@@ -63,7 +64,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         public HealthCheckResult Health()
         {
             _logger?.LogTrace("Checking Redis connection health");
-            HealthCheckResult result = new HealthCheckResult();
+            var result = new HealthCheckResult();
 
             try
             {
@@ -102,7 +103,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         private void DoStackExchangeHealth(HealthCheckResult health)
         {
-            var latency = (TimeSpan)ConnectorHelpers.Invoke(_pingMethod, _database, new[] { _flags });
+            var latency = (TimeSpan)ReflectionHelpers.Invoke(_pingMethod, _database, new[] { _flags });
             health.Details.Add("ping", latency.TotalMilliseconds);
         }
 
@@ -129,9 +130,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 {
                     var commandFlagsEnum = RedisTypeLocator.StackExchangeCommandFlagsNames;
                     _flags = Enum.Parse(commandFlagsEnum, "None");
-                    var getDatabaseMethod = ConnectorHelpers.FindMethod(_connector.GetType(), "GetDatabase");
-                    _database = ConnectorHelpers.Invoke(getDatabaseMethod, _connector, new object[] { -1, null });
-                    _pingMethod = ConnectorHelpers.FindMethod(_database.GetType(), "Ping");
+                    var getDatabaseMethod = ReflectionHelpers.FindMethod(_connector.GetType(), "GetDatabase");
+                    _database = ReflectionHelpers.Invoke(getDatabaseMethod, _connector, new object[] { -1, null });
+                    _pingMethod = ReflectionHelpers.FindMethod(_database.GetType(), "Ping");
                 }
             }
         }

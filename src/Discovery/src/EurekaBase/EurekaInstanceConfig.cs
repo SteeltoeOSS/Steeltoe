@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
 
 namespace Steeltoe.Discovery.Eureka
 {
@@ -111,15 +109,9 @@ namespace Steeltoe.Discovery.Eureka
         // eureka:instance:hostName
         public virtual string HostName
         {
-            get
-            {
-                return _thisHostName;
-            }
+            get => _thisHostName;
 
-            set
-            {
-                _thisHostName = value;
-            }
+            set => _thisHostName = value;
         }
 
         public virtual string IpAddress { get; set; }
@@ -138,13 +130,13 @@ namespace Steeltoe.Discovery.Eureka
 
         public virtual IDataCenterInfo DataCenterInfo { get; set; }
 
-        public virtual string[] DefaultAddressResolutionOrder { get; set; }
+        public virtual IEnumerable<string> DefaultAddressResolutionOrder { get; set; }
 
         public virtual string GetHostName(bool refresh)
         {
             if (refresh || string.IsNullOrEmpty(_thisHostName))
             {
-                _thisHostName = ResolveHostName();
+                _thisHostName = DnsTools.ResolveHostName();
             }
 
             return _thisHostName;
@@ -154,63 +146,14 @@ namespace Steeltoe.Discovery.Eureka
         {
             if (refresh || string.IsNullOrEmpty(_thisHostAddress))
             {
-                string hostName = GetHostName(refresh);
+                var hostName = GetHostName(refresh);
                 if (!string.IsNullOrEmpty(hostName))
                 {
-                    _thisHostAddress = ResolveHostAddress(hostName);
+                    _thisHostAddress = DnsTools.ResolveHostAddress(hostName);
                 }
             }
 
             return _thisHostAddress;
-        }
-
-        protected virtual string ResolveHostAddress(string hostName)
-        {
-            string result = null;
-            try
-            {
-                var results = Dns.GetHostAddresses(hostName);
-                if (results != null && results.Length > 0)
-                {
-                    foreach (var addr in results)
-                    {
-                        if (addr.AddressFamily.Equals(AddressFamily.InterNetwork))
-                        {
-                            result = addr.ToString();
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // Ignore
-            }
-
-            return result;
-        }
-
-        protected virtual string ResolveHostName()
-        {
-            string result = null;
-            try
-            {
-                result = Dns.GetHostName();
-                if (!string.IsNullOrEmpty(result))
-                {
-                    var response = Dns.GetHostEntry(result);
-                    if (response != null)
-                    {
-                        return response.HostName;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // Ignore
-            }
-
-            return result;
         }
     }
 }

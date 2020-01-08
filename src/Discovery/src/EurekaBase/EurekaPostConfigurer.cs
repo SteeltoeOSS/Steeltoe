@@ -13,15 +13,15 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common;
+using Steeltoe.Connector.Services;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Discovery.Eureka
 {
     public static class EurekaPostConfigurer
     {
-        public const string SPRING_APPLICATION_NAME_KEY = "spring:application:name";
-        public const string SPRING_APPLICATION_INSTANCEID_KEY = "spring:application:instance_id";
         public const string SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY = "spring:cloud:discovery:registrationMethod";
 
         internal const string EUREKA_URI_SUFFIX = "/eureka/";
@@ -50,7 +50,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (!uri.EndsWith(EUREKA_URI_SUFFIX))
             {
-                uri = uri + EUREKA_URI_SUFFIX;
+                uri += EUREKA_URI_SUFFIX;
             }
 
             clientOptions.EurekaServerServiceUrls = uri;
@@ -59,14 +59,20 @@ namespace Steeltoe.Discovery.Eureka
             clientOptions.ClientSecret = si.ClientSecret;
         }
 
-        public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options)
+        public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
         {
             var defaultId = options.GetHostName(false) + ":" + EurekaInstanceOptions.Default_Appname + ":" + EurekaInstanceOptions.Default_NonSecurePort;
 
             if (EurekaInstanceOptions.Default_Appname.Equals(options.AppName))
             {
-                string springAppName = config.GetValue<string>(SPRING_APPLICATION_NAME_KEY);
-                if (!string.IsNullOrEmpty(springAppName))
+                var springAppName = instanceInfo?.ApplicationNameInContext(SteeltoeComponent.Discovery);
+
+                // this is a bit of a hack, but depending on how we got here, ApplicationNameInContext may or may not know about VCAP
+                if (Platform.IsCloudFoundry && springAppName == System.Reflection.Assembly.GetEntryAssembly().GetName().Name && !string.IsNullOrEmpty(instanceInfo?.ApplicationName))
+                {
+                    options.AppName = instanceInfo.ApplicationName;
+                }
+                else if (!string.IsNullOrEmpty(springAppName))
                 {
                     options.AppName = springAppName;
                 }
@@ -84,7 +90,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (defaultId.Equals(options.InstanceId))
             {
-                string springInstanceId = config.GetValue<string>(SPRING_APPLICATION_INSTANCEID_KEY);
+                var springInstanceId = instanceInfo?.InstanceId;
                 if (!string.IsNullOrEmpty(springInstanceId))
                 {
                     options.InstanceId = springInstanceId;
@@ -112,7 +118,7 @@ namespace Steeltoe.Discovery.Eureka
                 return;
             }
 
-            UpdateConfiguration(config, instOptions);
+            UpdateConfiguration(config, instOptions, si?.ApplicationInfo);
 
             if (si == null)
             {
@@ -165,17 +171,17 @@ namespace Steeltoe.Discovery.Eureka
             instOptions.NonSecurePort = DEFAULT_NONSECUREPORT;
             instOptions.SecurePort = DEFAULT_SECUREPORT;
 
-            if (si.ApplicationInfo.ApplicationUris?.Length > 0)
+            if (si.ApplicationInfo.Uris.Any())
             {
-                instOptions.InstanceId = si.ApplicationInfo.ApplicationUris[0] + ":" + si.ApplicationInfo.InstanceId;
+                instOptions.InstanceId = si.ApplicationInfo.Uris.First() + ":" + si.ApplicationInfo.InstanceId;
             }
         }
 
         private static void UpdateWithDefaults(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
         {
-            if (si.ApplicationInfo.ApplicationUris != null && si.ApplicationInfo.ApplicationUris.Length > 0)
+            if (si.ApplicationInfo.Uris != null && si.ApplicationInfo.Uris.Any())
             {
-                instOptions.HostName = si.ApplicationInfo.ApplicationUris[0];
+                instOptions.HostName = si.ApplicationInfo.Uris.First();
             }
 
             instOptions.IpAddress = si.ApplicationInfo.InternalIP;

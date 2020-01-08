@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public static class CloudFoundryDefaults
@@ -29,9 +27,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public const string UserInfoUri = "/userinfo";
         public const string CheckTokenUri = "/check_token";
         public const string JwtTokenUri = "/token_keys";
-
-        [Obsolete("Use JwtTokenUri instead")]
-        public const string JwtTokenKey = JwtTokenUri;
 
         public const string OAuthServiceUrl = "Default_OAuthServiceUrl";
         public const string ClientId = "Default_ClientId";

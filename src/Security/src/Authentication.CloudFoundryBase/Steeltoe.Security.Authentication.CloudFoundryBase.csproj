@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Base Security Provider for CloudFoundry</Description>
     <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Security.Authentication.CloudFoundryBase</AssemblyName>
-    <PackageId>Steeltoe.Security.Authentication.CloudFoundryBase</PackageId>
-    <PackageTags>CloudFoundry;ASPNET;ASPNET Core;Security;OAuth2;SSO;OpenID</PackageTags>
+    <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry</RootNamespace>
+    <Description>Base Security Provider for CloudFoundry</Description>
+    <PackageTags>CloudFoundry;security;oauth2;sso;openid</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
@@ -20,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="$(JwtTokensVersion)" />
   </ItemGroup>
 </Project>

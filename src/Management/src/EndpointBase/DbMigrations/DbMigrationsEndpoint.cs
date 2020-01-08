@@ -13,14 +13,13 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 
-namespace Steeltoe.Management.EndpointBase.DbMigrations
+namespace Steeltoe.Management.Endpoint.DbMigrations
 {
     public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrationsDescriptor>>
     {

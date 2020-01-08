@@ -12,11 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using System.IO;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test

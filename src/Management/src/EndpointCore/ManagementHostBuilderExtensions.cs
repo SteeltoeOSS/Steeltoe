@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;

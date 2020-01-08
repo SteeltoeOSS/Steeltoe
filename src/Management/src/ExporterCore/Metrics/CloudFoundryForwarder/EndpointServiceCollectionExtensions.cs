@@ -15,6 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
+using Steeltoe.Extensions.Configuration;
 using Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder;
 using System;
 
@@ -39,7 +41,7 @@ namespace Steeltoe.Management.Exporter.Metrics
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton(new CloudFoundryForwarderOptions(config));
+            services.TryAddSingleton(new CloudFoundryForwarderOptions(services.GetApplicationInstanceInfo(), services.GetServicesInfo(), config));
             services.TryAddSingleton<IMetricsExporter, CloudFoundryForwarderExporter>();
         }
     }

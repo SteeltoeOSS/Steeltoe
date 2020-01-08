@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Linq;
 using Xunit;
 
@@ -60,7 +61,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
             MySqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
             // act
-            var exception = Assert.Throws<ConnectorException>(() => MySqlTypeLocator.MySqlConnection);
+            var exception = Assert.Throws<TypeLoadException>(() => MySqlTypeLocator.MySqlConnection);
 
             // assert
             Assert.Equal("Unable to find MySqlConnection, are you missing a MySql ADO.NET assembly?", exception.Message);

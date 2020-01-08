@@ -14,8 +14,6 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
@@ -27,10 +25,12 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddCloudFoundry(this IWebHostBuilder hostBuilder)
         {
-            hostBuilder.ConfigureAppConfiguration((context, config) =>
-            {
-                config.AddCloudFoundry();
-            });
+            hostBuilder
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    config.AddCloudFoundry();
+                })
+                .ConfigureServices(serviceCollection => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
 
             return hostBuilder;
         }
@@ -41,10 +41,12 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         /// <param name="hostBuilder">Your WebHostBuilder</param>
         public static IHostBuilder AddCloudFoundry(this IHostBuilder hostBuilder)
         {
-            hostBuilder.ConfigureAppConfiguration((context, config) =>
-            {
-                config.AddCloudFoundry();
-            });
+            hostBuilder
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    config.AddCloudFoundry();
+                })
+                .ConfigureServices((context, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
 
             return hostBuilder;
         }

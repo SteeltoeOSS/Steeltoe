@@ -18,7 +18,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Consul.Discovery;
 using System;
 using System.Threading.Tasks;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Steeltoe.Discovery.Consul.Registry
 {

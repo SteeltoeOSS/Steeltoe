@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common;
+using Steeltoe.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
@@ -75,8 +77,8 @@ namespace Steeltoe.CloudFoundry.Connector
         public List<SI> GetServiceInfos<SI>()
             where SI : class
         {
-            List<SI> results = new List<SI>();
-            foreach (IServiceInfo info in ServiceInfos)
+            var results = new List<SI>();
+            foreach (var info in ServiceInfos)
             {
                 if (info is SI si)
                 {
@@ -106,7 +108,7 @@ namespace Steeltoe.CloudFoundry.Connector
         public SI GetServiceInfo<SI>(string name)
             where SI : class
         {
-            List<SI> typed = GetServiceInfos<SI>();
+            var typed = GetServiceInfos<SI>();
             foreach (var si in typed)
             {
                 var info = si as IServiceInfo;
@@ -139,7 +141,7 @@ namespace Steeltoe.CloudFoundry.Connector
             {
                 if (type.IsDefined(typeof(ServiceInfoFactoryAttribute)))
                 {
-                    IServiceInfoFactory instance = CreateServiceInfoFactory(type.DeclaredConstructors);
+                    var instance = CreateServiceInfoFactory(type.DeclaredConstructors);
                     if (instance != null)
                     {
                         Factories.Add(instance);
@@ -151,7 +153,7 @@ namespace Steeltoe.CloudFoundry.Connector
         private IServiceInfoFactory CreateServiceInfoFactory(IEnumerable<ConstructorInfo> declaredConstructors)
         {
             IServiceInfoFactory result = null;
-            foreach (ConstructorInfo ci in declaredConstructors)
+            foreach (var ci in declaredConstructors)
             {
                 if (ci.GetParameters().Length == 0 && ci.IsPublic && !ci.IsStatic)
                 {
@@ -167,20 +169,14 @@ namespace Steeltoe.CloudFoundry.Connector
         {
             ServiceInfos.Clear();
 
-            CloudFoundryApplicationOptions appOpts = new CloudFoundryApplicationOptions();
-            var aopSection = _config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
-            aopSection.Bind(appOpts);
+            var appInfo = new CloudFoundryApplicationOptions(_config);
+            var serviceOpts = new CloudFoundryServicesOptions(_config);
 
-            ApplicationInstanceInfo appInfo = new ApplicationInstanceInfo(appOpts);
-            var serviceSection = _config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
-            CloudFoundryServicesOptions serviceOpts = new CloudFoundryServicesOptions();
-            serviceSection.Bind(serviceOpts);
-
-            foreach (KeyValuePair<string, Service[]> serviceopt in serviceOpts.Services)
+            foreach (var serviceopt in serviceOpts.Services)
             {
-                foreach (Service s in serviceopt.Value)
+                foreach (var s in serviceopt.Value)
                 {
-                    IServiceInfoFactory factory = FindFactory(s);
+                    var factory = FindFactory(s);
                     if (factory != null && factory.Create(s) is ServiceInfo info)
                     {
                         info.ApplicationInfo = appInfo;
@@ -192,7 +188,7 @@ namespace Steeltoe.CloudFoundry.Connector
 
         private IServiceInfoFactory FindFactory(Service s)
         {
-            foreach (IServiceInfoFactory f in Factories)
+            foreach (var f in Factories)
             {
                 if (f.Accept(s))
                 {

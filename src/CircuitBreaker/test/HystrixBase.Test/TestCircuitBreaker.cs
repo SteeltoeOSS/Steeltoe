@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
-    public class TestCircuitBreaker : IHystrixCircuitBreaker
+    public class TestCircuitBreaker : ICircuitBreaker
     {
         public readonly HystrixCommandMetrics Metrics;
         private bool forceShortCircuit = false;

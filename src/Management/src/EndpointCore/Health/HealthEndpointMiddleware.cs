@@ -20,7 +20,6 @@ using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.EndpointCore;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -32,13 +31,6 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public HealthEndpointMiddleware(RequestDelegate next, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
             : base(mgmtOptions: mgmtOptions, logger: logger)
-        {
-            _next = next;
-        }
-
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public HealthEndpointMiddleware(RequestDelegate next, ILogger<HealthEndpointMiddleware> logger = null)
-            : base(mgmtOptions: null, logger: logger)
         {
             _next = next;
         }

@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Common;
+using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 {
@@ -29,18 +31,31 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         public const int DEFAULT_TIMEOUT = 3;
         public const int DEFAULT_RATE = 60000;
+        private readonly IApplicationInstanceInfo applicationInstanceInfo;
 
         public CloudFoundryForwarderOptions()
             : base()
         {
         }
 
-        public CloudFoundryForwarderOptions(IConfiguration config)
+        public CloudFoundryForwarderOptions(IApplicationInstanceInfo appInfo, IServicesInfo serviceInfo, IConfiguration config)
         {
+            if (appInfo is null)
+            {
+                throw new ArgumentNullException(nameof(appInfo));
+            }
+
+            if (serviceInfo is null)
+            {
+                throw new ArgumentNullException(nameof(serviceInfo));
+            }
+
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
+            applicationInstanceInfo = appInfo;
 
             var section = config.GetSection(CONFIG_PREFIX);
             if (section != null)
@@ -48,35 +63,15 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                 section.Bind(this);
             }
 
-            section = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
-            if (section != null)
+            var servOptions = serviceInfo.GetInstancesOfType(FORWARDER_NAME);
+            if (servOptions.Any())
             {
-                CloudFoundryApplicationOptions appOptions = new CloudFoundryApplicationOptions(section);
-                if (string.IsNullOrEmpty(ApplicationId))
-                {
-                    ApplicationId = appOptions.ApplicationId;
-                }
-
-                if (string.IsNullOrEmpty(InstanceId))
-                {
-                    InstanceId = appOptions.InstanceId;
-                }
-
-                if (string.IsNullOrEmpty(InstanceIndex))
-                {
-                    InstanceIndex = appOptions.InstanceIndex.ToString();
-                }
+                ConfigureServiceCredentials(servOptions.First().Credentials);
             }
 
-            section = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
-            if (section != null)
-            {
-                CloudFoundryServicesOptions servOptions = new CloudFoundryServicesOptions(section);
-                if (servOptions.Services.TryGetValue(FORWARDER_NAME, out Service[] services))
-                {
-                    ConfigureServiceCredentials(services[0].Credentials);
-                }
-            }
+            ApplicationId ??= applicationInstanceInfo.ApplicationId;
+            InstanceId ??= applicationInstanceInfo.InstanceId;
+            InstanceIndex ??= applicationInstanceInfo.InstanceIndex.ToString();
         }
 
         public string Endpoint { get; set; }
@@ -99,12 +94,12 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         private void ConfigureServiceCredentials(Dictionary<string, Credential> credentials)
         {
-            if (string.IsNullOrEmpty(Endpoint) && credentials.TryGetValue(ENDPOINT_KEY, out Credential endpoint))
+            if (string.IsNullOrEmpty(Endpoint) && credentials.TryGetValue(ENDPOINT_KEY, out var endpoint))
             {
                 Endpoint = endpoint.Value;
             }
 
-            if (string.IsNullOrEmpty(AccessToken) && credentials.TryGetValue(ACCESS_KEY, out Credential token))
+            if (string.IsNullOrEmpty(AccessToken) && credentials.TryGetValue(ACCESS_KEY, out var token))
             {
                 AccessToken = token.Value;
             }

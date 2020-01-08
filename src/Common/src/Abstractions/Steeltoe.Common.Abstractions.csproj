@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\versions.props" />
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <RootNamespace>Steeltoe.Common</RootNamespace>
+    <Description>Abstractions commonly used across Steeltoe components</Description>
+    <PackageTags></PackageTags>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+</Project>

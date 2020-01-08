@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="..\..\..\..\versions.props" />
-
   <PropertyGroup>
     <Description>Steeltoe Management OpenCensus</Description>
     <TargetFramework>netstandard2.0</TargetFramework>

@@ -15,7 +15,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System.Linq;
 using Xunit;
 
@@ -44,16 +44,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 #endif
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
             Assert.False(oidcOptions.SaveTokens);
-#if !NET461
             Assert.NotNull(oidcOptions.BackchannelHttpHandler);
-#endif
         }
 
         [Fact]
         public void Configure_WithServiceInfo_ReturnsExpected()
         {
             // arrange
-            string authURL = "https://domain";
+            var authURL = "https://domain";
             var oidcOptions = new OpenIdConnectOptions();
             var info = new SsoServiceInfo("foobar", "clientId", "secret", authURL);
 

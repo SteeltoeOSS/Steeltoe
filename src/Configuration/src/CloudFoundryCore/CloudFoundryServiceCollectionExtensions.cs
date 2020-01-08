@@ -45,10 +45,10 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
             services.AddOptions();
 
-            var appSection = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
+            var appSection = config.GetSection(CloudFoundryApplicationOptions.PlatformConfigRoot);
             services.Configure<CloudFoundryApplicationOptions>(appSection);
 
-            var serviceSection = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
+            var serviceSection = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
             services.Configure<CloudFoundryServicesOptions>(serviceSection);
 
             return services;
@@ -65,7 +65,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         /// <param name="serviceName">the Cloud Foundry service name to bind to the options type</param>
         /// <returns>service container</returns>
         public static IServiceCollection ConfigureCloudFoundryService<TOption>(this IServiceCollection services, IConfiguration config, string serviceName)
-            where TOption : AbstractServiceOptions
+            where TOption : CloudFoundryServicesOptions
         {
             if (services == null)
             {
@@ -101,7 +101,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         /// <param name="serviceLabel">the Cloud Foundry service label to use to bind to the options type</param>
         /// <returns>serice container</returns>
         public static IServiceCollection ConfigureCloudFoundryServices<TOption>(this IServiceCollection services, IConfiguration config, string serviceLabel)
-               where TOption : AbstractServiceOptions
+               where TOption : CloudFoundryServicesOptions
         {
             if (services == null)
             {
@@ -119,10 +119,10 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             }
 
             var servicesOptions = GetServiceOptionsFromConfiguration(config);
-            servicesOptions.Services.TryGetValue(serviceLabel, out Service[] cfServices);
+            servicesOptions.Services.TryGetValue(serviceLabel, out var cfServices);
             if (cfServices != null)
             {
-                foreach (Service s in cfServices)
+                foreach (var s in cfServices)
                 {
                     services.ConfigureCloudFoundryService<TOption>(config, s.Name);
                 }

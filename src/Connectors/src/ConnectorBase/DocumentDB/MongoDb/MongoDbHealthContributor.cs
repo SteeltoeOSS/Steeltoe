@@ -14,8 +14,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 using System.Threading;
@@ -31,11 +32,11 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            Type mongoDbImplementationType = MongoDbTypeLocator.MongoClient;
+            var mongoDbImplementationType = MongoDbTypeLocator.MongoClient;
             var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
 
-            MongoDbConnectorOptions rabbitMQConfig = new MongoDbConnectorOptions(configuration);
-            MongoDbConnectorFactory factory = new MongoDbConnectorFactory(info, rabbitMQConfig, mongoDbImplementationType);
+            var rabbitMQConfig = new MongoDbConnectorOptions(configuration);
+            var factory = new MongoDbConnectorFactory(info, rabbitMQConfig, mongoDbImplementationType);
             return new MongoDbHealthContributor(factory, logger);
         }
 
@@ -56,7 +57,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
             var result = new HealthCheckResult();
             try
             {
-                var databases = ConnectorHelpers.Invoke(MongoDbTypeLocator.ListDatabasesMethod, _mongoClient, new object[] { new CancellationTokenSource(5000) });
+                var databases = ReflectionHelpers.Invoke(MongoDbTypeLocator.ListDatabasesMethod, _mongoClient, new object[] { new CancellationTokenSource(5000) });
 
                 if (databases == null)
                 {

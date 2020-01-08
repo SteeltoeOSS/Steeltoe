@@ -59,23 +59,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _apiDescriptionProviders = apiDescriptionProviders;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public MappingsEndpointMiddleware(
-            RequestDelegate next,
-            IMappingsOptions options,
-            IRouteMappings routeMappings = null,
-            IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
-            IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
-            ILogger<MappingsEndpointMiddleware> logger = null)
-            : base(logger: logger)
-        {
-            _next = next;
-            _options = options;
-            _routeMappings = routeMappings;
-            _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
-            _apiDescriptionProviders = apiDescriptionProviders;
-        }
-
         public async Task Invoke(HttpContext context)
         {
             if (IsMappingsRequest(context))
@@ -90,7 +73,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
         protected internal async Task HandleMappingsRequestAsync(HttpContext context)
         {
-            ApplicationMappings result = GetApplicationMappings(context);
+            var result = GetApplicationMappings(context);
             var serialInfo = Serialize(result);
 
             _logger?.LogDebug("Returning: {0}", serialInfo);
@@ -104,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             IDictionary<string, IList<MappingDescription>> desc = new Dictionary<string, IList<MappingDescription>>();
             if (_actionDescriptorCollectionProvider != null)
             {
-                ApiDescriptionProviderContext apiContext = GetApiDescriptions(_actionDescriptorCollectionProvider?.ActionDescriptors?.Items);
+                var apiContext = GetApiDescriptions(_actionDescriptorCollectionProvider?.ActionDescriptors?.Items);
                 desc = GetMappingDescriptions(apiContext);
             }
 
@@ -136,7 +119,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
             foreach (var path in paths)
             {
-                PathString pathString = new PathString(path);
+                var pathString = new PathString(path);
                 if (context.Request.Path.Equals(pathString))
                 {
                     return true;
@@ -153,7 +136,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             {
                 var cdesc = desc.ActionDescriptor as ControllerActionDescriptor;
                 var details = GetRouteDetails(desc);
-                mappingDescriptions.TryGetValue(cdesc.ControllerTypeInfo.FullName, out IList<MappingDescription> mapList);
+                mappingDescriptions.TryGetValue(cdesc.ControllerTypeInfo.FullName, out var mapList);
 
                 if (mapList == null)
                 {
@@ -175,7 +158,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                     }
 
                     var details = GetRouteDetails(desc);
-                    mappingDescriptions.TryGetValue(cdesc.ControllerTypeInfo.FullName, out IList<MappingDescription> mapList);
+                    mappingDescriptions.TryGetValue(cdesc.ControllerTypeInfo.FullName, out var mapList);
 
                     if (mapList == null)
                     {
@@ -204,11 +187,11 @@ namespace Steeltoe.Management.Endpoint.Mappings
             }
             else
             {
-                ControllerActionDescriptor cdesc = desc.ActionDescriptor as ControllerActionDescriptor;
+                var cdesc = desc.ActionDescriptor as ControllerActionDescriptor;
                 routeDetails.RouteTemplate = $"/{cdesc.ControllerName}/{cdesc.ActionName}";
             }
 
-            List<string> produces = new List<string>();
+            var produces = new List<string>();
             foreach (var respTypes in desc.SupportedResponseTypes)
             {
                 foreach (var format in respTypes.ApiResponseFormats)
@@ -219,7 +202,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
             routeDetails.Produces = produces;
 
-            List<string> consumes = new List<string>();
+            var consumes = new List<string>();
             foreach (var reqTypes in desc.SupportedRequestFormats)
             {
                 consumes.Add(reqTypes.MediaType);
@@ -291,7 +274,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 if (router is Route route)
                 {
                     var details = GetRouteDetails(route);
-                    desc.TryGetValue("CoreRouteHandler", out IList<MappingDescription> mapList);
+                    desc.TryGetValue("CoreRouteHandler", out var mapList);
 
                     if (mapList == null)
                     {
@@ -318,7 +301,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
         private IList<string> GetHttpMethods(Route route)
         {
             var constraints = route.Constraints;
-            if (constraints.TryGetValue("httpMethod", out IRouteConstraint routeConstraint) && routeConstraint is HttpMethodRouteConstraint methodConstraint)
+            if (constraints.TryGetValue("httpMethod", out var routeConstraint) && routeConstraint is HttpMethodRouteConstraint methodConstraint)
             {
                 return methodConstraint.AllowedMethods;
             }

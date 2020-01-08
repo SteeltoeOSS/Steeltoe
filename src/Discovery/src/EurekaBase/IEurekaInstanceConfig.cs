@@ -235,7 +235,7 @@ namespace Steeltoe.Discovery.Eureka
         /// address. The exact field values will depend on the implementation details of the corresponding
         /// implementing DataCenterInfo types.
         /// </summary>
-        string[] DefaultAddressResolutionOrder { get; set; }
+        IEnumerable<string> DefaultAddressResolutionOrder { get; set; }
 
         /// <summary>
         /// Gets the hostname associated with this instance.

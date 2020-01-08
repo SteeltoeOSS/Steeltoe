@@ -11,11 +11,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+using Microsoft.Extensions.Configuration;
+
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
-    public class MySqlServiceOption : AbstractServiceOptions
+    public class MySqlServiceOption : CloudFoundryServicesOptions
     {
         public MySqlServiceOption()
+            : base()
+        {
+        }
+
+        public MySqlServiceOption(IConfiguration config)
+            : base(config)
         {
         }
 

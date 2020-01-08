@@ -20,9 +20,5 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Diagnostics\" />
-  </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 using System.Data.SqlClient;
 using Xunit;
@@ -35,14 +35,14 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         [Fact]
         public void Create_ReturnsSqlConnection()
         {
-            SqlServerProviderConnectorOptions config = new SqlServerProviderConnectorOptions()
+            var config = new SqlServerProviderConnectorOptions()
             {
                 Server = "servername",
                 Password = "password",
                 Username = "username",
                 Database = "database"
             };
-            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e", "user", "pass");
+            var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e", "user", "pass");
             var factory = new SqlServerProviderConnectorFactory(si, config, typeof(SqlConnection));
             var connection = factory.Create(null);
             Assert.NotNull(connection);

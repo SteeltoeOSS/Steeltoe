@@ -5,7 +5,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CloudFoundry.Connector.EF6Core</AssemblyName>
     <PackageId>Steeltoe.CloudFoundry.Connector.EF6Core</PackageId>
-    <PackageTags>CloudFoundry;ASPNET Core;Connectors;EntityFramework</PackageTags>
+    <PackageTags>connectors;EntityFramework;aspnetcore;CloudFoundry;vcap</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 

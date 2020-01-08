@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.Oracle.EF6;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 
 namespace Steeltoe.CloudFoundry.Connector.EF6Core
@@ -31,9 +31,8 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
         /// <param name="services">Service Collection</param>
         /// <param name="config">Application Configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -45,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = config.GetSingletonServiceInfo<OracleServiceInfo>();
+            var info = config.GetSingletonServiceInfo<OracleServiceInfo>();
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -59,9 +58,8 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
         /// <param name="config">Application Configuration</param>
         /// <param name="serviceName">Name of service binding in Cloud Foundry</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -78,7 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -86,9 +84,9 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
 
         private static void DoAdd(IServiceCollection services, IConfiguration config, OracleServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
-            OracleProviderConnectorOptions oracleConfig = new OracleProviderConnectorOptions(config);
+            var oracleConfig = new OracleProviderConnectorOptions(config);
 
-            OracleDbContextConnectorFactory factory = new OracleDbContextConnectorFactory(info, oracleConfig, dbContextType);
+            var factory = new OracleDbContextConnectorFactory(info, oracleConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
     }

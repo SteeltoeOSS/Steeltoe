@@ -14,8 +14,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
@@ -30,13 +31,12 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
-            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
+            var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 
             var info = configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>();
 
-            RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions(configuration);
-            RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
+            var rabbitMQConfig = new RabbitMQProviderConnectorOptions(configuration);
+            var factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
             return new RabbitMQHealthContributor(factory, logger);
         }
 
@@ -59,7 +59,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
             var result = new HealthCheckResult();
             try
             {
-                var connection = ConnectorHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
+                var connection = ReflectionHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
 
                 if (connection == null)
                 {
@@ -71,7 +71,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
                 result.Status = HealthStatus.UP;
                 _logger?.LogTrace("RabbitMQ connection up!");
 
-                ConnectorHelpers.Invoke(RabbitMQTypeLocator.CloseConnectionMethod, connection, null);
+                ReflectionHelpers.Invoke(RabbitMQTypeLocator.CloseConnectionMethod, connection, null);
             }
             catch (Exception e)
             {

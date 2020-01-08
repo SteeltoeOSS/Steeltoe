@@ -16,9 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.RabbitMQ;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
 
@@ -32,11 +31,10 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logger factory</param>
         /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>RabbitMQ.Client.ConnectionFactory is retrievable as both ConnectionFactory and IConnectionFactory</remarks>
-        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -48,7 +46,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
                 throw new ArgumentNullException(nameof(config));
             }
 
-            RabbitMQServiceInfo info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
+            var info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -61,11 +59,10 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logger factory</param>
         /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>RabbitMQ.Client.ConnectionFactory is retrievable as both ConnectionFactory and IConnectionFactory</remarks>
-        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -82,7 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
                 throw new ArgumentNullException(nameof(config));
             }
 
-            RabbitMQServiceInfo info = config.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -90,11 +87,11 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 
         private static void DoAdd(IServiceCollection services, RabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
         {
-            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
-            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
+            var rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
+            var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 
-            RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);
-            RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
+            var rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);
+            var factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
             services.Add(new ServiceDescriptor(rabbitMQInterfaceType, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(rabbitMQImplementationType, factory.Create, contextLifetime));
             if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)

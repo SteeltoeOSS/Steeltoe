@@ -16,9 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Relational;
-using Steeltoe.CloudFoundry.Connector.Relational.PostgreSql;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.Services;
 using System;
 using System.Data;
 
@@ -32,9 +31,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
             {
@@ -46,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            PostgresServiceInfo info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
+            var info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime);
             return services;
@@ -59,9 +57,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logger factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
         {
             if (services == null)
             {
@@ -78,7 +75,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            PostgresServiceInfo info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;

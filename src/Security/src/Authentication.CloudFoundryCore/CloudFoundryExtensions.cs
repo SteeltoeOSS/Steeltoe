@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 
@@ -60,7 +61,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
                 securitySection.Bind(options);
 
-                SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+                var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
                 CloudFoundryOAuthConfigurer.Configure(info, options);
             });
             return builder;
@@ -140,7 +141,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
                 securitySection.Bind(cloudFoundryOptions);
 
-                SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+                var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
                 CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
             });
             return builder;
@@ -184,7 +185,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
                 securitySection.Bind(cloudFoundryOptions);
 
-                SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+                var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
                 CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
 
                 configurer(options, config);
@@ -227,7 +228,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
                 securitySection.Bind(cloudFoundryOptions);
 
-                SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+                var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
                 CloudFoundryJwtBearerConfigurer.Configure(info, options, cloudFoundryOptions);
             });
             return builder;

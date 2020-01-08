@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Threading;

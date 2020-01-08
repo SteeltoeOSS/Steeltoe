@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Census.Trace;
@@ -38,6 +39,8 @@ namespace Steeltoe.Management.Tracing
                 throw new ArgumentNullException(nameof(config));
             }
 
+            var appInstanceInfo = services.BuildServiceProvider().GetService<IApplicationInstanceInfo>();
+
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, TracingService>());
 
@@ -51,7 +54,7 @@ namespace Steeltoe.Management.Tracing
                     h = p.GetRequiredService<IHostingEnvironment>();
                 }
 #endif
-                return new TracingOptions(h.ApplicationName, config);
+                return new TracingOptions(appInstanceInfo, config);
             });
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());

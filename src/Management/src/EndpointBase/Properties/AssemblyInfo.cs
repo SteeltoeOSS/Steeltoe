@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Steeltoe.Management.EndpointBase")]
+[assembly: AssemblyProduct("Steeltoe.Management.Endpoint")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -31,7 +31,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Management.EndpointBase.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.EndpointCore.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.EndpointOwin.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.EndpointWeb.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.EndpointAutofac.Test")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

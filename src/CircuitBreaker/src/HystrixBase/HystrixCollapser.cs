@@ -25,13 +25,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
-    public enum RequestCollapserScope
-    {
-        REQUEST,
-        GLOBAL
-    }
-
-    public abstract class HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> : HysrixCollapserBase, IHystrixExecutable<RequestResponseType>
+    public abstract class HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> : HystrixCollapserBase, IHystrixExecutable<RequestResponseType>
     {
         protected internal CancellationToken _token;
 

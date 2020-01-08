@@ -1,18 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
-
   <PropertyGroup>
-    <Description>Steeltoe Management Endpoint Extensions for Microsoft DI</Description>
     <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Management.EndpointCore</AssemblyName>
-    <PackageId>Steeltoe.Management.EndpointCore</PackageId>
-    <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
     <RootNamespace>Steeltoe.Management.Endpoint</RootNamespace>
+    <Description>Package for using Steeltoe management endpoints with ASP.NET Core</Description>
+    <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(ExtensionsVersion)" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsVersion)" />
   </ItemGroup>
@@ -26,13 +23,18 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
+
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\EndpointBase\Steeltoe.Management.EndpointBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Common.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.EndpointBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

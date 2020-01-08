@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Consul;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Consul.Util;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -124,31 +124,26 @@ namespace Steeltoe.Discovery.Consul.Registry
         /// <summary>
         /// Create a Consul registration
         /// </summary>
-        /// <param name="config">configuration values to use</param>
         /// <param name="options">configuration options to use</param>
+        /// <param name="applicationInfo">Info about this app instance</param>
         /// <returns>a registration</returns>
-        public static ConsulRegistration CreateRegistration(IConfiguration config, ConsulDiscoveryOptions options)
+        public static ConsulRegistration CreateRegistration(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            var service = new AgentServiceRegistration();
 
-            AgentServiceRegistration service = new AgentServiceRegistration();
-
-            var appName = GetAppName(options, config);
-            service.ID = GetInstanceId(options, config);
+            service.ID = GetInstanceId(options, applicationInfo);
 
             if (!options.PreferAgentAddress)
             {
                 service.Address = options.HostName;
             }
 
+            var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX + ":serviceName");
             service.Name = NormalizeForConsul(appName);
             service.Tags = CreateTags(options);
             if (options.Port != 0)
@@ -184,44 +179,27 @@ namespace Steeltoe.Discovery.Consul.Registry
             return tags.ToArray();
         }
 
-        internal static string GetAppName(ConsulDiscoveryOptions options, IConfiguration config)
-        {
-            string appName = options.ServiceName;
-            if (!string.IsNullOrEmpty(appName))
-            {
-                return appName;
-            }
-
-            return config.GetValue("spring:application:name", "application");
-        }
-
-        internal static string GetInstanceId(ConsulDiscoveryOptions options, IConfiguration config)
+        internal static string GetInstanceId(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
         {
             if (string.IsNullOrEmpty(options.InstanceId))
             {
-                return NormalizeForConsul(GetDefaultInstanceId(options, config));
+                return NormalizeForConsul(GetDefaultInstanceId(applicationInfo));
             }
 
             return NormalizeForConsul(options.InstanceId);
         }
 
-        internal static string GetDefaultInstanceId(ConsulDiscoveryOptions options, IConfiguration config)
+        internal static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
         {
-            var appName = GetAppName(options, config);
-            string vcapId = config.GetValue<string>("vcap:application:instance_id", null);
-            if (!string.IsNullOrEmpty(vcapId))
+            var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX + ":serviceName");
+            var instanceId = applicationInfo.InstanceId;
+            if (string.IsNullOrEmpty(instanceId))
             {
-                return appName + ":" + vcapId;
+                var rand = new Random();
+                instanceId = rand.Next().ToString();
             }
 
-            string springId = config.GetValue<string>("spring:application:instance_id", null);
-            if (!string.IsNullOrEmpty(springId))
-            {
-                return appName + ":" + springId;
-            }
-
-            Random rand = new Random();
-            return appName + ":" + rand.Next().ToString();
+            return appName + ":" + instanceId;
         }
 
         internal static string NormalizeForConsul(string s)

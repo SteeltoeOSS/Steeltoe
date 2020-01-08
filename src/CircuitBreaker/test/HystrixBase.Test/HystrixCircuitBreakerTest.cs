@@ -14,14 +14,12 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
-using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -50,7 +48,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
             HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
 
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            ICircuitBreaker cb = cmd1._circuitBreaker;
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
             _ = await cmd1.ExecuteAsync();
@@ -93,7 +91,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             string key = "cmd-B";
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            ICircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -135,7 +133,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             string key = "cmd-C";
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            ICircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -177,7 +175,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             string key = "cmd-D";
 
             HystrixCommand<bool> cmd1 = new TimeoutCommand(key);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            ICircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -209,7 +207,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             string key = "cmd-E";
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            ICircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -256,7 +254,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             string key = "cmd-F";
 
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            ICircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -357,7 +355,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             int sleepWindow = 400;
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            ICircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -464,7 +462,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             int lowVolume = 5;
 
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            ICircuitBreaker cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -506,7 +504,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        public class TestCircuitBreaker : IHystrixCircuitBreaker
+        public class TestCircuitBreaker : ICircuitBreaker
         {
             private readonly HystrixCommandMetrics metrics;
             private bool forceShortCircuit = false;

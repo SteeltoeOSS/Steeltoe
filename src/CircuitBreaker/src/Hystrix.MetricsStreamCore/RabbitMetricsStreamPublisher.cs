@@ -17,7 +17,7 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CloudFoundry.Connector.Hystrix;
-using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Net.Security;

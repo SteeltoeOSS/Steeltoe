@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery;
 using System;
 using Xunit;
 

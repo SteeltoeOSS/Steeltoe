@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Util;
+
 namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 {
     internal class MockedTime : ITime

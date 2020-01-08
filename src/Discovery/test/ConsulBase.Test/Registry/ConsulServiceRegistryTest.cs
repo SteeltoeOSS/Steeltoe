@@ -15,6 +15,7 @@
 using Consul;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
 using System;
 using System.Collections.Generic;
@@ -67,10 +68,10 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                     { "spring:application:name", "foobar" }
             });
             var config = builder.Build();
-            var registration = ConsulRegistration.CreateRegistration(config, opts);
+            var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
             await reg.RegisterAsync(registration);
 
-            agentMoq.Verify(a => a.ServiceRegister(registration.Service, default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
             Assert.Single(sch._serviceHeartbeats);
             Assert.Contains(registration.InstanceId, sch._serviceHeartbeats.Keys);
@@ -110,16 +111,16 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                     { "spring:application:name", "foobar" }
             });
             var config = builder.Build();
-            var registration = ConsulRegistration.CreateRegistration(config, opts);
+            var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
             await reg.RegisterAsync(registration);
 
-            agentMoq.Verify(a => a.ServiceRegister(registration.Service, default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
             Assert.Single(sch._serviceHeartbeats);
             Assert.Contains(registration.InstanceId, sch._serviceHeartbeats.Keys);
 
             await reg.DeregisterAsync(registration);
-            agentMoq.Verify(a => a.ServiceDeregister(registration.Service.ID, default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.ServiceDeregister(registration.Service.ID, default), Times.Once);
             Assert.Empty(sch._serviceHeartbeats);
         }
 
@@ -155,7 +156,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 { "spring:application:name", "foobar" }
             });
             var config = builder.Build();
-            var registration = ConsulRegistration.CreateRegistration(config, opts);
+            var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
 
             var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
             Assert.ThrowsAsync<ArgumentException>(() => reg.SetStatusAsync(registration, string.Empty));
@@ -178,7 +179,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 { "spring:application:name", "foobar" }
             });
             var config = builder.Build();
-            var registration = ConsulRegistration.CreateRegistration(config, opts);
+            var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
 
             var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
             await reg.SetStatusAsync(registration, "Up");
@@ -212,7 +213,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                     { "spring:application:name", "foobar" }
                 });
             var config = builder.Build();
-            var registration = ConsulRegistration.CreateRegistration(config, opts);
+            var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
 
             var queryResult = new QueryResult<HealthCheck[]>()
             {
@@ -236,7 +237,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
             var healthMoq = new Mock<IHealthEndpoint>();
 
             clientMoq.Setup(c => c.Health).Returns(healthMoq.Object);
-            healthMoq.Setup(h => h.Checks(registration.ServiceId, QueryOptions.Default, default(CancellationToken))).Returns(result);
+            healthMoq.Setup(h => h.Checks(registration.ServiceId, QueryOptions.Default, default)).Returns(result);
 
             var sch = new TtlScheduler(opts, clientMoq.Object);
             var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);

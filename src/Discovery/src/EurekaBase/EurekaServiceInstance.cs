@@ -25,7 +25,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public EurekaServiceInstance(InstanceInfo info)
         {
-            this._info = info;
+            _info = info;
         }
 
         public string GetHost()
@@ -33,42 +33,13 @@ namespace Steeltoe.Discovery.Eureka
             return _info.HostName;
         }
 
-        public bool IsSecure
-        {
-            get
-            {
-                return _info.IsSecurePortEnabled;
-            }
-        }
+        public bool IsSecure => _info.IsSecurePortEnabled;
 
-        public IDictionary<string, string> Metadata
-        {
-            get
-            {
-                return _info.Metadata;
-            }
-        }
+        public IDictionary<string, string> Metadata => _info.Metadata;
 
-        public int Port
-        {
-            get
-            {
-                if (IsSecure)
-                {
-                    return _info.SecurePort;
-                }
+        public int Port { get => IsSecure ? _info.SecurePort : _info.Port; }
 
-                return _info.Port;
-            }
-        }
-
-        public string ServiceId
-        {
-            get
-            {
-                return _info.AppName;
-            }
-        }
+        public string ServiceId => _info.AppName;
 
         public Uri Uri
         {

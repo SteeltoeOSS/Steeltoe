@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Consul;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.Discovery;
-using Steeltoe.Consul.Client;
+using Steeltoe.Connector.Services;
+using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
@@ -52,7 +52,7 @@ namespace Steeltoe.Discovery.Client
 
             if (discoveryOptions.ClientType == DiscoveryClientType.EUREKA)
             {
-                EurekaClientOptions clientOptions = discoveryOptions.ClientOptions as EurekaClientOptions;
+                var clientOptions = discoveryOptions.ClientOptions as EurekaClientOptions;
                 if (clientOptions == null)
                 {
                     throw new ArgumentException("Missing Client Options");
@@ -110,7 +110,7 @@ namespace Steeltoe.Discovery.Client
                 throw new ArgumentNullException(nameof(config));
             }
 
-            IServiceInfo info = GetSingletonDiscoveryServiceInfo(config);
+            var info = GetSingletonDiscoveryServiceInfo(config);
 
             AddDiscoveryServices(services, info, config, lifecycle);
 
@@ -134,7 +134,7 @@ namespace Steeltoe.Discovery.Client
                 throw new ArgumentNullException(nameof(config));
             }
 
-            IServiceInfo info = GetNamedDiscoveryServiceInfo(config, serviceName);
+            var info = GetNamedDiscoveryServiceInfo(config, serviceName);
 
             AddDiscoveryServices(services, info, config, lifecycle);
 
@@ -190,7 +190,8 @@ namespace Steeltoe.Discovery.Client
             services.AddSingleton<IConsulRegistration>((p) =>
             {
                 var opts = p.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
-                return ConsulRegistration.CreateRegistration(config, opts.Value);
+                var appInfo = services.GetApplicationInstanceInfo();
+                return ConsulRegistration.CreateRegistration(opts.Value, appInfo);
             });
             services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();
             services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
@@ -209,7 +210,7 @@ namespace Steeltoe.Discovery.Client
 
         private static void ConfigureEurekaServices(IServiceCollection services, IConfiguration config, IServiceInfo info)
         {
-            EurekaServiceInfo einfo = info as EurekaServiceInfo;
+            var einfo = info as EurekaServiceInfo;
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
             services.Configure<EurekaClientOptions>(clientSection);
             services.PostConfigure<EurekaClientOptions>((options) =>

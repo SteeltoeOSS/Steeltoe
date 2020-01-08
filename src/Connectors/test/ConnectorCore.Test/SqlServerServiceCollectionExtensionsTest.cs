@@ -81,7 +81,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config);
@@ -95,7 +95,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config, "foobar"));
@@ -107,7 +107,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 

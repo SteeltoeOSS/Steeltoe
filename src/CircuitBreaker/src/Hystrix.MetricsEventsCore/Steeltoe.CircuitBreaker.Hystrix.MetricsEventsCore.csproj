@@ -1,32 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
- <Import Project="..\..\..\..\versions.props" />
-
+  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Steeltoe Neflix Hystrix Metrics Event Stream ASP.NET Core</Description>
     <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore</AssemblyName>
-    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore</PackageId>
-    <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
+    <Description>Netflix Hystrix metrics event stream for ASP.NET Core over HTTP</Description>
+    <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
+    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
       <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
       <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
-    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
   </ItemGroup>
 </Project>

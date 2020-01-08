@@ -91,15 +91,6 @@ namespace Steeltoe.Common.Http
             }
         }
 
-        [Obsolete("This method has a spelling error and will be removed, use 'ConfigureCertificateValidation'")]
-        public static void ConfigureCertificateValidatation(
-            bool validateCertificates,
-            out SecurityProtocolType protocolType,
-            out RemoteCertificateValidationCallback prevValidator)
-        {
-            ConfigureCertificateValidation(validateCertificates, out protocolType, out prevValidator);
-        }
-
         public static void RestoreCertificateValidation(
             bool validateCertificates,
             SecurityProtocolType protocolType,

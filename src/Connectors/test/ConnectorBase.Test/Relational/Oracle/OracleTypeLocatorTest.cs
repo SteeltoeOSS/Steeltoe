@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
@@ -53,7 +54,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
             OracleTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
             // act
-            var exception = Assert.Throws<ConnectorException>(() => OracleTypeLocator.OracleConnection);
+            var exception = Assert.Throws<TypeLoadException>(() => OracleTypeLocator.OracleConnection);
 
             // assert
             Assert.Equal("Unable to find OracleConnection, are you missing a Oracle ODP.NET assembly?", exception.Message);

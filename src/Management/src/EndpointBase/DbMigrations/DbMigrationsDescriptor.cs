@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointBase.DbMigrations
+namespace Steeltoe.Management.Endpoint.DbMigrations
 {
     public class DbMigrationsDescriptor
     {

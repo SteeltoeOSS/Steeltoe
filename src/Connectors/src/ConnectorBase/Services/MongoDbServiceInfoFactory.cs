@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
@@ -25,7 +26,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public override IServiceInfo Create(Service binding)
         {
-            string uri = GetUriFromCredentials(binding.Credentials);
+            var uri = GetUriFromCredentials(binding.Credentials);
             return new MongoDbServiceInfo(binding.Name, uri);
         }
     }

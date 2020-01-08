@@ -165,29 +165,6 @@ namespace Steeltoe.Common.Net
             Ndscontainer = 0x0b
         }
 
-#pragma warning disable S4200 // Native methods should be wrapped
-#pragma warning disable S4214 // "P/Invoke" methods should not be visible
-        /// <summary>
-        /// Retrieves the most recent extended error code set by a WNet function
-        /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>
-        /// </summary>
-        /// <param name="error">The error code reported by the network provider.</param>
-        /// <param name="errorBuf">String variable to receive the description of the error</param>
-        /// <param name="errorBufSize">Size of error buffer</param>
-        /// <param name="nameBuf">String variable to receive the network provider raising the error</param>
-        /// <param name="nameBufSize">Size of name buffer</param>
-        /// <returns>If the function succeeds, and it obtains the last error that the network provider reported, the return value is NO_ERROR.<para/>If the caller supplies an invalid buffer, the return value is ERROR_INVALID_ADDRESS.</returns>
-        [Obsolete("Use GetLastError instead. This direct call to mpr.dll will be removed in a future release")]
-        [DllImport("mpr.dll", CharSet = CharSet.Auto)]
-        public static extern int WNetGetLastError(
-            out int error,
-            out StringBuilder errorBuf,
-            int errorBufSize,
-            out StringBuilder nameBuf,
-            int nameBufSize);
-#pragma warning restore S4214 // "P/Invoke" methods should not be visible
-#pragma warning restore S4200 // Native methods should be wrapped
-
         /// <summary>
         /// Retrieves the most recent extended error code set by a WNet function
         /// <para/>Wraps an underlying P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>

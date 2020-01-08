@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
@@ -22,7 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-redis",
                 Tags = new string[] { "redis", "pivotal" },
@@ -35,14 +36,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "port", new Credential("60287") }
                 }
             };
-            RedisServiceInfoFactory factory = new RedisServiceInfoFactory();
+            var factory = new RedisServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-redis",
                 Tags = new string[] { "foobar", "pivotal" },
@@ -55,14 +56,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "port", new Credential("60287") }
                 }
             };
-            RedisServiceInfoFactory factory = new RedisServiceInfoFactory();
+            var factory = new RedisServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-redis",
                 Tags = new string[] { "redis", "pivotal" },
@@ -75,7 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "port", new Credential("60287") }
                 }
             };
-            RedisServiceInfoFactory factory = new RedisServiceInfoFactory();
+            var factory = new RedisServiceInfoFactory();
             var info = factory.Create(s) as RedisServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("myRedisService", info.Id);
@@ -88,7 +89,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Create_CreatesValidServiceBindingForTLS()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p.redis",
                 Tags = new string[] { "redis", "pivotal" },
@@ -103,7 +104,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
 
-            RedisServiceInfoFactory factory = new RedisServiceInfoFactory();
+            var factory = new RedisServiceInfoFactory();
             var info = factory.Create(s) as RedisServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("myRedisService", info.Id);

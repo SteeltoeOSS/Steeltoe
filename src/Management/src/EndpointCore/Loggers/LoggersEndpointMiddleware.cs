@@ -35,13 +35,6 @@ namespace Steeltoe.Management.Endpoint.Loggers
             _next = next;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, ILogger<LoggersEndpointMiddleware> logger = null)
-            : base(endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
-        {
-            _next = next;
-        }
-
         public async Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
@@ -56,8 +49,8 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         protected internal async Task HandleLoggersRequestAsync(HttpContext context)
         {
-            HttpRequest request = context.Request;
-            HttpResponse response = context.Response;
+            var request = context.Request;
+            var response = context.Response;
 
             if (context.Request.Method.Equals("POST"))
             {
@@ -96,14 +89,14 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         private bool ChangeLoggerLevel(HttpRequest request, string path)
         {
-            PathString epPath = new PathString(path);
-            if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+            var epPath = new PathString(path);
+            if (request.Path.StartsWithSegments(epPath, out var remaining) && remaining.HasValue)
             {
-                string loggerName = remaining.Value.TrimStart('/');
+                var loggerName = remaining.Value.TrimStart('/');
 
                 var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
 
-                change.TryGetValue("configuredLevel", out string level);
+                change.TryGetValue("configuredLevel", out var level);
 
                 _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
                 if (!string.IsNullOrEmpty(loggerName))

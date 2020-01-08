@@ -52,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public static HealthCheckResult ToHealthCheckResult(this Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult result)
         {
-            return new Common.HealthChecks.HealthCheckResult()
+            return new HealthCheckResult()
             {
                 Status = result.Status.ToHealthStatus(),
                 Description = result.Description,

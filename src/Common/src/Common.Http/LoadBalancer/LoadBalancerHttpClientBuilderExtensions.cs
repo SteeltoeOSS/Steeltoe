@@ -14,10 +14,11 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.LoadBalancer;
+using Steeltoe.Discovery;
 using System;
 using System.Net.Http;
 

@@ -13,46 +13,28 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Options;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
-    public class CloudFoundryServicesOptions : AbstractOptions
+    public class CloudFoundryServicesOptions : ServicesOptions
     {
-        public const string CONFIGURATION_PREFIX = "vcap";
+        public static string ServicesConfigRoot => "vcap";
 
+        public override string CONFIGURATION_PREFIX { get; protected set; } = ServicesConfigRoot;
+
+        // This constructor is for use with IOptions
         public CloudFoundryServicesOptions()
         {
         }
 
         public CloudFoundryServicesOptions(IConfigurationRoot root)
-            : base(root, CONFIGURATION_PREFIX)
+            : base(root, ServicesConfigRoot)
         {
         }
 
         public CloudFoundryServicesOptions(IConfiguration config)
-            : base(config)
+            : base(config, ServicesConfigRoot)
         {
-        }
-
-        public Dictionary<string, Service[]> Services { get; set; } = new Dictionary<string, Service[]>();
-
-        public IList<Service> ServicesList
-        {
-            get
-            {
-                List<Service> results = new List<Service>();
-                if (Services != null)
-                {
-                    foreach (KeyValuePair<string, Service[]> kvp in Services)
-                    {
-                        results.AddRange(kvp.Value);
-                    }
-                }
-
-                return results;
-            }
         }
     }
 }

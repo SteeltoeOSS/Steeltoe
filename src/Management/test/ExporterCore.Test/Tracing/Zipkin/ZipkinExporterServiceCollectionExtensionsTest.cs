@@ -51,6 +51,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Test
             var services = new ServiceCollection();
             var config = GetConfiguration();
 
+            services.AddSingleton(config);
+
             services.AddOptions();
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddSingleton<ITracing>(new TestTracing());

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Net;
 
 namespace Steeltoe.Discovery.Eureka
 {
@@ -25,96 +26,60 @@ namespace Steeltoe.Discovery.Eureka
 
         public EurekaInstanceOptions()
         {
-            this.StatusPageUrlPath = Default_StatusPageUrlPath;
-            this.HealthCheckUrlPath = Default_HealthCheckUrlPath;
-            this.IsInstanceEnabledOnInit = true;
-            this.VirtualHostName = null;
-            this.SecureVirtualHostName = null;
-            this.InstanceId = GetHostName(false) + ":" + AppName + ":" + NonSecurePort;
+            StatusPageUrlPath = Default_StatusPageUrlPath;
+            HealthCheckUrlPath = Default_HealthCheckUrlPath;
+            IsInstanceEnabledOnInit = true;
+            VirtualHostName = null;
+            SecureVirtualHostName = null;
+            InstanceId = GetHostName(false) + ":" + AppName + ":" + NonSecurePort;
         }
 
         // eureka:instance:appGroup
         public virtual string AppGroup
         {
-            get
-            {
-                return this.AppGroupName;
-            }
+            get => AppGroupName;
 
-            set
-            {
-                this.AppGroupName = value;
-            }
+            set => AppGroupName = value;
         }
 
         // eureka:instance:instanceEnabledOnInit
         public virtual bool InstanceEnabledOnInit
         {
-            get
-            {
-                return this.IsInstanceEnabledOnInit;
-            }
+            get => IsInstanceEnabledOnInit;
 
-            set
-            {
-                this.IsInstanceEnabledOnInit = value;
-            }
+            set => IsInstanceEnabledOnInit = value;
         }
 
         // eureka:instance:port
         public virtual int Port
         {
-            get
-            {
-                return this.NonSecurePort;
-            }
+            get => NonSecurePort;
 
-            set
-            {
-                this.NonSecurePort = value;
-            }
+            set => NonSecurePort = value;
         }
 
         // eureka:instance:nonSecurePortEnabled
         public virtual bool NonSecurePortEnabled
         {
-            get
-            {
-                return this.IsNonSecurePortEnabled;
-            }
+            get => IsNonSecurePortEnabled;
 
-            set
-            {
-                this.IsNonSecurePortEnabled = value;
-            }
+            set => IsNonSecurePortEnabled = value;
         }
 
         // eureka:instance:vipAddress
         public virtual string VipAddress
         {
-            get
-            {
-                return this.VirtualHostName;
-            }
+            get => VirtualHostName;
 
-            set
-            {
-                this.VirtualHostName = value;
-            }
+            set => VirtualHostName = value;
         }
 
         // eureka:instance:secureVipAddress
         public virtual string SecureVipAddress
         {
-            get
-            {
-                return this.SecureVirtualHostName;
-            }
+            get => SecureVirtualHostName;
 
-            set
-            {
-                this.SecureVirtualHostName = value;
-            }
+            set => SecureVirtualHostName = value;
         }
 
         // spring:cloud:discovery:registrationMethod changed to  eureka:instance:registrationMethod
@@ -124,20 +89,9 @@ namespace Steeltoe.Discovery.Eureka
 
         public override string IpAddress
         {
-            get
-            {
-                if (_ipAddress != null)
-                {
-                    return _ipAddress;
-                }
+            get => _ipAddress ?? _thisHostAddress;
 
-                return _thisHostAddress;
-            }
-
-            set
-            {
-                _ipAddress = value;
-            }
+            set => _ipAddress = value;
         }
 
         private string _hostName;
@@ -167,7 +121,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (refresh || string.IsNullOrEmpty(_thisHostName))
             {
-                _thisHostName = ResolveHostName();
+                _thisHostName = DnsTools.ResolveHostName();
             }
 
             return _thisHostName;

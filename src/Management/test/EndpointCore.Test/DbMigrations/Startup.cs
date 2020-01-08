@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.EndpointBase.DbMigrations;
+using Steeltoe.Management.Endpoint.DbMigrations;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 {

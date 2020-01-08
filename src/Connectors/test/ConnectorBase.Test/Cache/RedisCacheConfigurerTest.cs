@@ -14,8 +14,7 @@
 
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
-using Steeltoe.CloudFoundry.Connector.App;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System.Net;
 using Xunit;
 
@@ -59,15 +58,9 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         [Fact]
         public void UpdateOptions_FromServiceInfo_ReturnsExcpected()
         {
-            RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-            RedisCacheConnectorOptions connOptions = new RedisCacheConnectorOptions();
-            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
-            {
-                ApplicationInfo = new ApplicationInstanceInfo()
-                {
-                    ApplicationId = "applicationId"
-                }
-            };
+            var configurer = new RedisCacheConfigurer();
+            var connOptions = new RedisCacheConnectorOptions();
+            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
             configurer.UpdateOptions(si, connOptions);
 
             Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
@@ -77,8 +70,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+            var configurer = new RedisCacheConfigurer();
+            var config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -97,21 +90,15 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+            var configurer = new RedisCacheConfigurer();
+            var config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
                 Password = "password",
                 InstanceName = "instanceId"
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
-            {
-                ApplicationInfo = new ApplicationInstanceInfo()
-                {
-                    InstanceId = "instanceId"
-                }
-            };
+            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
             var connectionSettings = configurer.Configure(si, config);
             Assert.NotNull(connectionSettings);
 
@@ -123,8 +110,8 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         public void ConfigureConnection_NoServiceInfo_ReturnsExpected()
         {
             // arrange
-            RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+            var configurer = new RedisCacheConfigurer();
+            var config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -148,20 +135,14 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         public void ConfigureConnection_ServiceInfoOveridesConfig_ReturnsExpected()
         {
             // arrange
-            RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+            var configurer = new RedisCacheConfigurer();
+            var config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
                 Password = "password"
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
-            {
-                ApplicationInfo = new ApplicationInstanceInfo()
-                {
-                    InstanceId = "instanceId"
-                }
-            };
+            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
 
             // act
             var opts = configurer.Configure(si, config);

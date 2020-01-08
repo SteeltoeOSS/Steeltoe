@@ -14,7 +14,7 @@
 
 using Xunit;
 
-namespace Steeltoe.Consul.Client.Test
+namespace Steeltoe.Discovery.Consul.Client.Test
 {
     public class ConsulOptionsTest
     {

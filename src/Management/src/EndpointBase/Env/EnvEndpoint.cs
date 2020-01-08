@@ -15,7 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Configuration;
+using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Env
         private readonly IConfiguration _configuration;
         private readonly Sanitizer _sanitizer;
 
-#if NETSTANDARD2_1
+#if NETCOREAPP3_0
         private readonly IHostEnvironment _env;
 
         public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)

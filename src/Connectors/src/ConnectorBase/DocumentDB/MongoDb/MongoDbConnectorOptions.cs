@@ -81,7 +81,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
             else
             {
                 // build a MongoDB connection string
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
 
                 sb.Append("mongodb://");
                 AddColonDelimitedPair(sb, Username, Password, '@');

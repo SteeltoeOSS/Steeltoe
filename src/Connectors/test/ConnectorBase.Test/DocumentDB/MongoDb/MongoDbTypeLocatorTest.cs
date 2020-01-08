@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
@@ -42,7 +43,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             MongoDbTypeLocator.ConnectionInterfaceTypeNames = new string[] { "something-Wrong" };
 
             // act
-            var exception = Assert.Throws<ConnectorException>(() => MongoDbTypeLocator.IMongoClient);
+            var exception = Assert.Throws<TypeLoadException>(() => MongoDbTypeLocator.IMongoClient);
 
             // assert
             Assert.Equal("Unable to find IMongoClient, are you missing a MongoDB driver?", exception.Message);

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia.Test
@@ -25,11 +24,9 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         {
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         public override Links Invoke(string baseUrl)
         {
             return new Links();
         }
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 }

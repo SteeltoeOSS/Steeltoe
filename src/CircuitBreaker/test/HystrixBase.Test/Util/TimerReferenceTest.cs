@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Util;
 using System;
 using System.Diagnostics;
 using Xunit;

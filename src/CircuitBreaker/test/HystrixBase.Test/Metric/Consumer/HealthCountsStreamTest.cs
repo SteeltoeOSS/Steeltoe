@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;

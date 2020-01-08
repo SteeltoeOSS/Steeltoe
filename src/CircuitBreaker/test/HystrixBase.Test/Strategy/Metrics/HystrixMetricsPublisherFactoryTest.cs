@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -131,7 +131,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             public AtomicInteger CommandCounter = new AtomicInteger();
             public AtomicInteger ThreadCounter = new AtomicInteger();
 
-            public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, IHystrixCircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+            public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
             {
                 return new MyHystrixMetricsPublisherCommand(CommandCounter);
             }
@@ -173,7 +173,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
                 this.commandToReturn = commandToReturn;
             }
 
-            public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics, IHystrixCircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+            public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
             {
                 return commandToReturn;
             }

@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -28,13 +27,6 @@ namespace Steeltoe.Management.Endpoint.Env
 
         public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<EnvEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
-        {
-            _next = next;
-        }
-
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, ILogger<EnvEndpointMiddleware> logger = null)
-            : base(endpoint, logger: logger)
         {
             _next = next;
         }

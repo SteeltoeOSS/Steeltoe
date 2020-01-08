@@ -1,29 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
-  
   <PropertyGroup>
-    <Description>Steeltoe Management ExporterBase - Base Package</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Steeltoe.Management.ExporterBase</AssemblyName>
-    <PackageId>Steeltoe.Management.ExporterBase</PackageId>
-    <PackageTags>Management;Monitoring;Metrics;Distributed Trace</PackageTags>
     <RootNamespace>Steeltoe.Management.Exporter</RootNamespace>
+    <Description>Base package for exporting metrics and tracing</Description>
+    <PackageTags>management;monitoring;metrics;distributed trace;Cloud Foundry;zipkin;micrometer</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
+  <ItemGroup>
+    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
+  </ItemGroup>
+  
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj" />
+    <!--<ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />-->
     <ProjectReference Include="..\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Extensions.Configuration.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <!--<PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />-->
     <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
   </ItemGroup>
 </Project>

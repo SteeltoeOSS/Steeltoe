@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
@@ -22,8 +22,8 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
         [Fact]
         public void Create_ReturnsOAuthOptions()
         {
-            SsoServiceInfo si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
-            OAuthConnectorOptions config = new OAuthConnectorOptions();
+            var si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
+            var config = new OAuthConnectorOptions();
 
             var factory = new OAuthConnectorFactory(si, config);
             var result = factory.Create(null);

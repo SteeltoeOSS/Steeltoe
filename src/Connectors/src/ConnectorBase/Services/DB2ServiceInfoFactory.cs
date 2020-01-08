@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Connector.Services;
+
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class DB2ServiceInfoFactory : RelationalServiceInfoFactory

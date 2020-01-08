@@ -31,21 +31,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
         protected bool _exactRequestPathMatching;
         protected IList<IManagementOptions> _mgmtOptions;
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public EndpointMiddleware(IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
-        {
-            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
-            _exactRequestPathMatching = exactRequestPathMatching;
-            _logger = logger;
-        }
-
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public EndpointMiddleware(IEndpoint<TResult> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
-            : this(allowedMethods, exactRequestPathMatching, logger)
-        {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
-        }
-
         public EndpointMiddleware(IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
         {
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
@@ -141,13 +126,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
             {
                 _endpoint = value;
             }
-        }
-
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
-            : base(allowedMethods, exactRequestPathMatching, logger)
-        {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
+using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

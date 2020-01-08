@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_ThrowsIfTagsNull()
         {
-            string scheme = "scheme";
+            var scheme = "scheme";
             Tags tags = null;
 
             // Act and Assert
@@ -45,11 +45,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void TagsMatch_Matches()
         {
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            Service service1 = new Service()
+            var service1 = new Service()
             {
                 Tags = new string[] { "bar" }
             };
@@ -59,11 +59,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void TagsMatch_DoesntMatch()
         {
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            Service service1 = new Service()
+            var service1 = new Service()
             {
                 Tags = new string[] { "noMatch" }
             };
@@ -73,11 +73,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void LabelStartsWithTag_Matches()
         {
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            Service service1 = new Service()
+            var service1 = new Service()
             {
                 Tags = new string[] { "noMatch" },
                 Label = "foobarfoo"
@@ -88,11 +88,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void LabelStartsWithTag_DoesntMatch()
         {
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            Service service1 = new Service()
+            var service1 = new Service()
             {
                 Tags = new string[] { "noMatch" },
                 Label = "baby"
@@ -103,11 +103,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void UriMatchesScheme_Matches()
         {
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            Service service1 = new Service()
+            var service1 = new Service()
             {
                 Tags = new string[] { "noMatch" },
                 Label = "noMatch",
@@ -122,11 +122,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void UriMatchesScheme_DoesntMatch()
         {
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
-            Service service1 = new Service()
+            var service1 = new Service()
             {
                 Tags = new string[] { "noMatch" },
                 Label = "noMatch",
@@ -145,8 +145,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             {
                 { "username", new Credential("username") }
             };
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var uname = sif.GetUsernameFromCredentials(credentials);
@@ -173,8 +173,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             {
                 { "password", new Credential("password") }
             };
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var pwd = sif.GetPasswordFromCredentials(credentials);
@@ -193,8 +193,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             {
                 { "port", new Credential("123") }
             };
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var port = sif.GetPortFromCredentials(credentials);
@@ -213,8 +213,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             {
                 { "host", new Credential("host") }
             };
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var host = sif.GetHostFromCredentials(credentials);
@@ -241,8 +241,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             {
                 { "uri", new Credential("https://boo:222") }
             };
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var uri = sif.GetUriFromCredentials(credentials);
@@ -275,8 +275,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                         }
                 }
             };
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var list = sif.GetListFromCredentials(credentials, "uris");
@@ -303,8 +303,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                         }
                 }
             };
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var ex = Assert.Throws<ConnectorException>(() => sif.GetListFromCredentials(credentials, "foo"));
@@ -319,8 +319,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             {
                 { "key", new Credential("foobar") }
             };
-            Tags tags = new Tags(new string[] { "foo", "bar" });
-            string scheme = "scheme";
+            var tags = new Tags(new string[] { "foo", "bar" });
+            var scheme = "scheme";
 
             var sif = new TestServiceInfoFactory(tags, scheme);
             var ex = Assert.Throws<FormatException>(() => sif.GetIntFromCredentials(credentials, "key"));

@@ -1,28 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Steeltoe Service Discovery Client</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Discovery.ClientCore</AssemblyName>
-    <PackageId>Steeltoe.Discovery.ClientCore</PackageId>
-    <PackageTags>Eureka, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <Description>Package for using Steeltoe Service Discovery Client in ASP.NET Core applications</Description>
+    <PackageTags>aspnetcore;service discovery;service registry;Spring Cloud;eureka;consul</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
     <ProjectReference Include="..\ConsulBase\Steeltoe.Discovery.ConsulBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Discovery.EurekaBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Discovery.ConsulBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
   </ItemGroup>
 </Project>

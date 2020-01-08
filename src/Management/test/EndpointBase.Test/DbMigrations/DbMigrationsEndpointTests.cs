@@ -16,7 +16,6 @@ using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointBase.DbMigrations;
 using System;
 using System.Reflection;
 using Xunit;

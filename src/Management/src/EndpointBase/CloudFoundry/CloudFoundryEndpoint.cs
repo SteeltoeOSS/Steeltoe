@@ -20,7 +20,6 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
-#pragma warning disable CS0618 // Type or member is obsolete
     public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>
     {
         private readonly ILogger<CloudFoundryEndpoint> _logger;
@@ -44,66 +43,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger = logger;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public CloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null)
-            : base(options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            _logger = logger;
-        }
-
         protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
 
         public override Links Invoke(string baseUrl)
         {
-            if (_mgmtOption != null)
-            {
-                HypermediaService hypermediaService = new HypermediaService(_mgmtOption, options, _logger);
-                return hypermediaService.Invoke(baseUrl);
-            }
-
-            // TODO: The below code will be removed in 3.0
-            else
-            {
-                var endpointOptions = Options.Global.EndpointOptions;
-                var links = new Links();
-
-                if (!Options.Enabled.Value)
-                {
-                    return links;
-                }
-
-                foreach (var opt in endpointOptions)
-                {
-                    if (!opt.Enabled.Value)
-                    {
-                        continue;
-                    }
-
-                    if (opt == Options)
-                    {
-                        links._links.Add("self", new Link(baseUrl));
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
-                        {
-                            links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Id));
-                        }
-                        else if (links._links.ContainsKey(opt.Id))
-                        {
-                            _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
-                        }
-                    }
-                }
-
-                return links;
-            }
+            var hypermediaService = new HypermediaService(_mgmtOption, options, _logger);
+            return hypermediaService.Invoke(baseUrl);
         }
     }
 }
-#pragma warning restore CS0618 // Type or member is obsolete

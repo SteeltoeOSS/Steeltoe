@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,11 +60,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesZeros()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-A");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-A");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-A");
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-A");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-A");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-A");
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
@@ -85,14 +83,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleSuccess()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-B");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-B");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-B");
-            CountdownEvent latch = new CountdownEvent(1);
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-B");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-B");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-B");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
-            Command cmd = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            var cmd = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -110,15 +108,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleFailure()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-C");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-C");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-C");
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-C");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-C");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-C");
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
 
-            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
+            var cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -136,14 +134,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleTimeout()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-D");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-D");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-D");
-            CountdownEvent latch = new CountdownEvent(1);
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-D");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-D");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-D");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
-            Command cmd = Command.From(groupKey, key, HystrixEventType.TIMEOUT);
+            var cmd = Command.From(groupKey, key, HystrixEventType.TIMEOUT);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -160,14 +158,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSingleBadRequest()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-E");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-E");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-E");
-            CountdownEvent latch = new CountdownEvent(1);
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-E");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-E");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-E");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
-            Command cmd = Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
+            var cmd = Command.From(groupKey, key, HystrixEventType.BAD_REQUEST);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -185,17 +183,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestRequestFromCache()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-F");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-F");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-F");
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-F");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-F");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-F");
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
 
-            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
-            Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-            Command cmd3 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+            var cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            var cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+            var cmd3 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -216,20 +214,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestShortCircuited()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-G");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-G");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-G");
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-G");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-G");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-G");
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
 
-            Command failure1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
-            Command failure2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
-            Command failure3 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
+            var failure1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
+            var failure2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
+            var failure3 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0);
 
-            Command shortCircuit1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
-            Command shortCircuit2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            var shortCircuit1 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
+            var shortCircuit2 = CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -261,23 +259,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSemaphoreRejected()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-H");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-H");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-H");
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-H");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-H");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-H");
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
-            List<Command> saturators = new List<Command>();
+            var saturators = new List<Command>();
 
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
-            Command rejected1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
-            Command rejected2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            var rejected1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            var rejected2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -285,8 +283,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // 10 commands will saturate semaphore when called from different threads.
             // submit 2 more requests and they should be SEMAPHORE_REJECTED
             // should see 10 SUCCESSes, 2 SEMAPHORE_REJECTED and 2 FALLBACK_SUCCESSes
-            List<Task> tasks = new List<Task>();
-            foreach (Command saturator in saturators)
+            var tasks = new List<Task>();
+            foreach (var saturator in saturators)
             {
                 tasks.Add(Task.Run(() => saturator.Execute()));
             }
@@ -311,23 +309,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadPoolRejected()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-I");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-I");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-I");
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-I");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-I");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-I");
 
-            List<Command> saturators = new List<Command>();
-            CountdownEvent latch = new CountdownEvent(1);
+            var saturators = new List<Command>();
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 500));
             }
 
-            Command rejected1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
-            Command rejected2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            var rejected1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
+            var rejected2 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 0);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -335,8 +333,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // 10 commands will saturate threadpools when called concurrently.
             // submit 2 more requests and they should be THREADPOOL_REJECTED
             // should see 10 SUCCESSes, 2 THREADPOOL_REJECTED and 2 FALLBACK_SUCCESSes
-            List<Task> tasks = new List<Task>();
-            foreach (Command c in saturators)
+            var tasks = new List<Task>();
+            foreach (var c in saturators)
             {
                 tasks.Add(c.ExecuteAsync());
             }
@@ -361,15 +359,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestFallbackFailure()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-J");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-J");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-J");
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-J");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-J");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-J");
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
 
-            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_FAILURE);
+            var cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_FAILURE);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -386,15 +384,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestFallbackMissing()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-K");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-K");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-K");
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-K");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-K");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-K");
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
 
-            Command cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_MISSING);
+            var cmd = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_MISSING);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -412,30 +410,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestFallbackRejection()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-L");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-L");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-L");
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-L");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-L");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-L");
 
-            List<Command> fallbackSaturators = new List<Command>();
-            CountdownEvent latch = new CountdownEvent(1);
+            var fallbackSaturators = new List<Command>();
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 fallbackSaturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
             }
 
-            Command rejection1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
-            Command rejection2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
+            var rejection1 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
+            var rejection2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
 
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
             // let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
-            List<Task> tasks = new List<Task>();
-            foreach (Command saturator in fallbackSaturators)
+            var tasks = new List<Task>();
+            foreach (var saturator in fallbackSaturators)
             {
                 tasks.Add(saturator.ExecuteAsync());
             }
@@ -465,15 +463,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestMultipleEventsOverTimeGetStoredAndDoNotAgeOut()
         {
-            IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-M");
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-M");
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-M");
-            CountdownEvent latch = new CountdownEvent(1);
+            var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-M");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-M");
+            var key = HystrixCommandKeyDefault.AsKey("Cumulative-Counter-M");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, 10, 100);
-            Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
-            Command cmd2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 10);
+            var cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS, 20);
+            var cmd2 = Command.From(groupKey, key, HystrixEventType.FAILURE, 10);
 
             latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");

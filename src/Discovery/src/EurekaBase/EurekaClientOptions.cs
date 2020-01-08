@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Common.Discovery;
-
 namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
@@ -24,9 +22,6 @@ namespace Steeltoe.Discovery.Eureka
 
         public EurekaClientOptions()
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            InstanceInfoReplicationIntervalSeconds = Default_InstanceInfoReplicationIntervalSeconds;
-#pragma warning restore CS0618 // Type or member is obsolete
             EurekaServer = new EurekaServerConfig(this);
             Health = new EurekaHealthConfig(this);
         }
@@ -43,29 +38,17 @@ namespace Steeltoe.Discovery.Eureka
         // Configuration property: eureka:client:serviceUrl
         public string ServiceUrl
         {
-            get
-            {
-                return this.EurekaServerServiceUrls;
-            }
+            get => EurekaServerServiceUrls;
 
-            set
-            {
-                this.EurekaServerServiceUrls = value;
-            }
+            set => EurekaServerServiceUrls = value;
         }
 
         // Configuration property: eureka:client:validate_certificates
         public bool Validate_Certificates
         {
-            get
-            {
-                return this.ValidateCertificates;
-            }
+            get => ValidateCertificates;
 
-            set
-            {
-                this.ValidateCertificates = value;
-            }
+            set => ValidateCertificates = value;
         }
 
         // Configuration property: eureka:client:eurekaServer
@@ -86,43 +69,25 @@ namespace Steeltoe.Discovery.Eureka
             // Configuration property: eureka:client:health:enabled
             public bool Enabled
             {
-                get
-                {
-                    return _options.HealthContribEnabled;
-                }
+                get => _options.HealthContribEnabled;
 
-                set
-                {
-                    _options.HealthContribEnabled = value;
-                }
+                set => _options.HealthContribEnabled = value;
             }
 
             // Configuration property: eureka:client:health:monitoredApps
             public string MonitoredApps
             {
-                get
-                {
-                    return _options.HealthMonitoredApps;
-                }
+                get => _options.HealthMonitoredApps;
 
-                set
-                {
-                    _options.HealthMonitoredApps = value;
-                }
+                set => _options.HealthMonitoredApps = value;
             }
 
             // Configuration property: eureka:client:health:checkEnabled
             public bool CheckEnabled
             {
-                get
-                {
-                    return _options.HealthCheckEnabled;
-                }
+                get => _options.HealthCheckEnabled;
 
-                set
-                {
-                    _options.HealthCheckEnabled = value;
-                }
+                set => _options.HealthCheckEnabled = value;
             }
         }
 
@@ -140,15 +105,9 @@ namespace Steeltoe.Discovery.Eureka
             /// </summary>
             public string ProxyHost
             {
-                get
-                {
-                    return _options.ProxyHost;
-                }
+                get => _options.ProxyHost;
 
-                set
-                {
-                    _options.ProxyHost = value;
-                }
+                set => _options.ProxyHost = value;
             }
 
             /// <summary>
@@ -156,15 +115,9 @@ namespace Steeltoe.Discovery.Eureka
             /// </summary>
             public int ProxyPort
             {
-                get
-                {
-                    return _options.ProxyPort;
-                }
+                get => _options.ProxyPort;
 
-                set
-                {
-                    _options.ProxyPort = value;
-                }
+                set => _options.ProxyPort = value;
             }
 
             /// <summary>
@@ -172,15 +125,9 @@ namespace Steeltoe.Discovery.Eureka
             /// </summary>
             public string ProxyUserName
             {
-                get
-                {
-                    return _options.ProxyUserName;
-                }
+                get => _options.ProxyUserName;
 
-                set
-                {
-                    _options.ProxyUserName = value;
-                }
+                set => _options.ProxyUserName = value;
             }
 
             /// <summary>
@@ -188,15 +135,9 @@ namespace Steeltoe.Discovery.Eureka
             /// </summary>
             public string ProxyPassword
             {
-                get
-                {
-                    return _options.ProxyPassword;
-                }
+                get => _options.ProxyPassword;
 
-                set
-                {
-                    _options.ProxyPassword = value;
-                }
+                set => _options.ProxyPassword = value;
             }
 
             /// <summary>
@@ -204,15 +145,9 @@ namespace Steeltoe.Discovery.Eureka
             /// </summary>
             public bool ShouldGZipContent
             {
-                get
-                {
-                    return _options.ShouldGZipContent;
-                }
+                get => _options.ShouldGZipContent;
 
-                set
-                {
-                    _options.ShouldGZipContent = value;
-                }
+                set => _options.ShouldGZipContent = value;
             }
 
             /// <summary>
@@ -220,15 +155,9 @@ namespace Steeltoe.Discovery.Eureka
             /// </summary>
             public int ConnectTimeoutSeconds
             {
-                get
-                {
-                    return _options.EurekaServerConnectTimeoutSeconds;
-                }
+                get => _options.EurekaServerConnectTimeoutSeconds;
 
-                set
-                {
-                    _options.EurekaServerConnectTimeoutSeconds = value;
-                }
+                set => _options.EurekaServerConnectTimeoutSeconds = value;
             }
 
             /// <summary>
@@ -236,15 +165,9 @@ namespace Steeltoe.Discovery.Eureka
             /// </summary>
             public int RetryCount
             {
-                get
-                {
-                    return _options.EurekaServerRetryCount;
-                }
+                get => _options.EurekaServerRetryCount;
 
-                set
-                {
-                    _options.EurekaServerRetryCount = value;
-                }
+                set => _options.EurekaServerRetryCount = value;
             }
         }
     }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Connector.Services;
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.Services.Test
@@ -21,8 +22,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_CreatesExpected()
         {
-            string uri = "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true";
-            MySqlServiceInfo r1 = new MySqlServiceInfo("myId", uri);
+            var uri = "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true";
+            var r1 = new MySqlServiceInfo("myId", uri);
 
             Assert.Equal("myId", r1.Id);
             Assert.Equal("mysql", r1.Scheme);

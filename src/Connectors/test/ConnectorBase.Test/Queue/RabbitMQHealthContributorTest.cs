@@ -15,9 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.RabbitMQ;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
-using System;
+using Steeltoe.Connector.Services;
 using System.Collections.Generic;
 using Xunit;
 
@@ -34,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Queue
                 ["rabbit:client:port"] = "1234",
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var contrib = RabbitMQHealthContributor.GetRabbitMQContributor(config);
@@ -47,9 +46,9 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Queue
         public void Not_Connected_Returns_Down_Status()
         {
             // arrange
-            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
-            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
-            RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions();
+            _ = RabbitMQTypeLocator.IConnectionFactory;
+            var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
+            var rabbitMQConfig = new RabbitMQProviderConnectorOptions();
             var sInfo = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@localhost:5672/si_vhost");
             var logrFactory = new LoggerFactory();
             var connFactory = new RabbitMQProviderConnectorFactory(sInfo, rabbitMQConfig, rabbitMQImplementationType);
@@ -67,9 +66,9 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Queue
         public void Is_Connected_Returns_Up_Status()
         {
             // arrange
-            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
-            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
-            RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions();
+            _ = RabbitMQTypeLocator.IConnectionFactory;
+            var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
+            var rabbitMQConfig = new RabbitMQProviderConnectorOptions();
             var sInfo = new RabbitMQServiceInfo("MyId", "amqp://localhost:5672");
             var logrFactory = new LoggerFactory();
             var connFactory = new RabbitMQProviderConnectorFactory(sInfo, rabbitMQConfig, rabbitMQImplementationType);

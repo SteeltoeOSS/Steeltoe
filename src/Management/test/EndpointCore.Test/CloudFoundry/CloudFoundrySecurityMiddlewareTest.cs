@@ -247,7 +247,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var context = CreateRequest("GET", "/");
             var result = await middle.GetPermissions(context);
             Assert.NotNull(result);
-            Assert.Equal(Security.Permissions.NONE, result.Permissions);
+            Assert.Equal(Permissions.NONE, result.Permissions);
             Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
         }
 

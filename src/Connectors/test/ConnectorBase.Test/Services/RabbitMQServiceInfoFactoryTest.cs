@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Linq;
@@ -31,17 +33,17 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            Service s = CreateRabbitMQService();
+            var s = CreateRabbitMQService();
             Assert.NotNull(s);
 
-            RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
+            var factory = new RabbitMQServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Name = "rabbitMQService",
                 Plan = "free",
@@ -55,14 +57,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "uri", new Credential("amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                 }
             };
-            RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
+            var factory = new RabbitMQServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsSecureUriServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Name = "rabbitMQService",
                 Plan = "free",
@@ -76,14 +78,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "uri", new Credential("amqps://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                 }
             };
-            RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
+            var factory = new RabbitMQServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_WithLabelNoTagsServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "rabbitmq",
                 Name = "myService",
@@ -99,14 +101,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "http_api_uri", new Credential("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/") }
                 }
             };
-            RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
+            var factory = new RabbitMQServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-mysql",
                 Tags = new string[] { "foobar", "relational" },
@@ -123,14 +125,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
+            var factory = new RabbitMQServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsHystrixServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-circuit-breaker-dashboard",
                 Tags = new string[] { "circuit-breaker", "hystrix-amqp", "spring-cloud" },
@@ -151,15 +153,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     }
                 }
             };
-            RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
+            var factory = new RabbitMQServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            Service s = CreateRabbitMQService();
-            RabbitMQServiceInfoFactory factory = new RabbitMQServiceInfoFactory();
+            var s = CreateRabbitMQService();
+            var factory = new RabbitMQServiceInfoFactory();
             var info = factory.Create(s) as RabbitMQServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("spring-cloud-broker-rmq", info.Id);
@@ -240,15 +242,15 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
-            var opt = new CloudFoundryServicesOptions();
-            var section = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
+            var opt = new CloudFoundryServicesOptions(config);
+            var section = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
             section.Bind(opt);
             Assert.Single(opt.Services);
 
-            return opt.Services.First().Value[0];
+            return opt.Services.First().Value.First();
         }
     }
 }

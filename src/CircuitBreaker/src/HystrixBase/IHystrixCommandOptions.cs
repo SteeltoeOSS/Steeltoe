@@ -14,6 +14,12 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
+    public enum ExecutionIsolationStrategy
+    {
+        THREAD,
+        SEMAPHORE
+    }
+
     public interface IHystrixCommandOptions
     {
         IHystrixCommandGroupKey GroupKey { get; set; }
