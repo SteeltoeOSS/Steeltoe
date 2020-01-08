@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
     <Description>Netflix Hystrix metrics event stream for ASP.NET Core over RabbitMQ</Description>
     <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix;turbine;cloudfoundry</PackageTags>
   </PropertyGroup>

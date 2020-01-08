@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.Common;
@@ -304,7 +304,7 @@ namespace Steeltoe.Discovery.Client
 
         public class ApplicationLifecycle : IDiscoveryLifecycle
         {
-            public ApplicationLifecycle(IApplicationLifetime lifeCycle, IDiscoveryClient client)
+            public ApplicationLifecycle(IHostApplicationLifetime lifeCycle, IDiscoveryClient client)
             {
                 ApplicationStopping = lifeCycle.ApplicationStopping;
 

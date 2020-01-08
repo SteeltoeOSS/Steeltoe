@@ -136,7 +136,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             }
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public void AddPlaceholderResolver_HostBuilder_WrapsApplicationsConfiguration()
         {
@@ -180,6 +179,5 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             var config = server.Services.GetServices<IConfiguration>().SingleOrDefault();
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
-#endif
     }
 }

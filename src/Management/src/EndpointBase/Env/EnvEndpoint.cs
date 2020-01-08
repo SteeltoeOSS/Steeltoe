@@ -28,15 +28,9 @@ namespace Steeltoe.Management.Endpoint.Env
         private readonly IConfiguration _configuration;
         private readonly Sanitizer _sanitizer;
 
-#if NETCOREAPP3_0
         private readonly IHostEnvironment _env;
 
         public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)
-#else
-        private readonly IHostingEnvironment _env;
-
-        public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostingEnvironment env, ILogger<EnvEndpoint> logger = null)
-#endif
             : base(options)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));

@@ -17,9 +17,6 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-#if NETSTANDARD2_0
-using Newtonsoft.Json.Linq;
-#endif
 using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
@@ -30,9 +27,7 @@ using System.Net.Security;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
-#if NETCOREAPP3_0
 using System.Text.Json;
-#endif
 using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
@@ -95,7 +90,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             return Backchannel;
         }
 
-#if NETCOREAPP3_0
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(OAuthCodeExchangeContext context)
         {
             _logger?.LogDebug("ExchangeCodeAsync({code}, {redirectUri})", context.Code, context.RedirectUri);
@@ -122,34 +116,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 return OAuthTokenResponse.Failed(new Exception(error));
             }
         }
-#else
-        protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(string code, string redirectUri)
-        {
-            _logger?.LogDebug("ExchangeCodeAsync({code}, {redirectUri})", code, redirectUri);
-
-            var options = Options.BaseOptions();
-            options.CallbackUrl = redirectUri;
-
-            var tEx = new TokenExchanger(options, GetHttpClient());
-            HttpResponseMessage response = await tEx.ExchangeCodeForToken(code, Options.TokenEndpoint, Context.RequestAborted).ConfigureAwait(false);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                _logger?.LogDebug("ExchangeCodeAsync() received json: {json}", result);
-                var payload = JObject.Parse(result);
-                var tokenResponse = OAuthTokenResponse.Success(payload);
-
-                return tokenResponse;
-            }
-            else
-            {
-                var error = "OAuth token endpoint failure: " + await Display(response).ConfigureAwait(false);
-                return OAuthTokenResponse.Failed(new Exception(error));
-            }
-        }
-#endif
 
         protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
         {
@@ -182,11 +148,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             var resp = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             _logger?.LogDebug("CreateTicketAsync() received json: {json}", resp);
-#if NETCOREAPP3_0
             var payload = JsonDocument.Parse(resp).RootElement;
-#else
-            var payload = JObject.Parse(resp);
-#endif
             var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
             context.RunClaimActions();
             await Events.CreatingTicket(context).ConfigureAwait(false);

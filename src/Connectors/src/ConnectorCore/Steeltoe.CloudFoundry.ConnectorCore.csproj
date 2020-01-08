@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <RootNamespace>Steeltoe.CloudFoundry.Connector</RootNamespace>
     <Description>Package for using Connectors in your ASP.NET Core application</Description>
     <PackageTags>connectors;aspnetcore;CloudFoundry;vcap</PackageTags>

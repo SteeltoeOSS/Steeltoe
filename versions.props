@@ -56,21 +56,21 @@
     <SonarAnalyzerVersion>8.0.0.9566</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.118</StyleCopVersion>
-  </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1' OR '$(TargetFramework)' == 'netcoreapp3.0'">
-    <AspNetCoreVersion>3.0.0</AspNetCoreVersion>
     <EF6Version>6.3.0</EF6Version>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'netcoreapp3.0'">
+    <AspNetCoreVersion>3.0.0</AspNetCoreVersion>
     <ExtensionsVersion>3.0.0</ExtensionsVersion>
     <HealthChecksVersion>3.0.0</HealthChecksVersion>
     <LoggingVersion>3.0.0</LoggingVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'netcoreapp2.1'">
-    <AspNetVersion>5.2.4</AspNetVersion>
-    <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
-    <EF6Version>6.2.0</EF6Version>
-    <ExtensionsVersion>2.2.0</ExtensionsVersion>
-    <HealthChecksVersion>2.2.0</HealthChecksVersion>
-    <LoggingVersion>2.1.0</LoggingVersion>
+  
+  <!-- Should be used for tests only -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
+    <ExtensionsVersion>3.1.0</ExtensionsVersion>
+    <HealthChecksVersion>3.1.0</HealthChecksVersion>
+    <LoggingVersion>3.1.0</LoggingVersion>
   </PropertyGroup>
 </Project>

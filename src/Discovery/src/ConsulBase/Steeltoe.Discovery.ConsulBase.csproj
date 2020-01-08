@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Discovery.Consul</RootNamespace>
     <Description>Steeltoe compatibilty package for service discovery and registration with Hashicorp Consul</Description>
     <PackageTags>aspnetcore;Consul;Spring;Spring Cloud</PackageTags>

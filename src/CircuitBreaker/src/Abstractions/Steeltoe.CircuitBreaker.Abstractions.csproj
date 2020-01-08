@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.CircuitBreaker</RootNamespace>
     <Description>Circuit breaker abstractions</Description>
     <PackageTags>Spring Cloud;Circuit Breaker</PackageTags>

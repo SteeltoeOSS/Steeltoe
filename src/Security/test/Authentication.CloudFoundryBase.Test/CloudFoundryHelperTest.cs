@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if !NETCOREAPP3_0
-using Newtonsoft.Json.Linq;
-#endif
 using System;
-#if NETCOREAPP3_0
 using System.Text.Json;
-#endif
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
@@ -50,11 +45,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetExpTime_FindsTime()
         {
             var info = TestHelpers.GetValidTokenInfoRequestResponse();
-#if NETCOREAPP3_0
             var payload = JsonDocument.Parse(info).RootElement;
-#else
-            var payload = JObject.Parse(info);
-#endif
             var dateTime = CloudFoundryHelper.GetExpTime(payload);
             Assert.Equal(new DateTime(2016, 9, 2, 8, 04, 23, DateTimeKind.Utc), dateTime);
         }
@@ -63,11 +54,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetIssueTime_FindsTime()
         {
             var info = TestHelpers.GetValidTokenInfoRequestResponse();
-#if NETCOREAPP3_0
             var payload = JsonDocument.Parse(info).RootElement;
-#else
-            var payload = JObject.Parse(info);
-#endif
             var dateTime = CloudFoundryHelper.GetIssueTime(payload);
             Assert.Equal(new DateTime(2016, 9, 1, 20, 04, 23, DateTimeKind.Utc), dateTime);
         }
@@ -76,11 +63,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetScopes_FindsScopes()
         {
             var info = TestHelpers.GetValidTokenInfoRequestResponse();
-#if NETCOREAPP3_0
             var payload = JsonDocument.Parse(info).RootElement;
-#else
-            var payload = JObject.Parse(info);
-#endif
             var scopes = CloudFoundryHelper.GetScopes(payload);
             Assert.Contains("openid", scopes);
             Assert.Single(scopes);

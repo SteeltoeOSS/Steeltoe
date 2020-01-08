@@ -13,21 +13,13 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Hosting;
-#if NETSTANDARD2_1
 using Microsoft.Extensions.Hosting.Internal;
-#else
-using Microsoft.AspNetCore.Hosting.Internal;
-#endif
 
 namespace Steeltoe.Common
 {
     public static class HostingHelpers
     {
-#if NETSTANDARD2_1
         public static IHostEnvironment GetHostingEnvironment(string environmentName = "EnvironmentName")
-#else
-        public static IHostingEnvironment GetHostingEnvironment(string environmentName = "EnvironmentName")
-#endif
         {
             return new HostingEnvironment() { EnvironmentName = environmentName };
         }

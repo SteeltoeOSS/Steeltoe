@@ -1,17 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.CloudFoundry</RootNamespace>
     <Description>Package for using Steeltoe management endpoints with ASP.NET Core on Cloud Foundry</Description>
     <PackageTags>actuator;management;monitoring;aspnetcore;CloudFoundry;Spring Cloud;</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
-  </ItemGroup>
+
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\EndpointCore\Steeltoe.Management.EndpointCore.csproj" />

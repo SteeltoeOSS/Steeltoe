@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;</TargetFrameworks>
     <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry</RootNamespace>
     <Description>Base Security Provider for CloudFoundry</Description>
     <PackageTags>CloudFoundry;security;oauth2;sso;openid</PackageTags>

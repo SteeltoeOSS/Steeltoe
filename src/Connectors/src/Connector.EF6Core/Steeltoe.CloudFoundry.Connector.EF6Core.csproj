@@ -2,7 +2,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>CloudFoundry Connector Extensions for Entity Framework</Description>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
     <AssemblyName>Steeltoe.CloudFoundry.Connector.EF6Core</AssemblyName>
     <PackageId>Steeltoe.CloudFoundry.Connector.EF6Core</PackageId>
     <PackageTags>connectors;EntityFramework;aspnetcore;CloudFoundry;vcap</PackageTags>

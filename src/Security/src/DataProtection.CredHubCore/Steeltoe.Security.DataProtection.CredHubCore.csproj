@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Security.DataProtection.CredHub</RootNamespace>
     <Description>ASP.NET Core Extensions for CredHub Client</Description>
     <PackageTags>CloudFoundry;aspnetcore;Security;DataProtection;CredHub</PackageTags>
@@ -9,8 +9,9 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
+
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\DataProtection.CredHubBase\Steeltoe.Security.DataProtection.CredHubBase.csproj" />
   </ItemGroup>

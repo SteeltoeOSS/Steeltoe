@@ -16,9 +16,7 @@ using Consul;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NETCOREAPP3_0
 using Microsoft.Extensions.Hosting;
-#endif
 using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
@@ -133,11 +131,7 @@ namespace Steeltoe.Discovery.Client.Test
 
             var services = new ServiceCollection();
             services.AddOptions();
-#if NETCOREAPP3_0
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-#else
-            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
-#endif
             services.AddDiscoveryClient(config);
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
@@ -184,11 +178,7 @@ namespace Steeltoe.Discovery.Client.Test
             };
 
             var services = new ServiceCollection();
-#if NETCOREAPP3_0
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-#else
-            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
-#endif
             services.AddDiscoveryClient(options);
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
@@ -210,11 +200,7 @@ namespace Steeltoe.Discovery.Client.Test
             };
 
             var services = new ServiceCollection();
-#if NETCOREAPP3_0
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-#else
-            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
-#endif
             services.AddDiscoveryClient(options);
 
             var built = services.BuildServiceProvider();
@@ -239,11 +225,7 @@ namespace Steeltoe.Discovery.Client.Test
             };
 
             var services = new ServiceCollection();
-#if NETCOREAPP3_0
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-#else
-            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
-#endif
             services.AddDiscoveryClient(options);
             services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
 
@@ -268,11 +250,7 @@ namespace Steeltoe.Discovery.Client.Test
             };
 
             var services = new ServiceCollection();
-#if NETCOREAPP3_0
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-#else
-            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
-#endif
             Assert.Throws<ArgumentException>(() => services.AddDiscoveryClient(options));
         }
 
@@ -281,11 +259,7 @@ namespace Steeltoe.Discovery.Client.Test
         {
             // Arrange
             var services = new ServiceCollection();
-#if NETCOREAPP3_0
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-#else
-            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
-#endif
             services.AddDiscoveryClient((options) =>
            {
                options.ClientType = DiscoveryClientType.EUREKA;
@@ -321,11 +295,7 @@ namespace Steeltoe.Discovery.Client.Test
             var hprovider = new TestClientHandlerProvider();
             services.AddSingleton<IEurekaDiscoveryClientHandlerProvider>(hprovider);
 
-#if NETCOREAPP3_0
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-#else
-            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
-#endif
             services.AddDiscoveryClient(options);
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();

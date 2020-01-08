@@ -31,11 +31,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         {
             IEnvOptions options = null;
             IConfiguration configuration = null;
-        #if NETCOREAPP3_0
             IHostEnvironment env = null;
-        #else
-            IHostingEnvironment env = null;
-        #endif
 
             Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env));
 
