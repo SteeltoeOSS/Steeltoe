@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
+using Steeltoe.CircuitBreaker.HystrixBase.Util;
 using System;
 using System.Web;
 
@@ -22,7 +23,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
         public void Dispose()
         {
-            // for future use
+            HystrixShutdown.ShutdownThreads();
         }
 
         public void Init(HttpApplication context)
