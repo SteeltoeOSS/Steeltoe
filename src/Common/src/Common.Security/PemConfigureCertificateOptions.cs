@@ -21,8 +21,12 @@ using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using Org.BouncyCastle.Asn1.X509;
 using MS = System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security
@@ -60,14 +64,23 @@ namespace Steeltoe.Common.Security
                 return;
             }
 
-            var certBytes = Encoding.Default.GetBytes(pemCert);
             var keyBytes = Encoding.Default.GetBytes(pemKey);
 
-            X509Certificate cert = ReadCertificate(certBytes);
+            var certChain = Regex.Matches(pemCert, "-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Singleline)
+                .Cast<Match>()
+                .Select(x => ReadCertificate(Encoding.Default.GetBytes(x.Value)))
+                .ToList();
+
+            var cert = certChain.FirstOrDefault();
             AsymmetricCipherKeyPair keys = ReadKeys(keyBytes);
 
             var pfxBytes = CreatePfxContainer(cert, keys);
             options.Certificate = new MS.X509Certificate2(pfxBytes);
+
+            options.IssuerChain = certChain
+                .Skip(1)
+                .Select(c => new MS.X509Certificate2(c.GetEncoded()))
+                .ToList();
         }
 
         public void Configure(CertificateOptions options)

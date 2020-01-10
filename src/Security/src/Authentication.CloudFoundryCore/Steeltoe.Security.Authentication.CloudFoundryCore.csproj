@@ -18,4 +18,8 @@
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Security.Authentication.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
+    <ProjectReference Include="..\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" />
+  </ItemGroup>
 </Project>

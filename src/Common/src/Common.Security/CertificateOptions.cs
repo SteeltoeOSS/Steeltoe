@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security
@@ -21,5 +22,7 @@ namespace Steeltoe.Common.Security
         public string Name { get; set; }
 
         public X509Certificate2 Certificate { get; set; }
+
+        public List<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
     }
 }
