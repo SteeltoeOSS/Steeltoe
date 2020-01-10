@@ -1,8 +1,9 @@
-# Steeltoe
+# Steeltoe Open Source Software
 
 [![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/SteeltoeOSS.steeltoe?branchName=master)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=master)
 
 * [Introduction](#introduction)
+* [Project Management](#project-management)
 * [Project Repositories](#project-repositories)
 * [Roadmaps](#roadmaps)
 * [Getting Started](#getting-started)
@@ -37,6 +38,12 @@ Steeltoe provides services that broadly fall into two categories:
 
 [Steeltoe is freely available](https://www.nuget.org/packages?q=steeltoe) for production application usage today. Be sure to visit the [official Steeltoe site](https://steeltoe.io/).
 
+## Project Management
+
+The Steeltoe team uses [ZenHub](https://app.zenhub.com/workspaces/steeltoe-project-5d92153f31e8dd0001222ae6/board) for our Project Management Board across our active repositories.  This is the best way to see what state each issue is in, along with issue priorization and release assignment.
+
+_Note:_ ZenHub is built on top of GitHub issues, so it reflects the updates on GitHub as well as providing a view of the project's progress.
+
 ## Project Repositories
 
 Steeltoe is fully open source and is found under the SteeltoeOSS organization on GitHub.
@@ -57,17 +64,20 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 #### Other Repositories
 
 * [Samples](https://github.com/SteeltoeOSS/Samples) - Our collection of Sample applications used as a reference for Steeltoe .NET Application development
+* [Documentation](https://github.com/SteeltoeOSS/Documentation) - Markdown versions of our documentation on the [steeltoe.io/docs](steeltoe.io/docs) site
+* [MainSite](https://github.com/SteeltoeOSS/MainSite) - All of the steeltoe.io (Blazor) website
 * [Initializr](https://github.com/SteeltoeOSS/initializr) - The [Steeltoe Initializr](https://start.steeltoe.io) source code
 * [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling
 * [Dockerfiles](https://github.com/SteeltoeOSS/Dockerfiles) - Our collection of docker files we have on dockerhub
 * [eShopOnContainers](https://github.com/SteeltoeOSS/eShopOnContainers) - Sample reference microservice and container based application with added Steeltoe capabilities (Forked and updated from dotnet-architecture org)
-* [MainSite](https://github.com/SteeltoeOSS/MainSite) - All of the steeltoe.io website and documentation artifacts
+
 
 ## Roadmaps
 
 * [3.0.0](roadmaps/3.0.0.md) - In Progress
 * [2.5.0](roadmaps/2.5.0.md) - In Progress
 * [2.4.0](roadmaps/2.4.0.md) - Released
+   * [2.4.1](https://github.com/SteeltoeOSS/steeltoe/issues?q=is%3Aopen+is%3Aissue+milestone%3A2.4.1) - In Progress
 * [2.3.0](roadmaps/2.3.0.md) - Released
 * [2.2.0](roadmaps/2.2.0.md) - Released
 * [2.1.0](roadmaps/2.1.0.md) - Released
