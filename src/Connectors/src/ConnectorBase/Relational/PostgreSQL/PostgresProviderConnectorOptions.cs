@@ -14,6 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql
@@ -57,6 +59,18 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
         public string SearchPath { get; set; }
 
+        public string SslMode { get; set; }
+
+        public string ClientCertificate { get; set; }
+
+        public string ClientKey { get; set; }
+
+        public string SslRootCertificate { get; set; }
+
+        public bool? TrustServerCertificate { get; set; } = null;
+
+        internal Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
+
         public override string ToString()
         {
             StringBuilder sb;
@@ -76,6 +90,16 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             }
 
             AddKeyValue(sb, "Search Path", SearchPath);
+            AddKeyValue(sb, "sslmode", SslMode);
+            AddKeyValue(sb, "Trust Server Certificate", TrustServerCertificate);
+
+            if (Options != null && Options.Any())
+            {
+                foreach (var o in Options)
+                {
+                    AddKeyValue(sb, o.Key, o.Value);
+                }
+            }
 
             return sb.ToString();
         }

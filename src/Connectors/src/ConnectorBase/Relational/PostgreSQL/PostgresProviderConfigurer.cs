@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.Extensions;
+using System;
+using System.Linq;
 using System.Net;
 
 namespace Steeltoe.CloudFoundry.Connector.PostgreSql
@@ -34,7 +37,11 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
             if (!string.IsNullOrEmpty(si.Uri))
             {
-                configuration.Port = si.Port;
+                if (si.Port > 0)
+                {
+                    configuration.Port = si.Port;
+                }
+
                 if (configuration.UrlEncodedCredentials)
                 {
                     configuration.Username = WebUtility.UrlDecode(si.UserName);
@@ -48,7 +55,48 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
                 configuration.Host = si.Host;
                 configuration.Database = si.Path;
+                if (si.Query != null)
+                {
+                    foreach (var kvp in UriExtensions.ParseQuerystring(si.Query))
+                    {
+                        if (kvp.Key.Equals("sslmode", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            // Npgsql parses SSL Mode into an enum, the first character must be capitalized
+                            configuration.SslMode = FirstCharToUpper(kvp.Value);
+                        }
+                        else if (kvp.Key.Equals("sslcert"))
+                        {
+                            // TODO: Map this client cert into the npgsql client cert callback
+                            configuration.ClientCertificate = kvp.Value;
+                        }
+                        else if (kvp.Key.Equals("sslkey"))
+                        {
+                            // TODO: Map this client cert into the npgsql client cert callback
+                            configuration.ClientKey = kvp.Value;
+                        }
+                        else if (kvp.Key.Equals("sslrootcert"))
+                        {
+                            // TODO: Map this client cert into the npgsql remote cert validation callback
+                            configuration.SslRootCertificate = kvp.Value;
+                        }
+                        else
+                        {
+                            configuration.Options.Add(kvp.Key, kvp.Value);
+                        }
+                    }
+                }
             }
         }
+
+        // from https://stackoverflow.com/a/4405876/761468
+        private string FirstCharToUpper(string input) =>
+            input switch
+            {
+                null => throw new ArgumentNullException(nameof(input)),
+#pragma warning disable SA1122 // Use string.Empty for empty strings
+                "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
+#pragma warning restore SA1122 // Use string.Empty for empty strings
+                _ => input.First().ToString().ToUpper() + input.Substring(1)
+            };
     }
 }
