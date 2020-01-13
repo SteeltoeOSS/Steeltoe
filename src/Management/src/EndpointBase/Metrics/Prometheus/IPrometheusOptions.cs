@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-
-namespace Steeltoe.Common.Configuration
+namespace Steeltoe.Management.Endpoint.Metrics
 {
-    //TODO: check what needs to happen
-    public interface IPlaceholderResolverProvider : IConfigurationProvider
+    public interface IPrometheusOptions : IEndpointOptions
     {
-        new IList<IConfigurationProvider> Providers { get; }
+        string IngressIgnorePattern { get; }
 
-        new IList<string> ResolvedKeys { get; }
+        string EgressIgnorePattern { get; }
     }
 }
