@@ -8,7 +8,6 @@
     <AssemblyName>Steeltoe.CircuitBreaker.HystrixCore</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.HystrixCore</PackageId>
     <PackageTags>ASPNET Core;Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
 
