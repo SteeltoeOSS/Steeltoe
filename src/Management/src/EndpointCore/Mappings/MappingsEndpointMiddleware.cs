@@ -19,9 +19,6 @@ using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-#if NETSTANDARD2_0
-using Microsoft.AspNetCore.Mvc.Internal;
-#endif
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
@@ -316,20 +313,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 return new ApiDescriptionProviderContext(new List<ActionDescriptor>());
             }
 
-#if NETSTANDARD2_0
-            foreach (var action in actionDescriptors)
-            {
-                // This is required in order for OnProvidersExecuting() to work
-                var apiExplorerActionData = new ApiDescriptionActionData()
-                {
-                    GroupName = "Steeltoe"
-                };
-                action.SetProperty(apiExplorerActionData);
-            }
-#endif
-
             var context = new ApiDescriptionProviderContext(actionDescriptors);
-
             foreach (var provider in _apiDescriptionProviders)
             {
                 provider.OnProvidersExecuting(context);

@@ -21,18 +21,18 @@ variables:
 jobs:
 - job: Linux_Build_and_Test
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   steps:
   - task: UseDotNet@2
-    displayName: 'Install .NET Core 2.x SDK'
+    displayName: 'Install .NET Core 3.0 SDK'
     inputs:
       packageType: sdk
-      version: 2.2.300
+      version: 3.0.101
   - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.x SDK'
+    displayName: 'Install .NET Core 3.1 SDK'
     inputs:
       packageType: sdk
-      version: 3.0.100
+      version: 3.1.100
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -52,18 +52,18 @@ jobs:
       arguments: '-c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux"'
 - job: MacOS_Build_and_Test
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-latest'
   steps:
   - task: UseDotNet@2
-    displayName: 'Install .NET Core 2.x SDK'
+    displayName: 'Install .NET Core 3.0 SDK'
     inputs:
       packageType: sdk
-      version: 2.2.300
+      version: 3.0.101
   - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.x SDK'
+    displayName: 'Install .NET Core 3.1 SDK'
     inputs:
       packageType: sdk
-      version: 3.0.100
+      version: 3.1.100
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -84,7 +84,7 @@ jobs:
 - job: Windows_Build_Test_and_Package
   timeoutInMinutes: 90
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-latest'
   steps:
   - pwsh: |
       if ($env:PackageVersionOverride){
@@ -101,15 +101,15 @@ jobs:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
   - task: UseDotNet@2
-    displayName: 'Install .NET Core 2.x SDK'
+    displayName: 'Install .NET Core 3.0 SDK'
     inputs:
       packageType: sdk
-      version: 2.2.300
+      version: 3.0.101
   - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.x SDK'
+    displayName: 'Install .NET Core 3.1 SDK'
     inputs:
       packageType: sdk
-      version: 3.0.100
+      version: 3.1.100
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:

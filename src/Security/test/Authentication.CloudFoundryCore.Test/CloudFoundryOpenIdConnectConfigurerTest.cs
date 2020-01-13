@@ -37,11 +37,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(CloudFoundryDefaults.ClientId, oidcOptions.ClientId);
             Assert.Equal(CloudFoundryDefaults.ClientSecret, oidcOptions.ClientSecret);
             Assert.Equal(new PathString(CloudFoundryDefaults.CallbackPath), oidcOptions.CallbackPath);
-#if NETCOREAPP3_0
             Assert.Equal(19, oidcOptions.ClaimActions.Count());
-#else
-            Assert.Equal(21, oidcOptions.ClaimActions.Count());
-#endif
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
             Assert.False(oidcOptions.SaveTokens);
             Assert.NotNull(oidcOptions.BackchannelHttpHandler);
@@ -65,11 +61,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal("secret", oidcOptions.ClientSecret);
             Assert.Equal(new PathString(CloudFoundryDefaults.CallbackPath), oidcOptions.CallbackPath);
             Assert.Null(oidcOptions.BackchannelHttpHandler);
-#if NETCOREAPP3_0
             Assert.Equal(19, oidcOptions.ClaimActions.Count());
-#else
-            Assert.Equal(21, oidcOptions.ClaimActions.Count());
-#endif
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, oidcOptions.SignInScheme);
             Assert.False(oidcOptions.SaveTokens);
             Assert.Null(oidcOptions.BackchannelHttpHandler);

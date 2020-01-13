@@ -23,6 +23,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -84,7 +85,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             if (response.IsSuccessStatusCode)
             {
                 _logger?.LogTrace("Successfully exchanged auth code for a token");
-                var tokens = await response.Content.ReadAsJsonAsync<OpenIdTokenResponse>().ConfigureAwait(false);
+                var tokens = JsonSerializer.Deserialize<OpenIdTokenResponse>(await response.Content.ReadAsStringAsync());
 #if DEBUG
                 _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
                 _logger?.LogTrace("Access token received: {accessToken}", tokens.AccessToken);

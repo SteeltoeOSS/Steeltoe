@@ -59,7 +59,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<DbMigrationsStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddDbMigrationsActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -75,7 +74,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<DbMigrationsEndpoint>());
         }
-#endif
 
         [Fact]
         public void AddEnvActuator_IHostBuilder()
@@ -94,7 +92,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<EnvStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddEnvActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -110,7 +107,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<EnvEndpoint>());
         }
-#endif
 
         [Fact]
         public void AddHealthActuator_IHostBuilder()
@@ -163,7 +159,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<HealthStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddHealthActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -179,7 +174,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<HealthEndpointCore>());
         }
-#endif
 
         [Fact]
         public void AddHeapDumpActuator_IHostBuilder()
@@ -201,7 +195,6 @@ namespace Steeltoe.Management.Endpoint.Test
             }
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddHeapDumpActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -220,7 +213,6 @@ namespace Steeltoe.Management.Endpoint.Test
                 Assert.NotNull(host.Services.GetService<HeapDumpEndpoint>());
             }
         }
-#endif
 
         [Fact]
         public void AddHypermediaActuator_IHostBuilder()
@@ -239,7 +231,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<HypermediaStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddHypermediaActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -255,7 +246,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<ActuatorEndpoint>());
         }
-#endif
 
         [Fact]
         public void AddInfoActuator_IHostBuilder()
@@ -291,7 +281,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<InfoStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddInfoActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -307,7 +296,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<InfoEndpoint>());
         }
-#endif
 
         [Fact]
         public void AddLoggersActuator_IHostBuilder()
@@ -326,7 +314,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<LoggersStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddLoggersActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -342,7 +329,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<LoggersEndpoint>());
         }
-#endif
 
         [Fact]
         public void AddMappingsActuator_IHostBuilder()
@@ -361,7 +347,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<MappingsStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddMappingsActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -377,7 +362,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<IRouteMappings>());
         }
-#endif
 
         [Fact]
         public void AddMetricsActuator_IHostBuilder()
@@ -396,7 +380,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<MetricsStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddMetricsActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -412,7 +395,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<MetricsEndpoint>());
         }
-#endif
 
         [Fact]
         public void AddRefreshActuator_IHostBuilder()
@@ -431,7 +413,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<RefreshStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddRefreshActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -447,7 +428,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<RefreshEndpoint>());
         }
-#endif
 
         [Fact]
         public void AddThreadDumpActuator_IHostBuilder()
@@ -469,7 +449,6 @@ namespace Steeltoe.Management.Endpoint.Test
             }
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddThreadDumpActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -488,7 +467,6 @@ namespace Steeltoe.Management.Endpoint.Test
                 Assert.NotNull(host.Services.GetService<ThreadDumpEndpoint>());
             }
         }
-#endif
 
         [Fact]
         public void AddTraceActuator_IHostBuilder()
@@ -507,7 +485,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<TraceStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddTraceActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -523,7 +500,6 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<TraceEndpoint>());
         }
-#endif
 
         [Fact]
         public void AddCloudFoundryActuator_IHostBuilder()
@@ -542,7 +518,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<CloudFoundryActuatorStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
         [Fact]
         public async Task AddCloudFoundryActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -558,6 +533,5 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<CloudFoundryEndpoint>());
         }
-#endif
     }
 }
