@@ -73,6 +73,6 @@
     <EF6Version>6.2.0</EF6Version>
     <ExtensionsVersion>2.2.0</ExtensionsVersion>
     <HealthChecksVersion>2.2.0</HealthChecksVersion>
-    <LoggingVersion>2.1.0</LoggingVersion>
+    <LoggingVersion>2.2.0</LoggingVersion>
   </PropertyGroup>
 </Project>

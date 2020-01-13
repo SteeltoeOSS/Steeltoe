@@ -23,4 +23,8 @@
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+
 </Project>
