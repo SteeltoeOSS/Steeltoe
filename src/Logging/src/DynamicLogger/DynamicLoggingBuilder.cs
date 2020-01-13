@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using System;
 using System.Linq;
 
@@ -66,6 +67,16 @@ namespace Steeltoe.Extensions.Logging
             public ConsoleLoggerOptionsSetup(ILoggerProviderConfiguration<ConsoleLoggerProvider> providerConfiguration)
                 : base(providerConfiguration.Configuration)
             {
+            }
+
+            public override void Configure(ConsoleLoggerOptions options)
+            {
+                if (Platform.IsCloudFoundry)
+                {
+                    options.DisableColors = true;
+                }
+
+                base.Configure(options);
             }
         }
     }
