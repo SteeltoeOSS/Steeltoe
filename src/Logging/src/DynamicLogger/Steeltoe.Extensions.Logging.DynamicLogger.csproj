@@ -23,4 +23,8 @@
     <PackageReference Include="Steeltoe.Extensions.Logging.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+
 </Project>
