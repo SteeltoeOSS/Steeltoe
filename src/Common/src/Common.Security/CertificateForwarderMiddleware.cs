@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Security.Authentication.MtlsCore
+namespace Steeltoe.Common.Security
 {
     public class CertificateForwarderMiddleware
     {

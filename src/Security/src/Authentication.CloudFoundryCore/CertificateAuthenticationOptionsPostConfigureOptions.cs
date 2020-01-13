@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
-using System;
+using Steeltoe.Security.Authentication.MtlsCore;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public static class CloudFoundryIdentityCertificateConfigurationExtensions
+    public class CertificateAuthenticationOptionsPostConfigureOptions : IPostConfigureOptions<CertificateAuthenticationOptions>
     {
-        public static IConfigurationBuilder AddCloudFoundryContainerIdentity(this IConfigurationBuilder builder)
-        {
-            var certFile = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT");
-            var keyFile = Environment.GetEnvironmentVariable("CF_INSTANCE_KEY");
-            if (certFile == null || keyFile == null)
-            {
-                return builder;
-            }
+        private readonly IOptionsMonitor<CertificateOptions> _containerIdentityOptions;
 
-            return builder.AddPemFiles(certFile, keyFile);
+        public CertificateAuthenticationOptionsPostConfigureOptions(IOptionsMonitor<CertificateOptions> containerIdentityOptions)
+        {
+            _containerIdentityOptions = containerIdentityOptions;
+        }
+
+        public void PostConfigure(string name, CertificateAuthenticationOptions options)
+        {
+            options.IssuerChain = _containerIdentityOptions.CurrentValue.IssuerChain;
         }
     }
 }

@@ -8,8 +8,8 @@ namespace Steeltoe.Security.Authentication.MtlsCore
     [Flags]
     public enum CertificateTypes
     {
+        All = 0,
         Chained = 1,
-        SelfSigned = 2,
-        All = 3
+        SelfSigned = 2
     }
 }

@@ -1,0 +1,9 @@
+[NewRequest]
+Subject="CN=Rooted Server EKU,OU=dev,DC=idunno-dev,DC=org"
+Exportable = TRUE
+KeyLength = 2048
+KeySpec = 1
+KeyUsage = 0xA0
+
+[EnhancedKeyUsageExtension]
+OID = 1.3.6.1.5.5.7.3.1

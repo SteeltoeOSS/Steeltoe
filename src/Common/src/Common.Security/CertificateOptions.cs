@@ -17,7 +17,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security
 {
-    public class CertificateOptions : ICertificateOptions
+    public class CertificateOptions
     {
         public string Name { get; set; }
 

@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Security.Authentication.MtlsCore.Events;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -85,7 +87,19 @@ namespace Steeltoe.Security.Authentication.MtlsCore
                     ChainPolicy = chainPolicy
                 };
 
-                var certificateIsValid = chain.Build(clientCertificate);
+                var certificateIsValid = IsChainValid(chain, clientCertificate);
+                if (!certificateIsValid)
+                {
+                    using (Logger.BeginScope(clientCertificate.SHA256Thumprint()))
+                    {
+                        Logger.LogWarning("Client certificate failed validation, subject was {0}", clientCertificate.Subject);
+                        foreach (var validationFailure in chain.ChainStatus)
+                        {
+                            Logger.LogWarning("{0} {1}", validationFailure.Status, validationFailure.StatusInformation);
+                        }
+                    }
+                    return AuthenticateResult.Fail("Client certificate failed validation.");
+                }
 
                 //
                 //                if (!certificateIsValid)
@@ -140,6 +154,18 @@ namespace Steeltoe.Security.Authentication.MtlsCore
             }
         }
 
+        private bool IsChainValid(X509Chain chain, X509Certificate2 certificate)
+        {
+            var isValid = chain.Build(certificate);
+            // allow root cert to be side loaded without installing into X509Store Root store
+            if (!isValid && chain.ChainStatus.All(x => x.Status == X509ChainStatusFlags.UntrustedRoot))
+            {
+                var rootCert = chain.ChainElements.Cast<X509ChainElement>().Last().Certificate;
+                isValid = Options.IssuerChain.Contains(rootCert);
+            }
+
+            return isValid;
+        }
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             // Certificate authentication takes place at the connection level. We can't prompt once we're in
@@ -172,7 +198,10 @@ namespace Steeltoe.Security.Authentication.MtlsCore
                 RevocationFlag = revocationFlag,
                 RevocationMode = revocationMode,
             };
-            chainPolicy.ExtraStore.Import(@"c:\temp\root.pem");
+            foreach (var chainCert in Options.IssuerChain)
+            {
+                chainPolicy.ExtraStore.Add(chainCert);
+            }
             if (Options.ValidateCertificateUse)
             {
                 chainPolicy.ApplicationPolicy.Add(ClientCertificateOid);

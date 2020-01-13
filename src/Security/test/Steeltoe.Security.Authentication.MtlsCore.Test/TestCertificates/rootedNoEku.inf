@@ -1,0 +1,6 @@
+[NewRequest]
+Subject="CN=Rooted No EKU,OU=dev,DC=idunno-dev,DC=org"
+Exportable = TRUE
+KeyLength = 2048
+KeySpec = 1
+KeyUsage = 0xA0

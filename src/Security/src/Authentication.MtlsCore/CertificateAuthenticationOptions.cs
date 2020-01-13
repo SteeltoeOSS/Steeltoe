@@ -36,6 +36,11 @@ namespace Steeltoe.Security.Authentication.MtlsCore
         /// Gets or sets conditions under which verification of certificates in the X509 chain should be conducted.
         /// </summary>
         public X509RevocationMode RevocationMode { get; set; } = X509RevocationMode.Online;
+        
+        /// <summary>
+        /// Partial or full certificate chain for validation
+        /// </summary>
+        public List<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
 
         /// <summary>
         /// The object provided by the application to process events raised by the certificate authentication middleware.
