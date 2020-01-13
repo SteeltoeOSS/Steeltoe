@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Barry Dorrans. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Steeltoe.Security.Authentication.MtlsCore
 {
@@ -28,12 +28,10 @@ namespace Steeltoe.Security.Authentication.MtlsCore
         /// <summary>
         /// Adds certificate forwarding to the specified <see cref="IServiceCollection" />.
         /// </summary>
-        /// <param name="configure">An action delegate to configure the provided <see cref="CertificateForwarderOptions"/>.</param>
+        /// <param name="services"></param>
         /// <param name="configure">An action delegate to configure the provided <see cref="CertificateForwarderOptions"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-        public static IServiceCollection AddCertificateHeaderForwarding(
-            this IServiceCollection services,
-            Action<CertificateForwarderOptions> configure)
+        public static IServiceCollection AddCertificateHeaderForwarding(this IServiceCollection services, Action<CertificateForwarderOptions> configure)
         {
             if (services == null)
             {

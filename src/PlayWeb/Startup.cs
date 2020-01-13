@@ -34,7 +34,7 @@ namespace PlayWeb
             services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
                 .AddCloudFoundryIdentityCertificate();
             services.AddAuthorization(cfg => cfg.AddPolicy("sameorg", builder => builder.SameOrg()));
-            services.AddMvc();
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,7 +45,8 @@ namespace PlayWeb
 
             app.UseHttpsRedirection();
 
-            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(routeBuilder => routeBuilder.MapControllers());
         }
     }
 }

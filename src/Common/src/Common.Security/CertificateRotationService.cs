@@ -1,6 +1,6 @@
+using Microsoft.Extensions.Options;
 using System;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Security
 {
@@ -15,21 +15,31 @@ namespace Steeltoe.Common.Security
         {
             _optionsMonitor = optionsMonitor;
             _subscription = _optionsMonitor.OnChange(RotateCert);
-
         }
 
         public void Start()
         {
             if (_isStarted)
+            {
                 return;
+            }
+
             RotateCert(_optionsMonitor.CurrentValue);
             _lastValue = _optionsMonitor.CurrentValue;
+        }
+
+        public void Dispose()
+        {
+            _subscription.Dispose();
         }
 
         private void RotateCert(CertificateOptions newCert)
         {
             if (newCert.Certificate == null)
+            {
                 return;
+            }
+
             var personalCertStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             var authorityCertStore = new X509Store(StoreName.CertificateAuthority, StoreLocation.CurrentUser);
             personalCertStore.Open(OpenFlags.ReadWrite);
@@ -51,11 +61,6 @@ namespace Steeltoe.Common.Security
 
             personalCertStore.Close();
             authorityCertStore.Close();
-        }
-
-        public void Dispose()
-        {
-            _subscription.Dispose();
         }
     }
 }

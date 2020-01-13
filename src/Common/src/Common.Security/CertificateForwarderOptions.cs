@@ -9,7 +9,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore
     public class CertificateForwarderOptions
     {
         /// <summary>
-        /// The header name containing the Base64 encoded client certificate.
+        /// Gets or sets the header name containing the Base64 encoded client certificate.
         /// </summary>
         /// <remarks>
         /// This defaults to X-ARR-ClientCert, which is the header Azure Web Apps uses.
@@ -17,7 +17,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore
         public string CertificateHeader { get; set; } = "X-ARR-ClientCert";
 
         /// <summary>
-        /// The function used to convert the header to an instance of <see cref="X509Certificate2"/>.
+        /// Gets or sets the function used to convert the header to an instance of <see cref="X509Certificate2"/>.
         /// </summary>
         /// <remarks>
         /// This defaults to a conversion from a base64 converted string.

@@ -11,7 +11,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             var certFile = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT");
             var keyFile = Environment.GetEnvironmentVariable("CF_INSTANCE_KEY");
             if (certFile == null || keyFile == null)
+            {
                 return builder;
+            }
+
             return builder.AddPemFiles(certFile, keyFile);
         }
     }

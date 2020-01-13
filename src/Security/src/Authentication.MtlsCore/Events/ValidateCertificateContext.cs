@@ -1,19 +1,18 @@
 ﻿// Copyright (c) Barry Dorrans. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Steeltoe.Common.Security;
 
 namespace Steeltoe.Security.Authentication.MtlsCore.Events
 {
     public class ValidateCertificateContext : ResultContext<CertificateAuthenticationOptions>
     {
         /// <summary>
-        /// Creates a new instance of <see cref="ValidateCertificateContext"/>.
+        /// Initializes a new instance of the <see cref="ValidateCertificateContext"/> class.
         /// </summary>
         /// <param name="context">The HttpContext the validate context applies too.</param>
         /// <param name="scheme">The scheme used when the Basic Authentication handler was registered.</param>
@@ -29,10 +28,10 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Events
         }
 
         /// <summary>
-        /// The certificate to validate.
+        /// Gets or sets the certificate to validate.
         /// </summary>
         public X509Certificate2 ClientCertificate { get; set; }
-        
+
         public List<Claim> GetDefaultClaims()
         {
             var certificate = ClientCertificate;
@@ -87,8 +86,6 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Events
             }
 
             return claims;
-            
         }
-
     }
 }

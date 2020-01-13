@@ -13,13 +13,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
     <ProjectReference Include="..\Authentication.CloudFoundryBase\Steeltoe.Security.Authentication.CloudFoundryBase.csproj" />
+    <ProjectReference Include="..\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Security.Authentication.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
-    <ProjectReference Include="..\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" />
   </ItemGroup>
 </Project>

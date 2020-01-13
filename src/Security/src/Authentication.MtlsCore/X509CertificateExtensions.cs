@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Security.Authentication.MtlsCore
 {
-    public static class X509Certificate2Extensions
+    public static class X509CertificateExtensions
     {
         public static bool IsSelfSigned(this X509Certificate2 certificate)
         {
@@ -29,7 +29,5 @@ namespace Steeltoe.Security.Authentication.MtlsCore
                 return hashAsString;
             }
         }
-        
-        
     }
 }

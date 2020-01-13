@@ -1,19 +1,16 @@
 ﻿// Copyright (c) Barry Dorrans. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Security.Authentication.MtlsCore.Events;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Encodings.Web;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Steeltoe.Common.Security;
-using Steeltoe.Security.Authentication.MtlsCore.Events;
 
 namespace Steeltoe.Security.Authentication.MtlsCore
 {
@@ -21,13 +18,8 @@ namespace Steeltoe.Security.Authentication.MtlsCore
     {
         private static readonly Oid ClientCertificateOid = new Oid("1.3.6.1.5.5.7.3.2");
 
-        
-
-        public CertificateAuthenticationHandler(
-            IOptionsMonitor<CertificateAuthenticationOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock) : base(options, logger, encoder, clock)
+        public CertificateAuthenticationHandler(IOptionsMonitor<CertificateAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+            : base(options, logger, encoder, clock)
         {
         }
 
@@ -94,20 +86,20 @@ namespace Steeltoe.Security.Authentication.MtlsCore
                 };
 
                 var certificateIsValid = chain.Build(clientCertificate);
-//
-//                if (!certificateIsValid)
-//                {
-//                    using (Logger.BeginScope(clientCertificate.SHA256Thumprint()))
-//                    {
-//                        Logger.LogWarning("Client certificate failed validation, subject was {0}", clientCertificate.Subject);
-//                        foreach (var validationFailure in chain.ChainStatus)
-//                        {
-//                            Logger.LogWarning("{0} {1}", validationFailure.Status, validationFailure.StatusInformation);
-//                        }
-//                    }
-//                    return AuthenticateResult.Fail("Client certificate failed validation.");
-//                }
 
+                //
+                //                if (!certificateIsValid)
+                //                {
+                //                    using (Logger.BeginScope(clientCertificate.SHA256Thumprint()))
+                //                    {
+                //                        Logger.LogWarning("Client certificate failed validation, subject was {0}", clientCertificate.Subject);
+                //                        foreach (var validationFailure in chain.ChainStatus)
+                //                        {
+                //                            Logger.LogWarning("{0} {1}", validationFailure.Status, validationFailure.StatusInformation);
+                //                        }
+                //                    }
+                //                    return AuthenticateResult.Fail("Client certificate failed validation.");
+                //                }
                 var validateCertificateContext = new ValidateCertificateContext(Context, Scheme, Options)
                 {
                     ClientCertificate = clientCertificate
@@ -121,11 +113,11 @@ namespace Steeltoe.Security.Authentication.MtlsCore
                     return Success(validateCertificateContext.Principal, clientCertificate);
                 }
 
-                if (validateCertificateContext.Result != null &&
-                    validateCertificateContext.Result.Failure != null)
+                if (validateCertificateContext.Result != null && validateCertificateContext.Result.Failure != null)
                 {
                     return AuthenticateResult.Fail(validateCertificateContext.Result.Failure);
                 }
+
                 var identity = new ClaimsIdentity(validateCertificateContext.GetDefaultClaims(), CertificateAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
                 return Success(principal, clientCertificate);
@@ -200,7 +192,6 @@ namespace Steeltoe.Security.Authentication.MtlsCore
 
             return chainPolicy;
         }
-
 
         private AuthenticateResult Success(ClaimsPrincipal principal, X509Certificate2 certificate)
         {

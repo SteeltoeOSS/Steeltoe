@@ -1,11 +1,12 @@
-﻿// Copyright (c) Barry Dorrans. All rights reserved.
+﻿#pragma warning disable SA1636 // File header copyright text should match
+#pragma warning disable SA1515 // Single-line comment should be preceded by blank line
+// Copyright (c) Barry Dorrans. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+#pragma warning restore SA1636 // File header copyright text should match
+#pragma warning restore SA1515 // Single-line comment should be preceded by blank line
 
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Steeltoe.Security.Authentication.MtlsCore.Events;
+using System;
 
 namespace Steeltoe.Security.Authentication.MtlsCore
 {
@@ -30,6 +31,5 @@ namespace Steeltoe.Security.Authentication.MtlsCore
         {
             return builder.AddScheme<CertificateAuthenticationOptions, CertificateAuthenticationHandler>(authenticationScheme, configureOptions);
         }
-
     }
 }

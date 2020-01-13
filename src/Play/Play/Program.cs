@@ -1,12 +1,11 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
+using System;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace Play
 {
@@ -14,7 +13,7 @@ namespace Play
     {
         static async Task Main(string[] args)
         {
-            ConfigurationBuilder cb = new ConfigurationBuilder();
+            var cb = new ConfigurationBuilder();
             cb.AddPemFiles(@"c:\temp\container_certchain.txt", @"c:\temp\cert.key");
             var c = cb.Build();
 

@@ -6,7 +6,7 @@ using System;
 namespace Steeltoe.Security.Authentication.MtlsCore
 {
     [Flags]
-    public enum CertificateTypes 
+    public enum CertificateTypes
     {
         Chained = 1,
         SelfSigned = 2,

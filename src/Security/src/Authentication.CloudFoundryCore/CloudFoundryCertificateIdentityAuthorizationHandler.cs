@@ -40,7 +40,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             ClaimsPrincipal user = context.User;
             var requirement = context.PendingRequirements.OfType<T>().FirstOrDefault();
             if (requirement == null)
+            {
                 return;
+            }
+
             if (claimValue == null)
             {
                 context.Fail();

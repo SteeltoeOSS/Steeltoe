@@ -1,21 +1,21 @@
 ﻿// Copyright (c) Barry Dorrans. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authentication;
 using Steeltoe.Security.Authentication.MtlsCore.Events;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Security.Authentication.MtlsCore
 {
     public class CertificateAuthenticationOptions : AuthenticationSchemeOptions
     {
         /// <summary>
-        /// Value indicating the types of certificates accepted by the authentication middleware.
+        /// Gets or sets a value indicating the types of certificates accepted by the authentication middleware.
         /// </summary>
         public CertificateTypes AllowedCertificateTypes { get; set; } = CertificateTypes.Chained;
 
         /// <summary>
-        /// Flag indicating whether the client certificate must be suitable for client
+        /// Gets or sets a value indicating whether the client certificate must be suitable for client
         /// authentication, either via the Client Authentication EKU, or having no EKUs
         /// at all. If the certificate chains to a root CA all certificates in the chain must be validate
         /// for the client authentication EKU.
@@ -23,17 +23,17 @@ namespace Steeltoe.Security.Authentication.MtlsCore
         public bool ValidateCertificateUse { get; set; } = true;
 
         /// <summary>
-        /// Flag indicating whether the client certificate validity period should be checked.
+        /// Gets or sets a value indicating whether the client certificate validity period should be checked.
         /// </summary>
         public bool ValidateValidityPeriod { get; set; } = true;
 
         /// <summary>
-        /// Specifies which X509 certificates in the chain should be checked for revocation.
+        /// Gets or sets which X509 certificates in the chain should be checked for revocation.
         /// </summary>
         public X509RevocationFlag RevocationFlag { get; set; } = X509RevocationFlag.ExcludeRoot;
 
         /// <summary>
-        /// Specifies conditions under which verification of certificates in the X509 chain should be conducted.
+        /// Gets or sets conditions under which verification of certificates in the X509 chain should be conducted.
         /// </summary>
         public X509RevocationMode RevocationMode { get; set; } = X509RevocationMode.Online;
 

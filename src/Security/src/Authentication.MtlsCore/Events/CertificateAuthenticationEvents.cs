@@ -28,7 +28,6 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Events
         /// </remarks>
         public Func<ValidateCertificateContext, Task> OnValidateCertificate { get; set; } = context => Task.CompletedTask;
 
-
         public virtual Task AuthenticationFailed(CertificateAuthenticationFailedContext context) => OnAuthenticationFailed(context);
 
         public virtual Task ValidateCertificate(ValidateCertificateContext context) => OnValidateCertificate(context);
