@@ -17,11 +17,10 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Common.Configuration
 {
-    //TODO: check what needs to happen
     public interface IPlaceholderResolverProvider : IConfigurationProvider
     {
-        new IList<IConfigurationProvider> Providers { get; }
+        public IList<IConfigurationProvider> Providers { get; }
 
-        new IList<string> ResolvedKeys { get; }
+        public IList<string> ResolvedKeys { get; }
     }
 }
