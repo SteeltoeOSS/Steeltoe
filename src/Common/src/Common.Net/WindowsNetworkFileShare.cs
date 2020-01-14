@@ -264,12 +264,17 @@ namespace Steeltoe.Common.Net
             public ResourceType ResourceType;
             public ResourceDisplaytype DisplayType;
             public int Usage;
+
+            [MarshalAs(UnmanagedType.LPTStr)]
             public string LocalName;
 
             [MarshalAs(UnmanagedType.LPTStr)]
             public string RemoteName;
 
+            [MarshalAs(UnmanagedType.LPTStr)]
             public string Comment;
+
+            [MarshalAs(UnmanagedType.LPTStr)]
             public string Provider;
         }
     }
