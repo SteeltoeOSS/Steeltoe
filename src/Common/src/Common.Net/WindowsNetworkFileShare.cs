@@ -257,24 +257,16 @@ namespace Steeltoe.Common.Net
         /// The NETRESOURCE structure contains information about a network resource.
         /// More info on NetResource: <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba"/>
         /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public class NetResource
         {
             public ResourceScope Scope;
             public ResourceType ResourceType;
             public ResourceDisplaytype DisplayType;
             public int Usage;
-
-            [MarshalAs(UnmanagedType.LPTStr)]
             public string LocalName;
-
-            [MarshalAs(UnmanagedType.LPTStr)]
             public string RemoteName;
-
-            [MarshalAs(UnmanagedType.LPTStr)]
             public string Comment;
-
-            [MarshalAs(UnmanagedType.LPTStr)]
             public string Provider;
         }
     }
