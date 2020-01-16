@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -255,6 +256,48 @@ namespace Steeltoe.Extensions.Logging.Test
             // assert
             services.Dispose();
             dlogProvider.Dispose();
+        }
+
+        [Fact]
+        public void AddDynamicConsole_DoesntSetColorLocal()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole();
+                }).BuildServiceProvider();
+
+            // act
+            var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
+
+            // assert
+            Assert.NotNull(options);
+            Assert.False(options.Value.DisableColors);
+        }
+
+        [Fact]
+        public void AddDynamicConsole_DisablesColorOnPivotalPlatform()
+        {
+            // arrange
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "not empty");
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConfiguration(configuration.GetSection("Logging"));
+                    builder.AddDynamicConsole();
+                }).BuildServiceProvider();
+
+            // act
+            var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
+
+            // assert
+            Assert.NotNull(options);
+            Assert.True(options.Value.DisableColors);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
         }
     }
 }
