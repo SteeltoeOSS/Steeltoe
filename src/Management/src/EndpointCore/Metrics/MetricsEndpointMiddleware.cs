@@ -66,7 +66,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
-            string metricName = GetMetricName(request);
+            var metricName = GetMetricName(request);
             if (!string.IsNullOrEmpty(metricName))
             {
                 // GET /metrics/{metricName}?tag=key:value&tag=key:value

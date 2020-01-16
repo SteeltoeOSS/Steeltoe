@@ -56,5 +56,34 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             services.TryAddSingleton<MetricsEndpoint>();
         }
+
+        public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPolledDiagnosticSource, CLRRuntimeSource>());
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            var options = new PrometheusEndpointOptions(config);
+            services.TryAddSingleton<IPrometheusOptions>(options);
+            services.RegisterEndpointOptions(options);
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
+
+            services.TryAddSingleton<IStats, OpenCensusStats>();
+            services.TryAddSingleton<ITags, OpenCensusTags>();
+
+            services.TryAddSingleton<PrometheusScraperEndpoint>();
+        }
     }
 }
