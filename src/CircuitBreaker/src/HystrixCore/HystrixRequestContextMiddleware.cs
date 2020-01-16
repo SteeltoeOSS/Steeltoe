@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
-using System;
-using System.Collections.Generic;
+using Steeltoe.CircuitBreaker.HystrixBase.Util;
 using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
@@ -24,9 +24,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
         private readonly RequestDelegate _next;
 
-        public HystrixRequestContextMiddleware(RequestDelegate next)
+#pragma warning disable CS0618 // Type or member is obsolete
+        public HystrixRequestContextMiddleware(RequestDelegate next, IApplicationLifetime applicationLifetime)
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             _next = next;
+            applicationLifetime.ApplicationStopping.Register(() => HystrixShutdown.ShutdownThreads());
         }
 
         public async Task Invoke(HttpContext context)
