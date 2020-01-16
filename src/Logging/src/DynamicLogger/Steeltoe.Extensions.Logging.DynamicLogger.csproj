@@ -18,13 +18,11 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
 </Project>
