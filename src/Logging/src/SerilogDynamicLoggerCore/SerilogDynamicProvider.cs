@@ -1,4 +1,4 @@
-﻿// Copyright 2017 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         private ConcurrentDictionary<string, LogEventLevel> _runningLevels = new ConcurrentDictionary<string, LogEventLevel>();
         private LogEventLevel? _defaultLevel = null;
         private bool disposed = false;
+        
+        private IConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SerilogDynamicProvider"/> class.
@@ -51,6 +53,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
+            
+            _configuration = configuration;
 
             _serilogOptions = options ?? new SerilogOptions(configuration);
 
@@ -82,6 +86,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
+            
+            _configuration = configuration;
 
             _serilogOptions = options ?? new SerilogOptions(configuration);
 
@@ -101,7 +107,16 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             var levelSwitch = new LoggingLevelSwitch(eventLevel);
             _loggerSwitches.GetOrAdd(categoryName, levelSwitch);
 
-            var serilogger = new Serilog.LoggerConfiguration()
+            var seriloggerConf = new Serilog.LoggerConfiguration();
+            if (_configuration != null && _configuration.GetSection("Serilog:Destructure").Exists())
+            {
+                var confBuilder = new ConfigurationBuilder();
+                confBuilder.AddInMemoryCollection(_configuration.GetSection("Serilog")
+                    .AsEnumerable().Where((kv) => kv.Key.StartsWith("Serilog:Destructure") || kv.Key.StartsWith("Serilog:Using")));
+                seriloggerConf = seriloggerConf.ReadFrom.Configuration(confBuilder.Build());
+            }
+
+            var serilogger = seriloggerConf.MinimumLevel.ControlledBy(levelSwitch)
                 .MinimumLevel.ControlledBy(levelSwitch)
                 .WriteTo.Logger(_globalLogger)
                 .CreateLogger();
