@@ -16,28 +16,18 @@ trigger:
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  PackageVersion: $[format('2.4.1-ci{0}', variables['Build.BuildId'])]
+  PackageVersion: $[format('2.5.0-ci{0}', variables['Build.BuildId'])]
 
 jobs:
 - job: Linux_Build_and_Test
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   steps:
   - task: PowerShell@2
     displayName: 'Get GemFire NativeClient assemblies'
     inputs:
       filePath: src/Connectors/EnableGemFire.ps1
       arguments: $(PivNetAPIToken)
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 2.x SDK'
-    inputs:
-      packageType: sdk
-      version: 2.2.300
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.x SDK'
-    inputs:
-      packageType: sdk
-      version: 3.0.100
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -57,7 +47,7 @@ jobs:
       arguments: '-c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux"'
 - job: MacOS_Build_and_Test
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-latest'
   steps:
   - task: PowerShell@2
     displayName: 'Get GemFire NativeClient assemblies'
@@ -94,7 +84,7 @@ jobs:
 - job: Windows_Build_Test_and_Package
   timeoutInMinutes: 90
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-latest'
   steps:
   - pwsh: |
       if ($env:PackageVersionOverride){
@@ -115,16 +105,6 @@ jobs:
     inputs:
       filePath: src/Connectors/EnableGemFire.ps1
       arguments: $(PivNetAPIToken)
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 2.x SDK'
-    inputs:
-      packageType: sdk
-      version: 2.2.300
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.x SDK'
-    inputs:
-      packageType: sdk
-      version: 3.0.100
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -154,7 +134,6 @@ jobs:
     inputs:
       command: test
       projects: 'src/Steeltoe.All.sln'
-#      arguments: '-c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration&Category!=FlakyOnHostedAgents" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
       arguments: '-c $(buildConfiguration) -maxcpucount:1 /p:TreatWarningsAsErrors=True /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
   # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
   # First install the tool on the machine, then run it
