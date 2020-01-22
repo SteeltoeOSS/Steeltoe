@@ -79,7 +79,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
         {
             hostBuilder.ConfigureAppConfiguration((context, builder) =>
             {
-                builder.AddPlaceholderResolver();
+                builder.AddPlaceholderResolver(loggerFactory);
             });
             return hostBuilder;
         }
