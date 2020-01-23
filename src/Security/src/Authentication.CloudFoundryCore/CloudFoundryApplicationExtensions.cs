@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
-using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.MtlsCore;
 using System;
 
@@ -28,8 +27,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 throw new ArgumentNullException(nameof(app));
             }
 
-            app.UseCertificateRotation();
-            return app.UseMiddleware<CertificateForwarderMiddleware>();
+            return app
+                    .UseCertificateRotation()
+                    .UseCertificateForwarding();
         }
     }
 }

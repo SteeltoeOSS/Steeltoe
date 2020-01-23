@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.MtlsCore;
-using Steeltoe.Security.Authentication.MtlsCore.Events;
 using System;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
@@ -38,11 +38,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             services.AddOptions();
             services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
-            services.AddSingleton<IPostConfigureOptions<CertificateAuthenticationOptions>, CertificateAuthenticationOptionsPostConfigureOptions>();
+            services.AddSingleton<IPostConfigureOptions<STCertificateAuthenticationOptions>, CertificateAuthenticationOptionsPostConfigureOptions>();
             services.Configure<CertificateOptions>(configuration);
             services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
             services.AddSingleton<IAuthorizationHandler, CloudFoundryCertificateIdentityAuthorizationHandler>();
-            return services.AddCertificateHeaderForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
+            return services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
         }
 
         public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder)
@@ -51,7 +51,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 options.Events = new CertificateAuthenticationEvents()
                 {
-                    OnValidateCertificate = context =>
+                    OnCertificateValidated = context =>
                     {
                         var claims = context.GetDefaultClaims();
                         if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out var cfCert))

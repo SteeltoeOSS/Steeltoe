@@ -18,7 +18,7 @@ using Steeltoe.Security.Authentication.MtlsCore;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public class CertificateAuthenticationOptionsPostConfigureOptions : IPostConfigureOptions<CertificateAuthenticationOptions>
+    public class CertificateAuthenticationOptionsPostConfigureOptions : IPostConfigureOptions<STCertificateAuthenticationOptions>
     {
         private readonly IOptionsMonitor<CertificateOptions> _containerIdentityOptions;
 
@@ -27,7 +27,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             _containerIdentityOptions = containerIdentityOptions;
         }
 
-        public void PostConfigure(string name, CertificateAuthenticationOptions options)
+        public void PostConfigure(string name, STCertificateAuthenticationOptions options)
         {
             options.IssuerChain = _containerIdentityOptions.CurrentValue.IssuerChain;
         }

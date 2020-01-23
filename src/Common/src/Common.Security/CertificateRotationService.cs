@@ -18,7 +18,9 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security
 {
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public class CertificateRotationService : IDisposable, ICertificateRotationService
+#pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
         private readonly IOptionsMonitor<CertificateOptions> _optionsMonitor;
         private readonly IDisposable _subscription;

@@ -34,7 +34,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             OnCertRefresh(identityCert.CurrentValue);
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task HandleAsync(AuthorizationHandlerContext context)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             HandleCertRequirement<SameOrgRequirement>(context, CloudFoundryClaimTypes.CloudFoundryOrgId, _cloudFoundryCertificate?.OrgId);
             HandleCertRequirement<SameSpaceRequirement>(context, CloudFoundryClaimTypes.CloudFoundrySpaceId, _cloudFoundryCertificate?.SpaceId);

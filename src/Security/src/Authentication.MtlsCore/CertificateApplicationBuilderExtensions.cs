@@ -12,9 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Security.Authentication.CloudFoundryCore.Test
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Security;
+
+namespace Steeltoe.Security.Authentication.MtlsCore
 {
-    public class CloudFoundryContainerIdentityMtlsTest
+    public static class CertificateApplicationBuilderExtensions
     {
+        public static IApplicationBuilder UseCertificateRotation(this IApplicationBuilder applicationBuilder)
+        {
+            var certificateStoreService = applicationBuilder.ApplicationServices.GetService<ICertificateRotationService>();
+            certificateStoreService.Start();
+            return applicationBuilder;
+        }
     }
 }

@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Security.Authentication.MtlsCore.Events;
 using System;
 using System.IO;
 using System.Linq;
@@ -529,7 +529,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
                     Events = new CertificateAuthenticationEvents
                     {
-                        OnValidateCertificate = context =>
+                        OnCertificateValidated = context =>
                         {
                             var claims = new[]
                             {
@@ -586,7 +586,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
                     if (wireUpHeaderMiddleware)
                     {
-                        app.UseCertificateHeaderForwarding();
+                        app.UseCertificateForwarding();
                     }
 
                     app.UseAuthentication();
@@ -638,7 +638,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
                 if (wireUpHeaderMiddleware && !string.IsNullOrEmpty(headerName))
                 {
-                    services.AddCertificateHeaderForwarding(options =>
+                    services.AddCertificateForwarding(options =>
                     {
                         options.CertificateHeader = headerName;
                     });
@@ -655,7 +655,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
         private CertificateAuthenticationEvents sucessfulValidationEvents = new CertificateAuthenticationEvents()
         {
-            OnValidateCertificate = context =>
+            OnCertificateValidated = context =>
             {
                 var claims = new[]
                 {
@@ -671,7 +671,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
         private CertificateAuthenticationEvents failedValidationEvents = new CertificateAuthenticationEvents()
         {
-            OnValidateCertificate = context =>
+            OnCertificateValidated = context =>
             {
                 context.Fail("Not validated");
                 return Task.CompletedTask;
@@ -680,7 +680,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
         private CertificateAuthenticationEvents unprocessedValidationEvents = new CertificateAuthenticationEvents()
         {
-            OnValidateCertificate = context =>
+            OnCertificateValidated = context =>
             {
                 return Task.CompletedTask;
             }

@@ -1,0 +1,8 @@
+﻿---
+applications:
+- name: mtls-server-win
+  buildpacks:
+   - hwc_buildpack
+  memory: 256M
+  stack: windows
+  command: .\ServerApp
