@@ -22,9 +22,9 @@ namespace ServerApp
         {
             services.AddCloudFoundryContainerIdentity(Configuration);
 
-            //services
-            //    .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
-            //    .AddCloudFoundryIdentityCertificate();
+            services
+                .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
+                .AddCloudFoundryIdentityCertificate();
 
             services.AddAuthorization(cfg => cfg.AddPolicy("sameorg", builder => builder.SameOrg()));
 
@@ -49,7 +49,7 @@ namespace ServerApp
 
             app.UseRouting();
 
-        //    app.UseCloudFoundryContainerIdentity();
+            app.UseCloudFoundryContainerIdentity();
             app.UseAuthentication();
             app.UseAuthorization();
 

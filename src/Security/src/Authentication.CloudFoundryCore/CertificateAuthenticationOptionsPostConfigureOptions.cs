@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
-using Steeltoe.Security.Authentication.MtlsCore;
+using Steeltoe.Security.Authentication.Mtls;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {

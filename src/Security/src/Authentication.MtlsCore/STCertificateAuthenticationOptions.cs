@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Authentication.Certificate;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Security.Authentication.MtlsCore
+namespace Steeltoe.Security.Authentication.Mtls
 {
     public class STCertificateAuthenticationOptions : CertificateAuthenticationOptions
     {

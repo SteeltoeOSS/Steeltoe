@@ -19,10 +19,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
-using Steeltoe.Security.Authentication.MtlsCore;
+using Steeltoe.Security.Authentication.Mtls;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
@@ -47,13 +47,21 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder)
         {
-            builder.AddCertificate(CertificateAuthenticationDefaults.AuthenticationScheme, options =>
+            builder.AddCertificateST(options =>
             {
+                //// TODO: remove
+                options.ValidateValidityPeriod = false;
+                //// END TODO
+
                 options.Events = new CertificateAuthenticationEvents()
                 {
+                    OnAuthenticationFailed = context =>
+                    {
+                        return Task.CompletedTask;
+                    },
                     OnCertificateValidated = context =>
                     {
-                        var claims = context.GetDefaultClaims();
+                        var claims = new List<Claim>(context.Principal.Claims);
                         if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out var cfCert))
                         {
                             claims.Add(new Claim(CloudFoundryClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));

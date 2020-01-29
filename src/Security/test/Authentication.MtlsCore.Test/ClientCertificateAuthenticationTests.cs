@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Security.Authentication.Mtls;
 using System;
 using System.IO;
 using System.Linq;
@@ -70,7 +71,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 new CertificateAuthenticationOptions
                 {
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedValidWithClientEku);
 
@@ -85,7 +86,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 new CertificateAuthenticationOptions
                 {
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedValidWithNoEku);
 
@@ -114,7 +115,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 new CertificateAuthenticationOptions
                 {
                     AllowedCertificateTypes = CertificateTypes.Chained,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedValidWithNoEku);
 
@@ -129,7 +130,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 new CertificateAuthenticationOptions
                 {
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedValidWithServerEku);
 
@@ -145,7 +146,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 {
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
                     ValidateCertificateUse = false,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedValidWithServerEku);
 
@@ -161,7 +162,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 {
                     AllowedCertificateTypes = CertificateTypes.Chained,
                     ValidateCertificateUse = false,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedValidWithServerEku);
 
@@ -177,7 +178,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 {
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
                     ValidateCertificateUse = false,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedExpired);
 
@@ -193,7 +194,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 {
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
                     ValidateValidityPeriod = false,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedExpired);
 
@@ -209,7 +210,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 {
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
                     ValidateCertificateUse = false,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedNotYetValid);
 
@@ -225,83 +226,12 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 {
                     AllowedCertificateTypes = CertificateTypes.SelfSigned,
                     ValidateValidityPeriod = false,
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 Certificates.SelfSignedNotYetValid);
 
             var response = await server.CreateClient().GetAsync("https://example.com/");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyRootedCertWithNoEkuPassesByDefault()
-        {
-            var server = CreateServer(
-                new CertificateAuthenticationOptions
-                {
-                    Events = sucessfulValidationEvents
-                },
-                Certificates.RootedNoEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyRootedCertWithClientEkuPassesByDefault()
-        {
-            var server = CreateServer(
-                new CertificateAuthenticationOptions
-                {
-                    Events = sucessfulValidationEvents
-                },
-                Certificates.RootedClientEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyRootedCertWithServerEkuFailsByDefault()
-        {
-            var server = CreateServer(
-                new CertificateAuthenticationOptions
-                {
-                    Events = sucessfulValidationEvents
-                },
-                Certificates.RootedServerEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyRootedCertWithServerEkuPassesIfEkuValidationIsTurnedOff()
-        {
-            var server = CreateServer(
-                new CertificateAuthenticationOptions
-                {
-                    ValidateCertificateUse = false,
-                    Events = sucessfulValidationEvents
-                },
-                Certificates.RootedServerEku);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task VerifyRevokedCertFailsByDefault()
-        {
-            var server = CreateServer(
-                new CertificateAuthenticationOptions
-                {
-                    Events = sucessfulValidationEvents
-                },
-                Certificates.RootedRevoked);
-
-            var response = await server.CreateClient().GetAsync("https://example.com/");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
         [Fact]
@@ -313,7 +243,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                     ValidateCertificateUse = false,
                     Events = failedValidationEvents
                 },
-                Certificates.RootedServerEku);
+                Certificates.SelfSignedValidWithServerEku);
 
             var response = await server.CreateClient().GetAsync("https://example.com/");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -325,10 +255,11 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             var server = CreateServer(
                 new CertificateAuthenticationOptions
                 {
+                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
                     ValidateCertificateUse = false,
                     Events = unprocessedValidationEvents
                 },
-                Certificates.RootedServerEku);
+                Certificates.SelfSignedValidWithServerEku);
 
             var response = await server.CreateClient().GetAsync("https://example.com/");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -340,7 +271,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             var server = CreateServer(
                 new CertificateAuthenticationOptions
                 {
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 });
 
             var response = await server.CreateClient().GetAsync("https://example.com/");
@@ -348,50 +279,52 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
         }
 
         [Fact]
-        public async Task VerifyArrHeaderIsUsedIfCertIsNotPresent()
+        public async Task VerifyHeaderIsUsedIfCertIsNotPresent()
         {
             var server = CreateServer(
                 new CertificateAuthenticationOptions
                 {
-                    Events = sucessfulValidationEvents
+                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                    Events = successfulValidationEvents
                 },
                 wireUpHeaderMiddleware: true);
 
             var client = server.CreateClient();
-            client.DefaultRequestHeaders.Add("X-ARR-ClientCert", Convert.ToBase64String(Certificates.RootedNoEku.RawData));
+            client.DefaultRequestHeaders.Add("X-Client-Cert", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
             var response = await client.GetAsync("https://example.com/");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
-        public async Task VerifyArrHeaderEncodedCertFailsOnBadEncoding()
+        public async Task VerifyHeaderEncodedCertFailsOnBadEncoding()
         {
             var server = CreateServer(
                 new CertificateAuthenticationOptions
                 {
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 wireUpHeaderMiddleware: true);
 
             var client = server.CreateClient();
-            client.DefaultRequestHeaders.Add("X-ARR-ClientCert", "OOPS" + Convert.ToBase64String(Certificates.RootedNoEku.RawData));
+            client.DefaultRequestHeaders.Add("X-Client-Cert", "OOPS" + Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
             var response = await client.GetAsync("https://example.com/");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
         [Fact]
-        public async Task VerifySettingTheHeaderOnTheForwarderOptionsWorks()
+        public async Task VerifySettingTheAzureHeaderOnTheForwarderOptionsWorks()
         {
             var server = CreateServer(
                 new CertificateAuthenticationOptions
                 {
-                    Events = sucessfulValidationEvents
+                    AllowedCertificateTypes = CertificateTypes.SelfSigned,
+                    Events = successfulValidationEvents
                 },
                 wireUpHeaderMiddleware: true,
-                headerName: "random-Weird-header");
+                headerName: "X-ARR-ClientCert");
 
             var client = server.CreateClient();
-            client.DefaultRequestHeaders.Add("random-Weird-header", Convert.ToBase64String(Certificates.RootedNoEku.RawData));
+            client.DefaultRequestHeaders.Add("X-ARR-ClientCert", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
             var response = await client.GetAsync("https://example.com/");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -402,13 +335,13 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             var server = CreateServer(
                 new CertificateAuthenticationOptions
                 {
-                    Events = sucessfulValidationEvents
+                    Events = successfulValidationEvents
                 },
                 wireUpHeaderMiddleware: true,
-                headerName: "another-random-Weird-header");
+                headerName: "X-ARR-ClientCert");
 
             var client = server.CreateClient();
-            client.DefaultRequestHeaders.Add("random-Weird-header", Convert.ToBase64String(Certificates.RootedNoEku.RawData));
+            client.DefaultRequestHeaders.Add("random-Weird-header", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
             var response = await client.GetAsync("https://example.com/");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
@@ -531,6 +464,8 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                     {
                         OnCertificateValidated = context =>
                         {
+                            // Make sure we get the validated principal
+                            Assert.NotNull(context.Principal);
                             var claims = new[]
                             {
                                 new Claim(ClaimTypes.Name, Expected, ClaimValueTypes.String, context.Options.ClaimsIssuer)
@@ -621,7 +556,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             {
                 if (configureOptions != null)
                 {
-                    services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificate(options =>
+                    services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificateST(options =>
                     {
                         options.AllowedCertificateTypes = configureOptions.AllowedCertificateTypes;
                         options.Events = configureOptions.Events;
@@ -633,7 +568,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 }
                 else
                 {
-                    services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificate();
+                    services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificateST();
                 }
 
                 if (wireUpHeaderMiddleware && !string.IsNullOrEmpty(headerName))
@@ -653,7 +588,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             return server;
         }
 
-        private CertificateAuthenticationEvents sucessfulValidationEvents = new CertificateAuthenticationEvents()
+        private CertificateAuthenticationEvents successfulValidationEvents = new CertificateAuthenticationEvents()
         {
             OnCertificateValidated = context =>
             {
@@ -688,9 +623,6 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
         private static class Certificates
         {
-            private static readonly string collateralPath =
-                Path.Combine(Directory.GetCurrentDirectory(), "TestCertificates");
-
             public static X509Certificate2 SelfSignedValidWithClientEku { get; private set; } =
                 new X509Certificate2(GetFullyQualifiedFilePath("validSelfSignedClientEkuCertificate.cer"));
 
@@ -720,7 +652,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
 
             private static string GetFullyQualifiedFilePath(string filename)
             {
-                var filePath = Path.Combine(collateralPath, filename);
+                var filePath = Path.Combine(AppContext.BaseDirectory, "TestCertificates", filename);
                 if (!File.Exists(filePath))
                 {
                     throw new FileNotFoundException(filePath);

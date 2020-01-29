@@ -15,7 +15,7 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
-namespace Steeltoe.Security.Authentication.MtlsCore
+namespace Steeltoe.Security.Authentication.Mtls
 {
     public class CloudFoundryInstanceCertificate
     {

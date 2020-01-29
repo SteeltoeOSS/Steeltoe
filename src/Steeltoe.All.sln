@@ -225,10 +225,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Abstract
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.MtlsCore", "Security\src\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj", "{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC}"
 EndProject
-<<<<<<< HEAD
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.MtlsCore.Test", "Security\test\Authentication.MtlsCore.Test\Steeltoe.Security.Authentication.MtlsCore.Test.csproj", "{0134F5C0-7595-497E-91BE-CCCD2290CF8E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerApp", "Security\ServerApp\ServerApp.csproj", "{0D269D35-A379-4C98-BCB5-1D80F845C253}"
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Messaging", "Messaging", "{283EAD31-6CC1-4306-A0E8-AB60F6CB3FD8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientApp", "Security\ClientApp\ClientApp.csproj", "{831CC6BA-9A9A-4C32-AEB7-0CC3CAF96E6B}"
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Abstractions", "Messaging\src\Abstractions\Steeltoe.Messaging.Abstractions.csproj", "{082FF7F6-EC5B-4AC1-9B66-C4A6ED955371}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Base", "Messaging\src\Base\Steeltoe.Messaging.Base.csproj", "{F49866A5-8F5A-4AE9-B6FA-6671805BABAD}"
@@ -672,18 +674,18 @@ Global
 		{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{62824438-447A-4242-B9FA-4DCC39C2819E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{62824438-447A-4242-B9FA-4DCC39C2819E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{62824438-447A-4242-B9FA-4DCC39C2819E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{62824438-447A-4242-B9FA-4DCC39C2819E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C225B18-E71B-4FB9-8680-99FFADC8F409}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C225B18-E71B-4FB9-8680-99FFADC8F409}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C225B18-E71B-4FB9-8680-99FFADC8F409}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C225B18-E71B-4FB9-8680-99FFADC8F409}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0134F5C0-7595-497E-91BE-CCCD2290CF8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0134F5C0-7595-497E-91BE-CCCD2290CF8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0134F5C0-7595-497E-91BE-CCCD2290CF8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0134F5C0-7595-497E-91BE-CCCD2290CF8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D269D35-A379-4C98-BCB5-1D80F845C253}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D269D35-A379-4C98-BCB5-1D80F845C253}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D269D35-A379-4C98-BCB5-1D80F845C253}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D269D35-A379-4C98-BCB5-1D80F845C253}.Release|Any CPU.Build.0 = Release|Any CPU
+		{831CC6BA-9A9A-4C32-AEB7-0CC3CAF96E6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{831CC6BA-9A9A-4C32-AEB7-0CC3CAF96E6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{831CC6BA-9A9A-4C32-AEB7-0CC3CAF96E6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{831CC6BA-9A9A-4C32-AEB7-0CC3CAF96E6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

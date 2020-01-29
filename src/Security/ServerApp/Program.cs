@@ -19,6 +19,11 @@ namespace ServerApp
                 Environment.SetEnvironmentVariable("CF_INSTANCE_CERT", Path.Combine("Cert", "CF_INSTANCE_CERT.pem"));
                 Environment.SetEnvironmentVariable("CF_INSTANCE_KEY", Path.Combine("Cert", "CF_INSTANCE_KEY.pem"));
             }
+            else
+            {
+                Console.WriteLine("CF_INSTANCE_CERT: {0}", Environment.GetEnvironmentVariable("CF_INSTANCE_CERT"));
+                Console.WriteLine("CF_INSTANCE_KEY: {0}", Environment.GetEnvironmentVariable("CF_INSTANCE_KEY"));
+            }
 
             CreateHostBuilder(args).Build().Run();
         }
@@ -34,6 +39,6 @@ namespace ServerApp
                     //    o.ConfigureHttpsDefaults(o => o.ClientCertificateMode = ClientCertificateMode.RequireCertificate);
                     //});
                 })
-                .UseCloudHosting();
+                .UseCloudHosting(8080, 8081);
     }
 }

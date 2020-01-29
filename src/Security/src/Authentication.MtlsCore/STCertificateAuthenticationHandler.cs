@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -14,7 +16,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Security.Authentication.MtlsCore
+namespace Steeltoe.Security.Authentication.Mtls
 {
     internal class STCertificateAuthenticationHandler : AuthenticationHandler<STCertificateAuthenticationOptions>
     {
@@ -53,39 +55,34 @@ namespace Steeltoe.Security.Authentication.MtlsCore
                 return AuthenticateResult.NoResult();
             }
 
-            var clientCertificate = await Context.Connection.GetClientCertificateAsync();
-
-            // This should never be the case, as cert authentication happens long before ASP.NET kicks in.
-            if (clientCertificate == null)
-            {
-                Logger.LogDebug("No client certificate found.");
-                return AuthenticateResult.NoResult();
-            }
-
-            // If we have a self signed cert, and they're not allowed, exit early and not bother with
-            // any other validations.
-            if (clientCertificate.IsSelfSigned() &&
-                !Options.AllowedCertificateTypes.HasFlag(CertificateTypes.SelfSigned))
-            {
-                Logger.LogWarning("Self signed certificate rejected, subject was {0}", clientCertificate.Subject);
-
-                return AuthenticateResult.Fail("Options do not allow self signed certificates.");
-            }
-
-            // If we have a chained cert, and they're not allowed, exit early and not bother with
-            // any other validations.
-            if (!clientCertificate.IsSelfSigned() &&
-                !Options.AllowedCertificateTypes.HasFlag(CertificateTypes.Chained))
-            {
-                Logger.LogWarning("Chained certificate rejected, subject was {0}", clientCertificate.Subject);
-
-                return AuthenticateResult.Fail("Options do not allow chained certificates.");
-            }
-
-            var chainPolicy = BuildChainPolicy(clientCertificate);
-
             try
             {
+                var clientCertificate = await Context.Connection.GetClientCertificateAsync();
+
+                // This should never be the case, as cert authentication happens long before ASP.NET kicks in.
+                if (clientCertificate == null)
+                {
+                    Logger.NoCertificate();
+                    return AuthenticateResult.NoResult();
+                }
+
+                // If we have a self signed cert, and they're not allowed, exit early and not bother with
+                // any other validations.
+                if (clientCertificate.IsSelfSigned() && !Options.AllowedCertificateTypes.HasFlag(CertificateTypes.SelfSigned))
+                {
+                    Logger.LogWarning("Self signed certificate rejected, subject was {0}", clientCertificate.Subject);
+                    return AuthenticateResult.Fail("Options do not allow self signed certificates.");
+                }
+
+                // If we have a chained cert, and they're not allowed, exit early and not bother with
+                // any other validations.
+                if (!clientCertificate.IsSelfSigned() && !Options.AllowedCertificateTypes.HasFlag(CertificateTypes.Chained))
+                {
+                    Logger.CertificateRejected("Chained", clientCertificate.Subject);
+                    return AuthenticateResult.Fail("Options do not allow chained certificates.");
+                }
+
+                var chainPolicy = BuildChainPolicy(clientCertificate);
                 var chain = new X509Chain
                 {
                     ChainPolicy = chainPolicy
@@ -94,52 +91,31 @@ namespace Steeltoe.Security.Authentication.MtlsCore
                 var certificateIsValid = IsChainValid(chain, clientCertificate);
                 if (!certificateIsValid)
                 {
-                    using (Logger.BeginScope(clientCertificate.SHA256Thumprint()))
+                    var chainErrors = new List<string>();
+                    foreach (var validationFailure in chain.ChainStatus)
                     {
-                        Logger.LogWarning("Client certificate failed validation, subject was {0}", clientCertificate.Subject);
-                        foreach (var validationFailure in chain.ChainStatus)
-                        {
-                            Logger.LogWarning("{0} {1}", validationFailure.Status, validationFailure.StatusInformation);
-                        }
+                        chainErrors.Add($"{validationFailure.Status} {validationFailure.StatusInformation}");
                     }
 
+                    Logger.CertificateFailedValidation(clientCertificate.Subject, chainErrors);
                     return AuthenticateResult.Fail("Client certificate failed validation.");
                 }
 
-                //
-                //                if (!certificateIsValid)
-                //                {
-                //                    using (Logger.BeginScope(clientCertificate.SHA256Thumprint()))
-                //                    {
-                //                        Logger.LogWarning("Client certificate failed validation, subject was {0}", clientCertificate.Subject);
-                //                        foreach (var validationFailure in chain.ChainStatus)
-                //                        {
-                //                            Logger.LogWarning("{0} {1}", validationFailure.Status, validationFailure.StatusInformation);
-                //                        }
-                //                    }
-                //                    return AuthenticateResult.Fail("Client certificate failed validation.");
-                //                }
-                var validateCertificateContext = new CertificateValidatedContext(Context, Scheme, Options)
+                var certificateValidatedContext = new CertificateValidatedContext(Context, Scheme, Options)
                 {
-                    ClientCertificate = clientCertificate
+                    ClientCertificate = clientCertificate,
+                    Principal = CreatePrincipal(clientCertificate)
                 };
 
-                await Events.CertificateValidated(validateCertificateContext);
+                await Events.CertificateValidated(certificateValidatedContext);
 
-                if (validateCertificateContext.Result != null &&
-                    validateCertificateContext.Result.Succeeded)
+                if (certificateValidatedContext.Result != null)
                 {
-                    return Success(validateCertificateContext.Principal, clientCertificate);
+                    return certificateValidatedContext.Result;
                 }
 
-                if (validateCertificateContext.Result != null && validateCertificateContext.Result.Failure != null)
-                {
-                    return AuthenticateResult.Fail(validateCertificateContext.Result.Failure);
-                }
-
-                var identity = new ClaimsIdentity(validateCertificateContext.GetDefaultClaims(), CertificateAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-                return Success(principal, clientCertificate);
+                certificateValidatedContext.Success();
+                return certificateValidatedContext.Result;
             }
             catch (Exception ex)
             {
@@ -163,14 +139,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore
         {
             // Certificate authentication takes place at the connection level. We can't prompt once we're in
             // user code, so the best thing to do is Forbid, not Challenge.
-            Response.StatusCode = 403;
-            return Task.CompletedTask;
-        }
-
-        protected override Task HandleForbiddenAsync(AuthenticationProperties properties)
-        {
-            Response.StatusCode = 403;
-            return Task.CompletedTask;
+            return HandleForbiddenAsync(properties);
         }
 
         private bool IsChainValid(X509Chain chain, X509Certificate2 certificate)
@@ -178,7 +147,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore
             var isValid = chain.Build(certificate);
 
             // allow root cert to be side loaded without installing into X509Store Root store
-            if (!isValid && chain.ChainStatus.All(x => x.Status == X509ChainStatusFlags.UntrustedRoot))
+            if (!isValid && chain.ChainStatus.All(x => x.Status == X509ChainStatusFlags.UntrustedRoot || x.Status == X509ChainStatusFlags.PartialChain))
             {
                 var rootCert = chain.ChainElements.Cast<X509ChainElement>().Last().Certificate;
                 isValid = Options.IssuerChain.Contains(rootCert);
@@ -205,10 +174,20 @@ namespace Steeltoe.Security.Authentication.MtlsCore
                 RevocationFlag = revocationFlag,
                 RevocationMode = revocationMode,
             };
+
+            // TODO: review questionable choice for enabling local dev
+            if (!Platform.IsCloudHosted)
+            {
+                chainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+            }
+            // end questionable choice
+
+            // begin secret sauce
             foreach (var chainCert in Options.IssuerChain)
             {
                 chainPolicy.ExtraStore.Add(chainCert);
             }
+            // end secret sauce
 
             if (Options.ValidateCertificateUse)
             {
@@ -230,20 +209,60 @@ namespace Steeltoe.Security.Authentication.MtlsCore
             return chainPolicy;
         }
 
-        private AuthenticateResult Success(ClaimsPrincipal principal, X509Certificate2 certificate)
+        private ClaimsPrincipal CreatePrincipal(X509Certificate2 certificate)
         {
-            var props = new AuthenticationProperties
-            {
-                Items =
-                {
-                    {
-                        CertificateAuthenticationDefaults.AuthenticationScheme, certificate.GetRawCertDataString()
-                    }
-                }
-            };
+            var claims = new List<Claim>();
 
-            var ticket = new AuthenticationTicket(principal, props, Scheme.Name);
-            return AuthenticateResult.Success(ticket);
+            var issuer = certificate.Issuer;
+            claims.Add(new Claim("issuer", issuer, ClaimValueTypes.String, Options.ClaimsIssuer));
+
+            var thumbprint = certificate.Thumbprint;
+            claims.Add(new Claim(ClaimTypes.Thumbprint, thumbprint, ClaimValueTypes.Base64Binary, Options.ClaimsIssuer));
+
+            var value = certificate.SubjectName.Name;
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                claims.Add(new Claim(ClaimTypes.X500DistinguishedName, value, ClaimValueTypes.String, Options.ClaimsIssuer));
+            }
+
+            value = certificate.SerialNumber;
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                claims.Add(new Claim(ClaimTypes.SerialNumber, value, ClaimValueTypes.String, Options.ClaimsIssuer));
+            }
+
+            value = certificate.GetNameInfo(X509NameType.DnsName, false);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                claims.Add(new Claim(ClaimTypes.Dns, value, ClaimValueTypes.String, Options.ClaimsIssuer));
+            }
+
+            value = certificate.GetNameInfo(X509NameType.SimpleName, false);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                claims.Add(new Claim(ClaimTypes.Name, value, ClaimValueTypes.String, Options.ClaimsIssuer));
+            }
+
+            value = certificate.GetNameInfo(X509NameType.EmailName, false);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                claims.Add(new Claim(ClaimTypes.Email, value, ClaimValueTypes.String, Options.ClaimsIssuer));
+            }
+
+            value = certificate.GetNameInfo(X509NameType.UpnName, false);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                claims.Add(new Claim(ClaimTypes.Upn, value, ClaimValueTypes.String, Options.ClaimsIssuer));
+            }
+
+            value = certificate.GetNameInfo(X509NameType.UrlName, false);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                claims.Add(new Claim(ClaimTypes.Uri, value, ClaimValueTypes.String, Options.ClaimsIssuer));
+            }
+
+            var identity = new ClaimsIdentity(claims, CertificateAuthenticationDefaults.AuthenticationScheme);
+            return new ClaimsPrincipal(identity);
         }
     }
 }

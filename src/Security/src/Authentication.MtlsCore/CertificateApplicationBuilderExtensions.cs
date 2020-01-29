@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Security;
+using System;
 
-namespace Steeltoe.Security.Authentication.MtlsCore
+namespace Steeltoe.Security.Authentication.Mtls
 {
     public static class CertificateApplicationBuilderExtensions
     {
@@ -26,5 +29,40 @@ namespace Steeltoe.Security.Authentication.MtlsCore
             certificateStoreService.Start();
             return applicationBuilder;
         }
+
+        /// <summary>
+        /// Adds certificate authentication.
+        /// </summary>
+        /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
+        public static AuthenticationBuilder AddCertificateST(this AuthenticationBuilder builder)
+            => builder.AddCertificateST(CertificateAuthenticationDefaults.AuthenticationScheme);
+
+        /// <summary>
+        /// Adds certificate authentication.
+        /// </summary>
+        /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
+        /// <param name="authenticationScheme"></param>
+        public static AuthenticationBuilder AddCertificateST(this AuthenticationBuilder builder, string authenticationScheme)
+            => builder.AddCertificateST(authenticationScheme, configureOptions: null);
+
+        /// <summary>
+        /// Adds certificate authentication.
+        /// </summary>
+        /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
+        /// <param name="configureOptions"></param>
+        public static AuthenticationBuilder AddCertificateST(this AuthenticationBuilder builder, Action<STCertificateAuthenticationOptions> configureOptions)
+            => builder.AddCertificateST(CertificateAuthenticationDefaults.AuthenticationScheme, configureOptions);
+
+        /// <summary>
+        /// Adds certificate authentication.
+        /// </summary>
+        /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
+        /// <param name="authenticationScheme"></param>
+        /// <param name="configureOptions"></param>
+        public static AuthenticationBuilder AddCertificateST(
+            this AuthenticationBuilder builder,
+            string authenticationScheme,
+            Action<STCertificateAuthenticationOptions> configureOptions)
+            => builder.AddScheme<STCertificateAuthenticationOptions, STCertificateAuthenticationHandler>(authenticationScheme, configureOptions);
     }
 }

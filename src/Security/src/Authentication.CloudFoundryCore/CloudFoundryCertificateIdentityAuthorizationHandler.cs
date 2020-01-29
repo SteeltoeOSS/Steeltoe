@@ -15,7 +15,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
-using Steeltoe.Security.Authentication.MtlsCore;
+using Steeltoe.Security.Authentication.Mtls;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;

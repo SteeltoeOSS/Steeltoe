@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
-using Steeltoe.Security.Authentication.MtlsCore;
+using Steeltoe.Security.Authentication.Mtls;
 using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
