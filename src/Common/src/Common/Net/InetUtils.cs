@@ -102,13 +102,7 @@ namespace Steeltoe.Common.Net
                 return result;
             }
 
-            string localHost = GetHostAddress();
-            if (!string.IsNullOrEmpty(localHost))
-            {
-                return IPAddress.Parse(localHost);
-            }
-
-            return null;
+            return GetHostAddress();
         }
 
         internal bool IsInet4Address(IPAddress address)
@@ -194,9 +188,9 @@ namespace Steeltoe.Common.Net
             return hostInfo;
         }
 
-        internal string ResolveHostAddress(string hostName)
+        internal IPAddress ResolveHostAddress(string hostName)
         {
-            string result = null;
+            IPAddress result = null;
             try
             {
                 var results = Dns.GetHostAddresses(hostName);
@@ -206,7 +200,7 @@ namespace Steeltoe.Common.Net
                     {
                         if (addr.AddressFamily.Equals(AddressFamily.InterNetwork))
                         {
-                            result = addr.ToString();
+                            result = addr;
                             break;
                         }
                     }
@@ -248,7 +242,7 @@ namespace Steeltoe.Common.Net
             return ResolveHostName();
         }
 
-        internal string GetHostAddress()
+        internal IPAddress GetHostAddress()
         {
             string hostName = GetHostName();
             if (!string.IsNullOrEmpty(hostName))
