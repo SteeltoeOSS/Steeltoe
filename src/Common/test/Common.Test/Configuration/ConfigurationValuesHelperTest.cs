@@ -13,9 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Common.Configuration.Test

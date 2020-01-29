@@ -57,3 +57,6 @@ csharp_new_line_before_members_in_anonymous_types = true
 
 # CS0168: Variable is declared but never used
 dotnet_diagnostic.CS0168.severity = suggestion
+
+# S3925: "ISerializable" should be implemented correctly
+dotnet_diagnostic.S3925.severity = none
