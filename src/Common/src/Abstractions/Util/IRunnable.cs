@@ -15,7 +15,7 @@
 namespace Steeltoe.Common.Util
 {
     /// <summary>
-    /// An object that can be invoked syncronously via a run method.
+    /// An object that can be invoked synchronously via a run method.
     /// </summary>
     public interface IRunnable
     {

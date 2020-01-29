@@ -18,12 +18,12 @@ using System.Collections.Generic;
 namespace Steeltoe.Common.Converter
 {
     /// <summary>
-    /// Generic converter interface for converting betweeen two or more types
+    /// Generic converter interface for converting between two or more types
     /// </summary>
     public interface IGenericConverter
     {
         /// <summary>
-        /// Gets the soruce and target types this converter can convert between.
+        /// Gets the source and target types this converter can convert between.
         /// </summary>
         ISet<(Type Source, Type Target)> ConvertibleTypes { get; }
 

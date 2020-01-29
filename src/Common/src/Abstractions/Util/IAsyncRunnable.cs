@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Common.Util
 {
     /// <summary>
-    /// An object that can be invoked asyncronously via a run method.
+    /// An object that can be invoked asynchronously via a run method.
     /// </summary>
     public interface IAsyncRunnable
     {

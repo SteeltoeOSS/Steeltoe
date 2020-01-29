@@ -57,7 +57,7 @@ namespace Steeltoe.Common.Converter
             var list = ConversionUtils.CreateCompatListFor(targetType);
             if (list == null)
             {
-                throw new InvalidOperationException("Unable to create compatable list");
+                throw new InvalidOperationException("Unable to create compatible list");
             }
 
             if (!targetType.IsGenericType)
