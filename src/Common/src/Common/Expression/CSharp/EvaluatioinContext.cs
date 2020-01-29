@@ -16,7 +16,7 @@ using System;
 
 namespace Steeltoe.Common.Expression.CSharp
 {
-    public class EvaluatioinContext : IEvaluationContext
+    public class EvaluationContext : IEvaluationContext
     {
         public ITypeConverter TypeConverter => throw new NotImplementedException();
     }
