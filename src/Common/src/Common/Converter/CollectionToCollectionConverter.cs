@@ -44,7 +44,6 @@ namespace Steeltoe.Common.Converter
 
         public override object Convert(object source, Type sourceType, Type targetType)
         {
-            // ICollection sourceCollection = source as ICollection;
             var sourceCollection = source as IEnumerable;
             if (sourceCollection == null)
             {
