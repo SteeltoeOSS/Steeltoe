@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
 using System;
 
 namespace Steeltoe.Common.Security

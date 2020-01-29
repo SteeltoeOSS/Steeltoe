@@ -46,12 +46,12 @@ namespace Steeltoe.Common.Util
 
         public bool CompareAndSet(T expected, T update)
         {
-            return Interlocked.CompareExchange(ref this._value, update, expected) == expected;
+            return Interlocked.CompareExchange(ref _value, update, expected) == expected;
         }
 
         public T GetAndSet(T value)
         {
-            return Interlocked.Exchange(ref this._value, value);
+            return Interlocked.Exchange(ref _value, value);
         }
     }
 }
