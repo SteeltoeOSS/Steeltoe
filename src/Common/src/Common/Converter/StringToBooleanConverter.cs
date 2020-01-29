@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Common.Converter
 {
@@ -47,12 +48,11 @@ namespace Steeltoe.Common.Converter
                 return null;
             }
 
-            value = value.ToLowerInvariant();
-            if (_trueValues.Contains(value))
+            if (_trueValues.Contains(value, StringComparer.InvariantCultureIgnoreCase))
             {
                 return true;
             }
-            else if (_falseValues.Contains(value))
+            else if (_falseValues.Contains(value, StringComparer.InvariantCultureIgnoreCase))
             {
                 return false;
             }
