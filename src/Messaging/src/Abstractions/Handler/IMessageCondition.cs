@@ -49,7 +49,7 @@ namespace Steeltoe.Messaging.Handler
         /// </summary>
         /// <param name="other">the other condition to compare to</param>
         /// <param name="message">the message under process</param>
-        /// <returns>results of the comparision</returns>
+        /// <returns>results of the comparison</returns>
         int CompareTo(T other, IMessage message);
     }
 }
