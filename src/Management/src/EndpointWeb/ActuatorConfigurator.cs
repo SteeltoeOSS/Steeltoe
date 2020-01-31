@@ -59,7 +59,7 @@ namespace Steeltoe.Management.Endpoint
 
         public static void UseCloudFoundryActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
         {
-            UseCloudFoundryActuators(configuration, dynamicLogger, MediaTypeVersion.V1, ActuatorContext.ActuatorAndCloudFoundry, healthContributors, apiExplorer);
+            UseCloudFoundryActuators(configuration, dynamicLogger, MediaTypeVersion.V1, ActuatorContext.ActuatorAndCloudFoundry, healthContributors, apiExplorer, loggerFactory);
         }
 
         public static void UseCloudFoundryActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, MediaTypeVersion version, ActuatorContext context, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
@@ -166,7 +166,7 @@ namespace Steeltoe.Management.Endpoint
             var options = new HeapDumpEndpointOptions(configuration);
             _mgmtOptions.RegisterEndpointOptions(configuration, options);
 
-            heapDumper = heapDumper ?? new HeapDumper(options);
+            heapDumper ??= new HeapDumper(options);
             var ep = new HeapDumpEndpoint(options, heapDumper, CreateLogger<HeapDumpEndpoint>(loggerFactory));
             var handler = new HeapDumpHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<HeapDumpHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
@@ -181,8 +181,8 @@ namespace Steeltoe.Management.Endpoint
                 return;
             }
 
-            healthAggregator = healthAggregator ?? new DefaultHealthAggregator();
-            contributors = contributors ?? new List<IHealthContributor>() { new DiskSpaceContributor(new DiskSpaceContributorOptions(configuration)) };
+            healthAggregator ??= new DefaultHealthAggregator();
+            contributors ??= new List<IHealthContributor>() { new DiskSpaceContributor(new DiskSpaceContributorOptions(configuration)) };
             var ep = new HealthEndpoint(options, healthAggregator, contributors, CreateLogger<HealthEndpoint>(loggerFactory));
             var handler = new HealthHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<HealthHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
@@ -198,7 +198,7 @@ namespace Steeltoe.Management.Endpoint
                 return;
             }
 
-            contributors = contributors ?? new List<IInfoContributor>() { new GitInfoContributor(), new AppSettingsInfoContributor(configuration) };
+            contributors ??= new List<IInfoContributor>() { new GitInfoContributor(), new AppSettingsInfoContributor(configuration) };
             var ep = new InfoEndpoint(options, contributors, CreateLogger<InfoEndpoint>(loggerFactory));
             var handler = new InfoHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<InfoHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
@@ -228,7 +228,7 @@ namespace Steeltoe.Management.Endpoint
             }
 
             _mgmtOptions.RegisterEndpointOptions(configuration, options);
-            threadDumper = threadDumper ?? new ThreadDumper(options);
+            threadDumper ??= new ThreadDumper(options);
             IActuatorHandler handler;
 
             switch (version)
@@ -268,7 +268,7 @@ namespace Steeltoe.Management.Endpoint
         {
             var options = new HttpTraceEndpointOptions(configuration);
             _mgmtOptions.RegisterEndpointOptions(configuration, options);
-            traceRepository = traceRepository ?? new HttpTraceDiagnosticObserver(options, CreateLogger<HttpTraceDiagnosticObserver>(loggerFactory));
+            traceRepository ??= new HttpTraceDiagnosticObserver(options, CreateLogger<HttpTraceDiagnosticObserver>(loggerFactory));
             DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
             var ep = new HttpTraceEndpoint(options, traceRepository, CreateLogger<HttpTraceEndpoint>(loggerFactory));
             var handler = new HttpTraceHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<HttpTraceHandler>(loggerFactory));
@@ -288,7 +288,7 @@ namespace Steeltoe.Management.Endpoint
         {
             var options = new EnvEndpointOptions(configuration);
             _mgmtOptions.RegisterEndpointOptions(configuration, options);
-            hostingEnvironment = hostingEnvironment ?? new DefaultHostingEnvironment("development");
+            hostingEnvironment ??= new DefaultHostingEnvironment("development");
             var ep = new EnvEndpoint(options, configuration, hostingEnvironment, CreateLogger<EnvEndpoint>(loggerFactory));
             var handler = new EnvHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<EnvHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
@@ -359,7 +359,7 @@ namespace Steeltoe.Management.Endpoint
         {
             var options = new TraceEndpointOptions(configuration);
             _mgmtOptions.RegisterEndpointOptions(configuration, options);
-            traceRepository = traceRepository ?? new TraceDiagnosticObserver(options, CreateLogger<TraceDiagnosticObserver>(loggerFactory));
+            traceRepository ??= new TraceDiagnosticObserver(options, CreateLogger<TraceDiagnosticObserver>(loggerFactory));
             DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
             var ep = new TraceEndpoint(options, traceRepository, CreateLogger<TraceEndpoint>(loggerFactory));
             var handler = new TraceHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<TraceHandler>(loggerFactory));

@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             foreach (var epPath in epPaths)
             {
                 var psPath = request.Path;
-                if (psPath.StartsWithSegments(epPath, out string remaining) && !string.IsNullOrEmpty(remaining))
+                if (psPath.StartsWithSegments(epPath, _mgmtOptions.Select(p => p.Path), out var remaining) && !string.IsNullOrEmpty(remaining))
                 {
                     return remaining.TrimStart('/');
                 }
