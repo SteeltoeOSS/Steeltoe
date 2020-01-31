@@ -13,7 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{7B896F
 		..\..\sharedproject.props = ..\..\sharedproject.props
 		..\..\sharedtest.props = ..\..\sharedtest.props
 		..\..\stylecop.json = ..\..\stylecop.json
-		..\..\targetframework.props = ..\..\targetframework.props
 		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
@@ -24,6 +23,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Base.Test", "test\Base.Test\Steeltoe.Messaging.Base.Test.csproj", "{80DC697C-BA47-4F25-A741-FD5464C71F06}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChannelBenchmark", "test\Benchmarks\Channel\ChannelBenchmark.csproj", "{5F0DAE03-0CBD-4576-ACDD-0026A82E7760}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{2134CB62-4A32-4A3F-9AA5-C06B603D38FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{E5777518-72D9-4AB5-815C-AF9474BBFDEE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "..\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Abstractions", "..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj", "{B0931691-6632-41C0-8175-539885BD5775}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +54,18 @@ Global
 		{5F0DAE03-0CBD-4576-ACDD-0026A82E7760}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F0DAE03-0CBD-4576-ACDD-0026A82E7760}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F0DAE03-0CBD-4576-ACDD-0026A82E7760}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0931691-6632-41C0-8175-539885BD5775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0931691-6632-41C0-8175-539885BD5775}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0931691-6632-41C0-8175-539885BD5775}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0931691-6632-41C0-8175-539885BD5775}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,6 +75,9 @@ Global
 		{2C177BBD-9DAB-4926-BDDD-6A94C2F1DAE9} = {6B21DB1B-B017-4432-8F04-55CC34DE524C}
 		{80DC697C-BA47-4F25-A741-FD5464C71F06} = {D77F3F56-2B76-45CC-A3DF-6B4C46F09546}
 		{5F0DAE03-0CBD-4576-ACDD-0026A82E7760} = {D77F3F56-2B76-45CC-A3DF-6B4C46F09546}
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE} = {2134CB62-4A32-4A3F-9AA5-C06B603D38FB}
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9} = {2134CB62-4A32-4A3F-9AA5-C06B603D38FB}
+		{B0931691-6632-41C0-8175-539885BD5775} = {2134CB62-4A32-4A3F-9AA5-C06B603D38FB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7FBBA8CC-A3A6-4965-A47D-9C88091F1D84}
