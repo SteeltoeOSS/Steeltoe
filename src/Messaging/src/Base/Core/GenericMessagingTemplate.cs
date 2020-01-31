@@ -452,7 +452,7 @@ namespace Steeltoe.Messaging.Core
                     // Log
                 }
 
-                return replyMessage;
+                return !TimedOut ? replyMessage : null;
             }
 
             public ValueTask<IMessage> ReceiveAsync(CancellationToken cancellationToken = default)
