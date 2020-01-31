@@ -17,6 +17,7 @@ using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web;
@@ -57,9 +58,9 @@ namespace Steeltoe.Management.Endpoint.Handler
                 var psPath = context.Request.Path;
                 var epPath = _endpoint.Path;
 
-                if (psPath.StartsWithSegments(epPath, out string remaining) && !string.IsNullOrEmpty(remaining))
+                if (psPath.StartsWithSegments(epPath, _mgmtOptions.Select(p => p.Path), out var remaining) && !string.IsNullOrEmpty(remaining))
                 {
-                    string loggerName = remaining.TrimStart('/');
+                    var loggerName = remaining.TrimStart('/');
 
                     var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.InputStream);
 
