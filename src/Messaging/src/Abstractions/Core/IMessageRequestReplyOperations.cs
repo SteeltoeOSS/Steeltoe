@@ -21,7 +21,7 @@ namespace Steeltoe.Messaging.Core
     /// <summary>
     /// Operations for sending messages to and receiving the reply from a destination.
     /// </summary>
-    /// <typeparam name="D">type type of the destination</typeparam>
+    /// <typeparam name="D">the type of the destination</typeparam>
     public interface IMessageRequestReplyOperations<D>
     {
         /// <summary>
