@@ -484,9 +484,7 @@ namespace Steeltoe.Messaging.Core
 
             public bool Send(IMessage message, int timeout)
             {
-                replyMessage = message;
                 var alreadyReceivedReply = HasReceived;
-                replyLatch.Signal();
 
                 string errorDescription = null;
                 if (TimedOut)
@@ -502,6 +500,12 @@ namespace Steeltoe.Messaging.Core
                     errorDescription = "Reply message received but the receiving thread has exited due to " +
                             "an exception while sending the request message";
                 }
+                else
+                {
+                    replyMessage = message;
+                }
+
+                replyLatch.Signal();
 
                 if (errorDescription != null && throwExceptionOnLateReply)
                 {
@@ -513,7 +517,7 @@ namespace Steeltoe.Messaging.Core
 
             public ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken = default)
             {
-                return new ValueTask<bool>(Send(message));
+                return new ValueTask<bool>(Send(message, -1));
             }
         }
     }

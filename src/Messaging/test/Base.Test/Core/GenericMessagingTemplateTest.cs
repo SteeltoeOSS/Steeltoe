@@ -334,7 +334,7 @@ namespace Steeltoe.Messaging.Core.Test
             {
                 try
                 {
-                    Thread.Sleep(500);
+                    Thread.Sleep(1000);
                     var replyChannel = (IMessageChannel)message.Headers.ReplyChannel;
                     replyChannel.Send(new GenericMessage<string>("response"));
                     Failure = new InvalidOperationException("Expected exception");
