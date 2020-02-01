@@ -1,6 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <Import Project="..\..\..\..\versions.props" />
   
   <PropertyGroup>
     <Description>Steeltoe Messaging Abstractions</Description>
@@ -11,6 +9,7 @@
     <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
   </PropertyGroup>
   
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
