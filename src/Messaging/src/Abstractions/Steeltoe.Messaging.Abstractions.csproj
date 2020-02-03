@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <Description>Steeltoe Messaging Abstractions</Description>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Steeltoe.Messaging</RootNamespace>
+    <AssemblyName>Steeltoe.Messaging.Abstractions</AssemblyName>
+    <PackageId>Steeltoe.Messaging.Abstractions</PackageId>
+    <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+  
+</Project>

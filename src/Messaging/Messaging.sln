@@ -1,0 +1,85 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6B21DB1B-B017-4432-8F04-55CC34DE524C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D77F3F56-2B76-45CC-A3DF-6B4C46F09546}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{7B896FC9-32DD-4A89-B09B-1E34674CEFEC}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\nuget.config = ..\..\nuget.config
+		..\..\sharedproject.props = ..\..\sharedproject.props
+		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\stylecop.json = ..\..\stylecop.json
+		..\..\versions.props = ..\..\versions.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Abstractions", "src\Abstractions\Steeltoe.Messaging.Abstractions.csproj", "{482680D5-D36C-4E63-9E43-D35B00492BA5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Base", "src\Base\Steeltoe.Messaging.Base.csproj", "{2C177BBD-9DAB-4926-BDDD-6A94C2F1DAE9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Base.Test", "test\Base.Test\Steeltoe.Messaging.Base.Test.csproj", "{80DC697C-BA47-4F25-A741-FD5464C71F06}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChannelBenchmark", "test\Benchmarks\Channel\ChannelBenchmark.csproj", "{5F0DAE03-0CBD-4576-ACDD-0026A82E7760}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{2134CB62-4A32-4A3F-9AA5-C06B603D38FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{E5777518-72D9-4AB5-815C-AF9474BBFDEE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "..\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Abstractions", "..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj", "{B0931691-6632-41C0-8175-539885BD5775}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{482680D5-D36C-4E63-9E43-D35B00492BA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{482680D5-D36C-4E63-9E43-D35B00492BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{482680D5-D36C-4E63-9E43-D35B00492BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{482680D5-D36C-4E63-9E43-D35B00492BA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C177BBD-9DAB-4926-BDDD-6A94C2F1DAE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C177BBD-9DAB-4926-BDDD-6A94C2F1DAE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C177BBD-9DAB-4926-BDDD-6A94C2F1DAE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C177BBD-9DAB-4926-BDDD-6A94C2F1DAE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80DC697C-BA47-4F25-A741-FD5464C71F06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80DC697C-BA47-4F25-A741-FD5464C71F06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80DC697C-BA47-4F25-A741-FD5464C71F06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80DC697C-BA47-4F25-A741-FD5464C71F06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F0DAE03-0CBD-4576-ACDD-0026A82E7760}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F0DAE03-0CBD-4576-ACDD-0026A82E7760}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F0DAE03-0CBD-4576-ACDD-0026A82E7760}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F0DAE03-0CBD-4576-ACDD-0026A82E7760}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0931691-6632-41C0-8175-539885BD5775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0931691-6632-41C0-8175-539885BD5775}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0931691-6632-41C0-8175-539885BD5775}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0931691-6632-41C0-8175-539885BD5775}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{482680D5-D36C-4E63-9E43-D35B00492BA5} = {6B21DB1B-B017-4432-8F04-55CC34DE524C}
+		{2C177BBD-9DAB-4926-BDDD-6A94C2F1DAE9} = {6B21DB1B-B017-4432-8F04-55CC34DE524C}
+		{80DC697C-BA47-4F25-A741-FD5464C71F06} = {D77F3F56-2B76-45CC-A3DF-6B4C46F09546}
+		{5F0DAE03-0CBD-4576-ACDD-0026A82E7760} = {D77F3F56-2B76-45CC-A3DF-6B4C46F09546}
+		{E5777518-72D9-4AB5-815C-AF9474BBFDEE} = {2134CB62-4A32-4A3F-9AA5-C06B603D38FB}
+		{9EA5A7BF-D6CF-4241-B32F-CDEAA93197B9} = {2134CB62-4A32-4A3F-9AA5-C06B603D38FB}
+		{B0931691-6632-41C0-8175-539885BD5775} = {2134CB62-4A32-4A3F-9AA5-C06B603D38FB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7FBBA8CC-A3A6-4965-A47D-9C88091F1D84}
+	EndGlobalSection
+EndGlobal
