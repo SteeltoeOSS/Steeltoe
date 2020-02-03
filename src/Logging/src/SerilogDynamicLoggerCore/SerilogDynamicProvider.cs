@@ -38,7 +38,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         private ConcurrentDictionary<string, LogEventLevel> _runningLevels = new ConcurrentDictionary<string, LogEventLevel>();
         private LogEventLevel? _defaultLevel = null;
         private bool disposed = false;
-        
+
         private IConfiguration _configuration;
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
-            
+
             _configuration = configuration;
 
             _serilogOptions = options ?? new SerilogOptions(configuration);
@@ -86,7 +86,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
-            
+
             _configuration = configuration;
 
             _serilogOptions = options ?? new SerilogOptions(configuration);
