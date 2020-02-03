@@ -58,6 +58,9 @@
     <StyleCopVersion>1.1.118</StyleCopVersion>
 
     <EF6Version>6.3.0</EF6Version>
+
+    <PollyVersion>7.1.1</PollyVersion>
+    <PollyContribVersion>1.0.0</PollyContribVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'netcoreapp3.0'">
     <AspNetCoreVersion>3.0.0</AspNetCoreVersion>
