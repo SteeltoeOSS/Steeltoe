@@ -135,13 +135,18 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal void AddInstanceToVip(string address, InstanceInfo info, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
         {
+            if (info.InstanceId == null)
+            {
+                return;
+            }
+
             lock (_addRemoveInstanceLock)
             {
-                string addressUppper = address.ToUpperInvariant();
-                dict.TryGetValue(addressUppper, out ConcurrentDictionary<string, InstanceInfo> instances);
+                string addressUpper = address.ToUpperInvariant();
+                dict.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo> instances);
                 if (instances == null)
                 {
-                    instances = dict[addressUppper] = new ConcurrentDictionary<string, InstanceInfo>();
+                    instances = dict[addressUpper] = new ConcurrentDictionary<string, InstanceInfo>();
                 }
 
                 instances[info.InstanceId] = info;
