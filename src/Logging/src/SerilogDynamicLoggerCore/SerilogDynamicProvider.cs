@@ -108,20 +108,21 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             _loggerSwitches.GetOrAdd(categoryName, levelSwitch);
 
             var seriloggerConf = new Serilog.LoggerConfiguration();
-            if (_configuration != null && _configuration.GetSection("Serilog:Destructure").Exists())
+            if (_configuration != null)
             {
+                // Avoid re-registering the same sinks registered at global logger
+                // while applying other configurations such as destructuring for every child logger.
                 var confBuilder = new ConfigurationBuilder();
-                confBuilder.AddInMemoryCollection(_configuration.GetSection("Serilog")
-                    .AsEnumerable().Where((kv) => kv.Key.StartsWith("Serilog:Destructure") || kv.Key.StartsWith("Serilog:Using")));
+                confBuilder.AddInMemoryCollection(_configuration.GetSection(_serilogOptions.ConfigPath)
+                    .AsEnumerable().Where((kv) => !_serilogOptions.FullnameExclusions.Any(key => kv.Key.StartsWith(key))));
                 seriloggerConf = seriloggerConf.ReadFrom.Configuration(confBuilder.Build());
             }
 
-            var serilogger = seriloggerConf.MinimumLevel.ControlledBy(levelSwitch)
+            var serilogger = seriloggerConf
                 .MinimumLevel.ControlledBy(levelSwitch)
                 .WriteTo.Logger(_globalLogger)
                 .CreateLogger();
             var factory = new SerilogLoggerFactory(serilogger, true);
-
             return _loggers.GetOrAdd(categoryName, factory.CreateLogger(categoryName));
         }
 

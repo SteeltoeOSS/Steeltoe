@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Serilog.Events;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 {
@@ -23,7 +24,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
     /// </summary>
     public class SerilogOptions : ISerilogOptions
     {
-        private const string CONFIG_PATH = "Serilog";
+        public string ConfigPath => "Serilog";
 
         /// <summary>
         /// Gets or sets the minimum level for the root logger (and the "Default").
@@ -31,9 +32,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// </summary>
         public MinimumLevel MinimumLevel { get; set; }
 
+        public List<string> SubloggerConfigKeyExclusions { get; set; }
+
         public SerilogOptions(IConfiguration configuration)
         {
-            var section = configuration.GetSection(CONFIG_PATH);
+            var section = configuration.GetSection(ConfigPath);
             section.Bind(this);
             if (MinimumLevel == null)
             {
@@ -43,7 +46,15 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                     Override = new Dictionary<string, LogEventLevel>()
                 };
             }
+
+            if (SubloggerConfigKeyExclusions == null)
+            {
+                SubloggerConfigKeyExclusions = new[] { "WriteTo", "MinimumLevel" }.ToList();
+            }
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S2365:Properties should not make collection or array copies", Justification = "Minimal overhead")]
+        public List<string> FullnameExclusions => SubloggerConfigKeyExclusions?.Select(key => ConfigPath + ":" + key).ToList();
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

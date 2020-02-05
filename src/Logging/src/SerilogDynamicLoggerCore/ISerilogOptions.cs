@@ -12,10 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 {
     public interface ISerilogOptions
     {
+       string ConfigPath { get; }
+
        MinimumLevel MinimumLevel { get; set; }
+
+       List<string> SubloggerConfigKeyExclusions { get; set; }
+
+       List<string> FullnameExclusions { get; }
     }
 }
