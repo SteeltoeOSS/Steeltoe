@@ -32,7 +32,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// </summary>
         public MinimumLevel MinimumLevel { get; set; }
 
-        public List<string> SubloggerConfigKeyExclusions { get; set; }
+        public IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
 
         public SerilogOptions(IConfiguration configuration)
         {
@@ -49,12 +49,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
             if (SubloggerConfigKeyExclusions == null)
             {
-                SubloggerConfigKeyExclusions = new[] { "WriteTo", "MinimumLevel" }.ToList();
+                SubloggerConfigKeyExclusions = new List<string> { "WriteTo", "MinimumLevel" };
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S2365:Properties should not make collection or array copies", Justification = "Minimal overhead")]
-        public List<string> FullnameExclusions => SubloggerConfigKeyExclusions?.Select(key => ConfigPath + ":" + key).ToList();
+        public IEnumerable<string> FullnameExclusions => SubloggerConfigKeyExclusions?.Select(key => ConfigPath + ":" + key);
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

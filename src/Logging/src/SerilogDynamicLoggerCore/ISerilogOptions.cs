@@ -22,8 +22,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
        MinimumLevel MinimumLevel { get; set; }
 
-       List<string> SubloggerConfigKeyExclusions { get; set; }
+       IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
 
-       List<string> FullnameExclusions { get; }
+       IEnumerable<string> FullnameExclusions { get; }
     }
 }
