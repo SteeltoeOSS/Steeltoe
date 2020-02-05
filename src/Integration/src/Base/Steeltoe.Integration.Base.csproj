@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <Description>Steeltoe Integration Base</Description>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Steeltoe.Integration</RootNamespace>
+    <AssemblyName>Steeltoe.Integration.Base</AssemblyName>
+    <PackageId>Steeltoe.Integration.Base</PackageId>
+    <PackageTags>Integration, ASPNET Core, Spring, Spring Cloud</PackageTags>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Abstractions\Steeltoe.Integration.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Integration.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Polly" Version="$(PollyVersion)" />
+    <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="$(PollyContribVersion)" />
+  </ItemGroup>
+</Project>
