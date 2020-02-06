@@ -16,8 +16,5 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public interface IPrometheusOptions : IEndpointOptions
     {
-        string IngressIgnorePattern { get; }
-
-        string EgressIgnorePattern { get; }
     }
 }
