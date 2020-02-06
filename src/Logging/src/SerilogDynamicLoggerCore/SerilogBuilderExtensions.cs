@@ -74,7 +74,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                     Serilog.Log.Logger = logger;
                 }
 
-                services.AddSingleton<IDynamicLoggerProvider>(sp => new SerilogDynamicProvider(sp.GetRequiredService<IConfiguration>(), logger, levelSwitch));
+                services.AddSingleton<IDynamicLoggerProvider>(sp => new SerilogDynamicProvider(sp.GetRequiredService<IConfiguration>(), serilogOptions, logger, levelSwitch));
                 services.AddSingleton<ILoggerFactory>(sp => new SerilogDynamicLoggerFactory(sp.GetRequiredService<IDynamicLoggerProvider>()));
             });
 
@@ -110,7 +110,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                     Serilog.Log.Logger = logger;
                 }
 
-                services.AddSingleton<IDynamicLoggerProvider>(sp => new SerilogDynamicProvider(sp.GetRequiredService<IConfiguration>(), logger, levelSwitch));
+                services.AddSingleton<IDynamicLoggerProvider>(sp => new SerilogDynamicProvider(sp.GetRequiredService<IConfiguration>(), serilogOptions, logger, levelSwitch));
                 services.AddSingleton<ILoggerFactory>(sp => new SerilogDynamicLoggerFactory(sp.GetRequiredService<IDynamicLoggerProvider>()));
             });
 
