@@ -23,21 +23,21 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public class PrometheusScraperEndpoint : AbstractEndpoint<string>
     {
-        private readonly ILogger<MetricsEndpoint> _logger;
+        private readonly ILogger<PrometheusScraperEndpoint> _logger;
         private readonly IStats _stats;
 
-        public PrometheusScraperEndpoint(IPrometheusOptions options, IStats stats,  ILogger<MetricsEndpoint> logger = null)
+        public PrometheusScraperEndpoint(IPrometheusOptions options, IStats stats,  ILogger<PrometheusScraperEndpoint> logger = null)
             : base(options)
         {
             _stats = stats ?? throw new ArgumentNullException(nameof(stats));
             _logger = logger;
         }
 
-        public new IPrometheusOptions Options
+        public new IEndpointOptions Options
         {
             get
             {
-                return options as IPrometheusOptions;
+                return options as IEndpointOptions;
             }
         }
 

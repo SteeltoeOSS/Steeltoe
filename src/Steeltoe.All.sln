@@ -256,6 +256,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.StubBinder1", "Stream\test\StubBinder1\Steeltoe.Stream.StubBinder1.csproj", "{846CE4E4-C439-4B9A-8EF2-A1C8DEF5AAB3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.StubBinder2", "Stream\test\StubBinder2\Steeltoe.Stream.StubBinder2.csproj", "{5AE1F2D6-0D9B-4F9B-A47F-6063CD964805}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Hosting.Test", "Common\test\Common.Hosting.Test\Steeltoe.Common.Hosting.Test.csproj", "{BA80CEAD-02A2-480D-93F4-907B01BDB219}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
