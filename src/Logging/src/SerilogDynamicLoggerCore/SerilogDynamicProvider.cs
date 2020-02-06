@@ -1,4 +1,4 @@
-﻿// Copyright 2017 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,34 +38,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         private ConcurrentDictionary<string, LogEventLevel> _runningLevels = new ConcurrentDictionary<string, LogEventLevel>();
         private LogEventLevel? _defaultLevel = null;
         private bool disposed = false;
+        private IConfiguration _subLoggerConfiguration;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SerilogDynamicProvider"/> class.
-        /// Any Serilog settings can be passed in the IConfiguration as needed.
-        /// </summary>
-        /// <param name="configuration">Serilog readable <see cref="IConfiguration"/></param>
-        /// <param name="options">Subset of Serilog options managed by wrapper<see cref="ISerilogOptions"/></param>
-        public SerilogDynamicProvider(IConfiguration configuration, ISerilogOptions options = null)
+        [Obsolete("Will be removed in a future release; Use SerilogDynamicProvider(IConfiguration, ISerilogOptions, Logger, LoggingLevelSwitch) instead")]
+        public SerilogDynamicProvider(IConfiguration configuration, Logger logger, LoggingLevelSwitch loggingLevelSwitch, ISerilogOptions options = null)
+            : this(configuration, options, logger, loggingLevelSwitch)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            _serilogOptions = options ?? new SerilogOptions(configuration);
-
-            SetFiltersFromOptions();
-
-            // Add a level switch that controls the "Default" level at the root
-            _defaultLevel = _serilogOptions.MinimumLevel.Default;
-            var levelSwitch = new LoggingLevelSwitch(_defaultLevel.Value);
-            _loggerSwitches.GetOrAdd("Default", levelSwitch);
-
-            // Add a global logger that will be the root of all other added loggers
-            _globalLogger = new Serilog.LoggerConfiguration()
-                .MinimumLevel.ControlledBy(levelSwitch)
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger();
         }
 
         /// <summary>
@@ -76,7 +54,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// <param name="logger">Serilog logger<see cref="Serilog.Core.Logger"/></param>
         /// <param name="loggingLevelSwitch">Serilog global log level switch<see cref="Serilog.Core.LoggingLevelSwitch"/></param>
         /// <param name="options">Subset of Serilog options managed by wrapper<see cref="ISerilogOptions"/></param>
-        public SerilogDynamicProvider(IConfiguration configuration, Logger logger, LoggingLevelSwitch loggingLevelSwitch, ISerilogOptions options = null)
+        public SerilogDynamicProvider(IConfiguration configuration, ISerilogOptions options = null, Logger logger = null, LoggingLevelSwitch loggingLevelSwitch = null)
         {
             if (configuration == null)
             {
@@ -85,14 +63,31 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
             _serilogOptions = options ?? new SerilogOptions(configuration);
 
+            _subLoggerConfiguration = new ConfigurationBuilder()
+                .AddInMemoryCollection(configuration.GetSection(_serilogOptions.ConfigPath)
+                .AsEnumerable().Where((kv) => !_serilogOptions.FullnameExclusions.Any(key => kv.Key.StartsWith(key))))
+                .Build();
+
             SetFiltersFromOptions();
 
             // Add a level switch that controls the "Default" level at the root
-            _defaultLevel = loggingLevelSwitch.MinimumLevel;
+            if (loggingLevelSwitch == null)
+            {
+                _defaultLevel = _serilogOptions.MinimumLevel.Default;
+                loggingLevelSwitch = new LoggingLevelSwitch(_defaultLevel.Value);
+            }
+            else
+            {
+                _defaultLevel = loggingLevelSwitch.MinimumLevel;
+            }
+
             _loggerSwitches.GetOrAdd("Default", loggingLevelSwitch);
 
             // Add a global logger that will be the root of all other added loggers
-            _globalLogger = logger;
+            _globalLogger = logger ?? new Serilog.LoggerConfiguration()
+                .MinimumLevel.ControlledBy(loggingLevelSwitch)
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
         }
 
         public ILogger CreateLogger(string categoryName)
@@ -102,11 +97,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             _loggerSwitches.GetOrAdd(categoryName, levelSwitch);
 
             var serilogger = new Serilog.LoggerConfiguration()
+                .ReadFrom.Configuration(_subLoggerConfiguration)
                 .MinimumLevel.ControlledBy(levelSwitch)
                 .WriteTo.Logger(_globalLogger)
                 .CreateLogger();
             var factory = new SerilogLoggerFactory(serilogger, true);
-
             return _loggers.GetOrAdd(categoryName, factory.CreateLogger(categoryName));
         }
 
