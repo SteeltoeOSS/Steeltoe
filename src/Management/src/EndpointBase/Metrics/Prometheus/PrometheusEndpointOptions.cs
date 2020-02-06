@@ -19,15 +19,11 @@ namespace Steeltoe.Management.Endpoint.Metrics
     public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusOptions
     {
         internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:prometheus";
-        internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
-        internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions";
 
         public PrometheusEndpointOptions()
             : base()
         {
             Id = "prometheus";
-            IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
-            EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
         }
 
         public PrometheusEndpointOptions(IConfiguration config)
@@ -37,20 +33,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             {
                 Id = "prometheus";
             }
-
-            if (string.IsNullOrEmpty(IngressIgnorePattern))
-            {
-                IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
-            }
-
-            if (string.IsNullOrEmpty(EgressIgnorePattern))
-            {
-                EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
-            }
         }
-
-        public string IngressIgnorePattern { get; set; }
-
-        public string EgressIgnorePattern { get; set; }
     }
 }

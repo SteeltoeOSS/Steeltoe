@@ -74,6 +74,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IPolledDiagnosticSource, CLRRuntimeSource>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+
+            var metricsOptions = new MetricsEndpointOptions(config);
+            services.TryAddSingleton<IMetricsOptions>(metricsOptions);
+
             var options = new PrometheusEndpointOptions(config);
             services.TryAddSingleton<IPrometheusOptions>(options);
             services.RegisterEndpointOptions(options);

@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
     {
         private readonly RequestDelegate _next;
 
-        public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MetricsEndpointMiddleware> logger = null)
+        public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, null, false, logger)
         {
             _next = next;
