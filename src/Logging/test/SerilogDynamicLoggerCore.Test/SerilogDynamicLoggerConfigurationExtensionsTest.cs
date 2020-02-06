@@ -32,7 +32,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
                 { "Serilog:MinimumLevel:Default", "Error" },
                 { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
                 { "Serilog:MinimumLevel:Override:Steeltoe.Extensions", "Verbose" },
-                { "Serilog:MinimumLevel:Override:Steeltoe", "Information" }
+                { "Serilog:MinimumLevel:Override:Steeltoe", "Information" },
+                { "Serilog:SubloggerConfigKeyExclusions:0", "Enrichers" },
+                { "Serilog:SubloggerConfigKeyExclusions:1", "WriteTo" },
+                { "Serilog:SubloggerConfigKeyExclusions:2", "MinimumLevel" },
             };
             var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
 
@@ -44,6 +47,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             Assert.Equal(LogEventLevel.Warning, serilogOptions.MinimumLevel.Override["Microsoft"]);
             Assert.Equal(LogEventLevel.Information, serilogOptions.MinimumLevel.Override["Steeltoe"]);
             Assert.Equal(LogEventLevel.Verbose, serilogOptions.MinimumLevel.Override["Steeltoe.Extensions"]);
+            Assert.Collection<string>(
+                serilogOptions.SubloggerConfigKeyExclusions,
+                x => Assert.Contains("Enrichers", x),
+                x => Assert.Contains("WriteTo", x),
+                x => Assert.Contains("MinimumLevel", x));
         }
 
         [Fact]
@@ -58,6 +66,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 
             // assert
             Assert.Equal(LogEventLevel.Verbose, serilogOptions.MinimumLevel.Default);
+            Assert.Collection<string>(
+              serilogOptions.SubloggerConfigKeyExclusions,
+              x => Assert.Contains("WriteTo", x),
+              x => Assert.Contains("MinimumLevel", x));
         }
     }
 }
