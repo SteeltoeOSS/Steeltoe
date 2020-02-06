@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.Mtls
 {
+    /// <summary>
+    /// This class is based on <see cref="CertificateAuthenticationHandler" />, but allows side-loading a root CA
+    /// </summary>
     internal class STCertificateAuthenticationHandler : AuthenticationHandler<STCertificateAuthenticationOptions>
     {
         private static readonly Oid ClientCertificateOid = new Oid("1.3.6.1.5.5.7.3.2");
@@ -88,7 +91,10 @@ namespace Steeltoe.Security.Authentication.Mtls
                     ChainPolicy = chainPolicy
                 };
 
+                // begin deviation
                 var certificateIsValid = IsChainValid(chain, clientCertificate);
+                // end deviation
+
                 if (!certificateIsValid)
                 {
                     var chainErrors = new List<string>();
@@ -142,6 +148,12 @@ namespace Steeltoe.Security.Authentication.Mtls
             return HandleForbiddenAsync(properties);
         }
 
+        /// <summary>
+        /// Call chain.Build first, if !isValid then compares root with issuer chain known to this app 
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <param name="certificate"></param>
+        /// <returns></returns>
         private bool IsChainValid(X509Chain chain, X509Certificate2 certificate)
         {
             var isValid = chain.Build(certificate);

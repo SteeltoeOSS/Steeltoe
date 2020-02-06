@@ -26,7 +26,11 @@ namespace ServerApp
                 .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
                 .AddCloudFoundryIdentityCertificate();
 
-            services.AddAuthorization(cfg => cfg.AddPolicy("sameorg", builder => builder.SameOrg()));
+            services.AddAuthorization(cfg =>
+            {
+                cfg.AddPolicy("sameorg", builder => builder.SameOrg());
+                cfg.AddPolicy("samespace", builder => builder.SameSpace());
+            });
 
             services.AddControllersWithViews();
         }

@@ -1,0 +1,13 @@
+﻿Common Name: 98c48808-ba4f-44ad-45d0-a3cb
+Subject Alternative Names: 98c48808-ba4f-44ad-45d0-a3cb, IP Address:10.255.118.211
+Organization Unit: organization:83b1519a-0ead-4fbc-998a-47f6ffe9a5d1
+Valid From: January 28, 2020
+Valid To: January 29, 2020
+Serial Number: c8526ed725f0409471a434011e935391
+
+------
+
+Common Name: Diego Instance Identity Intermediate CA
+Valid From: October 25, 2019
+Valid To: October 24, 2021
+Serial Number: 39ffde73baf95c94816c89df725e36d9dc931f23

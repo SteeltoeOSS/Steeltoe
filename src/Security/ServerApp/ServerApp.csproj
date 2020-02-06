@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\src\Common.Build\Steeltoe.Common.Build.csproj" />
     <ProjectReference Include="..\..\Common\src\Common.Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\src\Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj" />
     <ProjectReference Include="..\src\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" />

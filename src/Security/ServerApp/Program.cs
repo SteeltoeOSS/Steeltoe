@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
+using Steeltoe.Common.Build;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Security.Authentication.CloudFoundry;
 using System;
@@ -13,6 +14,9 @@ namespace ServerApp
     {
         public static void Main(string[] args)
         {
+            var task = new GenerateCertificates();
+            task.Execute();
+
             if (!Platform.IsCloudFoundry)
             {
                 Console.WriteLine("Not running on the platform... using local certs");
