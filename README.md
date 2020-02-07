@@ -77,7 +77,8 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 * [3.0.0](roadmaps/3.0.0.md) - In Progress
 * [2.5.0](roadmaps/2.5.0.md) - In Progress
 * [2.4.0](roadmaps/2.4.0.md) - Released (11/2019)
-   * [2.4.1](https://github.com/SteeltoeOSS/steeltoe/issues?q=is%3Aissue+milestone%3A2.4.1+is%3Aclosed) - Released (1/2020)
+   * [2.4.1](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.4.1) - Released (1/2020)
+   * [2.4.2](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.4.2) - Released (2/2020)
 * [2.3.0](roadmaps/2.3.0.md) - Released (8/2019)
 * [2.2.0](roadmaps/2.2.0.md) - Released (3/2019)
 * [2.1.0](roadmaps/2.1.0.md) - Released (8/2018)
