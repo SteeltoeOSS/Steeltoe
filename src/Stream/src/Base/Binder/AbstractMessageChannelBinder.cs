@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Channel;
