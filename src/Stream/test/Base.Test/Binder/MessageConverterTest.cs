@@ -69,6 +69,9 @@ namespace Steeltoe.Stream.Binder
             Assert.Null(extractedWithRequestHeaders["baz"]);
             Assert.Equal("text/plain", extractedWithRequestHeaders["contentType"]);
             Assert.NotNull(extractedWithRequestHeaders["timestamp"]);
+            Assert.NotNull(extractedWithRequestHeaders["id"]);
+            Assert.IsType<long>(extractedWithRequestHeaders["timestamp"]);
+            Assert.IsType<Guid>(extractedWithRequestHeaders["id"]);
         }
 
         [Fact]
