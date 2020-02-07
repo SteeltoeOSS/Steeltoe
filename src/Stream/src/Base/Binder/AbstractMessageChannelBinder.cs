@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Channel;
@@ -28,6 +27,7 @@ using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Stream.Binder
@@ -466,7 +466,7 @@ namespace Steeltoe.Stream.Binder
             object value;
             if (properties is string)
             {
-                value = JsonConvert.DeserializeObject((string)properties, typeof(Dictionary<string, object>));
+                value = JsonSerializer.Deserialize<Dictionary<string, object>>((string)properties);
             }
             else
             {
