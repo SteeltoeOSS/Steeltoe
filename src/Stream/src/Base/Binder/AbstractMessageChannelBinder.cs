@@ -466,7 +466,7 @@ namespace Steeltoe.Stream.Binder
             object value;
             if (properties is string)
             {
-                value = JsonConvert.DeserializeObject((string)properties, typeof(Dictionary<string, object>));
+                value = JsonSerializer.Deserialize<Dictionary<string, object>>((string)properties);
             }
             else
             {
