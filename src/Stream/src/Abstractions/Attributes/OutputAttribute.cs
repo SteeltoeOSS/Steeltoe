@@ -25,16 +25,8 @@ namespace Steeltoe.Stream.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="OutputAttribute"/> class.
         /// </summary>
-        public OutputAttribute()
-        {
-            Name = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OutputAttribute"/> class.
-        /// </summary>
         /// <param name="name">the binding target name</param>
-        public OutputAttribute(string name)
+        public OutputAttribute(string name = null)
         {
             Name = name;
         }

@@ -25,16 +25,8 @@ namespace Steeltoe.Stream.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="InputAttribute"/> class.
         /// </summary>
-        public InputAttribute()
-        {
-            Name = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InputAttribute"/> class.
-        /// </summary>
         /// <param name="name">the binding target name</param>
-        public InputAttribute(string name)
+        public InputAttribute(string name = null)
         {
             Name = name;
         }
