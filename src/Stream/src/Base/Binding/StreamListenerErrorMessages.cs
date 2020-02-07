@@ -18,7 +18,7 @@ namespace Steeltoe.Stream.Binding
     {
         public const string INVALID_INBOUND_NAME = "The Input attribute must have the name of an input as value";
 
-        public const string INVALID_OUTBOUND_NAME = "The Output attribute must have the name of an input as value";
+        public const string INVALID_OUTBOUND_NAME = "The Output attribute must have the name of an output as value";
 
         public const string ATLEAST_ONE_OUTPUT = "At least one output must be specified";
 
