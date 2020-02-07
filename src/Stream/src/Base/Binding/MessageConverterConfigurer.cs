@@ -320,8 +320,8 @@ namespace Steeltoe.Stream.Binding
 
             /*
              * NOTE: The below code for BINDER_ORIGINAL_CONTENT_TYPE is to support legacy
-             * message format established in 1.x version of the framework and should/will
-             * no longer be supported in 3.x
+             * message format established in 1.x version of the Java Streams framework and should/will
+             * no longer be supported in 3.x of Java Streams
              */
 
             if (message.Headers.ContainsKey(BinderHeaders.BINDER_ORIGINAL_CONTENT_TYPE))
