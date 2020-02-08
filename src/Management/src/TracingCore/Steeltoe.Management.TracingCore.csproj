@@ -15,7 +15,6 @@
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
-    <ProjectReference Include="..\TracingBase\Steeltoe.Management.TracingBase.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Extensions.Logging.DynamicLogger" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />

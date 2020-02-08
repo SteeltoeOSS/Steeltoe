@@ -16,7 +16,6 @@
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj" />
-    <ProjectReference Include="..\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">

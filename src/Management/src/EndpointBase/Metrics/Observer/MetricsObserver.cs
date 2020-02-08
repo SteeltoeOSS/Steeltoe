@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             return totalMilliseconds / 1000;
         }
 
-        protected internal virtual bool ShouldIgnoreRequest(string path)
+        protected virtual bool ShouldIgnoreRequest1(string path)
         {
             if (string.IsNullOrEmpty(path))
             {

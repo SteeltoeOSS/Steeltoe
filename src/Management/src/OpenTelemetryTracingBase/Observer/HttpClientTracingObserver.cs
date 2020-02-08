@@ -12,45 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OpenCensus.Common;
-using OpenCensus.Trace;
-using OpenCensus.Trace.Propagation;
+using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Trace;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Tracing.Observer
 {
-    public abstract class AspNetCoreTracingObserver : DiagnosticObserver
+    public abstract class HttpClientTracingObserver : DiagnosticObserver
     {
-        private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
-
         protected ITracing Tracing { get; }
 
-        protected ITextFormat Propagation { get; }
+        protected ITextFormat TextFormat { get; }
 
-        protected ITracer Tracer { get; }
+        protected Tracer Tracer { get; }
 
         protected ITracingOptions Options { get; }
 
         protected Regex PathMatcher { get; }
 
-        protected AspNetCoreTracingObserver(string observerName, ITracingOptions options, ITracing tracing, ILogger logger)
-            : base(observerName, DIAGNOSTIC_NAME, logger)
+        protected HttpClientTracingObserver(string observerName, string diagnosticName, ITracingOptions options, ITracing tracing, ILogger logger)
+            : base(observerName, diagnosticName, logger)
         {
             Options = options;
             Tracing = tracing;
-            Propagation = tracing.PropagationComponent.TextFormat;
+            TextFormat = tracing.TextFormat;
             Tracer = tracing.Tracer;
-            PathMatcher = new Regex(options.IngressIgnorePattern);
+            PathMatcher = new Regex(options.EgressIgnorePattern);
         }
 
-        protected /*internal*/ virtual bool ShouldIgnoreRequest(PathString pathString)
+        protected internal virtual bool ShouldIgnoreRequest(string path)
         {
-            string path = pathString.Value;
             if (string.IsNullOrEmpty(path))
             {
                 return false;
@@ -74,28 +69,24 @@ namespace Steeltoe.Management.Tracing.Observer
             return string.Empty;
         }
 
-        protected internal ISpan GetCurrentSpan()
+        protected internal TelemetrySpan GetCurrentSpan()
         {
             var span = Tracer.CurrentSpan;
-            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
-            {
-                return null;
-            }
 
-            return span;
+            return span.Context.IsValid ? span : null;
         }
 
-        public class SpanContext
-        {
-            public SpanContext(ISpan active, IScope activeScope)
-            {
-                Active = active;
-                ActiveScope = activeScope;
-            }
+        //public class SpanContext
+        //{
+        //    public SpanContext(ISpan active, IScope activeScope)
+        //    {
+        //        Active = active;
+        //        ActiveScope = activeScope;
+        //    }
 
-            public ISpan Active { get; }
+        //    public ISpan Active { get; }
 
-            public IScope ActiveScope { get; }
-        }
+        //    public IScope ActiveScope { get; }
+        //}
     }
 }

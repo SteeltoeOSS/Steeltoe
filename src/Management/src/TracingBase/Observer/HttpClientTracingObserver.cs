@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Tracing.Observer
             PathMatcher = new Regex(options.EgressIgnorePattern);
         }
 
-        protected internal virtual bool ShouldIgnoreRequest(string path)
+        protected /*internal*/ virtual bool ShouldIgnoreRequest(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
