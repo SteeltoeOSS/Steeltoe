@@ -1,6 +1,0 @@
-﻿---
-applications:
-- name: mtls-server
-  buildpacks:
-   - dotnet_core_buildpack
-  command: cd ${HOME} && ./ServerApp
