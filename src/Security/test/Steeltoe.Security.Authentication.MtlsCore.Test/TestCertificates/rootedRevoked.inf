@@ -1,6 +1,0 @@
-[NewRequest]
-Subject="CN=Rooted but Revoked,OU=dev,DC=idunno-dev,DC=org"
-Exportable = TRUE
-KeyLength = 2048
-KeySpec = 1
-KeyUsage = 0xA0
