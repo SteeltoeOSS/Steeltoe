@@ -218,7 +218,7 @@ namespace Steeltoe.Stream.Binder
 
             if (message != null && type != null && _messageConverter != null)
             {
-                var targetType = type ?? typeof(object);
+                var targetType = type;
                 var payload = _messageConverter.FromMessage(message, targetType, type);
                 if (payload == null)
                 {
