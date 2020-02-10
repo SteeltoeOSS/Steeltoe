@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Build;
 using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.CloudFoundry;
 using System;
@@ -16,17 +17,7 @@ namespace ClientApp
     {
         public static async Task Main(string[] args)
         {
-            if (!Platform.IsCloudFoundry)
-            {
-                Console.WriteLine("Not running on the platform... using local certs");
-                Environment.SetEnvironmentVariable("CF_INSTANCE_CERT", Path.Combine("Cert", "CF_INSTANCE_CERT.pem"));
-                Environment.SetEnvironmentVariable("CF_INSTANCE_KEY", Path.Combine("Cert", "CF_INSTANCE_KEY.pem"));
-            }
-            else
-            {
-                Console.WriteLine("CF_INSTANCE_CERT: {0}", Environment.GetEnvironmentVariable("CF_INSTANCE_CERT"));
-                Console.WriteLine("CF_INSTANCE_KEY: {0}", Environment.GetEnvironmentVariable("CF_INSTANCE_KEY"));
-            }
+            StartupHelper.UseOrGeneratePlatformCertificates();
 
             var config = new ConfigurationBuilder().AddCloudFoundryContainerIdentity().Build();
 

@@ -9,7 +9,17 @@
   <Import Project="..\..\..\..\sharedproject.props" />
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build.Framework" Version="$(MSFTBuildVersion)" />
+    <!--<PackageReference Include="Microsoft.Build.Framework" Version="$(MSFTBuildVersion)" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="$(MSFTBuildVersion)" />
+    <PackageReference Include="Portable.BouncyCastle" Version="$(BouncyCastleVersion)" />-->
   </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+
 </Project>

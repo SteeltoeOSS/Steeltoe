@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +13,10 @@
     <ProjectReference Include="..\..\Common\src\Common.Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\src\Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj" />
     <ProjectReference Include="..\src\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="GeneratedCertificates\" />
   </ItemGroup>
 
 </Project>

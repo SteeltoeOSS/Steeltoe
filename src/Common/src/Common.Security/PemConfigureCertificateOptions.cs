@@ -31,8 +31,8 @@ namespace Steeltoe.Common.Security
 {
     public class PemConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
     {
-        private IConfiguration _config;
-        private ILogger _logger;
+        private readonly IConfiguration _config;
+        private readonly ILogger _logger;
 
         public PemConfigureCertificateOptions(IConfiguration config, ILogger logger = null)
         {
@@ -70,7 +70,7 @@ namespace Steeltoe.Common.Security
                 .ToList();
 
             var cert = certChain.FirstOrDefault();
-            AsymmetricCipherKeyPair keys = ReadKeys(keyBytes);
+            var keys = ReadKeys(keyBytes);
 
             var pfxBytes = CreatePfxContainer(cert, keys);
             options.Certificate = new MS.X509Certificate2(pfxBytes);
@@ -96,22 +96,18 @@ namespace Steeltoe.Common.Security
             var keyEntry = new AsymmetricKeyEntry(keys.Private);
             pkcs12Store.SetKeyEntry("ServerInstance", keyEntry, new X509CertificateEntry[] { certEntry });
 
-            using (MemoryStream stream = new MemoryStream())
-            {
-                pkcs12Store.Save(stream, null, new SecureRandom());
-                var bytes = stream.ToArray();
-                return Pkcs12Utilities.ConvertToDefiniteLength(bytes);
-            }
+            using var stream = new MemoryStream();
+            pkcs12Store.Save(stream, null, new SecureRandom());
+            var bytes = stream.ToArray();
+            return Pkcs12Utilities.ConvertToDefiniteLength(bytes);
         }
 
         internal AsymmetricCipherKeyPair ReadKeys(byte[] keyBytes)
         {
             try
             {
-                using (var reader = new StreamReader(new MemoryStream(keyBytes)))
-                {
-                    return new PemReader(reader).ReadObject() as AsymmetricCipherKeyPair;
-                }
+                using var reader = new StreamReader(new MemoryStream(keyBytes));
+                return new PemReader(reader).ReadObject() as AsymmetricCipherKeyPair;
             }
             catch (Exception e)
             {
@@ -125,10 +121,8 @@ namespace Steeltoe.Common.Security
         {
             try
             {
-                using (var reader = new StreamReader(new MemoryStream(certBytes)))
-                {
-                    return new PemReader(reader).ReadObject() as X509Certificate;
-                }
+                using var reader = new StreamReader(new MemoryStream(certBytes));
+                return new PemReader(reader).ReadObject() as X509Certificate;
             }
             catch (Exception e)
             {

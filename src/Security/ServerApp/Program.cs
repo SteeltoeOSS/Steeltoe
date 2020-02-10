@@ -14,21 +14,7 @@ namespace ServerApp
     {
         public static void Main(string[] args)
         {
-            var task = new GenerateCertificates();
-            task.Execute();
-
-            if (!Platform.IsCloudFoundry)
-            {
-                Console.WriteLine("Not running on the platform... using local certs");
-                Environment.SetEnvironmentVariable("CF_INSTANCE_CERT", Path.Combine("Cert", "CF_INSTANCE_CERT.pem"));
-                Environment.SetEnvironmentVariable("CF_INSTANCE_KEY", Path.Combine("Cert", "CF_INSTANCE_KEY.pem"));
-            }
-            else
-            {
-                Console.WriteLine("CF_INSTANCE_CERT: {0}", Environment.GetEnvironmentVariable("CF_INSTANCE_CERT"));
-                Console.WriteLine("CF_INSTANCE_KEY: {0}", Environment.GetEnvironmentVariable("CF_INSTANCE_KEY"));
-            }
-
+            StartupHelper.UseOrGeneratePlatformCertificates();
             CreateHostBuilder(args).Build().Run();
         }
 

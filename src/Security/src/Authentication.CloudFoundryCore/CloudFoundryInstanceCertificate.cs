@@ -19,8 +19,8 @@ namespace Steeltoe.Security.Authentication.Mtls
 {
     public class CloudFoundryInstanceCertificate
     {
-        private static readonly string CloudFoundryInstanceCertSubjectRegex =
-            @"^CN=(?<instance>[0-9a-f-]+),\sOU=organization:(?<org>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=app:(?<app>[0-9a-f-]+)$";
+        private const string CloudFoundryInstanceCertSubjectRegex =
+            @"^CN=(?<instance>[0-9a-f-]+),\sOU=organization:(?<org>[0-9a-f-]+),\sOU=space:(?<space>[0-9a-f-]+),\sOU=app:(?<app>[0-9a-f-]+)$";
 
         public static bool TryParse(X509Certificate2 certificate, out CloudFoundryInstanceCertificate cloudFoundryInstanceCertificate)
         {
@@ -33,12 +33,14 @@ namespace Steeltoe.Security.Authentication.Mtls
             var cfInstanceMatch = Regex.Match(certificate.SubjectName.Name, CloudFoundryInstanceCertSubjectRegex);
             if (cfInstanceMatch.Success)
             {
-                cloudFoundryInstanceCertificate = new CloudFoundryInstanceCertificate();
-                cloudFoundryInstanceCertificate.OrgId = cfInstanceMatch.Groups["org"].Value;
-                cloudFoundryInstanceCertificate.SpaceId = cfInstanceMatch.Groups["space"].Value;
-                cloudFoundryInstanceCertificate.AppId = cfInstanceMatch.Groups["app"].Value;
-                cloudFoundryInstanceCertificate.InstanceId = cfInstanceMatch.Groups["instance"].Value;
-                cloudFoundryInstanceCertificate.Certificate = certificate;
+                cloudFoundryInstanceCertificate = new CloudFoundryInstanceCertificate
+                {
+                    OrgId = cfInstanceMatch.Groups["org"].Value,
+                    SpaceId = cfInstanceMatch.Groups["space"].Value,
+                    AppId = cfInstanceMatch.Groups["app"].Value,
+                    InstanceId = cfInstanceMatch.Groups["instance"].Value,
+                    Certificate = certificate
+                };
             }
 
             return cfInstanceMatch.Success;
