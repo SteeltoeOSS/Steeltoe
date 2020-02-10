@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Steeltoe Stream MockBinder</Description>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Steeltoe.Stream.MockBinder</RootNamespace>
+    <AssemblyName>Steeltoe.Stream.MockBinder</AssemblyName>
+    <PackageId>Steeltoe.Stream.MockBinder</PackageId>
+    <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Base\Steeltoe.Stream.Base.csproj" />
+  </ItemGroup>
+
+</Project>
