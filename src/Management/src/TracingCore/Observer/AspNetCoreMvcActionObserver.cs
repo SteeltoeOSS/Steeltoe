@@ -99,10 +99,10 @@ namespace Steeltoe.Management.Tracing.Observer
 
             string spanName = ExtractSpanName(descriptor);
             //  IScope scope = Tracer.SpanBuilder(spanName).StartScopedSpan(out ISpan span);
-            Tracer.StartActiveSpan(spanName, out var span);
+            Tracer.StartActiveSpan(spanName, SpanKind.Server, out var span);
   
             span.PutMvcControllerClass(ExtractControllerName(descriptor))
-                .PutServerSpanKindAttribute()
+             //   .PutServerSpanKindAttribute()
                 .PutMvcControllerAction(ExtractActionName(descriptor));
 
             ActiveValue.Value = span;// new SpanContext(span, scope);

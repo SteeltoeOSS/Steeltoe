@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         private TraceExporterHandler _handler;
 
-        public TraceExporter(ITraceExporterOptions options, ITracing tracing, ILogger<TraceExporter> logger = null)
+        public TraceExporter(ITraceExporterOptions options, Tracing tracing, ILogger<TraceExporter> logger = null)
         {
             _options = options;
             _logger = logger;

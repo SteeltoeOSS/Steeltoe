@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using OpenCensus.Trace;
+using OpenTelemetry.Trace;
+using Steeltoe.Management.Tracing;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Tracing.Test
@@ -35,20 +36,15 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:useShortTraceIds"] = "true",
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(settings);
             return builder.Build();
         }
 
-        protected Span GetCurrentSpan(ITracer tracer)
+        protected TelemetrySpan GetCurrentSpan(Tracer tracer)
         {
             var span = tracer.CurrentSpan;
-            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
-            {
-                return null;
-            }
-
-            return span as Span;
+            return span.Context.IsValid ? span : null;
         }
     }
 }

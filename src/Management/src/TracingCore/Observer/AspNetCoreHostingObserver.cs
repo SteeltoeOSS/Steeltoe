@@ -146,16 +146,16 @@ namespace Steeltoe.Management.Tracing.Observer
                 //scope = Tracer.SpanBuilderWithRemoteParent(spanName, traceContext)
                 //    .StartScopedSpan(out span);
                 //Tracer.StartActiveSpan()
-                Tracer.StartActiveSpan(spanName, traceContext, out span);
+                Tracer.StartActiveSpan(spanName, traceContext, SpanKind.Server, out span);
             }
             else
             {
                 //scope = Tracer.SpanBuilder(spanName)
                 //   .StartScopedSpan(out span);
-                Tracer.StartActiveSpan(spanName, out span);
+                Tracer.StartActiveSpan(spanName, SpanKind.Server, out span);
             }
 
-            span.PutServerSpanKindAttribute()
+            span//.PutServerSpanKindAttribute()
                 .PutHttpRawUrlAttribute(context.Request.GetDisplayUrl())
                 .PutHttpMethodAttribute(context.Request.Method.ToString())
                 .PutHttpPathAttribute(context.Request.Path.ToString())

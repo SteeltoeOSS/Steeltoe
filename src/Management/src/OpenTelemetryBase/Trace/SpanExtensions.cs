@@ -26,11 +26,11 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
             return span;
         }
 
-        public static TelemetrySpan PutServerSpanKindAttribute(this TelemetrySpan span)
-        {
-            span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ServerSpanKind);
-            return span;
-        }
+        //public static TelemetrySpan PutServerSpanKindAttribute(this TelemetrySpan span)
+        //{
+        //    span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ServerSpanKind);
+        //    return span;
+        //}
 
         ////public static ISpan PutHttpUrlAttribute(this ISpan span, string url)
         ////{

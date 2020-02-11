@@ -18,7 +18,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Linq;
 using Xunit;
