@@ -26,11 +26,11 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
             return span;
         }
 
-        ////public static ISpan PutServerSpanKindAttribute(this ISpan span)
-        ////{
-        ////    span.PutAttribute(SpanAttributeConstants.SpanKindKey, AttributeValue.StringAttributeValue(SpanAttributeConstants.ServerSpanKind));
-        ////    return span;
-        ////}
+        public static TelemetrySpan PutServerSpanKindAttribute(this TelemetrySpan span)
+        {
+            span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ServerSpanKind);
+            return span;
+        }
 
         ////public static ISpan PutHttpUrlAttribute(this ISpan span, string url)
         ////{
@@ -62,17 +62,17 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
         ////    return span;
         ////}
 
-        ////public static ISpan PutHttpResponseSizeAttribute(this ISpan span, long size)
-        ////{
-        ////    span.PutAttribute(SpanAttributeConstants.HttpResponseSizeKey, AttributeValue.LongAttributeValue(size));
-        ////    return span;
-        ////}
+        public static TelemetrySpan PutHttpResponseSizeAttribute(this TelemetrySpan span, long size)
+        {
+            span.SetAttribute(SpanAttributeConstants.HttpResponseSizeKey, size);
+            return span;
+        }
 
-        ////public static ISpan PutHttpRequestSizeAttribute(this ISpan span, long size)
-        ////{
-        ////    span.PutAttribute(SpanAttributeConstants.HttpRequestSizeKey, AttributeValue.LongAttributeValue(size));
-        ////    return span;
-        ////}
+        public static TelemetrySpan PutHttpRequestSizeAttribute(this TelemetrySpan span, long size)
+        {
+            span.SetAttribute(SpanAttributeConstants.HttpRequestSizeKey, size);
+            return span;
+        }
 
         public static TelemetrySpan PutErrorAttribute(this TelemetrySpan span, string errorMessage)
         {

@@ -14,11 +14,10 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OpenCensus.Common;
-using OpenCensus.Trace;
-using OpenCensus.Trace.Propagation;
+using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Trace;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Text.RegularExpressions;
 
@@ -32,7 +31,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected ITextFormat Propagation { get; }
 
-        protected ITracer Tracer { get; }
+        protected Tracer Tracer { get; }
 
         protected ITracingOptions Options { get; }
 
@@ -43,7 +42,7 @@ namespace Steeltoe.Management.Tracing.Observer
         {
             Options = options;
             Tracing = tracing;
-            Propagation = tracing.PropagationComponent.TextFormat;
+            Propagation = tracing.TextFormat;
             Tracer = tracing.Tracer;
             PathMatcher = new Regex(options.IngressIgnorePattern);
         }
@@ -74,28 +73,24 @@ namespace Steeltoe.Management.Tracing.Observer
             return string.Empty;
         }
 
-        protected internal ISpan GetCurrentSpan()
+        protected internal TelemetrySpan GetCurrentSpan()
         {
             var span = Tracer.CurrentSpan;
-            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
-            {
-                return null;
-            }
 
-            return span;
+            return span.Context.IsValid ? span : null;
         }
 
-        public class SpanContext
-        {
-            public SpanContext(ISpan active, IScope activeScope)
-            {
-                Active = active;
-                ActiveScope = activeScope;
-            }
+        //public class SpanContext
+        //{
+        //    public SpanContext(ISpan active, IScope activeScope)
+        //    {
+        //        Active = active;
+        //        ActiveScope = activeScope;
+        //    }
 
-            public ISpan Active { get; }
+        //    public ISpan Active { get; }
 
-            public IScope ActiveScope { get; }
-        }
+        //    public IScope ActiveScope { get; }
+        //}
     }
 }

@@ -19,7 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using Steeltoe.Management.Tracing.Observer;
 using System;
 
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Tracing
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
-            services.TryAddSingleton<ITracing, OpenCensusTracing>();
+            services.TryAddSingleton<ITracing, OpenTelemetryTracing>();
             services.TryAddSingleton<IDynamicMessageProcessor, TracingLogProcessor>();
         }
     }

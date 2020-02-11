@@ -17,7 +17,7 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
 {
     public interface ITags
     {
-        //ITagger Tagger { get; }
+        //Tagger Tagger { get; }
 
         //ITagPropagationComponent TagPropagationComponent { get; }
 

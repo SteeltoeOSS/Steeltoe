@@ -20,4 +20,8 @@
     <PackageReference Include="Steeltoe.Extensions.Logging.DynamicLogger" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.TracingBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
+    <ProjectReference Include="..\OpenTelemetryTracingBase\Steeltoe.Management.OpenTelemetryTracingBase.csproj" />
+  </ItemGroup>
 </Project>
