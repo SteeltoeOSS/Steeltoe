@@ -17,11 +17,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
+using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Metrics
@@ -51,8 +50,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
 
-            services.TryAddSingleton<IStats, OpenCensusStats>();
-            services.TryAddSingleton<ITags, OpenCensusTags>();
+        //    services.TryAddSingleton<IStats, OpenCensusStats>();
+          //  services.TryAddSingleton<ITags, OpenCensusTags>();
 
             services.TryAddSingleton<MetricsEndpoint>();
         }

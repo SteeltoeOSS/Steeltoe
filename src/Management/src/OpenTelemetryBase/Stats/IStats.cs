@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using OpenTelemetry.Metrics;
 
-namespace Steeltoe.Management.Exporter.Tracing
+namespace Steeltoe.Management.OpenTelemetry.Stats
 {
-    [Obsolete("Use OpenCensus project packages")]
-    public interface ITraceExporter
+    public interface IStats
     {
-        void Start();
+        Meter Meter { get; }
+        //IStatsRecorder StatsRecorder { get; }
 
-        void Stop();
+        //IViewManager ViewManager { get; }
+
+        //StatsCollectionState State { get; set; }
     }
 }

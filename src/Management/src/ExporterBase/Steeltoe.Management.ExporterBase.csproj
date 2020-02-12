@@ -10,7 +10,6 @@
   
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(CI_BUILD)' == ''">

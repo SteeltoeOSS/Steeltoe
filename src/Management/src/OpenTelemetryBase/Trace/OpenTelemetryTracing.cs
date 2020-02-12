@@ -16,6 +16,7 @@ using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Trace.Configuration;
 using OpenTelemetry.Trace.Samplers;
+using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Trace
 {
@@ -23,7 +24,7 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
     {
         private readonly ITracingOptions options;
 
-        public OpenTelemetryTracing(ITracingOptions options, Sampler sampler = null)
+        public OpenTelemetryTracing(ITracingOptions options, Sampler sampler = null, Action<TracerBuilder> configureExporter = null)
         {
             this.options = options;
 
@@ -51,9 +52,16 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
                      options.MaxNumberOfMessageEvents,
                      options.MaxNumberOfLinks));
                 }
+
+                if (configureExporter != null)
+                {
+                    configureExporter(builder);
+                    //builder.AddExporter(configureExporter);
+                }
+
             });
 
-            _tracer = factory.GetTracer("SteeltoeTracer");
+            _tracer = factory.GetTracer("SteeltoeTracer"); //TODO;: Read from options
         }
 
         //   private readonly ITraceComponent traceComponent = new TraceComponent();

@@ -15,25 +15,24 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenCensus.Exporter.Zipkin;
+using OpenTelemetry.Exporter.Zipkin;
 using System;
 
 namespace Steeltoe.Management.Exporter.Tracing
 {
     public static class ZipkinExporterApplicationBuilderExtensions
     {
-        public static void UseTracingExporter(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+        //public static void UseTracingExporter(this IApplicationBuilder builder)
+        //{
+        //    if (builder == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(builder));
+        //    }
 
-            var service = builder.ApplicationServices.GetRequiredService<ZipkinTraceExporter>();
-            var lifetime = builder.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+        //    var service = builder.ApplicationServices.GetRequiredService<ZipkinTraceExporter>();
+        //    var lifetime = builder.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
 
-            lifetime.ApplicationStopping.Register(() => service.Stop());
-            service.Start();
-        }
+        //  //  service.Start();
+        //}
     }
 }

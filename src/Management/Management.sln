@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B86A4082-6F42-4BFC-A1F2-83CC422AD493}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8B4CE682-9C0B-4849-813B-E43BE098FCE2}"
+	ProjectSection(SolutionItems) = preProject
+		src\TracingCore\TracingServiceCollectionExtensions.cs = src\TracingCore\TracingServiceCollectionExtensions.cs
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{9764636B-4C42-4F38-8074-99C086B8FB74}"
 	ProjectSection(SolutionItems) = preProject
@@ -16,11 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{976463
 		..\..\stylecop.json = ..\..\stylecop.json
 		..\..\targetframework.props = ..\..\targetframework.props
 		..\..\versions.props = ..\..\versions.props
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2D0A3F62-46FA-4317-BDEB-BE9433B9EBBE}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore", "src\EndpointCore\Steeltoe.Management.EndpointCore.csproj", "{D544C805-F83B-46D8-9F64-AA783F924DB5}"
@@ -38,8 +36,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Diagnostics", "src\Diagnostics\Steeltoe.Management.Diagnostics.csproj", "{90C54C3B-488B-4449-826F-940A48992522}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterBase", "src\ExporterBase\Steeltoe.Management.ExporterBase.csproj", "{E102760A-037A-4B5F-AB38-29572C955A0D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.ExporterCore", "src\ExporterCore\Steeltoe.Management.ExporterCore.csproj", "{A8C4206F-5CB4-4AAD-A5DA-CAB75FB9944C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingCore", "src\TracingCore\Steeltoe.Management.TracingCore.csproj", "{1753EE33-0754-43B2-8A79-CAE080233F65}"
 EndProject
@@ -85,6 +81,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenTel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenTelemetryTracingBase", "src\OpenTelemetryTracingBase\Steeltoe.Management.OpenTelemetryTracingBase.csproj", "{96267423-D9EF-4058-80CA-8E537A32DA99}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fortune-Teller-Service", "..\..\..\..\Samples\Management\src\AspDotNetCore\Tracing\Fortune-Teller-Service\Fortune-Teller-Service.csproj", "{E0A9AD27-5994-4418-9916-D12F12CA0622}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensusBase", "src\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj", "{A0970231-E9BB-4453-9391-BB0C2E1C0641}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,10 +123,6 @@ Global
 		{E102760A-037A-4B5F-AB38-29572C955A0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E102760A-037A-4B5F-AB38-29572C955A0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E102760A-037A-4B5F-AB38-29572C955A0D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8C4206F-5CB4-4AAD-A5DA-CAB75FB9944C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8C4206F-5CB4-4AAD-A5DA-CAB75FB9944C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8C4206F-5CB4-4AAD-A5DA-CAB75FB9944C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8C4206F-5CB4-4AAD-A5DA-CAB75FB9944C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1753EE33-0754-43B2-8A79-CAE080233F65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1753EE33-0754-43B2-8A79-CAE080233F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1753EE33-0754-43B2-8A79-CAE080233F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -211,6 +207,14 @@ Global
 		{96267423-D9EF-4058-80CA-8E537A32DA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96267423-D9EF-4058-80CA-8E537A32DA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96267423-D9EF-4058-80CA-8E537A32DA99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0A9AD27-5994-4418-9916-D12F12CA0622}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0A9AD27-5994-4418-9916-D12F12CA0622}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0A9AD27-5994-4418-9916-D12F12CA0622}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0A9AD27-5994-4418-9916-D12F12CA0622}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0970231-E9BB-4453-9391-BB0C2E1C0641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0970231-E9BB-4453-9391-BB0C2E1C0641}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0970231-E9BB-4453-9391-BB0C2E1C0641}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0970231-E9BB-4453-9391-BB0C2E1C0641}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -224,7 +228,6 @@ Global
 		{E18FE0C4-04F0-46CB-B96A-E9B2210314D6} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{90C54C3B-488B-4449-826F-940A48992522} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{E102760A-037A-4B5F-AB38-29572C955A0D} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
-		{A8C4206F-5CB4-4AAD-A5DA-CAB75FB9944C} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{1753EE33-0754-43B2-8A79-CAE080233F65} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{A48BB975-39EB-43E1-9B22-AE1798F8D22E} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{2697ECCD-004F-4FEE-A8CC-7C08819141D2} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
@@ -246,6 +249,7 @@ Global
 		{C5A54146-778D-44EE-9F84-38E57963E30A} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{4ABD3875-FB13-4B18-9F84-351B73C6D30B} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{96267423-D9EF-4058-80CA-8E537A32DA99} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+		{A0970231-E9BB-4453-9391-BB0C2E1C0641} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7949396C-4BFF-4834-9BC2-F3A345E9CCE5}

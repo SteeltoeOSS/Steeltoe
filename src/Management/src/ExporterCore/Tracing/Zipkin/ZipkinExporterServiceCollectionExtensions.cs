@@ -15,11 +15,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using OpenCensus.Exporter.Zipkin;
+using OpenTelemetry.Exporter.Zipkin;
+using OpenTelemetry.Trace.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Management.Census.Trace;
 using Steeltoe.Management.Exporter.Tracing.Zipkin;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Net.Http;
 
@@ -39,37 +39,41 @@ namespace Steeltoe.Management.Exporter.Tracing
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton((p) =>
-            {
-                return CreateExporter(p, config);
-            });
+            var options = new ZipkinTraceExporterOptions();
+          //  Action<TracerBuilder> actionDelegate = ;
+
+          //  services.TryAddSingleton<Action<TracerBuilder>>((builder) => builder.UseZipkin(zipkinExporterOptions => { zipkinExporterOptions = options; })); ;
+            //{
+            //   builder.SetExporter(new ZipkinTraceExporter())
+            //});
+
         }
 
-        private static ZipkinTraceExporter CreateExporter(IServiceProvider p, IConfiguration config)
-        {
-            var opts = new TraceExporterOptions(p.GetApplicationInstanceInfo(), config);
-            var censusOpts = new ZipkinTraceExporterOptions()
-            {
-                Endpoint = new Uri(opts.Endpoint),
-                TimeoutSeconds = TimeSpan.FromSeconds(opts.TimeoutSeconds),
-                ServiceName = opts.ServiceName,
-                UseShortTraceIds = opts.UseShortTraceIds
-            };
+        //private static ZipkinTraceExporter CreateExporter(IServiceProvider p, IConfiguration config)
+        //{
+        //    var opts = new TraceExporterOptions(p.GetApplicationInstanceInfo(), config);
+        //    var censusOpts = new ZipkinTraceExporterOptions()
+        //    {
+        //        Endpoint = new Uri(opts.Endpoint),
+        //        TimeoutSeconds = TimeSpan.FromSeconds(opts.TimeoutSeconds),
+        //        ServiceName = opts.ServiceName,
+        //        UseShortTraceIds = opts.UseShortTraceIds
+        //    };
 
-            var tracing = p.GetRequiredService<ITracing>();
-            if (!opts.ValidateCertificates)
-            {
-                var client = new HttpClient(
-                    new HttpClientHandler()
-                    {
-                        ServerCertificateCustomValidationCallback = (mesg, cert, chain, errors) => { return true; }
-                    });
-                return new ZipkinTraceExporter(censusOpts, tracing.ExportComponent, client);
-            }
-            else
-            {
-                return new ZipkinTraceExporter(censusOpts, tracing.ExportComponent);
-            }
-        }
+        //    var tracing = p.GetRequiredService<ITracing>();
+        //    if (!opts.ValidateCertificates)
+        //    {
+        //        var client = new HttpClient(
+        //            new HttpClientHandler()
+        //            {
+        //                ServerCertificateCustomValidationCallback = (mesg, cert, chain, errors) => { return true; }
+        //            });
+        //        return new ZipkinTraceExporter(censusOpts, tracing.ExportComponent, client);
+        //    }
+        //    else
+        //    {
+        //        return new ZipkinTraceExporter(censusOpts, tracing.ExportComponent);
+        //    }
+        //}
     }
 }

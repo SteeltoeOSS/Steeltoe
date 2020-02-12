@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Trace.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
@@ -27,7 +28,7 @@ namespace Steeltoe.Management.Tracing
 {
     public static class TracingServiceCollectionExtensions
     {
-        public static void AddDistributedTracing(this IServiceCollection services, IConfiguration config)
+        public static void AddDistributedTracing(this IServiceCollection services, IConfiguration config, Action<TracerBuilder> configureTracer  = null)
         {
             if (services == null)
             {
@@ -55,7 +56,7 @@ namespace Steeltoe.Management.Tracing
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
-            services.TryAddSingleton<ITracing, OpenTelemetryTracing>();
+            services.TryAddSingleton<ITracing>((p) => { return new OpenTelemetryTracing(p.GetService<ITracingOptions>(), null, configureTracer); });
             services.TryAddSingleton<IDynamicMessageProcessor, TracingLogProcessor>();
         }
     }
