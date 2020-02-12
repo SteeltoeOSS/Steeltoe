@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenCensus.Trace;
+using OpenTelemetry.Trace;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System.Text;
 
 namespace Steeltoe.Management.Tracing
@@ -32,61 +32,61 @@ namespace Steeltoe.Management.Tracing
 
         public string Process(string inputLogMessage)
         {
-            Span currentSpan = GetCurrentSpan();
+            var currentSpan = GetCurrentSpan();
             if (currentSpan != null)
             {
                 var context = currentSpan.Context;
-                if (context != null)
+
+                var sb = new StringBuilder(" [");
+                sb.Append(options.Name);
+                sb.Append(",");
+
+                var traceId = context.TraceId.ToHexString();
+                if (traceId.Length > 16 && options.UseShortTraceIds)
                 {
-                    StringBuilder sb = new StringBuilder(" [");
-                    sb.Append(options.Name);
-                    sb.Append(",");
-
-                    var traceId = context.TraceId.ToLowerBase16();
-                    if (traceId.Length > 16 && options.UseShortTraceIds)
-                    {
-                        traceId = traceId.Substring(traceId.Length - 16, 16);
-                    }
-
-                    sb.Append(traceId);
-                    sb.Append(",");
-
-                    sb.Append(context.SpanId.ToLowerBase16());
-                    sb.Append(",");
-
-                    if (currentSpan.ParentSpanId != null)
-                    {
-                        sb.Append(currentSpan.ParentSpanId.ToLowerBase16());
-                    }
-
-                    sb.Append(",");
-
-                    if (currentSpan.Options.HasFlag(SpanOptions.RecordEvents))
-                    {
-                        sb.Append("true");
-                    }
-                    else
-                    {
-                        sb.Append("false");
-                    }
-
-                    sb.Append("] ");
-                    return sb.ToString() + inputLogMessage;
+                    traceId = traceId.Substring(traceId.Length - 16, 16);
                 }
+
+                sb.Append(traceId);
+                sb.Append(",");
+
+                sb.Append(context.SpanId.ToHexString());
+                sb.Append(",");
+
+                /*
+                //if (currentSpan.ParentSpanId != null)
+                //{
+                //    sb.Append(currentSpan.ParentSpanId.ToLowerBase16());
+                //}
+
+                //sb.Append(",");
+                */
+
+                if (currentSpan.IsRecording)
+                {
+                    sb.Append("true");
+                }
+                else
+                {
+                    sb.Append("false");
+                }
+
+                sb.Append("] ");
+                return sb.ToString() + inputLogMessage;
             }
 
             return inputLogMessage;
         }
 
-        protected internal Span GetCurrentSpan()
+        protected internal TelemetrySpan GetCurrentSpan()
         {
             var span = tracing.Tracer?.CurrentSpan;
-            if (span == null || span.Context == SpanContext.Invalid)
+            if (span == null || !span.Context.IsValid)
             {
                 return null;
             }
 
-            return span as Span;
+            return span;
         }
     }
 }

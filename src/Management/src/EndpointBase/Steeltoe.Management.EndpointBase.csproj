@@ -41,4 +41,8 @@
     <PackageReference Include="Steeltoe.Management.Diagnostics" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
+  </ItemGroup>
 </Project>

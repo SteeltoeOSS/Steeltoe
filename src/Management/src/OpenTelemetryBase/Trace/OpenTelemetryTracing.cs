@@ -16,24 +16,23 @@ using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Trace.Configuration;
 using OpenTelemetry.Trace.Samplers;
+using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Trace
 {
     public class OpenTelemetryTracing : ITracing
     {
-        private readonly ITracingOptions options;
+        private const int DefaultSpanMaxNumAttributes = 32;
 
-        public OpenTelemetryTracing(ITracingOptions options, Sampler sampler = null)
+        private const int DefaultSpanMaxNumEvents = 128;
+
+        private const int DefaultSpanMaxNumLinks = 32;
+
+        public OpenTelemetryTracing(ITracingOptions options, Action<TracerBuilder> configureTracer = null)
         {
-            this.options = options;
-
             var factory = TracerFactory.Create(builder =>
             {
-                if (sampler != null)
-                {
-                    builder.SetSampler(sampler);
-                }
-                else if (options.AlwaysSample)
+                if (options.AlwaysSample)
                 {
                     builder.SetSampler(new AlwaysSampleSampler());
                 }
@@ -42,48 +41,27 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
                     builder.SetSampler(new NeverSampleSampler());
                 }
 
-                if (options.MaxNumberOfAttributes > 0 &&
-                    options.MaxNumberOfLinks > 0 &&
+                var tracerConfig = new TracerConfiguration();
+                if (options.MaxNumberOfAttributes > 0 ||
+                    options.MaxNumberOfLinks > 0 ||
                     options.MaxNumberOfMessageEvents > 0)
                 {
-                    builder.SetTracerOptions(new TracerConfiguration(
-                     options.MaxNumberOfAttributes,
-                     options.MaxNumberOfMessageEvents,
-                     options.MaxNumberOfLinks));
+                    var maxAttributes = options.MaxNumberOfAttributes > 0 ? options.MaxNumberOfAttributes : DefaultSpanMaxNumAttributes;
+                    var maxEvents = options.MaxNumberOfMessageEvents > 0 ? options.MaxNumberOfMessageEvents : DefaultSpanMaxNumEvents;
+                    var maxLinks = options.MaxNumberOfLinks > 0 ? options.MaxNumberOfLinks : DefaultSpanMaxNumLinks;
+                    tracerConfig = new TracerConfiguration(maxAttributes, maxEvents, maxLinks);
                 }
+
+                builder.SetTracerOptions(tracerConfig);
+
+                configureTracer?.Invoke(builder);
             });
 
-            _tracer = factory.GetTracer("SteeltoeTracer");
+            Tracer = factory.GetTracer(options.Name);
         }
 
-        //   private readonly ITraceComponent traceComponent = new TraceComponent();
-
-        private Tracer _tracer;
-
-        public Tracer Tracer
-        {
-            get
-            {
-                return _tracer;// traceComponent.Tracer;
-            }
-        }
+        public Tracer Tracer { get; }
 
         public ITextFormat TextFormat { get; } = new B3Format();
-
-        //public IExportComponent ExportComponent
-        //{
-        //    get
-        //    {
-        //        return traceComponent.ExportComponent;
-        //    }
-        //}
-
-        //public TraceConfig TraceConfig
-        //{
-        //    get
-        //    {
-        //        return traceComponent.TraceConfig;
-        //    }
-        //}
     }
 }

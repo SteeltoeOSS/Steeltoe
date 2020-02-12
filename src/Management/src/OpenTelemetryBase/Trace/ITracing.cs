@@ -22,9 +22,5 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
         Tracer Tracer { get; }
 
         ITextFormat TextFormat { get; }
-
-      //  IExportComponent ExportComponent { get; }
-
-      //  TraceConfig TraceConfig { get; }
     }
 }

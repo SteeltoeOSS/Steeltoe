@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using OpenCensus.Common;
-using OpenCensus.Trace;
+using OpenTelemetry.Trace;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Propagation;
+using Steeltoe.Management.OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace.Propagation;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -95,8 +94,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            var spanContext = context as SpanContext;
-            var span = spanContext.Active;
+            var span = context as TelemetrySpan;
             if (span == null)
             {
                 Logger?.LogDebug("HandleExceptionEvent: Active span missing, {exception}", exception);
@@ -125,20 +123,17 @@ namespace Steeltoe.Management.Tracing.Observer
             string spanName = ExtractSpanName(request);
 
             var parentSpan = GetCurrentSpan();
-            ISpan started;
-            IScope scope;
+            TelemetrySpan started;
             if (parentSpan != null)
             {
-                scope = Tracer.SpanBuilderWithExplicitParent(spanName, parentSpan)
-                    .StartScopedSpan(out started);
+                Tracer.StartActiveSpan(spanName, parentSpan, out started);
             }
             else
             {
-                scope = Tracer.SpanBuilder(spanName)
-                   .StartScopedSpan(out started);
+                Tracer.StartActiveSpan(spanName, out started);
             }
 
-            request.Properties.Add(SPANCONTEXT_KEY, new SpanContext(started, scope));
+            request.Properties.Add(SPANCONTEXT_KEY, started);
 
             started.PutClientSpanKindAttribute()
                 .PutHttpRawUrlAttribute(request.RequestUri.ToString())
@@ -158,13 +153,9 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            SpanContext spanContext = context as SpanContext;
-
-            if (spanContext != null)
+            var span = context as TelemetrySpan;
+            if (span != null)
             {
-                ISpan span = spanContext.Active;
-                IScope scope = spanContext.ActiveScope;
-
                 if (response != null)
                 {
                     span.PutHttpStatusCodeAttribute((int)response.StatusCode)
@@ -183,17 +174,17 @@ namespace Steeltoe.Management.Tracing.Observer
                         .Status = Status.Cancelled;
                 }
 
-                scope.Dispose();  // Calls span.End(); and replaces CurrentSpan with previous span
+                span.End();
 
                 request.Properties.Remove(SPANCONTEXT_KEY);
             }
         }
 
-        protected internal void InjectTraceContext(HttpRequestMessage message, ISpan parentSpan)
+        protected internal void InjectTraceContext(HttpRequestMessage message, TelemetrySpan parentSpan)
         {
             // Expects the currentspan to be the span to inject into
             var headers = message.Headers;
-            Propagation.Inject(Tracer.CurrentSpan.Context, headers,  (c, k, v) =>
+            TextFormat.Inject(Tracer.CurrentSpan.Context, headers,  (c, k, v) =>
             {
                 if (k == B3Constants.XB3TraceId && v.Length > 16 && Options.UseShortTraceIds)
                 {
@@ -204,7 +195,7 @@ namespace Steeltoe.Management.Tracing.Observer
             });
             if (parentSpan != null)
             {
-                headers.Add(B3Constants.XB3ParentSpanId, parentSpan.Context.SpanId.ToLowerBase16());
+                headers.Add(B3Constants.XB3ParentSpanId, parentSpan.Context.SpanId.ToHexString());
             }
         }
 

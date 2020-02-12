@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\..\src\TracingBase\Steeltoe.Management.TracingBase.csproj" />
+
   </ItemGroup>
 
   <ItemGroup>

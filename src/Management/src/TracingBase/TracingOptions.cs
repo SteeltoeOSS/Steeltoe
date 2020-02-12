@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 
 namespace Steeltoe.Management.Tracing

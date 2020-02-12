@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using OpenCensus.Trace;
-using OpenCensus.Trace.Sampler;
-using Steeltoe.Management.Census.Trace;
+using OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test
@@ -26,25 +26,11 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void InitializedWithDefaults()
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var builder = new ConfigurationBuilder();
+            var opts = new TracingOptions(null, builder.Build());
 
-            OpenCensusTracing tracing = new OpenCensusTracing(opts);
-            Assert.NotNull(tracing.ExportComponent);
-            Assert.NotNull(tracing.PropagationComponent);
-            Assert.NotNull(tracing.TraceConfig);
+            var tracing = new OpenTelemetryTracing(opts);
             Assert.NotNull(tracing.Tracer);
-
-            var p = tracing.TraceConfig.ActiveTraceParams;
-            Assert.NotNull(p);
-
-            Assert.NotNull(p.Sampler);
-            Assert.NotEqual(Samplers.AlwaysSample, p.Sampler);
-            Assert.NotEqual(Samplers.NeverSample, p.Sampler);
-            Assert.Equal(32, p.MaxNumberOfAnnotations);
-            Assert.Equal(32, p.MaxNumberOfAttributes);
-            Assert.Equal(128, p.MaxNumberOfLinks);
-            Assert.Equal(128, p.MaxNumberOfMessageEvents);
         }
 
         [Fact]
@@ -64,26 +50,13 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:useShortTraceIds"] = "true",
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var opts = new TracingOptions(null, builder.Build());
 
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, new Sampler());
-            Assert.NotNull(tracing.ExportComponent);
-            Assert.NotNull(tracing.PropagationComponent);
-            Assert.NotNull(tracing.TraceConfig);
+            var tracing = new OpenTelemetryTracing(opts);
+
             Assert.NotNull(tracing.Tracer);
-
-            var p = tracing.TraceConfig.ActiveTraceParams;
-            Assert.NotNull(p);
-
-            Assert.NotNull(p.Sampler);
-            Assert.IsType<Sampler>(p.Sampler);
-
-            Assert.Equal(100, p.MaxNumberOfAnnotations);
-            Assert.Equal(100, p.MaxNumberOfAttributes);
-            Assert.Equal(100, p.MaxNumberOfLinks);
-            Assert.Equal(100, p.MaxNumberOfMessageEvents);
 
             appsettings = new Dictionary<string, string>()
             {
@@ -102,27 +75,15 @@ namespace Steeltoe.Management.Tracing.Test
             builder.AddInMemoryCollection(appsettings);
             opts = new TracingOptions(null, builder.Build());
 
-            tracing = new OpenCensusTracing(opts, null);
-            Assert.NotNull(tracing.ExportComponent);
-            Assert.NotNull(tracing.PropagationComponent);
-            Assert.NotNull(tracing.TraceConfig);
+            tracing = new OpenTelemetryTracing(opts, null);
             Assert.NotNull(tracing.Tracer);
-
-            p = tracing.TraceConfig.ActiveTraceParams;
-            Assert.NotNull(p);
-
-            Assert.Equal(Samplers.AlwaysSample, p.Sampler);
-            Assert.Equal(100, p.MaxNumberOfAnnotations);
-            Assert.Equal(100, p.MaxNumberOfAttributes);
-            Assert.Equal(100, p.MaxNumberOfLinks);
-            Assert.Equal(100, p.MaxNumberOfMessageEvents);
         }
 
-        private class Sampler : ISampler
+        private class TestSampler : Sampler
         {
-            public string Description => throw new System.NotImplementedException();
+            public override string Description => throw new System.NotImplementedException();
 
-            public bool ShouldSample(ISpanContext parentContext, bool hasRemoteParent, ITraceId traceId, ISpanId spanId, string name, IEnumerable<ISpan> parentLinks)
+            public override Decision ShouldSample(in SpanContext parentContext, in ActivityTraceId traceId, in ActivitySpanId spanId, string name, SpanKind spanKind, IDictionary<string, object> attributes, IEnumerable<Link> links)
             {
                 throw new System.NotImplementedException();
             }

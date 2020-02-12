@@ -21,7 +21,6 @@
     <PackageReference Include="Steeltoe.Management.TracingBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
-    <ProjectReference Include="..\OpenTelemetryTracingBase\Steeltoe.Management.OpenTelemetryTracingBase.csproj" />
+    <ProjectReference Include="..\TracingBase\Steeltoe.Management.TracingBase.csproj" />
   </ItemGroup>
 </Project>
