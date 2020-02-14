@@ -265,7 +265,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
                         if (updateDictionary)
                         {
-                            IDictionary<string, string> newData = new Dictionary<string, string>();
+                            IDictionary<string, string> newData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
                             if (!string.IsNullOrEmpty(env.State))
                             {
