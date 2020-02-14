@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -159,11 +158,16 @@ namespace Steeltoe.Security.Authentication.Mtls
             var isValid = chain.Build(certificate);
 
             // allow root cert to be side loaded without installing into X509Store Root store
-            if (!isValid && chain.ChainStatus.All(x => x.Status == X509ChainStatusFlags.UntrustedRoot || x.Status == X509ChainStatusFlags.PartialChain))
+            if (!isValid && chain.ChainStatus.All(x => 
+                x.Status == X509ChainStatusFlags.UntrustedRoot || x.Status == X509ChainStatusFlags.PartialChain ||
+                x.Status == X509ChainStatusFlags.OfflineRevocation || x.Status == X509ChainStatusFlags.RevocationStatusUnknown))
             {
-                var rootCert = chain.ChainElements.Cast<X509ChainElement>().Last().Certificate;
-                isValid = Options.IssuerChain.Contains(rootCert);
+                Logger.LogDebug("Certificate not valid by standard rules, trying custom validation");
+                // todo: log all chain status flags
+                isValid = Options.IssuerChain.Union(chain.ChainElements.Cast<X509ChainElement>().Select(c => c.Certificate)).Any();
             }
+
+            Logger.LogTrace("Certificate chain is valid: {0}", isValid);
 
             return isValid;
         }
@@ -186,13 +190,6 @@ namespace Steeltoe.Security.Authentication.Mtls
                 RevocationFlag = revocationFlag,
                 RevocationMode = revocationMode,
             };
-
-            // TODO: review questionable choice for enabling local dev
-            if (!Platform.IsCloudHosted)
-            {
-                chainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-            }
-            // end questionable choice
 
             // begin secret sauce
             foreach (var chainCert in Options.IssuerChain)
@@ -243,38 +240,23 @@ namespace Steeltoe.Security.Authentication.Mtls
                 claims.Add(new Claim(ClaimTypes.SerialNumber, value, ClaimValueTypes.String, Options.ClaimsIssuer));
             }
 
-            value = certificate.GetNameInfo(X509NameType.DnsName, false);
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                claims.Add(new Claim(ClaimTypes.Dns, value, ClaimValueTypes.String, Options.ClaimsIssuer));
-            }
-
-            value = certificate.GetNameInfo(X509NameType.SimpleName, false);
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                claims.Add(new Claim(ClaimTypes.Name, value, ClaimValueTypes.String, Options.ClaimsIssuer));
-            }
-
-            value = certificate.GetNameInfo(X509NameType.EmailName, false);
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                claims.Add(new Claim(ClaimTypes.Email, value, ClaimValueTypes.String, Options.ClaimsIssuer));
-            }
-
-            value = certificate.GetNameInfo(X509NameType.UpnName, false);
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                claims.Add(new Claim(ClaimTypes.Upn, value, ClaimValueTypes.String, Options.ClaimsIssuer));
-            }
-
-            value = certificate.GetNameInfo(X509NameType.UrlName, false);
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                claims.Add(new Claim(ClaimTypes.Uri, value, ClaimValueTypes.String, Options.ClaimsIssuer));
-            }
+            MapClaimIfFound(certificate, X509NameType.DnsName, claims, ClaimTypes.Dns);
+            MapClaimIfFound(certificate, X509NameType.SimpleName, claims, ClaimTypes.Name);
+            MapClaimIfFound(certificate, X509NameType.EmailName, claims, ClaimTypes.Email);
+            MapClaimIfFound(certificate, X509NameType.UpnName, claims, ClaimTypes.Upn);
+            MapClaimIfFound(certificate, X509NameType.UrlName, claims, ClaimTypes.Uri);
 
             var identity = new ClaimsIdentity(claims, CertificateAuthenticationDefaults.AuthenticationScheme);
             return new ClaimsPrincipal(identity);
+        }
+
+        private void MapClaimIfFound(X509Certificate2 certificate, X509NameType claimSource, List<Claim> claims, string claimDestination)
+        {
+            var value = certificate.GetNameInfo(claimSource, false);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                claims.Add(new Claim(claimDestination, value, ClaimValueTypes.String, Options.ClaimsIssuer));
+            }
         }
     }
 }

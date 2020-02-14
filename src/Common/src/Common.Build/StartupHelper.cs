@@ -13,22 +13,21 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Steeltoe.Common.Build
 {
     public static class StartupHelper
     {
-        public static void UseOrGeneratePlatformCertificates()
+        public static void UseOrGeneratePlatformCertificates(string orgId = null, string spaceId = null)
         {
-            var task = new CertificateWriter();
-            task.Write();
-
             if (!Platform.IsCloudFoundry)
             {
                 Console.WriteLine("Not running on the platform... using local certs");
+
+                var task = new CertificateWriter();
+                task.Write(orgId, spaceId);
+
                 Environment.SetEnvironmentVariable("CF_INSTANCE_CERT", Path.Combine(CertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"));
                 Environment.SetEnvironmentVariable("CF_INSTANCE_KEY", Path.Combine(CertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
             }

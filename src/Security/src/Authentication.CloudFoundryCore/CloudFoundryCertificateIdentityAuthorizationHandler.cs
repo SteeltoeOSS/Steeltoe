@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.Mtls;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -25,10 +27,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
     public class CloudFoundryCertificateIdentityAuthorizationHandler : IAuthorizationHandler
     {
         private readonly IOptionsMonitor<CertificateOptions> _identityCert;
+        private readonly ILogger<CloudFoundryCertificateIdentityAuthorizationHandler> _logger;
         private CloudFoundryInstanceCertificate _cloudFoundryCertificate;
 
-        public CloudFoundryCertificateIdentityAuthorizationHandler(IOptionsMonitor<CertificateOptions> identityCert)
+        public CloudFoundryCertificateIdentityAuthorizationHandler(IOptionsMonitor<CertificateOptions> identityCert, ILogger<CloudFoundryCertificateIdentityAuthorizationHandler> logger)
         {
+            _logger = logger;
             _identityCert = identityCert;
             _identityCert.OnChange(OnCertRefresh);
             OnCertRefresh(identityCert.CurrentValue);
@@ -48,12 +52,15 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 _cloudFoundryCertificate = cfCert;
             }
+            else
+            {
+                _logger?.LogWarning("Application identity certificate parsing failed! Subject was: {0}", cert.Certificate.Subject);
+            }
         }
 
         private void HandleCertRequirement<T>(AuthorizationHandlerContext context, string claimType, string claimValue)
             where T : IAuthorizationRequirement
         {
-            ClaimsPrincipal user = context.User;
             var requirement = context.PendingRequirements.OfType<T>().FirstOrDefault();
             if (requirement == null)
             {
@@ -66,9 +73,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 return;
             }
 
-            if (user.HasClaim(claimType, claimValue))
+            if (context.User.HasClaim(claimType, claimValue))
             {
                 context.Succeed(requirement);
+            }
+            else
+            {
+                _logger?.LogDebug("User has the required claim, but the value doesn't match. Expected {0} but got {1}", claimValue, context.User.FindFirstValue(claimType));
             }
         }
     }

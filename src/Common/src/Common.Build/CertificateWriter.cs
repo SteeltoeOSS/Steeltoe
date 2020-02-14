@@ -34,11 +34,17 @@ namespace Steeltoe.Common.Build
             var appId = Guid.NewGuid();
             var instanceId = Guid.NewGuid();
 
-            var subject = $"CN={instanceId},OU=organization:{orgId ?? Guid.NewGuid().ToString()},OU=space:{spaceId ?? Guid.NewGuid().ToString()},OU=app:{appId}";
+            var subject = $"CN={instanceId}, OU=organization:{orgId ?? Guid.NewGuid().ToString()} + OU=space:{spaceId ?? Guid.NewGuid().ToString()} + OU=app:{appId}";
 
             X509Certificate2 caCertificate;
 
-            // Create Root CA PFX with private key (if not already there)
+            // Create Root CA and intermediate cert PFX with private key (if not already there)
+            if (!Directory.Exists(Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates")))
+            {
+                Console.WriteLine("Creating directory to hold signing certs");
+                Directory.CreateDirectory(Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates"));
+            }
+
             if (!File.Exists(RootCAPfxPath))
             {
                 caCertificate = CreateRoot("CN=SteeltoeGeneratedCA");
@@ -80,7 +86,6 @@ namespace Steeltoe.Common.Build
                 "\r\n-----END CERTIFICATE-----\r\n";
 
             File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"), certContents);
-
             File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"), "-----BEGIN RSA PRIVATE KEY-----\r\n" + Convert.ToBase64String(clientCertificate.GetRSAPrivateKey().ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END RSA PRIVATE KEY-----");
 
             return true;

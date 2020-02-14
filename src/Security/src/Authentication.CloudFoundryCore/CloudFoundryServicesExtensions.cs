@@ -24,6 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using B = Org.BouncyCastle.X509;
+using M = System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
@@ -42,23 +44,34 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             services.Configure<CertificateOptions>(configuration);
             services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
             services.AddSingleton<IAuthorizationHandler, CloudFoundryCertificateIdentityAuthorizationHandler>();
-            return services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
+            return services.AddCertificateForwarding(opt => {
+                opt.CertificateHeader = "X-Forwarded-Client-Cert";
+                opt.HeaderConverter = (headerValue) =>
+                {
+                    var certBytes = Convert.FromBase64String(headerValue);
+
+                    // this is the default... works fine on Windows
+                    var cert = new M.X509Certificate2(certBytes);
+
+                    if (string.IsNullOrEmpty(cert.Subject))
+                    {
+                        var bCert = new B.X509CertificateParser().ReadCertificate(certBytes);
+
+                        // this still results in a blank subject on linux b/c its the same parsing mechanism 
+                        cert = new M.X509Certificate2(bCert.GetEncoded());
+                    }
+
+                    return cert;
+                };
+            });
         }
 
         public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder)
         {
             builder.AddCertificateST(options =>
             {
-                //// TODO: remove
-                options.ValidateValidityPeriod = false;
-                //// END TODO
-
                 options.Events = new CertificateAuthenticationEvents()
                 {
-                    OnAuthenticationFailed = context =>
-                    {
-                        return Task.CompletedTask;
-                    },
                     OnCertificateValidated = context =>
                     {
                         var claims = new List<Claim>(context.Principal.Claims);
